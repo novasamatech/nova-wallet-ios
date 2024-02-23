@@ -2,10 +2,12 @@ import SoraKeystore
 import RobinHood
 import FirebaseCore
 import FirebaseFirestore
+import SoraFoundation
 
 protocol Web3AlertsServicesFactoryProtocol {
     func createSyncService() -> Web3AlertsSyncServiceProtocol
     func createPushNotificationsService() -> PushNotificationsServiceProtocol
+    func createTopicService() -> TopicServiceProtocol
 }
 
 final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
@@ -34,7 +36,11 @@ final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
 
     func createSyncService() -> Web3AlertsSyncServiceProtocol {
         let repository: CoreDataRepository<LocalPushSettings, CDUserSingleValue> =
-            storageFacade.createRepository(mapper: AnyCoreDataMapper(Web3AlertSettingsMapper()))
+            storageFacade.createRepository(
+                filter: .pushSettings,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
+            )
 
         let service = Web3AlertsSyncService(
             repository: AnyDataProviderRepository(repository),
@@ -52,9 +58,27 @@ final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
             syncService = createSyncService()
         }
 
-        return PushNotificationsService(
+        let service = PushNotificationsService(
             service: syncService,
             settingsManager: settingsManager,
+            applicationHandler: ApplicationHandler(),
+            logger: logger
+        )
+        service.setup()
+
+        return service
+    }
+
+    func createTopicService() -> TopicServiceProtocol {
+        let repository: CoreDataRepository<LocalNotificationTopicSettings, CDUserSingleValue> =
+            storageFacade.createRepository(
+                filter: .topicSettings,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(Web3TopicSettingsMapper())
+            )
+
+        return TopicService(
+            repository: AnyDataProviderRepository(repository),
             logger: logger
         )
     }

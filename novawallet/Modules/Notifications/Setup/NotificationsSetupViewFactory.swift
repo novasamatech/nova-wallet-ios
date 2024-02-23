@@ -19,7 +19,8 @@ struct NotificationsSetupViewFactory {
         let interactor = NotificationsSetupInteractor(
             servicesFactory: Web3AlertsServicesFactory.shared,
             selectedWallet: selectedWallet,
-            chainRegistry: ChainRegistryFacade.sharedRegistry
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            settingsMananger: SettingsManager.shared
         )
         let wireframe = NotificationsSetupWireframe()
 

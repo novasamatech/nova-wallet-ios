@@ -1,10 +1,13 @@
 import UIKit
+import SoraKeystore
 
 final class NotificationsSetupInteractor {
     weak var presenter: NotificationsSetupInteractorOutputProtocol?
 
     let servicesFactory: Web3AlertsServicesFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
+    let settingsMananger: SettingsManagerProtocol
+
     private var syncService: Web3AlertsSyncServiceProtocol?
     private var pushNotificationsService: PushNotificationsServiceProtocol?
 
@@ -14,31 +17,23 @@ final class NotificationsSetupInteractor {
     init(
         servicesFactory: Web3AlertsServicesFactoryProtocol,
         selectedWallet: MetaAccountModel,
-        chainRegistry: ChainRegistryProtocol
+        chainRegistry: ChainRegistryProtocol,
+        settingsMananger: SettingsManagerProtocol
     ) {
         self.servicesFactory = servicesFactory
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
-    }
-
-    private func provideStatus() {
-        guard let pushNotificationsService = pushNotificationsService else {
-            return
-        }
-        pushNotificationsService.status { [weak self] status in
-            DispatchQueue.main.async {
-                self?.presenter?.didRegister(notificationStatus: status)
-            }
-        }
+        self.settingsMananger = settingsMananger
     }
 
     private func registerPushNotifications() {
         guard let pushNotificationsService = pushNotificationsService else {
             return
         }
-        pushNotificationsService.setup()
-        pushNotificationsService.register { [weak self] in
-            self?.provideStatus()
+        pushNotificationsService.register { [weak self] status in
+            DispatchQueue.main.async {
+                self?.presenter?.didRegister(notificationStatus: status)
+            }
         }
     }
 
@@ -68,15 +63,15 @@ final class NotificationsSetupInteractor {
                 stakingReward: .concrete([]),
                 transfer: .concrete([]),
                 tokenSent: true,
-                tokenReceived: true,
-                govMyDelegatorVoted: .concrete([]),
-                govMyReferendumFinished: .concrete([])
+                tokenReceived: true
             )
         )
+
         syncService.save(
-            notificationsEnabled: true,
-            settings: settings
+            settings: settings,
+            runningInQueue: .main
         ) { [weak self] in
+            self?.settingsMananger.notificationsEnabled = true
             self?.registerPushNotifications()
         }
     }

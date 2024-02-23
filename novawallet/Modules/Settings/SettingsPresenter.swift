@@ -207,13 +207,13 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .wiki:
             show(url: config.wikiURL)
         case .notifications:
-            switch pushNotificationsStatus {
-            case .notDetermined:
+            guard pushNotificationsStatus != nil else {
+                return
+            }
+            if pushNotificationsStatus == .notDetermined {
                 wireframe.showSetupNotifications(from: view, delegate: self)
-            case .off, .on:
-                wireframe.showManageNotifications(from: view)
-            case .none:
-                break
+            } else {
+                wireframe.showManageNotifications(from: view, delegate: self)
             }
         }
     }
@@ -331,8 +331,7 @@ extension SettingsPresenter: Localizable {
 }
 
 extension SettingsPresenter: PushNotificationsStatusDelegate {
-    func pushNotificationsStatusDidUpdate(_ pushNotificationsStatus: PushNotificationsStatus) {
-        self.pushNotificationsStatus = pushNotificationsStatus
-        updateView()
+    func pushNotificationsStatusDidUpdate() {
+        interactor.syncPushNotificationsStatus()
     }
 }

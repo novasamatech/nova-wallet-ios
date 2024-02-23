@@ -5,6 +5,7 @@
 "common.use" = "Use";
 "common.error.general.title" = "Error";
 "common.copy.address" = "Copy address";
+"common.clear" = "Clear";
 "operation.error.title" = "Operation Failed";
 "operation.error.message" = "Please, try again later";
 "connection.error.title" = "Connection Failed";
@@ -1472,6 +1473,19 @@
 "notifications.setup.subtitle" = "Get notified about Wallet operations, Governance\nupdates, Staking activity and Security, so you’re always\nin the know";
 "notifications.setup.enable.push.notifications" = "Enable push notifications";
 "notifications.setup.terms" = "By enabling push notifications, you agree to our\nTerms and Conditions and Privacy Policy";
+"notifications.management.powered.by" = "Powered by";
+"notifications.management.enable.notifications" = "Enable notifications";
+"notifications.management.wallets" = "Wallets";
+"notifications.management.announcements" = "Nova announcements";
+"notifications.management.sent.tokens" = "Sent tokens";
+"notifications.management.received.tokens" = "Received tokens";
+"notifications.management.gov" = "Governance";
+"notifications.management.staking.rewards" = "Staking rewards";
+"notifications.management.general" = "General";
+"notifications.management.balances" = "Balances";
+"notifications.management.others" = "Others";
+"notifications.error.disabled.in.settings.title" = "Enable Notifications for Nova Wallet";
+"notifications.error.disabled.in.settings.message" = "Go to Settings → Tap \"Notifications\" → Turn on \"Allow Notifications\"";
 "staking.alert.switch.to.stash.title" = "Select stash account to setup proxy";
 "staking.alert.switch.to.stash.message" = "Please switch your wallet to %@ to setup a proxy";
 "staking.proxy.revoke.access.type" = "Revoke access type";
@@ -1498,3 +1512,8 @@
 "staking.setup.proxy.authority" = "Give authority to";
 "staking.setup.proxy.deposit" = "Proxy deposit";
 "staking.setup.proxy.title" = "Add delegation for %@ staking";
+"notifications.management.gov.new.referendum" = "New Referendum";
+"notifications.management.gov.referendum.update" = "Referendum Update";
+"notifications.management.gov.tracks" = "Tracks";
+"notifications.management.gov.tracks.title" = "Select tracks for";
+"notifications.management.gov.selected.tracks" = "%li of %li";

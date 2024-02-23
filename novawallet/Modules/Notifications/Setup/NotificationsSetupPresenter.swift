@@ -5,7 +5,7 @@ final class NotificationsSetupPresenter {
     let wireframe: NotificationsSetupWireframeProtocol
     let interactor: NotificationsSetupInteractorInputProtocol
     let legalData: LegalData
-    private weak var delegate: PushNotificationsStatusDelegate?
+    weak var delegate: PushNotificationsStatusDelegate?
 
     init(
         interactor: NotificationsSetupInteractorInputProtocol,
@@ -43,8 +43,8 @@ extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
 }
 
 extension NotificationsSetupPresenter: NotificationsSetupInteractorOutputProtocol {
-    func didRegister(notificationStatus: PushNotificationsStatus) {
-        delegate?.pushNotificationsStatusDidUpdate(notificationStatus)
+    func didRegister(notificationStatus _: PushNotificationsStatus) {
+        delegate?.pushNotificationsStatusDidUpdate()
         wireframe.complete(on: view)
     }
 }

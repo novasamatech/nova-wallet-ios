@@ -11,12 +11,13 @@ enum Web3AlertsSyncServiceError: Error {
 
 protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
     func save(
-        notificationsEnabled: Bool,
         settings: LocalPushSettings,
+        runningInQueue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     )
     func update(
         token: String,
+        runningInQueue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     )
 }
@@ -152,13 +153,14 @@ final class Web3AlertsSyncService: BaseSyncService {
 
 extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
     func save(
-        notificationsEnabled: Bool,
         settings: LocalPushSettings,
+        runningInQueue queue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     ) {
-        settingsManager.notificationsEnabled = notificationsEnabled
         let saveOperation = localSaveOperation(settings: settings)
-        saveOperation.completionBlock = completionHandler
+        saveOperation.completionBlock = {
+            dispatchInQueueWhenPossible(queue, block: completionHandler)
+        }
 
         executingOperationWrapper?.allOperations.forEach {
             saveOperation.addDependency($0)
@@ -169,10 +171,11 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
     func update(
         token: String,
+        runningInQueue queue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     ) {
         guard settingsManager.notificationsEnabled else {
-            completionHandler()
+            dispatchInQueueWhenPossible(queue, block: completionHandler)
             return
         }
         let fetchOperation = repository.fetchOperation(by: { LocalPushSettings.getIdentifier() }, options: .init())
@@ -193,7 +196,7 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
         let updatingWrapper = wrapper.insertingHead(operations: [fetchOperation, updateSettingsOperation])
 
         updatingWrapper.targetOperation.completionBlock = {
-            completionHandler()
+            dispatchInQueueWhenPossible(queue, block: completionHandler)
         }
 
         executingOperationWrapper.map {

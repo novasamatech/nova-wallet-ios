@@ -8,12 +8,23 @@ import FirebaseMessaging
 protocol TopicServiceProtocol {
     func subscribe(to topic: NotificationTopic)
     func unsubscribe(from topic: NotificationTopic)
+    func save(
+        settings: LocalNotificationTopicSettings,
+        workingQueue: OperationQueue,
+        callbackQueue: DispatchQueue?,
+        completion: @escaping () -> Void
+    )
 }
 
 final class TopicService: TopicServiceProtocol {
     let logger: LoggerProtocol
+    let repository: AnyDataProviderRepository<LocalNotificationTopicSettings>
 
-    init(logger: LoggerProtocol) {
+    init(
+        repository: AnyDataProviderRepository<LocalNotificationTopicSettings>,
+        logger: LoggerProtocol
+    ) {
+        self.repository = repository
         self.logger = logger
     }
 
@@ -39,5 +50,24 @@ final class TopicService: TopicServiceProtocol {
 
     func unsubscribe(from topic: NotificationTopic) {
         unsubscribe(channel: topic.identifier)
+    }
+
+    func save(
+        settings: LocalNotificationTopicSettings,
+        workingQueue: OperationQueue,
+        callbackQueue: DispatchQueue?,
+        completion: @escaping () -> Void
+    ) {
+        let operation = repository.replaceOperation {
+            [settings]
+        }
+
+        execute(
+            operation: operation,
+            inOperationQueue: workingQueue,
+            runningCallbackIn: callbackQueue
+        ) { _ in
+            completion()
+        }
     }
 }
