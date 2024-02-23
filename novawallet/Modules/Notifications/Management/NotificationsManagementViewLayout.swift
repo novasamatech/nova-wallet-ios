@@ -7,7 +7,7 @@ final class NotificationsManagementViewLayout: UIView {
         let view = UITableView(frame: .zero, style: .grouped)
         view.backgroundColor = R.color.colorSecondaryScreenBackground()
         view.separatorStyle = .none
-        view.rowHeight = 48
+        view.rowHeight = 55
         return view
     }()
 

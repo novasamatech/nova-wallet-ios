@@ -16,6 +16,7 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
     func enableNotifications()
     func save(
         settings: LocalPushSettings,
+        topics: LocalNotificationTopicSettings,
         notificationsEnabled: Bool,
         announcementsEnabled: Bool
     )
@@ -24,6 +25,7 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
 
 protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
     func didReceive(settings: LocalPushSettings)
+    func didReceive(topicsSettings: LocalNotificationTopicSettings)
     func didReceive(error: NotificationsManagementError)
     func didReceive(notificationsEnabled: Bool)
     func didReceive(announcementsEnabled: Bool)
@@ -33,8 +35,16 @@ protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
 protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, ErrorPresentable,
     ApplicationSettingsPresentable, CommonRetryable {
     func showWallets(from view: ControllerBackedProtocol?)
-    func showStakingRewardsSetup(from view: ControllerBackedProtocol?)
-    func showGovSetup(from view: ControllerBackedProtocol?)
+    func showStakingRewardsSetup(
+        from view: ControllerBackedProtocol?,
+        selectedChains: Selection<Set<ChainModel.Id>>?,
+        completion: @escaping (Selection<Set<ChainModel.Id>>?) -> Void
+    )
+    func showGovSetup(
+        from view: ControllerBackedProtocol?,
+        settings: GovernanceNotificationsInitModel?,
+        completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
+    )
     func complete(from view: ControllerBackedProtocol?)
 }
 

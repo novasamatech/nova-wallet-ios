@@ -6,6 +6,7 @@
 "common.error.general.title" = "Ошибка";
 "common.copy.address" = "Копировать адрес";
 "operation.error.title" = "Ошибка операции";
+"common.clear" = "Очистить";
 "operation.error.message" = "Пожалуйста, попробуйте позже";
 "connection.error.title" = "Ошибка соединения";
 "connection.error.message" = "Пожалуйста, проверьте подключение к Интернету и повторите попытку.";
@@ -1472,6 +1473,23 @@
 "notifications.setup.subtitle" = "Получайте уведомления о действиях в кошельке, обновлениях в голосовании, активности стейкинга и безопасности, чтобы быть всегда в курсе.";
 "notifications.setup.enable.push.notifications" = "Включить пуш-уведомления";
 "notifications.setup.terms" = "Включая уведомления, вы соглашаетесь с нашими\nУсловиями использования и Политикой конфиденциальности";
+"notifications.management.powered.by" = "При поддержке";
+"notifications.management.enable.notifications" = "Включить уведомления";
+"notifications.management.wallets" = "Кошельки";
+"notifications.management.announcements" = "Анонсы Nova";
+"notifications.management.sent.tokens" = "Отправленные токены";
+"notifications.management.received.tokens" = "Полученные токены";
+"notifications.management.gov" = "Голосование";
+"notifications.management.staking.rewards" = "Награды за стейкинг";
+"notifications.management.general" = "Основное";
+"notifications.management.balances" = "Балансы";
+"notifications.management.others" = "Другое";
+"notifications.error.disabled.in.settings.title" = "Включите уведомления для Nova Wallet";
+"notifications.error.disabled.in.settings.message" = "Перейдите в Настройки → Нажмите \"Уведомления\" → Включите \"Разрешить уведомления\"";
+"notifications.management.gov.new.referendum" = "Новый Референдум";
+"notifications.management.gov.referendum.update" = "Обновление Референдума";
+"notifications.management.gov.tracks" = "Треки";
+"notifications.management.gov.tracks.title" = "Выберите треки для";
 "staking.alert.switch.to.stash.title" = "Выберите стэш-аккаунт для настройки прокси";
 "staking.alert.switch.to.stash.message" = "Пожалуйста, переключите свой кошелек на %@ , чтобы настроить прокси.";
 "staking.proxy.revoke.access.type" = "Отзываемый типа доступа";
@@ -1498,3 +1516,4 @@
 "staking.setup.proxy.authority" = "Выдать полномочия аккаунту";
 "staking.setup.proxy.deposit" = "Прокси депозит";
 "staking.setup.proxy.title" = "Добавить делегацию для %@ стекинга";
+"notifications.management.gov.selected.tracks" = "%li of %li";

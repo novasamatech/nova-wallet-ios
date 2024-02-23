@@ -63,9 +63,7 @@ final class NotificationsSetupInteractor {
                 stakingReward: .concrete([]),
                 transfer: .concrete([]),
                 tokenSent: true,
-                tokenReceived: true,
-                govMyDelegatorVoted: .concrete([]),
-                govMyReferendumFinished: .concrete([])
+                tokenReceived: true
             )
         )
 

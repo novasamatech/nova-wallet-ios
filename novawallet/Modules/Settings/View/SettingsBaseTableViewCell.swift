@@ -11,6 +11,7 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
     }
 
     private(set) var contentStackView: UIStackView?
+    private var imageViewModel: ImageViewModelProtocol?
 
     let roundView: RoundedView = .create { view in
         view.fillColor = R.color.colorBlockBackground()!
@@ -60,6 +61,11 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
         roundView.fillColor = highlighted ? R.color.colorCellBackgroundPressed()! : R.color.colorBlockBackground()!
     }
 
+    override func prepareForReuse() {
+        imageViewModel?.cancel(on: iconImageView)
+        super.prepareForReuse()
+    }
+
     func setupStyle() {
         backgroundColor = .clear
         selectionStyle = .none
@@ -91,16 +97,15 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
 
         iconImageView.snp.makeConstraints { $0.size.equalTo(24) }
 
-        roundView.addSubview(content)
-        content.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.top.equalToSuperview().inset(12)
-        }
-
         roundView.addSubview(separatorView)
         separatorView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.top.equalToSuperview().inset(separatorView.strokeWidth)
+        }
+        roundView.addSubview(content)
+        content.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.top.equalToSuperview().inset(12)
         }
 
         contentView.addSubview(roundView)
@@ -120,5 +125,17 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
 
     func hideImageViewIfNeeded(titleViewModel: TitleIconViewModel) {
         iconImageView.isHidden = titleViewModel.icon == nil
+    }
+
+    func bind(icon: ImageViewModelProtocol?, title: String) {
+        imageViewModel?.cancel(on: iconImageView)
+        icon?.loadImage(
+            on: iconImageView,
+            settings: .init(targetSize: .init(width: 24, height: 24)),
+            animated: true
+        )
+        imageViewModel = icon
+        titleLabel.text = title
+        setNeedsLayout()
     }
 }

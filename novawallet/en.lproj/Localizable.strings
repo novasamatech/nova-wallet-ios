@@ -5,6 +5,7 @@
 "common.use" = "Use";
 "common.error.general.title" = "Error";
 "common.copy.address" = "Copy address";
+"common.clear" = "Clear";
 "operation.error.title" = "Operation Failed";
 "operation.error.message" = "Please, try again later";
 "connection.error.title" = "Connection Failed";
@@ -1511,3 +1512,8 @@
 "staking.setup.proxy.authority" = "Give authority to";
 "staking.setup.proxy.deposit" = "Proxy deposit";
 "staking.setup.proxy.title" = "Add delegation for %@ staking";
+"notifications.management.gov.new.referendum" = "New Referendum";
+"notifications.management.gov.referendum.update" = "Referendum Update";
+"notifications.management.gov.tracks" = "Tracks";
+"notifications.management.gov.tracks.title" = "Select tracks for";
+"notifications.management.gov.selected.tracks" = "%li of %li";
