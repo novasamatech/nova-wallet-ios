@@ -29,6 +29,7 @@ struct SettingsViewFactory {
         let pushNotificationsService = PushNotificationsService(
             service: nil,
             settingsManager: SettingsManager.shared,
+            applicationHandler: ApplicationHandler(),
             logger: Logger.shared
         )
 

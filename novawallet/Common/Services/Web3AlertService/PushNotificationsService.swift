@@ -4,6 +4,7 @@ import UIKit
 import FirebaseMessaging
 import RobinHood
 import SoraKeystore
+import SoraFoundation
 
 enum PushNotificationsStatus {
     case authorized
@@ -26,20 +27,18 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
     var statusObservable: Observable<PushNotificationsStatus?> = .init(state: nil)
 
     private let notificationCenter = UNUserNotificationCenter.current()
-    private let appNotificationCenter = NotificationCenter.default
+    private let applicationHandler: ApplicationHandlerProtocol
 
     init(
         service: Web3AlertsSyncServiceProtocol?,
         settingsManager: SettingsManagerProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         logger: LoggerProtocol
     ) {
         self.service = service
         self.settingsManager = settingsManager
+        self.applicationHandler = applicationHandler
         self.logger = logger
-    }
-
-    deinit {
-        appNotificationCenter.removeObserver(self)
     }
 
     private func register(
@@ -83,12 +82,7 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
     func setup() {
         Messaging.messaging().delegate = self
         notificationCenter.delegate = self
-        appNotificationCenter.addObserver(
-            self,
-            selector: #selector(appMovedToForeground),
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil
-        )
+        applicationHandler.delegate = self
         updateStatus()
     }
 
@@ -96,10 +90,6 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         register(withOptions: [.alert, .badge, .sound]) { status in
             completion(status)
         }
-    }
-
-    @objc private func appMovedToForeground() {
-        updateStatus()
     }
 
     func updateStatus() {
@@ -124,5 +114,11 @@ extension PushNotificationsService: UNUserNotificationCenterDelegate {
 
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         logger.error(error.localizedDescription)
+    }
+}
+
+extension PushNotificationsService: ApplicationHandlerDelegate {
+    func didReceiveWillEnterForeground(notification _: Notification) {
+        updateStatus()
     }
 }

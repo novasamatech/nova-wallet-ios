@@ -2,6 +2,7 @@ import SoraKeystore
 import RobinHood
 import FirebaseCore
 import FirebaseFirestore
+import SoraFoundation
 
 protocol Web3AlertsServicesFactoryProtocol {
     func createSyncService() -> Web3AlertsSyncServiceProtocol
@@ -60,6 +61,7 @@ final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
         let service = PushNotificationsService(
             service: syncService,
             settingsManager: settingsManager,
+            applicationHandler: ApplicationHandler(),
             logger: logger
         )
         service.setup()

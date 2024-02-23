@@ -65,7 +65,7 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         provideNotificationsStatus()
     }
 
-    func enableNotifications() {
+    func checkNotificationsAvailability() {
         if pushService?.statusObservable.state == .denied {
             DispatchQueue.main.async {
                 self.presenter?.didReceive(error: .notificationsDisabledInSettings)
@@ -114,15 +114,13 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
 
 extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscriptionHandler {
     func handlePushNotificationsSettings(result: Result<[DataProviderChange<LocalPushSettings>], Error>) {
-        DispatchQueue.main.async {
-            switch result {
-            case let .success(changes):
-                if let settings = changes.reduceToLastChange() {
-                    self.presenter?.didReceive(settings: settings)
-                }
-            case let .failure(error):
-                self.presenter?.didReceive(error: .settingsSubscription(error))
+        switch result {
+        case let .success(changes):
+            if let settings = changes.reduceToLastChange() {
+                presenter?.didReceive(settings: settings)
             }
+        case let .failure(error):
+            presenter?.didReceive(error: .settingsSubscription(error))
         }
     }
 

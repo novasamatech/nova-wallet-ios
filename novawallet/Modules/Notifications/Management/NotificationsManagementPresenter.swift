@@ -104,7 +104,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
             if modifiedNotificationsEnabled == false {
                 modifiedNotificationsEnabled = true
-                interactor.enableNotifications()
+                interactor.checkNotificationsAvailability()
                 updateView()
             } else {
                 modifiedNotificationsEnabled = false

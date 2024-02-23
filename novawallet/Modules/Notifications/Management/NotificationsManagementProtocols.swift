@@ -13,7 +13,7 @@ protocol NotificationsManagementPresenterProtocol: AnyObject {
 
 protocol NotificationsManagementInteractorInputProtocol: AnyObject {
     func setup()
-    func enableNotifications()
+    func checkNotificationsAvailability()
     func save(
         settings: LocalPushSettings,
         topics: LocalNotificationTopicSettings,
