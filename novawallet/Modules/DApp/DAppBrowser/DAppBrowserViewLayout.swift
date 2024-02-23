@@ -69,6 +69,7 @@ final class DAppBrowserViewLayout: UIView {
 
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.scrollView.contentInsetAdjustmentBehavior = .always
+        view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         return view
     }()

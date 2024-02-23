@@ -19,6 +19,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     private let localizationManager: LocalizationManagerProtocol
     private let localRouter: URLLocalRouting
+    private let deviceOrientationManager: DeviceOrientationManaging
 
     private var selectedLocale: Locale {
         localizationManager.selectedLocale
@@ -27,10 +28,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     init(
         presenter: DAppBrowserPresenterProtocol,
         localRouter: URLLocalRouting,
+        deviceOrientationManager: DeviceOrientationManaging,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.localRouter = localRouter
+        self.deviceOrientationManager = deviceOrientationManager
         self.localizationManager = localizationManager
 
         super.init(nibName: nil, bundle: nil)
@@ -50,6 +53,24 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     override func loadView() {
         view = DAppBrowserViewLayout()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if #available(iOS 16.0, *) {
+            deviceOrientationManager.enableLandscape()
+            setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if #available(iOS 16.0, *) {
+            deviceOrientationManager.disableLandscape()
+            setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
     }
 
     override func viewDidLoad() {

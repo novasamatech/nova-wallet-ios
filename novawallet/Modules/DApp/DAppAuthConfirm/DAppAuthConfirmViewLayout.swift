@@ -118,33 +118,33 @@ final class DAppAuthConfirmViewLayout: UIView {
 
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16.0)
+            make.leading.trailing.equalTo(safeAreaLayoutGuide).inset(16.0)
             make.top.equalToSuperview().inset(112.0)
         }
 
         addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16.0)
+            make.leading.trailing.equalTo(safeAreaLayoutGuide).inset(16.0)
             make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
         }
 
         addSubview(walletView)
         walletView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.trailing.equalTo(safeAreaLayoutGuide).inset(UIConstants.horizontalInset)
             make.top.equalTo(subtitleLabel.snp.bottom).offset(24.0)
             make.height.equalTo(48.0)
         }
 
         addSubview(dappView)
         dappView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.trailing.equalTo(safeAreaLayoutGuide).inset(UIConstants.horizontalInset)
             make.top.equalTo(walletView.snp.bottom)
             make.height.equalTo(48.0)
         }
 
         addSubview(denyButton)
         denyButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.equalTo(safeAreaLayoutGuide).inset(UIConstants.horizontalInset)
             make.trailing.equalTo(self.snp.centerX).offset(-8.0)
             make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
             make.height.equalTo(UIConstants.actionHeight)
@@ -152,7 +152,7 @@ final class DAppAuthConfirmViewLayout: UIView {
 
         addSubview(allowButton)
         allowButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(safeAreaLayoutGuide).inset(UIConstants.horizontalInset)
             make.leading.equalTo(self.snp.centerX).offset(8.0)
             make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
             make.height.equalTo(UIConstants.actionHeight)
