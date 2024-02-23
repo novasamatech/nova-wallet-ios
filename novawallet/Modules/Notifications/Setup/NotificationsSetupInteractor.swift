@@ -68,7 +68,8 @@ final class NotificationsSetupInteractor {
         )
 
         syncService.save(
-            settings: settings
+            settings: settings,
+            runningInQueue: .main
         ) { [weak self] in
             self?.settingsMananger.notificationsEnabled = true
             self?.registerPushNotifications()

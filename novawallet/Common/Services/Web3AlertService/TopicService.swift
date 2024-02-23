@@ -8,7 +8,12 @@ import FirebaseMessaging
 protocol TopicServiceProtocol {
     func subscribe(to topic: NotificationTopic)
     func unsubscribe(from topic: NotificationTopic)
-    func save(settings: LocalNotificationTopicSettings, completion: @escaping () -> Void)
+    func save(
+        settings: LocalNotificationTopicSettings,
+        workingQueue: OperationQueue,
+        callbackQueue: DispatchQueue?,
+        completion: @escaping () -> Void
+    )
 }
 
 final class TopicService: TopicServiceProtocol {
@@ -47,15 +52,20 @@ final class TopicService: TopicServiceProtocol {
         unsubscribe(channel: topic.identifier)
     }
 
-    func save(settings: LocalNotificationTopicSettings, completion: @escaping () -> Void) {
+    func save(
+        settings: LocalNotificationTopicSettings,
+        workingQueue: OperationQueue,
+        callbackQueue: DispatchQueue?,
+        completion: @escaping () -> Void
+    ) {
         let operation = repository.replaceOperation {
             [settings]
         }
 
         execute(
             operation: operation,
-            inOperationQueue: .main,
-            runningCallbackIn: nil
+            inOperationQueue: workingQueue,
+            runningCallbackIn: callbackQueue
         ) { _ in
             completion()
         }

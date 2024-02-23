@@ -13,12 +13,18 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
     private var syncService: Web3AlertsSyncServiceProtocol?
     private var pushService: PushNotificationsServiceProtocol?
     private var topicService: TopicServiceProtocol?
+    private let workingQueue: OperationQueue
+    private let callbackQueue: DispatchQueue
 
     init(
         settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol,
         settingsManager: SettingsManagerProtocol,
-        alertServiceFactory: Web3AlertsServicesFactoryProtocol
+        alertServiceFactory: Web3AlertsServicesFactoryProtocol,
+        workingQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
+        callbackQueue: DispatchQueue = .global()
     ) {
+        self.workingQueue = workingQueue
+        self.callbackQueue = callbackQueue
         self.settingsLocalSubscriptionFactory = settingsLocalSubscriptionFactory
         self.settingsManager = settingsManager
         self.alertServiceFactory = alertServiceFactory
@@ -87,7 +93,7 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         group.enter()
         group.enter()
 
-        syncService?.save(settings: settings) { [weak self] in
+        syncService?.save(settings: settings, runningInQueue: callbackQueue) { [weak self] in
             self?.settingsManager.notificationsEnabled = notificationsEnabled
             self?.settingsManager.announcements = announcementsEnabled
             group.leave()
@@ -97,7 +103,11 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
             topicService = alertServiceFactory.createTopicService()
         }
 
-        topicService?.save(settings: topics) {
+        topicService?.save(
+            settings: topics,
+            workingQueue: workingQueue,
+            callbackQueue: callbackQueue
+        ) {
             group.leave()
         }
 
@@ -125,15 +135,13 @@ extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscri
     }
 
     func handleTopicsSettings(result: Result<[DataProviderChange<LocalNotificationTopicSettings>], Error>) {
-        DispatchQueue.main.async {
-            switch result {
-            case let .success(changes):
-                if let settings = changes.reduceToLastChange() {
-                    self.presenter?.didReceive(topicsSettings: settings)
-                }
-            case let .failure(error):
-                self.presenter?.didReceive(error: .settingsSubscription(error))
+        switch result {
+        case let .success(changes):
+            if let settings = changes.reduceToLastChange() {
+                presenter?.didReceive(topicsSettings: settings)
             }
+        case let .failure(error):
+            presenter?.didReceive(error: .settingsSubscription(error))
         }
     }
 }
