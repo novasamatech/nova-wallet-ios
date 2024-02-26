@@ -23,10 +23,16 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private let deviceOrientationManager: DeviceOrientationManaging
 
     private var scrollYOffset: CGFloat = 0
-    private lazy var slidingAnimator = BlockViewAnimator(duration: 0.3, delay: 0, options: [.curveLinear])
+    private var barsHideOffset: CGFloat = 20
+    private lazy var slidingAnimator = BlockViewAnimator(duration: 0.2, delay: 0, options: [.curveLinear])
+    private var isBarHidden: Bool = false
 
     private var selectedLocale: Locale {
         localizationManager.selectedLocale
+    }
+
+    var isLandscape: Bool {
+        view.frame.size.width > view.frame.size.height
     }
 
     init(
@@ -65,6 +71,20 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         if #available(iOS 16.0, *) {
             deviceOrientationManager.enableLandscape()
             setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        let isOldLandscape = view.frame.size.width > view.frame.size.height
+
+        super.viewWillTransition(to: size, with: coordinator)
+
+        let isNewLandscape = size.width > size.height
+
+        if !isOldLandscape, isNewLandscape {
+            hideBars()
+        } else if isOldLandscape, !isNewLandscape {
+            showBars()
         }
     }
 
@@ -245,16 +265,30 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     private func showBars() {
+        guard isBarHidden else {
+            return
+        }
+
+        isBarHidden = false
+
+        navigationController?.setNavigationBarHidden(false, animated: true)
+
         slidingAnimator.animate(block: {
             self.rootView.setIsToolbarHidden(false)
-            self.navigationController?.setNavigationBarHidden(false, animated: false)
         }, completionBlock: nil)
     }
 
     private func hideBars() {
+        guard !isBarHidden else {
+            return
+        }
+
+        isBarHidden = true
+
+        navigationController?.setNavigationBarHidden(true, animated: true)
+
         slidingAnimator.animate(block: {
             self.rootView.setIsToolbarHidden(true)
-            self.navigationController?.setNavigationBarHidden(true, animated: false)
         }, completionBlock: nil)
     }
 
@@ -349,21 +383,35 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
 extension DAppBrowserViewController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        scrollYOffset = scrollView.contentOffset.y
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let scrollDiff = scrollView.contentOffset.y - scrollYOffset
-        let isScrollingUp = scrollDiff > 0 && scrollView.contentOffset.y > 0
-        let isScrollingDown = scrollDiff < 0
-
-        if isScrollingUp {
-            hideBars()
-        } else if isScrollingDown {
-            showBars()
+        guard isLandscape else {
+            return
         }
 
         scrollYOffset = scrollView.contentOffset.y
+    }
+
+    func scrollViewDidScrollToTop(_: UIScrollView) {
+        showBars()
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView.isDragging, isLandscape else {
+            return
+        }
+
+        let scrollDiff = scrollView.contentOffset.y - scrollYOffset
+        let isScrollingUp = scrollDiff > 0 && scrollView.contentOffset.y > 0 && abs(scrollDiff) >= barsHideOffset
+        let isScrollingDown = scrollDiff < 0 && abs(scrollDiff) >= barsHideOffset
+
+        if isScrollingUp {
+            hideBars()
+
+            scrollYOffset = scrollView.contentOffset.y
+        } else if isScrollingDown {
+            showBars()
+
+            scrollYOffset = scrollView.contentOffset.y
+        }
     }
 }
 
