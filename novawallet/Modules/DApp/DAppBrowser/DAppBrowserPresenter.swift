@@ -105,6 +105,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
             title: R.string.localizable.commonClose(preferredLanguages: languages),
             style: .destructive
         ) { [weak self] in
+            self?.view?.didDecideClose()
             self?.wireframe.close(view: self?.view)
         }
 

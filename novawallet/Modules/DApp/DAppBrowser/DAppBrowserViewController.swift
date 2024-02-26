@@ -68,15 +68,6 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if #available(iOS 16.0, *) {
-            deviceOrientationManager.disableLandscape()
-            setNeedsUpdateOfSupportedInterfaceOrientations()
-        }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -346,6 +337,13 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
     func didSet(canShowSettings: Bool) {
         rootView.settingsBarButton.isEnabled = canShowSettings
+    }
+
+    func didDecideClose() {
+        if #available(iOS 16.0, *) {
+            deviceOrientationManager.disableLandscape()
+            setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
     }
 }
 
