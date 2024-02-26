@@ -1,6 +1,7 @@
 import UIKit
 import WebKit
 import SoraFoundation
+import SoraUI
 
 final class DAppBrowserViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserViewLayout
@@ -20,6 +21,9 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private let localizationManager: LocalizationManagerProtocol
     private let localRouter: URLLocalRouting
     private let deviceOrientationManager: DeviceOrientationManaging
+
+    private var scrollYOffset: CGFloat = 0
+    private lazy var slidingAnimator = BlockViewAnimator(duration: 0.3, delay: 0, options: [.curveLinear])
 
     private var selectedLocale: Locale {
         localizationManager.selectedLocale
@@ -92,6 +96,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         rootView.webView.uiDelegate = self
         rootView.webView.navigationDelegate = self
+        rootView.webView.scrollView.delegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
         configureObservers()
@@ -248,6 +253,20 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         }
     }
 
+    private func showBars() {
+        slidingAnimator.animate(block: {
+            self.rootView.setIsToolbarHidden(false)
+            self.navigationController?.setNavigationBarHidden(false, animated: false)
+        }, completionBlock: nil)
+    }
+
+    private func hideBars() {
+        slidingAnimator.animate(block: {
+            self.rootView.setIsToolbarHidden(true)
+            self.navigationController?.setNavigationBarHidden(true, animated: false)
+        }, completionBlock: nil)
+    }
+
     private func didChangeGoBack(_ newValue: Bool) {
         rootView.goBackBarItem.isEnabled = newValue
     }
@@ -327,6 +346,26 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
     func didSet(canShowSettings: Bool) {
         rootView.settingsBarButton.isEnabled = canShowSettings
+    }
+}
+
+extension DAppBrowserViewController: UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        scrollYOffset = scrollView.contentOffset.y
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let scrollDiff = scrollView.contentOffset.y - scrollYOffset
+        let isScrollingUp = scrollDiff > 0 && scrollView.contentOffset.y > 0
+        let isScrollingDown = scrollDiff < 0
+
+        if isScrollingUp {
+            hideBars()
+        } else if isScrollingDown {
+            showBars()
+        }
+
+        scrollYOffset = scrollView.contentOffset.y
     }
 }
 
