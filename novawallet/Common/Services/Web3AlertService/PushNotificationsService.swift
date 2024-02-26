@@ -16,7 +16,8 @@ enum PushNotificationsStatus {
 protocol PushNotificationsServiceProtocol {
     var statusObservable: Observable<PushNotificationsStatus?> { get set }
     func setup()
-    func register(completion: @escaping (PushNotificationsStatus) -> Void)
+    func register(completionQueue: DispatchQueue?,
+                  completion: @escaping (PushNotificationsStatus) -> Void)
     func updateStatus()
 }
 
@@ -43,6 +44,7 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
 
     private func register(
         withOptions options: UNAuthorizationOptions,
+        completionQueue queue: DispatchQueue?,
         completion: @escaping (PushNotificationsStatus) -> Void
     ) {
         notificationCenter.requestAuthorization(options: options) { [weak self] granted, error in
@@ -54,27 +56,30 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
             if let error = error {
                 self?.logger.error(error.localizedDescription)
             }
-            self?.status { [weak self] newStatus in
+            self?.status(completionQueue: queue) { [weak self] newStatus in
                 self?.statusObservable.state = newStatus
                 completion(newStatus)
             }
         }
     }
 
-    private func status(completion: @escaping (PushNotificationsStatus) -> Void) {
+    private func status(completionQueue queue: DispatchQueue?,
+                        completion: @escaping (PushNotificationsStatus) -> Void) {
         let notificationsEnabled = settingsManager.notificationsEnabled
         notificationCenter.getNotificationSettings { settings in
-            switch settings.authorizationStatus {
-            case .authorized, .provisional:
-                if notificationsEnabled {
-                    completion(.on)
-                } else {
-                    completion(.authorized)
+            dispatchInQueueWhenPossible(queue) {
+                switch settings.authorizationStatus {
+                case .authorized, .provisional:
+                    if notificationsEnabled {
+                        completion(.on)
+                    } else {
+                        completion(.authorized)
+                    }
+                case .denied, .ephemeral:
+                    completion(.denied)
+                case .notDetermined:
+                    completion(.notDetermined)
                 }
-            case .denied, .ephemeral:
-                completion(.denied)
-            case .notDetermined:
-                completion(.notDetermined)
             }
         }
     }
@@ -86,7 +91,8 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         updateStatus()
     }
 
-    func register(completion: @escaping (PushNotificationsStatus) -> Void) {
+    func register(completionQueue queue: DispatchQueue?,
+                  completion: @escaping (PushNotificationsStatus) -> Void) {
         register(withOptions: [.alert, .badge, .sound]) { status in
             completion(status)
         }

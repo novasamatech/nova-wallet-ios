@@ -7,7 +7,8 @@ final class NotificationsSetupInteractor {
     let servicesFactory: Web3AlertsServicesFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let settingsMananger: SettingsManagerProtocol
-
+    let localPushSettingsFactory: LocalPushSettingsFactoryProtocol
+    
     private var syncService: Web3AlertsSyncServiceProtocol?
     private var pushNotificationsService: PushNotificationsServiceProtocol?
 
@@ -18,22 +19,22 @@ final class NotificationsSetupInteractor {
         servicesFactory: Web3AlertsServicesFactoryProtocol,
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
-        settingsMananger: SettingsManagerProtocol
+        settingsMananger: SettingsManagerProtocol,
+        localPushSettingsFactory: LocalPushSettingsFactoryProtocol
     ) {
         self.servicesFactory = servicesFactory
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
         self.settingsMananger = settingsMananger
+        self.localPushSettingsFactory = localPushSettingsFactory
     }
 
     private func registerPushNotifications() {
         guard let pushNotificationsService = pushNotificationsService else {
             return
         }
-        pushNotificationsService.register { [weak self] status in
-            DispatchQueue.main.async {
-                self?.presenter?.didRegister(notificationStatus: status)
-            }
+        pushNotificationsService.register(completionQueue: .main) { [weak self] status in
+            self?.presenter?.didRegister(notificationStatus: status)
         }
     }
 
@@ -41,32 +42,10 @@ final class NotificationsSetupInteractor {
         guard let syncService = syncService else {
             return
         }
-        let chainFormat = ChainFormat.substrate(UInt16(SNAddressType.polkadotMain.rawValue))
-        let chainSpecific = selectedWallet.chainAccounts.reduce(into: [Web3AlertWallet.ChainId: AccountAddress]()) {
-            if let chainFormat = chains[$1.chainId]?.chainFormat {
-                let address = try? $1.accountId.toAddress(using: chainFormat)
-                $0[$1.chainId] = address ?? ""
-            }
-        }
-        let web3Wallet = Web3AlertWallet(
-            baseSubstrate: try? selectedWallet.substrateAccountId?.toAddress(using: chainFormat),
-            baseEthereum: try? selectedWallet.ethereumAddress?.toAddress(using: .ethereum),
-            chainSpecific: chainSpecific
-        )
-        let remoteIdentifier = UUID().uuidString
-        let settings = LocalPushSettings(
-            remoteIdentifier: remoteIdentifier,
-            pushToken: "",
-            updatedAt: Date(),
-            wallets: [web3Wallet],
-            notifications: .init(
-                stakingReward: nil,
-                transfer: nil,
-                tokenSent: true,
-                tokenReceived: true
-            )
-        )
-
+    
+        let settings = localPushSettingsFactory.createSettings(for: selectedWallet, 
+                                                               chains: chains)
+        
         syncService.save(
             settings: settings,
             runningInQueue: .main

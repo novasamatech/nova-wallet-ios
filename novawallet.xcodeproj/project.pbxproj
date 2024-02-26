@@ -1104,6 +1104,7 @@
 		77D2ED652B19C42D00A0E58C /* ProxyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED642B19C42D00A0E58C /* ProxyModels.swift */; };
 		77D2ED672B19C44900A0E58C /* ProxyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED662B19C44900A0E58C /* ProxyOperationFactory.swift */; };
 		77D2ED6B2B1DD78100A0E58C /* ProxyAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED6A2B1DD78100A0E58C /* ProxyAccountModel.swift */; };
+		77D7BB8E2B8C6B6400D42E8A /* LocalPushSettingsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D7BB8D2B8C6B6400D42E8A /* LocalPushSettingsFactory.swift */; };
 		77DAFF662B2979B100D4220C /* ProxyLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF652B2979B100D4220C /* ProxyLocalStorageSubscriber.swift */; };
 		77DAFF682B297A9C00D4220C /* ProxyListLocalStorageSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF672B297A9C00D4220C /* ProxyListLocalStorageSubscriptionHandler.swift */; };
 		77DAFF6B2B297CFE00D4220C /* ProxyListLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF6A2B297CFE00D4220C /* ProxyListLocalSubscriptionFactory.swift */; };
@@ -5508,6 +5509,7 @@
 		77D2ED662B19C44900A0E58C /* ProxyOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyOperationFactory.swift; sourceTree = "<group>"; };
 		77D2ED692B19CE4F00A0E58C /* MultiassetUserDataModel10.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel10.xcdatamodel; sourceTree = "<group>"; };
 		77D2ED6A2B1DD78100A0E58C /* ProxyAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyAccountModel.swift; sourceTree = "<group>"; };
+		77D7BB8D2B8C6B6400D42E8A /* LocalPushSettingsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushSettingsFactory.swift; sourceTree = "<group>"; };
 		77DAFF652B2979B100D4220C /* ProxyLocalStorageSubscriber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		77DAFF672B297A9C00D4220C /* ProxyListLocalStorageSubscriptionHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyListLocalStorageSubscriptionHandler.swift; sourceTree = "<group>"; };
 		77DAFF6A2B297CFE00D4220C /* ProxyListLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyListLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -11177,6 +11179,7 @@
 				773B2E3E2B74DCB500A3BC11 /* TopicService.swift */,
 				773B2E442B75727900A3BC11 /* FirebaseHolder.swift */,
 				773B2E462B757CFD00A3BC11 /* PushNotificationsService.swift */,
+				77D7BB8D2B8C6B6400D42E8A /* LocalPushSettingsFactory.swift */,
 			);
 			path = Web3AlertService;
 			sourceTree = "<group>";
@@ -23045,6 +23048,7 @@
 				8451720D298C473500489EF1 /* GovernanceSelectableTrackView.swift in Sources */,
 				0C59E8DC2AA60C3B001E11F3 /* NSPredicate+ExternalAssetBalance.swift in Sources */,
 				84CFF1EE26526FBC00DB7CF7 /* StakingBondMoreConfirmationProtocols.swift in Sources */,
+				77D7BB8E2B8C6B6400D42E8A /* LocalPushSettingsFactory.swift in Sources */,
 				8499FE7B27BE58A000712589 /* IdentityMapper.swift in Sources */,
 				845B89262959627A00EE25B0 /* SecurityLayerWireframe.swift in Sources */,
 				777AE2AB2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift in Sources */,
