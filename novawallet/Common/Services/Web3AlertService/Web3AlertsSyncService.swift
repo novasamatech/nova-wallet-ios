@@ -13,7 +13,7 @@ protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
     func save(
         settings: LocalPushSettings,
         runningInQueue: DispatchQueue?,
-        completionHandler: @escaping () -> Void
+        completionHandler: @escaping (Error?) -> Void
     )
     func update(
         token: String,
@@ -155,18 +155,30 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
     func save(
         settings: LocalPushSettings,
         runningInQueue queue: DispatchQueue?,
-        completionHandler: @escaping () -> Void
+        completionHandler: @escaping (Error?) -> Void
     ) {
-        let saveOperation = localSaveOperation(settings: settings)
-        saveOperation.completionBlock = {
-            dispatchInQueueWhenPossible(queue, block: completionHandler)
+        let remoteSaveOperation = remoteSaveOperation(settings: settings)
+        let localSaveOperation = localSaveOperation(settings: settings)
+        localSaveOperation.addDependency(remoteSaveOperation)
+
+        let mapOperation = ClosureOperation {
+            do {
+                _ = try localSaveOperation.extractNoCancellableResultData()
+                dispatchInQueueWhenPossible(queue) {
+                    completionHandler(nil)
+                }
+            } catch {
+                dispatchInQueueWhenPossible(queue) {
+                    completionHandler(error)
+                }
+            }
+        }
+        if let executingOperationWrapper = executingOperationWrapper {
+            mapOperation.addDependency(executingOperationWrapper.targetOperation)
         }
 
-        executingOperationWrapper?.allOperations.forEach {
-            saveOperation.addDependency($0)
-        }
-
-        operationQueue.addOperation(saveOperation)
+        mapOperation.addDependency(localSaveOperation)
+        operationQueue.addOperations([remoteSaveOperation, localSaveOperation, mapOperation], waitUntilFinished: false)
     }
 
     func update(

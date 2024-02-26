@@ -17,9 +17,10 @@ protocol NotificationsSetupInteractorInputProtocol: AnyObject {
 
 protocol NotificationsSetupInteractorOutputProtocol: AnyObject {
     func didRegister(notificationStatus: PushNotificationsStatus)
+    func didReceive(error: Error)
 }
 
-protocol NotificationsSetupWireframeProtocol: WebPresentable {
+protocol NotificationsSetupWireframeProtocol: WebPresentable, AlertPresentable, CommonRetryable, ErrorPresentable {
     func complete(on view: ControllerBackedProtocol?)
     func show(url: URL, from view: ControllerBackedProtocol?)
 }

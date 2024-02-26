@@ -16,8 +16,10 @@ enum PushNotificationsStatus {
 protocol PushNotificationsServiceProtocol {
     var statusObservable: Observable<PushNotificationsStatus?> { get set }
     func setup()
-    func register(completionQueue: DispatchQueue?,
-                  completion: @escaping (PushNotificationsStatus) -> Void)
+    func register(
+        completionQueue: DispatchQueue?,
+        completion: @escaping (PushNotificationsStatus) -> Void
+    )
     func updateStatus()
 }
 
@@ -63,8 +65,10 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         }
     }
 
-    private func status(completionQueue queue: DispatchQueue?,
-                        completion: @escaping (PushNotificationsStatus) -> Void) {
+    private func status(
+        completionQueue queue: DispatchQueue?,
+        completion: @escaping (PushNotificationsStatus) -> Void
+    ) {
         let notificationsEnabled = settingsManager.notificationsEnabled
         notificationCenter.getNotificationSettings { settings in
             dispatchInQueueWhenPossible(queue) {
@@ -91,15 +95,17 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
         updateStatus()
     }
 
-    func register(completionQueue queue: DispatchQueue?,
-                  completion: @escaping (PushNotificationsStatus) -> Void) {
-        register(withOptions: [.alert, .badge, .sound]) { status in
+    func register(
+        completionQueue queue: DispatchQueue?,
+        completion: @escaping (PushNotificationsStatus) -> Void
+    ) {
+        register(withOptions: [.alert, .badge, .sound], completionQueue: queue) { status in
             completion(status)
         }
     }
 
     func updateStatus() {
-        status { [weak self] newStatus in
+        status(completionQueue: nil) { [weak self] newStatus in
             self?.statusObservable.state = newStatus
         }
     }

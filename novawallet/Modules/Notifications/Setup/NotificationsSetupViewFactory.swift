@@ -20,7 +20,8 @@ struct NotificationsSetupViewFactory {
             servicesFactory: Web3AlertsServicesFactory.shared,
             selectedWallet: selectedWallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            settingsMananger: SettingsManager.shared
+            settingsMananger: SettingsManager.shared,
+            localPushSettingsFactory: LocalPushSettingsFactory()
         )
         let wireframe = NotificationsSetupWireframe()
 
@@ -28,7 +29,8 @@ struct NotificationsSetupViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             legalData: legalData,
-            delegate: delegate
+            delegate: delegate,
+            localizationManager: LocalizationManager.shared
         )
         let termDecorator = LocalizableResource {
             CompoundAttributedStringDecorator.legal(for: $0)

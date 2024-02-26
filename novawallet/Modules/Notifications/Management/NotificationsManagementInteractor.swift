@@ -93,10 +93,15 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         group.enter()
         group.enter()
 
-        syncService?.save(settings: settings, runningInQueue: callbackQueue) { [weak self] in
+        syncService?.save(settings: settings, runningInQueue: callbackQueue) { [weak self] error in
+            defer {
+                group.leave()
+            }
+            if let error = error {
+                self?.presenter?.didReceive(error: .save(error))
+                return
+            }
             self?.settingsManager.notificationsEnabled = notificationsEnabled
-            self?.settingsManager.announcements = announcementsEnabled
-            group.leave()
         }
 
         if topicService == nil {
@@ -107,7 +112,8 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
             settings: topics,
             workingQueue: workingQueue,
             callbackQueue: callbackQueue
-        ) {
+        ) { [weak self] in
+            self?.settingsManager.announcements = announcementsEnabled
             group.leave()
         }
 

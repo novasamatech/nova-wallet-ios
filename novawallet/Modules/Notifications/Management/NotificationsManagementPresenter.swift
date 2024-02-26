@@ -302,6 +302,10 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
             )
             modifiedNotificationsEnabled = false
             updateView()
+        case .save:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.save()
+            }
         }
     }
 

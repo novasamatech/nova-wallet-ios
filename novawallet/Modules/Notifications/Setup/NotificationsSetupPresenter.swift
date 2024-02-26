@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class NotificationsSetupPresenter {
     weak var view: NotificationsSetupViewProtocol?
@@ -6,17 +7,20 @@ final class NotificationsSetupPresenter {
     let interactor: NotificationsSetupInteractorInputProtocol
     let legalData: LegalData
     weak var delegate: PushNotificationsStatusDelegate?
+    let localizationManager: LocalizationManagerProtocol
 
     init(
         interactor: NotificationsSetupInteractorInputProtocol,
         wireframe: NotificationsSetupWireframeProtocol,
         legalData: LegalData,
-        delegate: PushNotificationsStatusDelegate?
+        delegate: PushNotificationsStatusDelegate?,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.legalData = legalData
         self.delegate = delegate
+        self.localizationManager = localizationManager
     }
 }
 
@@ -46,5 +50,14 @@ extension NotificationsSetupPresenter: NotificationsSetupInteractorOutputProtoco
     func didRegister(notificationStatus _: PushNotificationsStatus) {
         delegate?.pushNotificationsStatusDidUpdate()
         wireframe.complete(on: view)
+    }
+
+    func didReceive(error _: Error) {
+        wireframe.presentRequestStatus(
+            on: view,
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.interactor.enablePushNotifications()
+        }
     }
 }

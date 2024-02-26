@@ -8,7 +8,7 @@ final class NotificationsSetupInteractor {
     let chainRegistry: ChainRegistryProtocol
     let settingsMananger: SettingsManagerProtocol
     let localPushSettingsFactory: LocalPushSettingsFactoryProtocol
-    
+
     private var syncService: Web3AlertsSyncServiceProtocol?
     private var pushNotificationsService: PushNotificationsServiceProtocol?
 
@@ -42,14 +42,20 @@ final class NotificationsSetupInteractor {
         guard let syncService = syncService else {
             return
         }
-    
-        let settings = localPushSettingsFactory.createSettings(for: selectedWallet, 
-                                                               chains: chains)
-        
+
+        let settings = localPushSettingsFactory.createSettings(
+            for: selectedWallet,
+            chains: chains
+        )
+
         syncService.save(
             settings: settings,
             runningInQueue: .main
-        ) { [weak self] in
+        ) { [weak self] error in
+            if let error = error {
+                self?.presenter?.didReceive(error: error)
+                return
+            }
             self?.settingsMananger.notificationsEnabled = true
             self?.registerPushNotifications()
         }

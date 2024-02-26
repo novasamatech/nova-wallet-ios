@@ -51,6 +51,7 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
 enum NotificationsManagementError: Error {
     case settingsSubscription(Error)
     case notificationsDisabledInSettings
+    case save(Error)
 }
 
 typealias NotificationsManagementCellModel = CommonSettingsCellViewModel<NotificationsManagementRow>
