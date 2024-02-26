@@ -33,8 +33,8 @@ final class LocalPushSettingsFactory: LocalPushSettingsFactoryProtocol {
             notifications: .init(
                 stakingReward: nil,
                 transfer: nil,
-                tokenSent: true,
-                tokenReceived: true
+                tokenSent: .all,
+                tokenReceived: .all
             )
         )
     }

@@ -57,8 +57,8 @@ final class NotificationsManagementPresenter {
             isNotificationsOn: notificationsEnabled,
             wallets: settings.wallets.count,
             isAnnouncementsOn: announcementsEnabled,
-            isSentTokensOn: settings.notifications.tokenSent,
-            isReceiveTokensOn: settings.notifications.tokenReceived,
+            isSentTokensOn: settings.notifications.tokenSent == .all,
+            isReceiveTokensOn: settings.notifications.tokenReceived == .all,
             isGovernanceOn: isGovernanceOn(),
             isStakingOn: settings.notifications.stakingReward?.notificationsEnabled ?? false
         )
