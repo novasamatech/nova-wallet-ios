@@ -60,7 +60,7 @@ final class NotificationsManagementPresenter {
             isSentTokensOn: settings.notifications.tokenSent,
             isReceiveTokensOn: settings.notifications.tokenReceived,
             isGovernanceOn: isGovernanceOn(),
-            isStakingOn: settings.notifications.stakingReward.notificationsEnabled
+            isStakingOn: settings.notifications.stakingReward?.notificationsEnabled ?? false
         )
     }
 
@@ -237,16 +237,12 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     }
 
     func getStakingRewardsSettings() -> Selection<Set<ChainModel.Id>>? {
-        getChainsSettings(\.stakingReward)
-    }
-
-    func getChainsSettings(_ keyPath: KeyPath<Web3AlertNotification, RemotePushSettings.ChainSelection>) -> Selection<Set<ChainModel.Id>>? {
-        switch modifiedSettings?.notifications[keyPath: keyPath] {
+        switch modifiedSettings?.notifications.stakingReward {
         case let .concrete(chains):
             return .concrete(Set(chains))
         case .all:
             return .all
-        default:
+        case .none:
             return nil
         }
     }

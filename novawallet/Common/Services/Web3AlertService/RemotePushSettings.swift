@@ -12,8 +12,8 @@ struct Web3AlertWallet: Codable, Equatable {
 }
 
 struct Web3AlertNotification: Codable, Equatable {
-    var stakingReward: RemotePushSettings.ChainSelection
-    var transfer: RemotePushSettings.ChainSelection
+    var stakingReward: RemotePushSettings.ChainSelection?
+    var transfer: RemotePushSettings.ChainSelection?
     var tokenSent: Bool
     var tokenReceived: Bool
 }
