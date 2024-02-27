@@ -7,7 +7,11 @@ final class NotificationWalletListWireframe: NotificationWalletListWireframeProt
         self.completion = completion
     }
 
-    func complete(selectedWallets: [Web3AlertWallet]) {
+    func complete(
+        from view: ControllerBackedProtocol?,
+        selectedWallets: [Web3AlertWallet]
+    ) {
         completion(selectedWallets)
+        view?.controller.navigationController?.popViewController(animated: true)
     }
 }

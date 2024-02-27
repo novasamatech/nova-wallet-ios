@@ -147,7 +147,7 @@ extension NotificationWalletListPresenter: NotificationWalletListPresenterProtoc
             )
         }
 
-        wireframe?.complete(selectedWallets: wallets)
+        wireframe?.complete(from: view, selectedWallets: wallets)
     }
 }
 
