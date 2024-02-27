@@ -9683,6 +9683,21 @@ import RobinHood
         
     }
     
+    
+    
+     func didDecideClose()  {
+        
+    return cuckoo_manager.call("didDecideClose()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didDecideClose())
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -9725,6 +9740,11 @@ import RobinHood
 	    func didSet<M1: Cuckoo.Matchable>(canShowSettings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
 	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: canShowSettings) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didSet(canShowSettings: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func didDecideClose() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didDecideClose()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -9783,6 +9803,12 @@ import RobinHood
 	        return cuckoo_manager.verify("didSet(canShowSettings: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didDecideClose() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didDecideClose()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -9837,6 +9863,12 @@ import RobinHood
     
     
      func didSet(canShowSettings: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didDecideClose()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

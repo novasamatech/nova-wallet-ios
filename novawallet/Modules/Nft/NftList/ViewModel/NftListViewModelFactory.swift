@@ -110,7 +110,7 @@ final class NftListViewModelFactory {
 
     private func createPrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
         switch NftType(rawValue: model.nft.type) {
-        case .rmrkV1, .rmrkV2, .uniques, .none:
+        case .rmrkV1, .rmrkV2, .uniques, .kodadot, .none:
             return createNonFungiblePrice(from: model, locale: locale)
         case .pdc20:
             return createFungiblePrice(from: model, locale: locale)
@@ -264,6 +264,37 @@ final class NftListViewModelFactory {
         return NftListStaticViewModel(name: name ?? "", label: label ?? "", media: mediaViewModel)
     }
 
+    private func createKodaDotViewModel(
+        from model: NftModel,
+        locale: Locale
+    ) -> NftListMetadataViewModelProtocol {
+        let name = model.name ?? model.instanceId ?? ""
+
+        let label: String
+
+        if
+            let snString = model.label,
+            let serialNumber = Int32(snString),
+            let totalIssuance = model.issuanceTotal,
+            totalIssuance > 0 {
+            label = createLimitedIssuanceLabel(from: serialNumber, totalNumber: totalIssuance, locale: locale)
+        } else {
+            label = createUnlimitedIssuanceLabel(for: locale)
+        }
+
+        let mediaViewModel: NftMediaViewModelProtocol?
+
+        if
+            let imageReference = model.media,
+            let imageUrl = nftDownloadService.imageUrl(from: imageReference) {
+            mediaViewModel = NftImageViewModel(url: imageUrl)
+        } else {
+            mediaViewModel = nil
+        }
+
+        return NftListStaticViewModel(name: name, label: label, media: mediaViewModel)
+    }
+
     private func createMedatadaViewModel(
         from model: NftChainModel,
         locale: Locale
@@ -277,6 +308,8 @@ final class NftListViewModelFactory {
             return createRMRKV2Metadata(from: model.nft, locale: locale)
         case .pdc20:
             return createPdc20Metadata(from: model.nft, locale: locale)
+        case .kodadot:
+            return createKodaDotViewModel(from: model.nft, locale: locale)
         case .none:
             return createStaticMetadata(from: model.nft)
         }

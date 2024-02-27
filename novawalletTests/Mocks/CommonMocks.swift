@@ -6797,6 +6797,7 @@ import Cuckoo
 import FirebaseMessaging
 import Foundation
 import RobinHood
+import SoraFoundation
 import SoraKeystore
 import UIKit
 import UserNotifications
@@ -6866,16 +6867,16 @@ import UserNotifications
     
     
     
-     func register(completion: @escaping (PushNotificationsStatus) -> Void)  {
+     func register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)  {
         
-    return cuckoo_manager.call("register(completion: @escaping (PushNotificationsStatus) -> Void)",
-            parameters: (completion),
-            escapingParameters: (completion),
+    return cuckoo_manager.call("register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)",
+            parameters: (completionQueue, completion),
+            escapingParameters: (completionQueue, completion),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.register(completion: completion))
+            defaultCall: __defaultImplStub!.register(completionQueue: completionQueue, completion: completion))
         
     }
     
@@ -6913,9 +6914,9 @@ import UserNotifications
 	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func register<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((PushNotificationsStatus) -> Void)> where M1.MatchedType == (PushNotificationsStatus) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<((PushNotificationsStatus) -> Void)>] = [wrap(matchable: completion) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "register(completion: @escaping (PushNotificationsStatus) -> Void)", parameterMatchers: matchers))
+	    func register<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(completionQueue: M1, completion: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DispatchQueue?, (PushNotificationsStatus) -> Void)> where M1.OptionalMatchedType == DispatchQueue, M2.MatchedType == (PushNotificationsStatus) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(DispatchQueue?, (PushNotificationsStatus) -> Void)>] = [wrap(matchable: completionQueue) { $0.0 }, wrap(matchable: completion) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)", parameterMatchers: matchers))
 	    }
 	    
 	    func updateStatus() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -6951,9 +6952,9 @@ import UserNotifications
 	    }
 	    
 	    @discardableResult
-	    func register<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<((PushNotificationsStatus) -> Void), Void> where M1.MatchedType == (PushNotificationsStatus) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<((PushNotificationsStatus) -> Void)>] = [wrap(matchable: completion) { $0 }]
-	        return cuckoo_manager.verify("register(completion: @escaping (PushNotificationsStatus) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func register<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(completionQueue: M1, completion: M2) -> Cuckoo.__DoNotUse<(DispatchQueue?, (PushNotificationsStatus) -> Void), Void> where M1.OptionalMatchedType == DispatchQueue, M2.MatchedType == (PushNotificationsStatus) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(DispatchQueue?, (PushNotificationsStatus) -> Void)>] = [wrap(matchable: completionQueue) { $0.0 }, wrap(matchable: completion) { $0.1 }]
+	        return cuckoo_manager.verify("register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -6990,7 +6991,7 @@ import UserNotifications
     
     
     
-     func register(completion: @escaping (PushNotificationsStatus) -> Void)   {
+     func register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

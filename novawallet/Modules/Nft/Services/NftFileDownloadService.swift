@@ -76,8 +76,24 @@ final class NftFileDownloadService {
         return CompoundOperationWrapper(targetOperation: decodingLocalOperation, dependencies: [localFetchOperation])
     }
 
+    private func createLocalPath(_ fileName: String) -> String? {
+        let localFilePath = (cacheBasePath as NSString).appendingPathComponent(fileName)
+
+        // don't allow empty filenames
+        let filePathComponentsCount = (localFilePath as NSString).pathComponents.count
+        let basePathComponentsCount = (cacheBasePath as NSString).pathComponents.count
+
+        guard filePathComponentsCount > basePathComponentsCount else {
+            return nil
+        }
+
+        return localFilePath
+    }
+
     private func createLoadMetadataWrapper(for ipfsHash: String) -> CompoundOperationWrapper<JSON> {
-        let localFilePath = (cacheBasePath as NSString).appendingPathComponent(ipfsHash)
+        guard let localFilePath = createLocalPath(ipfsHash) else {
+            return CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+        }
 
         let localCheckOperation = createLocalJsonWrapper(for: localFilePath)
 

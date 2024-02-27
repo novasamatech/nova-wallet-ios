@@ -69,6 +69,7 @@ final class DAppBrowserViewLayout: UIView {
 
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.scrollView.contentInsetAdjustmentBehavior = .always
+        view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         return view
     }()
@@ -84,6 +85,33 @@ final class DAppBrowserViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setIsToolbarHidden(_ isHidden: Bool) {
+        toolbarBackgroundView.snp.remakeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+
+            if isHidden {
+                make.bottom.equalToSuperview().offset(Constants.toolbarHeight)
+                make.top.equalTo(self.snp.bottom)
+            } else {
+                make.bottom.equalToSuperview()
+                make.top.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.toolbarHeight)
+            }
+        }
+
+        toolBar.snp.remakeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(Constants.toolbarHeight)
+
+            if isHidden {
+                make.bottom.equalToSuperview().offset(Constants.toolbarHeight)
+            } else {
+                make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            }
+        }
+
+        layoutIfNeeded()
     }
 
     private func setupLayout() {
