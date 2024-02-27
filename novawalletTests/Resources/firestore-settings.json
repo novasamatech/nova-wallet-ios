@@ -2,8 +2,12 @@
    "updatedAt":"2024-02-08T22:02:29Z",
    "pushToken":"test-token",
    "notifications":{
-      "tokenReceived": true,
-      "tokenSent": true,
+      "tokenReceived": {
+          "type": "all"
+      },
+      "tokenSent": {
+          "type": "all"
+      },
       "stakingReward": {
           "type": "concrete",
           "value": []
