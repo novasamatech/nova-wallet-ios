@@ -33,7 +33,11 @@ final class DistributedUrlParser: DistributedUrlParserProtocol {
 
         switch DistributedStorageScheme(rawValue: scheme) {
         case .ipfs:
-            return .ipfs(hash: urlComponents.path)
+            if let host = urlComponents.host, host != "ipfs" {
+                return .ipfs(hash: (host as NSString).appendingPathComponent(urlComponents.path))
+            } else {
+                return .ipfs(hash: urlComponents.path)
+            }
         case .none:
             return nil
         }

@@ -2,17 +2,14 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-enum Pdc20NftSyncServiceError: Error {
-    case unsupported(String)
-}
-
-final class Pdc20NftSyncService: BaseNftSyncService {
+final class KodaDotNftSyncService: BaseNftSyncService {
     let ownerId: AccountId
     let chain: ChainModel
 
-    private let operationFactory = Pdc20NftOperationFactory(url: Pdc20Api.url)
+    private let operationFactory: KodaDotNftOperationFactoryProtocol
 
     init(
+        api: URL,
         ownerId: AccountId,
         chain: ChainModel,
         repository: AnyDataProviderRepository<NftModel>,
@@ -22,6 +19,7 @@ final class Pdc20NftSyncService: BaseNftSyncService {
     ) {
         self.ownerId = ownerId
         self.chain = chain
+        operationFactory = KodaDotNftOperationFactory(url: api)
 
         super.init(
             repository: repository,
@@ -32,22 +30,18 @@ final class Pdc20NftSyncService: BaseNftSyncService {
     }
 
     private func createRemoteFetchWrapper(
-        chain: ChainModel,
+        for chain: ChainModel,
         ownerId: AccountId
     ) -> CompoundOperationWrapper<[RemoteNftModel]> {
         do {
             let address = try ownerId.toAddress(using: chain.chainFormat)
 
-            guard let network = chain.pdc20Network else {
-                throw Pdc20NftSyncServiceError.unsupported(chain.name)
-            }
-
-            let fetchWrapper = operationFactory.fetchNfts(for: address, network: network)
+            let fetchWrapper = operationFactory.fetchNfts(for: address)
 
             let mapOperation = ClosureOperation<[RemoteNftModel]> {
                 let response = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-                return try Pdc20NftModelConverter.convert(response: response, chain: chain)
+                return try KodaDotNftModelConverter.convert(response: response, chain: chain)
             }
 
             mapOperation.addDependency(fetchWrapper.targetOperation)
@@ -59,6 +53,6 @@ final class Pdc20NftSyncService: BaseNftSyncService {
     }
 
     override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[RemoteNftModel]> {
-        createRemoteFetchWrapper(chain: chain, ownerId: ownerId)
+        createRemoteFetchWrapper(for: chain, ownerId: ownerId)
     }
 }
