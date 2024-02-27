@@ -10,6 +10,7 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     )
     func didSet(isDesktop: Bool)
     func didSet(canShowSettings: Bool)
+    func didDecideClose()
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {

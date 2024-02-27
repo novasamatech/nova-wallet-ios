@@ -75,10 +75,14 @@ struct TransferConfirmOnChainViewFactory {
             return nil
         }
 
+        guard let utilityAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo else {
+            return nil
+        }
+
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
-            utilityAssetInfo: chainAsset.chain.utilityAssets().first?.displayInfo,
+            utilityAssetInfo: utilityAssetInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 

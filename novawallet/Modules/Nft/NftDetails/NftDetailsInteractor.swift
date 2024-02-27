@@ -17,8 +17,9 @@ class NftDetailsInteractor {
 
     var chain: ChainModel { nftChainModel.chainAsset.chain }
 
-    private(set) var ownerOperation: CancellableCall?
+    let ownerCancellable = CancellableCallStore()
     private(set) var instanceOperation: CancellableCall?
+    let issuerCancellable = CancellableCallStore()
 
     init(
         nftChainModel: NftChainModel,
@@ -33,15 +34,15 @@ class NftDetailsInteractor {
     }
 
     deinit {
-        ownerOperation?.cancel()
+        ownerCancellable.cancel()
         instanceOperation?.cancel()
+        issuerCancellable.cancel()
     }
 
-    func fetchDisplayAddress(
+    func createDisplayAddressWrapper(
         for accountId: AccountId,
-        chain: ChainModel,
-        completion: @escaping ((Result<DisplayAddress, Error>) -> Void)
-    ) -> CancellableCall {
+        chain: ChainModel
+    ) -> CompoundOperationWrapper<DisplayAddress> {
         let allAccountsOperation = accountRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
         let mapOperation = ClosureOperation<DisplayAddress> {
@@ -64,10 +65,22 @@ class NftDetailsInteractor {
             }
         }
 
-        mapOperation.completionBlock = {
+        mapOperation.addDependency(allAccountsOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [allAccountsOperation])
+    }
+
+    func fetchDisplayAddress(
+        for accountId: AccountId,
+        chain: ChainModel,
+        completion: @escaping ((Result<DisplayAddress, Error>) -> Void)
+    ) -> CancellableCall {
+        let wrapper = createDisplayAddressWrapper(for: accountId, chain: chain)
+
+        wrapper.targetOperation.completionBlock = {
             DispatchQueue.main.async {
                 do {
-                    let displayAddress = try mapOperation.extractNoCancellableResultData()
+                    let displayAddress = try wrapper.targetOperation.extractNoCancellableResultData()
                     completion(.success(displayAddress))
                 } catch {
                     completion(.failure(error))
@@ -75,26 +88,50 @@ class NftDetailsInteractor {
             }
         }
 
-        mapOperation.addDependency(allAccountsOperation)
-
-        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [allAccountsOperation])
-
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
 
         return wrapper
     }
 
-    func provideOwner() {
-        guard ownerOperation == nil else {
+    func provideIssuer(from address: String?) {
+        issuerCancellable.cancel()
+
+        guard let address = address, let accountId = try? address.toAccountId(using: chain.chainFormat) else {
+            presenter?.didReceive(issuer: nil)
             return
         }
 
-        ownerOperation = fetchDisplayAddress(
-            for: nftChainModel.nft.ownerId,
-            chain: nftChainModel.chainAsset.chain
-        ) { [weak self] result in
-            self?.ownerOperation = nil
+        let wrapper = createDisplayAddressWrapper(for: accountId, chain: chain)
 
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: issuerCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(displayAddress):
+                self?.presenter?.didReceive(issuer: displayAddress)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
+            }
+        }
+    }
+
+    func provideOwner() {
+        ownerCancellable.cancel()
+
+        let wrapper = createDisplayAddressWrapper(
+            for: nftChainModel.nft.ownerId,
+            chain: chain
+        )
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: ownerCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
             switch result {
             case let .success(owner):
                 self?.presenter?.didReceive(owner: owner)
