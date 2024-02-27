@@ -1517,3 +1517,4 @@
 "staking.setup.proxy.deposit" = "Прокси депозит";
 "staking.setup.proxy.title" = "Добавить делегацию для %@ стекинга";
 "notifications.management.gov.selected.tracks" = "%li of %li";
+"xcm.delivery.fee.ed.error.message" = "Ваш доступный баланс %@, вам необходимо оставить минимум %@ для доставки перевода и заплатить комиссию сети %@. Вы можете перевести не более %@.";

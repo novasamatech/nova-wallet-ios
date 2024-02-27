@@ -1517,3 +1517,4 @@
 "notifications.management.gov.tracks" = "Tracks";
 "notifications.management.gov.tracks.title" = "Select tracks for";
 "notifications.management.gov.selected.tracks" = "%li of %li";
+"xcm.delivery.fee.ed.error.message" = "Your available balance is %@, you need to leave at least %@ for transfer delivery and pay network fee of %@. You can transfer not more than %@.";
