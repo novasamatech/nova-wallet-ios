@@ -184,6 +184,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func maxTransferrable() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
+        let balanceCountingEdValue = senderSendingAssetBalance?.balanceCountingEd ?? 0
         let originFeeValue = isOriginUtilityTransfer ? displayOriginFee ?? 0 : 0
         let crossChainFeeValue = displayCrosschainFee ?? 0
 
@@ -198,13 +199,17 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
         guard
             let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
+            let balanceCountingEd = Decimal.fromSubstrateAmount(balanceCountingEdValue, precision: precision),
             let originFee = Decimal.fromSubstrateAmount(originFeeValue, precision: precision),
             let crossChainFee = Decimal.fromSubstrateAmount(crossChainFeeValue, precision: precision),
             let minimumBalance = Decimal.fromSubstrateAmount(minimumBalanceValue, precision: precision) else {
             return 0
         }
 
-        return balance - originFee - crossChainFee - minimumBalance
+        let balanceWithoutFee = balance - originFee - crossChainFee
+        let balanceCountingEdWithoutFee = balanceCountingEd - originFee - crossChainFee - minimumBalance
+
+        return min(balanceWithoutFee, balanceCountingEdWithoutFee)
     }
 
     private func updateRecepientAddress(_ newAddress: String) {
