@@ -11,23 +11,23 @@ enum Web3AlertsSyncServiceError: Error {
 
 protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
     func save(
-        notificationsEnabled: Bool,
-
         settings: LocalPushSettings,
-        completionHandler: @escaping () -> Void
+        runningInQueue: DispatchQueue?,
+        completionHandler: @escaping (Error?) -> Void
     )
     func update(
         token: String,
+        runningInQueue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     )
 }
 
 final class Web3AlertsSyncService: BaseSyncService {
-    static let settingsKey = "Web3AlertsSettingsKey"
-
     let repository: AnyDataProviderRepository<LocalPushSettings>
     let settingsManager: SettingsManagerProtocol
     private let operationQueue: OperationQueue
+
+    @Atomic(defaultValue: nil)
     private var executingOperationWrapper: CompoundOperationWrapper<Void>?
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
@@ -117,7 +117,7 @@ final class Web3AlertsSyncService: BaseSyncService {
     private func remoteSaveOperation(settings: LocalPushSettings) -> BaseOperation<Void> {
         let saveSettingsOperation: AsyncClosureOperation<Void> = AsyncClosureOperation(cancelationClosure: {}) { responseClosure in
             let database = Firestore.firestore()
-            let documentRef = database.collection("users").document(settings.identifier)
+            let documentRef = database.collection("users").document(settings.remoteIdentifier)
             let encoder = Firestore.Encoder()
             encoder.dateEncodingStrategy = .iso8601
             try documentRef.setData(from: RemotePushSettings(from: settings), merge: true, encoder: encoder) { error in
@@ -145,7 +145,7 @@ final class Web3AlertsSyncService: BaseSyncService {
             return .createWithResult(nil)
         }
         return repository.fetchOperation(
-            by: { Self.settingsKey },
+            by: { LocalPushSettings.getIdentifier() },
             options: .init()
         )
     }
@@ -153,32 +153,44 @@ final class Web3AlertsSyncService: BaseSyncService {
 
 extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
     func save(
-        notificationsEnabled: Bool,
         settings: LocalPushSettings,
-        completionHandler: @escaping () -> Void
+        runningInQueue queue: DispatchQueue?,
+        completionHandler: @escaping (Error?) -> Void
     ) {
-        settingsManager.notificationsEnabled = notificationsEnabled
-        let saveOperation = localSaveOperation(settings: settings)
-        saveOperation.completionBlock = { [weak self] in
-            completionHandler()
+        let remoteSaveOperation = remoteSaveOperation(settings: settings)
+        let localSaveOperation = localSaveOperation(settings: settings)
+        localSaveOperation.addDependency(remoteSaveOperation)
+
+        let mapOperation = ClosureOperation {
+            do {
+                _ = try localSaveOperation.extractNoCancellableResultData()
+                dispatchInQueueWhenPossible(queue) {
+                    completionHandler(nil)
+                }
+            } catch {
+                dispatchInQueueWhenPossible(queue) {
+                    completionHandler(error)
+                }
+            }
+        }
+        if let executingOperationWrapper = executingOperationWrapper {
+            mapOperation.addDependency(executingOperationWrapper.targetOperation)
         }
 
-        executingOperationWrapper?.allOperations.forEach {
-            saveOperation.addDependency($0)
-        }
-
-        operationQueue.addOperation(saveOperation)
+        mapOperation.addDependency(localSaveOperation)
+        operationQueue.addOperations([remoteSaveOperation, localSaveOperation, mapOperation], waitUntilFinished: false)
     }
 
     func update(
         token: String,
+        runningInQueue queue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     ) {
         guard settingsManager.notificationsEnabled else {
-            completionHandler()
+            dispatchInQueueWhenPossible(queue, block: completionHandler)
             return
         }
-        let fetchOperation = repository.fetchOperation(by: { Self.settingsKey }, options: .init())
+        let fetchOperation = repository.fetchOperation(by: { LocalPushSettings.getIdentifier() }, options: .init())
         let updateSettingsOperation: BaseOperation<LocalPushSettings?> = ClosureOperation {
             if var localSettings = try fetchOperation.extractNoCancellableResultData() {
                 localSettings.pushToken = token
@@ -196,7 +208,7 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
         let updatingWrapper = wrapper.insertingHead(operations: [fetchOperation, updateSettingsOperation])
 
         updatingWrapper.targetOperation.completionBlock = {
-            completionHandler()
+            dispatchInQueueWhenPossible(queue, block: completionHandler)
         }
 
         executingOperationWrapper.map {

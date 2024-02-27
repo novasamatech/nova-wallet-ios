@@ -39,7 +39,8 @@ final class SettingsPresenter {
         let parameters = SettingsParameters(
             walletConnectSessionsCount: walletConnectSessionsCount,
             isBiometricAuthOn: biometrySettings?.isEnabled,
-            isPinConfirmationOn: isPinConfirmationOn
+            isPinConfirmationOn: isPinConfirmationOn,
+            isNotificationsOn: pushNotificationsStatus == .on
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
@@ -205,6 +206,15 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
         case .wiki:
             show(url: config.wikiURL)
+        case .notifications:
+            guard pushNotificationsStatus != nil else {
+                return
+            }
+            if pushNotificationsStatus == .notDetermined {
+                wireframe.showSetupNotifications(from: view, delegate: self)
+            } else {
+                wireframe.showManageNotifications(from: view, delegate: self)
+            }
         }
     }
 
@@ -300,6 +310,7 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
     func didReceive(pushNotificationsStatus: PushNotificationsStatus) {
         self.pushNotificationsStatus = pushNotificationsStatus
+        updateView()
     }
 }
 
@@ -316,5 +327,11 @@ extension SettingsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
+    }
+}
+
+extension SettingsPresenter: PushNotificationsStatusDelegate {
+    func pushNotificationsStatusDidUpdate() {
+        interactor.syncPushNotificationsStatus()
     }
 }

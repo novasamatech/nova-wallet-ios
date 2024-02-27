@@ -104,6 +104,29 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
 
+    func showSetupNotifications(from view: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate) {
+        guard let setupNotificationsView = NotificationsSetupViewFactory.createView(delegate: delegate) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: setupNotificationsView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func showManageNotifications(from view: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate) {
+        guard let manageNotificationsView = NotificationsManagementViewFactory.createView(delegate: delegate) else {
+            return
+        }
+        manageNotificationsView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(
+            manageNotificationsView.controller,
+            animated: true
+        )
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {

@@ -6797,6 +6797,7 @@ import Cuckoo
 import FirebaseMessaging
 import Foundation
 import RobinHood
+import SoraFoundation
 import SoraKeystore
 import UIKit
 import UserNotifications
@@ -6821,6 +6822,30 @@ import UserNotifications
     
 
     
+    
+    
+     var statusObservable: Observable<PushNotificationsStatus?> {
+        get {
+            return cuckoo_manager.getter("statusObservable",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.statusObservable)
+        }
+        
+        set {
+            cuckoo_manager.setter("statusObservable",
+                value: newValue,
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.statusObservable = newValue)
+        }
+        
+    }
+    
 
     
 
@@ -6842,31 +6867,31 @@ import UserNotifications
     
     
     
-     func register()  {
+     func register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)  {
         
-    return cuckoo_manager.call("register()",
+    return cuckoo_manager.call("register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)",
+            parameters: (completionQueue, completion),
+            escapingParameters: (completionQueue, completion),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.register(completionQueue: completionQueue, completion: completion))
+        
+    }
+    
+    
+    
+     func updateStatus()  {
+        
+    return cuckoo_manager.call("updateStatus()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.register())
-        
-    }
-    
-    
-    
-     func status(completion: @escaping (PushNotificationsStatus) -> Void)  {
-        
-    return cuckoo_manager.call("status(completion: @escaping (PushNotificationsStatus) -> Void)",
-            parameters: (completion),
-            escapingParameters: (completion),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.status(completion: completion))
+            defaultCall: __defaultImplStub!.updateStatus())
         
     }
     
@@ -6879,19 +6904,24 @@ import UserNotifications
 	    }
 	    
 	    
+	    var statusObservable: Cuckoo.ProtocolToBeStubbedProperty<MockPushNotificationsServiceProtocol, Observable<PushNotificationsStatus?>> {
+	        return .init(manager: cuckoo_manager, name: "statusObservable")
+	    }
+	    
+	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func register() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "register()", parameterMatchers: matchers))
+	    func register<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(completionQueue: M1, completion: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DispatchQueue?, (PushNotificationsStatus) -> Void)> where M1.OptionalMatchedType == DispatchQueue, M2.MatchedType == (PushNotificationsStatus) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(DispatchQueue?, (PushNotificationsStatus) -> Void)>] = [wrap(matchable: completionQueue) { $0.0 }, wrap(matchable: completion) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)", parameterMatchers: matchers))
 	    }
 	    
-	    func status<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.ProtocolStubNoReturnFunction<((PushNotificationsStatus) -> Void)> where M1.MatchedType == (PushNotificationsStatus) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<((PushNotificationsStatus) -> Void)>] = [wrap(matchable: completion) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "status(completion: @escaping (PushNotificationsStatus) -> Void)", parameterMatchers: matchers))
+	    func updateStatus() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceProtocol.self, method: "updateStatus()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -6908,6 +6938,11 @@ import UserNotifications
 	    }
 	
 	    
+	    
+	    var statusObservable: Cuckoo.VerifyProperty<Observable<PushNotificationsStatus?>> {
+	        return .init(manager: cuckoo_manager, name: "statusObservable", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
 	
 	    
 	    @discardableResult
@@ -6917,21 +6952,32 @@ import UserNotifications
 	    }
 	    
 	    @discardableResult
-	    func register() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("register()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func register<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(completionQueue: M1, completion: M2) -> Cuckoo.__DoNotUse<(DispatchQueue?, (PushNotificationsStatus) -> Void), Void> where M1.OptionalMatchedType == DispatchQueue, M2.MatchedType == (PushNotificationsStatus) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(DispatchQueue?, (PushNotificationsStatus) -> Void)>] = [wrap(matchable: completionQueue) { $0.0 }, wrap(matchable: completion) { $0.1 }]
+	        return cuckoo_manager.verify("register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func status<M1: Cuckoo.Matchable>(completion: M1) -> Cuckoo.__DoNotUse<((PushNotificationsStatus) -> Void), Void> where M1.MatchedType == (PushNotificationsStatus) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<((PushNotificationsStatus) -> Void)>] = [wrap(matchable: completion) { $0 }]
-	        return cuckoo_manager.verify("status(completion: @escaping (PushNotificationsStatus) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func updateStatus() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("updateStatus()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
 }
 
  class PushNotificationsServiceProtocolStub: PushNotificationsServiceProtocol {
+        
+    
+    
+     var statusObservable: Observable<PushNotificationsStatus?> {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Observable<PushNotificationsStatus?>).self)
+        }
+        
+        set { }
+        
+    }
     
 
     
@@ -6945,13 +6991,13 @@ import UserNotifications
     
     
     
-     func register()   {
+     func register(completionQueue: DispatchQueue?, completion: @escaping (PushNotificationsStatus) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
-     func status(completion: @escaping (PushNotificationsStatus) -> Void)   {
+     func updateStatus()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

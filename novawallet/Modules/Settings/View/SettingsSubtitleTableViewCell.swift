@@ -12,4 +12,10 @@ final class SettingsSubtitleTableViewCell: SettingsAccessoryTableViewCell<UILabe
 
         accessoryDisplayView.text = accessoryViewModel
     }
+
+    func bind(title: String, accessoryViewModel: String) {
+        super.bind(icon: nil, title: title)
+
+        accessoryDisplayView.text = accessoryViewModel
+    }
 }

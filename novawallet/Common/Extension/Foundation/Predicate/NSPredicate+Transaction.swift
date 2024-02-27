@@ -243,4 +243,12 @@ extension NSPredicate {
 
         return NSCompoundPredicate(andPredicateWithSubpredicates: [modulePredicate, callPredicate])
     }
+
+    static var pushSettings: NSPredicate {
+        NSPredicate(format: "%K == %@", #keyPath(CDUserSingleValue.identifier), LocalPushSettings.getIdentifier())
+    }
+
+    static var topicSettings: NSPredicate {
+        NSPredicate(format: "%K == %@", #keyPath(CDUserSingleValue.identifier), LocalNotificationTopicSettings.getIdentifier())
+    }
 }
