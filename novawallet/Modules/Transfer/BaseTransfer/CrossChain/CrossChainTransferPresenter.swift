@@ -186,7 +186,7 @@ class CrossChainTransferPresenter {
                 for: .init(
                     amount: isOriginUtilityTransfer ? sendingAmount : 0,
                     originNetworkFee: networkFee?.amountForCurrentAccount,
-                    originDeliveryFee: isOriginUtilityTransfer ? crossChainFee?.senderPart : 0,
+                    originDeliveryFee: crossChainFee?.senderPart,
                     crosschainHolding: isOriginUtilityTransfer ? crossChainFee?.holdingPart : 0,
                     totalBalance: senderUtilityBalanceCountingEd,
                     minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance
