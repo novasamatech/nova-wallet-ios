@@ -31,4 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         URLHandlingService.shared.handle(url: url)
     }
+
+    func application(_: UIApplication, supportedInterfaceOrientationsFor _: UIWindow?) -> UIInterfaceOrientationMask {
+        DeviceOrientationManager.shared.enabledOrientations
+    }
 }

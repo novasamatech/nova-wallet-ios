@@ -1,6 +1,7 @@
 import UIKit
 import WebKit
 import SoraFoundation
+import SoraUI
 
 final class DAppBrowserViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserViewLayout
@@ -19,18 +20,30 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     private let localizationManager: LocalizationManagerProtocol
     private let localRouter: URLLocalRouting
+    private let deviceOrientationManager: DeviceOrientationManaging
+
+    private var scrollYOffset: CGFloat = 0
+    private var barsHideOffset: CGFloat = 20
+    private lazy var slidingAnimator = BlockViewAnimator(duration: 0.2, delay: 0, options: [.curveLinear])
+    private var isBarHidden: Bool = false
 
     private var selectedLocale: Locale {
         localizationManager.selectedLocale
     }
 
+    var isLandscape: Bool {
+        view.frame.size.width > view.frame.size.height
+    }
+
     init(
         presenter: DAppBrowserPresenterProtocol,
         localRouter: URLLocalRouting,
+        deviceOrientationManager: DeviceOrientationManaging,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.localRouter = localRouter
+        self.deviceOrientationManager = deviceOrientationManager
         self.localizationManager = localizationManager
 
         super.init(nibName: nil, bundle: nil)
@@ -52,6 +65,29 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         view = DAppBrowserViewLayout()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if #available(iOS 16.0, *) {
+            deviceOrientationManager.enableLandscape()
+            setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        let isOldLandscape = view.frame.size.width > view.frame.size.height
+
+        super.viewWillTransition(to: size, with: coordinator)
+
+        let isNewLandscape = size.width > size.height
+
+        if !isOldLandscape, isNewLandscape {
+            hideBars()
+        } else if isOldLandscape, !isNewLandscape {
+            showBars()
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -71,6 +107,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         rootView.webView.uiDelegate = self
         rootView.webView.navigationDelegate = self
+        rootView.webView.scrollView.delegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
         configureObservers()
@@ -227,6 +264,34 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         }
     }
 
+    private func showBars() {
+        guard isBarHidden else {
+            return
+        }
+
+        isBarHidden = false
+
+        navigationController?.setNavigationBarHidden(false, animated: true)
+
+        slidingAnimator.animate(block: {
+            self.rootView.setIsToolbarHidden(false)
+        }, completionBlock: nil)
+    }
+
+    private func hideBars() {
+        guard !isBarHidden else {
+            return
+        }
+
+        isBarHidden = true
+
+        navigationController?.setNavigationBarHidden(true, animated: true)
+
+        slidingAnimator.animate(block: {
+            self.rootView.setIsToolbarHidden(true)
+        }, completionBlock: nil)
+    }
+
     private func didChangeGoBack(_ newValue: Bool) {
         rootView.goBackBarItem.isEnabled = newValue
     }
@@ -306,6 +371,47 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
     func didSet(canShowSettings: Bool) {
         rootView.settingsBarButton.isEnabled = canShowSettings
+    }
+
+    func didDecideClose() {
+        if #available(iOS 16.0, *) {
+            deviceOrientationManager.disableLandscape()
+            setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+    }
+}
+
+extension DAppBrowserViewController: UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        guard isLandscape else {
+            return
+        }
+
+        scrollYOffset = scrollView.contentOffset.y
+    }
+
+    func scrollViewDidScrollToTop(_: UIScrollView) {
+        showBars()
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView.isDragging, isLandscape else {
+            return
+        }
+
+        let scrollDiff = scrollView.contentOffset.y - scrollYOffset
+        let isScrollingUp = scrollDiff > 0 && scrollView.contentOffset.y > 0 && abs(scrollDiff) >= barsHideOffset
+        let isScrollingDown = scrollDiff < 0 && abs(scrollDiff) >= barsHideOffset
+
+        if isScrollingUp {
+            hideBars()
+
+            scrollYOffset = scrollView.contentOffset.y
+        } else if isScrollingDown {
+            showBars()
+
+            scrollYOffset = scrollView.contentOffset.y
+        }
     }
 }
 
