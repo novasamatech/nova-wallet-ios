@@ -297,7 +297,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         let networkFeeAmountInPlank = params.originNetworkFee ?? 0
         let networkFeeDecimal = networkFeeAmountInPlank.decimal(assetInfo: assetInfo)
         let balanceDecimal = params.totalBalance?.decimal(assetInfo: assetInfo) ?? 0
-        let minBalanceDecimal = params.totalBalance?.decimal(assetInfo: assetInfo) ?? 0
+        let minBalanceDecimal = params.minBalance?.decimal(assetInfo: assetInfo) ?? 0
         let crosschainHoldingDecimal = params.crosschainHolding?.decimal(assetInfo: assetInfo) ?? 0
         let sendingDecimal = (params.amount ?? 0) + crosschainHoldingDecimal
 
