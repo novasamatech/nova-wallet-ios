@@ -58,6 +58,16 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
+    // swiftlint:disable:next function_parameter_count
+    func notViolatingMinBalanceBeforePayingDeliveryFee(
+        for amount: Decimal?,
+        networkFee: ExtrinsicFeeProtocol?,
+        crosschainFee: XcmFeeModelProtocol?,
+        totalBalance: BigUInt?,
+        minBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating
+
     func has(crosschainFee: XcmFeeModelProtocol?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 }
 
@@ -66,7 +76,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
     var basePresentable: BaseErrorPresentable { presentable }
     let assetDisplayInfo: AssetBalanceDisplayInfo
-    let utilityAssetInfo: AssetBalanceDisplayInfo?
+    let utilityAssetInfo: AssetBalanceDisplayInfo
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     let presentable: TransferErrorPresentable
@@ -74,7 +84,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
     init(
         presentable: TransferErrorPresentable,
         assetDisplayInfo: AssetBalanceDisplayInfo,
-        utilityAssetInfo: AssetBalanceDisplayInfo?,
+        utilityAssetInfo: AssetBalanceDisplayInfo,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.presentable = presentable
@@ -146,7 +156,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
                 return
             }
 
-            let assetInfo = strongSelf.utilityAssetInfo ?? strongSelf.assetDisplayInfo
+            let assetInfo = strongSelf.utilityAssetInfo
 
             self?.presentable.presentNoReceiverAccount(
                 for: assetInfo.symbol,
@@ -251,13 +261,14 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         transferable: BigUInt?,
         locale: Locale
     ) -> DataValidating {
+        let assetInfo = utilityAssetInfo
         let feeAmountInPlank = (networkFee?.amountForCurrentAccount ?? 0) + (crosschainFee?.senderPart ?? 0)
-        let feeDecimal = feeAmountInPlank.decimal(assetInfo: assetDisplayInfo)
-        let balanceDecimal = transferable?.decimal(assetInfo: assetDisplayInfo) ?? 0
+        let feeDecimal = feeAmountInPlank.decimal(assetInfo: assetInfo)
+        let balanceDecimal = transferable?.decimal(assetInfo: assetInfo) ?? 0
         let amountDecimal = amount ?? 0
 
         return ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view, let assetInfo = self?.assetDisplayInfo else {
+            guard let view = self?.view else {
                 return
             }
 
@@ -271,6 +282,57 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
         }, preservesCondition: {
             feeDecimal + amountDecimal <= balanceDecimal
+        })
+    }
+
+    // swiftlint:disable:next function_parameter_count
+    func notViolatingMinBalanceBeforePayingDeliveryFee(
+        for amount: Decimal?,
+        networkFee: ExtrinsicFeeProtocol?,
+        crosschainFee: XcmFeeModelProtocol?,
+        totalBalance: BigUInt?,
+        minBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating {
+        let assetInfo = utilityAssetInfo
+        let networkFeeAmountInPlank = networkFee?.amountForCurrentAccount ?? 0
+        let networkFeeDecimal = networkFeeAmountInPlank.decimal(assetInfo: assetInfo)
+        let balanceDecimal = totalBalance?.decimal(assetInfo: assetInfo) ?? 0
+        let minBalanceDecimal = minBalance?.decimal(assetInfo: assetInfo) ?? 0
+        let amountDecimal = amount ?? 0
+
+        return ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetInfo)
+
+            let feeAndEd = networkFeeDecimal + minBalanceDecimal
+            let availableDecimal = balanceDecimal >= feeAndEd ? balanceDecimal - feeAndEd : 0
+
+            let availableString = tokenFormatter.value(for: locale).stringFromDecimal(availableDecimal) ?? ""
+            let balanceString = tokenFormatter.value(for: locale).stringFromDecimal(balanceDecimal) ?? ""
+            let minBalanceString = tokenFormatter.value(for: locale).stringFromDecimal(minBalanceDecimal) ?? ""
+            let networkFeeString = tokenFormatter.value(for: locale).stringFromDecimal(networkFeeDecimal) ?? ""
+
+            self?.presentable.presentMinBalanceViolatedForDeliveryFee(
+                from: view,
+                params: .init(
+                    totalBalance: balanceString,
+                    minBalance: minBalanceString,
+                    networkFee: networkFeeString,
+                    availableBalance: availableString
+                ),
+                locale: locale
+            )
+
+        }, preservesCondition: {
+            guard let crosschainFee = crosschainFee, crosschainFee.senderPart > 0 else {
+                return true
+            }
+
+            return networkFeeDecimal + amountDecimal + minBalanceDecimal <= balanceDecimal
         })
     }
 

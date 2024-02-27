@@ -49,10 +49,14 @@ struct TransferConfirmCrossChainViewFactory {
             utilityBalanceViewModelFactory = nil
         }
 
+        guard let utilityAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo else {
+            return nil
+        }
+
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: originChainAsset.assetDisplayInfo,
-            utilityAssetInfo: originChainAsset.chain.utilityAssets().first?.displayInfo,
+            utilityAssetInfo: utilityAssetInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
