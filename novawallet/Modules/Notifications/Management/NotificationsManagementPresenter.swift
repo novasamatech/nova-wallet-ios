@@ -21,7 +21,8 @@ final class NotificationsManagementPresenter {
     private var isSaveAvailable: Bool {
         guard let settings = settings,
               let announcementsEnabled = announcementsEnabled,
-              let notificationsEnabled = notificationsEnabled else {
+              let notificationsEnabled = notificationsEnabled,
+              let topicsSettings = topicsSettings else {
             return false
         }
 
