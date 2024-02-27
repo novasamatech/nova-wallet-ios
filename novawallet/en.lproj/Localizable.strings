@@ -1488,3 +1488,4 @@
 "staking.setup.proxy.authority" = "Give authority to";
 "staking.setup.proxy.deposit" = "Proxy deposit";
 "staking.setup.proxy.title" = "Add delegation for %@ staking";
+"xcm.delivery.fee.ed.error.message" = "Your available balance is %@, you need to leave at least %@ for transfer delivery and pay network fee of %@. You can transfer not more than %@.";
