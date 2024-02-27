@@ -189,7 +189,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
         /**
          *  Currently relaychains has an issue that leads to xcm fail if account's balance goes bellow ed
-         *  before paying delivery fee. So make sure we will have at least ed.
+         *  before paying delivery fee. So make sure we will have at least ed and don't burn any tokens on account kill
          */
         let hasOriginDeliveryFee = (crossChainFee?.senderPart ?? 0) > 0
         let minimumBalanceValue = hasOriginDeliveryFee && isOriginUtilityTransfer ? originSendingMinBalance ?? 0 : 0

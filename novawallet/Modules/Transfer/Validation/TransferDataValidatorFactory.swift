@@ -4,6 +4,15 @@ import SoraFoundation
 
 typealias CrossChainValidationFee = (origin: BigUInt?, crossChain: BigUInt?)
 
+struct CrossChainValidationAtLeastEdForDeliveryFee {
+    let amount: Decimal?
+    let originNetworkFee: BigUInt?
+    let originDeliveryFee: BigUInt?
+    let crosschainHolding: BigUInt?
+    let totalBalance: BigUInt?
+    let minBalance: BigUInt?
+}
+
 protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func willBeReaped(
         amount: Decimal?,
@@ -58,13 +67,8 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    // swiftlint:disable:next function_parameter_count
     func notViolatingMinBalanceBeforePayingDeliveryFee(
-        for amount: Decimal?,
-        networkFee: ExtrinsicFeeProtocol?,
-        crosschainFee: XcmFeeModelProtocol?,
-        totalBalance: BigUInt?,
-        minBalance: BigUInt?,
+        for params: CrossChainValidationAtLeastEdForDeliveryFee,
         locale: Locale
     ) -> DataValidating
 
@@ -285,21 +289,17 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         })
     }
 
-    // swiftlint:disable:next function_parameter_count
     func notViolatingMinBalanceBeforePayingDeliveryFee(
-        for amount: Decimal?,
-        networkFee: ExtrinsicFeeProtocol?,
-        crosschainFee: XcmFeeModelProtocol?,
-        totalBalance: BigUInt?,
-        minBalance: BigUInt?,
+        for params: CrossChainValidationAtLeastEdForDeliveryFee,
         locale: Locale
     ) -> DataValidating {
         let assetInfo = utilityAssetInfo
-        let networkFeeAmountInPlank = networkFee?.amountForCurrentAccount ?? 0
+        let networkFeeAmountInPlank = params.originNetworkFee ?? 0
         let networkFeeDecimal = networkFeeAmountInPlank.decimal(assetInfo: assetInfo)
-        let balanceDecimal = totalBalance?.decimal(assetInfo: assetInfo) ?? 0
-        let minBalanceDecimal = minBalance?.decimal(assetInfo: assetInfo) ?? 0
-        let amountDecimal = amount ?? 0
+        let balanceDecimal = params.totalBalance?.decimal(assetInfo: assetInfo) ?? 0
+        let minBalanceDecimal = params.totalBalance?.decimal(assetInfo: assetInfo) ?? 0
+        let crosschainHoldingDecimal = params.crosschainHolding?.decimal(assetInfo: assetInfo) ?? 0
+        let sendingDecimal = (params.amount ?? 0) + crosschainHoldingDecimal
 
         return ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
@@ -328,11 +328,11 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             )
 
         }, preservesCondition: {
-            guard let crosschainFee = crosschainFee, crosschainFee.senderPart > 0 else {
+            guard let originDeliveryFee = params.originDeliveryFee, originDeliveryFee > 0 else {
                 return true
             }
 
-            return networkFeeDecimal + amountDecimal + minBalanceDecimal <= balanceDecimal
+            return networkFeeDecimal + sendingDecimal + minBalanceDecimal <= balanceDecimal
         })
     }
 

@@ -183,11 +183,14 @@ class CrossChainTransferPresenter {
             ),
 
             dataValidatingFactory.notViolatingMinBalanceBeforePayingDeliveryFee(
-                for: isOriginUtilityTransfer ? sendingAmount : 0,
-                networkFee: networkFee,
-                crosschainFee: crossChainFee,
-                totalBalance: senderUtilityBalanceCountingEd,
-                minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance,
+                for: .init(
+                    amount: isOriginUtilityTransfer ? sendingAmount : 0,
+                    originNetworkFee: networkFee?.amountForCurrentAccount,
+                    originDeliveryFee: isOriginUtilityTransfer ? crossChainFee?.senderPart : 0,
+                    crosschainHolding: isOriginUtilityTransfer ? crossChainFee?.holdingPart : 0,
+                    totalBalance: senderUtilityBalanceCountingEd,
+                    minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance
+                ),
                 locale: selectedLocale
             ),
 
