@@ -34,7 +34,11 @@ protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
 
 protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, ErrorPresentable,
     ApplicationSettingsPresentable, CommonRetryable {
-    func showWallets(from view: ControllerBackedProtocol?)
+    func showWallets(
+        from view: ControllerBackedProtocol?,
+        initState: [Web3AlertWallet]?,
+        completion: @escaping ([Web3AlertWallet]) -> Void
+    )
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
         selectedChains: Selection<Set<ChainModel.Id>>?,

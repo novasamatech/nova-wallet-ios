@@ -124,7 +124,12 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
             updateView()
         case .wallets:
-            wireframe.showWallets(from: view)
+            wireframe.showWallets(
+                from: view,
+
+                initState: modifiedSettings?.wallets,
+                completion: changeWalletsSettings
+            )
         case .gov:
             wireframe.showGovSetup(
                 from: view,
@@ -245,6 +250,11 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         case .none:
             return nil
         }
+    }
+
+    func changeWalletsSettings(wallets: [Web3AlertWallet]) {
+        modifiedSettings = modifiedSettings?.with(wallets: wallets)
+        updateView()
     }
 }
 

@@ -41,4 +41,14 @@ extension LocalPushSettings {
             notifications: editedNotifications
         )
     }
+
+    func with(wallets: [Web3AlertWallet]) -> LocalPushSettings {
+        .init(
+            remoteIdentifier: remoteIdentifier,
+            pushToken: pushToken,
+            updatedAt: updatedAt,
+            wallets: wallets,
+            notifications: notifications
+        )
+    }
 }

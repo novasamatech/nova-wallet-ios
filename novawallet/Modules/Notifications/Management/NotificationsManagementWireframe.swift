@@ -1,7 +1,22 @@
 import Foundation
 
 final class NotificationsManagementWireframe: NotificationsManagementWireframeProtocol {
-    func showWallets(from _: ControllerBackedProtocol?) {}
+    func showWallets(
+        from view: ControllerBackedProtocol?,
+        initState: [Web3AlertWallet]?,
+        completion: @escaping ([Web3AlertWallet]) -> Void
+    ) {
+        guard let walletsView = NotificationWalletListViewFactory.createView(
+            initState: initState,
+            completion: completion
+        ) else {
+            return
+        }
+        view?.controller.navigationController?.pushViewController(
+            walletsView.controller,
+            animated: true
+        )
+    }
 
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
