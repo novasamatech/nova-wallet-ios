@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 protocol NftLocalSubscriptionFactoryProtocol {
     func getNftProvider(for wallet: MetaAccountModel, chains: [ChainModel]) -> StreamableProvider<NftModel>
@@ -42,7 +43,7 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         type: NftType
     ) -> AnyDataProviderRepository<NftModel> {
         let mapper = AnyCoreDataMapper(NftModelMapper())
-        let filter = NSPredicate.nfts(for: [(chain.chainId, ownerId)], type: type.rawValue)
+        let filter = NSPredicate.nfts(for: [(chain.chainId, ownerId)], type: type)
         let sortDescriptor = NSSortDescriptor.nftsByCreationDesc
         let repository = storageFacade.createRepository(
             filter: filter,
@@ -51,6 +52,29 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         )
 
         return AnyDataProviderRepository(repository)
+    }
+
+    private func createClearService() -> NftSyncServiceProtocol? {
+        let excludedTypes = NftType.excludedTypes
+
+        guard !excludedTypes.isEmpty else {
+            return nil
+        }
+
+        let mapper = AnyCoreDataMapper(NftModelMapper())
+        let filter = NSPredicate.nftsForTypes(excludedTypes)
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: mapper
+        )
+
+        return NFTClearService(
+            repository: AnyDataProviderRepository(repository),
+            operationQueue: operationQueue,
+            retryStrategy: ExponentialReconnection(),
+            logger: logger
+        )
     }
 
     private func createUniquesService(
@@ -107,11 +131,27 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         )
     }
 
+    private func createKodaDotService(for chain: ChainModel, ownerId: AccountId) -> NftSyncServiceProtocol? {
+        guard let apiUrl = KodaDotAssetHubApi.apiForChain(chain.chainId) else {
+            return nil
+        }
+
+        let repository = createSyncRepository(for: chain, ownerId: ownerId, type: .kodadot)
+
+        return KodaDotNftSyncService(
+            api: apiUrl,
+            ownerId: ownerId,
+            chain: chain,
+            repository: repository,
+            operationQueue: operationQueue
+        )
+    }
+
     private func createService(
         for chain: ChainModel,
         ownerId: AccountId,
         type: NftType
-    ) -> NftSyncServiceProtocol {
+    ) -> NftSyncServiceProtocol? {
         switch type {
         case .uniques:
             return createUniquesService(for: chain, ownerId: ownerId)
@@ -121,6 +161,8 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             return createRMRKV2Service(for: chain, ownerId: ownerId)
         case .pdc20:
             return createPdc20Service(for: chain, ownerId: ownerId)
+        case .kodadot:
+            return createKodaDotService(for: chain, ownerId: ownerId)
         }
     }
 
@@ -154,11 +196,22 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
 
         let nftOptions = createNftOptions(for: wallet, chains: chains)
 
-        let syncServices = nftOptions.map { option in
+        var syncServices = nftOptions.compactMap { option in
             createService(for: option.chain, ownerId: option.ownerId, type: option.type)
         }
 
+        if let clearService = createClearService() {
+            syncServices.insert(clearService, at: 0)
+        }
+
         let dataSource = NftStreamableSource(syncServices: syncServices)
+
+        /**
+         *  We can now have cases:
+         *  1) When we don't sync nfts (don't have source for it) but want to display it from cache (rmrk v1).
+         *  2) Don't have source for nfts and don't want to display them from cache (uniques).
+         *  Probably we want to remove such nfts from cache and don't provide source for them in future.
+         */
 
         let mapper = AnyCoreDataMapper(NftModelMapper())
         let observable = CoreDataContextObservable(

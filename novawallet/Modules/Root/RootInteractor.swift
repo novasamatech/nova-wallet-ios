@@ -50,7 +50,16 @@ final class RootInteractor {
             logger: Logger.shared
         )
 
-        URLHandlingService.shared.setup(children: [screenOpenService, purchaseHandler, keystoreImportService])
+        let wcHandlingService = WalletConnectUrlParsingService()
+
+        URLHandlingService.shared.setup(
+            children: [
+                screenOpenService,
+                purchaseHandler,
+                wcHandlingService,
+                keystoreImportService
+            ]
+        )
     }
 
     private func runMigrators() {

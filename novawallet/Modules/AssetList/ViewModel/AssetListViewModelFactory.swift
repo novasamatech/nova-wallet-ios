@@ -156,6 +156,12 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         let viewModels: [NftMediaViewModelProtocol] = nfts.filter { nft in
             nft.media != nil || nft.metadata != nil
         }.prefix(3).compactMap { nft in
+            if
+                let media = nft.media,
+                let gatewayImageUrl = nftDownloadService.imageUrl(from: media) {
+                return NftImageViewModel(url: gatewayImageUrl)
+            }
+
             if let media = nft.media, let url = URL(string: media) {
                 return NftImageViewModel(url: url)
             }

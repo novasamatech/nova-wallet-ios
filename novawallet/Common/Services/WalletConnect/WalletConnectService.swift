@@ -105,7 +105,11 @@ final class WalletConnectService {
             name: metadata.name,
             description: metadata.description,
             url: metadata.website,
-            icons: [metadata.icon]
+            icons: [metadata.icon],
+            redirect: .init(
+                native: metadata.redirect.native,
+                universal: metadata.redirect.universal
+            )
         )
 
         client = SignClientFactory.create(

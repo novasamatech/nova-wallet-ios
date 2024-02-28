@@ -93,7 +93,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     }
 
     private func provideAmountInputViewModel() {
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+        let inputAmount = inputResult?.absoluteValue(from: maxTransferrable())
 
         let viewModel = sendingBalanceViewModelFactory.createBalanceInputViewModel(
             inputAmount
@@ -162,7 +162,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func updateAmountPriceView() {
         if originChainAsset.asset.priceId != nil {
-            let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+            let inputAmount = inputResult?.absoluteValue(from: maxTransferrable()) ?? 0
 
             let priceData = sendingAssetPrice ?? PriceData.zero()
 
@@ -182,21 +182,34 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         view?.didReceiveCanSendMySelf(destinationAccountExists)
     }
 
-    private func balanceMinusFee() -> Decimal {
+    private func maxTransferrable() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
+        let balanceCountingEdValue = senderSendingAssetBalance?.balanceCountingEd ?? 0
         let originFeeValue = isOriginUtilityTransfer ? displayOriginFee ?? 0 : 0
         let crossChainFeeValue = displayCrosschainFee ?? 0
+
+        /**
+         *  Currently relaychains has an issue that leads to xcm fail if account's balance goes bellow ed
+         *  before paying delivery fee. So make sure we will have at least ed and don't burn any tokens on account kill
+         */
+        let hasOriginDeliveryFee = (crossChainFee?.senderPart ?? 0) > 0
+        let minimumBalanceValue = hasOriginDeliveryFee && isOriginUtilityTransfer ? originSendingMinBalance ?? 0 : 0
 
         let precision = originChainAsset.assetDisplayInfo.assetPrecision
 
         guard
             let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
+            let balanceCountingEd = Decimal.fromSubstrateAmount(balanceCountingEdValue, precision: precision),
             let originFee = Decimal.fromSubstrateAmount(originFeeValue, precision: precision),
-            let crossChainFee = Decimal.fromSubstrateAmount(crossChainFeeValue, precision: precision) else {
+            let crossChainFee = Decimal.fromSubstrateAmount(crossChainFeeValue, precision: precision),
+            let minimumBalance = Decimal.fromSubstrateAmount(minimumBalanceValue, precision: precision) else {
             return 0
         }
 
-        return balance - originFee - crossChainFee
+        let balanceWithoutFee = balance - originFee - crossChainFee
+        let balanceCountingEdWithoutFee = balanceCountingEd - originFee - crossChainFee - minimumBalance
+
+        return min(balanceWithoutFee, balanceCountingEdWithoutFee)
     }
 
     private func updateRecepientAddress(_ newAddress: String) {
@@ -222,7 +235,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     // MARK: Subsclass
 
     override func refreshOriginFee() {
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+        let inputAmount = inputResult?.absoluteValue(from: maxTransferrable()) ?? 0
         let assetInfo = originChainAsset.assetDisplayInfo
 
         guard let amount = inputAmount.toSubstrateAmount(
@@ -240,7 +253,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     }
 
     override func refreshCrossChainFee() {
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+        let inputAmount = inputResult?.absoluteValue(from: maxTransferrable()) ?? 0
         let assetInfo = originChainAsset.assetDisplayInfo
 
         guard let amount = inputAmount.toSubstrateAmount(
@@ -293,6 +306,12 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
             updateAmountPriceView()
             refreshOriginFee()
         }
+    }
+
+    override func didReceiveOriginSendingMinBalance(_ value: BigUInt) {
+        super.didReceiveOriginSendingMinBalance(value)
+
+        provideAmountInputViewModelIfRate()
     }
 
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
@@ -388,7 +407,7 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
 
         let utilityAssetInfo = ChainAsset(chain: originChainAsset.chain, asset: utilityAsset).assetDisplayInfo
 
-        let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+        let sendingAmount = inputResult?.absoluteValue(from: maxTransferrable())
 
         let originDeliveryFeeSpending = isOriginUtilityTransfer ?
             crossChainFee?.senderPart.decimal(assetInfo: utilityAssetInfo) :
