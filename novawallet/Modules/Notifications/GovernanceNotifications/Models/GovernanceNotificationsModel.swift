@@ -40,10 +40,10 @@ extension GovernanceNotificationsModel {
 }
 
 struct GovernanceNotificationsInitModel {
-    var newReferendum: [ChainModel.Id: Selection<Set<TrackIdLocal>>]
-    var referendumUpdate: [ChainModel.Id: Selection<Set<TrackIdLocal>>]
+    var newReferendum: [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]
+    var referendumUpdate: [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]
 
-    func tracks(for chainId: ChainModel.Id) -> Selection<Set<TrackIdLocal>>? {
+    func tracks(for chainId: ChainModel.Id) -> Web3Alert.Selection<Set<TrackIdLocal>>? {
         newReferendum[chainId] ?? referendumUpdate[chainId]
     }
 }

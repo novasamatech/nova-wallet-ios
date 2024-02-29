@@ -3,7 +3,7 @@ import SoraFoundation
 import RobinHood
 
 final class NotificationWalletListPresenter: WalletsListPresenter {
-    private var selectedWallets: [String] = []
+    private var selectedWallets: Set<MetaAccountModel.Id> = []
 
     var view: NotificationWalletListViewProtocol? {
         get {
@@ -23,10 +23,9 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
     }
 
     let localPushSettingsFactory: LocalPushSettingsFactoryProtocol
-    private var initState: [Web3AlertWallet]?
 
     init(
-        initState: [Web3AlertWallet]?,
+        initState: [Web3Alert.LocalWallet]?,
         interactor: NotificationWalletListInteractorInputProtocol,
         wireframe: NotificationWalletListWireframeProtocol,
         viewModelFactory: WalletsListViewModelFactoryProtocol,
@@ -35,7 +34,8 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
         logger: LoggerProtocol
     ) {
         self.localPushSettingsFactory = localPushSettingsFactory
-        self.initState = initState
+        selectedWallets = Set((initState ?? []).map(\.metaId))
+
         super.init(
             baseInteractor: interactor,
             baseWireframe: wireframe,
@@ -48,30 +48,13 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
     override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         let updatedChanges = filterIgnoredWallet(changes: changes)
         walletsList.apply(changes: updatedChanges)
-        initWalletsIfNeeded()
 
         if selectedWallets.isEmpty,
            let selectedWallet = walletsList.allItems.first(where: { $0.isSelected }) {
-            selectedWallets.append(selectedWallet.identifier)
+            selectedWallets.insert(selectedWallet.identifier)
         }
 
         updateViewModels()
-    }
-
-    private func initWalletsIfNeeded() {
-        guard let initState = initState else {
-            return
-        }
-        let initialWallets = walletsList.allItems.compactMap {
-            let web3Wallet = localPushSettingsFactory.createWallet(
-                from: $0.info,
-                chains: chains
-            )
-            return initState.contains(web3Wallet) ? $0.identifier : nil
-        }
-        selectedWallets = initialWallets
-
-        self.initState = nil
     }
 
     private func updateViewModels() {
@@ -94,7 +77,7 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
 
     private func select(walletId: String) {
         if selectedWallets.count < 3 {
-            selectedWallets.append(walletId)
+            selectedWallets.insert(walletId)
         } else {
             let title = R.string.localizable.notificationsWalletListLimitErrorTitle(
                 preferredLanguages: selectedLocale.rLanguages
@@ -119,7 +102,7 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
             return
         }
 
-        selectedWallets.removeAll(where: { $0 == walletId })
+        selectedWallets.remove(walletId)
 
         updateViewModels()
     }
@@ -137,15 +120,13 @@ extension NotificationWalletListPresenter: NotificationWalletListPresenterProtoc
     }
 
     func confirm() {
-        let wallets = selectedWallets.compactMap { walletId -> Web3AlertWallet? in
-            guard let wallet = walletsList.allItems.first(where: { $0.identifier == walletId }) else {
-                return nil
+        let wallets = walletsList.allItems
+            .filter {
+                selectedWallets.contains($0.identifier)
             }
-            return localPushSettingsFactory.createWallet(
-                from: wallet.info,
-                chains: chains
-            )
-        }
+            .map {
+                localPushSettingsFactory.createWallet(from: $0.info, chains: chains)
+            }
 
         wireframe?.complete(from: view, selectedWallets: wallets)
     }

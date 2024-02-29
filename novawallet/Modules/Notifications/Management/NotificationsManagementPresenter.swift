@@ -8,15 +8,15 @@ final class NotificationsManagementPresenter {
     let viewModelFactory: NotificationsManagemenViewModelFactoryProtocol
 
     weak var delegate: PushNotificationsStatusDelegate?
-    private var settings: LocalPushSettings?
-    private var topicsSettings: LocalNotificationTopicSettings?
+    private var settings: Web3Alert.LocalSettings?
+    private var topicsSettings: PushNotification.TopicSettings?
     private var notificationsEnabled: Bool?
     private var announcementsEnabled: Bool?
 
-    private var modifiedSettings: LocalPushSettings?
+    private var modifiedSettings: Web3Alert.LocalSettings?
     private var modifiedAnnouncementsEnabled: Bool?
     private var modifiedNotificationsEnabled: Bool?
-    private var modifiedTopicsSettings: LocalNotificationTopicSettings?
+    private var modifiedTopicsSettings: PushNotification.TopicSettings?
 
     private var isSaveAvailable: Bool {
         guard let settings = settings,
@@ -78,16 +78,18 @@ final class NotificationsManagementPresenter {
     }
 
     func isGovernanceOn() -> Bool {
-        let hasGovernanceTopics = modifiedTopicsSettings?.topics.contains {
+        guard let modifiedTopicsSettings = modifiedTopicsSettings else {
+            return false
+        }
+
+        return modifiedTopicsSettings.topics.contains {
             switch $0 {
             case .chainReferendums, .newChainReferendums:
                 return true
-            case .appUpdates:
+            case .appCustom:
                 return false
             }
         }
-
-        return hasGovernanceTopics == true
     }
 }
 
@@ -164,7 +166,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     }
 
     func changeGovSettings(settings: [ChainModel.Id: GovernanceNotificationsModel]) {
-        var topics: [NotificationTopic] = []
+        var topics: [PushNotification.Topic] = []
         topics = settings.reduce(into: topics) {
             guard $1.value.enabled else {
                 return
@@ -193,12 +195,8 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     }
 
     func getGovSettings() -> GovernanceNotificationsInitModel? {
-        guard let notifications = modifiedSettings?.notifications else {
-            return nil
-        }
-
-        var chainReferendumUpdateTopics = [ChainModel.Id: Selection<Set<TrackIdLocal>>]()
-        var chainNewReferendumTopics = [ChainModel.Id: Selection<Set<TrackIdLocal>>]()
+        var chainReferendumUpdateTopics = [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]()
+        var chainNewReferendumTopics = [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]()
         let allTopics = modifiedTopicsSettings.map(\.topics) ?? []
 
         for topic in allTopics {
@@ -227,7 +225,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         )
     }
 
-    func changeStakingRewardsSettings(result: Selection<Set<ChainModel.Id>>?) {
+    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<ChainModel.Id>>?) {
         modifiedSettings = modifiedSettings?.with {
             switch result {
             case .all:
@@ -242,7 +240,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         updateView()
     }
 
-    func getStakingRewardsSettings() -> Selection<Set<ChainModel.Id>>? {
+    func getStakingRewardsSettings() -> Web3Alert.Selection<Set<ChainModel.Id>>? {
         switch modifiedSettings?.notifications.stakingReward {
         case let .concrete(chains):
             return .concrete(Set(chains))
@@ -253,14 +251,14 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         }
     }
 
-    func changeWalletsSettings(wallets: [Web3AlertWallet]) {
+    func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
         modifiedSettings = modifiedSettings?.with(wallets: wallets)
         updateView()
     }
 }
 
 extension NotificationsManagementPresenter: NotificationsManagementInteractorOutputProtocol {
-    func didReceive(settings: LocalPushSettings) {
+    func didReceive(settings: Web3Alert.LocalSettings) {
         self.settings = settings
         if modifiedSettings == nil {
             modifiedSettings = settings
@@ -268,7 +266,7 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
         updateView()
     }
 
-    func didReceive(topicsSettings: LocalNotificationTopicSettings) {
+    func didReceive(topicsSettings: PushNotification.TopicSettings) {
         self.topicsSettings = topicsSettings
         if modifiedTopicsSettings == nil {
             modifiedTopicsSettings = topicsSettings

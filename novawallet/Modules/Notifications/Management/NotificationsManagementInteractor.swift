@@ -8,8 +8,8 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
     let settingsManager: SettingsManagerProtocol
     let alertServiceFactory: Web3AlertsServicesFactoryProtocol
 
-    private var settingsProvider: StreamableProvider<LocalPushSettings>?
-    private var topicsSettingsProvider: StreamableProvider<LocalNotificationTopicSettings>?
+    private var settingsProvider: StreamableProvider<Web3Alert.LocalSettings>?
+    private var topicsSettingsProvider: StreamableProvider<PushNotification.TopicSettings>?
     private var syncService: Web3AlertsSyncServiceProtocol?
     private var pushService: PushNotificationsServiceProtocol?
     private var topicService: TopicServiceProtocol?
@@ -80,8 +80,8 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
     }
 
     func save(
-        settings: LocalPushSettings,
-        topics: LocalNotificationTopicSettings,
+        settings: Web3Alert.LocalSettings,
+        topics: PushNotification.TopicSettings,
         notificationsEnabled: Bool,
         announcementsEnabled: Bool
     ) {
@@ -90,7 +90,6 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         }
 
         let group = DispatchGroup()
-        group.enter()
         group.enter()
 
         syncService?.save(settings: settings, runningInQueue: callbackQueue) { [weak self] error in
@@ -105,6 +104,7 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         }
 
         if topicService == nil {
+            group.enter()
             topicService = alertServiceFactory.createTopicService()
         }
 
@@ -129,7 +129,7 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
 }
 
 extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscriptionHandler {
-    func handlePushNotificationsSettings(result: Result<[DataProviderChange<LocalPushSettings>], Error>) {
+    func handlePushNotificationsSettings(result: Result<[DataProviderChange<Web3Alert.LocalSettings>], Error>) {
         switch result {
         case let .success(changes):
             if let settings = changes.reduceToLastChange() {
@@ -140,7 +140,7 @@ extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscri
         }
     }
 
-    func handleTopicsSettings(result: Result<[DataProviderChange<LocalNotificationTopicSettings>], Error>) {
+    func handleTopicsSettings(result: Result<[DataProviderChange<PushNotification.TopicSettings>], Error>) {
         switch result {
         case let .success(changes):
             if let settings = changes.reduceToLastChange() {

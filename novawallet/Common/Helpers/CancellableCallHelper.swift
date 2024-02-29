@@ -31,6 +31,10 @@ final class CancellableCallStore {
     func matches(call: CancellableCall) -> Bool {
         cancellableCall === call
     }
+
+    func getCall<T: CancellableCall>() -> T? {
+        cancellableCall as? T
+    }
 }
 
 func execute<T>(

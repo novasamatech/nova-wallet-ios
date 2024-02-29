@@ -3,8 +3,8 @@ import RobinHood
 import SubstrateSdk
 
 protocol SettingsLocalSubscriptionFactoryProtocol {
-    func getPushSettingsProvider() -> StreamableProvider<LocalPushSettings>?
-    func getTopicsProvider() -> StreamableProvider<LocalNotificationTopicSettings>?
+    func getPushSettingsProvider() -> StreamableProvider<Web3Alert.LocalSettings>?
+    func getTopicsProvider() -> StreamableProvider<PushNotification.TopicSettings>?
 }
 
 final class SettingsLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
@@ -32,22 +32,22 @@ final class SettingsLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
 }
 
 extension SettingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol {
-    func getPushSettingsProvider() -> StreamableProvider<LocalPushSettings>? {
+    func getPushSettingsProvider() -> StreamableProvider<Web3Alert.LocalSettings>? {
         let cacheKey = "push-settings"
 
-        if let provider = getProvider(for: cacheKey) as? StreamableProvider<LocalPushSettings> {
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<Web3Alert.LocalSettings> {
             return provider
         }
 
         let mapper = AnyCoreDataMapper(Web3AlertSettingsMapper())
-        let repository: CoreDataRepository<LocalPushSettings, CDUserSingleValue> =
+        let repository: CoreDataRepository<Web3Alert.LocalSettings, CDUserSingleValue> =
             storageFacade.createRepository(
                 filter: .pushSettings,
                 sortDescriptors: [],
                 mapper: mapper
             )
 
-        let source = EmptyStreamableSource<LocalPushSettings>()
+        let source = EmptyStreamableSource<Web3Alert.LocalSettings>()
 
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
@@ -73,22 +73,22 @@ extension SettingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProt
         return provider
     }
 
-    func getTopicsProvider() -> StreamableProvider<LocalNotificationTopicSettings>? {
+    func getTopicsProvider() -> StreamableProvider<PushNotification.TopicSettings>? {
         let cacheKey = "topics-settings"
 
-        if let provider = getProvider(for: cacheKey) as? StreamableProvider<LocalNotificationTopicSettings> {
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<PushNotification.TopicSettings> {
             return provider
         }
 
         let mapper = AnyCoreDataMapper(Web3TopicSettingsMapper())
-        let repository: CoreDataRepository<LocalNotificationTopicSettings, CDUserSingleValue> =
+        let repository: CoreDataRepository<PushNotification.TopicSettings, CDUserSingleValue> =
             storageFacade.createRepository(
                 filter: .topicSettings,
                 sortDescriptors: [],
                 mapper: mapper
             )
 
-        let source = EmptyStreamableSource<LocalNotificationTopicSettings>()
+        let source = EmptyStreamableSource<PushNotification.TopicSettings>()
 
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,

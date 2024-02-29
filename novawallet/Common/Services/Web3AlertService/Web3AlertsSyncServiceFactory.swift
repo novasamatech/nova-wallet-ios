@@ -35,7 +35,7 @@ final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
     }
 
     func createSyncService() -> Web3AlertsSyncServiceProtocol {
-        let repository: CoreDataRepository<LocalPushSettings, CDUserSingleValue> =
+        let repository: CoreDataRepository<Web3Alert.LocalSettings, CDUserSingleValue> =
             storageFacade.createRepository(
                 filter: .pushSettings,
                 sortDescriptors: [],
@@ -70,7 +70,7 @@ final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
     }
 
     func createTopicService() -> TopicServiceProtocol {
-        let repository: CoreDataRepository<LocalNotificationTopicSettings, CDUserSingleValue> =
+        let repository: CoreDataRepository<PushNotification.TopicSettings, CDUserSingleValue> =
             storageFacade.createRepository(
                 filter: .topicSettings,
                 sortDescriptors: [],

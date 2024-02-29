@@ -5,17 +5,17 @@ protocol SettingsSubscriber: AnyObject {
     var settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol { get }
     var settingsSubscriptionHandler: SettingsSubscriptionHandler { get }
 
-    func subscribeToPushSettings() -> StreamableProvider<LocalPushSettings>?
-    func subscribeToTopicsSettings() -> StreamableProvider<LocalNotificationTopicSettings>?
+    func subscribeToPushSettings() -> StreamableProvider<Web3Alert.LocalSettings>?
+    func subscribeToTopicsSettings() -> StreamableProvider<PushNotification.TopicSettings>?
 }
 
 extension SettingsSubscriber {
-    func subscribeToPushSettings() -> StreamableProvider<LocalPushSettings>? {
+    func subscribeToPushSettings() -> StreamableProvider<Web3Alert.LocalSettings>? {
         guard let provider = settingsLocalSubscriptionFactory.getPushSettingsProvider() else {
             return nil
         }
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<LocalPushSettings>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<Web3Alert.LocalSettings>]) in
             self?.settingsSubscriptionHandler.handlePushNotificationsSettings(result: .success(changes))
             return
         }
@@ -43,12 +43,12 @@ extension SettingsSubscriber {
         return provider
     }
 
-    func subscribeToTopicsSettings() -> StreamableProvider<LocalNotificationTopicSettings>? {
+    func subscribeToTopicsSettings() -> StreamableProvider<PushNotification.TopicSettings>? {
         guard let provider = settingsLocalSubscriptionFactory.getTopicsProvider() else {
             return nil
         }
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<LocalNotificationTopicSettings>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<PushNotification.TopicSettings>]) in
             self?.settingsSubscriptionHandler.handleTopicsSettings(result: .success(changes))
             return
         }
