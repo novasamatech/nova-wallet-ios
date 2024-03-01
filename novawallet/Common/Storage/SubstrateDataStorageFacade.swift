@@ -5,6 +5,11 @@ enum SubstrateStorageParams {
     static let databaseName = "SubstrateDataModel.sqlite"
     static let modelDirectory: String = "SubstrateDataModel.momd"
     static let modelVersion: SubstrateStorageVersion = .version26
+    #if DEBUG
+        static let groupName = "group.novafoundation.novawallet.dev"
+    #else
+        static let groupName = "group.novafoundation.novawallet"
+    #endif
 
     static let storageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
@@ -15,8 +20,20 @@ enum SubstrateStorageParams {
         return baseURL!
     }()
 
+    static let groupStorageDirectoryURL: URL = {
+        let baseURL = FileManager.default
+            .containerURL(
+                forSecurityApplicationGroupIdentifier: groupName
+            )?.appendingPathComponent("CoreData")
+        return baseURL!
+    }()
+
     static var storageURL: URL {
         storageDirectoryURL.appendingPathComponent(databaseName)
+    }
+
+    static var sharedStorageURL: URL {
+        groupStorageDirectoryURL.appendingPathComponent(databaseName)
     }
 }
 
@@ -45,7 +62,7 @@ class SubstrateDataStorageFacade: StorageFacadeProtocol {
         let modelURL = omoURL ?? momURL
 
         let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: SubstrateStorageParams.storageDirectoryURL,
+            databaseDirectory: SubstrateStorageParams.groupStorageDirectoryURL,
             databaseName: databaseName,
             incompatibleModelStrategy: .ignore
         )

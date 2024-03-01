@@ -1,26 +1,30 @@
-//
-//  NotificationService.swift
-//  NovaPushNotificationServiceExtension
-//
-//  Created by Gulnaz Almuhametova on 28.02.2024.
-//  Copyright © 2024 Nova Foundation. All rights reserved.
-//
-
 import UserNotifications
+import BigInt
+import SoraKeystore
 
 class NotificationService: UNNotificationServiceExtension {
-
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
-
+    var handler: PushNotificationHandler?
+    
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        if let bestAttemptContent = bestAttemptContent {
-            // Modify the notification content here...
-            bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
-            
+        guard let bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent) else {
+            return
+        }
+        guard let messageData = bestAttemptContent.userInfo["data"] as? Data,
+              let message = try? JSONDecoder().decode(NotificationMessage.self, from: messageData) else {
+            return
+        }
+        
+        let factory = PushNotificationHandlersFactory()
+        handler = factory.createHandler(message: message)
+        
+        handler?.handle(callbackQueue: nil) { notification in
+            bestAttemptContent.title = notification?.title ?? ""
+            bestAttemptContent.subtitle = ""
+            bestAttemptContent.body = notification?.subtitle ?? ""
             contentHandler(bestAttemptContent)
         }
     }

@@ -9,20 +9,37 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         let keychain = Keychain()
         let settings = SettingsManager.shared
 
+        let userStorePathMigrator = StorePathMigrator(
+            currentStoreLocation: UserStorageParams.storageURL,
+            sharedStoreLocation: UserStorageParams.sharedStorageURL,
+            fileManager: FileManager.default
+        )
         let userStorageMigrator = UserStorageMigrator(
             targetVersion: UserStorageParams.modelVersion,
-            storeURL: UserStorageParams.storageURL,
+            storeURL: UserStorageParams.sharedStorageURL,
             modelDirectory: UserStorageParams.modelDirectory,
             keystore: keychain,
             settings: settings,
             fileManager: FileManager.default
         )
-
+        let userSerialMigrator = SerialMigrator(
+            migration: userStorePathMigrator,
+            dependentMigration: userStorageMigrator
+        )
+        let substrateStoreMigrator = StorePathMigrator(
+            currentStoreLocation: SubstrateStorageParams.storageURL,
+            sharedStoreLocation: SubstrateStorageParams.sharedStorageURL,
+            fileManager: FileManager.default
+        )
         let substrateStorageMigrator = SubstrateStorageMigrator(
             storeURL: SubstrateStorageParams.storageURL,
             modelDirectory: SubstrateStorageParams.modelDirectory,
             model: SubstrateStorageParams.modelVersion,
             fileManager: FileManager.default
+        )
+        let substrateSerialMigrator = SerialMigrator(
+            migration: substrateStoreMigrator,
+            dependentMigration: substrateStorageMigrator
         )
 
         let interactor = RootInteractor(
@@ -32,7 +49,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             securityLayerInteractor: SecurityLayerService.shared.interactor,
             chainRegistryClosure: { ChainRegistryFacade.sharedRegistry },
             eventCenter: EventCenter.shared,
-            migrators: [userStorageMigrator, substrateStorageMigrator],
+            migrators: [userSerialMigrator, substrateSerialMigrator],
             logger: Logger.shared
         )
 

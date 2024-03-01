@@ -20,17 +20,34 @@ enum UserStorageParams {
     static let modelDirectory: String = "UserDataModel.momd"
     static let databaseName = "UserDataModel.sqlite"
 
+    #if DEBUG
+        static let groupName = "group.novafoundation.novawallet.dev"
+    #else
+        static let groupName = "group.novafoundation.novawallet"
+    #endif
+
     static let storageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
             for: .documentDirectory,
             in: .userDomainMask
         ).first?.appendingPathComponent("CoreData")
+        return baseURL!
+    }()
 
+    static let storageGroupDirectoryURL: URL = {
+        let baseURL = FileManager.default
+            .containerURL(
+                forSecurityApplicationGroupIdentifier: groupName
+            )?.appendingPathComponent("CoreData")
         return baseURL!
     }()
 
     static var storageURL: URL {
         storageDirectoryURL.appendingPathComponent(databaseName)
+    }
+
+    static var sharedStorageURL: URL {
+        storageGroupDirectoryURL.appendingPathComponent(databaseName)
     }
 }
 
@@ -58,7 +75,7 @@ class UserDataStorageFacade: StorageFacadeProtocol {
         let modelURL = omoURL ?? momURL
 
         let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: UserStorageParams.storageDirectoryURL,
+            databaseDirectory: UserStorageParams.sharedStorageURL,
             databaseName: UserStorageParams.databaseName,
             incompatibleModelStrategy: .ignore
         )

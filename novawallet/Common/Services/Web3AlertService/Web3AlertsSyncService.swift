@@ -17,6 +17,7 @@ protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
     )
     func update(
         token: String,
+        apnsPushToken: String,
         runningInQueue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     )
@@ -183,6 +184,7 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
     func update(
         token: String,
+        apnsPushToken: String,
         runningInQueue queue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     ) {
@@ -194,6 +196,7 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
         let updateSettingsOperation: BaseOperation<LocalPushSettings?> = ClosureOperation {
             if var localSettings = try fetchOperation.extractNoCancellableResultData() {
                 localSettings.pushToken = token
+                localSettings.apnsPushToken = apnsPushToken
                 localSettings.updatedAt = Date()
                 return localSettings
             } else {

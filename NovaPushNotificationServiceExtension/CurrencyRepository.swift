@@ -2,13 +2,23 @@ import Foundation
 import RobinHood
 import Rswift
 
+final class CurrencyRepository: JsonFileRepository<[Currency]> {
+    static let shared = CurrencyRepository()
+    static let fileName = "currencies"
+    
+    @Atomic(defaultValue: [])
+    private var currencies: [Currency]
+}
+
 extension CurrencyRepository: CurrencyRepositoryProtocol {
     func fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]> {
         guard currencies.isEmpty else {
             return CompoundOperationWrapper.createWithResult(currencies)
         }
+    
+        let currenciesJson = json(Self.fileName)!
         let fetchCurrenciesOperation = fetchOperation(
-            by: R.file.currenciesJson(),
+            by: currenciesJson,
             defaultValue: []
         )
         let cacheOperation: BaseOperation<[Currency]> = ClosureOperation { [weak self] in
@@ -23,11 +33,11 @@ extension CurrencyRepository: CurrencyRepositoryProtocol {
             dependencies: [fetchCurrenciesOperation]
         )
     }
-}
-
-final class CurrencyRepository: JsonFileRepository<[Currency]> {
-    static let shared = CurrencyRepository()
-
-    @Atomic(defaultValue: [])
-    private var currencies: [Currency]
+    
+    private func json(_ name: String) -> URL? {
+        guard let path = Bundle(for: Self.self).path(forResource: name, ofType: "json") else {
+            return nil
+        }
+        return URL(fileURLWithPath: path)
+    }
 }

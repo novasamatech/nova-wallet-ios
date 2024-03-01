@@ -112,8 +112,13 @@ final class PushNotificationsService: NSObject, PushNotificationsServiceProtocol
 }
 
 extension PushNotificationsService: MessagingDelegate {
-    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        service?.update(token: fcmToken ?? "", runningInQueue: .main) { [weak self] in
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        let apnsPushToken = messaging.apnsToken?.map { String(format: "%02.2hhx", $0) }.joined()
+        service?.update(
+            token: fcmToken ?? "",
+            apnsPushToken: apnsPushToken ?? "",
+            runningInQueue: .main
+        ) { [weak self] in
             self?.logger.debug("Push token was updated")
         }
     }

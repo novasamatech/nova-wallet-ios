@@ -24,6 +24,7 @@ final class LocalPushSettingsFactory: LocalPushSettingsFactoryProtocol {
         return LocalPushSettings(
             remoteIdentifier: UUID().uuidString,
             pushToken: "",
+            apnsPushToken: "",
             updatedAt: Date(),
             wallets: [web3Wallet],
             notifications: .init(
