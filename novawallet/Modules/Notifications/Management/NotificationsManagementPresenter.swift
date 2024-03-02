@@ -19,19 +19,10 @@ final class NotificationsManagementPresenter {
     private var modifiedTopicsSettings: PushNotification.TopicSettings?
 
     private var isSaveAvailable: Bool {
-        guard let settings = settings,
-              let announcementsEnabled = announcementsEnabled,
-              let notificationsEnabled = notificationsEnabled,
-              let topicsSettings = topicsSettings else {
-            return false
-        }
-
-        let parametersWasModified = settings != modifiedSettings ||
-            announcementsEnabled != modifiedAnnouncementsEnabled ||
-            notificationsEnabled != modifiedNotificationsEnabled ||
-            topicsSettings != modifiedTopicsSettings
-
-        return parametersWasModified
+        (settings != modifiedSettings) ||
+            (announcementsEnabled != modifiedAnnouncementsEnabled) ||
+            (notificationsEnabled != modifiedNotificationsEnabled) ||
+            (topicsSettings != modifiedTopicsSettings)
     }
 
     init(
@@ -74,6 +65,7 @@ final class NotificationsManagementPresenter {
             locale: selectedLocale
         )
         view?.didReceive(sections: viewModel)
+
         view?.didReceive(isSaveActionAvailabe: isSaveAvailable)
     }
 
@@ -262,7 +254,10 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
         self.settings = settings
         if modifiedSettings == nil {
             modifiedSettings = settings
+        } else {
+            modifiedSettings = modifiedSettings?.updatingMetadata(from: settings)
         }
+
         updateView()
     }
 

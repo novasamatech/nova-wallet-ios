@@ -58,4 +58,14 @@ extension Web3Alert.LocalSettings {
             notifications: notifications
         )
     }
+
+    func updatingMetadata(from other: Web3Alert.LocalSettings) -> Web3Alert.LocalSettings {
+        .init(
+            remoteIdentifier: other.remoteIdentifier,
+            pushToken: other.pushToken,
+            updatedAt: other.updatedAt,
+            wallets: wallets,
+            notifications: notifications
+        )
+    }
 }
