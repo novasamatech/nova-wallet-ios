@@ -7,7 +7,7 @@ final class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
     var handler: PushNotificationHandler?
-    
+
     override func didReceive(
         _ request: UNNotificationRequest,
 
@@ -15,7 +15,7 @@ final class NotificationService: UNNotificationServiceExtension {
     ) {
         self.contentHandler = contentHandler
         var requestContent = request.content.mutableCopy() as? UNMutableNotificationContent
-        
+
         guard let bestAttemptContent = requestContent else {
             return
         }

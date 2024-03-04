@@ -48,7 +48,7 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
             }
         }
     }
-    
+
     private func content(
         from chain: ChainModel,
         payload: ReferendumStateUpdatePayload
