@@ -57,7 +57,7 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
                 return
             }
             DispatchQueue.main.async {
-                self?.presenter?.didReceive(notificationsEnabled: status == .on)
+                self?.presenter?.didReceive(notificationsEnabled: status == .active)
             }
         }
     }
@@ -92,21 +92,38 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         let group = DispatchGroup()
         group.enter()
 
-        syncService?.save(settings: settings, runningInQueue: callbackQueue) { [weak self] error in
-            defer {
-                group.leave()
+        if notificationsEnabled {
+            syncService?.save(settings: settings, runningIn: callbackQueue) { [weak self] error in
+                defer {
+                    group.leave()
+                }
+                if let error = error {
+                    self?.presenter?.didReceive(error: .save(error))
+                    return
+                }
+                self?.settingsManager.notificationsEnabled = notificationsEnabled
             }
-            if let error = error {
-                self?.presenter?.didReceive(error: .save(error))
-                return
+        } else {
+            syncService?.disableRemoteSettings(
+                for: settings.remoteIdentifier,
+                runningIn: callbackQueue
+            ) { [weak self] error in
+                defer {
+                    group.leave()
+                }
+                if let error = error {
+                    self?.presenter?.didReceive(error: .save(error))
+                    return
+                }
+                self?.settingsManager.notificationsEnabled = notificationsEnabled
             }
-            self?.settingsManager.notificationsEnabled = notificationsEnabled
         }
 
         if topicService == nil {
-            group.enter()
             topicService = alertServiceFactory.createTopicService()
         }
+
+        group.enter()
 
         topicService?.save(
             settings: topics,

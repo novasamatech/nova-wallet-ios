@@ -40,7 +40,7 @@ final class SettingsPresenter {
             walletConnectSessionsCount: walletConnectSessionsCount,
             isBiometricAuthOn: biometrySettings?.isEnabled,
             isPinConfirmationOn: isPinConfirmationOn,
-            isNotificationsOn: pushNotificationsStatus == .on
+            isNotificationsOn: pushNotificationsStatus == .active
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(

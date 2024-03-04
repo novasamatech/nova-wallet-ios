@@ -472,6 +472,8 @@
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
 		0CF193D72A861D7E003F12F6 /* StartStakingInfoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */; };
+		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
+		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
 		0CFA16132B0CD8A0007AF885 /* GovSpentAmountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */; };
 		0CFA16162B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */; };
 		0CFA16192B0CE709007AF885 /* UtilityPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16182B0CE709007AF885 /* UtilityPallet.swift */; };
@@ -969,11 +971,11 @@
 		773A375A2B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */; };
 		773A375C2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */; };
 		773A375E2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */; };
-		773B2E3F2B74DCB500A3BC11 /* TopicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E3E2B74DCB500A3BC11 /* TopicService.swift */; };
+		773B2E3F2B74DCB500A3BC11 /* PushNotificationsTopicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E3E2B74DCB500A3BC11 /* PushNotificationsTopicService.swift */; };
 		773B2E412B752FD300A3BC11 /* AlertSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E402B752FD300A3BC11 /* AlertSettingsMapper.swift */; };
 		773B2E432B756F8600A3BC11 /* Web3AlertLocalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E422B756F8600A3BC11 /* Web3AlertLocalModel.swift */; };
 		773B2E452B75727900A3BC11 /* FirebaseHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E442B75727900A3BC11 /* FirebaseHolder.swift */; };
-		773B2E472B757CFD00A3BC11 /* PushNotificationsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E462B757CFD00A3BC11 /* PushNotificationsService.swift */; };
+		773B2E472B757CFD00A3BC11 /* PushNotificationsStatusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E462B757CFD00A3BC11 /* PushNotificationsStatusService.swift */; };
 		773BA0782B15F52200929BD4 /* Proxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773BA0772B15F52200929BD4 /* Proxy.swift */; };
 		773BA07A2B15F9DA00929BD4 /* Proxy+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773BA0792B15F9DA00929BD4 /* Proxy+CodingPath.swift */; };
 		774091F92ACB1F4B00172516 /* SwapAmountInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774091F82ACB1F4B00172516 /* SwapAmountInputView.swift */; };
@@ -1131,7 +1133,6 @@
 		77DF40392B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF40382B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift */; };
 		77DF403B2B7DC8C900ABDB53 /* SettingsSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF403A2B7DC8C900ABDB53 /* SettingsSubscriptionHandler.swift */; };
 		77DF403D2B7DC91200ABDB53 /* SettingsSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF403C2B7DC91200ABDB53 /* SettingsSubscriber.swift */; };
-		77DF403F2B7E1C6000ABDB53 /* PushNotificationsStatusDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF403E2B7E1C6000ABDB53 /* PushNotificationsStatusDelegate.swift */; };
 		77DF40422B7FE07D00ABDB53 /* SwitchTitleIconViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF40412B7FE07D00ABDB53 /* SwitchTitleIconViewModel.swift */; };
 		77DF40442B7FE09100ABDB53 /* AccessoryTitleIconViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF40432B7FE09100ABDB53 /* AccessoryTitleIconViewModel.swift */; };
 		77DF40472B7FE79500ABDB53 /* ChainNotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF40462B7FE79500ABDB53 /* ChainNotificationSettingsViewController.swift */; };
@@ -1182,7 +1183,7 @@
 		77F189442A49974A00E8B933 /* UITextView+bind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F189432A49974A00E8B933 /* UITextView+bind.swift */; };
 		77F189472A49BD6700E8B933 /* StartStakingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F189462A49BD6700E8B933 /* StartStakingViewModel.swift */; };
 		77F189492A4A299800E8B933 /* StartStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F189482A4A299800E8B933 /* StartStakingViewModelFactory.swift */; };
-		77F8A1982B73769C00B25F9B /* Web3AlertsSyncServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F8A1972B73769C00B25F9B /* Web3AlertsSyncServiceFactory.swift */; };
+		77F8A1982B73769C00B25F9B /* PushNotificationsFacadeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F8A1972B73769C00B25F9B /* PushNotificationsFacadeFactory.swift */; };
 		77F9FB072A9D96E900820625 /* NominationPoolBondMoreSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F9FB062A9D96E900820625 /* NominationPoolBondMoreSetupPresenter.swift */; };
 		77F9FB092A9D971000820625 /* NominationPoolBondMoreSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F9FB082A9D971000820625 /* NominationPoolBondMoreSetupInteractor.swift */; };
 		77F9FB0B2A9D97A100820625 /* NominationPoolBondMoreSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F9FB0A2A9D97A100820625 /* NominationPoolBondMoreSetupWireframe.swift */; };
@@ -4895,6 +4896,8 @@
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
 		0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoConstants.swift; sourceTree = "<group>"; };
+		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
+		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
 		0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountExtractor.swift; sourceTree = "<group>"; };
 		0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountBatchHandler.swift; sourceTree = "<group>"; };
 		0CFA16182B0CE709007AF885 /* UtilityPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityPallet.swift; sourceTree = "<group>"; };
@@ -5384,11 +5387,11 @@
 		773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewController.swift; sourceTree = "<group>"; };
 		773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetPresenter.swift; sourceTree = "<group>"; };
 		773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetProtocols.swift; sourceTree = "<group>"; };
-		773B2E3E2B74DCB500A3BC11 /* TopicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicService.swift; sourceTree = "<group>"; };
+		773B2E3E2B74DCB500A3BC11 /* PushNotificationsTopicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsTopicService.swift; sourceTree = "<group>"; };
 		773B2E402B752FD300A3BC11 /* AlertSettingsMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertSettingsMapper.swift; sourceTree = "<group>"; };
 		773B2E422B756F8600A3BC11 /* Web3AlertLocalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertLocalModel.swift; sourceTree = "<group>"; };
 		773B2E442B75727900A3BC11 /* FirebaseHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseHolder.swift; sourceTree = "<group>"; };
-		773B2E462B757CFD00A3BC11 /* PushNotificationsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsService.swift; sourceTree = "<group>"; };
+		773B2E462B757CFD00A3BC11 /* PushNotificationsStatusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsStatusService.swift; sourceTree = "<group>"; };
 		773BA0772B15F52200929BD4 /* Proxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Proxy.swift; sourceTree = "<group>"; };
 		773BA0792B15F9DA00929BD4 /* Proxy+CodingPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Proxy+CodingPath.swift"; sourceTree = "<group>"; };
 		774091F82ACB1F4B00172516 /* SwapAmountInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapAmountInputView.swift; sourceTree = "<group>"; };
@@ -5551,7 +5554,6 @@
 		77DF40382B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		77DF403A2B7DC8C900ABDB53 /* SettingsSubscriptionHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsSubscriptionHandler.swift; sourceTree = "<group>"; };
 		77DF403C2B7DC91200ABDB53 /* SettingsSubscriber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsSubscriber.swift; sourceTree = "<group>"; };
-		77DF403E2B7E1C6000ABDB53 /* PushNotificationsStatusDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotificationsStatusDelegate.swift; sourceTree = "<group>"; };
 		77DF40412B7FE07D00ABDB53 /* SwitchTitleIconViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchTitleIconViewModel.swift; sourceTree = "<group>"; };
 		77DF40432B7FE09100ABDB53 /* AccessoryTitleIconViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryTitleIconViewModel.swift; sourceTree = "<group>"; };
 		77DF40462B7FE79500ABDB53 /* ChainNotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainNotificationSettingsViewController.swift; sourceTree = "<group>"; };
@@ -5604,7 +5606,7 @@
 		77F189462A49BD6700E8B933 /* StartStakingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingViewModel.swift; sourceTree = "<group>"; };
 		77F189482A4A299800E8B933 /* StartStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		77F3F175AFC554763696CB2A /* StakingMoreOptionsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsPresenter.swift; sourceTree = "<group>"; };
-		77F8A1972B73769C00B25F9B /* Web3AlertsSyncServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertsSyncServiceFactory.swift; sourceTree = "<group>"; };
+		77F8A1972B73769C00B25F9B /* PushNotificationsFacadeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsFacadeFactory.swift; sourceTree = "<group>"; };
 		77F9FB062A9D96E900820625 /* NominationPoolBondMoreSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreSetupPresenter.swift; sourceTree = "<group>"; };
 		77F9FB082A9D971000820625 /* NominationPoolBondMoreSetupInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreSetupInteractor.swift; sourceTree = "<group>"; };
 		77F9FB0A2A9D97A100820625 /* NominationPoolBondMoreSetupWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreSetupWireframe.swift; sourceTree = "<group>"; };
@@ -9884,6 +9886,7 @@
 				0CE632A02B9035B2002E4D20 /* Web3Alert.swift */,
 				0CE632A22B904449002E4D20 /* PushNotification.swift */,
 				770ABB8B2B85587200132465 /* PushNotificationTopicSettings.swift */,
+				77D7BB8D2B8C6B6400D42E8A /* LocalPushSettingsFactory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -11229,11 +11232,11 @@
 			children = (
 				0CE6329F2B9035A5002E4D20 /* Model */,
 				7772EB332B726670000D7E21 /* Web3AlertsSyncService.swift */,
-				77F8A1972B73769C00B25F9B /* Web3AlertsSyncServiceFactory.swift */,
-				773B2E3E2B74DCB500A3BC11 /* TopicService.swift */,
+				77F8A1972B73769C00B25F9B /* PushNotificationsFacadeFactory.swift */,
+				773B2E3E2B74DCB500A3BC11 /* PushNotificationsTopicService.swift */,
 				773B2E442B75727900A3BC11 /* FirebaseHolder.swift */,
-				773B2E462B757CFD00A3BC11 /* PushNotificationsService.swift */,
-				77D7BB8D2B8C6B6400D42E8A /* LocalPushSettingsFactory.swift */,
+				773B2E462B757CFD00A3BC11 /* PushNotificationsStatusService.swift */,
+				0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */,
 			);
 			path = Web3AlertService;
 			sourceTree = "<group>";
@@ -15134,6 +15137,7 @@
 				0C37AFBC2B55732100009ECA /* NMapKeyEncodingOperation.swift */,
 				0C37AFC22B5796DD00009ECA /* StateCallOperationFactory.swift */,
 				0CCCDF752B64B80500473D42 /* StorageKeysOperationFactory.swift */,
+				0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -18212,7 +18216,6 @@
 		85D192A683920D50BCD10893 /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
-				77DF403E2B7E1C6000ABDB53 /* PushNotificationsStatusDelegate.swift */,
 				77DF40452B7FE77A00ABDB53 /* ChainNotificationSettings */,
 				6FF518658B8D6E46DDF118A7 /* GovernanceNotifications */,
 				41BFB04084E2C8CB2A4C684C /* GovernanceTracksSettings */,
@@ -22114,7 +22117,7 @@
 				8448D5B8277DA4C200FAEEBC /* DAppListLoadingView.swift in Sources */,
 				8413C4A92A025AC3001E190A /* WalletConnectScanPresentable.swift in Sources */,
 				84F30EEC25FFF40C00039D09 /* Nomination.swift in Sources */,
-				773B2E3F2B74DCB500A3BC11 /* TopicService.swift in Sources */,
+				773B2E3F2B74DCB500A3BC11 /* PushNotificationsTopicService.swift in Sources */,
 				84D2F1A227730F3A0040C680 /* DAppOperationConfirmViewModelFactory.swift in Sources */,
 				AE89720D25F12AF8008EC414 /* ValidatorInfoViewModelFactory.swift in Sources */,
 				84F51060263AE530005D15AE /* TitleValueView.swift in Sources */,
@@ -23318,7 +23321,6 @@
 				2A66CF4F25D109780006E4C1 /* CDPhishingItem+CoreDataDecodable.swift in Sources */,
 				0C6941BF2B1F247C00A7CF6D /* ChainSyncModeUpdateService.swift in Sources */,
 				0C0E0A9D2B3EFD2500865F10 /* ProxyCallFilter.swift in Sources */,
-				77DF403F2B7E1C6000ABDB53 /* PushNotificationsStatusDelegate.swift in Sources */,
 				8496ADDE276B123200306B24 /* PolkadotExtentionMessage.swift in Sources */,
 				84A15489262888CA0050D557 /* IdentityOperationFactory.swift in Sources */,
 				8473D4212657FFFB00B394B2 /* Crowdloan.swift in Sources */,
@@ -23778,6 +23780,7 @@
 				88A95FA628F8664100BE26F3 /* ReferendumTimelineView.swift in Sources */,
 				88BB0B3F29C1E17F00D041C1 /* KiltDid+StoragePath.swift in Sources */,
 				843A2C7326A8641400266F53 /* MultiValueView.swift in Sources */,
+				0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */,
 				0CB261F52A9E188300287305 /* NominationPoolsBondExtraCall.swift in Sources */,
 				3FF8EE1158A273D0D50BC7A6 /* StakingUnbondConfirmPresenter.swift in Sources */,
 				8498534F2A17390900993977 /* PalletAssets.swift in Sources */,
@@ -24116,6 +24119,7 @@
 				84540172292F907B00213402 /* BlurBackgroundView.swift in Sources */,
 				771901B02AE97DA500D9C918 /* SwapConfirmViewModels.swift in Sources */,
 				DC682E96D056C069902B9C31 /* DAppSearchViewController.swift in Sources */,
+				0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */,
 				286577D8FE44D1F9E7BBDCA9 /* DAppSearchViewLayout.swift in Sources */,
 				8825018E29D2E31F001BE6FB /* ModuleNameResolver.swift in Sources */,
 				84350AD02845724E0031EF24 /* IdentityAccountInfoView.swift in Sources */,
@@ -24737,7 +24741,7 @@
 				844304652A28EB0D00DE36DE /* ObservableSyncService.swift in Sources */,
 				770955712AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift in Sources */,
 				B30FEC6F62918BC6F38396A2 /* ReferendumVoteConfirmViewController.swift in Sources */,
-				773B2E472B757CFD00A3BC11 /* PushNotificationsService.swift in Sources */,
+				773B2E472B757CFD00A3BC11 /* PushNotificationsStatusService.swift in Sources */,
 				840AE2E129C9A24C008FF665 /* EtherscanTxHistoryResponse.swift in Sources */,
 				0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */,
 				163709FEE6203813261DD771 /* ReferendumVoteConfirmViewLayout.swift in Sources */,
@@ -25168,7 +25172,7 @@
 				8786222ADF4643BE7A6FBBEB /* SwapSetupViewController.swift in Sources */,
 				772AB22A2B3E157B0099DB73 /* AccountManagementHintView.swift in Sources */,
 				350B8A18C9C91DF07D2E53C5 /* SwapSetupViewLayout.swift in Sources */,
-				77F8A1982B73769C00B25F9B /* Web3AlertsSyncServiceFactory.swift in Sources */,
+				77F8A1982B73769C00B25F9B /* PushNotificationsFacadeFactory.swift in Sources */,
 				66531C7E2E0E99C89A89A35A /* SwapSetupViewFactory.swift in Sources */,
 				EB280B977471EA442D91395E /* SwapConfirmProtocols.swift in Sources */,
 				232B205831DF28B772515DF2 /* SwapConfirmWireframe.swift in Sources */,

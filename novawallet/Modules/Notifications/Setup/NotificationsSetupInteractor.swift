@@ -50,7 +50,7 @@ final class NotificationsSetupInteractor {
 
         syncService.save(
             settings: settings,
-            runningInQueue: .main
+            runningIn: .main
         ) { [weak self] error in
             if let error = error {
                 self?.presenter?.didReceive(error: error)
