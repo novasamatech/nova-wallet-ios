@@ -41,6 +41,10 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             migration: substrateStoreMigrator,
             dependentMigration: substrateStorageMigrator
         )
+        let sharedSettingsMigrator = SharedSettingsMigrator(
+            settingsManager: SettingsManager.shared,
+            sharedSettingsManager: SharedSettingsManager()
+        )
 
         let interactor = RootInteractor(
             settings: SelectedWalletSettings.shared,
@@ -49,7 +53,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             securityLayerInteractor: SecurityLayerService.shared.interactor,
             chainRegistryClosure: { ChainRegistryFacade.sharedRegistry },
             eventCenter: EventCenter.shared,
-            migrators: [userSerialMigrator, substrateSerialMigrator],
+            migrators: [sharedSettingsMigrator, userSerialMigrator, substrateSerialMigrator],
             logger: Logger.shared
         )
 

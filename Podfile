@@ -52,6 +52,7 @@ abstract_target 'novawalletAll' do
   target 'novawallet'
   
   target 'NovaPushNotificationServiceExtension' do
+    pod 'SwiftLint'
     pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '1.17.0'
     pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
     pod 'SoraKeystore', '~> 1.0.0'

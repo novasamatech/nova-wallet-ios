@@ -13,7 +13,8 @@ class NotificationService: UNNotificationServiceExtension {
         guard let bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent) else {
             return
         }
-        guard let messageData = bestAttemptContent.userInfo["data"] as? Data,
+        guard let messageBody = bestAttemptContent.userInfo["message"] as? [String: Any],
+              let messageData = try? JSONSerialization.data(withJSONObject: messageBody["data"]),
               let message = try? JSONDecoder().decode(NotificationMessage.self, from: messageData) else {
             return
         }

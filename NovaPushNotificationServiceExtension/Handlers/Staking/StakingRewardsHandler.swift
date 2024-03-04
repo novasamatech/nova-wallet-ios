@@ -4,19 +4,18 @@ import SoraKeystore
 import BigInt
 import SoraFoundation
 
-final class TransferHandler: CommonHandler, PushNotificationHandler {
-    let operationQueue = OperationQueue()
+final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
+    let operationQueue: OperationQueue
     let callStore = CancellableCallStore()
     let chainId: ChainModel.Id
-    let payload: NotificationTransferPayload
-    let type: TransferType
+    let payload: StakingRewardPayload
     
     init(chainId: ChainModel.Id,
-         payload: NotificationTransferPayload,
-         type: TransferType) {
+         payload: StakingRewardPayload,
+         operationQueue: OperationQueue) {
         self.chainId = chainId
         self.payload = payload
-        self.type = type
+        self.operationQueue = operationQueue
     }
     
     func handle(callbackQueue: DispatchQueue?,
@@ -29,12 +28,12 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
                 let settings = try settingsOperation.extractNoCancellableResultData().first
                 let chains = try chainOperation.extractNoCancellableResultData()
                 guard let chain = chains.first(where: { $0.chainId == self.chainId }),
-                      let asset = self.mapHistoryAssetId(self.payload.assetId, chain: chain) else {
+                      let asset = chain.utilityAsset() else {
                     return nil
                 }
                 
                 let priceOperation: BaseOperation<[PriceData]>
-                if let priceId = asset.priceId, let currency = self.currencyManager()?.selectedCurrency {
+                if let priceId = asset.priceId, let currency = self.currencyManager(operationQueue: self.operationQueue)?.selectedCurrency {
                     priceOperation = self.priceRepository(for: priceId, currencyId: currency.id).fetchAllOperation(with: .init())
                 } else {
                     priceOperation = .createWithResult([])
@@ -72,19 +71,11 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
             }
     }
     
-    private func mapHistoryAssetId(_ assetId: String, chain: ChainModel) -> AssetModel? {
-        if assetId == SubqueryHistoryElement.nativeFeeAssetId {
-            return chain.utilityAsset()
-        } else {
-            return chain.asset(byHistoryAssetId: assetId)
-        }
-    }
-    
     private func updatingContent(wallets: [Web3AlertWallet],
                                  chain: ChainModel,
                                  asset: AssetModel,
                                  price: PriceData?,
-                                 payload: NotificationTransferPayload) -> NotificationContentResult {
+                                 payload: StakingRewardPayload) -> NotificationContentResult {
         let walletString: String
         if wallets.count > 1 {
             //TODO: after adding metaId in settings
@@ -92,46 +83,17 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
         } else {
             walletString = ""
         }
-        let title = [type.title, walletString].joined(separator: " ")
-        let balance = balanceViewModel(asset: asset, amount: payload.amount, priceData: price)
-        let subtitle = type.subtitle(
-            amount: balance?.amount ?? "",
-            price: balance?.price,
-            chainName: chain.name,
-            address: type.address(from: payload)
-        )
+        let title = [
+            localizedString("", locale: locale),
+            walletString
+        ].joined(separator: " ")
+        let balance = balanceViewModel(asset: asset, amount: payload.amount, priceData: price, workingQueue: operationQueue)
+        let priceString = price.map { "(\($0))" } ?? ""
+        let subtitle = localizedString("",
+                                       with: [balance?.amount ?? "", priceString, chain.name],
+                                       locale: locale)
         
         return .init(title: title, subtitle: subtitle)
     }
-    
-    private func balanceViewModel(asset: AssetModel, amount: BigUInt, priceData: PriceData?) -> BalanceViewModelProtocol? {
-        guard let currencyManager = currencyManager() else {
-            return nil
-        }
-        let decimalAmount = amount.decimal(precision: asset.precision)
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let factory = BalanceViewModelFactory(targetAssetInfo: asset.displayInfo,
-                                              priceAssetInfoFactory: priceAssetInfoFactory)
-        return factory.balanceFromPrice(decimalAmount, priceData: priceData).value(for: LocalizationManager.shared.selectedLocale)
-    }
-    
-    private func priceRepository(for priceId: String, currencyId: Int) -> CoreDataRepository<PriceData, CDPrice> {
-        let mapper = PriceDataMapper()
-        let identifier = PriceData.createIdentifier(for: priceId, currencyId: currencyId)
-        let filter = NSPredicate(format: "%K == %@", #keyPath(CDPrice.identifier), identifier)
-        
-        let repository: CoreDataRepository<PriceData, CDPrice> = substrateStorageFacade.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
-        
-        return repository
-    }
-    
-    private func currencyManager() -> CurrencyManagerProtocol? {
-        try? CurrencyManager(currencyRepository: CurrencyRepository(),
-                             settingsManager: SettingsManager.shared,
-                             queue: operationQueue)
-    }
 }
+
