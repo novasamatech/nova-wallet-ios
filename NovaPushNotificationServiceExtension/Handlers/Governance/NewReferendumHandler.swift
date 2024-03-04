@@ -9,39 +9,50 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
     let payload: NewReferendumPayload
     let operationQueue: OperationQueue
     let callStore = CancellableCallStore()
-    
-    init(chainId: ChainModel.Id,
-         payload: NewReferendumPayload,
-         operationQueue: OperationQueue) {
+
+    init(
+        chainId: ChainModel.Id,
+        payload: NewReferendumPayload,
+        operationQueue: OperationQueue
+    ) {
         self.chainId = chainId
         self.payload = payload
         self.operationQueue = operationQueue
     }
-    
-    func handle(callbackQueue: DispatchQueue?,
-                completion: @escaping (NotificationContentResult?) -> Void) {
+
+    func handle(
+        callbackQueue: DispatchQueue?,
+        completion: @escaping (NotificationContentResult?) -> Void
+    ) {
         let chainOperation = chainsRepository.fetchAllOperation(with: .init())
-    
-        execute(operation: chainOperation,
-                inOperationQueue: operationQueue,
-                backingCallIn: callStore,
-                runningCallbackIn: callbackQueue) { [weak self] result in
+
+        execute(
+            operation: chainOperation,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: callbackQueue
+        ) { [weak self] result in
             switch result {
-            case .success(let chains):
+            case let .success(chains):
                 guard let chain = chains.first, let self = self else {
                     completion(nil)
                     return
                 }
-                let title = localizedString(LocalizationKeys.Governance.newReferendumTitle, 
-                                            locale: self.locale)
-                let subtitle = localizedString(LocalizationKeys.Governance.newReferendumSubtitle, 
-                                               with: [chain.name, self.payload.referendumId],
-                                               locale: self.locale)
+                let title = localizedString(
+                    LocalizationKeys.Governance.newReferendumTitle,
+
+                    locale: self.locale
+                )
+                let subtitle = localizedString(
+                    LocalizationKeys.Governance.newReferendumSubtitle,
+
+                    with: [chain.name, self.payload.referendumId],
+                    locale: self.locale
+                )
                 completion(.init(title: title, subtitle: subtitle))
             case .failure:
                 completion(nil)
             }
         }
     }
-    
 }

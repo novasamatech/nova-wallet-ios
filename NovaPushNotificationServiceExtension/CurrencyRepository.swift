@@ -5,7 +5,7 @@ import Rswift
 final class CurrencyRepository: JsonFileRepository<[Currency]> {
     static let shared = CurrencyRepository()
     static let fileName = "currencies"
-    
+
     @Atomic(defaultValue: [])
     private var currencies: [Currency]
 }
@@ -15,7 +15,7 @@ extension CurrencyRepository: CurrencyRepositoryProtocol {
         guard currencies.isEmpty else {
             return CompoundOperationWrapper.createWithResult(currencies)
         }
-    
+
         let currenciesJson = json(Self.fileName)!
         let fetchCurrenciesOperation = fetchOperation(
             by: currenciesJson,
@@ -33,7 +33,7 @@ extension CurrencyRepository: CurrencyRepositoryProtocol {
             dependencies: [fetchCurrenciesOperation]
         )
     }
-    
+
     private func json(_ name: String) -> URL? {
         guard let path = Bundle(for: Self.self).path(forResource: name, ofType: "json") else {
             return nil

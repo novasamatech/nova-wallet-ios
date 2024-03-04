@@ -7,7 +7,7 @@ enum LocalizationKeys {
         static let incomeSubtitle = "push.notification.receive.tokens.subtitle"
         static let outcomeSubtitle = "push.notification.sent.tokens.subtitle"
     }
-    
+
     enum Governance {
         static let newReferendumTitle = "push.notification.new.referendum.title"
         static let newReferendumSubtitle = "push.notification.new.referendum.subtitle"
@@ -18,7 +18,7 @@ enum LocalizationKeys {
         static let referendumStatusUpdatedTitle = "push.notification.referendum.status.updated.title"
         static let referendumStatusUpdatedSubitle = "push.notification.referendum.status.updated.subtitle"
     }
-    
+
     enum Technical {
         static let newReleaseTitle = "push.notification.new.release.title"
         static let newReleaseSubtitle = "push.notification.new.release.subtitle"
@@ -33,8 +33,10 @@ func localizedString(_ string: String, with arguments: [CVarArg] = [], locale: L
 
 func localizedBundle(locale: Locale?) -> Bundle {
     if let locale {
-        if let preferredLocale = Bundle.preferredLocalizations(from: Bundle.main.localizations,
-                                                               forPreferences: locale.rLanguages).first {
+        if let preferredLocale = Bundle.preferredLocalizations(
+            from: Bundle.main.localizations,
+            forPreferences: locale.rLanguages
+        ).first {
             if let path = Bundle.main.path(forResource: preferredLocale, ofType: "lproj") {
                 if let bundle = Bundle(path: path) {
                     return bundle

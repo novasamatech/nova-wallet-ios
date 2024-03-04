@@ -12,9 +12,9 @@ struct NewReleasePayload: Codable {
 
 struct NewReferendumPayload: Codable {
     let referendumId: UInt
-    
+
     var referendumNumber: String {
-        return "#@\(referendumId)"
+        "#@\(referendumId)"
     }
 }
 
@@ -22,16 +22,16 @@ struct ReferendumStateUpdatePayload: Codable {
     let referendumId: UInt
     let from: Status
     let to: Status
- 
+
     enum Status: String, Codable {
         case created
         case deciding
         case confirming
         case approved
         case rejected
-        
-        //TODO: localize
-        func description(for locale: Locale?) -> String {
+
+        // TODO: localize
+        func description(for _: Locale?) -> String {
             switch self {
             case .created:
                 return "Created"
@@ -46,9 +46,9 @@ struct ReferendumStateUpdatePayload: Codable {
             }
         }
     }
-    
+
     var referendumNumber: String {
-        return "#@\(referendumId)"
+        "#@\(referendumId)"
     }
 }
 
