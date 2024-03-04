@@ -15,8 +15,8 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
     func setup()
     func checkNotificationsAvailability()
     func save(
-        settings: LocalPushSettings,
-        topics: LocalNotificationTopicSettings,
+        settings: Web3Alert.LocalSettings,
+        topics: PushNotification.TopicSettings,
         notificationsEnabled: Bool,
         announcementsEnabled: Bool
     )
@@ -24,8 +24,8 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
 }
 
 protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
-    func didReceive(settings: LocalPushSettings)
-    func didReceive(topicsSettings: LocalNotificationTopicSettings)
+    func didReceive(settings: Web3Alert.LocalSettings)
+    func didReceive(topicsSettings: PushNotification.TopicSettings)
     func didReceive(error: NotificationsManagementError)
     func didReceive(notificationsEnabled: Bool)
     func didReceive(announcementsEnabled: Bool)
@@ -34,11 +34,15 @@ protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
 
 protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, ErrorPresentable,
     ApplicationSettingsPresentable, CommonRetryable {
-    func showWallets(from view: ControllerBackedProtocol?)
+    func showWallets(
+        from view: ControllerBackedProtocol?,
+        initState: [Web3Alert.LocalWallet]?,
+        completion: @escaping ([Web3Alert.LocalWallet]) -> Void
+    )
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
-        selectedChains: Selection<Set<ChainModel.Id>>?,
-        completion: @escaping (Selection<Set<ChainModel.Id>>?) -> Void
+        selectedChains: Web3Alert.Selection<Set<ChainModel.Id>>?,
+        completion: @escaping (Web3Alert.Selection<Set<ChainModel.Id>>?) -> Void
     )
     func showGovSetup(
         from view: ControllerBackedProtocol?,

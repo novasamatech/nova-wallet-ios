@@ -5,7 +5,7 @@ import CoreData
 final class Web3AlertSettingsMapper {
     var entityIdentifierFieldName: String { #keyPath(CDUserSingleValue.identifier) }
 
-    typealias DataProviderModel = LocalPushSettings
+    typealias DataProviderModel = Web3Alert.LocalSettings
     typealias CoreDataEntity = CDUserSingleValue
 }
 

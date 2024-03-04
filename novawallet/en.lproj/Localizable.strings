@@ -1517,4 +1517,7 @@
 "notifications.management.gov.tracks" = "Tracks";
 "notifications.management.gov.tracks.title" = "Select tracks for";
 "notifications.management.gov.selected.tracks" = "%li of %li";
+"notifications.wallet.list.title" = "Select up to 3 wallets to be notified when wallet has activity";
+"notifications.wallet.list.limit.error.title" = "You cannot select more than 3 wallets";
+"notifications.wallet.list.limit.error.message" = "Unfortunately, there is currently a limit in push notifications for only 3 of your wallets.";
 "xcm.delivery.fee.ed.error.message" = "Your available balance is %@, you need to leave at least %@ for transfer delivery and pay network fee of %@. You can transfer not more than %@.";

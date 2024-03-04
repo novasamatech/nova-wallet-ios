@@ -1517,4 +1517,7 @@
 "staking.setup.proxy.deposit" = "Прокси депозит";
 "staking.setup.proxy.title" = "Добавить делегацию для %@ стекинга";
 "notifications.management.gov.selected.tracks" = "%li of %li";
+"notifications.wallet.list.title" = "Выберите до 3 кошельков, чтобы получать уведомления, когда в кошельке происходит активность";
+"notifications.wallet.list.limit.error.title" = "Вы не можете выбрать более 3 кошельков";
+"notifications.wallet.list.limit.error.message" = "К сожалению, в настоящее время установлен лимит push-уведомлений только для 3 ваших кошельков.";
 "xcm.delivery.fee.ed.error.message" = "Ваш доступный баланс %@, вам необходимо оставить минимум %@ для доставки перевода и заплатить комиссию сети %@. Вы можете перевести не более %@.";

@@ -6,11 +6,11 @@ final class StakingRewardsNotificationsPresenter {
     let wireframe: StakingRewardsNotificationsWireframeProtocol
     let interactor: StakingRewardsNotificationsInteractorInputProtocol
     private let chainList: ListDifferenceCalculator<ChainModel>
-    private let initialState: Selection<Set<ChainModel.Id>>?
+    private let initialState: Web3Alert.Selection<Set<ChainModel.Id>>?
     private var selectedChains: Set<ChainModel.Id>?
 
     init(
-        initialState: Selection<Set<ChainModel.Id>>?,
+        initialState: Web3Alert.Selection<Set<ChainModel.Id>>?,
         interactor: StakingRewardsNotificationsInteractorInputProtocol,
         wireframe: StakingRewardsNotificationsWireframeProtocol
     ) {

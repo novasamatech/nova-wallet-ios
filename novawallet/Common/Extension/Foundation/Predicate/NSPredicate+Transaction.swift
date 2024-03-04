@@ -245,10 +245,16 @@ extension NSPredicate {
     }
 
     static var pushSettings: NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDUserSingleValue.identifier), LocalPushSettings.getIdentifier())
+        NSPredicate(
+            format: "%K == %@", #keyPath(CDUserSingleValue.identifier),
+            Web3Alert.LocalSettings.getIdentifier()
+        )
     }
 
     static var topicSettings: NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDUserSingleValue.identifier), LocalNotificationTopicSettings.getIdentifier())
+        NSPredicate(
+            format: "%K == %@", #keyPath(CDUserSingleValue.identifier),
+            PushNotification.TopicSettings.getIdentifier()
+        )
     }
 }

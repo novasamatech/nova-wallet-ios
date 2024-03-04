@@ -3,40 +3,54 @@ import FirebaseFirestore
 import SubstrateSdk
 import RobinHood
 
-struct Web3AlertWallet: Codable, Equatable {
+extension Web3Alert {
     typealias ChainId = String
 
-    let baseSubstrate: AccountAddress?
-    let baseEthereum: AccountAddress?
-    let chainSpecific: [ChainId: AccountAddress]
-}
-
-struct Web3AlertNotification: Codable, Equatable {
-    var stakingReward: RemotePushSettings.ChainSelection?
-    var transfer: RemotePushSettings.ChainSelection?
-    var tokenSent: RemotePushSettings.ChainSelection?
-    var tokenReceived: RemotePushSettings.ChainSelection?
-}
-
-struct RemotePushSettings: Codable, Equatable {
-    let pushToken: String
-    let updatedAt: Date
-    let wallets: [Web3AlertWallet]
-    let notifications: Web3AlertNotification
-
-    init(from local: LocalPushSettings) {
-        pushToken = local.pushToken
-        updatedAt = local.updatedAt
-        wallets = local.wallets
-        notifications = local.notifications
+    struct Wallet: Codable, Equatable {
+        let baseSubstrate: AccountAddress?
+        let baseEthereum: AccountAddress?
+        let chainSpecific: [ChainId: AccountAddress]
     }
+
+    struct Notifications: Codable, Equatable {
+        var stakingReward: ChainSelection?
+        var transfer: ChainSelection?
+        var tokenSent: ChainSelection?
+        var tokenReceived: ChainSelection?
+    }
+
+    struct RemoteSettings: Codable, Equatable {
+        let pushToken: String
+        let updatedAt: Date
+        let wallets: [Wallet]
+        let notifications: Notifications
+
+        init(from local: Web3Alert.LocalSettings) {
+            pushToken = local.pushToken
+            updatedAt = local.updatedAt
+            wallets = local.wallets.map(\.remoteModel)
+            notifications = local.notifications
+        }
+    }
+
+    enum Selection<T> {
+        case all
+        case concrete(T)
+
+        var concreteValue: T? {
+            switch self {
+            case .all:
+                return nil
+            case let .concrete(value):
+                return value
+            }
+        }
+    }
+
+    typealias ChainSelection = Selection<[ChainId]>
 }
 
-extension RemotePushSettings {
-    typealias ChainSelection = Selection<[String]>
-}
-
-extension RemotePushSettings.ChainSelection {
+extension Web3Alert.ChainSelection {
     var notificationsEnabled: Bool {
         switch self {
         case .all:
@@ -47,21 +61,7 @@ extension RemotePushSettings.ChainSelection {
     }
 }
 
-enum Selection<T> {
-    case all
-    case concrete(T)
-
-    var concreteValue: T? {
-        switch self {
-        case .all:
-            return nil
-        case let .concrete(value):
-            return value
-        }
-    }
-}
-
-extension RemotePushSettings.ChainSelection: Codable, Equatable {
+extension Web3Alert.Selection: Codable, Equatable where T: Codable & Equatable {
     private enum CodingKeys: String, CodingKey {
         case type
         case value
@@ -103,7 +103,7 @@ extension RemotePushSettings.ChainSelection: Codable, Equatable {
     }
 }
 
-extension Optional where Wrapped == RemotePushSettings.ChainSelection {
+extension Optional where Wrapped == Web3Alert.ChainSelection {
     mutating func toggle() {
         switch self {
         case .none:
