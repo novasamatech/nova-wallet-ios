@@ -10,7 +10,7 @@ class CommonHandler {
         LocalizationManager.shared.selectedLocale
     }
 
-    lazy var settingsRepository: AnyDataProviderRepository<LocalPushSettings> = createSettingsRepository()
+    lazy var settingsRepository: AnyDataProviderRepository<Web3Alert.LocalSettings> = createSettingsRepository()
     lazy var chainsRepository: AnyDataProviderRepository<ChainModel> = createChainsRepository()
     let settingsManager: SettingsManagerProtocol
 
@@ -24,15 +24,15 @@ class CommonHandler {
         self.settingsManager = settingsManager
     }
 
-    func createSettingsRepository() -> AnyDataProviderRepository<LocalPushSettings> {
+    func createSettingsRepository() -> AnyDataProviderRepository<Web3Alert.LocalSettings> {
         let pushSettings = NSPredicate(
             format: "%K == %@",
 
             #keyPath(CDUserSingleValue.identifier),
-            LocalPushSettings.getIdentifier()
+            Web3Alert.LocalSettings.getIdentifier()
         )
 
-        let repository: CoreDataRepository<LocalPushSettings, CDUserSingleValue> =
+        let repository: CoreDataRepository<Web3Alert.LocalSettings, CDUserSingleValue> =
             userStorageFacade.createRepository(
                 filter: pushSettings,
                 sortDescriptors: [],

@@ -93,7 +93,7 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
     }
 
     private func updatingContent(
-        wallets: [Web3AlertWallet],
+        wallets: [Web3Alert.LocalWallet],
         chain: ChainModel,
         asset: AssetModel,
         price: PriceData?,

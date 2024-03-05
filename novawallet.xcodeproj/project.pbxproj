@@ -1168,8 +1168,8 @@
 		77AB55592AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB55582AA244BB0058814E /* OperationPoolRewardOrSlashModel.swift */; };
 		77AB555B2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555A2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift */; };
 		77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB555C2AA24BA90058814E /* OperationDetailsPoolRewardView.swift */; };
-		77AE4F902B9058D300426519 /* LocalPushSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E422B756F8600A3BC11 /* LocalPushSettings.swift */; };
-		77AE4F912B9058D800426519 /* RemotePushSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DB70ED2B709E4300288F26 /* RemotePushSettings.swift */; };
+		77AE4F902B9058D300426519 /* Web3AlertLocalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E422B756F8600A3BC11 /* Web3AlertLocalModel.swift */; };
+		77AE4F912B9058D800426519 /* Web3AlertRemoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DB70ED2B709E4300288F26 /* Web3AlertRemoteModel.swift */; };
 		77AE4F922B90591400426519 /* StorageFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5424EFD254005D486C /* StorageFacadeProtocol.swift */; };
 		77AE4F932B90592E00426519 /* UserStorageVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DE76726D64F7F0045CD29 /* UserStorageVersion.swift */; };
 		77AE4F942B90595800426519 /* UserDataStorageFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5224EFD210005D486C /* UserDataStorageFacade.swift */; };
@@ -1280,6 +1280,13 @@
 		77ED167C2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77ED167B2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift */; };
 		77ED167E2A0D0AE900E1FC8C /* Lenses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77ED167D2A0D0AE900E1FC8C /* Lenses.swift */; };
 		77ED16802A0D6E9A00E1FC8C /* TableViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77ED167F2A0D6E9A00E1FC8C /* TableViewModels.swift */; };
+		77EDF9222B96D654003266B1 /* Web3Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE632A02B9035B2002E4D20 /* Web3Alert.swift */; };
+		77EDF9232B96D74E003266B1 /* MetaAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B821A26EF80BC00D25C72 /* MetaAccountModel.swift */; };
+		77EDF9242B96DCEB003266B1 /* ProxyAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED6A2B1DD78100A0E58C /* ProxyAccountModel.swift */; };
+		77EDF9252B96DD1B003266B1 /* Proxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773BA0772B15F52200929BD4 /* Proxy.swift */; };
+		77EDF9262B96DD72003266B1 /* ChainAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B821C26EF80DB00D25C72 /* ChainAccountModel.swift */; };
+		77EDF9272B96DD8E003266B1 /* MetaAccountMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B821826EF808D00D25C72 /* MetaAccountMapper.swift */; };
+		77EDF9282B96DDA9003266B1 /* MultiassetCryptoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2826F6A59C00F0A25E /* MultiassetCryptoType.swift */; };
 		77EFFC8A2A6E7A24009E28F8 /* AccountExistense.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EFFC882A6E7A24009E28F8 /* AccountExistense.swift */; };
 		77EFFC8D2A6EECFD009E28F8 /* StakingAmountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EFFC8C2A6EECFD009E28F8 /* StakingAmountViewModelFactory.swift */; };
 		77EFFC8F2A714C21009E28F8 /* StakingTypeBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EFFC8E2A714C21009E28F8 /* StakingTypeBannerView.swift */; };
@@ -21450,7 +21457,7 @@
 			files = (
 				778215B92B91223D006C7D13 /* NotificationService.swift in Sources */,
 				7778FE5B2B910AA70023E801 /* Decimal+String.swift in Sources */,
-				77AE4F902B9058D300426519 /* LocalPushSettings.swift in Sources */,
+				77AE4F902B9058D300426519 /* Web3AlertLocalModel.swift in Sources */,
 				7778FE702B910D590023E801 /* Paths+Equilibrium.swift in Sources */,
 				778215DF2B95B0D1006C7D13 /* LocalizationKeys.swift in Sources */,
 				7778FE5E2B910B8A0023E801 /* OperationManagerFacade.swift in Sources */,
@@ -21458,7 +21465,7 @@
 				77AE4F932B90592E00426519 /* UserStorageVersion.swift in Sources */,
 				77AE4F992B905B6E00426519 /* ChainNodeModel.swift in Sources */,
 				77AE4F922B90591400426519 /* StorageFacadeProtocol.swift in Sources */,
-				77AE4F912B9058D800426519 /* RemotePushSettings.swift in Sources */,
+				77AE4F912B9058D800426519 /* Web3AlertRemoteModel.swift in Sources */,
 				7778FE472B9103F80023E801 /* AssetBalanceViewModel.swift in Sources */,
 				7778FE3A2B90AC0B0023E801 /* ChainModelMapper.swift in Sources */,
 				7778FE3E2B90CCDD0023E801 /* SubstrateStorageVersion.swift in Sources */,
@@ -21466,6 +21473,7 @@
 				7778FE712B910D710023E801 /* EvmEventParser.swift in Sources */,
 				7778FE532B9109270023E801 /* WalletViewModelObserverContainer.swift in Sources */,
 				7778FE502B9108AA0023E801 /* CompoundOperationWrapper+Result.swift in Sources */,
+				77EDF9242B96DCEB003266B1 /* ProxyAccountModel.swift in Sources */,
 				7778FE722B910D900023E801 /* StorageCodingPath.swift in Sources */,
 				7778FE402B90F42D0023E801 /* PriceDataMapper.swift in Sources */,
 				778215CD2B914EC4006C7D13 /* NotificationContentResult.swift in Sources */,
@@ -21513,6 +21521,7 @@
 				7778FE5A2B910A9B0023E801 /* LongrunOperation.swift in Sources */,
 				778215E12B95B3D9006C7D13 /* ReferendumUpdatesHandler.swift in Sources */,
 				77AE4FA82B905E0000426519 /* AlertSettingsMapper.swift in Sources */,
+				77EDF9252B96DD1B003266B1 /* Proxy.swift in Sources */,
 				77AE4F972B905B4D00426519 /* ChainModel.swift in Sources */,
 				778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */,
 				77AE4F962B905B2F00426519 /* AddressConversion.swift in Sources */,
@@ -21523,14 +21532,17 @@
 				77AE4FAE2B90611000426519 /* DispatchQueueHelper.swift in Sources */,
 				7778FE6A2B910CF60023E801 /* String+Helpers.swift in Sources */,
 				77AE4F9E2B905BC900426519 /* RemoteChainNodeModel.swift in Sources */,
+				77EDF9262B96DD72003266B1 /* ChainAccountModel.swift in Sources */,
 				7778FE762B910DE00023E801 /* EventRecord.swift in Sources */,
 				7778FE572B910A540023E801 /* LocalizationManager+Shared.swift in Sources */,
 				778215D62B959344006C7D13 /* SharedSettingsManager.swift in Sources */,
 				7778FE552B9109C50023E801 /* AssetBalanceFormatterFactory.swift in Sources */,
 				778215CB2B914E9D006C7D13 /* Payload.swift in Sources */,
+				77EDF9232B96D74E003266B1 /* MetaAccountModel.swift in Sources */,
 				778215E72B95C432006C7D13 /* StakingRewardsHandler.swift in Sources */,
 				7778FE5D2B910B7D0023E801 /* SettingsExtension.swift in Sources */,
 				7778FE482B9104030023E801 /* ImageViewModel.swift in Sources */,
+				77EDF9282B96DDA9003266B1 /* MultiassetCryptoType.swift in Sources */,
 				7778FE742B910DBC0023E801 /* TypeRegistry+Node.swift in Sources */,
 				7778FE6B2B910D1B0023E801 /* AssetType.swift in Sources */,
 				77AE4FB02B90646100426519 /* BaseOperation+Cancellable.swift in Sources */,
@@ -21541,6 +21553,7 @@
 				7778FE4D2B9107EC0023E801 /* CompoundOperationWrapper+Add.swift in Sources */,
 				77AE4FAD2B90604000426519 /* CancellableCallHelper.swift in Sources */,
 				7778FE772B910E040023E801 /* NovaTintImageProcessor.swift in Sources */,
+				77EDF9272B96DD8E003266B1 /* MetaAccountMapper.swift in Sources */,
 				77AE4F9A2B905B7500426519 /* LocalChainExternalApi.swift in Sources */,
 				7778FE452B90FA1C0023E801 /* OperationCombiningService.swift in Sources */,
 				77AE4FAF2B90611800426519 /* BaseOperation+Result.swift in Sources */,
@@ -21555,6 +21568,7 @@
 				7778FE462B9103EB0023E801 /* BalanceViewModelFactory.swift in Sources */,
 				7778FE492B9104EE0023E801 /* PriceAssetInfoFactory.swift in Sources */,
 				77AE4FAB2B905E9B00426519 /* TimeInterval+Time.swift in Sources */,
+				77EDF9222B96D654003266B1 /* Web3Alert.swift in Sources */,
 				778215BD2B9140CD006C7D13 /* CurrencyRepositoryProtocol.swift in Sources */,
 				77AE4F952B905B0C00426519 /* SubstrateAlias.swift in Sources */,
 			);
