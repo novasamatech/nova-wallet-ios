@@ -1,4 +1,5 @@
 import BigInt
+import Foundation
 import SubstrateSdk
 
 struct StakingRewardPayload: Codable {
@@ -52,7 +53,7 @@ struct ReferendumStateUpdatePayload: Codable {
     }
 }
 
-struct NotificationTransferPayload: Codable {
+struct NotificationTransferPayload: Decodable {
     let sender: AccountAddress?
     let recipient: AccountAddress?
     @StringCodable var amount: BigUInt

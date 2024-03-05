@@ -1537,3 +1537,5 @@
 "push.notification.referendum.single.status.updated.subtitle" = "Статус %@ референдума %@ изменен на %@";
 "push.notification.new.release.title" = "Доступно новое обновление Nova Wallet!";
 "push.notification.new.release.subtitle" = "Загрузите Nova Wallet v%@, чтобы получить все новые функции!";
+"push.notification.staking.reward.title" = "⭐️ Новая награда";
+"push.notification.staking.reward.subtitle" = "Получено %@ %@ от стейкинга %@";

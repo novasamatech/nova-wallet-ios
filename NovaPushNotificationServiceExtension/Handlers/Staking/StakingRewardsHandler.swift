@@ -95,19 +95,18 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
             walletString = ""
         }
         let title = [
-            localizedString("", locale: locale),
+            localizedString(LocalizationKeys.StakingReward.title, locale: locale),
             walletString
         ].joined(separator: " ")
         let balance = balanceViewModel(
             asset: asset,
             amount: payload.amount,
             priceData: price,
-
             workingQueue: operationQueue
         )
         let priceString = price.map { "(\($0))" } ?? ""
         let subtitle = localizedString(
-            "",
+            LocalizationKeys.StakingReward.subtitle,
             with: [balance?.amount ?? "", priceString, chain.name],
             locale: locale
         )

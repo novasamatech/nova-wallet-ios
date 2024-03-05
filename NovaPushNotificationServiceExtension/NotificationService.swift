@@ -14,16 +14,18 @@ final class NotificationService: UNNotificationServiceExtension {
         withContentHandler contentHandler: @escaping ContentHandler
     ) {
         self.contentHandler = contentHandler
-        var requestContent = request.content.mutableCopy() as? UNMutableNotificationContent
+        let requestContent = request.content.mutableCopy() as? UNMutableNotificationContent
 
         guard let bestAttemptContent = requestContent else {
+            contentHandler(request.content)
             return
         }
 
-        guard let messageBody = bestAttemptContent.userInfo["message"] as? [String: Any],
-              let jsonData = messageBody["data"],
-              let messageData = try? JSONSerialization.data(withJSONObject: jsonData),
-              let message = try? JSONDecoder().decode(NotificationMessage.self, from: messageData) else {
+        guard let message = try? NotificationMessage(
+            userInfo: bestAttemptContent.userInfo,
+            decoder: JSONDecoder()
+        ) else {
+            contentHandler(request.content)
             return
         }
 

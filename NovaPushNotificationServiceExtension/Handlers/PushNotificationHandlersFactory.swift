@@ -43,8 +43,12 @@ final class PushNotificationHandlersFactory: PushNotificationHandlersFactoryProt
                 localizationManager: localizationManager,
                 operationQueue: operationQueue
             )
-        default:
-            fatalError()
+        case let .stakingReward(chainId, payload):
+            return StakingRewardsHandler(
+                chainId: chainId,
+                payload: payload,
+                operationQueue: operationQueue
+            )
         }
     }
 }

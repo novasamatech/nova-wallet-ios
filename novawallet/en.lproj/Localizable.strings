@@ -1537,3 +1537,6 @@
 "push.notification.referendum.single.status.updated.subtitle" = "%@ Referendum %@ status changed to %@";
 "push.notification.new.release.title" = "A new update of Nova Wallet is available!";
 "push.notification.new.release.subtitle" = "Download Nova Wallet v%@ to get all the new features!";
+"push.notification.staking.reward.title" = "⭐️ New reward";
+"push.notification.staking.reward.subtitle" = "Received %@ %@ from %@ staking";
+

@@ -1,3 +1,5 @@
+import Foundation
+
 enum NotificationMessage {
     case transfer(
         type: TransferType,
@@ -21,55 +23,52 @@ enum NotificationMessage {
     )
 }
 
-extension NotificationMessage: Decodable {
-    enum CodingKeys: CodingKey {
-        case type
-        case chainId
-        case payload
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let type = try container.decode(String.self, forKey: .type)
+extension NotificationMessage {
+    init(userInfo: [AnyHashable: Any], decoder: JSONDecoder) throws {
+        guard let type = userInfo["type"] as? String,
+              let payloadString = userInfo["payload"] as? String,
+              let payloadData = payloadString.replacingOccurrences(of: "'", with: "\"").data(using: .utf8) else {
+            throw NotificationMessageError.invalidData
+        }
 
         switch type {
         case "tokensSent":
-            let chainId = try container.decode(String.self, forKey: .chainId)
-            let payload = try container.decode(NotificationTransferPayload.self, forKey: .payload)
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(NotificationTransferPayload.self, from: payloadData)
             self = .transfer(
                 type: .outcome,
                 chainId: chainId,
                 payload: payload
             )
         case "tokensReceived":
-            let chainId = try container.decode(String.self, forKey: .chainId)
-            let payload = try container.decode(NotificationTransferPayload.self, forKey: .payload)
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(NotificationTransferPayload.self, from: payloadData)
             self = .transfer(
                 type: .income,
                 chainId: chainId,
                 payload: payload
             )
         case "govNewRef":
-            let chainId = try container.decode(String.self, forKey: .chainId)
-            let payload = try container.decode(NewReferendumPayload.self, forKey: .payload)
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(NewReferendumPayload.self, from: payloadData)
             self = .newReferendum(chainId: chainId, payload: payload)
         case "govState":
-            let chainId = try container.decode(String.self, forKey: .chainId)
-            let payload = try container.decode(ReferendumStateUpdatePayload.self, forKey: .payload)
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(ReferendumStateUpdatePayload.self, from: payloadData)
             self = .referendumUpdate(chainId: chainId, payload: payload)
         case "stakingReward":
-            let chainId = try container.decode(String.self, forKey: .chainId)
-            let payload = try container.decode(StakingRewardPayload.self, forKey: .payload)
+            let chainId = userInfo["chainId"] as? String ?? ""
+            let payload = try decoder.decode(StakingRewardPayload.self, from: payloadData)
             self = .stakingReward(chainId: chainId, payload: payload)
         case "appNewRelease":
-            let payload = try container.decode(NewReleasePayload.self, forKey: .payload)
+            let payload = try decoder.decode(NewReleasePayload.self, from: payloadData)
             self = .newRelease(payload: payload)
         default:
-            throw DecodingError.dataCorruptedError(
-                forKey: .type,
-                in: container,
-                debugDescription: "unexpected value"
-            )
+            throw NotificationMessageError.invalidData
         }
     }
+}
+
+enum NotificationMessageError: Error {
+    case invalidData
 }

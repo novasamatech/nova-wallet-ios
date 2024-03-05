@@ -25,6 +25,11 @@ enum LocalizationKeys {
         static let newReleaseTitle = "push.notification.new.release.title"
         static let newReleaseSubtitle = "push.notification.new.release.subtitle"
     }
+
+    enum StakingReward {
+        static let title = "push.notification.staking.reward.title"
+        static let subtitle = "push.notification.staking.reward.subtitle"
+    }
 }
 
 func localizedString(_ string: String, with arguments: [CVarArg] = [], locale: Locale?) -> String {
