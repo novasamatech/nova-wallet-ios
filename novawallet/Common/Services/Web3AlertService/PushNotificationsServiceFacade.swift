@@ -19,6 +19,8 @@ protocol PushNotificationsServiceFacadeProtocol: ApplicationServiceProtocol {
     )
 
     func unsubscribeStatus(_ target: AnyObject)
+
+    func updateAPNS(token: Data)
 }
 
 final class PushNotificationsServiceFacade {
@@ -313,5 +315,9 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
 
     func unsubscribeStatus(_ target: AnyObject) {
         statusService.statusObservable.removeObserver(by: target)
+    }
+
+    func updateAPNS(token: Data) {
+        statusService.updateAPNS(token: token)
     }
 }

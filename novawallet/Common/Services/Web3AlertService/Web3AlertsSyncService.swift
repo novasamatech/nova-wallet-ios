@@ -301,7 +301,7 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
                 switch result {
                 case .success:
                     let tokenChanged = (try? updateSettingsOperation.extractNoCancellableResultData()) != nil
-                    
+
                     if tokenChanged {
                         self?.logger.debug("Web3 Alert token updated")
                     } else {

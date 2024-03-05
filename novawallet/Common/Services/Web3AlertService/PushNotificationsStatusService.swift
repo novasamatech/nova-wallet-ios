@@ -28,6 +28,8 @@ protocol PushNotificationsStatusServiceProtocol: AnyObject, ApplicationServicePr
 
     func enablePushNotifications()
     func disablePushNotifications()
+
+    func updateAPNS(token: Data)
 }
 
 protocol PushNotificationsStatusServiceDelegate: AnyObject {
@@ -156,6 +158,10 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
         settingsManager.notificationsEnabled = false
 
         deregister()
+    }
+
+    func updateAPNS(token: Data) {
+        Messaging.messaging().apnsToken = token
     }
 }
 

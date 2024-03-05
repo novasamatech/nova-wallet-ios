@@ -21,13 +21,13 @@ enum PushNotification {
                     "govState",
                     chainId,
                     trackId.map { String($0) }
-                ].compactMap { $0 }.joined(separator: ":")
+                ].compactMap { $0 }.joined(separator: "_")
             case let .newChainReferendums(chainId, trackId):
                 return [
                     "govNewRef",
                     chainId,
                     trackId.map { String($0) }
-                ].compactMap { $0 }.joined(separator: ":")
+                ].compactMap { $0 }.joined(separator: "_")
             }
         }
     }
