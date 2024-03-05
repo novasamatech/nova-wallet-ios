@@ -18,7 +18,7 @@ final class ParaStkHintsViewModelFactory: ParaStkHintsViewModelFactoryProtocol {
     }
 
     func unstakingRewards(for locale: Locale) -> String {
-        R.string.localizable.stakingHintNoRewards_V2_2_0(preferredLanguages: locale.rLanguages)
+        R.string.localizable.stakingHintNoRewards_v2_2_0(preferredLanguages: locale.rLanguages)
     }
 
     func unstakingRedeem(for locale: Locale) -> String {

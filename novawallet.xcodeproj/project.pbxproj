@@ -4646,6 +4646,12 @@
 		0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pdc20DetailsInteractor.swift; sourceTree = "<group>"; };
 		0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftDetailsPrice.swift; sourceTree = "<group>"; };
 		0C8B0EBF2B84A4D600A2A53F /* URLLocalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLLocalRouter.swift; sourceTree = "<group>"; };
+		0C8E3AE62B96352A00B16FC1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		0C8E3AE72B96352B00B16FC1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		0C8E3AE82B96352B00B16FC1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
+		0C8E3AE92B96353E00B16FC1 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		0C8E3AEA2B96353E00B16FC1 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0C8E3AEB2B96353F00B16FC1 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = it; path = it.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsUpdateMediator.swift; sourceTree = "<group>"; };
 		0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletUpdateMediatorTests.swift; sourceTree = "<group>"; };
@@ -20430,6 +20436,8 @@
 			knownRegions = (
 				en,
 				ru,
+				"zh-Hans",
+				it,
 			);
 			mainGroup = 8490139F24A80984008F705E;
 			productRefGroup = 849013A924A80984008F705E /* Products */;
@@ -25058,6 +25066,8 @@
 			children = (
 				8490145F24A94373008F705E /* en */,
 				8490146224A9438E008F705E /* ru */,
+				0C8E3AE72B96352B00B16FC1 /* zh-Hans */,
+				0C8E3AEA2B96353E00B16FC1 /* it */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -25075,6 +25085,8 @@
 			children = (
 				84C07EDD24AF1935008FC35B /* en */,
 				84C07EE524AF1990008FC35B /* ru */,
+				0C8E3AE62B96352A00B16FC1 /* zh-Hans */,
+				0C8E3AE92B96353E00B16FC1 /* it */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -25084,6 +25096,8 @@
 			children = (
 				AE74EC1625FCF09000C494E7 /* en */,
 				AE74EC1F25FCF0A600C494E7 /* ru */,
+				0C8E3AE82B96352B00B16FC1 /* zh-Hans */,
+				0C8E3AEB2B96353F00B16FC1 /* it */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";

@@ -57,7 +57,7 @@ final class StakingUnbondHintView: HintListView {
         }
 
         hints.append(contentsOf: [
-            R.string.localizable.stakingHintNoRewards_V2_2_0(preferredLanguages: locale.rLanguages),
+            R.string.localizable.stakingHintNoRewards_v2_2_0(preferredLanguages: locale.rLanguages),
             R.string.localizable.stakingHintRedeem_v2_2_0(preferredLanguages: locale.rLanguages)
         ])
 

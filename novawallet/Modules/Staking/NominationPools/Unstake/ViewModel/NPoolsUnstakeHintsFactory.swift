@@ -41,7 +41,7 @@ extension NPoolsUnstakeHintsFactory: NPoolsUnstakeHintsFactoryProtocol {
         }
 
         hints.append(contentsOf: [
-            R.string.localizable.stakingHintNoRewards_V2_2_0(preferredLanguages: locale.rLanguages),
+            R.string.localizable.stakingHintNoRewards_v2_2_0(preferredLanguages: locale.rLanguages),
             R.string.localizable.stakingHintRedeem(preferredLanguages: locale.rLanguages)
         ])
 
