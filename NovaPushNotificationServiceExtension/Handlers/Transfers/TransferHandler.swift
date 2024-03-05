@@ -35,7 +35,7 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
                 operationManager: OperationManager(operationQueue: operationQueue)) {
                 let settings = try settingsOperation.extractNoCancellableResultData().first
                 let chains = try chainOperation.extractNoCancellableResultData()
-                guard let chain = chains.first(where: { $0.chainId == self.chainId }),
+                guard let chain = self.search(chainId: self.chainId, in: chains),
                       let asset = self.mapHistoryAssetId(self.payload.assetId, chain: chain) else {
                     return nil
                 }
@@ -84,8 +84,8 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
         }
     }
 
-    private func mapHistoryAssetId(_ assetId: String, chain: ChainModel) -> AssetModel? {
-        if assetId == SubqueryHistoryElement.nativeFeeAssetId {
+    private func mapHistoryAssetId(_ assetId: String?, chain: ChainModel) -> AssetModel? {
+        if assetId == nil {
             return chain.utilityAsset()
         } else {
             return chain.asset(byHistoryAssetId: assetId)

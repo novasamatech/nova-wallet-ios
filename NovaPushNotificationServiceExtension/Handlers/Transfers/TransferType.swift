@@ -17,7 +17,7 @@ enum TransferType {
         amount: String,
         price: String?,
         chainName: String,
-        address: AccountAddress,
+        address: AccountAddress?,
         locale: Locale
     ) -> String {
         let priceString = price.map { "(\($0))" } ?? ""
@@ -29,18 +29,26 @@ enum TransferType {
                 locale: locale
             )
         case .outcome:
-            return localizedString(
-                LocalizationKeys.Transfer.outcomeSubtitle,
-                with: [amount, priceString, address, chainName],
-                locale: locale
-            )
+            if let address = address {
+                return localizedString(
+                    LocalizationKeys.Transfer.outcomeSubtitle,
+                    with: [amount, priceString, address, chainName],
+                    locale: locale
+                )
+            } else {
+                return localizedString(
+                    LocalizationKeys.Transfer.outcomeWOAddressSubtitle,
+                    with: [amount, priceString, chainName],
+                    locale: locale
+                )
+            }
         }
     }
 
-    func address(from payload: NotificationTransferPayload) -> AccountAddress {
+    func address(from payload: NotificationTransferPayload) -> AccountAddress? {
         switch self {
         case .income:
-            return ""
+            return nil
         case .outcome:
             return payload.recipient
         }

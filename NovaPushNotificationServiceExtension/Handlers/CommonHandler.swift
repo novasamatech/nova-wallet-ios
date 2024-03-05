@@ -52,6 +52,11 @@ class CommonHandler {
 
         return AnyDataProviderRepository(repository)
     }
+
+    // TODO: fix mapping
+    func search(chainId: ChainModel.Id, in chains: [ChainModel]) -> ChainModel? {
+        chains.first(where: { $0.chainId == chainId })
+    }
 }
 
 extension CommonHandler {

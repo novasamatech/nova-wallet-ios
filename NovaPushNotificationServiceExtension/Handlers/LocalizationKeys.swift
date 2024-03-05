@@ -6,6 +6,7 @@ enum LocalizationKeys {
         static let outcomeTitle = "push.notification.sent.tokens.title"
         static let incomeSubtitle = "push.notification.receive.tokens.subtitle"
         static let outcomeSubtitle = "push.notification.sent.tokens.subtitle"
+        static let outcomeWOAddressSubtitle = "push.notification.sent.tokens.wo.address.subtitle"
     }
 
     enum Governance {
@@ -17,6 +18,7 @@ enum LocalizationKeys {
         static let referendumRejectedSubitle = "push.notification.referendum.rejected.subtitle"
         static let referendumStatusUpdatedTitle = "push.notification.referendum.status.updated.title"
         static let referendumStatusUpdatedSubitle = "push.notification.referendum.status.updated.subtitle"
+        static let referendumSingleStatusUpdatedSubitle = "push.notification.referendum.single.status.updated.subtitle"
     }
 
     enum Technical {

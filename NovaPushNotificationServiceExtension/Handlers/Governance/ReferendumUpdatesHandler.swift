@@ -81,14 +81,26 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
                 LocalizationKeys.Governance.referendumStatusUpdatedTitle,
                 locale: locale
             )
-            let subtitle = localizedString(
-                LocalizationKeys.Governance.referendumStatusUpdatedSubitle,
-                with: [chain.name,
-                       self.payload.referendumNumber,
-                       self.payload.from.description(for: locale),
-                       self.payload.to.description(for: locale)],
-                locale: locale
-            )
+            let subtitle: String
+
+            if let oldStatus = self.payload.from {
+                subtitle = localizedString(
+                    LocalizationKeys.Governance.referendumStatusUpdatedSubitle,
+                    with: [chain.name,
+                           self.payload.referendumNumber,
+                           oldStatus.description(for: locale),
+                           self.payload.to.description(for: locale)],
+                    locale: locale
+                )
+            } else {
+                subtitle = localizedString(
+                    LocalizationKeys.Governance.referendumSingleStatusUpdatedSubitle,
+                    with: [chain.name,
+                           self.payload.referendumNumber,
+                           self.payload.to.description(for: locale)],
+                    locale: locale
+                )
+            }
             return .init(title: title, subtitle: subtitle)
         }
     }

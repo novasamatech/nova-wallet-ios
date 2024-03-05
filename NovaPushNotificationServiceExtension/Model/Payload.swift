@@ -14,13 +14,13 @@ struct NewReferendumPayload: Codable {
     let referendumId: UInt
 
     var referendumNumber: String {
-        "#@\(referendumId)"
+        "#\(referendumId)"
     }
 }
 
 struct ReferendumStateUpdatePayload: Codable {
     let referendumId: UInt
-    let from: Status
+    let from: Status?
     let to: Status
 
     enum Status: String, Codable {
@@ -48,13 +48,13 @@ struct ReferendumStateUpdatePayload: Codable {
     }
 
     var referendumNumber: String {
-        "#@\(referendumId)"
+        "#\(referendumId)"
     }
 }
 
 struct NotificationTransferPayload: Codable {
-    let sender: AccountAddress
-    let recipient: AccountAddress
+    let sender: AccountAddress?
+    let recipient: AccountAddress?
     @StringCodable var amount: BigUInt
-    let assetId: String
+    let assetId: String?
 }

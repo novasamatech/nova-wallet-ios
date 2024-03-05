@@ -1,5 +1,4 @@
 import UIKit
-import Rswift
 
 struct ImageViewModelSettings {
     let targetSize: CGSize

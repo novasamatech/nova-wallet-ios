@@ -32,7 +32,7 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
                 operationManager: OperationManager(operationQueue: operationQueue)) {
                 let settings = try settingsOperation.extractNoCancellableResultData().first
                 let chains = try chainOperation.extractNoCancellableResultData()
-                guard let chain = chains.first(where: { $0.chainId == self.chainId }),
+                guard let chain = self.search(chainId: self.chainId, in: chains),
                       let asset = chain.utilityAsset() else {
                     return nil
                 }

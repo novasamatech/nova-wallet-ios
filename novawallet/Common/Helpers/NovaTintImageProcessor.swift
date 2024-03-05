@@ -1,6 +1,5 @@
 import Kingfisher
 import UIKit
-import Rswift
 
 final class NovaTintImageProcessor: ImageProcessor {
     let identifier: String

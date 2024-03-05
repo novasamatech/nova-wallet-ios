@@ -46,7 +46,7 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                 let subtitle = localizedString(
                     LocalizationKeys.Governance.newReferendumSubtitle,
 
-                    with: [chain.name, self.payload.referendumId],
+                    with: [chain.name, self.payload.referendumNumber],
                     locale: self.locale
                 )
                 completion(.init(title: title, subtitle: subtitle))

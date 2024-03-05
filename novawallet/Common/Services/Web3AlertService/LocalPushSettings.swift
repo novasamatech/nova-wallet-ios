@@ -5,7 +5,6 @@ struct LocalPushSettings: Codable, Equatable, Identifiable {
     var identifier: String { Self.getIdentifier() }
     let remoteIdentifier: String
     var pushToken: String
-    var apnsPushToken: String
     var updatedAt: Date
     let wallets: [Web3AlertWallet]
     let notifications: Web3AlertNotification
@@ -13,14 +12,12 @@ struct LocalPushSettings: Codable, Equatable, Identifiable {
     init(
         remoteIdentifier: String,
         pushToken: String,
-        apnsPushToken: String,
         updatedAt: Date,
         wallets: [Web3AlertWallet],
         notifications: Web3AlertNotification
     ) {
         self.remoteIdentifier = remoteIdentifier
         self.pushToken = pushToken
-        self.apnsPushToken = apnsPushToken
         self.updatedAt = updatedAt
         self.wallets = wallets
         self.notifications = notifications
@@ -39,7 +36,6 @@ extension LocalPushSettings {
         return .init(
             remoteIdentifier: remoteIdentifier,
             pushToken: pushToken,
-            apnsPushToken: apnsPushToken,
             updatedAt: updatedAt,
             wallets: wallets,
             notifications: editedNotifications
@@ -50,7 +46,6 @@ extension LocalPushSettings {
         .init(
             remoteIdentifier: remoteIdentifier,
             pushToken: pushToken,
-            apnsPushToken: apnsPushToken,
             updatedAt: updatedAt,
             wallets: wallets,
             notifications: notifications
