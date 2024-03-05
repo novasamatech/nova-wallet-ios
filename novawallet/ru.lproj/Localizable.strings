@@ -1522,10 +1522,10 @@
 "notifications.wallet.list.limit.error.message" = "К сожалению, в настоящее время установлен лимит push-уведомлений только для 3 ваших кошельков.";
 "xcm.delivery.fee.ed.error.message" = "Ваш доступный баланс %@, вам необходимо оставить минимум %@ для доставки перевода и заплатить комиссию сети %@. Вы можете перевести не более %@.";
 "push.notification.sent.tokens.title" = "💸 Отправлено";
-"push.notification.sent.tokens.subtitle" = "Перевод %@ %@ для %@ в %@";
-"push.notification.sent.tokens.wo.address.subtitle" = "Перевод %@ %@ в %@";
+"push.notification.sent.tokens.subtitle" = "Отправлено %@ %@ для %@ в %@";
+"push.notification.sent.tokens.wo.address.subtitle" = "Отправлено %@ %@ в %@";
 "push.notification.receive.tokens.title" = "⬇️ Получено";
-"push.notification.receive.tokens.subtitle" = "Перевод %@ $@ в %@";
+"push.notification.receive.tokens.subtitle" = "Получено %@ %@ в %@";
 "push.notification.new.referendum.title" = "🗳️ Новый референдум";
 "push.notification.new.referendum.subtitle" = "Референдум %@ %@ теперь активен!";
 "push.notification.referendum.approved.title" = "✅ Референдум одобрен!";

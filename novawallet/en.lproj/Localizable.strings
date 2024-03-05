@@ -1525,7 +1525,7 @@
 "push.notification.sent.tokens.subtitle" = "Sent %@ %@ to %@ on %@";
 "push.notification.sent.tokens.wo.address.subtitle" = "Sent %@ %@ on %@";
 "push.notification.receive.tokens.title" = "⬇️ Received";
-"push.notification.receive.tokens.subtitle" = "Received %@ $@ on %@";
+"push.notification.receive.tokens.subtitle" = "Received %@ %@ on %@";
 "push.notification.new.referendum.title" = "🗳️ New referendum";
 "push.notification.new.referendum.subtitle" = "%@ Referendum %@ is now live!";
 "push.notification.referendum.approved.title" = "✅ Referendum approved!";
