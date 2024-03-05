@@ -4,64 +4,62 @@ import SoraKeystore
 final class NotificationsSetupInteractor {
     weak var presenter: NotificationsSetupInteractorOutputProtocol?
 
-    let servicesFactory: Web3AlertsServicesFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
-    let settingsMananger: SettingsManagerProtocol
     let localPushSettingsFactory: LocalPushSettingsFactoryProtocol
-
-    private var syncService: Web3AlertsSyncServiceProtocol?
-    private var pushNotificationsService: PushNotificationsServiceProtocol?
+    let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
 
     let selectedWallet: MetaAccountModel
     private var chains: [ChainModel.Id: ChainModel] = [:]
 
     init(
-        servicesFactory: Web3AlertsServicesFactoryProtocol,
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
-        settingsMananger: SettingsManagerProtocol,
+        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
         localPushSettingsFactory: LocalPushSettingsFactoryProtocol
     ) {
-        self.servicesFactory = servicesFactory
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
-        self.settingsMananger = settingsMananger
+        self.pushNotificationsFacade = pushNotificationsFacade
         self.localPushSettingsFactory = localPushSettingsFactory
     }
 
-    private func registerPushNotifications() {
-        guard let pushNotificationsService = pushNotificationsService else {
-            return
-        }
-        pushNotificationsService.register(completionQueue: .main) { [weak self] status in
-            self?.presenter?.didRegister(notificationStatus: status)
+    private func subscribePushNotifications() {
+        pushNotificationsFacade.subscribeStatus(self) { [weak self] _, newStatus in
+            if PushNotificationsStatus.userInitiatedStatuses.contains(newStatus) {
+                self?.presenter?.didRegister(notificationStatus: newStatus)
+            }
         }
     }
 
     private func saveSettingsAndRegisterDevice() {
-        guard let syncService = syncService else {
-            return
-        }
-
-        let settings = localPushSettingsFactory.createSettings(
+        let accountBasedSettings = localPushSettingsFactory.createSettings(
             for: selectedWallet,
             chains: chains
         )
 
-        syncService.save(
-            settings: settings,
-            runningIn: .main
-        ) { [weak self] error in
-            if let error = error {
+        // TODO: Fix topics settings default
+        let topicsSettings = PushNotification.TopicSettings(topics: [])
+
+        let allSettings = PushNotification.AllSettings(
+            notificationsEnabled: true,
+            accountBased: accountBasedSettings,
+            topics: topicsSettings
+        )
+
+        pushNotificationsFacade.save(
+            settings: allSettings
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.subscribePushNotifications()
+            case let .failure(error):
                 self?.presenter?.didReceive(error: error)
-                return
             }
-            self?.settingsMananger.notificationsEnabled = true
-            self?.registerPushNotifications()
         }
     }
 
     private func subscribeChains() {
+        // TODO: We need to wait those chains before notifications enabled
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: .main
@@ -80,8 +78,6 @@ extension NotificationsSetupInteractor: NotificationsSetupInteractorInputProtoco
     }
 
     func enablePushNotifications() {
-        syncService = servicesFactory.createSyncService()
-        pushNotificationsService = servicesFactory.createPushNotificationsService()
         saveSettingsAndRegisterDevice()
     }
 }

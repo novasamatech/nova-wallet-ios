@@ -24,7 +24,7 @@ protocol PushNotificationsServiceFacadeProtocol: ApplicationServiceProtocol {
 final class PushNotificationsServiceFacade {
     static let shared = PushNotificationsServiceFacade(
         factory: PushNotificationsFacadeFactory(
-            storageFacade: SubstrateDataStorageFacade.shared,
+            storageFacade: UserDataStorageFacade.shared,
             settingsManager: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
@@ -188,7 +188,7 @@ final class PushNotificationsServiceFacade {
             token: token,
             runningIn: nil
         ) { [weak self] in
-            self?.logger.debug("Push notification save completed")
+            self?.logger.debug("Push notification update completed")
         }
     }
 
@@ -209,7 +209,7 @@ extension PushNotificationsServiceFacade: PushNotificationsStatusServiceDelegate
     }
 }
 
-extension PushNotificationsServiceFacade: ApplicationServiceProtocol {
+extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol {
     func setup() {
         guard !isActive else {
             return

@@ -12,6 +12,10 @@ enum PushNotificationsStatus {
     case denied
     case notDetermined
     case unknown
+
+    static var userInitiatedStatuses: Set<PushNotificationsStatus> {
+        [.active, .authorized, .denied]
+    }
 }
 
 protocol PushNotificationsStatusServiceProtocol: AnyObject, ApplicationServiceProtocol {
@@ -83,12 +87,10 @@ final class PushNotificationsStatusService: NSObject {
 
     private func setupNotificationDelegates() {
         Messaging.messaging().delegate = self
-        notificationCenter.delegate = self
     }
 
     private func clearNotificationDelegates() {
         Messaging.messaging().delegate = nil
-        notificationCenter.delegate = nil
     }
 }
 
@@ -160,18 +162,11 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
 extension PushNotificationsStatusService: MessagingDelegate {
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         if let fcmToken = fcmToken {
+            logger.debug("Did receive push token")
             delegate?.didReceivePushNotifications(token: fcmToken)
+        } else {
+            logger.warning("Did receive empty push token")
         }
-    }
-}
-
-extension PushNotificationsStatusService: UNUserNotificationCenterDelegate {
-    func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        Messaging.messaging().apnsToken = deviceToken
-    }
-
-    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        logger.error(error.localizedDescription)
     }
 }
 

@@ -5,29 +5,17 @@ import SoraKeystore
 final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
     weak var presenter: NotificationsManagementInteractorOutputProtocol?
     let settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol
-    let settingsManager: SettingsManagerProtocol
-    let alertServiceFactory: Web3AlertsServicesFactoryProtocol
+    let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
 
     private var settingsProvider: StreamableProvider<Web3Alert.LocalSettings>?
     private var topicsSettingsProvider: StreamableProvider<PushNotification.TopicSettings>?
-    private var syncService: Web3AlertsSyncServiceProtocol?
-    private var pushService: PushNotificationsServiceProtocol?
-    private var topicService: TopicServiceProtocol?
-    private let workingQueue: OperationQueue
-    private let callbackQueue: DispatchQueue
 
     init(
-        settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol,
-        settingsManager: SettingsManagerProtocol,
-        alertServiceFactory: Web3AlertsServicesFactoryProtocol,
-        workingQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
-        callbackQueue: DispatchQueue = .global()
+        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
+        settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol
     ) {
-        self.workingQueue = workingQueue
-        self.callbackQueue = callbackQueue
+        self.pushNotificationsFacade = pushNotificationsFacade
         self.settingsLocalSubscriptionFactory = settingsLocalSubscriptionFactory
-        self.settingsManager = settingsManager
-        self.alertServiceFactory = alertServiceFactory
     }
 
     private func subscribeToSettings() {
@@ -40,25 +28,9 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         topicsSettingsProvider = subscribeToTopicsSettings()
     }
 
-    private func provideAnnouncementsFlag() {
-        let isEnabled = settingsManager.announcements
-        DispatchQueue.main.async {
-            self.presenter?.didReceive(announcementsEnabled: isEnabled)
-        }
-    }
-
     private func provideNotificationsStatus() {
-        if pushService == nil {
-            pushService = alertServiceFactory.createPushNotificationsService()
-        }
-
-        pushService?.statusObservable.addObserver(with: self, sendStateOnSubscription: true) { [weak self] _, status in
-            guard let status = status else {
-                return
-            }
-            DispatchQueue.main.async {
-                self?.presenter?.didReceive(notificationsEnabled: status == .active)
-            }
+        pushNotificationsFacade.subscribeStatus(self) { [weak self] _, status in
+            self?.presenter?.didReceive(notificationStatus: status)
         }
     }
 }
@@ -67,75 +39,27 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
     func setup() {
         subscribeToSettings()
         subscribeToTopicsSettings()
-        provideAnnouncementsFlag()
         provideNotificationsStatus()
-    }
-
-    func checkNotificationsAvailability() {
-        if pushService?.statusObservable.state == .denied {
-            DispatchQueue.main.async {
-                self.presenter?.didReceive(error: .notificationsDisabledInSettings)
-            }
-        }
     }
 
     func save(
         settings: Web3Alert.LocalSettings,
         topics: PushNotification.TopicSettings,
-        notificationsEnabled: Bool,
-        announcementsEnabled: Bool
+        notificationsEnabled: Bool
     ) {
-        if syncService == nil {
-            syncService = alertServiceFactory.createSyncService()
-        }
+        let allSettings = PushNotification.AllSettings(
+            notificationsEnabled: notificationsEnabled,
+            accountBased: settings,
+            topics: topics
+        )
 
-        let group = DispatchGroup()
-        group.enter()
-
-        if notificationsEnabled {
-            syncService?.save(settings: settings, runningIn: callbackQueue) { [weak self] error in
-                defer {
-                    group.leave()
-                }
-                if let error = error {
-                    self?.presenter?.didReceive(error: .save(error))
-                    return
-                }
-                self?.settingsManager.notificationsEnabled = notificationsEnabled
+        pushNotificationsFacade.save(settings: allSettings) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.didReceiveSaveCompletion()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .save(error))
             }
-        } else {
-            syncService?.disableRemoteSettings(
-                for: settings.remoteIdentifier,
-                runningIn: callbackQueue
-            ) { [weak self] error in
-                defer {
-                    group.leave()
-                }
-                if let error = error {
-                    self?.presenter?.didReceive(error: .save(error))
-                    return
-                }
-                self?.settingsManager.notificationsEnabled = notificationsEnabled
-            }
-        }
-
-        if topicService == nil {
-            topicService = alertServiceFactory.createTopicService()
-        }
-
-        group.enter()
-
-        topicService?.save(
-            settings: topics,
-            workingQueue: workingQueue,
-            callbackQueue: callbackQueue
-        ) { [weak self] in
-            self?.settingsManager.announcements = announcementsEnabled
-            group.leave()
-        }
-
-        group.notify(queue: .main) {
-            self.presenter?.didReceiveSaveCompletion()
         }
     }
 

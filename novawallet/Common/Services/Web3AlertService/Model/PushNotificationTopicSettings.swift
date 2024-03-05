@@ -16,3 +16,19 @@ extension PushNotification {
         }
     }
 }
+
+extension PushNotification.TopicSettings {
+    func byTogglingAnnouncements() -> PushNotification.TopicSettings {
+        let hasAppCustom = topics.contains { $0 == .appCustom }
+
+        var newTopics = topics
+
+        if hasAppCustom {
+            newTopics.removeAll { $0 == .appCustom }
+        } else {
+            newTopics.append(.appCustom)
+        }
+
+        return .init(topics: topics)
+    }
+}

@@ -269,7 +269,7 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
             options: .init()
         )
 
-        let updateSettingsOperation: BaseOperation<Web3Alert.LocalSettings?> = ClosureOperation {
+        let updateSettingsOperation: BaseOperation<Web3Alert.LocalSettings?> = ClosureOperation { [weak self] in
             if
                 var localSettings = try fetchOperation.extractNoCancellableResultData(),
                 localSettings.pushToken != token {
@@ -300,7 +300,13 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
             dispatchInQueueWhenPossible(queue) {
                 switch result {
                 case .success:
-                    self?.logger.debug("Web3 Alert token updated")
+                    let tokenChanged = (try? updateSettingsOperation.extractNoCancellableResultData()) != nil
+                    
+                    if tokenChanged {
+                        self?.logger.debug("Web3 Alert token updated")
+                    } else {
+                        self?.logger.debug("Web3 Alert token not changed")
+                    }
                 case let .failure(error):
                     self?.logger.error("Web3 Alert token updated failed: \(error)")
                 }

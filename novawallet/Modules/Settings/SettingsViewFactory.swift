@@ -26,12 +26,6 @@ struct SettingsViewFactory {
         )
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let pushNotificationsService = PushNotificationsService(
-            service: nil,
-            settingsManager: SettingsManager.shared,
-            applicationHandler: ApplicationHandler(),
-            logger: Logger.shared
-        )
 
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
@@ -41,7 +35,7 @@ struct SettingsViewFactory {
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
             walletNotificationService: walletNotificationService,
-            pushNotificationsService: pushNotificationsService,
+            pushNotificationsFacade: PushNotificationsServiceFacade.shared,
             operationQueue: operationQueue
         )
 

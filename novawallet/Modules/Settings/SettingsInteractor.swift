@@ -17,7 +17,7 @@ final class SettingsInteractor {
     let walletConnect: WalletConnectDelegateInputProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
     let operationQueue: OperationQueue
-    let pushNotificationsService: PushNotificationsServiceProtocol
+    let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -27,7 +27,7 @@ final class SettingsInteractor {
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        pushNotificationsService: PushNotificationsServiceProtocol,
+        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedWalletSettings = selectedWalletSettings
@@ -36,7 +36,7 @@ final class SettingsInteractor {
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
-        self.pushNotificationsService = pushNotificationsService
+        self.pushNotificationsFacade = pushNotificationsFacade
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -74,16 +74,8 @@ final class SettingsInteractor {
     }
 
     private func providePushNotificationsStatus() {
-        pushNotificationsService.statusObservable.addObserver(
-            with: self,
-            sendStateOnSubscription: true
-        ) { [weak self] _, status in
-            guard let status = status else {
-                return
-            }
-            DispatchQueue.main.async {
-                self?.presenter?.didReceive(pushNotificationsStatus: status)
-            }
+        pushNotificationsFacade.subscribeStatus(self) { [weak self] _, newStatus in
+            self?.presenter?.didReceive(pushNotificationsStatus: newStatus)
         }
     }
 }
@@ -96,7 +88,6 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
-        pushNotificationsService.setup()
         providePushNotificationsStatus()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
@@ -129,10 +120,6 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
                 self?.presenter?.didReceive(error: .walletConnectFailed(error))
             }
         }
-    }
-
-    func syncPushNotificationsStatus() {
-        pushNotificationsService.updateStatus()
     }
 }
 

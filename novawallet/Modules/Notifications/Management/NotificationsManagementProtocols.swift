@@ -13,12 +13,10 @@ protocol NotificationsManagementPresenterProtocol: AnyObject {
 
 protocol NotificationsManagementInteractorInputProtocol: AnyObject {
     func setup()
-    func checkNotificationsAvailability()
     func save(
         settings: Web3Alert.LocalSettings,
         topics: PushNotification.TopicSettings,
-        notificationsEnabled: Bool,
-        announcementsEnabled: Bool
+        notificationsEnabled: Bool
     )
     func remakeSubscription()
 }
@@ -27,8 +25,7 @@ protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
     func didReceive(settings: Web3Alert.LocalSettings)
     func didReceive(topicsSettings: PushNotification.TopicSettings)
     func didReceive(error: NotificationsManagementError)
-    func didReceive(notificationsEnabled: Bool)
-    func didReceive(announcementsEnabled: Bool)
+    func didReceive(notificationStatus: PushNotificationsStatus)
     func didReceiveSaveCompletion()
 }
 
@@ -54,7 +51,6 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
 
 enum NotificationsManagementError: Error {
     case settingsSubscription(Error)
-    case notificationsDisabledInSettings
     case save(Error)
 }
 
