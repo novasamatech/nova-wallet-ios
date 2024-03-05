@@ -3,8 +3,8 @@ import SoraFoundation
 
 struct NotificationWalletListViewFactory {
     static func createView(
-        initState: [Web3AlertWallet]?,
-        completion: @escaping ([Web3AlertWallet]) -> Void
+        initState: [Web3Alert.LocalWallet]?,
+        completion: @escaping ([Web3Alert.LocalWallet]) -> Void
     ) -> NotificationWalletListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil

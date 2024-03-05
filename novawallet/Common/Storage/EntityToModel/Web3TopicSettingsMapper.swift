@@ -5,7 +5,7 @@ import CoreData
 final class Web3TopicSettingsMapper {
     var entityIdentifierFieldName: String { #keyPath(CDUserSingleValue.identifier) }
 
-    typealias DataProviderModel = LocalNotificationTopicSettings
+    typealias DataProviderModel = PushNotification.TopicSettings
     typealias CoreDataEntity = CDUserSingleValue
 }
 

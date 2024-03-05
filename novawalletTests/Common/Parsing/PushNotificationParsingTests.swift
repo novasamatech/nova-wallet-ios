@@ -8,7 +8,7 @@ final class PushNotificationParsingTests: XCTestCase {
         decoder.dateDecodingStrategy = .iso8601
         let url = json("firestore-settings")!
         let data = try Data(contentsOf: url)
-        let settings = try decoder.decode(RemotePushSettings.self, from: data)
+        let settings = try decoder.decode(Web3Alert.RemoteSettings.self, from: data)
         XCTAssertEqual(settings.pushToken, "test-token")
         XCTAssertEqual(settings.wallets.count, 1)
     }
