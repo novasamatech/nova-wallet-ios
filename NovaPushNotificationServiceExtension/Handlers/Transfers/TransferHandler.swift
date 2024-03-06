@@ -49,21 +49,24 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
                     priceOperation = .createWithResult([])
                 }
                 priceOperation.addDependency(chainOperation)
+                let fetchMetaAccountsOperation = self.createWalletsRepository().fetchAllOperation(with: .init())
 
                 let mapOperaion = ClosureOperation {
                     let price = try priceOperation.extractNoCancellableResultData().first
+                    let metaAccounts = try fetchMetaAccountsOperation.extractNoCancellableResultData()
                     return self.updatingContent(
                         wallets: settings?.wallets ?? [],
-                        chain: chain,
-                        asset: asset,
+                        metaAccounts: metaAccounts,
+                        chainAsset: .init(chain: chain, asset: asset),
                         price: price,
                         payload: self.payload
                     )
                 }
 
                 mapOperaion.addDependency(priceOperation)
+                mapOperaion.addDependency(fetchMetaAccountsOperation)
 
-                return .init(targetOperation: mapOperaion, dependencies: [priceOperation])
+                return .init(targetOperation: mapOperaion, dependencies: [priceOperation, fetchMetaAccountsOperation])
             }
 
         contentWrapper.addDependency(operations: [settingsOperation, chainOperation])
@@ -94,36 +97,57 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
 
     private func updatingContent(
         wallets: [Web3Alert.LocalWallet],
-        chain: ChainModel,
-        asset: AssetModel,
+        metaAccounts: [MetaAccountModel],
+        chainAsset: ChainAsset,
         price: PriceData?,
         payload: NotificationTransferPayload
     ) -> NotificationContentResult {
-        let walletString: String
-        if wallets.count > 1 {
-            // TODO: after adding metaId in settings
-            walletString = "[]"
-        } else {
-            walletString = ""
-        }
-        let title = [
-            type.title(locale: locale),
-            walletString
-        ].joined(separator: " ")
+        let walletName = targetWalletName(wallets: wallets, metaAccounts: metaAccounts)
+        let title = type.title(locale: locale, walletName: walletName)
+
         let balance = balanceViewModel(
-            asset: asset,
+            asset: chainAsset.asset,
             amount: payload.amount,
             priceData: price,
             workingQueue: operationQueue
         )
+        let address = type.address(from: payload)
+        let addressOrName = targetWalletName(
+            for: address,
+            chainId: chainId,
+            wallets: wallets,
+            metaAccounts: metaAccounts
+        )
         let subtitle = type.subtitle(
             amount: balance?.amount ?? "",
-            price: balance?.price,
-            chainName: chain.name,
-            address: type.address(from: payload),
+            price: balance?.price ?? "",
+            chainName: chainAsset.chain.name,
+            address: addressOrName,
             locale: locale
         )
 
         return .init(title: title, subtitle: subtitle)
+    }
+
+    private func targetWalletName(
+        wallets: [Web3Alert.LocalWallet],
+        metaAccounts: [MetaAccountModel]
+    ) -> String? {
+        switch type {
+        case .income:
+            return targetWalletName(
+                for: payload.recipient,
+                chainId: chainId,
+                wallets: wallets,
+                metaAccounts: metaAccounts
+            )
+        case .outcome:
+            return targetWalletName(
+                for: payload.sender,
+                chainId: chainId,
+                wallets: wallets,
+                metaAccounts: metaAccounts
+            )
+        }
     }
 }

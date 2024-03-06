@@ -27,7 +27,6 @@ class CommonHandler {
     func createSettingsRepository() -> AnyDataProviderRepository<Web3Alert.LocalSettings> {
         let pushSettings = NSPredicate(
             format: "%K == %@",
-
             #keyPath(CDUserSingleValue.identifier),
             Web3Alert.LocalSettings.getIdentifier()
         )
@@ -98,5 +97,41 @@ extension CommonHandler {
             settingsManager: SharedSettingsManager() ?? SettingsManager.shared,
             queue: operationQueue
         )
+    }
+
+    func targetWalletName(
+        for address: AccountAddress?,
+        chainId: ChainModel.Id,
+        wallets: [Web3Alert.LocalWallet],
+        metaAccounts: [MetaAccountModel]
+    ) -> String? {
+        guard let address = address else {
+            return nil
+        }
+
+        guard let targetWallet = wallets.first(where: {
+            if let specificAddress = $0.remoteModel.chainSpecific[chainId] {
+                return specificAddress == address
+            } else {
+                return $0.remoteModel.baseSubstrate == address ||
+                    $0.remoteModel.baseEthereum == address
+            }
+        }) else {
+            return nil
+        }
+
+        return metaAccounts.first(where: { $0.metaId == targetWallet.metaId })?.name
+    }
+
+    func createWalletsRepository() -> AnyDataProviderRepository<MetaAccountModel> {
+        let mapper = MetaAccountMapper()
+
+        let repository = userStorageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        return AnyDataProviderRepository(repository)
     }
 }

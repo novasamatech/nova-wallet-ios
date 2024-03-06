@@ -4,13 +4,17 @@ enum TransferType {
     case income
     case outcome
 
-    func title(locale: Locale) -> String {
+    func title(locale: Locale, walletName: String?) -> String {
+        let walletString = walletName.flatMap { "[\($0)]" } ?? ""
+        let title: String
         switch self {
         case .income:
-            return localizedString(LocalizationKeys.Transfer.incomeTitle, locale: locale)
+            title = localizedString(LocalizationKeys.Transfer.incomeTitle, locale: locale)
         case .outcome:
-            return localizedString(LocalizationKeys.Transfer.outcomeTitle, locale: locale)
+            title = localizedString(LocalizationKeys.Transfer.outcomeTitle, locale: locale)
         }
+
+        return [title, walletString].joined(with: .space)
     }
 
     func subtitle(

@@ -46,20 +46,23 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
                 }
                 priceOperation.addDependency(chainOperation)
 
+                let fetchMetaAccountsOperation = self.createWalletsRepository().fetchAllOperation(with: .init())
                 let mapOperaion = ClosureOperation {
                     let price = try priceOperation.extractNoCancellableResultData().first
+                    let metaAccounts = try fetchMetaAccountsOperation.extractNoCancellableResultData()
                     return self.updatingContent(
                         wallets: settings?.wallets ?? [],
-                        chain: chain,
-                        asset: asset,
-                        price: price,
+                        metaAccounts: metaAccounts,
+                        chainAsset: .init(chain: chain, asset: asset),
+                        priceData: price,
                         payload: self.payload
                     )
                 }
 
                 mapOperaion.addDependency(priceOperation)
+                mapOperaion.addDependency(fetchMetaAccountsOperation)
 
-                return .init(targetOperation: mapOperaion, dependencies: [priceOperation])
+                return .init(targetOperation: mapOperaion, dependencies: [priceOperation, fetchMetaAccountsOperation])
             }
 
         contentWrapper.addDependency(operations: [settingsOperation, chainOperation])
@@ -82,32 +85,36 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
 
     private func updatingContent(
         wallets: [Web3Alert.LocalWallet],
-        chain: ChainModel,
-        asset: AssetModel,
-        price: PriceData?,
+        metaAccounts: [MetaAccountModel],
+        chainAsset: ChainAsset,
+        priceData: PriceData?,
         payload: StakingRewardPayload
     ) -> NotificationContentResult {
-        let walletString: String
-        if wallets.count > 1 {
-            // TODO: after adding metaId in settings
-            walletString = "[]"
-        } else {
-            walletString = ""
-        }
+        let walletName = targetWalletName(
+            for: payload.recipient,
+            chainId: chainId,
+            wallets: wallets,
+            metaAccounts: metaAccounts
+        )
+        let walletString = walletName.flatMap { "[\($0)]" } ?? ""
         let title = [
             localizedString(LocalizationKeys.StakingReward.title, locale: locale),
             walletString
-        ].joined(separator: " ")
+        ].joined(with: .space)
         let balance = balanceViewModel(
-            asset: asset,
+            asset: chainAsset.asset,
             amount: payload.amount,
-            priceData: price,
+            priceData: priceData,
             workingQueue: operationQueue
         )
-        let priceString = price.map { "(\($0))" } ?? ""
+        let priceString = balance?.price.map { "(\($0))" } ?? ""
         let subtitle = localizedString(
             LocalizationKeys.StakingReward.subtitle,
-            with: [balance?.amount ?? "", priceString, chain.name],
+            with: [
+                balance?.amount ?? "",
+                priceString,
+                chainAsset.chain.name
+            ],
             locale: locale
         )
 
