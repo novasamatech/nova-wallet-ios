@@ -46,7 +46,7 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
                 }
                 priceOperation.addDependency(chainOperation)
 
-                let fetchMetaAccountsOperation = self.createWalletsRepository().fetchAllOperation(with: .init())
+                let fetchMetaAccountsOperation = self.walletsRepository().fetchAllOperation(with: .init())
                 let mapOperaion = ClosureOperation {
                     let price = try priceOperation.extractNoCancellableResultData().first
                     let metaAccounts = try fetchMetaAccountsOperation.extractNoCancellableResultData()

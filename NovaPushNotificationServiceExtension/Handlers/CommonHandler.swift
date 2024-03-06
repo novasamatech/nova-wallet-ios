@@ -123,7 +123,7 @@ extension CommonHandler {
         return metaAccounts.first(where: { $0.metaId == targetWallet.metaId })?.name
     }
 
-    func createWalletsRepository() -> AnyDataProviderRepository<MetaAccountModel> {
+    func walletsRepository() -> AnyDataProviderRepository<MetaAccountModel> {
         let mapper = MetaAccountMapper()
 
         let repository = userStorageFacade.createRepository(
