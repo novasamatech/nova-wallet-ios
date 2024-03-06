@@ -207,7 +207,6 @@ final class PushNotificationsServiceFacade {
 extension PushNotificationsServiceFacade: PushNotificationsStatusServiceDelegate {
     func didReceivePushNotifications(token: String) {
         updateWeb3PushToken(using: token)
-        refreshTopicSubscription()
     }
 }
 
@@ -319,5 +318,6 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
 
     func updateAPNS(token: Data) {
         statusService.updateAPNS(token: token)
+        refreshTopicSubscription()
     }
 }

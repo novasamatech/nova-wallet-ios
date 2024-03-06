@@ -20,8 +20,8 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
 
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
-        selectedChains: Web3Alert.Selection<Set<ChainModel.Id>>?,
-        completion: @escaping (Web3Alert.Selection<Set<ChainModel.Id>>?) -> Void
+        selectedChains: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?,
+        completion: @escaping (Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) -> Void
     ) {
         guard let stakingRewardsView = StakingRewardsNotificationsViewFactory.createView(
             selectedChains: selectedChains,
@@ -37,8 +37,8 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
 
     func showGovSetup(
         from view: ControllerBackedProtocol?,
-        settings: GovernanceNotificationsInitModel?,
-        completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
+        settings: GovernanceNotificationsModel,
+        completion: @escaping (GovernanceNotificationsModel) -> Void
     ) {
         guard let govNotificationsView = GovernanceNotificationsViewFactory.createView(
             settings: settings,

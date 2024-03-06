@@ -5,7 +5,7 @@ final class NotificationsSetupInteractor {
     weak var presenter: NotificationsSetupInteractorOutputProtocol?
 
     let chainRegistry: ChainRegistryProtocol
-    let localPushSettingsFactory: LocalPushSettingsFactoryProtocol
+    let localPushSettingsFactory: PushNotificationSettingsFactoryProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
 
     let selectedWallet: MetaAccountModel
@@ -15,7 +15,7 @@ final class NotificationsSetupInteractor {
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
-        localPushSettingsFactory: LocalPushSettingsFactoryProtocol
+        localPushSettingsFactory: PushNotificationSettingsFactoryProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
@@ -32,13 +32,12 @@ final class NotificationsSetupInteractor {
     }
 
     private func saveSettingsAndRegisterDevice() {
-        let accountBasedSettings = localPushSettingsFactory.createSettings(
+        let accountBasedSettings = localPushSettingsFactory.createWalletSettings(
             for: selectedWallet,
             chains: chains
         )
 
-        // TODO: Fix topics settings default
-        let topicsSettings = PushNotification.TopicSettings(topics: [])
+        let topicsSettings = PushNotification.TopicSettings(topics: [.appCustom])
 
         let allSettings = PushNotification.AllSettings(
             notificationsEnabled: true,

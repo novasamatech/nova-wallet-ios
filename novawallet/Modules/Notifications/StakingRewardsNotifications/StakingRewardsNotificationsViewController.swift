@@ -1,6 +1,7 @@
 import UIKit
 import SoraFoundation
 
+// swiftlint:disable:next type_name
 final class StakingRewardsNotificationsViewController: ChainNotificationSettingsViewController {
     let presenter: StakingRewardsNotificationsPresenterProtocol
 

@@ -1,13 +1,12 @@
+import Foundation
 import RobinHood
 
 extension PushNotification {
     struct TopicSettings: Codable, Equatable, Identifiable {
         var identifier: String { Self.getIdentifier() }
-        let topics: [PushNotification.Topic]
+        let topics: Set<PushNotification.Topic>
 
-        init(
-            topics: [PushNotification.Topic]
-        ) {
+        init(topics: Set<PushNotification.Topic>) {
             self.topics = topics
         }
 
@@ -15,20 +14,43 @@ extension PushNotification {
             "LocalNotificationTopicSettingsIdentifier"
         }
     }
+
+    enum Topic: Codable, Hashable, Equatable {
+        static let componentsSeparator = "_"
+
+        case appCustom
+        case chainReferendums(chainId: Web3Alert.LocalChainId, trackId: TrackIdLocal)
+        case newChainReferendums(chainId: Web3Alert.LocalChainId, trackId: TrackIdLocal)
+
+        var remoteId: String {
+            switch self {
+            case .appCustom:
+                return "appCustom"
+            case let .chainReferendums(chainId, trackId):
+                let remoteChainId = Web3Alert.createRemoteChainId(from: chainId)
+                return [
+                    "govState",
+                    remoteChainId,
+                    String(trackId)
+                ].joined(separator: Self.componentsSeparator)
+            case let .newChainReferendums(chainId, trackId):
+                let remoteChainId = Web3Alert.createRemoteChainId(from: chainId)
+                return [
+                    "govNewRef",
+                    remoteChainId,
+                    String(trackId)
+                ].joined(separator: Self.componentsSeparator)
+            }
+        }
+    }
 }
 
 extension PushNotification.TopicSettings {
     func byTogglingAnnouncements() -> PushNotification.TopicSettings {
-        let hasAppCustom = topics.contains { $0 == .appCustom }
+        let hasAppCustom = topics.contains(.appCustom)
 
-        var newTopics = topics
+        let newTopics = hasAppCustom ? topics.subtracting([.appCustom]) : topics.union([.appCustom])
 
-        if hasAppCustom {
-            newTopics.removeAll { $0 == .appCustom }
-        } else {
-            newTopics.append(.appCustom)
-        }
-
-        return .init(topics: topics)
+        return .init(topics: newTopics)
     }
 }

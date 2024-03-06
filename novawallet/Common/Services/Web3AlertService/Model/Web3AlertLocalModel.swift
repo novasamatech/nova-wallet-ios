@@ -2,20 +2,22 @@ import Foundation
 import RobinHood
 
 extension Web3Alert {
+    typealias LocalNotifications = Web3Alert.Notifications<Set<Web3Alert.LocalChainId>>
+
     struct LocalSettings: Codable, Equatable, Identifiable {
         var identifier: String { Self.getIdentifier() }
         let remoteIdentifier: String
         var pushToken: String
         var updatedAt: Date
         let wallets: [LocalWallet]
-        let notifications: Web3Alert.Notifications
+        let notifications: LocalNotifications
 
         init(
             remoteIdentifier: String,
             pushToken: String,
             updatedAt: Date,
             wallets: [LocalWallet],
-            notifications: Web3Alert.Notifications
+            notifications: LocalNotifications
         ) {
             self.remoteIdentifier = remoteIdentifier
             self.pushToken = pushToken
@@ -31,12 +33,12 @@ extension Web3Alert {
 
     struct LocalWallet: Codable, Equatable {
         let metaId: MetaAccountModel.Id
-        let remoteModel: Web3Alert.Wallet
+        let model: Web3Alert.Wallet<Web3Alert.LocalChainId>
     }
 }
 
 extension Web3Alert.LocalSettings {
-    func with(_ modifier: (inout Web3Alert.Notifications) -> Void) -> Web3Alert.LocalSettings {
+    func with(_ modifier: (inout Web3Alert.LocalNotifications) -> Void) -> Web3Alert.LocalSettings {
         var editedNotifications = notifications
         modifier(&editedNotifications)
 
@@ -67,5 +69,29 @@ extension Web3Alert.LocalSettings {
             wallets: wallets,
             notifications: notifications
         )
+    }
+}
+
+extension Web3Alert.Selection where T == Set<Web3Alert.LocalChainId> {
+    var notificationsEnabled: Bool {
+        switch self {
+        case .all:
+            return true
+        case let .concrete(value):
+            return !value.isEmpty
+        }
+    }
+}
+
+extension Optional where Wrapped == Web3Alert.Selection<Set<Web3Alert.LocalChainId>> {
+    mutating func toggle() {
+        switch self {
+        case .none:
+            self = .all
+        case .all:
+            self = nil
+        case .concrete:
+            self = nil
+        }
     }
 }

@@ -38,13 +38,13 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
     )
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
-        selectedChains: Web3Alert.Selection<Set<ChainModel.Id>>?,
-        completion: @escaping (Web3Alert.Selection<Set<ChainModel.Id>>?) -> Void
+        selectedChains: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?,
+        completion: @escaping (Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) -> Void
     )
     func showGovSetup(
         from view: ControllerBackedProtocol?,
-        settings: GovernanceNotificationsInitModel?,
-        completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
+        settings: GovernanceNotificationsModel,
+        completion: @escaping (GovernanceNotificationsModel) -> Void
     )
     func complete(from view: ControllerBackedProtocol?)
 }

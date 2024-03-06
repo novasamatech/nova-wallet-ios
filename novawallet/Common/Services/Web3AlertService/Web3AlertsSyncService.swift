@@ -269,7 +269,7 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
             options: .init()
         )
 
-        let updateSettingsOperation: BaseOperation<Web3Alert.LocalSettings?> = ClosureOperation { [weak self] in
+        let updateSettingsOperation: BaseOperation<Web3Alert.LocalSettings?> = ClosureOperation {
             if
                 var localSettings = try fetchOperation.extractNoCancellableResultData(),
                 localSettings.pushToken != token {

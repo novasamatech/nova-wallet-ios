@@ -156,15 +156,16 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
                 completion: changeWalletsSettings
             )
         case .gov:
+            let settings = modifiedTopicsSettings.map { GovernanceNotificationsModel(topicSettings: $0) }
             wireframe.showGovSetup(
                 from: view,
-                settings: getGovSettings(),
+                settings: settings ?? .empty(),
                 completion: changeGovSettings
             )
         case .staking:
             wireframe.showStakingRewardsSetup(
                 from: view,
-                selectedChains: getStakingRewardsSettings(),
+                selectedChains: modifiedSettings?.notifications.stakingReward,
                 completion: changeStakingRewardsSettings
             )
         }
@@ -186,90 +187,25 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         )
     }
 
-    func changeGovSettings(settings: [ChainModel.Id: GovernanceNotificationsModel]) {
-        var topics: [PushNotification.Topic] = []
-        topics = settings.reduce(into: topics) {
-            guard $1.value.enabled else {
-                return
-            }
-            switch $1.value.tracks {
-            case .all:
-                if $1.value.newReferendum {
-                    $0.append(.newChainReferendums(chainId: $1.key, trackId: nil))
-                }
-                if $1.value.referendumUpdate {
-                    $0.append(.chainReferendums(chainId: $1.key, trackId: nil))
-                }
-            case let .concrete(trackIds, _):
-                for trackId in trackIds {
-                    if $1.value.newReferendum {
-                        $0.append(.newChainReferendums(chainId: $1.key, trackId: trackId))
-                    }
-                    if $1.value.referendumUpdate {
-                        $0.append(.chainReferendums(chainId: $1.key, trackId: trackId))
-                    }
-                }
-            }
-        }
-        modifiedTopicsSettings = .init(topics: topics)
+    func changeGovSettings(settings: GovernanceNotificationsModel) {
+        let currentSettings = modifiedTopicsSettings ?? .init(topics: [])
+        modifiedTopicsSettings = currentSettings.applying(governanceSettings: settings)
         updateView()
     }
 
-    func getGovSettings() -> GovernanceNotificationsInitModel? {
-        var chainReferendumUpdateTopics = [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]()
-        var chainNewReferendumTopics = [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]()
-        let allTopics = modifiedTopicsSettings.map(\.topics) ?? []
-
-        for topic in allTopics {
-            switch topic {
-            case let .chainReferendums(chainId, optTrackId):
-                if let trackId = optTrackId {
-                    let addedTracks = chainReferendumUpdateTopics[chainId]?.concreteValue ?? []
-                    chainReferendumUpdateTopics[chainId] = .concrete(Set(addedTracks + [trackId]))
-                } else {
-                    chainReferendumUpdateTopics[chainId] = .all
-                }
-            case let .newChainReferendums(chainId, optTrackId):
-                if let trackId = optTrackId {
-                    let addedTracks = chainNewReferendumTopics[chainId]?.concreteValue ?? []
-                    chainNewReferendumTopics[chainId] = .concrete(Set(addedTracks + [trackId]))
-                } else {
-                    chainNewReferendumTopics[chainId] = .all
-                }
-            default: break
-            }
-        }
-
-        return .init(
-            newReferendum: chainNewReferendumTopics,
-            referendumUpdate: chainReferendumUpdateTopics
-        )
-    }
-
-    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<ChainModel.Id>>?) {
+    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) {
         modifiedSettings = modifiedSettings?.with {
             switch result {
             case .all:
                 $0.stakingReward = .all
             case let .concrete(selectedChains):
-                $0.stakingReward = .concrete(Array(selectedChains))
+                $0.stakingReward = .concrete(selectedChains)
             case nil:
-                $0.stakingReward = .concrete(Array([]))
+                $0.stakingReward = .concrete([])
             }
         }
 
         updateView()
-    }
-
-    func getStakingRewardsSettings() -> Web3Alert.Selection<Set<ChainModel.Id>>? {
-        switch modifiedSettings?.notifications.stakingReward {
-        case let .concrete(chains):
-            return .concrete(Set(chains))
-        case .all:
-            return .all
-        case .none:
-            return nil
-        }
     }
 
     func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {

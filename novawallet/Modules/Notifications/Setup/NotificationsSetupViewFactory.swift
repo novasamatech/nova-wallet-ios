@@ -20,7 +20,7 @@ struct NotificationsSetupViewFactory {
             selectedWallet: selectedWallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
-            localPushSettingsFactory: LocalPushSettingsFactory()
+            localPushSettingsFactory: PushNotificationSettingsFactory()
         )
         let wireframe = NotificationsSetupWireframe()
 

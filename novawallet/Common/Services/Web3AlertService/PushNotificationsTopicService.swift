@@ -64,7 +64,7 @@ final class PushNotificationsTopicService: PushNotificationsTopicServiceProtocol
                     let topics = try operation.extractNoCancellableResultData().first?.topics ?? []
 
                     for topic in topics {
-                        self?.subscribe(channel: topic.identifier)
+                        self?.subscribe(channel: topic.remoteId)
                     }
 
                 } catch {
@@ -97,11 +97,11 @@ final class PushNotificationsTopicService: PushNotificationsTopicServiceProtocol
                     let oldTopics = oldSettings?.topics ?? []
 
                     for topic in oldTopics {
-                        self?.unsubscribe(channel: topic.identifier)
+                        self?.unsubscribe(channel: topic.remoteId)
                     }
 
                     for topic in settings.topics {
-                        self?.subscribe(channel: topic.identifier)
+                        self?.subscribe(channel: topic.remoteId)
                     }
 
                     dispatchInQueueWhenPossible(callbackQueue) {
