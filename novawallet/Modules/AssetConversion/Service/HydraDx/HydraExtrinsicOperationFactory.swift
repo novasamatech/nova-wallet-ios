@@ -163,7 +163,7 @@ final class HydraExtrinsicOperationFactory {
 
         // we always revert to native currency after swap if it is not native
         if !params.isFeeInNativeCurrency {
-            revertCurrencyCall = .init(currency: params.currentFeeCurrency)
+            revertCurrencyCall = .init(currency: HydraDx.nativeAssetId)
         } else {
             revertCurrencyCall = nil
         }
