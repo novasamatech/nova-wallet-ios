@@ -49,7 +49,7 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
     ) {
         let allSettings = PushNotification.AllSettings(
             notificationsEnabled: notificationsEnabled,
-            accountBased: settings,
+            accountBased: settings.settingCurrentDate(),
             topics: topics
         )
 

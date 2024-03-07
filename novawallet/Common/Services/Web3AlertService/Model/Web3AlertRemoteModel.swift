@@ -41,7 +41,7 @@ extension Web3Alert {
             notifications = RemoteNotifications(
                 stakingReward: local.notifications.stakingReward?.mapConcreteValue { closure($0) },
                 tokenSent: local.notifications.tokenSent?.mapConcreteValue { closure($0) },
-                tokenReceived: local.notifications.tokenSent?.mapConcreteValue { closure($0) }
+                tokenReceived: local.notifications.tokenReceived?.mapConcreteValue { closure($0) }
             )
         }
     }

@@ -38,13 +38,14 @@ final class GovernanceNotificationsPresenter {
 
     private func provideViewModels() {
         let viewModels: [GovernanceNotificationsViewModel] = chainList.allItems.compactMap { chain in
-            guard let allTracks = tracks[chain.chainId] else {
+            guard let allTrackIds = getTrackIds(for: chain.chainId) else {
                 return nil
             }
 
+            let tracks = settings.tracks(for: chain.chainId) ?? allTrackIds
             let selectedTracks = GovernanceNotificationsViewModel.SelectedTracks(
-                tracks: settings.tracks(for: chain.chainId) ?? [],
-                totalTracksCount: allTracks.count
+                tracks: tracks,
+                totalTracksCount: allTrackIds.count
             )
 
             return GovernanceNotificationsViewModel(
@@ -193,6 +194,8 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsInteractorOut
     }
 
     func didReceiveTracks(_ tracks: [GovernanceTrackInfoLocal], for chain: ChainModel) {
+        Logger.shared.debug("Did receive tracks for \(chain.name): \(tracks)")
+
         self.tracks[chain.chainId] = tracks
         provideViewModels()
     }

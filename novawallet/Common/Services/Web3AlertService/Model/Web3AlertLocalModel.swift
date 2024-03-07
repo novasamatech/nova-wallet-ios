@@ -7,8 +7,8 @@ extension Web3Alert {
     struct LocalSettings: Codable, Equatable, Identifiable {
         var identifier: String { Self.getIdentifier() }
         let remoteIdentifier: String
-        var pushToken: String
-        var updatedAt: Date
+        let pushToken: String
+        let updatedAt: Date
         let wallets: [LocalWallet]
         let notifications: LocalNotifications
 
@@ -38,6 +38,36 @@ extension Web3Alert {
 }
 
 extension Web3Alert.LocalSettings {
+    func settingCurrentDate() -> Web3Alert.LocalSettings {
+        .init(
+            remoteIdentifier: remoteIdentifier,
+            pushToken: pushToken,
+            updatedAt: Date(),
+            wallets: wallets,
+            notifications: notifications
+        )
+    }
+
+    func updating(date: Date) -> Web3Alert.LocalSettings {
+        .init(
+            remoteIdentifier: remoteIdentifier,
+            pushToken: pushToken,
+            updatedAt: date,
+            wallets: wallets,
+            notifications: notifications
+        )
+    }
+
+    func updating(pushToken: String) -> Web3Alert.LocalSettings {
+        .init(
+            remoteIdentifier: remoteIdentifier,
+            pushToken: pushToken,
+            updatedAt: updatedAt,
+            wallets: wallets,
+            notifications: notifications
+        )
+    }
+
     func with(_ modifier: (inout Web3Alert.LocalNotifications) -> Void) -> Web3Alert.LocalSettings {
         var editedNotifications = notifications
         modifier(&editedNotifications)

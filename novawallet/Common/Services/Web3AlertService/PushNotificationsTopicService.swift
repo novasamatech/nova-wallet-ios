@@ -6,22 +6,20 @@ import FirebaseFirestore
 import FirebaseMessaging
 
 protocol PushNotificationsTopicServiceProtocol {
-    func refreshTopicSubscription()
-
     func save(
         settings: PushNotification.TopicSettings,
         callbackQueue: DispatchQueue?,
         completion: @escaping (Error?) -> Void
     )
 
-    func saveLocal(
+    func saveDiff(
         settings: PushNotification.TopicSettings,
         callbackQueue: DispatchQueue?,
         completion: @escaping (Error?) -> Void
     )
 }
 
-final class PushNotificationsTopicService: PushNotificationsTopicServiceProtocol {
+final class PushNotificationsTopicService {
     let logger: LoggerProtocol
     let repository: AnyDataProviderRepository<PushNotification.TopicSettings>
     let operationQueue: OperationQueue
@@ -39,108 +37,140 @@ final class PushNotificationsTopicService: PushNotificationsTopicServiceProtocol
         self.logger = logger
     }
 
-    private func subscribe(channel: String) {
-        Messaging.messaging().subscribe(toTopic: channel) { [weak self] error in
-            if let error = error {
-                self?.logger.error(error.localizedDescription)
-            }
-        }
-    }
+    private func saveSubscriptions(
+        from topicChanges: @escaping () throws -> (Set<PushNotification.Topic>, Set<PushNotification.Topic>)
+    ) -> BaseOperation<Void> {
+        AsyncClosureOperation(
+            cancelationClosure: {},
+            operationClosure: { [weak self] completionClosure in
+                let messaging = Messaging.messaging()
+                let (newTopics, removedTopics) = try topicChanges()
 
-    private func unsubscribe(channel: String) {
-        Messaging.messaging().unsubscribe(fromTopic: channel) { [weak self] error in
-            if let error = error {
-                self?.logger.error(error.localizedDescription)
-            }
-        }
-    }
+                self?.logger.debug("Subscribing: \(newTopics)")
+                self?.logger.debug("Unsubscribing: \(removedTopics)")
 
-    func refreshTopicSubscription() {
-        let operation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+                Task {
+                    do {
+                        try await withThrowingTaskGroup(of: Void.self) { group in
+                            for newTopic in newTopics {
+                                group.addTask {
+                                    try await messaging.subscribe(toTopic: newTopic.remoteId)
+                                }
+                            }
 
-        operation.completionBlock = { [weak self] in
-            dispatchInQueueWhenPossible(self?.workQueue) {
-                do {
-                    let topics = try operation.extractNoCancellableResultData().first?.topics ?? []
+                            for removedTopic in removedTopics {
+                                group.addTask {
+                                    try await messaging.unsubscribe(fromTopic: removedTopic.remoteId)
+                                }
+                            }
 
-                    for topic in topics {
-                        self?.subscribe(channel: topic.remoteId)
+                            try await group.waitForAll()
+                        }
+
+                        completionClosure(.success(()))
+                    } catch {
+                        completionClosure(.failure(error))
                     }
-
-                } catch {
-                    self?.logger.error("Refresh failed: \(error)")
                 }
             }
-        }
-
-        operationQueue.addOperation(operation)
+        )
     }
+}
 
+extension PushNotificationsTopicService: PushNotificationsTopicServiceProtocol {
     func save(
         settings: PushNotification.TopicSettings,
         callbackQueue: DispatchQueue?,
         completion: @escaping (Error?) -> Void
     ) {
-        let oldSettingsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-        let saveSettingsOperation = repository.replaceOperation {
+        let remoteSaveOperation = saveSubscriptions { (settings.topics, []) }
+
+        let localSaveOperation = repository.replaceOperation {
             [settings]
         }
 
-        saveSettingsOperation.addDependency(oldSettingsOperation)
+        localSaveOperation.configurationBlock = {
+            do {
+                try remoteSaveOperation.extractNoCancellableResultData()
+            } catch {
+                localSaveOperation.result = .failure(error)
+            }
+        }
 
-        saveSettingsOperation.completionBlock = { [weak self] in
-            dispatchInQueueWhenPossible(self?.workQueue) {
+        localSaveOperation.addDependency(remoteSaveOperation)
+
+        localSaveOperation.completionBlock = { [weak self] in
+            dispatchInQueueWhenPossible(callbackQueue) {
                 do {
-                    let oldSettings = try oldSettingsOperation.extractNoCancellableResultData().first
-                    try saveSettingsOperation.extractNoCancellableResultData()
+                    try localSaveOperation.extractNoCancellableResultData()
 
-                    let oldTopics = oldSettings?.topics ?? []
+                    self?.logger.debug("Topics saved")
 
-                    for topic in oldTopics {
-                        self?.unsubscribe(channel: topic.remoteId)
-                    }
-
-                    for topic in settings.topics {
-                        self?.subscribe(channel: topic.remoteId)
-                    }
-
-                    dispatchInQueueWhenPossible(callbackQueue) {
-                        completion(nil)
-                    }
-
+                    completion(nil)
                 } catch {
-                    self?.logger.error("Refresh failed: \(error)")
+                    self?.logger.error("Topics error failed \(error)")
 
-                    dispatchInQueueWhenPossible(callbackQueue) {
-                        completion(error)
-                    }
+                    completion(error)
                 }
             }
         }
 
-        operationQueue.addOperations([oldSettingsOperation, saveSettingsOperation], waitUntilFinished: false)
+        operationQueue.addOperations(
+            [remoteSaveOperation, localSaveOperation],
+            waitUntilFinished: false
+        )
     }
 
-    func saveLocal(
+    func saveDiff(
         settings: PushNotification.TopicSettings,
         callbackQueue: DispatchQueue?,
         completion: @escaping (Error?) -> Void
     ) {
-        let operation = repository.replaceOperation {
+        let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        let remoteSaveOperation = saveSubscriptions {
+            let localTopics = try localFetchOperation.extractNoCancellableResultData().first?.topics ?? []
+            let newTopics = settings.topics.subtracting(localTopics)
+            let removedTopics = localTopics.subtracting(settings.topics)
+
+            return (newTopics, removedTopics)
+        }
+
+        remoteSaveOperation.addDependency(localFetchOperation)
+
+        let localSaveOperation = repository.replaceOperation {
             [settings]
         }
 
-        execute(
-            operation: operation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: callbackQueue
-        ) { result in
-            switch result {
-            case .success:
-                completion(nil)
-            case let .failure(error):
-                completion(error)
+        localSaveOperation.configurationBlock = {
+            do {
+                try remoteSaveOperation.extractNoCancellableResultData()
+            } catch {
+                localSaveOperation.result = .failure(error)
             }
         }
+
+        localSaveOperation.addDependency(remoteSaveOperation)
+
+        localSaveOperation.completionBlock = { [weak self] in
+            dispatchInQueueWhenPossible(callbackQueue) {
+                do {
+                    try localSaveOperation.extractNoCancellableResultData()
+
+                    self?.logger.debug("Topics diff saved")
+
+                    completion(nil)
+
+                } catch {
+                    self?.logger.error("Topics diff failed: \(error)")
+
+                    completion(error)
+                }
+            }
+        }
+
+        operationQueue.addOperations(
+            [localFetchOperation, localSaveOperation, remoteSaveOperation],
+            waitUntilFinished: false
+        )
     }
 }

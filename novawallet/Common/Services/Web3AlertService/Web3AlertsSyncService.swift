@@ -79,7 +79,7 @@ final class Web3AlertsSyncService: BaseSyncService {
         forceUpdate: Bool
     ) -> CompoundOperationWrapper<Void> {
         let newSettingsOperation = ClosureOperation<Web3Alert.LocalSettings?> {
-            guard var localSettings = try fetchOperation.extractNoCancellableResultData() else {
+            guard let localSettings = try fetchOperation.extractNoCancellableResultData() else {
                 return nil
             }
             guard !forceUpdate else {
@@ -90,8 +90,8 @@ final class Web3AlertsSyncService: BaseSyncService {
             if lastUpdate.daysFromSeconds < 1 {
                 return nil
             }
-            localSettings.updatedAt = now
-            return localSettings
+
+            return localSettings.updating(date: now)
         }
 
         newSettingsOperation.addDependency(fetchOperation)
@@ -143,7 +143,7 @@ final class Web3AlertsSyncService: BaseSyncService {
                 encoder.dateEncodingStrategy = .iso8601
                 try documentRef.setData(
                     from: Web3Alert.RemoteSettings(from: settings),
-                    merge: true,
+                    merge: false,
                     encoder: encoder
                 ) { error in
                     if let error = error {
@@ -271,11 +271,11 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
         let updateSettingsOperation: BaseOperation<Web3Alert.LocalSettings?> = ClosureOperation {
             if
-                var localSettings = try fetchOperation.extractNoCancellableResultData(),
+                let localSettings = try fetchOperation.extractNoCancellableResultData(),
                 localSettings.pushToken != token {
-                localSettings.pushToken = token
-                localSettings.updatedAt = Date()
                 return localSettings
+                    .updating(pushToken: token)
+                    .settingCurrentDate()
             } else {
                 return nil
             }

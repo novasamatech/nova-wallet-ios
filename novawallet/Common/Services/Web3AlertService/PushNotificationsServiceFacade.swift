@@ -37,6 +37,7 @@ final class PushNotificationsServiceFacade {
 
     let factory: PushNotificationsFacadeFactoryProtocol
     let operationQueue: OperationQueue
+    let setupTimeoutInSec: Int
     let logger: LoggerProtocol
 
     let statusService: PushNotificationsStatusServiceProtocol
@@ -49,10 +50,12 @@ final class PushNotificationsServiceFacade {
     init(
         factory: PushNotificationsFacadeFactoryProtocol,
         operationQueue: OperationQueue,
+        setupTimeoutInSec: Int = 30,
         logger: LoggerProtocol
     ) {
         self.factory = factory
         self.operationQueue = operationQueue
+        self.setupTimeoutInSec = setupTimeoutInSec
         self.logger = logger
 
         statusService = factory.createStatusService()
@@ -152,7 +155,7 @@ final class PushNotificationsServiceFacade {
         AsyncClosureOperation(
             cancelationClosure: {},
             operationClosure: { completionClosure in
-                if settings.notificationsEnabled, notificationsWereEnabledBefore {
+                if !notificationsWereEnabledBefore {
                     topicService.save(
                         settings: settings.topics,
                         callbackQueue: nil
@@ -164,8 +167,8 @@ final class PushNotificationsServiceFacade {
                         }
                     }
                 } else {
-                    // in case notifications were not enable we need to wait the token
-                    topicService.saveLocal(
+                    // in case notifications were not enabled we need to wait the token
+                    topicService.saveDiff(
                         settings: settings.topics,
                         callbackQueue: nil
                     ) { optError in
@@ -192,15 +195,6 @@ final class PushNotificationsServiceFacade {
         ) { [weak self] in
             self?.logger.debug("Push notification update completed")
         }
-    }
-
-    private func refreshTopicSubscription() {
-        guard let topicService = topicService else {
-            logger.warning("Refresh topic requested but not available")
-            return
-        }
-
-        topicService.refreshTopicSubscription()
     }
 }
 
@@ -238,6 +232,7 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
         throttleServicesIfNeeded()
     }
 
+    // swiftlint:disable:next function_body_length
     func save(
         settings: PushNotification.AllSettings,
         completion: @escaping (Result<Void, PushNotificationsServiceFacadeError>) -> Void
@@ -245,6 +240,7 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
         let topicServiceWereActive = topicService != nil
 
         if settings.notificationsEnabled {
+            statusService.enablePushNotifications()
             setupServicesForActiveStateIfNeeded()
         }
 
@@ -262,10 +258,22 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
             return
         }
 
+        let notificationsEnabledOperation = statusService.notificationsReadyOperation(with: setupTimeoutInSec)
+
         let accountBasedSaveOperation = createAccountBasedUpdate(
             from: settings,
             syncService: syncService
         )
+
+        accountBasedSaveOperation.addDependency(notificationsEnabledOperation)
+
+        accountBasedSaveOperation.configurationBlock = {
+            do {
+                try notificationsEnabledOperation.extractNoCancellableResultData()
+            } catch {
+                accountBasedSaveOperation.result = .failure(error)
+            }
+        }
 
         let topicsSaveOperation = createTopicsUpdate(
             from: settings,
@@ -273,19 +281,25 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
             topicService: topicService
         )
 
+        topicsSaveOperation.configurationBlock = {
+            do {
+                try notificationsEnabledOperation.extractNoCancellableResultData()
+            } catch {
+                topicsSaveOperation.result = .failure(error)
+            }
+        }
+
         topicsSaveOperation.addDependency(accountBasedSaveOperation)
 
         topicsSaveOperation.completionBlock = { [weak self] in
             dispatchInQueueWhenPossible(.main) {
-                if settings.notificationsEnabled {
-                    self?.statusService.enablePushNotifications()
-                } else {
-                    self?.statusService.disablePushNotifications()
-                }
-
                 do {
                     try accountBasedSaveOperation.extractNoCancellableResultData()
                     try topicsSaveOperation.extractNoCancellableResultData()
+
+                    if !settings.notificationsEnabled {
+                        self?.statusService.disablePushNotifications()
+                    }
 
                     completion(.success(()))
                 } catch {
@@ -295,7 +309,7 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
         }
 
         operationQueue.addOperations(
-            [accountBasedSaveOperation, topicsSaveOperation],
+            [notificationsEnabledOperation, accountBasedSaveOperation, topicsSaveOperation],
             waitUntilFinished: false
         )
     }
@@ -318,6 +332,5 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
 
     func updateAPNS(token: Data) {
         statusService.updateAPNS(token: token)
-        refreshTopicSubscription()
     }
 }

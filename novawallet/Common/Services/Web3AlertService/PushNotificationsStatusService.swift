@@ -30,16 +30,31 @@ protocol PushNotificationsStatusServiceProtocol: AnyObject, ApplicationServicePr
     func disablePushNotifications()
 
     func updateAPNS(token: Data)
+
+    func notificationsReadyOperation(with timeoutInSec: Int) -> BaseOperation<Void>
 }
 
 protocol PushNotificationsStatusServiceDelegate: AnyObject {
     func didReceivePushNotifications(token: String)
 }
 
+enum PushNotificationsStatusServiceError: Error {
+    case notifcationTokensWaitDenied
+    case notifcationTokensWaitTimeout
+}
+
+// This class is desinged to be accessed only from the main thread
 final class PushNotificationsStatusService: NSObject {
+    enum TokensReadyStatus {
+        case waiting
+        case denied
+        case ready
+    }
+
     let settingsManager: SettingsManagerProtocol
     let logger: LoggerProtocol
     let statusObservable: Observable<PushNotificationsStatus> = .init(state: .unknown)
+    let tokensReadyObservable: Observable<TokensReadyStatus> = .init(state: .waiting)
 
     private let notificationCenter = UNUserNotificationCenter.current()
     private let applicationHandler: ApplicationHandlerProtocol
@@ -56,13 +71,10 @@ final class PushNotificationsStatusService: NSObject {
         self.logger = logger
     }
 
-    private func status(
-        completionQueue queue: DispatchQueue?,
-        completion: @escaping (PushNotificationsStatus) -> Void
-    ) {
+    private func status(with completion: @escaping (PushNotificationsStatus) -> Void) {
         let notificationsEnabled = settingsManager.notificationsEnabled
         notificationCenter.getNotificationSettings { settings in
-            dispatchInQueueWhenPossible(queue) {
+            dispatchInQueueWhenPossible(.main) {
                 switch settings.authorizationStatus {
                 case .authorized, .provisional:
                     if notificationsEnabled {
@@ -81,9 +93,24 @@ final class PushNotificationsStatusService: NSObject {
         }
     }
 
+    private func updateTokensReadyState() {
+        switch statusObservable.state {
+        case .active:
+            let messaging = Messaging.messaging()
+            let hasApns = messaging.apnsToken != nil
+            let hasFcm = messaging.fcmToken != nil
+            tokensReadyObservable.state = hasApns && hasFcm ? .ready : .waiting
+        case .denied:
+            tokensReadyObservable.state = .denied
+        case .authorized, .notDetermined, .unknown:
+            tokensReadyObservable.state = .waiting
+        }
+    }
+
     private func updateStatus() {
-        status(completionQueue: nil) { [weak self] newStatus in
+        status { [weak self] newStatus in
             self?.statusObservable.state = newStatus
+            self?.updateTokensReadyState()
         }
     }
 
@@ -113,14 +140,10 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
     func register() {
         setupNotificationDelegates()
 
-        notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { [weak self] granted, error in
+        notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { [weak self] granted, _ in
             dispatchInQueueWhenPossible(.main) {
                 if granted {
                     UIApplication.shared.registerForRemoteNotifications()
-                }
-
-                if let error = error {
-                    self?.logger.error(error.localizedDescription)
                 }
 
                 self?.updateStatus()
@@ -162,6 +185,52 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
 
     func updateAPNS(token: Data) {
         Messaging.messaging().apnsToken = token
+
+        updateTokensReadyState()
+    }
+
+    func notificationsReadyOperation(with timeoutInSec: Int) -> BaseOperation<Void> {
+        ClosureOperation {
+            let semaphore = DispatchSemaphore(value: 0)
+
+            let subscriptionId = NSObject()
+
+            var error: PushNotificationsStatusServiceError?
+
+            dispatchInQueueWhenPossible(.main) {
+                self.tokensReadyObservable.addObserver(
+                    with: subscriptionId,
+                    sendStateOnSubscription: true,
+                    queue: .main
+                ) { _, status in
+                    switch status {
+                    case .ready:
+                        error = nil
+                        semaphore.signal()
+                    case .denied:
+                        error = .notifcationTokensWaitDenied
+                        semaphore.signal()
+                    case .waiting:
+                        break
+                    }
+                }
+            }
+
+            let status = semaphore.wait(timeout: .now() + .seconds(timeoutInSec))
+
+            dispatchInQueueWhenPossible(.main) {
+                self.tokensReadyObservable.removeObserver(by: subscriptionId)
+            }
+
+            switch status {
+            case .success:
+                if let error = error {
+                    throw error
+                }
+            case .timedOut:
+                throw PushNotificationsStatusServiceError.notifcationTokensWaitTimeout
+            }
+        }
     }
 }
 
@@ -173,6 +242,8 @@ extension PushNotificationsStatusService: MessagingDelegate {
         } else {
             logger.warning("Did receive empty push token")
         }
+
+        updateTokensReadyState()
     }
 }
 
