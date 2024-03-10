@@ -34,6 +34,10 @@ class BasePolkassemblyOperationFactory {
                 HttpContentType.json.rawValue,
                 forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
             )
+            request.setValue(
+                GovernanceApiKeys.polkassemblyApiKey,
+                forHTTPHeaderField: "x-api-key"
+            )
             request.httpMethod = HttpMethod.post.rawValue
             request.timeoutInterval = timeout
             return request

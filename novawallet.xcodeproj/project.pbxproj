@@ -112,6 +112,7 @@
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
 		0C29B5382A4C68A500E35C6D /* AnimationUpdatibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */; };
 		0C2AA829B5CB89B39E0FA95E /* CrowdloanContributionConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF01941105BCD02536538362 /* CrowdloanContributionConfirmProtocols.swift */; };
+		0C2EF3A12B9D87FC0014F1EC /* GovernanceApiKeys+Polkassembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2EF3A02B9D87FC0014F1EC /* GovernanceApiKeys+Polkassembly.swift */; };
 		0C2F86802A7119D400593C01 /* AuraSessionLengthOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F867F2A7119D400593C01 /* AuraSessionLengthOperationFactory.swift */; };
 		0C2F86822A7233DC00593C01 /* EraNominationPoolsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86812A7233DC00593C01 /* EraNominationPoolsService.swift */; };
 		0C2F86842A72343800593C01 /* EraNominationPoolsServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86832A72343800593C01 /* EraNominationPoolsServiceProtocol.swift */; };
@@ -4455,6 +4456,7 @@
 		0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationUpdatibleView.swift; sourceTree = "<group>"; };
 		0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupWireframe.swift; sourceTree = "<group>"; };
 		0C2B583DB30C6C818B0F952D /* ParaStkRebondWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondWireframe.swift; sourceTree = "<group>"; };
+		0C2EF3A02B9D87FC0014F1EC /* GovernanceApiKeys+Polkassembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GovernanceApiKeys+Polkassembly.swift"; sourceTree = "<group>"; };
 		0C2F867F2A7119D400593C01 /* AuraSessionLengthOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraSessionLengthOperationFactory.swift; sourceTree = "<group>"; };
 		0C2F86812A7233DC00593C01 /* EraNominationPoolsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraNominationPoolsService.swift; sourceTree = "<group>"; };
 		0C2F86832A72343800593C01 /* EraNominationPoolsServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraNominationPoolsServiceProtocol.swift; sourceTree = "<group>"; };
@@ -15692,6 +15694,7 @@
 				84C479C029309E58003DF82B /* BasePolkassemblyOperationFactory.swift */,
 				84C9CF3A291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift */,
 				84C479BE29309062003DF82B /* GovernanceV2PolkassemblyOperationFactory.swift */,
+				0C2EF3A02B9D87FC0014F1EC /* GovernanceApiKeys+Polkassembly.swift */,
 			);
 			path = Polkassembly;
 			sourceTree = "<group>";
@@ -20654,7 +20657,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#check if env-vars.sh exists\nif [ -f $PROJECT_DIR/$PROJECT_NAME/env-vars.sh ]\nthen\nsource $PROJECT_DIR/$PROJECT_NAME/env-vars.sh\nfi\n#no `else` case needed if the CI works as expected\n\nWORK_DIR=\"$PROJECT_DIR/$PROJECT_NAME\"\necho \"Sourcery Work Directory = $WORK_DIR\"\n\nOUT_FILE=\"$PROJECT_DIR/CIKeys.generated.swift\"\necho \"Sourcery Output File = $OUT_FILE\"\n\n\"$PODS_ROOT/Sourcery/bin/sourcery\" --templates \"$WORK_DIR\" --sources \"$WORK_DIR\" --output \"$OUT_FILE\" --args mercuryoSecretKey=$MERCURYO_PRODUCTION_SECRET,mercuryoTestSecretKey=$MERCURYO_TEST_SECRET,acalaAuthToken=$ACALA_AUTH_TOKEN,moonbeamHistoryApiKey=$MOONBEAM_HISTORY_API_KEY,moonriverHistoryApiKey=$MOONRIVER_HISTORY_API_KEY,etherscanHistoryApiKey=$ETHERSCAN_HISTORY_API_KEY,acalaAuthTestToken=$ACALA_TEST_AUTH_TOKEN,moonbeamApiKey=$MOONBEAM_API_KEY,moonbeamApiTestKey=$MOONBEAM_TEST_API_KEY,infuraApiKey=$INFURA_API_KEY,wcProjectId=$WC_PROJECT_ID,dwellirApiKey=$DWELLIR_API_KEY\n";
+			shellScript = "#check if env-vars.sh exists\nif [ -f $PROJECT_DIR/$PROJECT_NAME/env-vars.sh ]\nthen\nsource $PROJECT_DIR/$PROJECT_NAME/env-vars.sh\nfi\n#no `else` case needed if the CI works as expected\n\nWORK_DIR=\"$PROJECT_DIR/$PROJECT_NAME\"\necho \"Sourcery Work Directory = $WORK_DIR\"\n\nOUT_FILE=\"$PROJECT_DIR/CIKeys.generated.swift\"\necho \"Sourcery Output File = $OUT_FILE\"\n\n\"$PODS_ROOT/Sourcery/bin/sourcery\" --templates \"$WORK_DIR\" --sources \"$WORK_DIR\" --output \"$OUT_FILE\" --args mercuryoSecretKey=$MERCURYO_PRODUCTION_SECRET,mercuryoTestSecretKey=$MERCURYO_TEST_SECRET,acalaAuthToken=$ACALA_AUTH_TOKEN,moonbeamHistoryApiKey=$MOONBEAM_HISTORY_API_KEY,moonriverHistoryApiKey=$MOONRIVER_HISTORY_API_KEY,etherscanHistoryApiKey=$ETHERSCAN_HISTORY_API_KEY,acalaAuthTestToken=$ACALA_TEST_AUTH_TOKEN,moonbeamApiKey=$MOONBEAM_API_KEY,moonbeamApiTestKey=$MOONBEAM_TEST_API_KEY,infuraApiKey=$INFURA_API_KEY,wcProjectId=$WC_PROJECT_ID,dwellirApiKey=$DWELLIR_API_KEY,polkassemblyApiKey=$POLKASSEMBLY_API_KEY\n";
 		};
 		B296F5F654EA299699479AE4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -24855,6 +24858,7 @@
 				2003738C399EFA9A61343EDD /* StakingConfirmProxyInteractor.swift in Sources */,
 				C044A73D956CAFB926D4BEC1 /* StakingConfirmProxyViewController.swift in Sources */,
 				DA33289649E281A2D6378C1C /* StakingConfirmProxyViewLayout.swift in Sources */,
+				0C2EF3A12B9D87FC0014F1EC /* GovernanceApiKeys+Polkassembly.swift in Sources */,
 				2AFCF6923D31691A53BEC762 /* StakingConfirmProxyViewFactory.swift in Sources */,
 				C4D962BDC211A38CA3536425 /* StakingProxyManagementProtocols.swift in Sources */,
 				D5F1C910930BA08E5F7681B2 /* StakingProxyManagementWireframe.swift in Sources */,
