@@ -136,6 +136,7 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsPresenterProtocol {
                 fee: fee,
                 total: assetBalance?.balanceCountingEd,
                 minBalance: existentialDeposit,
+                asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
             dataValidatorFactory.hasProfitAfterClaim(

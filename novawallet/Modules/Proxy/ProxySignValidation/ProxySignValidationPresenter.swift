@@ -59,6 +59,7 @@ final class ProxySignValidationPresenter {
                 fee: fee,
                 total: balance.balanceCountingEd,
                 minBalance: balanceExistence.minBalance,
+                asset: chainAsset.assetDisplayInfo,
                 locale: locale
             )
         ]).runValidation(

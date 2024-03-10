@@ -263,6 +263,7 @@ class SwapBasePresenter {
                 fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.extrinsicFee : nil,
                 total: swapModel.utilityAssetBalance?.balanceCountingEd,
                 minBalance: swapModel.feeChainAsset.isUtilityAsset ? swapModel.utilityAssetExistense?.minBalance : 0,
+                asset: swapModel.utilityChainAsset?.assetDisplayInfo ?? swapModel.feeChainAsset.assetDisplayInfo,
                 locale: locale
             ),
             dataValidatingFactory.canReceive(params: swapModel, locale: locale),
