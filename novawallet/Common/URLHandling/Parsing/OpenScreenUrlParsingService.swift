@@ -8,14 +8,6 @@ protocol OpenScreenUrlParsingServiceProtocol: AnyObject {
     func cancel()
 }
 
-protocol OpenScreenPushServiceProtocol: AnyObject {
-    func handle(
-        message: NotificationMessage,
-        completion: @escaping (Result<PushHandlingScreen, Error>) -> Void
-    )
-    func cancel()
-}
-
 enum OpenScreenUrlParsingError: Error {
     case openGovScreen(GovScreenError)
     case openDAppScreen(DAppError)

@@ -12,7 +12,7 @@ final class MainTabBarInteractor {
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
-    let pushScreenOpenService: PushScreenOpenServiceProtocol
+    let pushScreenOpenService: OpenPushScreenServiceProtocol
 
     deinit {
         stopServices()
@@ -23,7 +23,7 @@ final class MainTabBarInteractor {
         serviceCoordinator: ServiceCoordinatorProtocol,
         keystoreImportService: KeystoreImportServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
-        pushScreenOpenService: PushScreenOpenServiceProtocol,
+        pushScreenOpenService: OpenPushScreenServiceProtocol,
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol
     ) {

@@ -3,7 +3,7 @@ import SoraFoundation
 import SoraKeystore
 import RobinHood
 
-final class OpenPushAssetDetailsService {
+final class AssetDetailsNotificationMessageHandler {
     private let chainRegistry: ChainRegistryProtocol
     private let settings: SelectedWalletSettings
     private let eventCenter: EventCenterProtocol
@@ -38,10 +38,10 @@ final class OpenPushAssetDetailsService {
         for chainId: ChainModel.Id,
         assetId: String?,
         address: AccountAddress?,
-        completion: @escaping (Result<ChainAssetId, OpenPushAssetError>) -> Void
+        completion: @escaping (Result<ChainAssetId, AssetDetailsHandlingError>) -> Void
     ) {
         guard let address = address else {
-            completion(.failure(OpenPushAssetError.invalidAddress))
+            completion(.failure(AssetDetailsHandlingError.invalidAddress))
             return
         }
 
@@ -73,10 +73,10 @@ final class OpenPushAssetDetailsService {
         chain: ChainModel,
         assetId: String?,
         address: AccountAddress,
-        completion: @escaping (Result<ChainAssetId, OpenPushAssetError>) -> Void
+        completion: @escaping (Result<ChainAssetId, AssetDetailsHandlingError>) -> Void
     ) {
         guard let asset = mapAssetId(assetId, chain: chain) else {
-            completion(.failure(OpenPushAssetError.invalidAssetId))
+            completion(.failure(AssetDetailsHandlingError.invalidAssetId))
             return
         }
 
@@ -113,13 +113,13 @@ final class OpenPushAssetDetailsService {
             switch result {
             case let .success(result):
                 guard let wallet = result else {
-                    completion(.failure(OpenPushAssetError.unknownWallet))
+                    completion(.failure(AssetDetailsHandlingError.unknownWallet))
                     return
                 }
 
                 self.select(wallet: wallet) { error in
                     if let error = error {
-                        completion(.failure(OpenPushAssetError.select(error)))
+                        completion(.failure(AssetDetailsHandlingError.select(error)))
                     } else {
                         completion(.success(ChainAssetId(
                             chainId: chain.chainId,
@@ -129,7 +129,7 @@ final class OpenPushAssetDetailsService {
                 }
 
             case let .failure(error):
-                completion(.failure(OpenPushAssetError.select(error)))
+                completion(.failure(AssetDetailsHandlingError.select(error)))
             }
         }
     }
@@ -175,7 +175,7 @@ final class OpenPushAssetDetailsService {
     }
 }
 
-extension OpenPushAssetDetailsService: OpenScreenPushServiceProtocol {
+extension AssetDetailsNotificationMessageHandler: NotificationMessageHandlerProtocol {
     func handle(message: NotificationMessage, completion: @escaping (Result<PushHandlingScreen, Error>) -> Void) {
         let targetAddress: AccountAddress?
         let targetChainId: ChainModel.Id
@@ -197,7 +197,7 @@ extension OpenPushAssetDetailsService: OpenScreenPushServiceProtocol {
             }
             targetChainId = chainId
         default:
-            completion(.failure(OpenPushAssetError.internalError))
+            completion(.failure(AssetDetailsHandlingError.internalError))
             return
         }
 

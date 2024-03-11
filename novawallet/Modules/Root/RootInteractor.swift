@@ -63,8 +63,8 @@ final class RootInteractor {
     }
 
     private func setupPushHandlingService() {
-        let handlingFactory = OpenScreenPushHandlingServiceFactory(chainRegistryClosure: chainRegistryClosure)
-        let screenOpenService = PushScreenOpenService(
+        let handlingFactory = OpenPushScreenServiceFactory(chainRegistryClosure: chainRegistryClosure)
+        let screenOpenService = OpenPushScreenService(
             handlingFactory: handlingFactory,
             logger: Logger.shared
         )

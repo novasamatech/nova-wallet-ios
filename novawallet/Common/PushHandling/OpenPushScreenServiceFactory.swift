@@ -2,11 +2,11 @@ import RobinHood
 import SoraKeystore
 import Foundation
 
-protocol OpenScreenPushHandlingServiceFactoryProtocol {
-    func createHandler(message: NotificationMessage) -> OpenScreenPushServiceProtocol?
+protocol OpenPushScreenServiceFactoryProtocol {
+    func createHandler(message: NotificationMessage) -> NotificationMessageHandlerProtocol?
 }
 
-final class OpenScreenPushHandlingServiceFactory: OpenScreenPushHandlingServiceFactoryProtocol {
+final class OpenPushScreenServiceFactory: OpenPushScreenServiceFactoryProtocol {
     private let chainRegistryClosure: ChainRegistryLazyClosure
     private let settings: SettingsManagerProtocol
     private let operationQueue: OperationQueue
@@ -33,7 +33,7 @@ final class OpenScreenPushHandlingServiceFactory: OpenScreenPushHandlingServiceF
         self.userDataStorageFacade = userDataStorageFacade
     }
 
-    func createHandler(message: NotificationMessage) -> OpenScreenPushServiceProtocol? {
+    func createHandler(message: NotificationMessage) -> NotificationMessageHandlerProtocol? {
         switch message {
         case .transfer, .stakingReward:
             let chainRegistry = chainRegistryClosure()
@@ -47,7 +47,7 @@ final class OpenScreenPushHandlingServiceFactory: OpenScreenPushHandlingServiceF
                 sortDescriptors: [],
                 mapper: AnyCoreDataMapper(MetaAccountMapper())
             )
-            return OpenPushAssetDetailsService(
+            return AssetDetailsNotificationMessageHandler(
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue,
                 workingQueue: workingQueue,
@@ -59,7 +59,7 @@ final class OpenScreenPushHandlingServiceFactory: OpenScreenPushHandlingServiceF
 
         case .newReferendum, .referendumUpdate:
             let chainRegistry = chainRegistryClosure()
-            return OpenGovernancePushHandlingService(chainRegistry: chainRegistry, settings: settings)
+            return GovernanceNotificationMessageHandler(chainRegistry: chainRegistry, settings: settings)
         case .newRelease:
             return nil
         }

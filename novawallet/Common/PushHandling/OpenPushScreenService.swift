@@ -10,24 +10,32 @@ enum PushHandlingScreen {
     case error(Error)
 }
 
-protocol PushScreenOpenServiceProtocol: PushHandlingServiceProtocol {
+protocol NotificationMessageHandlerProtocol: AnyObject {
+    func handle(
+        message: NotificationMessage,
+        completion: @escaping (Result<PushHandlingScreen, Error>) -> Void
+    )
+    func cancel()
+}
+
+protocol OpenPushScreenServiceProtocol: PushHandlingServiceProtocol {
     var delegate: PushScreenOpenDelegate? { get set }
 
     func consumePendingScreenOpen() -> PushHandlingScreen?
 }
 
-final class PushScreenOpenService {
+final class OpenPushScreenService {
     weak var delegate: PushScreenOpenDelegate?
     private var pendingScreen: PushHandlingScreen?
-    private var processingHandler: OpenScreenPushServiceProtocol?
+    private var processingHandler: NotificationMessageHandlerProtocol?
     private lazy var decoder = JSONDecoder()
     private let delegateQueue: DispatchQueue
 
     let logger: LoggerProtocol
-    let handlingFactory: OpenScreenPushHandlingServiceFactory
+    let handlingFactory: OpenPushScreenServiceFactory
 
     init(
-        handlingFactory: OpenScreenPushHandlingServiceFactory,
+        handlingFactory: OpenPushScreenServiceFactory,
         delegateQueue: DispatchQueue = .main,
         logger: LoggerProtocol
     ) {
@@ -37,7 +45,7 @@ final class PushScreenOpenService {
     }
 }
 
-extension PushScreenOpenService: PushScreenOpenServiceProtocol {
+extension OpenPushScreenService: OpenPushScreenServiceProtocol {
     func handle(userInfo: [AnyHashable: Any], completion: @escaping (Bool) -> Void) {
         guard let message = try? NotificationMessage(userInfo: userInfo, decoder: decoder) else {
             logger.warning("Can't parse message")

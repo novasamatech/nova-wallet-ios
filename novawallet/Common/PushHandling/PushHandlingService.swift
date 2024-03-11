@@ -5,9 +5,9 @@ protocol PushHandlingServiceProtocol: AnyObject {
 final class PushHandlingService {
     static let shared = PushHandlingService()
 
-    private(set) var service: PushScreenOpenServiceProtocol?
+    private(set) var service: OpenPushScreenServiceProtocol?
 
-    func setup(service: PushScreenOpenServiceProtocol) {
+    func setup(service: OpenPushScreenServiceProtocol) {
         self.service = service
     }
 }

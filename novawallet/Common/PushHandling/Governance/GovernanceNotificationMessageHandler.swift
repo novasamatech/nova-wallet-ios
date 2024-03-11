@@ -1,6 +1,6 @@
-typealias OpenGovernancePushHandlingService = OpenGovernanceUrlParsingService
+typealias GovernanceNotificationMessageHandler = OpenGovernanceUrlParsingService
 
-extension OpenGovernancePushHandlingService: OpenScreenPushServiceProtocol {
+extension GovernanceNotificationMessageHandler: NotificationMessageHandlerProtocol {
     func handle(message: NotificationMessage, completion: @escaping (Result<PushHandlingScreen, Error>) -> Void) {
         switch message {
         case let .newReferendum(chainId, payload):
