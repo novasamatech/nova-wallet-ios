@@ -1290,6 +1290,8 @@
 		77EDF9262B96DD72003266B1 /* ChainAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B821C26EF80DB00D25C72 /* ChainAccountModel.swift */; };
 		77EDF9272B96DD8E003266B1 /* MetaAccountMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B821826EF808D00D25C72 /* MetaAccountMapper.swift */; };
 		77EDF9282B96DDA9003266B1 /* MultiassetCryptoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2826F6A59C00F0A25E /* MultiassetCryptoType.swift */; };
+		77EF9A7E2B9F138A0034D619 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
+		77EF9A7F2B9F141D0034D619 /* Web3Alert+ChainId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D9AA92B9723A4003CBAB8 /* Web3Alert+ChainId.swift */; };
 		77EFFC8A2A6E7A24009E28F8 /* AccountExistense.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EFFC882A6E7A24009E28F8 /* AccountExistense.swift */; };
 		77EFFC8D2A6EECFD009E28F8 /* StakingAmountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EFFC8C2A6EECFD009E28F8 /* StakingAmountViewModelFactory.swift */; };
 		77EFFC8F2A714C21009E28F8 /* StakingTypeBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EFFC8E2A714C21009E28F8 /* StakingTypeBannerView.swift */; };
@@ -21496,6 +21498,7 @@
 				7778FE3F2B90CEEE0023E801 /* ChainModel+historyId.swift in Sources */,
 				7778FE602B910BCB0023E801 /* Language.swift in Sources */,
 				7778FE5F2B910BC10023E801 /* NumberFormatter.swift in Sources */,
+				77EF9A7F2B9F141D0034D619 /* Web3Alert+ChainId.swift in Sources */,
 				77AE4FA02B905C0C00426519 /* ChainAsset.swift in Sources */,
 				77AE4FAC2B905EDB00426519 /* UInt64+TimeInterval.swift in Sources */,
 				77AE4F942B90595800426519 /* UserDataStorageFacade.swift in Sources */,
@@ -21522,6 +21525,7 @@
 				7778FE3C2B90CC440023E801 /* SubstrateDataStorageFacade.swift in Sources */,
 				77AE4FA22B905CAE00426519 /* ChainAssetDisplayInfo.swift in Sources */,
 				7778FE662B910CB70023E801 /* OrmlAssetExtras.swift in Sources */,
+				77EF9A7E2B9F138A0034D619 /* OperatingCall.swift in Sources */,
 				778215C42B914DF8006C7D13 /* TransferHandler.swift in Sources */,
 				77AE4FA32B905CD400426519 /* CrowdloanDisplayInfo.swift in Sources */,
 				7778FE632B910C8C0023E801 /* CustomAssetMapper.swift in Sources */,

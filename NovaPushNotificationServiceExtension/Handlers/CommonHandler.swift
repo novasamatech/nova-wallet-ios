@@ -110,11 +110,11 @@ extension CommonHandler {
         }
 
         guard let targetWallet = wallets.first(where: {
-            if let specificAddress = $0.remoteModel.chainSpecific[chainId] {
+            if let specificAddress = $0.model.chainSpecific[chainId] {
                 return specificAddress == address
             } else {
-                return $0.remoteModel.baseSubstrate == address ||
-                    $0.remoteModel.baseEthereum == address
+                return $0.model.baseSubstrate == address ||
+                    $0.model.baseEthereum == address
             }
         }) else {
             return nil
