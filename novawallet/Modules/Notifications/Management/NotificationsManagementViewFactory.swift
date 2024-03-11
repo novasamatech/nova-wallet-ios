@@ -3,12 +3,12 @@ import SoraFoundation
 import SoraKeystore
 
 struct NotificationsManagementViewFactory {
-    static func createView(delegate: PushNotificationsStatusDelegate?) -> NotificationsManagementViewProtocol? {
+    static func createView() -> NotificationsManagementViewProtocol? {
         let interactor = NotificationsManagementInteractor(
-            settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactory.shared,
-            settingsManager: SettingsManager.shared,
-            alertServiceFactory: Web3AlertsServicesFactory.shared
+            pushNotificationsFacade: PushNotificationsServiceFacade.shared,
+            settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactory.shared
         )
+
         let wireframe = NotificationsManagementWireframe()
 
         let viewModelFactory = NotificationsManagemenViewModelFactory(
@@ -19,8 +19,7 @@ struct NotificationsManagementViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            localizationManager: LocalizationManager.shared,
-            delegate: delegate
+            localizationManager: LocalizationManager.shared
         )
 
         let view = NotificationsManagementViewController(

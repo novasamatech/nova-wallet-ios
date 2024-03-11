@@ -20,7 +20,7 @@ protocol StakingRewardsNotificationsInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRewardsNotificationsWireframeProtocol: AnyObject {
-    func complete(selectedChains: Web3Alert.Selection<Set<ChainModel.Id>>?)
+    func complete(selectedChains: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?)
 }
 
 struct StakingRewardsNotificationsViewModel {

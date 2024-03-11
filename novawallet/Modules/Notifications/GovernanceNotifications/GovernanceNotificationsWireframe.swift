@@ -1,9 +1,9 @@
 import Foundation
 
 final class GovernanceNotificationsWireframe: GovernanceNotificationsWireframeProtocol {
-    let completion: ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
+    let completion: (GovernanceNotificationsModel) -> Void
 
-    init(completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void) {
+    init(completion: @escaping (GovernanceNotificationsModel) -> Void) {
         self.completion = completion
     }
 
@@ -27,7 +27,7 @@ final class GovernanceNotificationsWireframe: GovernanceNotificationsWireframePr
         )
     }
 
-    func complete(settings: [ChainModel.Id: GovernanceNotificationsModel]) {
+    func complete(settings: GovernanceNotificationsModel) {
         completion(settings)
     }
 }

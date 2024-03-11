@@ -30,7 +30,7 @@ struct NotificationWalletListViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            localPushSettingsFactory: LocalPushSettingsFactory(),
+            localPushSettingsFactory: PushNotificationSettingsFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )

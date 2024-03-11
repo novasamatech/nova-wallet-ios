@@ -5,54 +5,49 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseMessaging
 
-enum Web3AlertsSyncServiceError: Error {
-    case notificationsDisabled
-}
-
 protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
     func save(
         settings: Web3Alert.LocalSettings,
-        runningInQueue: DispatchQueue?,
+        runningIn queue: DispatchQueue?,
         completionHandler: @escaping (Error?) -> Void
     )
 
     func update(
         token: String,
-        runningInQueue: DispatchQueue?,
+        runningIn queue: DispatchQueue?,
         completionHandler: @escaping () -> Void
+    )
+
+    func disableRemote(
+        settings: Web3Alert.LocalSettings,
+        runningIn queue: DispatchQueue?,
+        completionHandler: @escaping (Error?) -> Void
     )
 }
 
 final class Web3AlertsSyncService: BaseSyncService {
     let repository: AnyDataProviderRepository<Web3Alert.LocalSettings>
-    let settingsManager: SettingsManagerProtocol
     private let operationQueue: OperationQueue
     private let workQueue: DispatchQueue
 
     private var syncWrapperStore = CancellableCallStore()
 
-    private var executingOperationWrapper: CompoundOperationWrapper<Void>? {
-        syncWrapperStore.getCall()
-    }
-
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     init(
         repository: AnyDataProviderRepository<Web3Alert.LocalSettings>,
-        settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue = .global()
     ) {
         self.repository = repository
-        self.settingsManager = settingsManager
         self.operationQueue = operationQueue
         self.workQueue = workQueue
-
-        FirebaseHolder.shared.configureApp()
     }
 
     override func performSyncUp() {
-        guard executingOperationWrapper == nil else {
+        guard !syncWrapperStore.hasCall else {
+            logger.debug("Sync already in progress")
+            completeImmediate(nil)
             return
         }
 
@@ -84,7 +79,7 @@ final class Web3AlertsSyncService: BaseSyncService {
         forceUpdate: Bool
     ) -> CompoundOperationWrapper<Void> {
         let newSettingsOperation = ClosureOperation<Web3Alert.LocalSettings?> {
-            guard var localSettings = try fetchOperation.extractNoCancellableResultData() else {
+            guard let localSettings = try fetchOperation.extractNoCancellableResultData() else {
                 return nil
             }
             guard !forceUpdate else {
@@ -95,8 +90,8 @@ final class Web3AlertsSyncService: BaseSyncService {
             if lastUpdate.daysFromSeconds < 1 {
                 return nil
             }
-            localSettings.updatedAt = now
-            return localSettings
+
+            return localSettings.updating(date: now)
         }
 
         newSettingsOperation.addDependency(fetchOperation)
@@ -104,7 +99,7 @@ final class Web3AlertsSyncService: BaseSyncService {
         let wrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: operationManager
         ) {
-            guard var newSettings = try newSettingsOperation.extractNoCancellableResultData() else {
+            guard let newSettings = try newSettingsOperation.extractNoCancellableResultData() else {
                 return CompoundOperationWrapper.createWithResult(())
             }
 
@@ -139,27 +134,46 @@ final class Web3AlertsSyncService: BaseSyncService {
     private func remoteSaveOperation(
         settings: Web3Alert.LocalSettings
     ) -> BaseOperation<Void> {
-        let saveSettingsOperation: AsyncClosureOperation<Void> = AsyncClosureOperation(
-            cancelationClosure: {}
-        ) { responseClosure in
-            let database = Firestore.firestore()
-            let documentRef = database.collection("users").document(settings.remoteIdentifier)
-            let encoder = Firestore.Encoder()
-            encoder.dateEncodingStrategy = .iso8601
-            try documentRef.setData(
-                from: Web3Alert.RemoteSettings(from: settings),
-                merge: true,
-                encoder: encoder
-            ) { error in
-                if let error = error {
-                    responseClosure(.failure(error))
-                } else {
-                    responseClosure(.success(()))
+        AsyncClosureOperation(
+            cancelationClosure: {},
+            operationClosure: { responseClosure in
+                let database = Firestore.firestore()
+                let documentRef = database.collection("users").document(settings.remoteIdentifier)
+                let encoder = Firestore.Encoder()
+                encoder.dateEncodingStrategy = .iso8601
+                try documentRef.setData(
+                    from: Web3Alert.RemoteSettings(from: settings),
+                    merge: false,
+                    encoder: encoder
+                ) { error in
+                    if let error = error {
+                        responseClosure(.failure(error))
+                    } else {
+                        responseClosure(.success(()))
+                    }
                 }
             }
-        }
+        )
+    }
 
-        return saveSettingsOperation
+    private func remoteDeleteOperation(
+        for remoteIdentifier: String
+    ) -> BaseOperation<Void> {
+        AsyncClosureOperation(
+            cancelationClosure: {},
+            operationClosure: { responseClosure in
+                let database = Firestore.firestore()
+                let documentRef = database.collection("users").document(remoteIdentifier)
+
+                documentRef.delete { optError in
+                    if let error = optError {
+                        responseClosure(.failure(error))
+                    } else {
+                        responseClosure(.success(()))
+                    }
+                }
+            }
+        )
     }
 
     private func localSaveOperation(settings: Web3Alert.LocalSettings) -> BaseOperation<Void> {
@@ -171,24 +185,34 @@ final class Web3AlertsSyncService: BaseSyncService {
     }
 
     private func fetchLocalSettingsOperation() -> BaseOperation<Web3Alert.LocalSettings?> {
-        // TODO: This is not obvious. Probably not run the service if notifications disabled
-        guard settingsManager.notificationsEnabled else {
-            return .createWithResult(nil)
-        }
-
-        return repository.fetchOperation(
+        repository.fetchOperation(
             by: { Web3Alert.LocalSettings.getIdentifier() },
             options: .init()
         )
+    }
+
+    private func waitInProgress(for wrapper: CompoundOperationWrapper<Void>) {
+        if let executingCall = syncWrapperStore.operatingCall {
+            logger.debug("Waiting previous call")
+            wrapper.addDependency(operations: executingCall.allOperations)
+        }
     }
 }
 
 extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
     func save(
         settings: Web3Alert.LocalSettings,
-        runningInQueue queue: DispatchQueue?,
+        runningIn queue: DispatchQueue?,
         completionHandler: @escaping (Error?) -> Void
     ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        logger.debug("Saving push settings...")
+
         let remoteSaveOperation = remoteSaveOperation(settings: settings)
 
         let localSaveOperation = localSaveOperation(settings: settings)
@@ -205,46 +229,53 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
         let wrapper = CompoundOperationWrapper(targetOperation: localSaveOperation, dependencies: [remoteSaveOperation])
 
-        if let executingOperationWrapper = executingOperationWrapper {
-            wrapper.addDependency(wrapper: executingOperationWrapper)
-        }
+        waitInProgress(for: wrapper)
 
-        execute(
+        executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            runningCallbackIn: queue
+            backingCallIn: syncWrapperStore,
+            runningCallbackIn: workQueue,
+            mutex: mutex
         ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.logger.debug("Web3 Alert settings saved")
-                completionHandler(nil)
-            case let .failure(error):
-                self?.logger.debug("Web3 Alert settings save failed: \(error)")
-                completionHandler(error)
+            dispatchInQueueWhenPossible(queue) {
+                switch result {
+                case .success:
+                    self?.logger.debug("Web3 Alert settings saved")
+                    completionHandler(nil)
+                case let .failure(error):
+                    self?.logger.debug("Web3 Alert settings save failed: \(error)")
+                    completionHandler(error)
+                }
             }
         }
     }
 
     func update(
         token: String,
-        runningInQueue queue: DispatchQueue?,
+        runningIn queue: DispatchQueue?,
         completionHandler: @escaping () -> Void
     ) {
-        // TODO: This is not obvious. Probably not run the service if notifications disabled
-        guard settingsManager.notificationsEnabled else {
-            dispatchInQueueWhenPossible(queue, block: completionHandler)
-            return
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
         }
+
+        logger.debug("Updating push token...")
+
         let fetchOperation = repository.fetchOperation(
             by: { Web3Alert.LocalSettings.getIdentifier() },
             options: .init()
         )
 
         let updateSettingsOperation: BaseOperation<Web3Alert.LocalSettings?> = ClosureOperation {
-            if var localSettings = try fetchOperation.extractNoCancellableResultData() {
-                localSettings.pushToken = token
-                localSettings.updatedAt = Date()
+            if
+                let localSettings = try fetchOperation.extractNoCancellableResultData(),
+                localSettings.pushToken != token {
                 return localSettings
+                    .updating(pushToken: token)
+                    .settingCurrentDate()
             } else {
                 return nil
             }
@@ -257,23 +288,85 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
         let updatingWrapper = saveWrapper.insertingHead(operations: [fetchOperation, updateSettingsOperation])
 
-        if let executingOperationWrapper = executingOperationWrapper {
-            updatingWrapper.addDependency(wrapper: executingOperationWrapper)
-        }
+        waitInProgress(for: updatingWrapper)
 
-        execute(
+        executeCancellable(
             wrapper: updatingWrapper,
             inOperationQueue: operationQueue,
-            runningCallbackIn: queue
+            backingCallIn: syncWrapperStore,
+            runningCallbackIn: workQueue,
+            mutex: mutex
         ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.logger.debug("Web3 Alert token updated")
-            case let .failure(error):
-                self?.logger.error("Web3 Alert token updated failed: \(error)")
-            }
+            dispatchInQueueWhenPossible(queue) {
+                switch result {
+                case .success:
+                    let tokenChanged = (try? updateSettingsOperation.extractNoCancellableResultData()) != nil
 
-            completionHandler()
+                    if tokenChanged {
+                        self?.logger.debug("Web3 Alert token updated")
+                    } else {
+                        self?.logger.debug("Web3 Alert token not changed")
+                    }
+                case let .failure(error):
+                    self?.logger.error("Web3 Alert token updated failed: \(error)")
+                }
+
+                completionHandler()
+            }
+        }
+    }
+
+    func disableRemote(
+        settings: Web3Alert.LocalSettings,
+        runningIn queue: DispatchQueue?,
+        completionHandler: @escaping (Error?) -> Void
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        logger.debug("Deleting remote settings...")
+
+        let remoteDeleteOperation = remoteDeleteOperation(for: settings.remoteIdentifier)
+
+        let localSaveOperation = localSaveOperation(settings: settings)
+
+        localSaveOperation.configurationBlock = {
+            do {
+                try remoteDeleteOperation.extractNoCancellableResultData()
+            } catch {
+                localSaveOperation.result = .failure(error)
+            }
+        }
+
+        localSaveOperation.addDependency(remoteDeleteOperation)
+
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: localSaveOperation,
+            dependencies: [remoteDeleteOperation]
+        )
+
+        waitInProgress(for: wrapper)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: syncWrapperStore,
+            runningCallbackIn: workQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            dispatchInQueueWhenPossible(queue) {
+                switch result {
+                case .success:
+                    self?.logger.debug("Web3 Alert settings removed")
+                    completionHandler(nil)
+                case let .failure(error):
+                    self?.logger.debug("Web3 Alert settings remove failed: \(error)")
+                    completionHandler(error)
+                }
+            }
         }
     }
 }
