@@ -12,6 +12,7 @@ final class AssetDetailsNotificationMessageHandler {
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
     private let callbackStore = CancellableCallStore()
+
     init(
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,

@@ -28,8 +28,7 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible 
     )
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
-        screen: PushHandlingScreen,
-        locale: Locale
+        screen: PushHandlingScreen
     )
 }
 

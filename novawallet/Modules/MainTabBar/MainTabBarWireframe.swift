@@ -60,8 +60,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
 
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
-        screen: PushHandlingScreen,
-        locale _: Locale
+        screen: PushHandlingScreen
     ) {
         guard
             let controller = view?.controller as? UITabBarController,
@@ -79,7 +78,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             if let controller: AssetListViewProtocol = viewController?.contentViewController() {
                 controller.didReceiveShowChainAsset(chainAssetId: chainAssetId)
             }
-        case let .error(error):
+        case .error:
             break
         }
     }
