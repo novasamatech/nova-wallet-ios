@@ -136,6 +136,7 @@ extension NPoolsRedeemPresenter: NPoolsRedeemPresenterProtocol {
                 fee: fee,
                 total: assetBalance?.balanceCountingEd,
                 minBalance: existentialDeposit,
+                asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             )
         ]).runValidation { [weak self] in
