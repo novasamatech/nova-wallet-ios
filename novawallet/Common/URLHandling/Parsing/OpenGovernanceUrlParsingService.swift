@@ -68,6 +68,18 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
         type: String?,
         completion: @escaping () -> Void
     ) {
+        handle(
+            targetChainClosure: { $0.chainId == chainId },
+            type: type,
+            completion: completion
+        )
+    }
+
+    func handle(
+        targetChainClosure: @escaping (ChainModel) -> Bool,
+        type: String?,
+        completion: @escaping () -> Void
+    ) {
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: .main
@@ -77,7 +89,7 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             }
             let chains: [ChainModel] = changes.allChangedItems()
 
-            guard let chainModel = chains.first(where: { $0.chainId == chainId }) else {
+            guard let chainModel = chains.first(where: targetChainClosure) else {
                 return
             }
 
@@ -87,7 +99,7 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             case .failure:
                 break
             case let .success(type):
-                self.settings.governanceChainId = chainId
+                self.settings.governanceChainId = chainModel.chainId
                 self.settings.governanceType = type
                 completion()
             }

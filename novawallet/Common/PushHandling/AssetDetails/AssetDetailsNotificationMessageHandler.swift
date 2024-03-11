@@ -55,7 +55,9 @@ final class AssetDetailsNotificationMessageHandler {
             }
             let chains: [ChainModel] = changes.allChangedItems()
 
-            guard let chainModel = chains.first(where: { $0.chainId == chainId }) else {
+            guard let chainModel = chains.first(where: {
+                Web3Alert.createRemoteChainId(from: $0.chainId) == chainId
+            }) else {
                 return
             }
 
@@ -150,11 +152,11 @@ final class AssetDetailsNotificationMessageHandler {
         metaAccounts: [MetaAccountModel]
     ) -> MetaAccountModel? {
         guard let targetWallet = wallets.first(where: {
-            if let specificAddress = $0.remoteModel.chainSpecific[chainId] {
+            if let specificAddress = $0.model.chainSpecific[chainId] {
                 return specificAddress == address
             } else {
-                return $0.remoteModel.baseSubstrate == address ||
-                    $0.remoteModel.baseEthereum == address
+                return $0.model.baseSubstrate == address ||
+                    $0.model.baseEthereum == address
             }
         }) else {
             return nil
