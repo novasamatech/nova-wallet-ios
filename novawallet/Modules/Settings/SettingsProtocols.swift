@@ -30,7 +30,6 @@ protocol SettingsInteractorInputProtocol: AnyObject {
     func updateBiometricAuthSettings(isOn: Bool)
     func updatePinConfirmationSettings(isOn: Bool)
     func connectWalletConnect(uri: String)
-    func syncPushNotificationsStatus()
 }
 
 protocol SettingsInteractorOutputProtocol: AnyObject {
@@ -57,6 +56,6 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showAuthorization(completion: @escaping (Bool) -> Void)
     func showWalletConnect(from view: ControllerBackedProtocol?)
     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)
-    func showSetupNotifications(from view: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate)
-    func showManageNotifications(from view: ControllerBackedProtocol?, delegate: PushNotificationsStatusDelegate)
+    func showSetupNotifications(from view: ControllerBackedProtocol?)
+    func showManageNotifications(from view: ControllerBackedProtocol?)
 }

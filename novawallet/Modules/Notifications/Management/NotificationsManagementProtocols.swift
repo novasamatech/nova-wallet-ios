@@ -13,12 +13,10 @@ protocol NotificationsManagementPresenterProtocol: AnyObject {
 
 protocol NotificationsManagementInteractorInputProtocol: AnyObject {
     func setup()
-    func checkNotificationsAvailability()
     func save(
         settings: Web3Alert.LocalSettings,
         topics: PushNotification.TopicSettings,
-        notificationsEnabled: Bool,
-        announcementsEnabled: Bool
+        notificationsEnabled: Bool
     )
     func remakeSubscription()
 }
@@ -27,8 +25,7 @@ protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
     func didReceive(settings: Web3Alert.LocalSettings)
     func didReceive(topicsSettings: PushNotification.TopicSettings)
     func didReceive(error: NotificationsManagementError)
-    func didReceive(notificationsEnabled: Bool)
-    func didReceive(announcementsEnabled: Bool)
+    func didReceive(notificationStatus: PushNotificationsStatus)
     func didReceiveSaveCompletion()
 }
 
@@ -41,20 +38,19 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
     )
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
-        selectedChains: Web3Alert.Selection<Set<ChainModel.Id>>?,
-        completion: @escaping (Web3Alert.Selection<Set<ChainModel.Id>>?) -> Void
+        selectedChains: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?,
+        completion: @escaping (Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) -> Void
     )
     func showGovSetup(
         from view: ControllerBackedProtocol?,
-        settings: GovernanceNotificationsInitModel?,
-        completion: @escaping ([ChainModel.Id: GovernanceNotificationsModel]) -> Void
+        settings: GovernanceNotificationsModel,
+        completion: @escaping (GovernanceNotificationsModel) -> Void
     )
     func complete(from view: ControllerBackedProtocol?)
 }
 
 enum NotificationsManagementError: Error {
     case settingsSubscription(Error)
-    case notificationsDisabledInSettings
     case save(Error)
 }
 

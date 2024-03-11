@@ -3,8 +3,7 @@ import RobinHood
 
 protocol GovernanceNotificationsViewProtocol: ControllerBackedProtocol {
     func didReceive(isClearActionAvailabe: Bool)
-    func didReceive(viewModels: [GovernanceNotificationsModel])
-    func didReceiveUpdates(for viewModel: GovernanceNotificationsModel)
+    func didReceive(viewModels: [GovernanceNotificationsViewModel])
 }
 
 protocol GovernanceNotificationsPresenterProtocol: ChainNotificationSettingsPresenterProtocol {
@@ -21,6 +20,8 @@ protocol GovernanceNotificationsInteractorInputProtocol: AnyObject {
 
 protocol GovernanceNotificationsInteractorOutputProtocol: AnyObject {
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>])
+    func didReceiveTracks(_ tracks: [GovernanceTrackInfoLocal], for chain: ChainModel)
+    func didReceive(trackFetchError: Error, for chain: ChainModel)
 }
 
 protocol GovernanceNotificationsWireframeProtocol: AnyObject {
@@ -30,5 +31,5 @@ protocol GovernanceNotificationsWireframeProtocol: AnyObject {
         selectedTracks: Set<TrackIdLocal>?,
         completion: @escaping SelectTracksClosure
     )
-    func complete(settings: [ChainModel.Id: GovernanceNotificationsModel])
+    func complete(settings: GovernanceNotificationsModel)
 }

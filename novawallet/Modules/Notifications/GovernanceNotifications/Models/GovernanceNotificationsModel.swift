@@ -1,49 +1,131 @@
 import RobinHood
 
-struct GovernanceNotificationsModel: Identifiable {
-    var identifier: ChainModel.Id
-    var enabled: Bool
-    var icon: ImageViewModelProtocol?
-    var name: String
-    var newReferendum: Bool
-    var referendumUpdate: Bool
-    var tracks: SelectedTracks
+struct GovernanceNotificationsModel {
+    let newReferendum: [ChainModel.Id: Set<TrackIdLocal>]
+    let referendumUpdate: [ChainModel.Id: Set<TrackIdLocal>]
 
-    enum SelectedTracks {
-        case all
-        case concrete(Set<TrackIdLocal>, count: Int?)
+    init(
+        newReferendum: [ChainModel.Id: Set<TrackIdLocal>],
+        referendumUpdate: [ChainModel.Id: Set<TrackIdLocal>]
+    ) {
+        self.newReferendum = newReferendum
+        self.referendumUpdate = referendumUpdate
     }
 
-    var allNotificationsIsOff: Bool {
-        newReferendum == false &&
-            referendumUpdate == false
+    func isNewReferendumNotificationEnabled(for chainId: ChainModel.Id) -> Bool {
+        newReferendum[chainId] != nil
+    }
+
+    func isReferendumUpdateNotificationEnabled(for chainId: ChainModel.Id) -> Bool {
+        referendumUpdate[chainId] != nil
+    }
+
+    func isNotificationEnabled(for chainId: ChainModel.Id) -> Bool {
+        isNewReferendumNotificationEnabled(for: chainId) ||
+            isReferendumUpdateNotificationEnabled(for: chainId)
+    }
+
+    func tracks(for chainId: ChainModel.Id) -> Set<TrackIdLocal>? {
+        newReferendum[chainId] ?? referendumUpdate[chainId]
+    }
+
+    func enablingNewReferendumNotification(
+        for tracks: Set<TrackIdLocal>,
+        chainId: ChainModel.Id
+    ) -> GovernanceNotificationsModel {
+        var updatedNewReferendum = newReferendum
+        updatedNewReferendum[chainId] = tracks
+
+        return .init(newReferendum: updatedNewReferendum, referendumUpdate: referendumUpdate)
+    }
+
+    func disablingNewReferendumNotification(
+        for chainId: ChainModel.Id
+    ) -> GovernanceNotificationsModel {
+        var updatedNewReferendum = newReferendum
+        updatedNewReferendum[chainId] = nil
+
+        return .init(newReferendum: updatedNewReferendum, referendumUpdate: referendumUpdate)
+    }
+
+    func enablingReferendumUpdateNotification(
+        for tracks: Set<TrackIdLocal>,
+        chainId: ChainModel.Id
+    ) -> GovernanceNotificationsModel {
+        var updatedReferendumUpdate = referendumUpdate
+        updatedReferendumUpdate[chainId] = tracks
+
+        return .init(newReferendum: newReferendum, referendumUpdate: updatedReferendumUpdate)
+    }
+
+    func disablingReferendumUpdateNotification(for chainId: ChainModel.Id) -> GovernanceNotificationsModel {
+        var updatedReferendumUpdate = referendumUpdate
+        updatedReferendumUpdate[chainId] = nil
+
+        return .init(newReferendum: newReferendum, referendumUpdate: updatedReferendumUpdate)
     }
 }
 
 extension GovernanceNotificationsModel {
-    var selectedTracks: Set<TrackIdLocal>? {
-        switch tracks {
-        case .all:
-            return nil
-        case let .concrete(tracksIds, _):
-            return Set(tracksIds)
+    init(topicSettings: PushNotification.TopicSettings) {
+        var chainReferendumUpdateTopics = [ChainModel.Id: Set<TrackIdLocal>]()
+        var chainNewReferendumTopics = [ChainModel.Id: Set<TrackIdLocal>]()
+
+        for topic in topicSettings.topics {
+            switch topic {
+            case let .chainReferendums(chainId, trackId):
+                chainReferendumUpdateTopics[chainId] = chainReferendumUpdateTopics[chainId]?.union([trackId])
+                    ?? [trackId]
+            case let .newChainReferendums(chainId, trackId):
+                chainNewReferendumTopics[chainId] = chainNewReferendumTopics[chainId]?.union([trackId])
+                    ?? [trackId]
+            default:
+                break
+            }
         }
+
+        newReferendum = chainNewReferendumTopics
+        referendumUpdate = chainReferendumUpdateTopics
     }
 
-    mutating func set(selectedTracks: Set<TrackIdLocal>, count: Int?) {
-        if selectedTracks.count == count {
-            tracks = .all
-        } else {
-            tracks = .concrete(selectedTracks, count: count)
-        }
+    static func empty() -> GovernanceNotificationsModel {
+        .init(newReferendum: [:], referendumUpdate: [:])
     }
 }
 
-struct GovernanceNotificationsInitModel {
-    var newReferendum: [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]
-    var referendumUpdate: [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]
+extension PushNotification.TopicSettings {
+    func applying(governanceSettings: GovernanceNotificationsModel) -> PushNotification.TopicSettings {
+        var topics: Set<PushNotification.Topic> = topics.filter {
+            switch $0 {
+            case .chainReferendums, .newChainReferendums:
+                return false
+            case .appCustom:
+                return true
+            }
+        }
 
-    func tracks(for chainId: ChainModel.Id) -> Web3Alert.Selection<Set<TrackIdLocal>>? {
-        newReferendum[chainId] ?? referendumUpdate[chainId]
+        topics = governanceSettings.newReferendum.reduce(
+            into: topics
+        ) { accum, keyValue in
+            let chainId = keyValue.key
+            let tracks = keyValue.value
+
+            tracks.forEach { track in
+                accum.insert(.newChainReferendums(chainId: chainId, trackId: track))
+            }
+        }
+
+        topics = governanceSettings.referendumUpdate.reduce(
+            into: topics
+        ) { accum, keyValue in
+            let chainId = keyValue.key
+            let tracks = keyValue.value
+
+            tracks.forEach { track in
+                accum.insert(.chainReferendums(chainId: chainId, trackId: track))
+            }
+        }
+
+        return .init(topics: topics)
     }
 }

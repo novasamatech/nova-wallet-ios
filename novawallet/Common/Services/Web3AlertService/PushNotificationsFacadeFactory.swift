@@ -4,23 +4,17 @@ import FirebaseCore
 import FirebaseFirestore
 import SoraFoundation
 
-protocol Web3AlertsServicesFactoryProtocol {
+protocol PushNotificationsFacadeFactoryProtocol {
     func createSyncService() -> Web3AlertsSyncServiceProtocol
-    func createPushNotificationsService() -> PushNotificationsServiceProtocol
-    func createTopicService() -> TopicServiceProtocol
+    func createStatusService() -> PushNotificationsStatusServiceProtocol
+    func createTopicService() -> PushNotificationsTopicServiceProtocol
 }
 
-final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
+final class PushNotificationsFacadeFactory: PushNotificationsFacadeFactoryProtocol {
     let storageFacade: StorageFacadeProtocol
     let settingsManager: SettingsManagerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
-    private var syncService: Web3AlertsSyncServiceProtocol?
-
-    static var shared: Web3AlertsServicesFactory = .init(
-        storageFacade: UserDataStorageFacade.shared,
-        operationQueue: OperationManagerFacade.sharedDefaultQueue
-    )
 
     init(
         storageFacade: StorageFacadeProtocol,
@@ -44,32 +38,21 @@ final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
 
         let service = Web3AlertsSyncService(
             repository: AnyDataProviderRepository(repository),
-            settingsManager: settingsManager,
             operationQueue: operationQueue
         )
-
-        syncService = service
 
         return service
     }
 
-    func createPushNotificationsService() -> PushNotificationsServiceProtocol {
-        if syncService == nil {
-            syncService = createSyncService()
-        }
-
-        let service = PushNotificationsService(
-            service: syncService,
+    func createStatusService() -> PushNotificationsStatusServiceProtocol {
+        PushNotificationsStatusService(
             settingsManager: settingsManager,
             applicationHandler: ApplicationHandler(),
             logger: logger
         )
-        service.setup()
-
-        return service
     }
 
-    func createTopicService() -> TopicServiceProtocol {
+    func createTopicService() -> PushNotificationsTopicServiceProtocol {
         let repository: CoreDataRepository<PushNotification.TopicSettings, CDUserSingleValue> =
             storageFacade.createRepository(
                 filter: .topicSettings,
@@ -77,8 +60,9 @@ final class Web3AlertsServicesFactory: Web3AlertsServicesFactoryProtocol {
                 mapper: AnyCoreDataMapper(Web3TopicSettingsMapper())
             )
 
-        return TopicService(
+        return PushNotificationsTopicService(
             repository: AnyDataProviderRepository(repository),
+            operationQueue: operationQueue,
             logger: logger
         )
     }

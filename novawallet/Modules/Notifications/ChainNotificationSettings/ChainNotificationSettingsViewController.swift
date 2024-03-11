@@ -92,13 +92,13 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
     }
 
     private func action(section: Int, row: Int) {
-        var model = models[section]
+        let model = models[section]
         switch model {
-        case var .collapsable(cells):
+        case let .collapsable(cells):
             switch cells[row] {
             case let .accessoryCell(accessory):
                 accessory.action()
-            case var .switchCell(switchCell):
+            case let .switchCell(switchCell):
                 models[section] = model.togglingSwitch(at: row)
                 models[section].isOn(at: row).map { switchCell.action($0) }
 
@@ -208,7 +208,7 @@ extension ChainNotificationSettingsViewController {
             switch self {
             case let .switchCell(model):
                 return model.isOn
-            case let .accessoryCell(model):
+            case .accessoryCell:
                 return nil
             }
         }
@@ -235,9 +235,9 @@ extension ChainNotificationSettingsViewController {
 
         func isOn(at index: Int) -> Bool? {
             switch self {
-            case var .collapsable(cells):
+            case let .collapsable(cells):
                 return cells[index].isOn
-            case var .common(cell):
+            case let .common(cell):
                 return cell.isOn
             }
         }

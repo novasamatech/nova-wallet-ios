@@ -12,10 +12,6 @@ enum GovernanceTracksSettingsViewFactory {
         chain: ChainModel,
         completion: @escaping SelectTracksClosure
     ) -> GovernanceTracksSettingsViewProtocol? {
-        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
-            return nil
-        }
-
         guard let runtimeProvider = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chain.chainId) else {
             return nil
         }

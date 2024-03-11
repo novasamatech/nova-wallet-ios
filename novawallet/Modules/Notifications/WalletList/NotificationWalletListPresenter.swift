@@ -22,14 +22,14 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
         baseWireframe as? NotificationWalletListWireframeProtocol
     }
 
-    let localPushSettingsFactory: LocalPushSettingsFactoryProtocol
+    let localPushSettingsFactory: PushNotificationSettingsFactoryProtocol
 
     init(
         initState: [Web3Alert.LocalWallet]?,
         interactor: NotificationWalletListInteractorInputProtocol,
         wireframe: NotificationWalletListWireframeProtocol,
         viewModelFactory: WalletsListViewModelFactoryProtocol,
-        localPushSettingsFactory: LocalPushSettingsFactoryProtocol,
+        localPushSettingsFactory: PushNotificationSettingsFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {

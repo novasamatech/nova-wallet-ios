@@ -3,7 +3,6 @@ import SoraFoundation
 
 final class GovernanceNotificationsViewController: ChainNotificationSettingsViewController {
     let presenter: GovernanceNotificationsPresenterProtocol
-    private var viewModels: [GovernanceNotificationsModel] = []
     lazy var quantityFormatter = NumberFormatter.quantity.localizableResource()
 
     init(
@@ -27,11 +26,13 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
         presenter.proceed()
     }
 
-    private func createSections() -> [ChainNotificationSettingsViewController.Section] {
+    private func createSections(
+        from viewModels: [GovernanceNotificationsViewModel]
+    ) -> [ChainNotificationSettingsViewController.Section] {
         viewModels.map(createSection)
     }
 
-    private func createSection(from model: GovernanceNotificationsModel) -> Section {
+    private func createSection(from model: GovernanceNotificationsViewModel) -> Section {
         let newRefendumTitle = R.string.localizable.notificationsManagementGovNewReferendum(
             preferredLanguages: selectedLocale.rLanguages
         )
@@ -74,7 +75,7 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
             )),
             .accessoryCell(.init(
                 title: tracks,
-                accessory: tracksSubtitle(from: model.tracks),
+                accessory: tracksSubtitle(from: model.selectedTracks),
                 action: { [weak self] in
                     self?.presenter.selectTracks(chainId: model.identifier)
                 }
@@ -82,22 +83,19 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
         ])
     }
 
-    private func tracksSubtitle(from count: GovernanceNotificationsModel.SelectedTracks) -> String {
-        switch count {
-        case .all:
+    private func tracksSubtitle(
+        from selectedTracks: GovernanceNotificationsViewModel.SelectedTracks
+    ) -> String {
+        if selectedTracks.allSelected {
             return R.string.localizable.commonAll(
                 preferredLanguages: selectedLocale.rLanguages
             )
-        case let .concrete(tracks, totalCount):
-            if let count = totalCount {
-                return R.string.localizable.notificationsManagementGovSelectedTracks(
-                    tracks.count,
-                    count,
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-            } else {
-                return quantityFormatter.value(for: selectedLocale).string(from: .init(value: tracks.count)) ?? ""
-            }
+        } else {
+            return R.string.localizable.notificationsManagementGovSelectedTracks(
+                selectedTracks.tracks.count,
+                selectedTracks.totalTracksCount,
+                preferredLanguages: selectedLocale.rLanguages
+            )
         }
     }
 }
@@ -107,17 +105,8 @@ extension GovernanceNotificationsViewController: GovernanceNotificationsViewProt
         super.set(isClearActionAvailabe: isClearActionAvailabe)
     }
 
-    func didReceive(viewModels: [GovernanceNotificationsModel]) {
-        self.viewModels = viewModels
-        let sections = createSections()
+    func didReceive(viewModels: [GovernanceNotificationsViewModel]) {
+        let sections = createSections(from: viewModels)
         super.set(models: sections)
-    }
-
-    func didReceiveUpdates(for viewModel: GovernanceNotificationsModel) {
-        guard let index = viewModels.firstIndex(where: { $0.identifier == viewModel.identifier }) else {
-            return
-        }
-        let section = createSection(from: viewModel)
-        super.update(model: section, at: index)
     }
 }
