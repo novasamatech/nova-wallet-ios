@@ -80,11 +80,11 @@ final class SettingsTests: XCTestCase {
         
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
       
-        let pushNotificationsService = MockPushNotificationsServiceProtocol()
-        let status = Observable<PushNotificationsStatus?>(state: .denied)
-        stub(pushNotificationsService) { stub in
-            when(stub).setup().thenDoNothing()
-            when(stub).statusObservable.get.thenReturn(status)
+        let pushNotificationsFacade = MockPushNotificationsServiceFacadeProtocol()
+        stub(pushNotificationsFacade) { stub in
+            when(stub).subscribeStatus(any(), closure: any()).then { _, closure in
+                closure(.unknown, .active)
+            }
         }
 
         let interactor = SettingsInteractor(
@@ -95,7 +95,7 @@ final class SettingsTests: XCTestCase {
             settingsManager: InMemorySettingsManager(),
             biometryAuth: biometryAuthMock,
             walletNotificationService: walletNotificationService,
-            pushNotificationsService: pushNotificationsService,
+            pushNotificationsFacade: pushNotificationsFacade,
             operationQueue: operationQueue
         )
 
