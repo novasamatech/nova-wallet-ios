@@ -12,6 +12,7 @@ final class MainTabBarInteractor {
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
+    let pushScreenOpenService: PushScreenOpenServiceProtocol
 
     deinit {
         stopServices()
@@ -22,12 +23,14 @@ final class MainTabBarInteractor {
         serviceCoordinator: ServiceCoordinatorProtocol,
         keystoreImportService: KeystoreImportServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
+        pushScreenOpenService: PushScreenOpenServiceProtocol,
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol
     ) {
         self.eventCenter = eventCenter
         self.keystoreImportService = keystoreImportService
         self.screenOpenService = screenOpenService
+        self.pushScreenOpenService = pushScreenOpenService
         self.serviceCoordinator = serviceCoordinator
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
@@ -68,9 +71,14 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         suggestSecretImportIfNeeded()
 
         screenOpenService.delegate = self
+        pushScreenOpenService.delegate = self
 
         if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
+        }
+
+        if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
+            presenter?.didRequestPushScreenOpen(pushPendingScreen)
         }
     }
 }
@@ -111,6 +119,14 @@ extension MainTabBarInteractor: ScreenOpenDelegate {
     func didAskScreenOpen(_ screen: UrlHandlingScreen) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.presenter?.didRequestScreenOpen(screen)
+        }
+    }
+}
+
+extension MainTabBarInteractor: PushScreenOpenDelegate {
+    func didAskScreenOpen(_ screen: PushHandlingScreen) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.presenter?.didRequestPushScreenOpen(screen)
         }
     }
 }

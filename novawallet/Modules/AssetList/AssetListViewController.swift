@@ -507,6 +507,10 @@ extension AssetListViewController: AssetListViewProtocol {
 
         rootView.collectionViewLayout.deactivatePromotion()
     }
+
+    func didReceiveShowChainAsset(chainAssetId: ChainAssetId) {
+        presenter.selectAsset(for: chainAssetId)
+    }
 }
 
 extension AssetListViewController: PromotionBannerViewDelegate {

@@ -62,6 +62,16 @@ final class RootInteractor {
         )
     }
 
+    private func setupPushHandlingService() {
+        let handlingFactory = OpenScreenPushHandlingServiceFactory(chainRegistryClosure: chainRegistryClosure)
+        let screenOpenService = PushScreenOpenService(
+            handlingFactory: handlingFactory,
+            logger: Logger.shared
+        )
+
+        PushHandlingService.shared.setup(service: screenOpenService)
+    }
+
     private func runMigrators() {
         migrators.forEach { migrator in
             do {
@@ -111,6 +121,7 @@ extension RootInteractor: RootInteractorInputProtocol {
         setupTableViewsAppearance()
 
         setupURLHandlingService()
+        setupPushHandlingService()
         runMigrators()
 
         settings.setup(runningCompletionIn: .main) { result in

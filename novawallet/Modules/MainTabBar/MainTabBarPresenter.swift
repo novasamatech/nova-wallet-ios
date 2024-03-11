@@ -32,4 +32,12 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
             locale: localizationManager.selectedLocale
         )
     }
+
+    func didRequestPushScreenOpen(_ screen: PushHandlingScreen) {
+        wireframe.presentScreenIfNeeded(
+            on: view,
+            screen: screen,
+            locale: localizationManager.selectedLocale
+        )
+    }
 }

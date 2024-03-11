@@ -1,9 +1,6 @@
 import Foundation
 
-enum TransferType {
-    case income
-    case outcome
-
+extension TransferType {
     func title(locale: Locale, walletName: String?) -> String {
         let walletString = walletName.flatMap { "[\($0)]" } ?? ""
         let title: String

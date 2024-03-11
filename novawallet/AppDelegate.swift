@@ -40,4 +40,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
     }
+
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        guard application.applicationState != .active else {
+            fetchCompletionHandler(.noData)
+            return
+        }
+        PushHandlingService.shared.handle(userInfo: userInfo) { success in
+            if success {
+                fetchCompletionHandler(.newData)
+            } else {
+                fetchCompletionHandler(.failed)
+            }
+        }
+    }
 }

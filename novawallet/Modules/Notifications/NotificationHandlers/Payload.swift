@@ -12,7 +12,7 @@ struct NewReleasePayload: Codable {
 }
 
 struct NewReferendumPayload: Codable {
-    let referendumId: UInt
+    let referendumId: UInt32
 
     var referendumNumber: String {
         "#\(referendumId)"
@@ -20,7 +20,7 @@ struct NewReferendumPayload: Codable {
 }
 
 struct ReferendumStateUpdatePayload: Codable {
-    let referendumId: UInt
+    let referendumId: UInt32
     let from: Status?
     let to: Status
 

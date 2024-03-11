@@ -1,0 +1,67 @@
+import RobinHood
+import SoraKeystore
+import Foundation
+
+protocol OpenScreenPushHandlingServiceFactoryProtocol {
+    func createHandler(message: NotificationMessage) -> OpenScreenPushServiceProtocol?
+}
+
+final class OpenScreenPushHandlingServiceFactory: OpenScreenPushHandlingServiceFactoryProtocol {
+    private let chainRegistryClosure: ChainRegistryLazyClosure
+    private let settings: SettingsManagerProtocol
+    private let operationQueue: OperationQueue
+    private let workingQueue: DispatchQueue
+    private let walletSettings: SelectedWalletSettings
+    private let userDataStorageFacade: StorageFacadeProtocol
+    private let eventCenter: EventCenterProtocol
+
+    init(
+        chainRegistryClosure: @escaping ChainRegistryLazyClosure,
+        settings: SettingsManagerProtocol = SettingsManager.shared,
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
+        workingQueue: DispatchQueue = .main,
+        walletSettings: SelectedWalletSettings = SelectedWalletSettings.shared,
+        eventCenter: EventCenterProtocol = EventCenter.shared,
+        userDataStorageFacade: StorageFacadeProtocol = UserDataStorageFacade.shared
+    ) {
+        self.chainRegistryClosure = chainRegistryClosure
+        self.settings = settings
+        self.operationQueue = operationQueue
+        self.workingQueue = workingQueue
+        self.walletSettings = walletSettings
+        self.eventCenter = eventCenter
+        self.userDataStorageFacade = userDataStorageFacade
+    }
+
+    func createHandler(message: NotificationMessage) -> OpenScreenPushServiceProtocol? {
+        switch message {
+        case .transfer, .stakingReward:
+            let chainRegistry = chainRegistryClosure()
+            let settingsRepository = userDataStorageFacade.createRepository(
+                filter: .pushSettings,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(Web3AlertSettingsMapper())
+            )
+            let walletsRepository = userDataStorageFacade.createRepository(
+                filter: nil,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(MetaAccountMapper())
+            )
+            return OpenPushAssetDetailsService(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue,
+                workingQueue: workingQueue,
+                settings: walletSettings,
+                eventCenter: eventCenter,
+                settingsRepository: AnyDataProviderRepository(settingsRepository),
+                walletsRepository: AnyDataProviderRepository(walletsRepository)
+            )
+
+        case .newReferendum, .referendumUpdate:
+            let chainRegistry = chainRegistryClosure()
+            return OpenGovernancePushHandlingService(chainRegistry: chainRegistry, settings: settings)
+        case .newRelease:
+            return nil
+        }
+    }
+}

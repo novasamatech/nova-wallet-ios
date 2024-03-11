@@ -8,6 +8,7 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceiveGroups(viewModel: AssetListViewModel)
     func didReceiveNft(viewModel: AssetListNftsViewModel?)
     func didReceivePromotion(viewModel: PromotionBannerView.ViewModel)
+    func didReceiveShowChainAsset(chainAssetId: ChainAssetId)
     func didClosePromotion()
     func didCompleteRefreshing()
 }
