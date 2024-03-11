@@ -3,7 +3,7 @@ import SoraFoundation
 import SoraKeystore
 
 struct NotificationsSetupViewFactory {
-    static func createView(delegate: PushNotificationsStatusDelegate?) -> NotificationsSetupViewProtocol? {
+    static func createView() -> NotificationsSetupViewProtocol? {
         guard
             let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -17,11 +17,10 @@ struct NotificationsSetupViewFactory {
         )
 
         let interactor = NotificationsSetupInteractor(
-            servicesFactory: Web3AlertsServicesFactory.shared,
             selectedWallet: selectedWallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            settingsMananger: SettingsManager.shared,
-            localPushSettingsFactory: LocalPushSettingsFactory()
+            pushNotificationsFacade: PushNotificationsServiceFacade.shared,
+            localPushSettingsFactory: PushNotificationSettingsFactory()
         )
         let wireframe = NotificationsSetupWireframe()
 
@@ -29,7 +28,6 @@ struct NotificationsSetupViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             legalData: legalData,
-            delegate: delegate,
             localizationManager: LocalizationManager.shared
         )
         let termDecorator = LocalizableResource {

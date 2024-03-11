@@ -7,20 +7,18 @@ final class NotificationsManagementPresenter {
     let interactor: NotificationsManagementInteractorInputProtocol
     let viewModelFactory: NotificationsManagemenViewModelFactoryProtocol
 
-    weak var delegate: PushNotificationsStatusDelegate?
+    private var notificationStatus: PushNotificationsStatus?
+
     private var settings: Web3Alert.LocalSettings?
     private var topicsSettings: PushNotification.TopicSettings?
     private var notificationsEnabled: Bool?
-    private var announcementsEnabled: Bool?
 
     private var modifiedSettings: Web3Alert.LocalSettings?
-    private var modifiedAnnouncementsEnabled: Bool?
     private var modifiedNotificationsEnabled: Bool?
     private var modifiedTopicsSettings: PushNotification.TopicSettings?
 
     private var isSaveAvailable: Bool {
         (settings != modifiedSettings) ||
-            (announcementsEnabled != modifiedAnnouncementsEnabled) ||
             (notificationsEnabled != modifiedNotificationsEnabled) ||
             (topicsSettings != modifiedTopicsSettings)
     }
@@ -29,26 +27,24 @@ final class NotificationsManagementPresenter {
         interactor: NotificationsManagementInteractorInputProtocol,
         wireframe: NotificationsManagementWireframeProtocol,
         viewModelFactory: NotificationsManagemenViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol,
-        delegate: PushNotificationsStatusDelegate?
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.delegate = delegate
         self.localizationManager = localizationManager
     }
 
     private func getParameters() -> NotificationsManagementParameters? {
-        guard let settings = modifiedSettings,
-              let notificationsEnabled = modifiedNotificationsEnabled ?? notificationsEnabled,
-              let announcementsEnabled = modifiedAnnouncementsEnabled ?? announcementsEnabled else {
+        guard
+            let settings = modifiedSettings,
+            let notificationsEnabled = modifiedNotificationsEnabled ?? notificationsEnabled else {
             return nil
         }
         return .init(
             isNotificationsOn: notificationsEnabled,
             wallets: settings.wallets.count,
-            isAnnouncementsOn: announcementsEnabled,
+            isAnnouncementsOn: isAnnouncementsOn(),
             isSentTokensOn: settings.notifications.tokenSent == .all,
             isReceiveTokensOn: settings.notifications.tokenReceived == .all,
             isGovernanceOn: isGovernanceOn(),
@@ -83,6 +79,40 @@ final class NotificationsManagementPresenter {
             }
         }
     }
+
+    func isAnnouncementsOn() -> Bool {
+        guard let modifiedTopicsSettings = modifiedTopicsSettings else {
+            return false
+        }
+
+        return modifiedTopicsSettings.topics.contains {
+            switch $0 {
+            case .chainReferendums, .newChainReferendums:
+                return false
+            case .appCustom:
+                return true
+            }
+        }
+    }
+
+    func checkNotificationsAvailability() {
+        if notificationStatus == .denied {
+            let message = R.string.localizable.notificationsErrorDisabledInSettingsMessage(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let title = R.string.localizable.notificationsErrorDisabledInSettingsTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            wireframe.askOpenApplicationSettings(
+                with: message,
+                title: title,
+                from: view,
+                locale: selectedLocale
+            )
+            modifiedNotificationsEnabled = false
+            updateView()
+        }
+    }
 }
 
 extension NotificationsManagementPresenter: NotificationsManagementPresenterProtocol {
@@ -99,14 +129,14 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
             if modifiedNotificationsEnabled == false {
                 modifiedNotificationsEnabled = true
-                interactor.checkNotificationsAvailability()
+                checkNotificationsAvailability()
                 updateView()
             } else {
                 modifiedNotificationsEnabled = false
                 updateView()
             }
         case .announcements:
-            modifiedAnnouncementsEnabled?.toggle()
+            modifiedTopicsSettings = modifiedTopicsSettings?.byTogglingAnnouncements()
             updateView()
         case .sentTokens:
             modifiedSettings = modifiedSettings?.with {
@@ -126,24 +156,25 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
                 completion: changeWalletsSettings
             )
         case .gov:
+            let settings = modifiedTopicsSettings.map { GovernanceNotificationsModel(topicSettings: $0) }
             wireframe.showGovSetup(
                 from: view,
-                settings: getGovSettings(),
+                settings: settings ?? .empty(),
                 completion: changeGovSettings
             )
         case .staking:
             wireframe.showStakingRewardsSetup(
                 from: view,
-                selectedChains: getStakingRewardsSettings(),
+                selectedChains: modifiedSettings?.notifications.stakingReward,
                 completion: changeStakingRewardsSettings
             )
         }
     }
 
     func save() {
-        guard let settings = modifiedSettings,
-              let notificationsEnabled = modifiedNotificationsEnabled,
-              let modifiedAnnouncementsEnabled = modifiedAnnouncementsEnabled else {
+        guard
+            let settings = modifiedSettings,
+            let notificationsEnabled = modifiedNotificationsEnabled else {
             return
         }
 
@@ -152,95 +183,29 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         interactor.save(
             settings: settings,
             topics: topics,
-            notificationsEnabled: notificationsEnabled,
-            announcementsEnabled: modifiedAnnouncementsEnabled
+            notificationsEnabled: notificationsEnabled
         )
     }
 
-    func changeGovSettings(settings: [ChainModel.Id: GovernanceNotificationsModel]) {
-        var topics: [PushNotification.Topic] = []
-        topics = settings.reduce(into: topics) {
-            guard $1.value.enabled else {
-                return
-            }
-            switch $1.value.tracks {
-            case .all:
-                if $1.value.newReferendum {
-                    $0.append(.newChainReferendums(chainId: $1.key, trackId: nil))
-                }
-                if $1.value.referendumUpdate {
-                    $0.append(.chainReferendums(chainId: $1.key, trackId: nil))
-                }
-            case let .concrete(trackIds, _):
-                for trackId in trackIds {
-                    if $1.value.newReferendum {
-                        $0.append(.newChainReferendums(chainId: $1.key, trackId: trackId))
-                    }
-                    if $1.value.referendumUpdate {
-                        $0.append(.chainReferendums(chainId: $1.key, trackId: trackId))
-                    }
-                }
-            }
-        }
-        modifiedTopicsSettings = .init(topics: topics)
+    func changeGovSettings(settings: GovernanceNotificationsModel) {
+        let currentSettings = modifiedTopicsSettings ?? .init(topics: [])
+        modifiedTopicsSettings = currentSettings.applying(governanceSettings: settings)
         updateView()
     }
 
-    func getGovSettings() -> GovernanceNotificationsInitModel? {
-        var chainReferendumUpdateTopics = [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]()
-        var chainNewReferendumTopics = [ChainModel.Id: Web3Alert.Selection<Set<TrackIdLocal>>]()
-        let allTopics = modifiedTopicsSettings.map(\.topics) ?? []
-
-        for topic in allTopics {
-            switch topic {
-            case let .chainReferendums(chainId, optTrackId):
-                if let trackId = optTrackId {
-                    let addedTracks = chainReferendumUpdateTopics[chainId]?.concreteValue ?? []
-                    chainReferendumUpdateTopics[chainId] = .concrete(Set(addedTracks + [trackId]))
-                } else {
-                    chainReferendumUpdateTopics[chainId] = .all
-                }
-            case let .newChainReferendums(chainId, optTrackId):
-                if let trackId = optTrackId {
-                    let addedTracks = chainNewReferendumTopics[chainId]?.concreteValue ?? []
-                    chainNewReferendumTopics[chainId] = .concrete(Set(addedTracks + [trackId]))
-                } else {
-                    chainNewReferendumTopics[chainId] = .all
-                }
-            default: break
-            }
-        }
-
-        return .init(
-            newReferendum: chainNewReferendumTopics,
-            referendumUpdate: chainReferendumUpdateTopics
-        )
-    }
-
-    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<ChainModel.Id>>?) {
+    func changeStakingRewardsSettings(result: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) {
         modifiedSettings = modifiedSettings?.with {
             switch result {
             case .all:
                 $0.stakingReward = .all
             case let .concrete(selectedChains):
-                $0.stakingReward = .concrete(Array(selectedChains))
+                $0.stakingReward = .concrete(selectedChains)
             case nil:
-                $0.stakingReward = .concrete(Array([]))
+                $0.stakingReward = .concrete([])
             }
         }
 
         updateView()
-    }
-
-    func getStakingRewardsSettings() -> Web3Alert.Selection<Set<ChainModel.Id>>? {
-        switch modifiedSettings?.notifications.stakingReward {
-        case let .concrete(chains):
-            return .concrete(Set(chains))
-        case .all:
-            return .all
-        case .none:
-            return nil
-        }
     }
 
     func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
@@ -269,19 +234,14 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
         updateView()
     }
 
-    func didReceive(notificationsEnabled: Bool) {
-        self.notificationsEnabled = notificationsEnabled
+    func didReceive(notificationStatus: PushNotificationsStatus) {
+        self.notificationStatus = notificationStatus
+        notificationsEnabled = notificationStatus == .active
+
         if modifiedNotificationsEnabled == nil {
             modifiedNotificationsEnabled = notificationsEnabled
         }
-        updateView()
-    }
 
-    func didReceive(announcementsEnabled: Bool) {
-        self.announcementsEnabled = announcementsEnabled
-        if modifiedAnnouncementsEnabled == nil {
-            modifiedAnnouncementsEnabled = announcementsEnabled
-        }
         updateView()
     }
 
@@ -291,21 +251,6 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscription()
             }
-        case .notificationsDisabledInSettings:
-            let message = R.string.localizable.notificationsErrorDisabledInSettingsMessage(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            let title = R.string.localizable.notificationsErrorDisabledInSettingsTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            wireframe.askOpenApplicationSettings(
-                with: message,
-                title: title,
-                from: view,
-                locale: selectedLocale
-            )
-            modifiedNotificationsEnabled = false
-            updateView()
         case .save:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.save()
@@ -315,7 +260,6 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
 
     func didReceiveSaveCompletion() {
         view?.stopLoading()
-        delegate?.pushNotificationsStatusDidUpdate()
         wireframe.complete(from: view)
     }
 }

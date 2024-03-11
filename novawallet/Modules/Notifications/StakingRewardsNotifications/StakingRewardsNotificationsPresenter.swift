@@ -10,7 +10,7 @@ final class StakingRewardsNotificationsPresenter {
     private var selectedChains: Set<ChainModel.Id>?
 
     init(
-        initialState: Web3Alert.Selection<Set<ChainModel.Id>>?,
+        initialState: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?,
         interactor: StakingRewardsNotificationsInteractorInputProtocol,
         wireframe: StakingRewardsNotificationsWireframeProtocol
     ) {
@@ -66,7 +66,12 @@ extension StakingRewardsNotificationsPresenter: StakingRewardsNotificationsPrese
     func proceed() {
         if let selectedChains = selectedChains {
             let selectedAll = selectedChains.count == chainList.allItems.count
-            wireframe.complete(selectedChains: selectedAll ? .all : .concrete(Set(selectedChains)))
+
+            if selectedAll {
+                wireframe.complete(selectedChains: .all)
+            } else {
+                wireframe.complete(selectedChains: .concrete(selectedChains))
+            }
         }
     }
 }

@@ -38,7 +38,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        Messaging.messaging().apnsToken = deviceToken
+        Logger.shared.debug("Did receive APNS push token")
+
+        PushNotificationsServiceFacade.shared.updateAPNS(token: deviceToken)
+    }
+
+    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        Logger.shared.error("Failed to register push notifications: \(error)")
     }
 
     func application(

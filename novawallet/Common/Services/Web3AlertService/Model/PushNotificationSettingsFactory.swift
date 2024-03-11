@@ -1,7 +1,7 @@
 import SubstrateSdk
 
-protocol LocalPushSettingsFactoryProtocol {
-    func createSettings(
+protocol PushNotificationSettingsFactoryProtocol {
+    func createWalletSettings(
         for wallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel]
     ) -> Web3Alert.LocalSettings
@@ -12,8 +12,8 @@ protocol LocalPushSettingsFactoryProtocol {
     ) -> Web3Alert.LocalWallet
 }
 
-final class LocalPushSettingsFactory: LocalPushSettingsFactoryProtocol {
-    func createSettings(
+final class PushNotificationSettingsFactory: PushNotificationSettingsFactoryProtocol {
+    func createWalletSettings(
         for wallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel]
     ) -> Web3Alert.LocalSettings {
@@ -28,7 +28,6 @@ final class LocalPushSettingsFactory: LocalPushSettingsFactoryProtocol {
             wallets: [web3Wallet],
             notifications: .init(
                 stakingReward: nil,
-                transfer: nil,
                 tokenSent: .all,
                 tokenReceived: .all
             )
@@ -39,21 +38,21 @@ final class LocalPushSettingsFactory: LocalPushSettingsFactoryProtocol {
         from wallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel]
     ) -> Web3Alert.LocalWallet {
-        let chainSpecific = wallet.chainAccounts.reduce(into: [Web3Alert.ChainId: AccountAddress]()) {
-            if let chainFormat = chains[$1.chainId]?.chainFormat {
-                let address = try? $1.accountId.toAddress(using: chainFormat)
-                $0[$1.chainId] = address ?? ""
+        let chainSpecific = wallet.chainAccounts.reduce(into: [Web3Alert.LocalChainId: AccountAddress]()) {
+            if let chain = chains[$1.chainId] {
+                let address = try? $1.accountId.toAddress(using: chain.chainFormat)
+                $0[chain.chainId] = address ?? ""
             }
         }
 
         let substrateChainFormat = ChainFormat.substrate(UInt16(SNAddressType.genericSubstrate.rawValue))
 
-        let remoteWallet = Web3Alert.Wallet(
+        let model = Web3Alert.Wallet<Web3Alert.LocalChainId>(
             baseSubstrate: try? wallet.substrateAccountId?.toAddress(using: substrateChainFormat),
             baseEthereum: try? wallet.ethereumAddress?.toAddress(using: .ethereum),
             chainSpecific: chainSpecific
         )
 
-        return .init(metaId: wallet.metaId, remoteModel: remoteWallet)
+        return .init(metaId: wallet.metaId, model: model)
     }
 }
