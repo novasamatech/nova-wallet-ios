@@ -23,7 +23,7 @@ class SettingsTableDataSource<TRow, TSection>: NSObject, UITableViewDataSource {
         let viewModels = sections[indexPath.section].1
         let cellViewModel = viewModels[indexPath.row]
 
-        let cell: UITableViewCell & TableViewCellPositioning
+        let cell: UITableViewCell & TableViewCellPositioning & ActivatableTableViewCell
 
         switch cellViewModel.accessory {
         case let .title(viewModel):
@@ -49,7 +49,7 @@ class SettingsTableDataSource<TRow, TSection>: NSObject, UITableViewDataSource {
         }
 
         cell.apply(position: .init(row: indexPath.row, count: viewModels.count))
-
+        cell.set(active: cellViewModel.isActive)
         return cell
     }
 }
@@ -81,4 +81,9 @@ struct CommonSettingsCellViewModel<TRow> {
     let row: TRow
     let title: TitleIconViewModel
     let accessory: Accessory
+    let isActive: Bool
+}
+
+protocol ActivatableTableViewCell {
+    func set(active: Bool)
 }
