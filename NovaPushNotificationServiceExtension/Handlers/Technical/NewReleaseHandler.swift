@@ -25,15 +25,12 @@ final class NewReleaseHandler: PushNotificationHandler {
     ) {
         dispatchInQueueWhenPossible(callbackQueue) {
             let locale = self.localizationManager.selectedLocale
-            let title = localizedString(
-                LocalizationKeys.Technical.newReleaseTitle,
-                locale: locale
+            let title = R.string.localizable.pushNotificationNewReleaseTitle(preferredLanguages: locale.rLanguages)
+            let subtitle = R.string.localizable.pushNotificationNewReleaseSubtitle(
+                self.payload.version,
+                preferredLanguages: locale.rLanguages
             )
-            let subtitle = localizedString(
-                LocalizationKeys.Technical.newReleaseSubtitle,
-                with: [self.payload.version],
-                locale: locale
-            )
+
             completion(.init(title: title, subtitle: subtitle))
         }
     }

@@ -98,7 +98,7 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
         )
         let walletString = walletName.flatMap { "[\($0)]" } ?? ""
         let title = [
-            localizedString(LocalizationKeys.StakingReward.title, locale: locale),
+            R.string.localizable.pushNotificationStakingRewardTitle(preferredLanguages: locale.rLanguages),
             walletString
         ].joined(with: .space)
         let balance = balanceViewModel(
@@ -107,15 +107,13 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
             priceData: priceData,
             workingQueue: operationQueue
         )
+
         let priceString = balance?.price.map { "(\($0))" } ?? ""
-        let subtitle = localizedString(
-            LocalizationKeys.StakingReward.subtitle,
-            with: [
-                balance?.amount ?? "",
-                priceString,
-                chainAsset.chain.name
-            ],
-            locale: locale
+        let subtitle = R.string.localizable.pushNotificationStakingRewardSubtitle(
+            balance?.amount ?? "",
+            priceString,
+            chainAsset.chain.name,
+            preferredLanguages: locale.rLanguages
         )
 
         return .init(title: title, subtitle: subtitle)

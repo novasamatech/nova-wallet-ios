@@ -38,16 +38,15 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                     completion(nil)
                     return
                 }
-                let title = localizedString(
-                    LocalizationKeys.Governance.newReferendumTitle,
 
-                    locale: self.locale
+                let title = R.string.localizable.pushNotificationNewReferendumTitle(
+                    preferredLanguages: self.locale.rLanguages
                 )
-                let subtitle = localizedString(
-                    LocalizationKeys.Governance.newReferendumSubtitle,
 
-                    with: [chain.name, self.payload.referendumNumber],
-                    locale: self.locale
+                let subtitle = R.string.localizable.pushNotificationNewReferendumSubtitle(
+                    chain.name,
+                    self.payload.referendumNumber,
+                    preferredLanguages: self.locale.rLanguages
                 )
                 completion(.init(title: title, subtitle: subtitle))
             case .failure:

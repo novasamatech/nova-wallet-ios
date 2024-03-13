@@ -9,9 +9,9 @@ enum TransferType {
         let title: String
         switch self {
         case .income:
-            title = localizedString(LocalizationKeys.Transfer.incomeTitle, locale: locale)
+            title = R.string.localizable.pushNotificationReceiveTokensTitle(preferredLanguages: locale.rLanguages)
         case .outcome:
-            title = localizedString(LocalizationKeys.Transfer.outcomeTitle, locale: locale)
+            title = R.string.localizable.pushNotificationSentTokensTitle(preferredLanguages: locale.rLanguages)
         }
 
         return [title, walletString].joined(with: .space)
@@ -27,23 +27,27 @@ enum TransferType {
         let priceString = price.map { "(\($0))" } ?? ""
         switch self {
         case .income:
-            return localizedString(
-                LocalizationKeys.Transfer.incomeSubtitle,
-                with: [amount, priceString, chainName],
-                locale: locale
+            return R.string.localizable.pushNotificationReceiveTokensSubtitle(
+                amount,
+                priceString,
+                chainName,
+                preferredLanguages: locale.rLanguages
             )
         case .outcome:
             if let address = address {
-                return localizedString(
-                    LocalizationKeys.Transfer.outcomeSubtitle,
-                    with: [amount, priceString, address, chainName],
-                    locale: locale
+                return R.string.localizable.pushNotificationSentTokensSubtitle(
+                    amount,
+                    priceString,
+                    address,
+                    chainName,
+                    preferredLanguages: locale.rLanguages
                 )
             } else {
-                return localizedString(
-                    LocalizationKeys.Transfer.outcomeWOAddressSubtitle,
-                    with: [amount, priceString, chainName],
-                    locale: locale
+                return R.string.localizable.pushNotificationSentTokensWoAddressSubtitle(
+                    amount,
+                    priceString,
+                    chainName,
+                    preferredLanguages: locale.rLanguages
                 )
             }
         }
