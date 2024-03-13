@@ -27,12 +27,12 @@ final class StorePathMigrator: Migrating {
         guard requiresMigration() else {
             return
         }
-        
+
         try NSPersistentStoreCoordinator.replaceStore(
             at: sharedStoreLocation,
             withStoreAt: currentStoreLocation
         )
-        
+
         try NSPersistentStoreCoordinator.destroyStore(at: currentStoreLocation)
     }
 }
