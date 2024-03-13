@@ -24,3 +24,5 @@
 "push.notification.referendum.cancelled" = "Cancelled";
 "push.notification.referendum.timedOut" = "Timed out";
 "push.notification.referendum.killed" = "Killed";
+"push.notification.default.title" = "Nova Wallet";
+"push.notification.unsupported.body" = "Unsupported message content";

@@ -1,6 +1,7 @@
 import UserNotifications
 import BigInt
 import SoraKeystore
+import SoraFoundation
 
 final class NotificationService: UNNotificationServiceExtension {
     typealias ContentHandler = (UNNotificationContent) -> Void
@@ -10,14 +11,12 @@ final class NotificationService: UNNotificationServiceExtension {
 
     override func didReceive(
         _ request: UNNotificationRequest,
-
         withContentHandler contentHandler: @escaping ContentHandler
     ) {
         self.contentHandler = contentHandler
         let requestContent = request.content.mutableCopy() as? UNMutableNotificationContent
 
         guard let bestAttemptContent = requestContent else {
-            contentHandler(request.content)
             return
         }
 
@@ -25,7 +24,10 @@ final class NotificationService: UNNotificationServiceExtension {
             userInfo: bestAttemptContent.userInfo,
             decoder: JSONDecoder()
         ) else {
-            contentHandler(request.content)
+            let result = NotificationContentResult.createUnsupportedResult(
+                for: LocalizationManager.shared.selectedLocale
+            )
+            contentHandler(result.toUserNotificationContent())
             return
         }
 
@@ -33,16 +35,19 @@ final class NotificationService: UNNotificationServiceExtension {
         handler = factory.createHandler(message: message)
 
         handler?.handle(callbackQueue: nil) { notification in
-            bestAttemptContent.title = notification?.title ?? ""
-            bestAttemptContent.subtitle = ""
-            bestAttemptContent.body = notification?.subtitle ?? ""
-            contentHandler(bestAttemptContent)
+            if let notification = notification {
+                contentHandler(notification.toUserNotificationContent())
+            } else {
+                let unsupported = NotificationContentResult.createUnsupportedResult(
+                    for: LocalizationManager.shared.selectedLocale
+                )
+                contentHandler(unsupported.toUserNotificationContent())
+            }
         }
     }
 
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
-        // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
         }
