@@ -1,19 +1,13 @@
 import Foundation
 
 final class SerialMigrator: Migrating {
-    let migration: Migrating
-    let dependentMigration: Migrating
+    let migrations: [Migrating]
 
-    init(
-        migration: Migrating,
-        dependentMigration: Migrating
-    ) {
-        self.migration = migration
-        self.dependentMigration = dependentMigration
+    init(migrations: [Migrating]) {
+        self.migrations = migrations
     }
 
     func migrate() throws {
-        try migration.migrate()
-        try dependentMigration.migrate()
+        try migrations.forEach { try $0.migrate() }
     }
 }

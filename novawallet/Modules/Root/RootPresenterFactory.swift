@@ -9,38 +9,10 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         let keychain = Keychain()
         let settings = SettingsManager.shared
 
-        let userStorePathMigrator = StorePathMigrator(
-            currentStoreLocation: UserStorageParams.storageURL,
-            sharedStoreLocation: UserStorageParams.sharedStorageURL,
-            fileManager: FileManager.default
-        )
-        let userStorageMigrator = UserStorageMigrator(
-            targetVersion: UserStorageParams.modelVersion,
-            storeURL: UserStorageParams.sharedStorageURL,
-            modelDirectory: UserStorageParams.modelDirectory,
-            keystore: keychain,
-            settings: settings,
-            fileManager: FileManager.default
-        )
-        let userSerialMigrator = SerialMigrator(
-            migration: userStorePathMigrator,
-            dependentMigration: userStorageMigrator
-        )
-        let substrateStoreMigrator = StorePathMigrator(
-            currentStoreLocation: SubstrateStorageParams.storageURL,
-            sharedStoreLocation: SubstrateStorageParams.sharedStorageURL,
-            fileManager: FileManager.default
-        )
-        let substrateStorageMigrator = SubstrateStorageMigrator(
-            storeURL: SubstrateStorageParams.storageURL,
-            modelDirectory: SubstrateStorageParams.modelDirectory,
-            model: SubstrateStorageParams.modelVersion,
-            fileManager: FileManager.default
-        )
-        let substrateSerialMigrator = SerialMigrator(
-            migration: substrateStoreMigrator,
-            dependentMigration: substrateStorageMigrator
-        )
+        let userDatabaseMigrator = createUserDatabaseMigration()
+        
+        let substrateDatabaseMigrator = createSubstrateDatabaseMigration()
+        
         let sharedSettingsMigrator = SharedSettingsMigrator(
             settingsManager: SettingsManager.shared,
             sharedSettingsManager: SharedSettingsManager()
@@ -64,5 +36,46 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         interactor.presenter = presenter
 
         return presenter
+    }
+    
+    private static func createUserDatabaseMigration() -> Migrating {
+        let storePathMigrator = StorePathMigrator(
+            currentStoreLocation: UserStorageParams.storageURL,
+            sharedStoreLocation: UserStorageParams.sharedStorageURL,
+            fileManager: FileManager.default
+        )
+        
+        let storageMigrator = UserStorageMigrator(
+            targetVersion: UserStorageParams.modelVersion,
+            storeURL: UserStorageParams.sharedStorageURL,
+            modelDirectory: UserStorageParams.modelDirectory,
+            keystore: keychain,
+            settings: settings,
+            fileManager: FileManager.default
+        )
+        
+        return SerialMigrator(migrations: [storePathMigrator, storageMigrator])
+        
+        return SerialMigrator(
+            migration: userStorePathMigrator,
+            dependentMigration: userStorageMigrator
+        )
+    }
+    
+    private static func createSubstrateDatabaseMigration() -> Migrating {
+        let storePathMigrator = StorePathMigrator(
+            currentStoreLocation: SubstrateStorageParams.storageURL,
+            sharedStoreLocation: SubstrateStorageParams.sharedStorageURL,
+            fileManager: FileManager.default
+        )
+        
+        let storageMigrator = SubstrateStorageMigrator(
+            storeURL: SubstrateStorageParams.sharedStorageURL,
+            modelDirectory: SubstrateStorageParams.modelDirectory,
+            model: SubstrateStorageParams.modelVersion,
+            fileManager: FileManager.default
+        )
+        
+        return SerialMigrator(migrations: [storePathMigrator, storageMigrator])
     }
 }
