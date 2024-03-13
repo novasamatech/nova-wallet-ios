@@ -63,14 +63,16 @@ class CommonHandler {
 extension CommonHandler {
     func balanceViewModel(
         asset: AssetModel,
-        amount: BigUInt,
+        amount: String,
         priceData: PriceData?,
         workingQueue: OperationQueue
     ) -> BalanceViewModelProtocol? {
-        guard let currencyManager = currencyManager(operationQueue: workingQueue) else {
+        guard
+            let currencyManager = currencyManager(operationQueue: workingQueue),
+            let amountInPlank = BigUInt(amount) else {
             return nil
         }
-        let decimalAmount = amount.decimal(precision: asset.precision)
+        let decimalAmount = amountInPlank.decimal(precision: asset.precision)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let factory = BalanceViewModelFactory(
             targetAssetInfo: asset.displayInfo,

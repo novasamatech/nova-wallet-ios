@@ -1,10 +1,9 @@
-import BigInt
 import Foundation
-import SubstrateSdk
+import BigInt
 
 struct StakingRewardPayload: Codable {
     let recipient: AccountAddress
-    @StringCodable var amount: BigUInt
+    let amount: String
 }
 
 struct NewReleasePayload: Codable {
@@ -20,9 +19,15 @@ struct NewReferendumPayload: Codable {
 }
 
 struct ReferendumStateUpdatePayload: Codable {
+    enum CodingKeys: String, CodingKey {
+        case referendumId
+        case fromStatus = "from"
+        case toStatus = "to"
+    }
+
     let referendumId: UInt
-    let from: Status?
-    let to: Status
+    let fromStatus: Status?
+    let toStatus: Status
 
     enum Status: String, Codable {
         case created
@@ -30,20 +35,28 @@ struct ReferendumStateUpdatePayload: Codable {
         case confirming
         case approved
         case rejected
+        case cancelled
+        case timedOut
+        case killed
 
-        // TODO: localize
-        func description(for _: Locale?) -> String {
+        func description(for locale: Locale?) -> String {
             switch self {
             case .created:
-                return "Created"
+                return R.string.localizable.pushNotificationReferendumCreated(preferredLanguages: locale?.rLanguages)
             case .deciding:
-                return "Deciding"
+                return R.string.localizable.pushNotificationReferendumDeciding(preferredLanguages: locale?.rLanguages)
             case .confirming:
-                return "Confirming"
+                return R.string.localizable.pushNotificationReferendumConfirming(preferredLanguages: locale?.rLanguages)
             case .approved:
-                return "Approved"
+                return R.string.localizable.pushNotificationReferendumApproved(preferredLanguages: locale?.rLanguages)
             case .rejected:
-                return "Rejected"
+                return R.string.localizable.pushNotificationReferendumRejected(preferredLanguages: locale?.rLanguages)
+            case .cancelled:
+                return R.string.localizable.pushNotificationReferendumCancelled(preferredLanguages: locale?.rLanguages)
+            case .timedOut:
+                return R.string.localizable.pushNotificationReferendumTimedOut(preferredLanguages: locale?.rLanguages)
+            case .killed:
+                return R.string.localizable.pushNotificationReferendumKilled(preferredLanguages: locale?.rLanguages)
             }
         }
     }
@@ -56,6 +69,6 @@ struct ReferendumStateUpdatePayload: Codable {
 struct NotificationTransferPayload: Decodable {
     let sender: AccountAddress?
     let recipient: AccountAddress?
-    @StringCodable var amount: BigUInt
+    let amount: String
     let assetId: String?
 }

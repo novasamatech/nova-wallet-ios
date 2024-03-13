@@ -16,3 +16,11 @@
 "push.notification.new.release.subtitle" = "Загрузите Nova Wallet v%@, чтобы получить все новые функции!";
 "push.notification.staking.reward.title" = "⭐️ Новая награда";
 "push.notification.staking.reward.subtitle" = "Получено %@ %@ от стейкинга %@";
+"push.notification.referendum.created" = "Создан";
+"push.notification.referendum.deciding" = "Решение";
+"push.notification.referendum.approved" = "Одобрен";
+"push.notification.referendum.rejected" = "Отклонён";
+"push.notification.referendum.confirming" = "Проходит";
+"push.notification.referendum.cancelled" = "Отменён";
+"push.notification.referendum.timedOut" = "Тайм-аут";
+"push.notification.referendum.killed" = "Удалён";

@@ -39,7 +39,7 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
                     completion(nil)
                     return
                 }
-                let content = self.content(from: chain, payload: self.payload)
+                let content = self.content(from: chain)
                 completion(content)
             case .failure:
                 completion(nil)
@@ -47,11 +47,8 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
         }
     }
 
-    private func content(
-        from chain: ChainModel,
-        payload: ReferendumStateUpdatePayload
-    ) -> NotificationContentResult {
-        switch payload.to {
+    private func content(from chain: ChainModel) -> NotificationContentResult {
+        switch payload.toStatus {
         case .approved:
             let title = R.string.localizable.pushNotificationReferendumApprovedTitle(
                 preferredLanguages: locale.rLanguages
@@ -83,19 +80,19 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
 
             let subtitle: String
 
-            if let oldStatus = payload.from {
+            if let oldStatus = payload.fromStatus {
                 subtitle = R.string.localizable.pushNotificationReferendumStatusUpdatedSubtitle(
                     chain.name,
                     payload.referendumNumber,
                     oldStatus.description(for: locale),
-                    payload.to.description(for: locale),
+                    payload.toStatus.description(for: locale),
                     preferredLanguages: locale.rLanguages
                 )
             } else {
                 subtitle = R.string.localizable.pushNotificationReferendumSingleStatusUpdatedSubtitle(
                     chain.name,
                     payload.referendumNumber,
-                    payload.to.description(for: locale),
+                    payload.toStatus.description(for: locale),
                     preferredLanguages: locale.rLanguages
                 )
             }

@@ -53,16 +53,10 @@ abstract_target 'novawalletAll' do
   
   target 'NovaPushNotificationServiceExtension' do
     pod 'SwiftLint'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '1.17.0'
     pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'RobinHood', '~> 2.6.0'
     pod 'Sourcery', '~> 1.4'
-    pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.8'
-    pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.1'
-    pod 'FirebaseAuth'
-    pod 'FirebaseFirestore'
-    pod 'FirebaseMessaging'
   end
 
 

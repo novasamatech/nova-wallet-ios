@@ -16,3 +16,11 @@
 "push.notification.new.release.subtitle" = "Download Nova Wallet v%@ to get all the new features!";
 "push.notification.staking.reward.title" = "⭐️ New reward";
 "push.notification.staking.reward.subtitle" = "Received %@ %@ from %@ staking";
+"push.notification.referendum.created" = "Created";
+"push.notification.referendum.deciding" = "Deciding";
+"push.notification.referendum.approved" = "Approved";
+"push.notification.referendum.rejected" = "Rejected";
+"push.notification.referendum.confirming" = "Confirming";
+"push.notification.referendum.cancelled" = "Cancelled";
+"push.notification.referendum.timedOut" = "Timed out";
+"push.notification.referendum.killed" = "Killed";
