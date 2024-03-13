@@ -1,7 +1,4 @@
-import FirebaseCore
-import FirebaseFirestore
-import SubstrateSdk
-import RobinHood
+import Foundation
 
 extension Web3Alert {
     typealias RemoteWallet = Wallet<Web3Alert.RemoteChainId>

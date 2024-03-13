@@ -74,9 +74,10 @@ extension CommonHandler {
         }
         let decimalAmount = amountInPlank.decimal(precision: asset.precision)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let factory = BalanceViewModelFactory(
+        let factory = PrimitiveBalanceViewModelFactory(
             targetAssetInfo: asset.displayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            formatterFactory: AssetBalanceFormatterFactory()
         )
         return factory.balanceFromPrice(decimalAmount, priceData: priceData).value(for: locale)
     }
