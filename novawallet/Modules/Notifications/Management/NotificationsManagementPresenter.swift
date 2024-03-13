@@ -18,9 +18,11 @@ final class NotificationsManagementPresenter {
     private var modifiedTopicsSettings: PushNotification.TopicSettings?
 
     private var isSaveAvailable: Bool {
-        (settings != modifiedSettings) ||
+        let settingsWasModified = (settings != modifiedSettings) ||
             (notificationsEnabled != modifiedNotificationsEnabled) ||
             (topicsSettings != modifiedTopicsSettings)
+        let isAmbiguousState = isAllNotificationsOff() == true && modifiedNotificationsEnabled == true
+        return settingsWasModified && !isAmbiguousState
     }
 
     init(
@@ -95,6 +97,17 @@ final class NotificationsManagementPresenter {
         }
     }
 
+    func isAllNotificationsOff() -> Bool? {
+        guard let parameters = getParameters() else {
+            return nil
+        }
+        return !parameters.isAnnouncementsOn &&
+            !parameters.isGovernanceOn &&
+            !parameters.isReceiveTokensOn &&
+            !parameters.isSentTokensOn &&
+            !parameters.isStakingOn
+    }
+
     func checkNotificationsAvailability() {
         if notificationStatus == .denied {
             let message = R.string.localizable.notificationsErrorDisabledInSettingsMessage(
@@ -115,14 +128,7 @@ final class NotificationsManagementPresenter {
     }
 
     func disableNotificationIfNeeded() {
-        guard let parameters = getParameters() else {
-            return
-        }
-        if !parameters.isAnnouncementsOn,
-           !parameters.isGovernanceOn,
-           !parameters.isReceiveTokensOn,
-           !parameters.isSentTokensOn,
-           !parameters.isStakingOn {
+        if isAllNotificationsOff() == true {
             modifiedNotificationsEnabled = false
         }
     }
