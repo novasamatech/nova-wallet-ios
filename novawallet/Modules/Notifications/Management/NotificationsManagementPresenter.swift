@@ -113,6 +113,19 @@ final class NotificationsManagementPresenter {
             updateView()
         }
     }
+
+    func disableNotificationIfNeeded() {
+        guard let parameters = getParameters() else {
+            return
+        }
+        if !parameters.isAnnouncementsOn,
+           !parameters.isGovernanceOn,
+           !parameters.isReceiveTokensOn,
+           !parameters.isSentTokensOn,
+           !parameters.isStakingOn {
+            modifiedNotificationsEnabled = false
+        }
+    }
 }
 
 extension NotificationsManagementPresenter: NotificationsManagementPresenterProtocol {
@@ -137,21 +150,23 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
         case .announcements:
             modifiedTopicsSettings = modifiedTopicsSettings?.byTogglingAnnouncements()
+            disableNotificationIfNeeded()
             updateView()
         case .sentTokens:
             modifiedSettings = modifiedSettings?.with {
                 $0.tokenSent.toggle()
             }
+            disableNotificationIfNeeded()
             updateView()
         case .receivedTokens:
             modifiedSettings = modifiedSettings?.with {
                 $0.tokenReceived.toggle()
             }
+            disableNotificationIfNeeded()
             updateView()
         case .wallets:
             wireframe.showWallets(
                 from: view,
-
                 initState: modifiedSettings?.wallets,
                 completion: changeWalletsSettings
             )
@@ -190,6 +205,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     func changeGovSettings(settings: GovernanceNotificationsModel) {
         let currentSettings = modifiedTopicsSettings ?? .init(topics: [])
         modifiedTopicsSettings = currentSettings.applying(governanceSettings: settings)
+        disableNotificationIfNeeded()
         updateView()
     }
 
@@ -205,6 +221,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
         }
 
+        disableNotificationIfNeeded()
         updateView()
     }
 

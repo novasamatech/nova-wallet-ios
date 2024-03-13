@@ -56,3 +56,5 @@ extension UncertainStorage where T: Decodable {
         }
     }
 }
+
+extension UncertainStorage: Equatable where T: Equatable {}

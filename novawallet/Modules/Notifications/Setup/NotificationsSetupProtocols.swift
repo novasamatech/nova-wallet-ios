@@ -23,4 +23,5 @@ protocol NotificationsSetupInteractorOutputProtocol: AnyObject {
 protocol NotificationsSetupWireframeProtocol: WebPresentable, AlertPresentable, CommonRetryable, ErrorPresentable {
     func complete(on view: ControllerBackedProtocol?)
     func show(url: URL, from view: ControllerBackedProtocol?)
+    func close(on view: ControllerBackedProtocol?)
 }

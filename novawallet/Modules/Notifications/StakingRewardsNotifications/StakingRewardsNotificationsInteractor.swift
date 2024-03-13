@@ -18,7 +18,7 @@ final class StakingRewardsNotificationsInteractor {
             let stakingChains = changes.filter {
                 switch $0 {
                 case let .insert(newItem), let .update(newItem):
-                    return newItem.hasStaking
+                    return newItem.hasPushNotifications && newItem.hasStaking
                 case .delete:
                     return true
                 }

@@ -190,6 +190,10 @@ struct ChainModel: Equatable, Hashable {
         assets.contains { $0.hasStaking }
     }
 
+    var hasPushNotifications: Bool {
+        options?.contains(where: { $0 == .pushNotifications }) ?? false
+    }
+
     func chainAssetsWithExternalBalances() -> [ChainAsset] {
         assets.compactMap { asset in
             guard asset.hasPoolStaking || asset.isUtility && hasCrowdloans else {
@@ -303,6 +307,7 @@ enum LocalChainOptions: String, Codable {
     case swapHub = "swap-hub"
     case swapHydra = "hydradx-swaps"
     case proxy
+    case pushNotifications = "pushSupport"
 }
 
 extension ChainModel {

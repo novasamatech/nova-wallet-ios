@@ -4,9 +4,17 @@ import SoraKeystore
 
 struct NotificationsManagementViewFactory {
     static func createView() -> NotificationsManagementViewProtocol? {
+        guard
+            let selectedWallet = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
         let interactor = NotificationsManagementInteractor(
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
-            settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactory.shared
+            settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactory.shared,
+            localPushSettingsFactory: PushNotificationSettingsFactory(),
+            selectedWallet: selectedWallet,
+            chainRegistry: ChainRegistryFacade.sharedRegistry
         )
 
         let wireframe = NotificationsManagementWireframe()

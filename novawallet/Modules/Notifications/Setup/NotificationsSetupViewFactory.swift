@@ -3,7 +3,7 @@ import SoraFoundation
 import SoraKeystore
 
 struct NotificationsSetupViewFactory {
-    static func createView() -> NotificationsSetupViewProtocol? {
+    static func createView(completion: @escaping () -> Void) -> NotificationsSetupViewProtocol? {
         guard
             let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -23,6 +23,7 @@ struct NotificationsSetupViewFactory {
             localPushSettingsFactory: PushNotificationSettingsFactory()
         )
         let wireframe = NotificationsSetupWireframe()
+        wireframe.completion = completion
 
         let presenter = NotificationsSetupPresenter(
             interactor: interactor,

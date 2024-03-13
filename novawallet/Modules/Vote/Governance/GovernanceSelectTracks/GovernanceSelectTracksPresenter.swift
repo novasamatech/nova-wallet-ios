@@ -7,7 +7,7 @@ class GovernanceSelectTracksPresenter: SelectTracksPresenter, GovernanceSelectTr
             selectTracksView as? GovernanceSelectTracksViewProtocol
         }
         set {
-            baseView = newValue
+            selectTracksView = newValue
         }
     }
 

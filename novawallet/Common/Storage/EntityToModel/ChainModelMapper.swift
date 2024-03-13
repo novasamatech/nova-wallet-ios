@@ -317,6 +317,10 @@ final class ChainModelMapper {
             options.append(.proxy)
         }
 
+        if entity.hasPushNotifications {
+            options.append(.pushNotifications)
+        }
+
         return !options.isEmpty ? options : nil
     }
 }
@@ -403,6 +407,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasSwapHub = model.hasSwapHub
         entity.hasSwapHydra = model.hasSwapHydra
         entity.hasProxy = model.hasProxy
+        entity.hasPushNotifications = model.hasPushNotifications
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue
         entity.additional = try model.additional.map {

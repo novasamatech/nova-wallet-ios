@@ -5415,6 +5415,7 @@
 		775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainPresenter.swift; sourceTree = "<group>"; };
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
+		7761DD252BA10CF2000C600C /* SubstrateDataModel27.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel27.xcdatamodel; sourceTree = "<group>"; };
 		7772EB312B724A8F000D7E21 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7772EB332B726670000D7E21 /* Web3AlertsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertsSyncService.swift; sourceTree = "<group>"; };
 		77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableContainerView.swift; sourceTree = "<group>"; };
@@ -26109,6 +26110,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				7761DD252BA10CF2000C600C /* SubstrateDataModel27.xcdatamodel */,
 				0C85FF352B6E08F800FC0014 /* SubstrateDataModel26.xcdatamodel */,
 				7722739F2B3D44F000EB4BC3 /* SubstrateDataModel25.xcdatamodel */,
 				0C8AF7BD2B39567700005AC9 /* SubstrateDataModel24.xcdatamodel */,
@@ -26136,7 +26138,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 0C85FF352B6E08F800FC0014 /* SubstrateDataModel26.xcdatamodel */;
+			currentVersion = 7761DD252BA10CF2000C600C /* SubstrateDataModel27.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

@@ -105,7 +105,12 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
     }
 
     func showSetupNotifications(from view: ControllerBackedProtocol?) {
-        guard let setupNotificationsView = NotificationsSetupViewFactory.createView() else {
+        let completion: () -> Void = { [weak self] in
+            self?.showManageNotifications(from: view)
+        }
+        guard let setupNotificationsView = NotificationsSetupViewFactory.createView(
+            completion: completion
+        ) else {
             return
         }
 
