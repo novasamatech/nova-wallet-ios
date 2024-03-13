@@ -21,7 +21,7 @@ final class NotificationsManagementPresenter {
         let settingsWasModified = (settings != modifiedSettings) ||
             (notificationsEnabled != modifiedNotificationsEnabled) ||
             (topicsSettings != modifiedTopicsSettings)
-        let isAmbiguousState = isAllNotificationsOff() == true && modifiedNotificationsEnabled == true
+        let isAmbiguousState = areAllNotificationsOff() == true && modifiedNotificationsEnabled == true
         return settingsWasModified && !isAmbiguousState
     }
 
@@ -97,7 +97,7 @@ final class NotificationsManagementPresenter {
         }
     }
 
-    func isAllNotificationsOff() -> Bool? {
+    func areAllNotificationsOff() -> Bool? {
         guard let parameters = getParameters() else {
             return nil
         }
@@ -128,7 +128,7 @@ final class NotificationsManagementPresenter {
     }
 
     func disableNotificationIfNeeded() {
-        if isAllNotificationsOff() == true {
+        if areAllNotificationsOff() == true {
             modifiedNotificationsEnabled = false
         }
     }
