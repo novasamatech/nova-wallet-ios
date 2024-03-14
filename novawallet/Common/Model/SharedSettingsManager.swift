@@ -8,13 +8,7 @@ enum SharedSettingsKey: String, CaseIterable {
 final class SharedSettingsManager: SettingsManagerProtocol {
     private let userDefaults: UserDefaults
 
-    #if DEBUG
-        static let groupName = "group.novafoundation.novawallet.dev"
-    #else
-        static let groupName = "group.novafoundation.novawallet"
-    #endif
-
-    init?(group: String = groupName) {
+    init?(group: String = SharedContainerGroup.name) {
         if let userDefaults = UserDefaults(suiteName: group) {
             self.userDefaults = userDefaults
         } else {

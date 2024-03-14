@@ -5,11 +5,6 @@ enum SubstrateStorageParams {
     static let databaseName = "SubstrateDataModel.sqlite"
     static let modelDirectory: String = "SubstrateDataModel.momd"
     static let modelVersion: SubstrateStorageVersion = .version26
-    #if DEBUG
-        static let groupName = "group.novafoundation.novawallet.dev"
-    #else
-        static let groupName = "group.novafoundation.novawallet"
-    #endif
 
     static let storageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
@@ -23,7 +18,7 @@ enum SubstrateStorageParams {
     static let groupStorageDirectoryURL: URL = {
         let baseURL = FileManager.default
             .containerURL(
-                forSecurityApplicationGroupIdentifier: groupName
+                forSecurityApplicationGroupIdentifier: SharedContainerGroup.name
             )?.appendingPathComponent("CoreData")
         return baseURL!
     }()

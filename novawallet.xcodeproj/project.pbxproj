@@ -449,6 +449,8 @@
 		0CCD18D12BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18CF2BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift */; };
 		0CCD18D32BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18D22BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift */; };
 		0CCD18D42BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18D22BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift */; };
+		0CCD18D62BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18D52BA2C17C0068D73A /* SharedContainerGroup.swift */; };
+		0CCD18D72BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18D52BA2C17C0068D73A /* SharedContainerGroup.swift */; };
 		0CCDB2DC2B7128A7007BC5D6 /* HydraOmnipoolTokensFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2DB2B7128A7007BC5D6 /* HydraOmnipoolTokensFactory.swift */; };
 		0CCDB2DE2B7488A5007BC5D6 /* HydraStableswapPoolService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2DD2B7488A5007BC5D6 /* HydraStableswapPoolService.swift */; };
 		0CCDB2E02B748B59007BC5D6 /* HydraStableswapPoolState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2DF2B748B59007BC5D6 /* HydraStableswapPoolState.swift */; };
@@ -4999,6 +5001,7 @@
 		0CCD18CA2BA1F0F00068D73A /* BalanceViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
 		0CCD18CF2BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimitiveBalanceViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
 		0CCD18D22BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimitiveBalanceViewModelFactory.swift; sourceTree = "<group>"; };
+		0CCD18D52BA2C17C0068D73A /* SharedContainerGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedContainerGroup.swift; sourceTree = "<group>"; };
 		0CCDB2DB2B7128A7007BC5D6 /* HydraOmnipoolTokensFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolTokensFactory.swift; sourceTree = "<group>"; };
 		0CCDB2DD2B7488A5007BC5D6 /* HydraStableswapPoolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapPoolService.swift; sourceTree = "<group>"; };
 		0CCDB2DF2B748B59007BC5D6 /* HydraStableswapPoolState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapPoolState.swift; sourceTree = "<group>"; };
@@ -15109,6 +15112,7 @@
 				849013FA24A92A05008F705E /* novawallet.debug.xcconfig */,
 				849013F824A92A05008F705E /* novawallet.dev.xcconfig */,
 				849013F924A92A05008F705E /* novawallet.release.xcconfig */,
+				0CCD18D52BA2C17C0068D73A /* SharedContainerGroup.swift */,
 			);
 			path = Configs;
 			sourceTree = "<group>";
@@ -21572,6 +21576,7 @@
 				0CCD18AF2BA175540068D73A /* NotificationContentResult+UserContent.swift in Sources */,
 				77AE4F972B905B4D00426519 /* ChainModel.swift in Sources */,
 				778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */,
+				0CCD18D72BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */,
 				77AE4F962B905B2F00426519 /* AddressConversion.swift in Sources */,
 				77AE4FAE2B90611000426519 /* DispatchQueueHelper.swift in Sources */,
 				7778FE6A2B910CF60023E801 /* String+Helpers.swift in Sources */,
@@ -22694,6 +22699,7 @@
 				88AC5ADE2948CB540056DD40 /* TransactionHistoryViewModelFactory.swift in Sources */,
 				84038FEC26FFBA4D00C73F3F /* PriceLocalStorageSubscriber.swift in Sources */,
 				841221A428F0A3F200715C82 /* ReferendumAccountVoteLocal.swift in Sources */,
+				0CCD18D62BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */,
 				8436C7A129ACDCA50024B409 /* VotersStakingInfo.swift in Sources */,
 				8473D4082657E9AD00B394B2 /* CrowdloanLastContribution.swift in Sources */,
 				8456D2BF2993E97200D159A7 /* GovernanceYourDelegationViewModel.swift in Sources */,
@@ -26387,7 +26393,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013FA24A92A05008F705E /* novawallet.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDebug.entitlements;
@@ -26422,7 +26428,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013F924A92A05008F705E /* novawallet.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawallet.entitlements;
@@ -26570,7 +26576,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013F824A92A05008F705E /* novawallet.dev.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDev.entitlements;
@@ -26684,7 +26690,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 84AE11CA273C007E00B294B7 /* novawallet.staging.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawallet.entitlements;

@@ -20,12 +20,6 @@ enum UserStorageParams {
     static let modelDirectory: String = "UserDataModel.momd"
     static let databaseName = "UserDataModel.sqlite"
 
-    #if DEBUG
-        static let groupName = "group.novafoundation.novawallet.dev"
-    #else
-        static let groupName = "group.novafoundation.novawallet"
-    #endif
-
     static let storageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
             for: .documentDirectory,
@@ -37,7 +31,7 @@ enum UserStorageParams {
     static let storageGroupDirectoryURL: URL = {
         let baseURL = FileManager.default
             .containerURL(
-                forSecurityApplicationGroupIdentifier: groupName
+                forSecurityApplicationGroupIdentifier: SharedContainerGroup.name
             )?.appendingPathComponent("CoreData")
         return baseURL!
     }()
