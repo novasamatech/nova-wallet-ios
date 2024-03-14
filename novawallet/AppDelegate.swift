@@ -1,5 +1,4 @@
 import UIKit
-import FirebaseMessaging
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

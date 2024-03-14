@@ -1,6 +1,5 @@
 import Foundation
 import RobinHood
-import Rswift
 
 extension CurrencyRepository: CurrencyRepositoryProtocol {
     func fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]> {

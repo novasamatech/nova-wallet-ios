@@ -8,7 +8,6 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
     let chainId: ChainModel.Id
     let payload: ReferendumStateUpdatePayload
     let operationQueue: OperationQueue
-    let callStore = CancellableCallStore()
 
     init(
         chainId: ChainModel.Id,
@@ -29,7 +28,6 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
         execute(
             operation: chainOperation,
             inOperationQueue: operationQueue,
-            backingCallIn: callStore,
             runningCallbackIn: callbackQueue
         ) { [weak self] result in
             guard let self = self else {
@@ -41,7 +39,7 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
                     completion(nil)
                     return
                 }
-                let content = self.content(from: chain, payload: payload)
+                let content = self.content(from: chain)
                 completion(content)
             case .failure:
                 completion(nil)
@@ -49,58 +47,56 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
         }
     }
 
-    private func content(
-        from chain: ChainModel,
-        payload: ReferendumStateUpdatePayload
-    ) -> NotificationContentResult {
-        switch payload.to {
+    private func content(from chain: ChainModel) -> NotificationContentResult {
+        switch payload.toStatus {
         case .approved:
-            let title = localizedString(
-                LocalizationKeys.Governance.referendumApprovedTitle,
-                locale: locale
+            let title = R.string.localizable.pushNotificationReferendumApprovedTitle(
+                preferredLanguages: locale.rLanguages
             )
-            let subtitle = localizedString(
-                LocalizationKeys.Governance.referendumApprovedSubitle,
-                with: [chain.name, self.payload.referendumNumber],
-                locale: locale
+
+            let subtitle = R.string.localizable.pushNotificationReferendumApprovedSubtitle(
+                chain.name,
+                payload.referendumNumber,
+                preferredLanguages: locale.rLanguages
             )
+
             return .init(title: title, subtitle: subtitle)
         case .rejected:
-            let title = localizedString(
-                LocalizationKeys.Governance.referendumRejectedTitle,
-                locale: locale
+            let title = R.string.localizable.pushNotificationReferendumRejectedTitle(
+                preferredLanguages: locale.rLanguages
             )
-            let subtitle = localizedString(
-                LocalizationKeys.Governance.referendumRejectedSubitle,
-                with: [chain.name, self.payload.referendumNumber],
-                locale: locale
+
+            let subtitle = R.string.localizable.pushNotificationReferendumRejectedSubtitle(
+                chain.name,
+                payload.referendumNumber,
+                preferredLanguages: locale.rLanguages
             )
+
             return .init(title: title, subtitle: subtitle)
         default:
-            let title = localizedString(
-                LocalizationKeys.Governance.referendumStatusUpdatedTitle,
-                locale: locale
+            let title = R.string.localizable.pushNotificationReferendumStatusUpdatedTitle(
+                preferredLanguages: locale.rLanguages
             )
+
             let subtitle: String
 
-            if let oldStatus = self.payload.from {
-                subtitle = localizedString(
-                    LocalizationKeys.Governance.referendumStatusUpdatedSubitle,
-                    with: [chain.name,
-                           self.payload.referendumNumber,
-                           oldStatus.description(for: locale),
-                           self.payload.to.description(for: locale)],
-                    locale: locale
+            if let oldStatus = payload.fromStatus {
+                subtitle = R.string.localizable.pushNotificationReferendumStatusUpdatedSubtitle(
+                    chain.name,
+                    payload.referendumNumber,
+                    oldStatus.description(for: locale),
+                    payload.toStatus.description(for: locale),
+                    preferredLanguages: locale.rLanguages
                 )
             } else {
-                subtitle = localizedString(
-                    LocalizationKeys.Governance.referendumSingleStatusUpdatedSubitle,
-                    with: [chain.name,
-                           self.payload.referendumNumber,
-                           self.payload.to.description(for: locale)],
-                    locale: locale
+                subtitle = R.string.localizable.pushNotificationReferendumSingleStatusUpdatedSubtitle(
+                    chain.name,
+                    payload.referendumNumber,
+                    payload.toStatus.description(for: locale),
+                    preferredLanguages: locale.rLanguages
                 )
             }
+
             return .init(title: title, subtitle: subtitle)
         }
     }
