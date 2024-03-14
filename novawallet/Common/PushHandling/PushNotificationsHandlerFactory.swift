@@ -2,11 +2,11 @@ import RobinHood
 import SoraKeystore
 import Foundation
 
-protocol OpenPushScreenServiceFactoryProtocol {
-    func createHandler(message: NotificationMessage) -> NotificationMessageHandlerProtocol?
+protocol PushNotificationsHandlerFactoryProtocol {
+    func createHandler(message: NotificationMessage) -> PushNotificationMessageHandlingProtocol?
 }
 
-final class OpenPushScreenServiceFactory: OpenPushScreenServiceFactoryProtocol {
+final class PushNotificationsHandlerFactory: PushNotificationsHandlerFactoryProtocol {
     private let chainRegistryClosure: ChainRegistryLazyClosure
     private let settings: SettingsManagerProtocol
     private let operationQueue: OperationQueue
@@ -33,7 +33,7 @@ final class OpenPushScreenServiceFactory: OpenPushScreenServiceFactoryProtocol {
         self.userDataStorageFacade = userDataStorageFacade
     }
 
-    func createHandler(message: NotificationMessage) -> NotificationMessageHandlerProtocol? {
+    func createHandler(message: NotificationMessage) -> PushNotificationMessageHandlingProtocol? {
         switch message {
         case .transfer, .stakingReward:
             let chainRegistry = chainRegistryClosure()

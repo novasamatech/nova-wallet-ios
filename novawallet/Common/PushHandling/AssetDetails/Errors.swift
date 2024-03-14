@@ -3,5 +3,5 @@ enum AssetDetailsHandlingError: Error {
     case select(Error)
     case unknownWallet
     case invalidAddress
-    case internalError
+    case unsupportedMessage
 }

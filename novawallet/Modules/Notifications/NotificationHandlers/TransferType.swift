@@ -1,6 +1,8 @@
 import Foundation
 
-enum TransferType {
-    case income
-    case outcome
+extension PushNotification {
+    enum TransferType {
+        case income
+        case outcome
+    }
 }

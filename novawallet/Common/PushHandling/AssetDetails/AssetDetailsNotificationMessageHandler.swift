@@ -36,12 +36,10 @@ final class AssetDetailsNotificationMessageHandler {
     }
 
     private func handle(
-        for chainId: ChainModel.Id,
-        assetId: String?,
-        address: AccountAddress?,
-        completion: @escaping (Result<ChainAssetId, AssetDetailsHandlingError>) -> Void
+        parameters: ResolvedParameters,
+        completion: @escaping (Result<ChainAsset, AssetDetailsHandlingError>) -> Void
     ) {
-        guard let address = address else {
+        guard let address = parameters.address else {
             completion(.failure(AssetDetailsHandlingError.invalidAddress))
             return
         }
@@ -56,7 +54,7 @@ final class AssetDetailsNotificationMessageHandler {
             let chains: [ChainModel] = changes.allChangedItems()
 
             guard let chainModel = chains.first(where: {
-                Web3Alert.createRemoteChainId(from: $0.chainId) == chainId
+                Web3Alert.createRemoteChainId(from: $0.chainId) == parameters.chainId
             }) else {
                 return
             }
@@ -65,7 +63,7 @@ final class AssetDetailsNotificationMessageHandler {
 
             self.handle(
                 chain: chainModel,
-                assetId: assetId,
+                assetId: parameters.assetId,
                 address: address,
                 completion: completion
             )
@@ -76,7 +74,7 @@ final class AssetDetailsNotificationMessageHandler {
         chain: ChainModel,
         assetId: String?,
         address: AccountAddress,
-        completion: @escaping (Result<ChainAssetId, AssetDetailsHandlingError>) -> Void
+        completion: @escaping (Result<ChainAsset, AssetDetailsHandlingError>) -> Void
     ) {
         guard let asset = mapAssetId(assetId, chain: chain) else {
             completion(.failure(AssetDetailsHandlingError.invalidAssetId))
@@ -93,7 +91,7 @@ final class AssetDetailsNotificationMessageHandler {
             let wallet = Self.targetWallet(
                 address: address,
                 chainId: chain.chainId,
-                wallets: wallets,
+                pushNotificationWallets: wallets,
                 metaAccounts: metaAccounts
             )
 
@@ -112,27 +110,35 @@ final class AssetDetailsNotificationMessageHandler {
             inOperationQueue: operationQueue,
             backingCallIn: callbackStore,
             runningCallbackIn: workingQueue
-        ) { result in
+        ) { [weak self] result in
             switch result {
             case let .success(result):
-                guard let wallet = result else {
-                    completion(.failure(AssetDetailsHandlingError.unknownWallet))
-                    return
-                }
-
-                self.select(wallet: wallet) { error in
-                    if let error = error {
-                        completion(.failure(AssetDetailsHandlingError.select(error)))
-                    } else {
-                        completion(.success(ChainAssetId(
-                            chainId: chain.chainId,
-                            assetId: asset.assetId
-                        )))
-                    }
-                }
-
+                self?.trySelect(
+                    wallet: result,
+                    chainAsset: .init(chain: chain, asset: asset),
+                    completion: completion
+                )
             case let .failure(error):
                 completion(.failure(AssetDetailsHandlingError.select(error)))
+            }
+        }
+    }
+
+    private func trySelect(
+        wallet: MetaAccountModel?,
+        chainAsset: ChainAsset,
+        completion: @escaping (Result<ChainAsset, AssetDetailsHandlingError>) -> Void
+    ) {
+        guard let wallet = wallet else {
+            completion(.failure(AssetDetailsHandlingError.unknownWallet))
+            return
+        }
+
+        select(wallet: wallet) { error in
+            if let error = error {
+                completion(.failure(AssetDetailsHandlingError.select(error)))
+            } else {
+                completion(.success(chainAsset))
             }
         }
     }
@@ -148,10 +154,10 @@ final class AssetDetailsNotificationMessageHandler {
     private static func targetWallet(
         address: AccountAddress,
         chainId: ChainModel.Id,
-        wallets: [Web3Alert.LocalWallet],
+        pushNotificationWallets: [Web3Alert.LocalWallet],
         metaAccounts: [MetaAccountModel]
     ) -> MetaAccountModel? {
-        guard let targetWallet = wallets.first(where: {
+        guard let targetWallet = pushNotificationWallets.first(where: {
             if let specificAddress = $0.model.chainSpecific[chainId] {
                 return specificAddress == address
             } else {
@@ -176,45 +182,46 @@ final class AssetDetailsNotificationMessageHandler {
             }
         }
     }
-}
 
-extension AssetDetailsNotificationMessageHandler: NotificationMessageHandlerProtocol {
-    func handle(message: NotificationMessage, completion: @escaping (Result<PushHandlingScreen, Error>) -> Void) {
-        let targetAddress: AccountAddress?
-        let targetChainId: ChainModel.Id
-        let targetAssetId: String?
-
-        switch message {
-        case let .stakingReward(chainId, payload):
-            targetChainId = chainId
-            targetAddress = payload.recipient
-            targetAssetId = nil
-        case let .transfer(type, chainId, payload):
-            switch type {
-            case .income:
-                targetAddress = payload.recipient
-                targetAssetId = payload.assetId
-            case .outcome:
-                targetAddress = payload.sender
-                targetAssetId = payload.assetId
-            }
-            targetChainId = chainId
-        default:
-            completion(.failure(AssetDetailsHandlingError.internalError))
-            return
-        }
-
-        handle(
-            for: targetChainId,
-            assetId: targetAssetId,
-            address: targetAddress
-        ) {
+    private func handleParsedMessage(
+        _ parameters: ResolvedParameters,
+        completion: @escaping (Result<PushNotification.OpenScreen, Error>) -> Void
+    ) {
+        handle(parameters: parameters) {
             switch $0 {
-            case let .success(chainAssetId):
-                completion(.success(.historyDetails(chainAssetId)))
+            case let .success(chainAsset):
+                completion(.success(.historyDetails(chainAsset)))
             case let .failure(error):
                 completion(.failure(error))
             }
         }
+    }
+}
+
+extension AssetDetailsNotificationMessageHandler: PushNotificationMessageHandlingProtocol {
+    func handle(
+        message: NotificationMessage,
+        completion: @escaping (Result<PushNotification.OpenScreen, Error>) -> Void
+    ) {
+        switch message {
+        case let .stakingReward(chainId, payload):
+            let resolvedParameters = ResolvedParameters(chainId: chainId, assetId: nil, address: payload.recipient)
+            handleParsedMessage(resolvedParameters, completion: completion)
+        case let .transfer(type, chainId, payload):
+            let address = type == .income ? payload.recipient : payload.sender
+            let resolvedParameters = ResolvedParameters(chainId: chainId, assetId: payload.assetId, address: address)
+            handleParsedMessage(resolvedParameters, completion: completion)
+        default:
+            completion(.failure(AssetDetailsHandlingError.unsupportedMessage))
+            return
+        }
+    }
+}
+
+extension AssetDetailsNotificationMessageHandler {
+    struct ResolvedParameters {
+        let chainId: ChainModel.Id
+        let assetId: String?
+        let address: AccountAddress?
     }
 }

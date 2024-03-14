@@ -56,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             fetchCompletionHandler(.noData)
             return
         }
-        PushHandlingService.shared.handle(userInfo: userInfo) { success in
+        PushNotificationHandlingService.shared.handle(userInfo: userInfo) { success in
             if success {
                 fetchCompletionHandler(.newData)
             } else {

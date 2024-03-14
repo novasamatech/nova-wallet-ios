@@ -2,7 +2,7 @@ import Foundation
 
 enum NotificationMessage {
     case transfer(
-        type: TransferType,
+        type: PushNotification.TransferType,
         chainId: ChainModel.Id,
         payload: NotificationTransferPayload
     )

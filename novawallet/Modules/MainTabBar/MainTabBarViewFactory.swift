@@ -11,7 +11,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             let keystoreImportService: KeystoreImportServiceProtocol = URLHandlingService.shared
             .findService(),
             let screenOpenService: ScreenOpenServiceProtocol = URLHandlingService.shared.findService(),
-            let pushScreenOpenService = PushHandlingService.shared.service
+            let pushScreenOpenService = PushNotificationHandlingService.shared.service
         else {
             Logger.shared.error("Can't find required keystore import service")
             return nil

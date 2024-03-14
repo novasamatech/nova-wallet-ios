@@ -1,6 +1,6 @@
 import Foundation
 
-enum PushNotification {
+extension PushNotification {
     struct AllSettings {
         let notificationsEnabled: Bool
         let accountBased: Web3Alert.LocalSettings

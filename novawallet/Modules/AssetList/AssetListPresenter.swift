@@ -22,7 +22,6 @@ final class AssetListPresenter {
     private var hidesZeroBalances: Bool?
     private var shouldShowPolkadotPromotion: Bool = true
     private var hasWalletsUpdates: Bool = false
-    private var selectedChainAssetId: ChainAssetId?
 
     private(set) var walletConnectSessionsCount: Int = 0
 
@@ -361,26 +360,16 @@ final class AssetListPresenter {
     }
 
     private func presentAssetDetails(for chainAssetId: ChainAssetId) {
-        guard
-            let chainAsset = chainAsset(by: chainAssetId) else {
-            selectedChainAssetId = chainAssetId
-            return
-        }
-
-        wireframe.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
-    }
-
-    private func chainAsset(by chainAssetId: ChainAssetId) -> ChainAsset? {
         // get chain from interactor that includes also disabled assets
         let optChain = interactor.getFullChain(for: chainAssetId.chainId) ?? model.allChains[chainAssetId.chainId]
 
         guard
             let chain = optChain,
             let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
-            return nil
+            return
         }
 
-        return .init(chain: chain, asset: asset)
+        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 }
 
@@ -491,18 +480,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
         view?.didClosePromotion()
     }
-
-    func showSelectedAssetIfNeeded() {
-        guard let chainAssetId = selectedChainAssetId else {
-            return
-        }
-        guard let chainAsset = chainAsset(by: chainAssetId) else {
-            return
-        }
-
-        selectedChainAssetId = nil
-        wireframe.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
-    }
 }
 
 extension AssetListPresenter: AssetListInteractorOutputProtocol {
@@ -519,8 +496,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         case .nfts:
             updateNftView()
         }
-
-        showSelectedAssetIfNeeded()
     }
 
     func didReceive(

@@ -1,41 +1,43 @@
 import Foundation
 
-protocol PushScreenOpenDelegate: AnyObject {
-    func didAskScreenOpen(_ screen: PushHandlingScreen)
+protocol PushNotificationOpenDelegate: AnyObject {
+    func didAskScreenOpen(_ screen: PushNotification.OpenScreen)
 }
 
-enum PushHandlingScreen {
-    case gov(Referenda.ReferendumIndex)
-    case historyDetails(ChainAssetId)
-    case error(Error)
+extension PushNotification {
+    enum OpenScreen {
+        case gov(Referenda.ReferendumIndex)
+        case historyDetails(ChainAsset)
+        case error(Error)
+    }
 }
 
-protocol NotificationMessageHandlerProtocol: AnyObject {
+protocol PushNotificationMessageHandlingProtocol: AnyObject {
     func handle(
         message: NotificationMessage,
-        completion: @escaping (Result<PushHandlingScreen, Error>) -> Void
+        completion: @escaping (Result<PushNotification.OpenScreen, Error>) -> Void
     )
     func cancel()
 }
 
-protocol OpenPushScreenServiceProtocol: PushHandlingServiceProtocol {
-    var delegate: PushScreenOpenDelegate? { get set }
+protocol PushNotificationOpenScreenFacadeProtocol: PushNotificationHandlingServiceProtocol {
+    var delegate: PushNotificationOpenDelegate? { get set }
 
-    func consumePendingScreenOpen() -> PushHandlingScreen?
+    func consumePendingScreenOpen() -> PushNotification.OpenScreen?
 }
 
-final class OpenPushScreenService {
-    weak var delegate: PushScreenOpenDelegate?
-    private var pendingScreen: PushHandlingScreen?
-    private var processingHandler: NotificationMessageHandlerProtocol?
+final class PushNotificationOpenScreenFacade {
+    weak var delegate: PushNotificationOpenDelegate?
+    private var pendingScreen: PushNotification.OpenScreen?
+    private var processingHandler: PushNotificationMessageHandlingProtocol?
     private lazy var decoder = JSONDecoder()
     private let delegateQueue: DispatchQueue
 
     let logger: LoggerProtocol
-    let handlingFactory: OpenPushScreenServiceFactory
+    let handlingFactory: PushNotificationsHandlerFactory
 
     init(
-        handlingFactory: OpenPushScreenServiceFactory,
+        handlingFactory: PushNotificationsHandlerFactory,
         delegateQueue: DispatchQueue = .main,
         logger: LoggerProtocol
     ) {
@@ -45,7 +47,7 @@ final class OpenPushScreenService {
     }
 }
 
-extension OpenPushScreenService: OpenPushScreenServiceProtocol {
+extension PushNotificationOpenScreenFacade: PushNotificationOpenScreenFacadeProtocol {
     func handle(userInfo: [AnyHashable: Any], completion: @escaping (Bool) -> Void) {
         guard let message = try? NotificationMessage(userInfo: userInfo, decoder: decoder) else {
             logger.warning("Can't parse message")
@@ -65,12 +67,12 @@ extension OpenPushScreenService: OpenPushScreenServiceProtocol {
                 return
             }
 
-            let screen: PushHandlingScreen
+            let screen: PushNotification.OpenScreen
             switch result {
             case let .success(preparedScreen):
                 screen = preparedScreen
                 completion(true)
-            case let .failure(error):
+            case .failure:
                 completion(false)
                 return
             }
@@ -86,7 +88,7 @@ extension OpenPushScreenService: OpenPushScreenServiceProtocol {
         }
     }
 
-    func consumePendingScreenOpen() -> PushHandlingScreen? {
+    func consumePendingScreenOpen() -> PushNotification.OpenScreen? {
         let screen = pendingScreen
 
         pendingScreen = nil

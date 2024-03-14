@@ -12,7 +12,7 @@ final class MainTabBarInteractor {
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
-    let pushScreenOpenService: OpenPushScreenServiceProtocol
+    let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
 
     deinit {
         stopServices()
@@ -23,7 +23,7 @@ final class MainTabBarInteractor {
         serviceCoordinator: ServiceCoordinatorProtocol,
         keystoreImportService: KeystoreImportServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
-        pushScreenOpenService: OpenPushScreenServiceProtocol,
+        pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol
     ) {
@@ -123,8 +123,8 @@ extension MainTabBarInteractor: ScreenOpenDelegate {
     }
 }
 
-extension MainTabBarInteractor: PushScreenOpenDelegate {
-    func didAskScreenOpen(_ screen: PushHandlingScreen) {
+extension MainTabBarInteractor: PushNotificationOpenDelegate {
+    func didAskScreenOpen(_ screen: PushNotification.OpenScreen) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.presenter?.didRequestPushScreenOpen(screen)
         }

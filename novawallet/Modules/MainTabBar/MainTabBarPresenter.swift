@@ -33,7 +33,7 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         )
     }
 
-    func didRequestPushScreenOpen(_ screen: PushHandlingScreen) {
+    func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen) {
         wireframe.presentScreenIfNeeded(
             on: view,
             screen: screen

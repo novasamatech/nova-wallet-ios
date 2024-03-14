@@ -60,7 +60,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
 
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
-        screen: PushHandlingScreen
+        screen: PushNotification.OpenScreen
     ) {
         guard
             let controller = view?.controller as? UITabBarController,
@@ -71,13 +71,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         switch screen {
         case let .gov(rederendumIndex):
             openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
-        case let .historyDetails(chainAssetId):
-            controller.selectedIndex = MainTabBarIndex.wallet
-            let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
-            (viewController as? UINavigationController)?.popToRootViewController(animated: true)
-            if let controller: AssetListViewProtocol = viewController?.contentViewController() {
-                controller.didReceiveShowChainAsset(chainAssetId: chainAssetId)
-            }
+        case let .historyDetails(chainAsset):
+            openAssetDetailsScreen(in: controller, chainAsset: chainAsset)
         case .error:
             break
         }
@@ -93,6 +88,31 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         if let govController: VoteViewProtocol = govViewController?.contentViewController() {
             govController.showReferendumsDetails(rederendumIndex)
         }
+    }
+
+    private func openAssetDetailsScreen(
+        in controller: UITabBarController,
+        chainAsset: ChainAsset
+    ) {
+        controller.selectedIndex = MainTabBarIndex.wallet
+        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
+        (viewController as? UINavigationController)?.popToRootViewController(animated: true)
+
+        let operationState = AssetOperationState(
+            assetListObservable: .init(state: .init(value: .init())),
+            swapCompletionClosure: nil
+        )
+        guard let detailsView = AssetDetailsContainerViewFactory.createView(
+            chain: chainAsset.chain,
+            asset: chainAsset.asset,
+            operationState: operationState
+        ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: detailsView.controller)
+
+        controller.present(navigationController, animated: true)
     }
 
     // MARK: Private
