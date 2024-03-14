@@ -70,8 +70,8 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
                     }
                     self.chainRegistry.chainsUnsubscribe(self)
                     let chains = changes.mergeToDict([String: ChainModel]())
-                    let defaultSettings = localPushSettingsFactory.createWalletSettings(
-                        for: selectedWallet,
+                    let defaultSettings = self.localPushSettingsFactory.createWalletSettings(
+                        for: self.selectedWallet,
                         chains: chains
                     )
                     self.localSettings = .defined(defaultSettings)
