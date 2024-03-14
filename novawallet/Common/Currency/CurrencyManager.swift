@@ -70,20 +70,6 @@ final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol {
     }
 }
 
-// MARK: - Shared instance
-
-extension CurrencyManager {
-    static let shared = CurrencyManager()
-
-    private convenience init?() {
-        try? self.init(
-            currencyRepository: CurrencyRepository.shared,
-            settingsManager: SettingsManager.shared,
-            queue: OperationManagerFacade.sharedDefaultQueue
-        )
-    }
-}
-
 // MARK: - Error
 
 enum CurrencyManagerError: Error {

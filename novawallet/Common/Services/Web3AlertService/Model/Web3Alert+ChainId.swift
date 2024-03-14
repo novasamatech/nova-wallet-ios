@@ -8,6 +8,6 @@ extension Web3Alert {
             return chainId
         }
 
-        return String(chainId.prefix(size)).stripHexPrefix().addHexPrefix()
+        return String(chainId.prefix(size)).withoutHexPrefix().withHexPrefix()
     }
 }

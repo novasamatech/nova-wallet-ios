@@ -9,7 +9,7 @@ abstract_target 'novawalletAll' do
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
   pod 'SoraUI', :git => 'https://github.com/ERussel/UIkit-iOS.git', :tag => '1.13.0'
-  pod 'RobinHood', '~> 2.6.0'
+  pod 'RobinHood', :git => 'https://github.com/ERussel/robinhood-ios.git', :tag => '2.6.1'
   pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
   pod 'SwiftyBeaver'
   pod 'ReachabilitySwift'
@@ -40,7 +40,7 @@ abstract_target 'novawalletAll' do
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
     pod 'SoraKeystore', '~> 1.0.0'
-    pod 'RobinHood', '~> 2.6.0'
+    pod 'RobinHood', :git => 'https://github.com/ERussel/robinhood-ios.git', :tag => '2.6.1'
     pod 'Sourcery', '~> 1.4'
     pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.8'
     pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.1'
@@ -50,6 +50,19 @@ abstract_target 'novawalletAll' do
   target 'novawalletIntegrationTests'
 
   target 'novawallet'
+  
+  target 'NovaPushNotificationServiceExtension' do
+    inherit! :search_paths
+
+    pod 'SwiftLint'
+    pod 'R.swift', :inhibit_warnings => true
+    pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
+    pod 'SoraKeystore', '~> 1.0.0'
+    pod 'RobinHood', :git => 'https://github.com/ERussel/robinhood-ios.git', :tag => '2.6.1'
+    pod 'Sourcery', '~> 1.4'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '1.17.0'
+  end
+
 
 end
 

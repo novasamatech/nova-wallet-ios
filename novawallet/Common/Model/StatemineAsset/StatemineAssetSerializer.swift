@@ -2,16 +2,6 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-struct StatemineAssetExtras: Codable {
-    let assetId: String
-    let palletName: String?
-
-    init(info: AssetsPalletStorageInfo) {
-        assetId = info.assetIdString
-        palletName = info.palletName
-    }
-}
-
 enum StatemineAssetSerializerError: Error {
     case assetIdTypeNotFound(palletName: String?)
 }
