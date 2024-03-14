@@ -69,7 +69,7 @@ class UserDataStorageFacade: StorageFacadeProtocol {
         let modelURL = omoURL ?? momURL
 
         let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: UserStorageParams.sharedStorageURL,
+            databaseDirectory: UserStorageParams.storageGroupDirectoryURL,
             databaseName: UserStorageParams.databaseName,
             incompatibleModelStrategy: .ignore
         )
