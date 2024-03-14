@@ -45,4 +45,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         Logger.shared.error("Failed to register push notifications: \(error)")
     }
+
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        guard application.applicationState != .active else {
+            fetchCompletionHandler(.noData)
+            return
+        }
+        PushNotificationHandlingService.shared.handle(userInfo: userInfo) { success in
+            if success {
+                fetchCompletionHandler(.newData)
+            } else {
+                fetchCompletionHandler(.failed)
+            }
+        }
+    }
 }

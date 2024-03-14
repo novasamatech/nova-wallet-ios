@@ -35,7 +35,7 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
             }
             switch result {
             case let .success(chains):
-                guard let chain = chains.first(where: { $0.chainId == self.chainId }) else {
+                guard let chain = self.search(chainId: self.chainId, in: chains) else {
                     completion(nil)
                     return
                 }

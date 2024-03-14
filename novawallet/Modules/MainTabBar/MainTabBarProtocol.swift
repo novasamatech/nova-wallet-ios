@@ -16,6 +16,7 @@ protocol MainTabBarInteractorInputProtocol: AnyObject {
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestImportAccount(source: SecretSource)
     func didRequestScreenOpen(_ screen: UrlHandlingScreen)
+    func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen)
 }
 
 protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible {
@@ -24,6 +25,10 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible 
         on view: MainTabBarViewProtocol?,
         screen: UrlHandlingScreen,
         locale: Locale
+    )
+    func presentScreenIfNeeded(
+        on view: MainTabBarViewProtocol?,
+        screen: PushNotification.OpenScreen
     )
 }
 

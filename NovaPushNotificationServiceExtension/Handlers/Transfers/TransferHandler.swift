@@ -9,12 +9,12 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
     let callStore = CancellableCallStore()
     let chainId: ChainModel.Id
     let payload: NotificationTransferPayload
-    let type: TransferType
+    let type: PushNotification.TransferType
 
     init(
         chainId: ChainModel.Id,
         payload: NotificationTransferPayload,
-        type: TransferType,
+        type: PushNotification.TransferType,
         operationQueue: OperationQueue
     ) {
         self.chainId = chainId
