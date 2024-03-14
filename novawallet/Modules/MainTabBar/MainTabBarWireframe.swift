@@ -96,7 +96,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     ) {
         controller.selectedIndex = MainTabBarIndex.wallet
         let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
-        (viewController as? UINavigationController)?.popToRootViewController(animated: true)
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
 
         let operationState = AssetOperationState(
             assetListObservable: .init(state: .init(value: .init())),
@@ -110,9 +111,10 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             return
         }
 
-        let navigationController = NovaNavigationController(rootViewController: detailsView.controller)
-
-        controller.present(navigationController, animated: true)
+        navigationController?.pushViewController(
+            detailsView.controller,
+            animated: true
+        )
     }
 
     // MARK: Private

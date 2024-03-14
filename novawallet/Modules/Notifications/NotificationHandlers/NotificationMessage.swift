@@ -32,7 +32,7 @@ extension NotificationMessage {
         }
 
         switch type {
-        case "tokensSent":
+        case "tokenSent":
             let chainId = userInfo["chainId"] as? String ?? ""
             let payload = try decoder.decode(NotificationTransferPayload.self, from: payloadData)
             self = .transfer(
@@ -40,7 +40,7 @@ extension NotificationMessage {
                 chainId: chainId,
                 payload: payload
             )
-        case "tokensReceived":
+        case "tokenReceived":
             let chainId = userInfo["chainId"] as? String ?? ""
             let payload = try decoder.decode(NotificationTransferPayload.self, from: payloadData)
             self = .transfer(

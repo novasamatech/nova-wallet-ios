@@ -1,12 +1,12 @@
 import UserNotifications
 
 extension NotificationContentResult {
-    func toUserNotificationContent() -> UNNotificationContent {
+    func toUserNotificationContent(with userInfo: [AnyHashable: Any] = [:]) -> UNNotificationContent {
         let content = UNMutableNotificationContent()
         content.title = title
         content.subtitle = ""
         content.body = subtitle
-
+        content.userInfo = userInfo
         return content
     }
 }

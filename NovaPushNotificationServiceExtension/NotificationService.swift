@@ -36,7 +36,7 @@ final class NotificationService: UNNotificationServiceExtension {
 
         handler?.handle(callbackQueue: nil) { notification in
             if let notification = notification {
-                contentHandler(notification.toUserNotificationContent())
+                contentHandler(notification.toUserNotificationContent(with: bestAttemptContent.userInfo))
             } else {
                 let unsupported = NotificationContentResult.createUnsupportedResult(
                     for: LocalizationManager.shared.selectedLocale
