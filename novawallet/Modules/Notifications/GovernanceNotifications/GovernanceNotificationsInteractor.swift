@@ -58,7 +58,7 @@ final class GovernanceNotificationsInteractor {
             let govChains = changes.filter {
                 switch $0 {
                 case let .insert(newItem), let .update(newItem):
-                    return newItem.hasGovernanceV2
+                    return newItem.hasPushNotifications && newItem.hasGovernanceV2
                 case .delete:
                     return true
                 }

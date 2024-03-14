@@ -32,19 +32,44 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
     ) -> [(NotificationsManagementSection, [NotificationsManagementCellModel])] {
         [
             (.main, [
-                createSwitchViewModel(row: .enableNotifications, isOn: parameters.isNotificationsOn, locale: locale),
-                createViewModel(row: .wallets, count: parameters.wallets, locale: locale)
+                createSwitchViewModel(row: .enableNotifications, isOn: parameters.isNotificationsOn, isActive: true, locale: locale),
+                createViewModel(row: .wallets, count: parameters.wallets, isActive: true, locale: locale)
             ]),
             (.general, [
-                createSwitchViewModel(row: .announcements, isOn: parameters.isAnnouncementsOn, locale: locale)
+                createSwitchViewModel(
+                    row: .announcements,
+                    isOn: parameters.isAnnouncementsOn,
+                    isActive: parameters.isNotificationsOn,
+                    locale: locale
+                )
             ]),
             (.balances, [
-                createSwitchViewModel(row: .sentTokens, isOn: parameters.isSentTokensOn, locale: locale),
-                createSwitchViewModel(row: .receivedTokens, isOn: parameters.isReceiveTokensOn, locale: locale)
+                createSwitchViewModel(
+                    row: .sentTokens,
+                    isOn: parameters.isSentTokensOn,
+                    isActive: parameters.isNotificationsOn,
+                    locale: locale
+                ),
+                createSwitchViewModel(
+                    row: .receivedTokens,
+                    isOn: parameters.isReceiveTokensOn,
+                    isActive: parameters.isNotificationsOn,
+                    locale: locale
+                )
             ]),
             (.others, [
-                createAccessoryViewModel(row: .gov, isOn: parameters.isGovernanceOn, locale: locale),
-                createAccessoryViewModel(row: .staking, isOn: parameters.isStakingOn, locale: locale)
+                createAccessoryViewModel(
+                    row: .gov,
+                    isOn: parameters.isGovernanceOn,
+                    isActive: parameters.isNotificationsOn,
+                    locale: locale
+                ),
+                createAccessoryViewModel(
+                    row: .staking,
+                    isOn: parameters.isStakingOn,
+                    isActive: parameters.isNotificationsOn,
+                    locale: locale
+                )
             ])
         ]
     }
@@ -52,6 +77,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
     private func createSwitchViewModel(
         row: NotificationsManagementRow,
         isOn: Bool,
+        isActive: Bool,
         locale: Locale
     ) -> NotificationsManagementCellModel {
         .init(
@@ -60,13 +86,15 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
                 title: row.title(for: locale),
                 icon: row.icon
             ),
-            accessory: .switchControl(isOn: isOn)
+            accessory: .switchControl(isOn: isOn),
+            isActive: isActive
         )
     }
 
     private func createAccessoryViewModel(
         row: NotificationsManagementRow,
         isOn: Bool,
+        isActive: Bool,
         locale: Locale
     ) -> NotificationsManagementCellModel {
         let accessory = isOn ? R.string.localizable.commonOn(preferredLanguages: locale.rLanguages) :
@@ -78,13 +106,15 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
                 title: row.title(for: locale),
                 icon: row.icon
             ),
-            accessory: .init(optTitle: accessory)
+            accessory: .init(optTitle: accessory),
+            isActive: isActive
         )
     }
 
     private func createViewModel(
         row: NotificationsManagementRow,
         count: Int,
+        isActive: Bool,
         locale: Locale
     ) -> NotificationsManagementCellModel {
         let count = quantityFormatter.value(for: locale).string(from: .init(value: count)) ?? ""
@@ -95,7 +125,8 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
                 title: row.title(for: locale),
                 icon: row.icon
             ),
-            accessory: .init(optTitle: count)
+            accessory: .init(optTitle: count),
+            isActive: isActive
         )
     }
 }

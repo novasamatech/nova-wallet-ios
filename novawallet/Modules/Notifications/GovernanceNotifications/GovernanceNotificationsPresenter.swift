@@ -98,6 +98,7 @@ extension GovernanceNotificationsPresenter: GovernanceNotificationsPresenterProt
                 .disablingReferendumUpdateNotification(for: chainId)
         }
 
+        provideViewModels()
         provideClearButtonState()
     }
 
