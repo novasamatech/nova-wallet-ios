@@ -40,40 +40,33 @@ final class PushNotificationsTopicService {
     private func saveSubscriptions(
         from topicChanges: @escaping () throws -> (Set<PushNotification.Topic>, Set<PushNotification.Topic>)
     ) -> BaseOperation<Void> {
-        AsyncClosureOperation(
-            cancelationClosure: {},
-            operationClosure: { [weak self] completionClosure in
-                let messaging = Messaging.messaging()
-                let (newTopics, removedTopics) = try topicChanges()
+        ClosureOperation { [weak self] in
+            let messaging = Messaging.messaging()
+            let (newTopics, removedTopics) = try topicChanges()
 
-                self?.logger.debug("Subscribing: \(newTopics)")
-                self?.logger.debug("Unsubscribing: \(removedTopics)")
+            self?.logger.debug("Subscribing: \(newTopics)")
+            self?.logger.debug("Unsubscribing: \(removedTopics)")
 
-                Task {
-                    do {
-                        try await withThrowingTaskGroup(of: Void.self) { group in
-                            for newTopic in newTopics {
-                                group.addTask {
-                                    try await messaging.subscribe(toTopic: newTopic.remoteId)
-                                }
-                            }
-
-                            for removedTopic in removedTopics {
-                                group.addTask {
-                                    try await messaging.unsubscribe(fromTopic: removedTopic.remoteId)
-                                }
-                            }
-
-                            try await group.waitForAll()
-                        }
-
-                        completionClosure(.success(()))
-                    } catch {
-                        completionClosure(.failure(error))
+            for newTopic in newTopics {
+                messaging.subscribe(toTopic: newTopic.remoteId) { optError in
+                    if let error = optError {
+                        self?.logger.error("Topic subscription failed \(error)")
+                    } else {
+                        self?.logger.debug("Topic subscribed: \(newTopic.remoteId)")
                     }
                 }
             }
-        )
+
+            for removedTopic in removedTopics {
+                messaging.unsubscribe(fromTopic: removedTopic.remoteId) { optError in
+                    if let error = optError {
+                        self?.logger.error("Topic unsubscription failed \(error)")
+                    } else {
+                        self?.logger.debug("Topic unsubscribed: \(removedTopic.remoteId)")
+                    }
+                }
+            }
+        }
     }
 }
 
