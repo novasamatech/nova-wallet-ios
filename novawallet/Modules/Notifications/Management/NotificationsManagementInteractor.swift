@@ -24,18 +24,28 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         }
     }
 
+    private var metaAccounts: [MetaAccountModel.Id: MetaAccountModel] = [:]
+
+    private let walletsRepository: AnyDataProviderRepository<MetaAccountModel>
+    private let operationQueue: OperationQueue
+    private let callStore = CancellableCallStore()
+
     init(
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
         settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol,
         localPushSettingsFactory: PushNotificationSettingsFactoryProtocol,
         selectedWallet: MetaAccountModel,
-        chainRegistry: ChainRegistryProtocol
+        walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.pushNotificationsFacade = pushNotificationsFacade
         self.settingsLocalSubscriptionFactory = settingsLocalSubscriptionFactory
         self.localPushSettingsFactory = localPushSettingsFactory
         self.chainRegistry = chainRegistry
         self.selectedWallet = selectedWallet
+        self.walletsRepository = walletsRepository
+        self.operationQueue = operationQueue
     }
 
     private func subscribeToSettings() {
@@ -80,6 +90,41 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
             }
         }
     }
+
+    func fetchWallets() {
+        let fetchWalletsOperation = walletsRepository.fetchAllOperation(with: .init())
+        execute(
+            operation: fetchWalletsOperation,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(metaAccounts):
+                self?.metaAccounts = metaAccounts.reduce(into: [MetaAccountModel.Id: MetaAccountModel]()) {
+                    $0[$1.metaId] = $1
+                }
+                self?.provideSettings()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .fetchMetaAccounts(error))
+            }
+        }
+    }
+
+    func provideSettings() {
+        switch localSettings {
+        case .undefined:
+            return
+        case let .defined(settings):
+            guard let settings = settings else {
+                return
+            }
+            let existingWallets = settings.wallets.filter { metaAccounts[$0.metaId] != nil }
+            let settingsWithExistingWallets = settings.with(wallets: existingWallets)
+            localSettings = .defined(settingsWithExistingWallets)
+            presenter?.didReceive(settings: settingsWithExistingWallets)
+        }
+    }
 }
 
 extension NotificationsManagementInteractor: NotificationsManagementInteractorInputProtocol {
@@ -114,6 +159,10 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         subscribeToSettings()
         subscribeToTopicsSettings()
     }
+
+    func fetchMetaAccounts() {
+        fetchWallets()
+    }
 }
 
 extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscriptionHandler {
@@ -121,10 +170,8 @@ extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscri
         switch result {
         case let .success(changes):
             let lastChange = changes.reduceToLastChange()
-            if let settings = lastChange {
-                presenter?.didReceive(settings: settings)
-            }
             localSettings = .defined(lastChange)
+            provideSettings()
         case let .failure(error):
             presenter?.didReceive(error: .settingsSubscription(error))
         }

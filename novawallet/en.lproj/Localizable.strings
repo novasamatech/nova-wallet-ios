@@ -1521,3 +1521,5 @@
 "notifications.wallet.list.limit.error.title" = "You cannot select more than 3 wallets";
 "notifications.wallet.list.limit.error.message" = "Unfortunately, there is currently a limit in push notifications for only 3 of your wallets.";
 "xcm.delivery.fee.ed.error.message" = "Your available balance is %@, you need to leave at least %@ for transfer delivery and pay network fee of %@. You can transfer not more than %@.";
+"notifications.wallet.list.selection.hint" = "Select at least 1 wallet...";
+"notifications.management.wallets.warning" = "You won't receive notifications about Wallet Activities (Balances, Staking) because your haven't selected any wallet";

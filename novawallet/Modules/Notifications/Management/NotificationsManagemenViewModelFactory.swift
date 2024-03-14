@@ -31,7 +31,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
         locale: Locale
     ) -> [(NotificationsManagementSection, [NotificationsManagementCellModel])] {
         [
-            (.main, [
+            (.main(warning: warning(walletsCount: parameters.wallets, locale: locale)), [
                 createSwitchViewModel(row: .enableNotifications, isOn: parameters.isNotificationsOn, isActive: true, locale: locale),
                 createViewModel(row: .wallets, count: parameters.wallets, isActive: true, locale: locale)
             ]),
@@ -72,6 +72,16 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
                 )
             ])
         ]
+    }
+
+    private func warning(walletsCount: Int, locale: Locale) -> String? {
+        guard walletsCount == 0 else {
+            return nil
+        }
+
+        return R.string.localizable.notificationsWalletListSelectionHint(
+            preferredLanguages: locale.rLanguages
+        )
     }
 
     private func createSwitchViewModel(

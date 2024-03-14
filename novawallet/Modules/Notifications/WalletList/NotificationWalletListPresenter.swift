@@ -73,6 +73,7 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
         )
 
         view?.didReload()
+        view?.setAction(enabled: !selectedWallets.isEmpty)
     }
 
     private func select(walletId: String) {
@@ -98,10 +99,6 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
     }
 
     private func deselect(walletId: String) {
-        guard selectedWallets.count > 1 else {
-            return
-        }
-
         selectedWallets.remove(walletId)
 
         updateViewModels()

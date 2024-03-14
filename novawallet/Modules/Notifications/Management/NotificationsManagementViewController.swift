@@ -40,6 +40,7 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
         rootView.tableView.dataSource = tableDataSource
         rootView.tableView.delegate = self
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
+        rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionFooterView.self)
     }
 
     private func setupLocalization() {
@@ -65,10 +66,24 @@ final class NotificationsManagementViewController: UIViewController, ViewHolder 
         )
         navigationItem.rightBarButtonItem?.isEnabled = saveButtonEnabled
         navigationItem.rightBarButtonItem?.tintColor = R.color.colorButtonTextAccent()
+
+        let backButtonItem = UIBarButtonItem(
+            image: R.image.iconBack()!,
+            style: .plain,
+            target: self, action:
+            #selector(backAction)
+        )
+        backButtonItem.tintColor = R.color.colorIconPrimary()!
+        navigationItem.leftBarButtonItem = backButtonItem
+        navigationItem.leftItemsSupplementBackButton = false
     }
 
     @objc private func saveAction() {
         presenter.save()
+    }
+
+    @objc private func backAction() {
+        presenter.back()
     }
 }
 
@@ -112,6 +127,24 @@ extension NotificationsManagementViewController: UITableViewDelegate {
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         section == 0 ? 0 : 37
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        guard case let .main(warning) = tableDataSource.sections[section].0,
+              let text = warning else {
+            return nil
+        }
+
+        let footer: SettingsSectionFooterView = tableView.dequeueReusableHeaderFooterView()
+        footer.titleLabel.text = text
+        return footer
+    }
+
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        guard case let .main(warning) = tableDataSource.sections[section].0, warning != nil else {
+            return .zero
+        }
+        return UITableView.automaticDimension
     }
 }
 

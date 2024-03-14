@@ -235,6 +235,31 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         modifiedSettings = modifiedSettings?.with(wallets: wallets)
         updateView()
     }
+
+    func back() {
+        guard isSaveAvailable else {
+            wireframe.complete(from: view)
+            return
+        }
+
+        let languages = selectedLocale.rLanguages
+
+        let closeViewModel = AlertPresentableAction(
+            title: R.string.localizable.commonClose(preferredLanguages: languages),
+            style: .destructive
+        ) { [weak self] in
+            self?.wireframe.complete(from: self?.view)
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: nil,
+            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
+            actions: [closeViewModel],
+            closeAction: R.string.localizable.commonCancel(preferredLanguages: languages)
+        )
+
+        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
 }
 
 extension NotificationsManagementPresenter: NotificationsManagementInteractorOutputProtocol {
@@ -277,6 +302,10 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
         case .save:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.save()
+            }
+        case .fetchMetaAccounts:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.fetchMetaAccounts()
             }
         }
     }

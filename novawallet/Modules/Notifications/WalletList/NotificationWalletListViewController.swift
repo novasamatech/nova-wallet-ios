@@ -65,4 +65,19 @@ final class NotificationWalletListViewController: WalletsListViewController<
     }
 }
 
-extension NotificationWalletListViewController: NotificationWalletListViewProtocol {}
+extension NotificationWalletListViewController: NotificationWalletListViewProtocol {
+    func setAction(enabled: Bool) {
+        if enabled {
+            rootView.actionButton.actionButton.applyDefaultStyle()
+            rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else {
+            rootView.actionButton.actionButton.applyDisabledStyle()
+            rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.notificationsWalletListSelectionHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+        rootView.actionButton.actionButton.isEnabled = enabled
+    }
+}

@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 enum NotificationsManagementSection {
-    case main
+    case main(warning: String?)
     case general
     case balances
     case others
