@@ -1231,7 +1231,6 @@ import Cuckoo
 
 import Foundation
 import RobinHood
-import Rswift
 
 import Cuckoo
 @testable import novawallet

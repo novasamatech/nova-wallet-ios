@@ -146,7 +146,6 @@ import Cuckoo
 
 import Foundation
 import RobinHood
-import Rswift
 
 
  class MockCurrencyRepositoryProtocol: CurrencyRepositoryProtocol, Cuckoo.ProtocolMock {

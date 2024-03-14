@@ -6,7 +6,7 @@ enum SubstrateStorageParams {
     static let modelDirectory: String = "SubstrateDataModel.momd"
     static let modelVersion: SubstrateStorageVersion = .version26
 
-    static let storageDirectoryURL: URL = {
+    static let deprecatedStorageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
             for: .documentDirectory,
             in: .userDomainMask
@@ -15,7 +15,7 @@ enum SubstrateStorageParams {
         return baseURL!
     }()
 
-    static let groupStorageDirectoryURL: URL = {
+    static let sharedStorageDirectoryURL: URL = {
         let baseURL = FileManager.default
             .containerURL(
                 forSecurityApplicationGroupIdentifier: SharedContainerGroup.name
@@ -23,12 +23,12 @@ enum SubstrateStorageParams {
         return baseURL!
     }()
 
-    static var storageURL: URL {
-        storageDirectoryURL.appendingPathComponent(databaseName)
+    static var deprecatedStorageURL: URL {
+        deprecatedStorageDirectoryURL.appendingPathComponent(databaseName)
     }
 
     static var sharedStorageURL: URL {
-        groupStorageDirectoryURL.appendingPathComponent(databaseName)
+        sharedStorageDirectoryURL.appendingPathComponent(databaseName)
     }
 }
 
@@ -57,7 +57,7 @@ class SubstrateDataStorageFacade: StorageFacadeProtocol {
         let modelURL = omoURL ?? momURL
 
         let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: SubstrateStorageParams.groupStorageDirectoryURL,
+            databaseDirectory: SubstrateStorageParams.sharedStorageDirectoryURL,
             databaseName: databaseName,
             incompatibleModelStrategy: .ignore
         )

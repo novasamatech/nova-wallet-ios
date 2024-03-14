@@ -20,7 +20,7 @@ enum UserStorageParams {
     static let modelDirectory: String = "UserDataModel.momd"
     static let databaseName = "UserDataModel.sqlite"
 
-    static let storageDirectoryURL: URL = {
+    static let deprecatedStorageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
             for: .documentDirectory,
             in: .userDomainMask
@@ -28,7 +28,7 @@ enum UserStorageParams {
         return baseURL!
     }()
 
-    static let storageGroupDirectoryURL: URL = {
+    static let sharedStorageDirectoryURL: URL = {
         let baseURL = FileManager.default
             .containerURL(
                 forSecurityApplicationGroupIdentifier: SharedContainerGroup.name
@@ -36,12 +36,12 @@ enum UserStorageParams {
         return baseURL!
     }()
 
-    static var storageURL: URL {
-        storageDirectoryURL.appendingPathComponent(databaseName)
+    static var deprecatedStorageURL: URL {
+        deprecatedStorageDirectoryURL.appendingPathComponent(databaseName)
     }
 
     static var sharedStorageURL: URL {
-        storageGroupDirectoryURL.appendingPathComponent(databaseName)
+        sharedStorageDirectoryURL.appendingPathComponent(databaseName)
     }
 }
 
@@ -69,7 +69,7 @@ class UserDataStorageFacade: StorageFacadeProtocol {
         let modelURL = omoURL ?? momURL
 
         let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: UserStorageParams.storageGroupDirectoryURL,
+            databaseDirectory: UserStorageParams.sharedStorageDirectoryURL,
             databaseName: UserStorageParams.databaseName,
             incompatibleModelStrategy: .ignore
         )
