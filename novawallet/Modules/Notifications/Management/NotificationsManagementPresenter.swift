@@ -18,9 +18,11 @@ final class NotificationsManagementPresenter {
     private var modifiedTopicsSettings: PushNotification.TopicSettings?
 
     private var isSaveAvailable: Bool {
-        (settings != modifiedSettings) ||
+        let settingsWasModified = (settings != modifiedSettings) ||
             (notificationsEnabled != modifiedNotificationsEnabled) ||
             (topicsSettings != modifiedTopicsSettings)
+        let isAmbiguousState = areAllNotificationsOff() == true && modifiedNotificationsEnabled == true
+        return settingsWasModified && !isAmbiguousState
     }
 
     init(
@@ -95,6 +97,17 @@ final class NotificationsManagementPresenter {
         }
     }
 
+    func areAllNotificationsOff() -> Bool? {
+        guard let parameters = getParameters() else {
+            return nil
+        }
+        return !parameters.isAnnouncementsOn &&
+            !parameters.isGovernanceOn &&
+            !parameters.isReceiveTokensOn &&
+            !parameters.isSentTokensOn &&
+            !parameters.isStakingOn
+    }
+
     func checkNotificationsAvailability() {
         if notificationStatus == .denied {
             let message = R.string.localizable.notificationsErrorDisabledInSettingsMessage(
@@ -111,6 +124,12 @@ final class NotificationsManagementPresenter {
             )
             modifiedNotificationsEnabled = false
             updateView()
+        }
+    }
+
+    func disableNotificationIfNeeded() {
+        if areAllNotificationsOff() == true {
+            modifiedNotificationsEnabled = false
         }
     }
 }
@@ -137,21 +156,23 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
         case .announcements:
             modifiedTopicsSettings = modifiedTopicsSettings?.byTogglingAnnouncements()
+            disableNotificationIfNeeded()
             updateView()
         case .sentTokens:
             modifiedSettings = modifiedSettings?.with {
                 $0.tokenSent.toggle()
             }
+            disableNotificationIfNeeded()
             updateView()
         case .receivedTokens:
             modifiedSettings = modifiedSettings?.with {
                 $0.tokenReceived.toggle()
             }
+            disableNotificationIfNeeded()
             updateView()
         case .wallets:
             wireframe.showWallets(
                 from: view,
-
                 initState: modifiedSettings?.wallets,
                 completion: changeWalletsSettings
             )
@@ -190,6 +211,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     func changeGovSettings(settings: GovernanceNotificationsModel) {
         let currentSettings = modifiedTopicsSettings ?? .init(topics: [])
         modifiedTopicsSettings = currentSettings.applying(governanceSettings: settings)
+        disableNotificationIfNeeded()
         updateView()
     }
 
@@ -205,6 +227,7 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             }
         }
 
+        disableNotificationIfNeeded()
         updateView()
     }
 

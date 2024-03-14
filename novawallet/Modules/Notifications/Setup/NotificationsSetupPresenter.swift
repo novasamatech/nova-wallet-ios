@@ -31,7 +31,7 @@ extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
     }
 
     func skip() {
-        wireframe.complete(on: view)
+        wireframe.close(on: view)
     }
 
     func activateTerms() {
@@ -48,12 +48,20 @@ extension NotificationsSetupPresenter: NotificationsSetupInteractorOutputProtoco
         wireframe.complete(on: view)
     }
 
-    func didReceive(error _: Error) {
-        wireframe.presentRequestStatus(
-            on: view,
-            locale: localizationManager.selectedLocale
-        ) { [weak self] in
-            self?.interactor.enablePushNotifications()
+    func didReceive(error: Error) {
+        switch error {
+        case let PushNotificationsServiceFacadeError.settingsUpdateFailed(internalError):
+            if internalError is PushNotificationsStatusServiceError {
+                wireframe.complete(on: view)
+                return
+            }
+        default:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: localizationManager.selectedLocale
+            ) { [weak self] in
+                self?.interactor.enablePushNotifications()
+            }
         }
     }
 }

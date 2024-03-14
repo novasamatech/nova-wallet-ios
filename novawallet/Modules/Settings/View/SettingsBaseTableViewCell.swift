@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 import SoraUI
 
-class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPositioning where AccessoryView: UIView {
+class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPositioning, ActivatableTableViewCell where AccessoryView: UIView {
     let iconImageView = UIImageView()
 
     let titleLabel: UILabel = .create {
@@ -137,5 +137,10 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
         imageViewModel = icon
         titleLabel.text = title
         setNeedsLayout()
+    }
+
+    func set(active: Bool) {
+        isUserInteractionEnabled = active
+        titleLabel.apply(style: active ? .regularSubhedlinePrimary : .regularSubhedlineInactive)
     }
 }

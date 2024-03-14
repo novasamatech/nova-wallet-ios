@@ -4,14 +4,9 @@ import CoreData
 enum SubstrateStorageParams {
     static let databaseName = "SubstrateDataModel.sqlite"
     static let modelDirectory: String = "SubstrateDataModel.momd"
-    static let modelVersion: SubstrateStorageVersion = .version26
-    #if DEBUG
-        static let groupName = "group.novafoundation.novawallet.dev"
-    #else
-        static let groupName = "group.novafoundation.novawallet"
-    #endif
+    static let modelVersion: SubstrateStorageVersion = .version27
 
-    static let storageDirectoryURL: URL = {
+    static let deprecatedStorageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
             for: .documentDirectory,
             in: .userDomainMask
@@ -20,20 +15,20 @@ enum SubstrateStorageParams {
         return baseURL!
     }()
 
-    static let groupStorageDirectoryURL: URL = {
+    static let sharedStorageDirectoryURL: URL = {
         let baseURL = FileManager.default
             .containerURL(
-                forSecurityApplicationGroupIdentifier: groupName
+                forSecurityApplicationGroupIdentifier: SharedContainerGroup.name
             )?.appendingPathComponent("CoreData")
         return baseURL!
     }()
 
-    static var storageURL: URL {
-        storageDirectoryURL.appendingPathComponent(databaseName)
+    static var deprecatedStorageURL: URL {
+        deprecatedStorageDirectoryURL.appendingPathComponent(databaseName)
     }
 
     static var sharedStorageURL: URL {
-        groupStorageDirectoryURL.appendingPathComponent(databaseName)
+        sharedStorageDirectoryURL.appendingPathComponent(databaseName)
     }
 }
 
@@ -62,7 +57,7 @@ class SubstrateDataStorageFacade: StorageFacadeProtocol {
         let modelURL = omoURL ?? momURL
 
         let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: SubstrateStorageParams.groupStorageDirectoryURL,
+            databaseDirectory: SubstrateStorageParams.sharedStorageDirectoryURL,
             databaseName: databaseName,
             incompatibleModelStrategy: .ignore
         )

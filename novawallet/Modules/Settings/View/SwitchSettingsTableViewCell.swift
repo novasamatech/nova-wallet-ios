@@ -33,4 +33,9 @@ final class SwitchSettingsTableViewCell: SettingsBaseTableViewCell<UISwitch> {
 
         rightView.isOn = isOn
     }
+
+    override func set(active: Bool) {
+        super.set(active: active)
+        rightView.alpha = active ? 1 : 0.5
+    }
 }

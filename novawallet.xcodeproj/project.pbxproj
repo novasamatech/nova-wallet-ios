@@ -43,6 +43,7 @@
 		0B48B02E973CB304B765BBC9 /* ReferendumDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ABAD23C0039AFA8351C650 /* ReferendumDetailsProtocols.swift */; };
 		0B65DAE0327678679CACE0B1 /* GovernanceDelegateInfoViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E894D4633D04AD4415CE1F2 /* GovernanceDelegateInfoViewFactory.swift */; };
 		0BB2E3FF30B1700D321C526A /* TransferNetworkSelectionViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA463769D0F411429780D7D /* TransferNetworkSelectionViewFactory.swift */; };
+		0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */; };
 		0C0CB37F2AC540B200EAC516 /* AssetConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */; };
 		0C0CB3822AC545A800EAC516 /* AssetConversionExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3812AC545A800EAC516 /* AssetConversionExtrinsicService.swift */; };
 		0C0CB3852AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3842AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift */; };
@@ -449,6 +450,8 @@
 		0CCD18D12BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18CF2BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift */; };
 		0CCD18D32BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18D22BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift */; };
 		0CCD18D42BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18D22BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift */; };
+		0CCD18D62BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18D52BA2C17C0068D73A /* SharedContainerGroup.swift */; };
+		0CCD18D72BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCD18D52BA2C17C0068D73A /* SharedContainerGroup.swift */; };
 		0CCDB2DC2B7128A7007BC5D6 /* HydraOmnipoolTokensFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2DB2B7128A7007BC5D6 /* HydraOmnipoolTokensFactory.swift */; };
 		0CCDB2DE2B7488A5007BC5D6 /* HydraStableswapPoolService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2DD2B7488A5007BC5D6 /* HydraStableswapPoolService.swift */; };
 		0CCDB2E02B748B59007BC5D6 /* HydraStableswapPoolState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2DF2B748B59007BC5D6 /* HydraStableswapPoolState.swift */; };
@@ -4610,6 +4613,7 @@
 		0BA85EE628D7029AC940DFA3 /* NominationPoolBondMoreBasePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreBasePresenter.swift; sourceTree = "<group>"; };
 		0C0130482B0E5BD300746952 /* SubstrateDataModel22.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel22.xcdatamodel; sourceTree = "<group>"; };
 		0C04290B2A67A42A00C3583A /* SubstrateDataModel17.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel17.xcdatamodel; sourceTree = "<group>"; };
+		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
 		0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversion.swift; sourceTree = "<group>"; };
 		0C0CB3812AC545A800EAC516 /* AssetConversionExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionExtrinsicService.swift; sourceTree = "<group>"; };
 		0C0CB3842AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapOperationFactory.swift; sourceTree = "<group>"; };
@@ -5014,6 +5018,7 @@
 		0CCD18CA2BA1F0F00068D73A /* BalanceViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
 		0CCD18CF2BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimitiveBalanceViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
 		0CCD18D22BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimitiveBalanceViewModelFactory.swift; sourceTree = "<group>"; };
+		0CCD18D52BA2C17C0068D73A /* SharedContainerGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedContainerGroup.swift; sourceTree = "<group>"; };
 		0CCDB2DB2B7128A7007BC5D6 /* HydraOmnipoolTokensFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolTokensFactory.swift; sourceTree = "<group>"; };
 		0CCDB2DD2B7488A5007BC5D6 /* HydraStableswapPoolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapPoolService.swift; sourceTree = "<group>"; };
 		0CCDB2DF2B748B59007BC5D6 /* HydraStableswapPoolState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapPoolState.swift; sourceTree = "<group>"; };
@@ -5582,6 +5587,7 @@
 		775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainPresenter.swift; sourceTree = "<group>"; };
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
+		7761DD252BA10CF2000C600C /* SubstrateDataModel27.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel27.xcdatamodel; sourceTree = "<group>"; };
 		7772EB312B724A8F000D7E21 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7772EB332B726670000D7E21 /* Web3AlertsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertsSyncService.swift; sourceTree = "<group>"; };
 		77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableContainerView.swift; sourceTree = "<group>"; };
@@ -14704,6 +14710,7 @@
 			isa = PBXGroup;
 			children = (
 				849ECD3426DE70B900F542A3 /* SingleToMultiassetUserMigrationTests.swift */,
+				0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */,
 			);
 			path = Migration;
 			sourceTree = "<group>";
@@ -15191,6 +15198,7 @@
 				849013FA24A92A05008F705E /* novawallet.debug.xcconfig */,
 				849013F824A92A05008F705E /* novawallet.dev.xcconfig */,
 				849013F924A92A05008F705E /* novawallet.release.xcconfig */,
+				0CCD18D52BA2C17C0068D73A /* SharedContainerGroup.swift */,
 			);
 			path = Configs;
 			sourceTree = "<group>";
@@ -21657,6 +21665,7 @@
 				0CCD18AF2BA175540068D73A /* NotificationContentResult+UserContent.swift in Sources */,
 				77AE4F972B905B4D00426519 /* ChainModel.swift in Sources */,
 				778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */,
+				0CCD18D72BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */,
 				77AE4F962B905B2F00426519 /* AddressConversion.swift in Sources */,
 				77AE4FAE2B90611000426519 /* DispatchQueueHelper.swift in Sources */,
 				7778FE6A2B910CF60023E801 /* String+Helpers.swift in Sources */,
@@ -22785,6 +22794,7 @@
 				88AC5ADE2948CB540056DD40 /* TransactionHistoryViewModelFactory.swift in Sources */,
 				84038FEC26FFBA4D00C73F3F /* PriceLocalStorageSubscriber.swift in Sources */,
 				841221A428F0A3F200715C82 /* ReferendumAccountVoteLocal.swift in Sources */,
+				0CCD18D62BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */,
 				8436C7A129ACDCA50024B409 /* VotersStakingInfo.swift in Sources */,
 				8473D4082657E9AD00B394B2 /* CrowdloanLastContribution.swift in Sources */,
 				8456D2BF2993E97200D159A7 /* GovernanceYourDelegationViewModel.swift in Sources */,
@@ -25925,6 +25935,7 @@
 				84B7C714289BFA79001A3566 /* AccountCreateTests.swift in Sources */,
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
+				0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */,
 				8836AF4828AA49AB00A94EDD /* Currency+btc.swift in Sources */,
 				842D1E8E24D2091A00C30A7A /* CommonMocks.swift in Sources */,
 				8467FD0824E5E0BD005D486C /* KeystoreDefinition+Test.swift in Sources */,
@@ -26485,7 +26496,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013FA24A92A05008F705E /* novawallet.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDebug.entitlements;
@@ -26520,7 +26531,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013F924A92A05008F705E /* novawallet.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawallet.entitlements;
@@ -26668,7 +26679,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013F824A92A05008F705E /* novawallet.dev.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDev.entitlements;
@@ -26782,7 +26793,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 84AE11CA273C007E00B294B7 /* novawallet.staging.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawallet.entitlements;
@@ -26921,6 +26932,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				7761DD252BA10CF2000C600C /* SubstrateDataModel27.xcdatamodel */,
 				0C85FF352B6E08F800FC0014 /* SubstrateDataModel26.xcdatamodel */,
 				7722739F2B3D44F000EB4BC3 /* SubstrateDataModel25.xcdatamodel */,
 				0C8AF7BD2B39567700005AC9 /* SubstrateDataModel24.xcdatamodel */,
@@ -26948,7 +26960,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 0C85FF352B6E08F800FC0014 /* SubstrateDataModel26.xcdatamodel */;
+			currentVersion = 7761DD252BA10CF2000C600C /* SubstrateDataModel27.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

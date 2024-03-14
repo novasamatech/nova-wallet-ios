@@ -2,7 +2,13 @@ import Foundation
 import UIKit
 
 final class NotificationsSetupWireframe: NotificationsSetupWireframeProtocol {
+    var completion: (() -> Void)?
+
     func complete(on view: ControllerBackedProtocol?) {
+        view?.controller.dismiss(animated: true, completion: completion)
+    }
+
+    func close(on view: ControllerBackedProtocol?) {
         view?.controller.dismiss(animated: true)
     }
 

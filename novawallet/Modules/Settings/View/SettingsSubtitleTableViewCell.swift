@@ -18,4 +18,9 @@ final class SettingsSubtitleTableViewCell: SettingsAccessoryTableViewCell<UILabe
 
         accessoryDisplayView.text = accessoryViewModel
     }
+
+    override func set(active: Bool) {
+        super.set(active: active)
+        accessoryDisplayView.apply(style: active ? .regularSubhedlineSecondary : .regularSubhedlineInactive)
+    }
 }

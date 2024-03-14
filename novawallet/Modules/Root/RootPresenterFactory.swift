@@ -41,13 +41,14 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         return presenter
     }
 
-    private static func createUserDatabaseMigration(
+    static func createUserDatabaseMigration(
         for settings: SettingsManagerProtocol,
         keychain: KeystoreProtocol
     ) -> Migrating {
         let storePathMigrator = StorePathMigrator(
-            currentStoreLocation: UserStorageParams.storageURL,
+            currentStoreLocation: UserStorageParams.deprecatedStorageURL,
             sharedStoreLocation: UserStorageParams.sharedStorageURL,
+            sharedStoreDirectory: UserStorageParams.sharedStorageDirectoryURL,
             fileManager: FileManager.default
         )
 
@@ -63,10 +64,11 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         return SerialMigrator(migrations: [storePathMigrator, storageMigrator])
     }
 
-    private static func createSubstrateDatabaseMigration() -> Migrating {
+    static func createSubstrateDatabaseMigration() -> Migrating {
         let storePathMigrator = StorePathMigrator(
-            currentStoreLocation: SubstrateStorageParams.storageURL,
+            currentStoreLocation: SubstrateStorageParams.deprecatedStorageURL,
             sharedStoreLocation: SubstrateStorageParams.sharedStorageURL,
+            sharedStoreDirectory: SubstrateStorageParams.sharedStorageDirectoryURL,
             fileManager: FileManager.default
         )
 
