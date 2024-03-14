@@ -936,7 +936,7 @@ DEPENDENCIES:
   - Kingfisher
   - R.swift
   - ReachabilitySwift
-  - RobinHood (from `https://github.com/ERussel/robinhood-ios.git`, commit `81b569e4c8b6b4b0fdf0696b4294b5e149eadaca`)
+  - RobinHood (from `https://github.com/ERussel/robinhood-ios.git`, tag `2.6.1`)
   - SnapKit (~> 5.0.0)
   - SoraFoundation (from `https://github.com/ERussel/Foundation-iOS.git`, tag `1.1.0`)
   - SoraKeystore (~> 1.0.0)
@@ -1014,8 +1014,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
   RobinHood:
-    :commit: 81b569e4c8b6b4b0fdf0696b4294b5e149eadaca
     :git: https://github.com/ERussel/robinhood-ios.git
+    :tag: 2.6.1
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -1051,8 +1051,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
   RobinHood:
-    :commit: 81b569e4c8b6b4b0fdf0696b4294b5e149eadaca
     :git: https://github.com/ERussel/robinhood-ios.git
+    :tag: 2.6.1
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -1138,6 +1138,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 9c7ed411d8120369ce00dedc448ec27a4311a211
+PODFILE CHECKSUM: 3b521ee14d42ee2c4cb0b94d39d63cc62941a174
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.15.0

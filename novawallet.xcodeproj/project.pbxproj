@@ -1154,6 +1154,7 @@
 		77A6F5CF2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5CE2A31C4D4004AFD1A /* Web3TransferRecipientRepositoryFactory.swift */; };
 		77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5D12A31DB8C004AFD1A /* JsonCanonicalizer.swift */; };
 		77A6F5D52A31E046004AFD1A /* JsonCanonicalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77A6F5D42A31E046004AFD1A /* JsonCanonicalizerTests.swift */; };
+		77A90E2B2BA2BFBD00A08A3E /* Referenda.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A25C528D84BE2006AC9F5 /* Referenda.swift */; };
 		77AAC3E52B70DB0300B8B89E /* firestore-settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 77AAC3E42B70DB0300B8B89E /* firestore-settings.json */; };
 		77AAD2992B1731D1007AD86F /* ReferendumsInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAD2982B1731D1007AD86F /* ReferendumsInitState.swift */; };
 		77AAE2202AFB00CB006872CC /* OperationSwapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAE21F2AFB00CB006872CC /* OperationSwapModel.swift */; };
@@ -1189,6 +1190,7 @@
 		77AE4FAE2B90611000426519 /* DispatchQueueHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F43C0E25DF016600AEDA56 /* DispatchQueueHelper.swift */; };
 		77AE4FAF2B90611800426519 /* BaseOperation+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843910C6253F56EA00E3C217 /* BaseOperation+Result.swift */; };
 		77AE4FB02B90646100426519 /* BaseOperation+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */; };
+		77AF376B2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AF376A2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift */; };
 		77C35CE52B568ED100308F16 /* YourWalletsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */; };
 		77C35CE72B56D07300308F16 /* ScanAddressPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */; };
 		77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */; };
@@ -5692,6 +5694,7 @@
 		77AE4FB32B906B1B00426519 /* novawalletDev.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = novawalletDev.entitlements; sourceTree = "<group>"; };
 		77AE4FB42B906B2600426519 /* NovaPushNotificationServiceExtensionDev.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NovaPushNotificationServiceExtensionDev.entitlements; sourceTree = "<group>"; };
 		77AE4FB52B906B2E00426519 /* NovaPushNotificationServiceExtensionDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NovaPushNotificationServiceExtensionDebug.entitlements; sourceTree = "<group>"; };
+		77AF376A2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumStatusExtensions.swift; sourceTree = "<group>"; };
 		77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsPresentable.swift; sourceTree = "<group>"; };
 		77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAddressPresentable.swift; sourceTree = "<group>"; };
 		77C35CE82B5A890500308F16 /* Web3NameServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameServiceFactory.swift; sourceTree = "<group>"; };
@@ -11400,7 +11403,6 @@
 			isa = PBXGroup;
 			children = (
 				778215C32B914DF8006C7D13 /* TransferHandler.swift */,
-				77FC822E2BA1B99E00E7ED3C /* TransferTypeExtensions.swift */,
 			);
 			path = Transfers;
 			sourceTree = "<group>";
@@ -11417,6 +11419,7 @@
 		778215DA2B95A8F7006C7D13 /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
+				77AF37692BA2C19500FD1A8E /* Extensions */,
 				778215C72B914E62006C7D13 /* Transfers */,
 				778215DB2B95AD67006C7D13 /* Governance */,
 				778215E52B95C42B006C7D13 /* Staking */,
@@ -11537,6 +11540,15 @@
 				77EA2A172A333C1500B0670B /* output */,
 			);
 			path = canonicalization;
+			sourceTree = "<group>";
+		};
+		77AF37692BA2C19500FD1A8E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				77FC822E2BA1B99E00E7ED3C /* TransferTypeExtensions.swift */,
+				77AF376A2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		77B011712B6CCCBB003A5868 /* Web3AlertService */ = {
@@ -21618,6 +21630,7 @@
 				77AE4FAC2B905EDB00426519 /* UInt64+TimeInterval.swift in Sources */,
 				77AE4F942B90595800426519 /* UserDataStorageFacade.swift in Sources */,
 				7778FE4C2B9107D20023E801 /* CompoundOperationWrapper+Dependency.swift in Sources */,
+				77A90E2B2BA2BFBD00A08A3E /* Referenda.swift in Sources */,
 				7778FE612B910BD40023E801 /* GovernanceType.swift in Sources */,
 				7778FE542B9109430023E801 /* Observable.swift in Sources */,
 				7778FE432B90F8060023E801 /* CurrencyManager.swift in Sources */,
@@ -21666,7 +21679,6 @@
 				7778FE4D2B9107EC0023E801 /* CompoundOperationWrapper+Add.swift in Sources */,
 				77AE4FAD2B90604000426519 /* CancellableCallHelper.swift in Sources */,
 				77FC822F2BA1B99E00E7ED3C /* TransferTypeExtensions.swift in Sources */,
-				7778FE772B910E040023E801 /* NovaTintImageProcessor.swift in Sources */,
 				77EDF9272B96DD8E003266B1 /* MetaAccountMapper.swift in Sources */,
 				77AE4F9A2B905B7500426519 /* LocalChainExternalApi.swift in Sources */,
 				7778FE452B90FA1C0023E801 /* OperationCombiningService.swift in Sources */,
@@ -21679,6 +21691,7 @@
 				7778FE582B910A760023E801 /* MoneyPresentable.swift in Sources */,
 				77AE4F982B905B5C00426519 /* AssetModel.swift in Sources */,
 				7778FE492B9104EE0023E801 /* PriceAssetInfoFactory.swift in Sources */,
+				77AF376B2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift in Sources */,
 				0CCD18D42BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift in Sources */,
 				77AE4FAB2B905E9B00426519 /* TimeInterval+Time.swift in Sources */,
 				77EDF9222B96D654003266B1 /* Web3Alert.swift in Sources */,
