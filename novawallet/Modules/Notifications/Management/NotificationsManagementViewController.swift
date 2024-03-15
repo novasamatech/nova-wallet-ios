@@ -126,7 +126,7 @@ extension NotificationsManagementViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        section == 0 ? 0 : 37
+        section == 0 ? 0 : 57
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {

@@ -1,6 +1,6 @@
 import UIKit
 
-class SectionTextHeaderView: UITableViewHeaderFooterView {
+class SectionTextHeaderFooterView: UITableViewHeaderFooterView {
     var horizontalOffset: CGFloat = 20 {
         didSet {
             titleLabel.snp.updateConstraints { make in

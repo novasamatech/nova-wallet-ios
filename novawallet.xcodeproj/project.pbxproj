@@ -1025,6 +1025,7 @@
 		775F194D2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */; };
 		775F19512A5811FA009915B6 /* StartStakingParachainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */; };
 		775F19532A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */; };
+		7764E2772BA43DA1002F54AA /* SettingsSectionFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7764E2762BA43DA1002F54AA /* SettingsSectionFooterView.swift */; };
 		7772EB322B724A90000D7E21 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7772EB312B724A8F000D7E21 /* GoogleService-Info.plist */; };
 		7772EB342B726670000D7E21 /* Web3AlertsSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7772EB332B726670000D7E21 /* Web3AlertsSyncService.swift */; };
 		77740BBC2AD4A7B800E8C06F /* CollapsableContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */; };
@@ -1272,7 +1273,7 @@
 		77EA2A292A333C1500B0670B /* arrays_input.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A1F2A333C1500B0670B /* arrays_input.json */; };
 		77EA2A2A2A333C1500B0670B /* weird_input.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A202A333C1500B0670B /* weird_input.json */; };
 		77EA2A2B2A333C1500B0670B /* structures_input.json in Resources */ = {isa = PBXBuildFile; fileRef = 77EA2A212A333C1500B0670B /* structures_input.json */; };
-		77EAABA52B2726A500CA7305 /* SectionTextHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EAABA42B2726A500CA7305 /* SectionTextHeaderView.swift */; };
+		77EAABA52B2726A500CA7305 /* SectionTextHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EAABA42B2726A500CA7305 /* SectionTextHeaderFooterView.swift */; };
 		77ECB4702ACEEE2E0015CE9F /* NetworkFeeInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77ECB46F2ACEEE2D0015CE9F /* NetworkFeeInfoView.swift */; };
 		77ED167A2A0CF41700E1FC8C /* StakingRewardFiltersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77ED16792A0CF41600E1FC8C /* StakingRewardFiltersViewModel.swift */; };
 		77ED167C2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77ED167B2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift */; };
@@ -5588,6 +5589,7 @@
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
 		7761DD252BA10CF2000C600C /* SubstrateDataModel27.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel27.xcdatamodel; sourceTree = "<group>"; };
+		7764E2762BA43DA1002F54AA /* SettingsSectionFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSectionFooterView.swift; sourceTree = "<group>"; };
 		7772EB312B724A8F000D7E21 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7772EB332B726670000D7E21 /* Web3AlertsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertsSyncService.swift; sourceTree = "<group>"; };
 		77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableContainerView.swift; sourceTree = "<group>"; };
@@ -5782,7 +5784,7 @@
 		77EA2A1F2A333C1500B0670B /* arrays_input.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = arrays_input.json; sourceTree = "<group>"; };
 		77EA2A202A333C1500B0670B /* weird_input.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = weird_input.json; sourceTree = "<group>"; };
 		77EA2A212A333C1500B0670B /* structures_input.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = structures_input.json; sourceTree = "<group>"; };
-		77EAABA42B2726A500CA7305 /* SectionTextHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionTextHeaderView.swift; sourceTree = "<group>"; };
+		77EAABA42B2726A500CA7305 /* SectionTextHeaderFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionTextHeaderFooterView.swift; sourceTree = "<group>"; };
 		77ECB46F2ACEEE2D0015CE9F /* NetworkFeeInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkFeeInfoView.swift; sourceTree = "<group>"; };
 		77ED16792A0CF41600E1FC8C /* StakingRewardFiltersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardFiltersViewModel.swift; sourceTree = "<group>"; };
 		77ED167B2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardFiltersPeriod.swift; sourceTree = "<group>"; };
@@ -12170,7 +12172,7 @@
 				84276686297AB22B0063E08E /* TableViewCellPosition.swift */,
 				84CA40792A036886004BB71E /* PlainBaseTableViewCell.swift */,
 				84B24FA72A2F23F700F9BF59 /* BlurredTableViewCell.swift */,
-				77EAABA42B2726A500CA7305 /* SectionTextHeaderView.swift */,
+				77EAABA42B2726A500CA7305 /* SectionTextHeaderFooterView.swift */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -12461,6 +12463,7 @@
 				844C3E592A06141F00C4305F /* SettingsSubtitleTableViewCell.swift */,
 				844C3E5B2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift */,
 				844C3E5D2A06180900C4305F /* SettingsBoxTableViewCell.swift */,
+				7764E2762BA43DA1002F54AA /* SettingsSectionFooterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -24355,7 +24358,7 @@
 				6F0CFDAB9D0C35075BD74A77 /* WalletHistoryFilterProtocols.swift in Sources */,
 				849C7BD92A1B21CF00434621 /* GladingRectModel.swift in Sources */,
 				60461B20A5DA9E9E3AF0BB84 /* WalletHistoryFilterWireframe.swift in Sources */,
-				77EAABA52B2726A500CA7305 /* SectionTextHeaderView.swift in Sources */,
+				77EAABA52B2726A500CA7305 /* SectionTextHeaderFooterView.swift in Sources */,
 				8487583327F06AF300495306 /* QRScannerViewLayout.swift in Sources */,
 				84AF08DA2941BC7900D0572B /* TokenManageNetworkViewModel.swift in Sources */,
 				8448336727FAAF780077FB55 /* TransakProvider.swift in Sources */,
@@ -25319,6 +25322,7 @@
 				0C495B902B4290A900B8D339 /* Proxy+Call.swift in Sources */,
 				846DA55B2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift in Sources */,
 				0C3205CA2A895489002EB914 /* EvmGasLimitProvider.swift in Sources */,
+				7764E2772BA43DA1002F54AA /* SettingsSectionFooterView.swift in Sources */,
 				AE180C8B30831C9BAA39763A /* ParaStkYieldBoostSetupViewController.swift in Sources */,
 				8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */,
 				88B1862A28EF30A600D49854 /* YourVoteView.swift in Sources */,

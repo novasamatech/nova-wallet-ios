@@ -85,7 +85,7 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
                         chains: chains
                     )
                     self.localSettings = .defined(defaultSettings)
-                    self.presenter?.didReceive(settings: defaultSettings)
+                    self.provideSettings()
                 }
             }
         }
@@ -116,7 +116,7 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         case .undefined:
             return
         case let .defined(settings):
-            guard let settings = settings else {
+            guard let settings = settings, !metaAccounts.isEmpty else {
                 return
             }
             let existingWallets = settings.wallets.filter { metaAccounts[$0.metaId] != nil }
@@ -132,6 +132,7 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         subscribeToSettings()
         subscribeToTopicsSettings()
         provideNotificationsStatus()
+        fetchWallets()
     }
 
     func save(

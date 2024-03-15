@@ -20,7 +20,7 @@ final class ProxiedsUpdateViewLayout: UIView {
         view.sectionFooterHeight = 0
         view.registerClassForCell(ProxyTableViewCell.self)
         view.registerClassForCell(ProxyInfoTableViewCell.self)
-        view.registerHeaderFooterView(withClass: SectionTextHeaderView.self)
+        view.registerHeaderFooterView(withClass: SectionTextHeaderFooterView.self)
         return view
     }()
 

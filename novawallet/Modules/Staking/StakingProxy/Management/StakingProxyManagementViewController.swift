@@ -39,7 +39,7 @@ final class StakingProxyManagementViewController: UIViewController, ViewHolder {
     private func setupTableView() {
         rootView.tableView.rowHeight = 48
         rootView.tableView.registerClassForCell(WalletsListTableViewCell<UIImageView>.self)
-        rootView.tableView.registerHeaderFooterView(withClass: SectionTextHeaderView.self)
+        rootView.tableView.registerHeaderFooterView(withClass: SectionTextHeaderFooterView.self)
         rootView.tableView.delegate = self
     }
 
@@ -99,7 +99,7 @@ extension StakingProxyManagementViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
-        let header: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
+        let header: SectionTextHeaderFooterView = tableView.dequeueReusableHeaderFooterView()
         let text = R.string.localizable.stakingProxyManagementTitle(
             preferredLanguages: selectedLocale.rLanguages
         )

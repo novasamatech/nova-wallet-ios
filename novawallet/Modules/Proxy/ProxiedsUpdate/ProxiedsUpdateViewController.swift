@@ -180,7 +180,7 @@ extension ProxiedsUpdateViewController: UITableViewDelegate {
             }
 
             let title = R.string.localizable.commonProxieds(preferredLanguages: selectedLocale.rLanguages)
-            let header: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
+            let header: SectionTextHeaderFooterView = tableView.dequeueReusableHeaderFooterView()
             header.bind(text: title)
             return header
         case .revoked:
@@ -190,7 +190,7 @@ extension ProxiedsUpdateViewController: UITableViewDelegate {
             }
 
             let title = R.string.localizable.proxyUpdatesProxyRevoked(preferredLanguages: selectedLocale.rLanguages)
-            let header: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
+            let header: SectionTextHeaderFooterView = tableView.dequeueReusableHeaderFooterView()
             header.bind(text: title)
             return header
         }

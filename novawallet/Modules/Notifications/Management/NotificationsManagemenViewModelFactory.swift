@@ -8,6 +8,10 @@ struct NotificationsManagementParameters {
     let isReceiveTokensOn: Bool
     let isGovernanceOn: Bool
     let isStakingOn: Bool
+
+    var walletDependentNotificationsOn: Bool {
+        isSentTokensOn || isReceiveTokensOn || isStakingOn
+    }
 }
 
 protocol NotificationsManagemenViewModelFactoryProtocol {
@@ -30,8 +34,10 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
         parameters: NotificationsManagementParameters,
         locale: Locale
     ) -> [(NotificationsManagementSection, [NotificationsManagementCellModel])] {
-        [
-            (.main(warning: warning(walletsCount: parameters.wallets, locale: locale)), [
+        let warning = warning(parameters: parameters, locale: locale)
+
+        return [
+            (.main(warning: warning), [
                 createSwitchViewModel(row: .enableNotifications, isOn: parameters.isNotificationsOn, isActive: true, locale: locale),
                 createViewModel(row: .wallets, count: parameters.wallets, isActive: true, locale: locale)
             ]),
@@ -74,12 +80,15 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
         ]
     }
 
-    private func warning(walletsCount: Int, locale: Locale) -> String? {
-        guard walletsCount == 0 else {
+    private func warning(
+        parameters: NotificationsManagementParameters,
+        locale: Locale
+    ) -> String? {
+        guard parameters.wallets == 0, parameters.walletDependentNotificationsOn else {
             return nil
         }
 
-        return R.string.localizable.notificationsWalletListSelectionHint(
+        return R.string.localizable.notificationsManagementWalletsWarning(
             preferredLanguages: locale.rLanguages
         )
     }
