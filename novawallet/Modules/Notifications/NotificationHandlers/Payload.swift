@@ -18,7 +18,7 @@ struct NewReferendumPayload: Codable {
     }
 }
 
-struct ReferendumStateUpdatePayload: Codable {
+struct ReferendumStateUpdatePayload: Decodable {
     enum CodingKeys: String, CodingKey {
         case referendumId
         case fromStatus = "from"
@@ -29,7 +29,7 @@ struct ReferendumStateUpdatePayload: Codable {
     let fromStatus: Status?
     let toStatus: Status
 
-    enum Status: String, Codable {
+    enum Status: String, CaseInsensitiveDecodale {
         case created
         case deciding
         case confirming
