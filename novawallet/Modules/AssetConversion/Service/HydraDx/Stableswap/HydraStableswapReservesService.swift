@@ -51,13 +51,13 @@ final class HydraStableswapReservesService: ObservableSubscriptionSyncService<Hy
 
         let decimalsRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraAssetRegistry.assetMetadata,
+                storagePath: HydraAssetRegistry.assetsPath,
                 localKey: "",
                 keyParamClosure: {
                     StringScaleMapper(value: asset)
                 }
             ),
-            mappingKey: HydraStableswap.ReservesRemoteState.assetMetadataKey(asset)
+            mappingKey: HydraStableswap.ReservesRemoteState.assetKey(asset)
         )
 
         return [balanceRequest, decimalsRequest]
