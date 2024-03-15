@@ -4,7 +4,7 @@ import SubstrateSdk
 enum HydraAssetRegistry {
     static let module = "AssetRegistry"
 
-    struct AssetMetadata: Decodable {
+    struct Asset: Decodable {
         @StringCodable var decimals: UInt8
     }
 }

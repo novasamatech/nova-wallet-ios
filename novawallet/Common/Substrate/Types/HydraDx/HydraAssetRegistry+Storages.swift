@@ -1,7 +1,7 @@
 import Foundation
 
 extension HydraAssetRegistry {
-    static var assetMetadata: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.module, itemName: "AssetMetadataMap")
+    static var assetsPath: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.module, itemName: "Assets")
     }
 }
