@@ -1,6 +1,6 @@
 import UIKit
 
-final class SettingsSectionHeaderView: SectionTextHeaderFooterView {
+final class SettingsSectionHeaderView: SectionTextHeaderView {
     override func setupLayout() {
         super.setupLayout()
         horizontalOffset = 20

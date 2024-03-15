@@ -11,6 +11,8 @@ final class NotificationWalletListViewController: WalletsListViewController<
         basePresenter as? NotificationWalletListPresenterProtocol
     }
 
+    private var isActionEnabled: Bool = false
+
     init(
         presenter: NotificationWalletListPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -41,9 +43,10 @@ final class NotificationWalletListViewController: WalletsListViewController<
         )
 
         rootView.headerView.bind(topValue: title, bottomValue: nil)
-        rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+        rootView.actionView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: selectedLocale.rLanguages
         )
+        updateActionView()
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -53,7 +56,7 @@ final class NotificationWalletListViewController: WalletsListViewController<
     }
 
     private func setupHandlers() {
-        rootView.actionButton.actionButton.addTarget(
+        rootView.actionView.actionButton.addTarget(
             self,
             action: #selector(applyAction),
             for: .touchUpInside
@@ -63,21 +66,26 @@ final class NotificationWalletListViewController: WalletsListViewController<
     @objc private func applyAction() {
         presenter?.confirm()
     }
+
+    private func updateActionView() {
+        if isActionEnabled {
+            rootView.actionView.actionButton.applyDefaultStyle()
+            rootView.actionView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else {
+            rootView.actionView.actionButton.applyDisabledStyle()
+            rootView.actionView.actionButton.imageWithTitleView?.title = R.string.localizable.notificationsWalletListSelectionHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+        rootView.actionView.actionButton.isEnabled = isActionEnabled
+    }
 }
 
 extension NotificationWalletListViewController: NotificationWalletListViewProtocol {
     func setAction(enabled: Bool) {
-        if enabled {
-            rootView.actionButton.actionButton.applyDefaultStyle()
-            rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        } else {
-            rootView.actionButton.actionButton.applyDisabledStyle()
-            rootView.actionButton.actionButton.imageWithTitleView?.title = R.string.localizable.notificationsWalletListSelectionHint(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        }
-        rootView.actionButton.actionButton.isEnabled = enabled
+        isActionEnabled = enabled
+        updateActionView()
     }
 }
