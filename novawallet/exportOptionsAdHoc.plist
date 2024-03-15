@@ -14,10 +14,8 @@
     <dict>
         <key>io.novafoundation.novawallet.dev</key>
         <string>nova-wallet-dev</string>
-    </dict>
-    <dict>
         <key>io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension</key>
-        <string>nova-wallet-dev-push-notifications</string>
+        <string>nova-wallet-dev-extension</string>
     </dict>
 </dict>
 </plist>
