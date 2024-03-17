@@ -308,22 +308,14 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
             let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetInfo)
 
-            let feeAndEd = networkFeeDecimal + minBalanceDecimal
+            let feeAndEd = networkFeeDecimal + minBalanceDecimal + crosschainHoldingDecimal
             let availableDecimal = balanceDecimal >= feeAndEd ? balanceDecimal - feeAndEd : 0
 
             let availableString = tokenFormatter.value(for: locale).stringFromDecimal(availableDecimal) ?? ""
-            let balanceString = tokenFormatter.value(for: locale).stringFromDecimal(balanceDecimal) ?? ""
-            let minBalanceString = tokenFormatter.value(for: locale).stringFromDecimal(minBalanceDecimal) ?? ""
-            let networkFeeString = tokenFormatter.value(for: locale).stringFromDecimal(networkFeeDecimal) ?? ""
 
             self?.presentable.presentMinBalanceViolatedForDeliveryFee(
                 from: view,
-                params: .init(
-                    totalBalance: balanceString,
-                    minBalance: minBalanceString,
-                    networkFee: networkFeeString,
-                    availableBalance: availableString
-                ),
+                availableBalance: availableString,
                 locale: locale
             )
 

@@ -19,7 +19,13 @@ protocol BaseErrorPresentable {
         locale: Locale?
     )
 
-    func presentMinBalanceViolated(from view: ControllerBackedProtocol, locale: Locale?)
+    func presentMinBalanceViolated(
+        from view: ControllerBackedProtocol,
+        minBalanceForOperation: String,
+        currentBalance: String,
+        needToAddBalance: String,
+        locale: Locale?
+    )
 }
 
 extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -150,9 +156,18 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         present(viewModel: viewModel, style: .alert, from: view)
     }
 
-    func presentMinBalanceViolated(from view: ControllerBackedProtocol, locale: Locale?) {
+    func presentMinBalanceViolated(
+        from view: ControllerBackedProtocol,
+        minBalanceForOperation: String,
+        currentBalance: String,
+        needToAddBalance: String,
+        locale: Locale?
+    ) {
         let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.walletFeeOverExistentialDeposit(
+        let message = R.string.localizable.transactionMinBalanceViolationMessage(
+            minBalanceForOperation,
+            currentBalance,
+            needToAddBalance,
             preferredLanguages: locale?.rLanguages
         )
 

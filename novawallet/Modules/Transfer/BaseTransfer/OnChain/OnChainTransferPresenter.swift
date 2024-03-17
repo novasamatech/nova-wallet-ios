@@ -124,6 +124,7 @@ class OnChainTransferPresenter {
                 fee: fee?.value,
                 total: senderUtilityBalanceCountingEd,
                 minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
+                asset: utilityAssetInfo,
                 locale: selectedLocale
             ),
 
