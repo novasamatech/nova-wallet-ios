@@ -23,6 +23,13 @@ protocol Web3AlertsSyncServiceProtocol: ApplicationServiceProtocol {
         runningIn queue: DispatchQueue?,
         completionHandler: @escaping (Error?) -> Void
     )
+
+    func updateWallets(
+        dependingOn localWalletClosure: @escaping () throws -> [MetaAccountModel.Id: MetaAccountModel],
+        chainsClosure: @escaping () throws -> [ChainModel.Id: ChainModel],
+        runningIn queue: DispatchQueue?,
+        completionHandler: @escaping (Error?) -> Void
+    )
 }
 
 final class Web3AlertsSyncService: BaseSyncService {
@@ -197,6 +204,45 @@ final class Web3AlertsSyncService: BaseSyncService {
             wrapper.addDependency(operations: executingCall.allOperations)
         }
     }
+
+    private func createWalletsDiffWrapper(
+        dependingOn localWalletClosure: @escaping () throws -> [MetaAccountModel.Id: MetaAccountModel],
+        chainsClosure: @escaping () throws -> [ChainModel.Id: ChainModel]
+    ) -> CompoundOperationWrapper<Web3Alert.LocalSettings?> {
+        let fetchLocalSettingsOperation = fetchLocalSettingsOperation()
+
+        let newLocalSettingsOperation = ClosureOperation<Web3Alert.LocalSettings?> {
+            guard let localSettings = try fetchLocalSettingsOperation.extractNoCancellableResultData() else {
+                return nil
+            }
+
+            let localWallets = try localWalletClosure()
+            let chains = try chainsClosure()
+
+            let settingsFactory = PushNotificationSettingsFactory()
+
+            let existingRemoteWallets: [Web3Alert.LocalWallet] = localSettings.wallets.compactMap { remoteWallet in
+                guard let localWallet = localWallets[remoteWallet.metaId] else {
+                    return nil
+                }
+
+                return settingsFactory.createWallet(from: localWallet, chains: chains)
+            }
+
+            if existingRemoteWallets != localSettings.wallets {
+                return localSettings.with(wallets: existingRemoteWallets)
+            } else {
+                return nil
+            }
+        }
+
+        newLocalSettingsOperation.addDependency(fetchLocalSettingsOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: newLocalSettingsOperation,
+            dependencies: [fetchLocalSettingsOperation]
+        )
+    }
 }
 
 extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
@@ -366,6 +412,55 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
                     self?.logger.debug("Web3 Alert settings remove failed: \(error)")
                     completionHandler(error)
                 }
+            }
+        }
+    }
+
+    func updateWallets(
+        dependingOn localWalletClosure: @escaping () throws -> [MetaAccountModel.Id: MetaAccountModel],
+        chainsClosure: @escaping () throws -> [ChainModel.Id: ChainModel],
+        runningIn queue: DispatchQueue?,
+        completionHandler: @escaping (Error?) -> Void
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        logger.debug("Updating wallets...")
+
+        let walletsDiffWrapper = createWalletsDiffWrapper(
+            dependingOn: localWalletClosure,
+            chainsClosure: chainsClosure
+        )
+
+        let saveWrapper = saveWrapper(dependsOn: walletsDiffWrapper.targetOperation, forceUpdate: true)
+
+        saveWrapper.addDependency(wrapper: walletsDiffWrapper)
+
+        let wrapper = saveWrapper.insertingHead(operations: walletsDiffWrapper.allOperations)
+
+        waitInProgress(for: wrapper)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: syncWrapperStore,
+            runningCallbackIn: queue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                if let settings = try? walletsDiffWrapper.targetOperation.extractNoCancellableResultData() {
+                    self?.logger.debug("New wallets: \(settings.wallets)")
+                } else {
+                    self?.logger.debug("No wallet changes")
+                }
+
+                completionHandler(nil)
+            case let .failure(error):
+                completionHandler(error)
             }
         }
     }

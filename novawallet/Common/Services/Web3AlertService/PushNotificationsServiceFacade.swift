@@ -21,11 +21,14 @@ protocol PushNotificationsServiceFacadeProtocol: ApplicationServiceProtocol {
     func unsubscribeStatus(_ target: AnyObject)
 
     func updateAPNS(token: Data)
+
+    func syncWallets()
 }
 
 final class PushNotificationsServiceFacade {
     static let shared = PushNotificationsServiceFacade(
         factory: PushNotificationsFacadeFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             storageFacade: UserDataStorageFacade.shared,
             settingsManager: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
@@ -44,6 +47,7 @@ final class PushNotificationsServiceFacade {
 
     private(set) var syncService: Web3AlertsSyncServiceProtocol?
     private(set) var topicService: PushNotificationsTopicServiceProtocol?
+    private(set) var walletsUpdateService: SyncServiceProtocol?
 
     private var isActive: Bool = false
 
@@ -101,6 +105,14 @@ final class PushNotificationsServiceFacade {
 
         if topicService == nil {
             topicService = factory.createTopicService()
+        }
+
+        if let web3SyncService = syncService, walletsUpdateService == nil {
+            walletsUpdateService = factory.createWalletsUpdateService(
+                for: web3SyncService
+            )
+
+            walletsUpdateService?.setup()
         }
     }
 
@@ -332,5 +344,9 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
 
     func updateAPNS(token: Data) {
         statusService.updateAPNS(token: token)
+    }
+
+    func syncWallets() {
+        walletsUpdateService?.syncUp(afterDelay: 0, ignoreIfSyncing: false)
     }
 }
