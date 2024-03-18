@@ -347,6 +347,6 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
     }
 
     func syncWallets() {
-        walletsUpdateService?.syncUp(afterDelay: 0, ignoreIfSyncing: false)
+        walletsUpdateService?.syncUp()
     }
 }

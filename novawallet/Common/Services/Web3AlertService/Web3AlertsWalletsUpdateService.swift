@@ -9,6 +9,8 @@ final class Web3AlertsWalletsUpdateService: BaseSyncService {
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
+    private let walletsCancellable = CancellableCallStore()
+
     init(
         chainRegistry: ChainRegistryProtocol,
         walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
@@ -31,7 +33,7 @@ final class Web3AlertsWalletsUpdateService: BaseSyncService {
         for chains: [ChainModel.Id: ChainModel],
         localWallets: [MetaAccountModel.Id: MetaAccountModel]
     ) {
-        guard getIsSyncing() else {
+        guard isSyncing else {
             logger.warning("Wallets received but sync cancelled")
             return
         }
@@ -49,16 +51,20 @@ final class Web3AlertsWalletsUpdateService: BaseSyncService {
     private func loadWalletsAndSync(for chains: [ChainModel.Id: ChainModel]) {
         let walletsOperations = walletsRepository.fetchAllOperation(with: .init())
 
-        execute(
-            operation: walletsOperations,
+        let wrapper = CompoundOperationWrapper(targetOperation: walletsOperations)
+
+        executeCancellable(
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
-            runningCallbackIn: workingQueue
+            backingCallIn: walletsCancellable,
+            runningCallbackIn: workingQueue,
+            mutex: mutex
         ) { [weak self] result in
             switch result {
             case let .success(wallets):
                 self?.updateWallets(for: chains, localWallets: wallets.reduceToDict())
             case let .failure(error):
-                self?.complete(error)
+                self?.completeImmediate(error)
             }
         }
     }
@@ -82,6 +88,7 @@ final class Web3AlertsWalletsUpdateService: BaseSyncService {
     }
 
     override func stopSyncUp() {
+        walletsCancellable.cancel()
         chainRegistry.chainsUnsubscribe(self)
     }
 }
