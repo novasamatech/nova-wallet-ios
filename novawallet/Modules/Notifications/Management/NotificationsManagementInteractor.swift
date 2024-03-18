@@ -70,7 +70,7 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         case .undefined:
             return
         case let .defined(settings):
-            if settings == nil, notificationStatus == .denied {
+            if settings == nil {
                 chainRegistry.chainsSubscribe(
                     self,
                     runningInQueue: .main

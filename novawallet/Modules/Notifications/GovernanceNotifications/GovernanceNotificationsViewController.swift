@@ -12,7 +12,12 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
         self.presenter = presenter
         super.init(
             presenter: presenter,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            navigationItemTitle: .init {
+                R.string.localizable.tabbarGovernanceTitle(
+                    preferredLanguages: $0.rLanguages
+                )
+            }
         )
     }
 
