@@ -4,7 +4,7 @@ import SubstrateSdk
 
 extension HydraRouter {
     static var routeExecutedPath: EventCodingPath {
-        .init(moduleName: HydraRouter.moduleName, eventName: "RouteExecuted")
+        .init(moduleName: HydraRouter.moduleName, eventName: "Executed")
     }
 
     struct RouteExecutedEvent: Codable {

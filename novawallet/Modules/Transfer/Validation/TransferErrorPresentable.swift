@@ -1,12 +1,5 @@
 import Foundation
 
-struct XcmMinBalanceViolationPresentingParams {
-    let totalBalance: String
-    let minBalance: String
-    let networkFee: String
-    let availableBalance: String
-}
-
 protocol TransferErrorPresentable: BaseErrorPresentable {
     func presentReceiverBalanceTooLow(from view: ControllerBackedProtocol, locale: Locale?)
     func presentNoReceiverAccount(
@@ -29,7 +22,7 @@ protocol TransferErrorPresentable: BaseErrorPresentable {
 
     func presentMinBalanceViolatedForDeliveryFee(
         from view: ControllerBackedProtocol,
-        params: XcmMinBalanceViolationPresentingParams,
+        availableBalance: String,
         locale: Locale?
     )
 }
@@ -135,15 +128,12 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
 
     func presentMinBalanceViolatedForDeliveryFee(
         from view: ControllerBackedProtocol,
-        params: XcmMinBalanceViolationPresentingParams,
+        availableBalance: String,
         locale: Locale?
     ) {
         let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
         let message = R.string.localizable.xcmDeliveryFeeEdErrorMessage(
-            params.totalBalance,
-            params.minBalance,
-            params.networkFee,
-            params.availableBalance,
+            availableBalance,
             preferredLanguages: locale?.rLanguages
         )
 
