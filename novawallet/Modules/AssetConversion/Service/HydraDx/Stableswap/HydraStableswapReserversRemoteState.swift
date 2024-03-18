@@ -33,8 +33,8 @@ extension HydraStableswap {
             "reserve:" + String(asset)
         }
 
-        static func assetMetadataKey(_ asset: HydraDx.AssetId) -> String {
-            "metadata:" + String(asset)
+        static func assetKey(_ asset: HydraDx.AssetId) -> String {
+            "asset:" + String(asset)
         }
 
         private func decodeAccount(for key: String, with context: [CodingUserInfoKey: Any]?) throws -> OrmlAccount? {
@@ -61,13 +61,13 @@ extension HydraStableswap {
         }
 
         func getDecimals(for asset: HydraDx.AssetId, with context: [CodingUserInfoKey: Any]?) throws -> UInt8? {
-            let key = Self.assetMetadataKey(asset)
+            let key = Self.assetKey(asset)
 
             guard let json = values[key] else {
                 return nil
             }
 
-            return try json.map(to: HydraAssetRegistry.AssetMetadata?.self, with: context)?.decimals
+            return try json.map(to: HydraAssetRegistry.Asset?.self, with: context)?.decimals
         }
     }
 

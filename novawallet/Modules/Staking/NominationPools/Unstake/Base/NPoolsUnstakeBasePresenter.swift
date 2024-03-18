@@ -106,6 +106,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
                 fee: fee,
                 total: assetBalance?.balanceCountingEd,
                 minBalance: existentialDeposit,
+                asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
             dataValidatorFactory.hasLedgerUnstakeSpace(
