@@ -14,7 +14,7 @@ struct NewReferendumPayload: Codable {
     let referendumId: Referenda.ReferendumIndex
 
     var referendumNumber: String {
-        "#\(referendumId)"
+        "\(referendumId)"
     }
 }
 
@@ -41,7 +41,7 @@ struct ReferendumStateUpdatePayload: Decodable {
     }
 
     var referendumNumber: String {
-        "#\(referendumId)"
+        "\(referendumId)"
     }
 }
 
