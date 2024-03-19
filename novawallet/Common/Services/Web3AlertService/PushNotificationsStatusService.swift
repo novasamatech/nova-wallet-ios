@@ -69,6 +69,9 @@ final class PushNotificationsStatusService: NSObject {
         self.settingsManager = settingsManager
         self.applicationHandler = applicationHandler
         self.logger = logger
+
+        super.init()
+        notificationCenter.delegate = self
     }
 
     private func status(with completion: @escaping (PushNotificationsStatus) -> Void) {
@@ -257,5 +260,15 @@ extension PushNotificationsStatusService: MessagingDelegate {
 extension PushNotificationsStatusService: ApplicationHandlerDelegate {
     func didReceiveWillEnterForeground(notification _: Notification) {
         updateStatus()
+    }
+}
+
+extension PushNotificationsStatusService: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _: UNUserNotificationCenter,
+        willPresent _: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.alert, .badge, .sound])
     }
 }

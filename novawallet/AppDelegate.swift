@@ -47,14 +47,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(
-        _ application: UIApplication,
+        _: UIApplication,
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        guard application.applicationState != .active else {
-            fetchCompletionHandler(.noData)
-            return
-        }
         PushNotificationHandlingService.shared.handle(userInfo: userInfo) { success in
             if success {
                 fetchCompletionHandler(.newData)
