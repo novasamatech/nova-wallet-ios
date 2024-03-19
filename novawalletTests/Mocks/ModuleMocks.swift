@@ -1962,6 +1962,21 @@ import SoraKeystore
     
     
     
+     func syncWallets()  {
+        
+    return cuckoo_manager.call("syncWallets()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.syncWallets())
+        
+    }
+    
+    
+    
      func setup()  {
         
     return cuckoo_manager.call("setup()",
@@ -2019,6 +2034,11 @@ import SoraKeystore
 	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceFacadeProtocol.self, method: "updateAPNS(token: Data)", parameterMatchers: matchers))
 	    }
 	    
+	    func syncWallets() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceFacadeProtocol.self, method: "syncWallets()", parameterMatchers: matchers))
+	    }
+	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockPushNotificationsServiceFacadeProtocol.self, method: "setup()", parameterMatchers: matchers))
@@ -2070,6 +2090,12 @@ import SoraKeystore
 	    }
 	    
 	    @discardableResult
+	    func syncWallets() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("syncWallets()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -2111,6 +2137,12 @@ import SoraKeystore
     
     
      func updateAPNS(token: Data)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func syncWallets()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

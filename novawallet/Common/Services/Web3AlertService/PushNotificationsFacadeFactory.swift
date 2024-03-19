@@ -8,20 +8,26 @@ protocol PushNotificationsFacadeFactoryProtocol {
     func createSyncService() -> Web3AlertsSyncServiceProtocol
     func createStatusService() -> PushNotificationsStatusServiceProtocol
     func createTopicService() -> PushNotificationsTopicServiceProtocol
+    func createWalletsUpdateService(
+        for settingsService: Web3AlertsSyncServiceProtocol
+    ) -> SyncServiceProtocol
 }
 
 final class PushNotificationsFacadeFactory: PushNotificationsFacadeFactoryProtocol {
+    let chainRegistry: ChainRegistryProtocol
     let storageFacade: StorageFacadeProtocol
     let settingsManager: SettingsManagerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
+        chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
         settingsManager: SettingsManagerProtocol = SettingsManager.shared,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
+        self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
         self.settingsManager = settingsManager
         self.operationQueue = operationQueue
@@ -64,6 +70,22 @@ final class PushNotificationsFacadeFactory: PushNotificationsFacadeFactoryProtoc
             repository: AnyDataProviderRepository(repository),
             operationQueue: operationQueue,
             logger: logger
+        )
+    }
+
+    func createWalletsUpdateService(
+        for settingsService: Web3AlertsSyncServiceProtocol
+    ) -> SyncServiceProtocol {
+        let walletsRepository = AccountRepositoryFactory(storageFacade: storageFacade).createMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
+
+        return Web3AlertsWalletsUpdateService(
+            chainRegistry: chainRegistry,
+            walletsRepository: walletsRepository,
+            settingsService: settingsService,
+            operationQueue: operationQueue
         )
     }
 }

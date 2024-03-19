@@ -11,7 +11,8 @@ protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
 
     func updateOnWalletSelectionChange()
 
-    func updateOnWalletChange()
+    func updateOnWalletChange(for mode: AccountChangeType)
+    func updateOnWalletRemove()
 }
 
 final class ServiceCoordinator {
@@ -69,8 +70,16 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         }
     }
 
-    func updateOnWalletChange() {
-        proxySyncService.syncUp()
+    func updateOnWalletChange(for mode: AccountChangeType) {
+        if mode == .manually {
+            proxySyncService.syncUp()
+        }
+
+        pushNotificationsFacade.syncWallets()
+    }
+
+    func updateOnWalletRemove() {
+        pushNotificationsFacade.syncWallets()
     }
 
     func setup() {

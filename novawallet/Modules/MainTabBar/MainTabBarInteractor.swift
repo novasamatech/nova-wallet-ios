@@ -89,15 +89,15 @@ extension MainTabBarInteractor: EventVisitorProtocol {
     }
 
     func processAccountsChanged(event: AccountsChanged) {
-        if event.method == .manually {
-            serviceCoordinator.updateOnWalletChange()
-        }
+        serviceCoordinator.updateOnWalletChange(for: event.method)
     }
 
     func processChainAccountChanged(event: ChainAccountChanged) {
-        if event.method == .manually {
-            serviceCoordinator.updateOnWalletChange()
-        }
+        serviceCoordinator.updateOnWalletChange(for: event.method)
+    }
+
+    func processAccountsRemoved(event _: AccountsRemovedManually) {
+        serviceCoordinator.updateOnWalletRemove()
     }
 }
 
