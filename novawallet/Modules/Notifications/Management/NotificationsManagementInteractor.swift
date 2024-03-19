@@ -24,23 +24,18 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         }
     }
 
-    private let operationQueue: OperationQueue
-    private let callStore = CancellableCallStore()
-
     init(
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
         settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol,
         localPushSettingsFactory: PushNotificationSettingsFactoryProtocol,
         selectedWallet: MetaAccountModel,
-        chainRegistry: ChainRegistryProtocol,
-        operationQueue: OperationQueue
+        chainRegistry: ChainRegistryProtocol
     ) {
         self.pushNotificationsFacade = pushNotificationsFacade
         self.settingsLocalSubscriptionFactory = settingsLocalSubscriptionFactory
         self.localPushSettingsFactory = localPushSettingsFactory
         self.chainRegistry = chainRegistry
         self.selectedWallet = selectedWallet
-        self.operationQueue = operationQueue
     }
 
     private func subscribeToSettings() {
