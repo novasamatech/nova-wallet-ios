@@ -1510,11 +1510,11 @@
 "notifications.setup.title" = "Не пропустите ничего!";
 "notifications.setup.subtitle" = "Получайте уведомления об операциях кошелька, обновлениях демократии, наград стейкинга и безопасности, чтобы вы всегда быть в куре событий";
 "notifications.setup.enable.push.notifications" = "Включить push-уведомления";
-"notifications.setup.terms" = "Включая push-уведомления, вы соглашаетесь с нашими %s и %s";
+"notifications.setup.terms" = "Включая push-уведомления, вы соглашаетесь с нашими %@ и %@";
 "common.terms.and.conditions" = "Условиями использования";
 "common.privacy.policy" = "Политикой конфиденциальности";
 "notifications.setup.notification.subtitle" = "Получено +0.6068 KSM ($20.35) от Kusama стейкинга";
-"notifications.setup.notification.accessory" = "";
+"notifications.setup.notification.accessory" = "Сейчас";
 "notifications.setup.notification.title" = "⭐️ Новая награда";
 "notifications.management.powered.by" = "При поддержке";
 "notifications.error.disabled.in.settings.title" = "Включите уведомления для Nova Wallet";

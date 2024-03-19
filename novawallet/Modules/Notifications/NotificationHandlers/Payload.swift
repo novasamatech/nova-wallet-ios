@@ -29,7 +29,7 @@ struct ReferendumStateUpdatePayload: Decodable {
     let fromStatus: Status?
     let toStatus: Status
 
-    enum Status: String, CaseInsensitiveDecodale {
+    enum Status: String, Decodable {
         case created
         case deciding
         case confirming
