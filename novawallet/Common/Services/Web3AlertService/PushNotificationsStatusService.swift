@@ -69,9 +69,6 @@ final class PushNotificationsStatusService: NSObject {
         self.settingsManager = settingsManager
         self.applicationHandler = applicationHandler
         self.logger = logger
-
-        super.init()
-        notificationCenter.delegate = self
     }
 
     private func status(with completion: @escaping (PushNotificationsStatus) -> Void) {
@@ -126,10 +123,12 @@ final class PushNotificationsStatusService: NSObject {
 
     private func setupNotificationDelegates() {
         Messaging.messaging().delegate = self
+        notificationCenter.delegate = self
     }
 
     private func clearNotificationDelegates() {
         Messaging.messaging().delegate = nil
+        notificationCenter.delegate = nil
     }
 }
 
@@ -269,6 +268,10 @@ extension PushNotificationsStatusService: UNUserNotificationCenterDelegate {
         willPresent _: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([.alert, .badge, .sound])
+        if #available(iOS 14.0, *) {
+            completionHandler([.banner, .list, .badge, .sound])
+        } else {
+            completionHandler([.alert, .badge, .sound])
+        }
     }
 }
