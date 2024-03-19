@@ -37,7 +37,7 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
             }
             switch result {
             case let .success(chains):
-                guard let chain = search(
+                guard let chain = self.search(
                     chainId: self.chainId,
                     in: chains
                 ) else {
