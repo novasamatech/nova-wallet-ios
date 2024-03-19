@@ -19,7 +19,6 @@ struct NotificationsManagementViewFactory {
             settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactory.shared,
             localPushSettingsFactory: PushNotificationSettingsFactory(),
             selectedWallet: selectedWallet,
-            walletsRepository: walletsRepository,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

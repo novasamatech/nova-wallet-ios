@@ -303,10 +303,6 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.save()
             }
-        case .fetchMetaAccounts:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.fetchMetaAccounts()
-            }
         }
     }
 

@@ -20,7 +20,6 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
         notificationsEnabled: Bool
     )
     func remakeSubscription()
-    func fetchMetaAccounts()
 }
 
 protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
@@ -54,7 +53,6 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
 enum NotificationsManagementError: Error {
     case settingsSubscription(Error)
     case save(Error)
-    case fetchMetaAccounts(Error)
 }
 
 typealias NotificationsManagementCellModel = CommonSettingsCellViewModel<NotificationsManagementRow>

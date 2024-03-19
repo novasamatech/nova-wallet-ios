@@ -24,9 +24,6 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         }
     }
 
-    private var metaAccounts: [MetaAccountModel.Id: MetaAccountModel] = [:]
-
-    private let walletsRepository: AnyDataProviderRepository<MetaAccountModel>
     private let operationQueue: OperationQueue
     private let callStore = CancellableCallStore()
 
@@ -35,7 +32,6 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol,
         localPushSettingsFactory: PushNotificationSettingsFactoryProtocol,
         selectedWallet: MetaAccountModel,
-        walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
@@ -44,7 +40,6 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         self.localPushSettingsFactory = localPushSettingsFactory
         self.chainRegistry = chainRegistry
         self.selectedWallet = selectedWallet
-        self.walletsRepository = walletsRepository
         self.operationQueue = operationQueue
     }
 
@@ -91,38 +86,15 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         }
     }
 
-    func fetchWallets() {
-        let fetchWalletsOperation = walletsRepository.fetchAllOperation(with: .init())
-        execute(
-            operation: fetchWalletsOperation,
-            inOperationQueue: operationQueue,
-            backingCallIn: callStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(metaAccounts):
-                self?.metaAccounts = metaAccounts.reduce(into: [MetaAccountModel.Id: MetaAccountModel]()) {
-                    $0[$1.metaId] = $1
-                }
-                self?.provideSettings()
-            case let .failure(error):
-                self?.presenter?.didReceive(error: .fetchMetaAccounts(error))
-            }
-        }
-    }
-
     func provideSettings() {
         switch localSettings {
         case .undefined:
             return
         case let .defined(settings):
-            guard let settings = settings, !metaAccounts.isEmpty else {
+            guard let settings = settings else {
                 return
             }
-            let existingWallets = settings.wallets.filter { metaAccounts[$0.metaId] != nil }
-            let settingsWithExistingWallets = settings.with(wallets: existingWallets)
-            localSettings = .defined(settingsWithExistingWallets)
-            presenter?.didReceive(settings: settingsWithExistingWallets)
+            presenter?.didReceive(settings: settings)
         }
     }
 }
@@ -132,7 +104,6 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
         subscribeToSettings()
         subscribeToTopicsSettings()
         provideNotificationsStatus()
-        fetchWallets()
     }
 
     func save(
@@ -159,10 +130,6 @@ extension NotificationsManagementInteractor: NotificationsManagementInteractorIn
     func remakeSubscription() {
         subscribeToSettings()
         subscribeToTopicsSettings()
-    }
-
-    func fetchMetaAccounts() {
-        fetchWallets()
     }
 }
 
