@@ -6,12 +6,15 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
 
     private let presenter: ChainNotificationSettingsPresenterProtocol
     private var models: [Section] = []
+    let navigationItemTitle: LocalizableResource<String>
 
     init(
         presenter: ChainNotificationSettingsPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        navigationItemTitle: LocalizableResource<String>
     ) {
         self.presenter = presenter
+        self.navigationItemTitle = navigationItemTitle
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -44,9 +47,7 @@ class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let rightBarButtonItemTitle = R.string.localizable.commonClear(
             preferredLanguages: selectedLocale.rLanguages)
-        navigationItem.title = R.string.localizable.tabbarGovernanceTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        navigationItem.title = navigationItemTitle.value(for: selectedLocale)
         navigationItem.rightBarButtonItem?.title = rightBarButtonItemTitle
     }
 

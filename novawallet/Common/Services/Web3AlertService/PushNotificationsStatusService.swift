@@ -107,8 +107,15 @@ final class PushNotificationsStatusService: NSObject {
         }
     }
 
+    private func syncSettingsIfNeeded(newStatus: PushNotificationsStatus) {
+        if newStatus == .denied, settingsManager.notificationsEnabled {
+            settingsManager.notificationsEnabled = false
+        }
+    }
+
     private func updateStatus() {
         status { [weak self] newStatus in
+            self?.syncSettingsIfNeeded(newStatus: newStatus)
             self?.statusObservable.state = newStatus
             self?.updateTokensReadyState()
         }
