@@ -11,12 +11,14 @@ protocol MainTabBarPresenterProtocol: AnyObject {
 
 protocol MainTabBarInteractorInputProtocol: AnyObject {
     func setup()
+    func setPushNotificationsSetupScreenSeen()
 }
 
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestImportAccount(source: SecretSource)
     func didRequestScreenOpen(_ screen: UrlHandlingScreen)
     func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen)
+    func didRequestPushNotificationsSetupOpen()
 }
 
 protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible {
@@ -29,6 +31,10 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible 
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
         screen: PushNotification.OpenScreen
+    )
+    func presentPushNotificationsSetup(
+        on view: MainTabBarViewProtocol?,
+        completion: @escaping () -> Void
     )
 }
 

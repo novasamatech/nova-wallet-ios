@@ -1027,6 +1027,7 @@
 		775F194D2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */; };
 		775F19512A5811FA009915B6 /* StartStakingParachainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */; };
 		775F19532A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */; };
+		7764E2772BA43DA1002F54AA /* SettingsSectionFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7764E2762BA43DA1002F54AA /* SettingsSectionFooterView.swift */; };
 		7764E2792BA49E15002F54AA /* CaseInsensitiveDecodale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7764E2782BA49E15002F54AA /* CaseInsensitiveDecodale.swift */; };
 		7764E27A2BA49E3C002F54AA /* CaseInsensitiveDecodale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7764E2782BA49E15002F54AA /* CaseInsensitiveDecodale.swift */; };
 		7772EB322B724A90000D7E21 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7772EB312B724A8F000D7E21 /* GoogleService-Info.plist */; };
@@ -5594,6 +5595,7 @@
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
 		7761DD252BA10CF2000C600C /* SubstrateDataModel27.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel27.xcdatamodel; sourceTree = "<group>"; };
+		7764E2762BA43DA1002F54AA /* SettingsSectionFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSectionFooterView.swift; sourceTree = "<group>"; };
 		7764E2782BA49E15002F54AA /* CaseInsensitiveDecodale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseInsensitiveDecodale.swift; sourceTree = "<group>"; };
 		7772EB312B724A8F000D7E21 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7772EB332B726670000D7E21 /* Web3AlertsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertsSyncService.swift; sourceTree = "<group>"; };
@@ -12463,6 +12465,7 @@
 				844C3E592A06141F00C4305F /* SettingsSubtitleTableViewCell.swift */,
 				844C3E5B2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift */,
 				844C3E5D2A06180900C4305F /* SettingsBoxTableViewCell.swift */,
+				7764E2762BA43DA1002F54AA /* SettingsSectionFooterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -25325,6 +25328,7 @@
 				0C495B902B4290A900B8D339 /* Proxy+Call.swift in Sources */,
 				846DA55B2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift in Sources */,
 				0C3205CA2A895489002EB914 /* EvmGasLimitProvider.swift in Sources */,
+				7764E2772BA43DA1002F54AA /* SettingsSectionFooterView.swift in Sources */,
 				AE180C8B30831C9BAA39763A /* ParaStkYieldBoostSetupViewController.swift in Sources */,
 				8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */,
 				88B1862A28EF30A600D49854 /* YourVoteView.swift in Sources */,

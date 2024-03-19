@@ -32,9 +32,15 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
             backingCallIn: callStore,
             runningCallbackIn: callbackQueue
         ) { [weak self] result in
+            guard let self = self else {
+                return
+            }
             switch result {
             case let .success(chains):
-                guard let chain = chains.first, let self = self else {
+                guard let chain = self.search(
+                    chainId: self.chainId,
+                    in: chains
+                ) else {
                     completion(nil)
                     return
                 }

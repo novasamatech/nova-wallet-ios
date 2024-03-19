@@ -108,10 +108,10 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
             workingQueue: operationQueue
         )
 
-        let priceString = balance?.price.map { "(\($0))" } ?? ""
+        let optPriceString = balance?.price.map { "(\($0))" }
+        let amountWithPrice = [balance?.amount, optPriceString].compactMap { $0 }.joined(with: .space)
         let subtitle = R.string.localizable.pushNotificationStakingRewardSubtitle(
-            balance?.amount ?? "",
-            priceString,
+            amountWithPrice,
             chainAsset.chain.name,
             preferredLanguages: locale.rLanguages
         )

@@ -9,6 +9,7 @@ protocol NotificationsManagementPresenterProtocol: AnyObject {
     func setup()
     func actionRow(_ row: NotificationsManagementRow)
     func save()
+    func back()
 }
 
 protocol NotificationsManagementInteractorInputProtocol: AnyObject {

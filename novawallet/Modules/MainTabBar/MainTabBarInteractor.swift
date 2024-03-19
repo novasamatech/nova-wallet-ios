@@ -13,6 +13,7 @@ final class MainTabBarInteractor {
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
+    let settingsManager: SettingsManagerProtocol
 
     deinit {
         stopServices()
@@ -25,7 +26,8 @@ final class MainTabBarInteractor {
         screenOpenService: ScreenOpenServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
         securedLayer: SecurityLayerServiceProtocol,
-        inAppUpdatesService: SyncServiceProtocol
+        inAppUpdatesService: SyncServiceProtocol,
+        settingsManager: SettingsManagerProtocol
     ) {
         self.eventCenter = eventCenter
         self.keystoreImportService = keystoreImportService
@@ -34,6 +36,7 @@ final class MainTabBarInteractor {
         self.serviceCoordinator = serviceCoordinator
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
+        self.settingsManager = settingsManager
         self.inAppUpdatesService.setup()
 
         startServices()
@@ -61,6 +64,14 @@ final class MainTabBarInteractor {
             presenter?.didRequestImportAccount(source: .mnemonic)
         }
     }
+
+    private func showPushNotificationsSetupIfNeeded() {
+        if !settingsManager.notificationsSetupSeen {
+            securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+                self?.presenter?.didRequestPushNotificationsSetupOpen()
+            }
+        }
+    }
 }
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
@@ -80,6 +91,12 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
         }
+
+        showPushNotificationsSetupIfNeeded()
+    }
+
+    func setPushNotificationsSetupScreenSeen() {
+        settingsManager.notificationsSetupSeen = true
     }
 }
 

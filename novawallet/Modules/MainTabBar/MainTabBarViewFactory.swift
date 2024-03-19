@@ -30,7 +30,8 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             screenOpenService: screenOpenService,
             pushScreenOpenService: pushScreenOpenService,
             securedLayer: securedLayer,
-            inAppUpdatesService: inAppUpdatesService
+            inAppUpdatesService: inAppUpdatesService,
+            settingsManager: SettingsManager.shared
         )
 
         let walletNotificationService = serviceCoordinator.walletNotificationService

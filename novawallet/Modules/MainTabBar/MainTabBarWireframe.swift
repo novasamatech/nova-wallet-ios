@@ -78,6 +78,18 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
     }
 
+    func presentPushNotificationsSetup(on view: MainTabBarViewProtocol?, completion: @escaping () -> Void) {
+        guard let setupPushNotificationsView = NotificationsSetupViewFactory.createView() else {
+            return
+        }
+
+        view?.controller.present(
+            setupPushNotificationsView.controller,
+            animated: true,
+            completion: completion
+        )
+    }
+
     private func openGovernanceScreen(
         in controller: UITabBarController,
         rederendumIndex: Referenda.ReferendumIndex

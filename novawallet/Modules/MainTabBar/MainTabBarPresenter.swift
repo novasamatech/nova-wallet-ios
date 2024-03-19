@@ -39,4 +39,10 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
             screen: screen
         )
     }
+
+    func didRequestPushNotificationsSetupOpen() {
+        wireframe.presentPushNotificationsSetup(on: view) { [weak self] in
+            self?.interactor.setPushNotificationsSetupScreenSeen()
+        }
+    }
 }

@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 enum NotificationsManagementSection {
-    case main
+    case main(warning: String?)
     case general
     case balances
     case others
@@ -12,7 +12,7 @@ enum NotificationsManagementSection {
         case .main:
             return nil
         case .general:
-            return R.string.localizable.notificationsManagementGeneral(
+            return R.string.localizable.settingsGeneral(
                 preferredLanguages: locale.rLanguages
             ).uppercased()
         case .balances:
@@ -70,7 +70,7 @@ enum NotificationsManagementRow {
                 preferredLanguages: locale.rLanguages
             )
         case .gov:
-            return R.string.localizable.notificationsManagementGov(
+            return R.string.localizable.tabbarGovernanceTitle(
                 preferredLanguages: locale.rLanguages
             )
         case .staking:

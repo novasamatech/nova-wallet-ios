@@ -12,7 +12,12 @@ final class StakingRewardsNotificationsViewController: ChainNotificationSettings
         self.presenter = presenter
         super.init(
             presenter: presenter,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            navigationItemTitle: .init {
+                R.string.localizable.notificationsManagementStakingRewards(
+                    preferredLanguages: $0.rLanguages
+                )
+            }
         )
     }
 

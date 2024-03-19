@@ -60,7 +60,7 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
         case .undefined:
             return
         case let .defined(settings):
-            if settings == nil, notificationStatus == .denied {
+            if settings == nil {
                 chainRegistry.chainsSubscribe(
                     self,
                     runningInQueue: .main
@@ -75,9 +75,21 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
                         chains: chains
                     )
                     self.localSettings = .defined(defaultSettings)
-                    self.presenter?.didReceive(settings: defaultSettings)
+                    self.provideSettings()
                 }
             }
+        }
+    }
+
+    func provideSettings() {
+        switch localSettings {
+        case .undefined:
+            return
+        case let .defined(settings):
+            guard let settings = settings else {
+                return
+            }
+            presenter?.didReceive(settings: settings)
         }
     }
 }
@@ -121,10 +133,8 @@ extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscri
         switch result {
         case let .success(changes):
             let lastChange = changes.reduceToLastChange()
-            if let settings = lastChange {
-                presenter?.didReceive(settings: settings)
-            }
             localSettings = .defined(lastChange)
+            provideSettings()
         case let .failure(error):
             presenter?.didReceive(error: .settingsSubscription(error))
         }

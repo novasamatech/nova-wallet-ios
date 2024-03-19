@@ -2,7 +2,7 @@ import UIKit
 
 final class NotificationWalletListViewLayout: WalletsListViewLayout, TableHeaderLayoutUpdatable {
     let headerView = MultiValueView.createTableHeaderView()
-    let actionButton: LoadableActionView = .create {
+    let actionView: LoadableActionView = .create {
         $0.actionButton.applyDefaultStyle()
     }
 
@@ -26,8 +26,8 @@ final class NotificationWalletListViewLayout: WalletsListViewLayout, TableHeader
     override func setupLayout() {
         super.setupLayout()
 
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        addSubview(actionView)
+        actionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)

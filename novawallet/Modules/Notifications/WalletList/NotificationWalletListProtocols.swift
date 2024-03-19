@@ -1,4 +1,6 @@
-protocol NotificationWalletListViewProtocol: WalletsListViewProtocol {}
+protocol NotificationWalletListViewProtocol: WalletsListViewProtocol {
+    func setAction(enabled: Bool)
+}
 
 protocol NotificationWalletListPresenterProtocol: WalletsListPresenterProtocol {
     func selectItem(at index: Int, section: Int)
