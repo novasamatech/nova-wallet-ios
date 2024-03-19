@@ -221,9 +221,9 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             case .all:
                 $0.stakingReward = .all
             case let .concrete(selectedChains):
-                $0.stakingReward = .concrete(selectedChains)
+                $0.stakingReward = !selectedChains.isEmpty ? .concrete(selectedChains) : nil
             case nil:
-                $0.stakingReward = .concrete([])
+                $0.stakingReward = nil
             }
         }
 
