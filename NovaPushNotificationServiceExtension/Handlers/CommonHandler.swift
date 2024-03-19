@@ -110,7 +110,7 @@ extension CommonHandler {
         wallets: [Web3Alert.LocalWallet],
         metaAccounts: [MetaAccountModel]
     ) -> String? {
-        guard let address = address else {
+        guard let address = address, wallets.count > 1 else {
             return nil
         }
 

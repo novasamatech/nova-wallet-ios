@@ -59,7 +59,14 @@ final class NotificationsSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
+        let termsConditions = R.string.localizable
+            .commonTermsAndConditions(preferredLanguages: selectedLocale.rLanguages)
+        let privacyPolicy = R.string.localizable
+            .commonPrivacyPolicy(preferredLanguages: selectedLocale.rLanguages)
+
         let termsText = strings.notificationsSetupTerms(
+            termsConditions,
+            privacyPolicy,
             preferredLanguages: selectedLocale.rLanguages
         )
 

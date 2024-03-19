@@ -44,7 +44,7 @@ final class GovernanceNotificationsViewController: ChainNotificationSettingsView
         let referendumUpdate = R.string.localizable.notificationsManagementGovReferendumUpdate(
             preferredLanguages: selectedLocale.rLanguages
         )
-        let tracks = R.string.localizable.notificationsManagementGovTracks(
+        let tracks = R.string.localizable.govTracks(
             preferredLanguages: selectedLocale.rLanguages
         )
         return .collapsable([

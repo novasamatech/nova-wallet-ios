@@ -23,6 +23,7 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
     }
 
     let localPushSettingsFactory: PushNotificationSettingsFactoryProtocol
+    private let walletsLimit: Int = 3
 
     init(
         initState: [Web3Alert.LocalWallet]?,
@@ -77,13 +78,15 @@ final class NotificationWalletListPresenter: WalletsListPresenter {
     }
 
     private func select(walletId: String) {
-        if selectedWallets.count < 3 {
+        if selectedWallets.count < walletsLimit {
             selectedWallets.insert(walletId)
         } else {
             let title = R.string.localizable.notificationsWalletListLimitErrorTitle(
+                walletsLimit,
                 preferredLanguages: selectedLocale.rLanguages
             )
             let message = R.string.localizable.notificationsWalletListLimitErrorMessage(
+                walletsLimit,
                 preferredLanguages: selectedLocale.rLanguages
             )
             let closeAction = R.string.localizable.commonCancel()
