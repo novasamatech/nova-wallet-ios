@@ -117,7 +117,6 @@ final class PushNotificationsStatusService: NSObject {
         status { [weak self] newStatus in
             self?.syncSettingsIfNeeded(newStatus: newStatus)
             self?.statusObservable.state = newStatus
-            self?.syncSettingsIfNeeded(newStatus: newStatus)
             self?.updateTokensReadyState()
         }
     }
