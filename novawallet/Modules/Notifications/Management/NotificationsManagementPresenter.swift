@@ -110,27 +110,40 @@ final class NotificationsManagementPresenter {
 
     func checkNotificationsAvailability() {
         if notificationStatus == .denied {
-            let message = R.string.localizable.notificationsErrorDisabledInSettingsMessage(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            let title = R.string.localizable.notificationsErrorDisabledInSettingsTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            wireframe.askOpenApplicationSettings(
-                with: message,
-                title: title,
-                from: view,
-                locale: selectedLocale
-            )
-            modifiedNotificationsEnabled = false
-            updateView()
+            showNotificationDeniedError()
         }
+    }
+
+    func showNotificationDeniedError() {
+        let message = R.string.localizable.notificationsErrorDisabledInSettingsMessage(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let title = R.string.localizable.notificationsErrorDisabledInSettingsTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        wireframe.askOpenApplicationSettings(
+            with: message,
+            title: title,
+            from: view,
+            locale: selectedLocale
+        )
+        modifiedNotificationsEnabled = false
+        updateView()
     }
 
     func disableNotificationIfNeeded() {
         if areAllNotificationsOff() == true {
             modifiedNotificationsEnabled = false
         }
+    }
+
+    func isStatusDeniedError(_ error: Error) -> Bool {
+        if case let PushNotificationsServiceFacadeError.settingsUpdateFailed(internalError) = error,
+           (internalError as? PushNotificationsStatusServiceError) == .notifcationTokensWaitDenied {
+            return true
+        }
+
+        return false
     }
 }
 
@@ -299,9 +312,14 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscription()
             }
-        case .save:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.save()
+        case let .save(error):
+            view?.stopLoading()
+            if isStatusDeniedError(error) {
+                showNotificationDeniedError()
+            } else {
+                wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                    self?.save()
+                }
             }
         }
     }

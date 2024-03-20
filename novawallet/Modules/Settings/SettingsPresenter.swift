@@ -210,11 +210,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             guard pushNotificationsStatus != nil else {
                 return
             }
-            if pushNotificationsStatus == .notDetermined {
-                wireframe.showSetupNotifications(from: view)
-            } else {
-                wireframe.showManageNotifications(from: view)
-            }
+
+            wireframe.showManageNotifications(from: view)
         }
     }
 

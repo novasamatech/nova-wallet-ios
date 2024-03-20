@@ -83,6 +83,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             return
         }
 
+        setupPushNotificationsView.controller.isModalInPresentation = true
         view?.controller.present(
             setupPushNotificationsView.controller,
             animated: true,

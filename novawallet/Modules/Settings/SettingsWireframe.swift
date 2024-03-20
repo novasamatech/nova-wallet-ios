@@ -104,23 +104,6 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
 
-    func showSetupNotifications(from view: ControllerBackedProtocol?) {
-        let completion: () -> Void = { [weak self] in
-            self?.showManageNotifications(from: view)
-        }
-        guard let setupNotificationsView = NotificationsSetupViewFactory.createView(
-            completion: completion
-        ) else {
-            return
-        }
-
-        let navigationController = NovaNavigationController(
-            rootViewController: setupNotificationsView.controller
-        )
-
-        view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
     func showManageNotifications(from view: ControllerBackedProtocol?) {
         guard let manageNotificationsView = NotificationsManagementViewFactory.createView() else {
             return

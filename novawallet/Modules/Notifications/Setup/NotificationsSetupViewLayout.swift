@@ -49,7 +49,7 @@ final class NotificationsSetupViewLayout: UIView {
         addSubview(titleImage)
         titleImage.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide).offset(16)
+            make.top.equalToSuperview().offset(64)
             make.height.width.equalTo(88)
         }
         addSubview(titleLabel)
