@@ -143,9 +143,8 @@ extension NotificationsManagementInteractor: SettingsSubscriber, SettingsSubscri
     func handleTopicsSettings(result: Result<[DataProviderChange<PushNotification.TopicSettings>], Error>) {
         switch result {
         case let .success(changes):
-            if let settings = changes.reduceToLastChange() {
-                presenter?.didReceive(topicsSettings: settings)
-            }
+            let settings = changes.reduceToLastChange() ?? .init(topics: .init())
+            presenter?.didReceive(topicsSettings: settings)
         case let .failure(error):
             presenter?.didReceive(error: .settingsSubscription(error))
         }
