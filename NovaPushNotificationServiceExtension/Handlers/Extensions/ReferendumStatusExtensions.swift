@@ -22,33 +22,3 @@ extension ReferendumStateUpdatePayload.Status {
         }
     }
 }
-
-extension ReferendumStateUpdatePayload.Status {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let status = try container.decode(String.self)
-        switch status {
-        case "Created":
-            self = .created
-        case "Deciding":
-            self = .deciding
-        case "Confirming":
-            self = .confirming
-        case "Approved":
-            self = .approved
-        case "Rejected":
-            self = .rejected
-        case "TimedOut":
-            self = .timedOut
-        case "Cancelled":
-            self = .cancelled
-        case "Killed":
-            self = .killed
-        default:
-            throw DecodingError.dataCorruptedError(
-                in: container,
-                debugDescription: "Cannot initialize RawRepresentable from invalid String value \(status)"
-            )
-        }
-    }
-}
