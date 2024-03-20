@@ -123,10 +123,12 @@ final class PushNotificationsStatusService: NSObject {
 
     private func setupNotificationDelegates() {
         Messaging.messaging().delegate = self
+        notificationCenter.delegate = self
     }
 
     private func clearNotificationDelegates() {
         Messaging.messaging().delegate = nil
+        notificationCenter.delegate = nil
     }
 }
 
@@ -257,5 +259,19 @@ extension PushNotificationsStatusService: MessagingDelegate {
 extension PushNotificationsStatusService: ApplicationHandlerDelegate {
     func didReceiveWillEnterForeground(notification _: Notification) {
         updateStatus()
+    }
+}
+
+extension PushNotificationsStatusService: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _: UNUserNotificationCenter,
+        willPresent _: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        if #available(iOS 14.0, *) {
+            completionHandler([.banner, .list, .badge, .sound])
+        } else {
+            completionHandler([.alert, .badge, .sound])
+        }
     }
 }

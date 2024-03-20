@@ -1510,7 +1510,7 @@
 "notifications.setup.title" = "Don’t miss a thing!";
 "notifications.setup.subtitle" = "Get notified about Wallet operations, Governance updates, Staking activity and Security, so you’re always in the know";
 "notifications.setup.enable.push.notifications" = "Enable push notifications";
-"notifications.setup.terms" = "By enabling push notifications, you agree to our %s and %s";
+"notifications.setup.terms" = "By enabling push notifications, you agree to our %@ and %@";
 "common.terms.and.conditions" = "Terms and Conditions";
 "common.privacy.policy" = "Privacy Policy";
 "notifications.setup.notification.subtitle" = "Received +0.6068 KSM ($20.35) from Kusama staking";
