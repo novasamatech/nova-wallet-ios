@@ -1238,6 +1238,7 @@
 		77D326E92B98DF380055FE88 /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215CA2B914E9D006C7D13 /* Payload.swift */; };
 		77D326EA2B98DF900055FE88 /* TransferType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215C82B914E6F006C7D13 /* TransferType.swift */; };
 		77D326EE2B999ADD0055FE88 /* AssetDetailsNotificationMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D326ED2B999ADD0055FE88 /* AssetDetailsNotificationMessageHandler.swift */; };
+		77D5569D2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D5569C2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift */; };
 		77D7BB8E2B8C6B6400D42E8A /* PushNotificationSettingsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D7BB8D2B8C6B6400D42E8A /* PushNotificationSettingsFactory.swift */; };
 		77D7BB902B8D2BEC00D42E8A /* WalletCheckboxTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D7BB8F2B8D2BEC00D42E8A /* WalletCheckboxTableViewCell.swift */; };
 		77DAFF662B2979B100D4220C /* ProxyLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF652B2979B100D4220C /* ProxyLocalStorageSubscriber.swift */; };
@@ -5751,6 +5752,7 @@
 		77D2ED692B19CE4F00A0E58C /* MultiassetUserDataModel10.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel10.xcdatamodel; sourceTree = "<group>"; };
 		77D2ED6A2B1DD78100A0E58C /* ProxyAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyAccountModel.swift; sourceTree = "<group>"; };
 		77D326ED2B999ADD0055FE88 /* AssetDetailsNotificationMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetDetailsNotificationMessageHandler.swift; sourceTree = "<group>"; };
+		77D5569C2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManagerExtensions.swift; sourceTree = "<group>"; };
 		77D7BB8D2B8C6B6400D42E8A /* PushNotificationSettingsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationSettingsFactory.swift; sourceTree = "<group>"; };
 		77D7BB8F2B8D2BEC00D42E8A /* WalletCheckboxTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCheckboxTableViewCell.swift; sourceTree = "<group>"; };
 		77DAFF652B2979B100D4220C /* ProxyLocalStorageSubscriber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyLocalStorageSubscriber.swift; sourceTree = "<group>"; };
@@ -11552,6 +11554,7 @@
 			children = (
 				77FC822E2BA1B99E00E7ED3C /* TransferTypeExtensions.swift */,
 				77AF376A2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift */,
+				77D5569C2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -21698,6 +21701,7 @@
 				7778FE4A2B9105780023E801 /* BigInt+Decimal.swift in Sources */,
 				77AE4F9B2B905B7D00426519 /* ChainSyncMode.swift in Sources */,
 				0CCD18D12BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift in Sources */,
+				77D5569D2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift in Sources */,
 				7778FE582B910A760023E801 /* MoneyPresentable.swift in Sources */,
 				77AE4F982B905B5C00426519 /* AssetModel.swift in Sources */,
 				7778FE492B9104EE0023E801 /* PriceAssetInfoFactory.swift in Sources */,
