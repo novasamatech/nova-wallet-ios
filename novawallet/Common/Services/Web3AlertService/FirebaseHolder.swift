@@ -5,7 +5,7 @@ final class FirebaseHolder {
     static let shared = FirebaseHolder()
 
     #if F_RELEASE
-        static let configPath = R.file.googleServiceInfoProductionPlist()!
+        static let configPath = R.file.googleServiceInfoReleasePlist()!
     #else
         static let configPath = R.file.googleServiceInfoDevPlist()!
     #endif
