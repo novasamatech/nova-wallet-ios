@@ -68,7 +68,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
     }
     
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
         let userInfo = response.notification.request.content.userInfo
         PushNotificationHandlingService.shared.handle(
             userInfo: userInfo
@@ -78,6 +82,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else {
                 Logger.shared.error("Notification handling failed: \(userInfo)")
             }
+            
+            completionHandler()
         }
     }
 }
