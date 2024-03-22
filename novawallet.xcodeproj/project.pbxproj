@@ -404,6 +404,7 @@
 		0CBC29C82A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */; };
 		0CBD23F822E358320E328F2D /* GovernanceTracksSettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442FCD700DEAFD358A48F35D /* GovernanceTracksSettingsViewLayout.swift */; };
 		0CBF5DE72AB1A60500087EBF /* SharedOperationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF5DE62AB1A60500087EBF /* SharedOperationStatus.swift */; };
+		0CC0F7E92BAD46EF002C49F6 /* GoogleService-Info-Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7E82BAD46EF002C49F6 /* GoogleService-Info-Release.plist */; };
 		0CC2E55E2A6AB2B7004092E7 /* StashItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */; };
 		0CC2E5602A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55F2A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift */; };
 		0CC2E5622A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E5612A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift */; };
@@ -1238,7 +1239,7 @@
 		77D326E92B98DF380055FE88 /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215CA2B914E9D006C7D13 /* Payload.swift */; };
 		77D326EA2B98DF900055FE88 /* TransferType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778215C82B914E6F006C7D13 /* TransferType.swift */; };
 		77D326EE2B999ADD0055FE88 /* AssetDetailsNotificationMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D326ED2B999ADD0055FE88 /* AssetDetailsNotificationMessageHandler.swift */; };
-		77D556982BAB2139009AC873 /* GoogleService-Info-Production.plist in Resources */ = {isa = PBXBuildFile; fileRef = 77D556972BAB2139009AC873 /* GoogleService-Info-Production.plist */; };
+		77D5569D2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D5569C2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift */; };
 		77D7BB8E2B8C6B6400D42E8A /* PushNotificationSettingsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D7BB8D2B8C6B6400D42E8A /* PushNotificationSettingsFactory.swift */; };
 		77D7BB902B8D2BEC00D42E8A /* WalletCheckboxTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D7BB8F2B8D2BEC00D42E8A /* WalletCheckboxTableViewCell.swift */; };
 		77DAFF662B2979B100D4220C /* ProxyLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF652B2979B100D4220C /* ProxyLocalStorageSubscriber.swift */; };
@@ -4985,6 +4986,8 @@
 		0CBC29C52A421B5000F7B1F7 /* StakingMainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMainWireframe.swift; sourceTree = "<group>"; };
 		0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardBuilderResult.swift; sourceTree = "<group>"; };
 		0CBF5DE62AB1A60500087EBF /* SharedOperationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedOperationStatus.swift; sourceTree = "<group>"; };
+		0CC0F7E72BAD4359002C49F6 /* NovaPushNotificationServiceExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NovaPushNotificationServiceExtensionRelease.entitlements; sourceTree = "<group>"; };
+		0CC0F7E82BAD46EF002C49F6 /* GoogleService-Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Release.plist"; sourceTree = "<group>"; };
 		0CC2E55C2A6AAFFD004092E7 /* SubstrateDataModel18.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel18.xcdatamodel; sourceTree = "<group>"; };
 		0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashItemMapper.swift; sourceTree = "<group>"; };
 		0CC2E55F2A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRemoteSubscriptionService.swift; sourceTree = "<group>"; };
@@ -5589,7 +5592,6 @@
 		7754BD552B5021C30099C13E /* StakingProxyBaseProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingProxyBaseProtocols.swift; sourceTree = "<group>"; };
 		7754BD572B50232C0099C13E /* ProxyDepositCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyDepositCalculator.swift; sourceTree = "<group>"; };
 		7756927C2A20B88200220756 /* TokenOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOperation.swift; sourceTree = "<group>"; };
-		775999B02B70C1300040D884 /* novawallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = novawallet.entitlements; sourceTree = "<group>"; };
 		775F194C2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoRelaychainPresenter.swift; sourceTree = "<group>"; };
 		775F19502A5811FA009915B6 /* StartStakingParachainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingParachainInteractor.swift; sourceTree = "<group>"; };
 		775F19522A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoParachainPresenter.swift; sourceTree = "<group>"; };
@@ -5752,8 +5754,8 @@
 		77D2ED692B19CE4F00A0E58C /* MultiassetUserDataModel10.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel10.xcdatamodel; sourceTree = "<group>"; };
 		77D2ED6A2B1DD78100A0E58C /* ProxyAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyAccountModel.swift; sourceTree = "<group>"; };
 		77D326ED2B999ADD0055FE88 /* AssetDetailsNotificationMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetDetailsNotificationMessageHandler.swift; sourceTree = "<group>"; };
-		77D556972BAB2139009AC873 /* GoogleService-Info-Production.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Production.plist"; sourceTree = "<group>"; };
 		77D5569B2BAB299D009AC873 /* novawalletRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = novawalletRelease.entitlements; sourceTree = "<group>"; };
+		77D5569C2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManagerExtensions.swift; sourceTree = "<group>"; };
 		77D7BB8D2B8C6B6400D42E8A /* PushNotificationSettingsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationSettingsFactory.swift; sourceTree = "<group>"; };
 		77D7BB8F2B8D2BEC00D42E8A /* WalletCheckboxTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCheckboxTableViewCell.swift; sourceTree = "<group>"; };
 		77DAFF652B2979B100D4220C /* ProxyLocalStorageSubscriber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyLocalStorageSubscriber.swift; sourceTree = "<group>"; };
@@ -11555,6 +11557,7 @@
 			children = (
 				77FC822E2BA1B99E00E7ED3C /* TransferTypeExtensions.swift */,
 				77AF376A2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift */,
+				77D5569C2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -11642,6 +11645,7 @@
 				778215D92B95A8DE006C7D13 /* Model */,
 				77AE4FB52B906B2E00426519 /* NovaPushNotificationServiceExtensionDebug.entitlements */,
 				77AE4FB42B906B2600426519 /* NovaPushNotificationServiceExtensionDev.entitlements */,
+				0CC0F7E72BAD4359002C49F6 /* NovaPushNotificationServiceExtensionRelease.entitlements */,
 				77CAF4312B8E96A400E4297C /* NotificationService.swift */,
 				0CCD18A62BA160C10068D73A /* R.generated.swift */,
 				849013A924A80984008F705E /* Products */,
@@ -14941,7 +14945,6 @@
 				77D5569B2BAB299D009AC873 /* novawalletRelease.entitlements */,
 				77AE4FB32B906B1B00426519 /* novawalletDev.entitlements */,
 				77AE4FB22B906B0900426519 /* novawalletDebug.entitlements */,
-				775999B02B70C1300040D884 /* novawallet.entitlements */,
 				84452F6F25D5E2B300F47EC5 /* Resources */,
 				8490141D24A93027008F705E /* Fonts */,
 				849013E324A92915008F705E /* Configs */,
@@ -14955,7 +14958,7 @@
 				849013B624A80986008F705E /* LaunchScreen.storyboard */,
 				849013B924A80986008F705E /* Info.plist */,
 				7772EB312B724A8F000D7E21 /* GoogleService-Info-Dev.plist */,
-				77D556972BAB2139009AC873 /* GoogleService-Info-Production.plist */,
+				0CC0F7E82BAD46EF002C49F6 /* GoogleService-Info-Release.plist */,
 				84C07EDA24AF1924008FC35B /* InfoPlist.strings */,
 				8490146024A94373008F705E /* Localizable.strings */,
 				AE74EC1725FCF09000C494E7 /* Localizable.stringsdict */,
@@ -21127,7 +21130,6 @@
 				849013A624A80984008F705E /* Resources */,
 				C8525C8798D5D5AB9F0FAE36 /* [CP] Embed Pods Frameworks */,
 				77CAF4372B8E96A400E4297C /* Embed Foundation Extensions */,
-				77D5569A2BAB2278009AC873 /* GoogleService plist */,
 			);
 			buildRules = (
 			);
@@ -21246,7 +21248,6 @@
 				842876AE24AE049B00D91AD8 /* SelectionListViewController.xib in Resources */,
 				849013FD24A92A05008F705E /* novawallet.debug.xcconfig in Resources */,
 				84D8F16724D81CB100AF43E9 /* TitleWithSubtitleTableViewCell.xib in Resources */,
-				77D556982BAB2139009AC873 /* GoogleService-Info-Production.plist in Resources */,
 				84452F7625D5E2B300F47EC5 /* runtime-default.json in Resources */,
 				848A837F274BB03F004493DD /* PublicSans-SemiBold.otf in Resources */,
 				84F1D67329069FFB0050F4E3 /* governanceDApps.json in Resources */,
@@ -21259,6 +21260,7 @@
 				84E58C7D275E125100BD441A /* PublicSans-ExtraLight.otf in Resources */,
 				848A8381274BB03F004493DD /* PublicSans-Regular.otf in Resources */,
 				849014B824AA87E3008F705E /* PinSetupViewController.xib in Resources */,
+				0CC0F7E92BAD46EF002C49F6 /* GoogleService-Info-Release.plist in Resources */,
 				84D8F16924D821ED00AF43E9 /* IconWithTitleTableViewCell.xib in Resources */,
 				84DF21A325347042005454AE /* DetailsDisplayTableViewCell.xib in Resources */,
 				849013FB24A92A05008F705E /* novawallet.dev.xcconfig in Resources */,
@@ -21342,24 +21344,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		77D5569A2BAB2278009AC873 /* GoogleService plist */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "GoogleService plist";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "DEV_PLIST=\"${PROJECT_DIR}/novawallet/GoogleService-Info-Dev.plist\"\nPRODUCTION_PLIST=\"${PROJECT_DIR}/novawallet/GoogleService-Info-Production.plist\"\nDESTINATION=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n\n# Copy appropriate plist based on build configuration\ncase \"${CONFIGURATION}\" in\n   \"Debug\" | \"Dev\" | \"Staging\" )\n        if [ -f \"$DEV_PLIST\" ]; then\n            cp -r \"$DEV_PLIST\" \"$DESTINATION\"\n        else\n            echo \"Error: Development plist not found at $DEV_PLIST\"\n            exit 1\n        fi\n        ;;\n   \"Release\" )\n        if [ -f \"$PRODUCTION_PLIST\" ]; then\n            cp -r \"$PRODUCTION_PLIST\" \"$DESTINATION\"\n        else\n            echo \"Error: Production plist not found at $PRODUCTION_PLIST\"\n            exit 1\n        fi\n        ;;\n    *)\n        echo \"Unknown configuration: ${CONFIGURATION}\"\n        exit 1\n        ;;\nesac\n\necho \"GoogleService-Info.plist copied successfully.\"\nexit 0\n";
 		};
 		77EDF9202B95EE90003266B1 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -21723,6 +21707,7 @@
 				7778FE4A2B9105780023E801 /* BigInt+Decimal.swift in Sources */,
 				77AE4F9B2B905B7D00426519 /* ChainSyncMode.swift in Sources */,
 				0CCD18D12BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift in Sources */,
+				77D5569D2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift in Sources */,
 				7778FE582B910A760023E801 /* MoneyPresentable.swift in Sources */,
 				77AE4F982B905B5C00426519 /* AssetModel.swift in Sources */,
 				7778FE492B9104EE0023E801 /* PriceAssetInfoFactory.swift in Sources */,
@@ -26278,6 +26263,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
+				CODE_SIGN_ENTITLEMENTS = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -26589,7 +26575,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-appstore";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-appstore-gulnaz";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-appstore-ruslan";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

@@ -20,6 +20,8 @@ final class NotificationService: UNNotificationServiceExtension {
             return
         }
 
+        LocalizationManager.shared.refreshLocale()
+
         guard let message = try? NotificationMessage(
             userInfo: bestAttemptContent.userInfo,
             decoder: JSONDecoder()
