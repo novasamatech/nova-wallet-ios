@@ -16,12 +16,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let rootWindow = NovaWindow()
         window = rootWindow
+        
+        // the requirement is to set the delegate before living didFinishLaunching
+        setupPushNotificationsDelegate()
 
         let presenter = RootPresenterFactory.createPresenter(with: rootWindow)
         presenter.loadOnLaunch()
 
         rootWindow.makeKeyAndVisible()
         return true
+    }
+    
+    func setupPushNotificationsDelegate() {
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.delegate = self
     }
 
     func application(
@@ -45,17 +53,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         Logger.shared.error("Failed to register push notifications: \(error)")
     }
+}
 
-    func application(
-        _: UIApplication,
-        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
-        fetchCompletionHandler: @escaping (UIBackgroundFetchResult) -> Void
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _: UNUserNotificationCenter,
+        willPresent _: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        PushNotificationHandlingService.shared.handle(userInfo: userInfo) { success in
+        if #available(iOS 14.0, *) {
+            completionHandler([.banner, .list, .badge, .sound])
+        } else {
+            completionHandler([.alert, .badge, .sound])
+        }
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        let userInfo = response.notification.request.content.userInfo
+        PushNotificationHandlingService.shared.handle(
+            userInfo: userInfo
+        ) { success in
             if success {
-                fetchCompletionHandler(.newData)
+                Logger.shared.debug("Notification handled: \(userInfo)")
             } else {
-                fetchCompletionHandler(.failed)
+                Logger.shared.error("Notification handling failed: \(userInfo)")
             }
         }
     }
