@@ -201,6 +201,11 @@ final class PushNotificationsServiceFacade {
             return
         }
 
+        guard !token.isEmpty else {
+            logger.warning("Empty token push token received. No update.")
+            return
+        }
+
         syncService.update(
             token: token,
             runningIn: nil

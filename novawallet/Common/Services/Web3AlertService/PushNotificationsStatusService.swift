@@ -163,7 +163,7 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
             if let error = optError {
                 self?.logger.error("FCM token remove failed: \(error)")
             } else {
-                self?.logger.error("FCM token removed")
+                self?.logger.debug("FCM token removed")
             }
 
             self?.updateStatus()
@@ -232,9 +232,13 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
             switch status {
             case .success:
                 if let error = error {
+                    self.logger.error("Token waiting failed: \(error)")
                     throw error
+                } else {
+                    self.logger.debug("Token waiting completed")
                 }
             case .timedOut:
+                self.logger.warning("Token waiting timeout...")
                 throw PushNotificationsStatusServiceError.notifcationTokensWaitTimeout
             }
         }
@@ -244,7 +248,7 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
 extension PushNotificationsStatusService: MessagingDelegate {
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         if let fcmToken = fcmToken {
-            logger.debug("Did receive push token")
+            logger.debug("Did receive push token: \(fcmToken)")
             delegate?.didReceivePushNotifications(token: fcmToken)
         } else {
             logger.warning("Did receive empty push token")

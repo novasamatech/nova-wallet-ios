@@ -26,7 +26,7 @@ final class NotificationService: UNNotificationServiceExtension {
             userInfo: bestAttemptContent.userInfo,
             decoder: JSONDecoder()
         ) else {
-            contentHandler(requestContent)
+            contentHandler(bestAttemptContent)
             return
         }
 
