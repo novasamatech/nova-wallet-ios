@@ -16,6 +16,7 @@ final class FirebaseHolder {
         guard !isConfigured else {
             return
         }
+
         FirebaseApp.configure()
         isConfigured = true
     }
