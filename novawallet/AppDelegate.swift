@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let rootWindow = NovaWindow()
         window = rootWindow
-        
+
         // the requirement is to set the delegate before living didFinishLaunching
         setupPushNotificationsDelegate()
 
@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rootWindow.makeKeyAndVisible()
         return true
     }
-    
+
     func setupPushNotificationsDelegate() {
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.delegate = self
@@ -67,22 +67,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             completionHandler([.alert, .badge, .sound])
         }
     }
-    
+
     func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
+        _: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        PushNotificationHandlingService.shared.handle(
-            userInfo: userInfo
-        ) { success in
-            if success {
-                Logger.shared.debug("Notification handled: \(userInfo)")
-            } else {
-                Logger.shared.error("Notification handling failed: \(userInfo)")
-            }
-            
+        PushNotificationHandlingService.shared.handle(userInfo: userInfo) { _ in
             completionHandler()
         }
     }

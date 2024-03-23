@@ -1,0 +1,5 @@
+#include "../../Pods/Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.release.xcconfig"
+
+OTHER_SWIFT_FLAGS = $(inherited) "-DF_RELEASE"
+
+APP_NAME = Nova
