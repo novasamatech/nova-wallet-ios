@@ -50,7 +50,7 @@ final class PushNotificationsTopicService {
             for newTopic in newTopics {
                 messaging.subscribe(toTopic: newTopic.remoteId) { optError in
                     if let error = optError {
-                        self?.logger.error("Topic subscription failed \(error)")
+                        self?.logger.error("Topic subscription failed \(newTopic.remoteId) \(error)")
                     } else {
                         self?.logger.debug("Topic subscribed: \(newTopic.remoteId)")
                     }

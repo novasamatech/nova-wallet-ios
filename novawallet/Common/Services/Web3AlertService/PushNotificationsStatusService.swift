@@ -32,6 +32,8 @@ protocol PushNotificationsStatusServiceProtocol: AnyObject, ApplicationServicePr
     func updateAPNS(token: Data)
 
     func notificationsReadyOperation(with timeoutInSec: Int) -> BaseOperation<Void>
+
+    func getToken() -> String?
 }
 
 protocol PushNotificationsStatusServiceDelegate: AnyObject {
@@ -122,7 +124,9 @@ final class PushNotificationsStatusService: NSObject {
     }
 
     private func setupNotificationDelegates() {
-        Messaging.messaging().delegate = self
+        let messaging = Messaging.messaging()
+        messaging.isAutoInitEnabled = false
+        messaging.delegate = self
     }
 
     private func clearNotificationDelegates() {
@@ -159,7 +163,10 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
     }
 
     func deregister() {
-        Messaging.messaging().deleteToken { [weak self] optError in
+        let messaging = Messaging.messaging()
+
+        messaging.apnsToken = nil
+        messaging.deleteToken { [weak self] optError in
             if let error = optError {
                 self?.logger.error("FCM token remove failed: \(error)")
             } else {
@@ -193,7 +200,7 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
     func updateAPNS(token: Data) {
         Messaging.messaging().apnsToken = token
 
-        updateTokensReadyState()
+        updateStatus()
     }
 
     func notificationsReadyOperation(with timeoutInSec: Int) -> BaseOperation<Void> {
@@ -243,6 +250,15 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
             }
         }
     }
+
+    func getToken() -> String? {
+        switch statusObservable.state {
+        case .active:
+            return Messaging.messaging().fcmToken
+        case .authorized, .denied, .notDetermined, .unknown:
+            return nil
+        }
+    }
 }
 
 extension PushNotificationsStatusService: MessagingDelegate {
@@ -254,7 +270,7 @@ extension PushNotificationsStatusService: MessagingDelegate {
             logger.warning("Did receive empty push token")
         }
 
-        updateTokensReadyState()
+        updateStatus()
     }
 }
 

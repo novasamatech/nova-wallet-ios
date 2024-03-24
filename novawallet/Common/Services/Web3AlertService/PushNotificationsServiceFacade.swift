@@ -86,6 +86,10 @@ final class PushNotificationsServiceFacade {
             setupServicesForActiveStateIfNeeded()
 
             statusService.register()
+
+            if let currentToken = statusService.getToken() {
+                updateWeb3PushToken(using: currentToken)
+            }
         }
 
         if oldStatus == .active, newStatus != .active {
