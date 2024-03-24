@@ -205,6 +205,32 @@ final class Web3AlertsSyncService: BaseSyncService {
         }
     }
 
+    private func syncedExecute<T>(
+        wrapper: CompoundOperationWrapper<T>,
+        callbackQueue: DispatchQueue,
+        mutex: NSLock,
+        callStore: CancellableCallStore,
+        callbackClosure: @escaping (Result<T, Error>) -> Void
+    ) {
+        wrapper.targetOperation.completionBlock = {
+            dispatchInQueueWhenPossible(callbackQueue, locking: mutex) {
+                // still deliver result for current even executing other wrapper
+                _ = callStore.clearIfMatches(call: wrapper)
+
+                do {
+                    let value = try wrapper.targetOperation.extractNoCancellableResultData()
+                    callbackClosure(.success(value))
+                } catch {
+                    callbackClosure(.failure(error))
+                }
+            }
+        }
+
+        callStore.store(call: wrapper)
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
     private func createWalletsDiffWrapper(
         dependingOn localWalletClosure: @escaping () throws -> [MetaAccountModel.Id: MetaAccountModel],
         chainsClosure: @escaping () throws -> [ChainModel.Id: ChainModel]
@@ -277,12 +303,11 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
         waitInProgress(for: wrapper)
 
-        executeCancellable(
+        syncedExecute(
             wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: syncWrapperStore,
-            runningCallbackIn: workQueue,
-            mutex: mutex
+            callbackQueue: workQueue,
+            mutex: mutex,
+            callStore: syncWrapperStore
         ) { [weak self] result in
             dispatchInQueueWhenPossible(queue) {
                 switch result {
@@ -336,12 +361,11 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
         waitInProgress(for: updatingWrapper)
 
-        executeCancellable(
+        syncedExecute(
             wrapper: updatingWrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: syncWrapperStore,
-            runningCallbackIn: workQueue,
-            mutex: mutex
+            callbackQueue: workQueue,
+            mutex: mutex,
+            callStore: syncWrapperStore
         ) { [weak self] result in
             dispatchInQueueWhenPossible(queue) {
                 switch result {
@@ -349,12 +373,12 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
                     let tokenChanged = (try? updateSettingsOperation.extractNoCancellableResultData()) != nil
 
                     if tokenChanged {
-                        self?.logger.debug("Web3 Alert token updated")
+                        self?.logger.debug("Web3 Alert push token updated")
                     } else {
-                        self?.logger.debug("Web3 Alert token not changed")
+                        self?.logger.debug("Web3 Alert push token not changed")
                     }
                 case let .failure(error):
-                    self?.logger.error("Web3 Alert token updated failed: \(error)")
+                    self?.logger.error("Web3 Alert push token updated failed: \(error)")
                 }
 
                 completionHandler()
@@ -396,12 +420,11 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
         waitInProgress(for: wrapper)
 
-        executeCancellable(
+        syncedExecute(
             wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: syncWrapperStore,
-            runningCallbackIn: workQueue,
-            mutex: mutex
+            callbackQueue: workQueue,
+            mutex: mutex,
+            callStore: syncWrapperStore
         ) { [weak self] result in
             dispatchInQueueWhenPossible(queue) {
                 switch result {
@@ -443,24 +466,25 @@ extension Web3AlertsSyncService: Web3AlertsSyncServiceProtocol {
 
         waitInProgress(for: wrapper)
 
-        executeCancellable(
+        syncedExecute(
             wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: syncWrapperStore,
-            runningCallbackIn: queue,
-            mutex: mutex
+            callbackQueue: workQueue,
+            mutex: mutex,
+            callStore: syncWrapperStore
         ) { [weak self] result in
-            switch result {
-            case .success:
-                if let settings = try? walletsDiffWrapper.targetOperation.extractNoCancellableResultData() {
-                    self?.logger.debug("New wallets: \(settings.wallets)")
-                } else {
-                    self?.logger.debug("No wallet changes")
-                }
+            dispatchInQueueWhenPossible(queue) {
+                switch result {
+                case .success:
+                    if let settings = try? walletsDiffWrapper.targetOperation.extractNoCancellableResultData() {
+                        self?.logger.debug("New wallets: \(settings.wallets)")
+                    } else {
+                        self?.logger.debug("No wallet changes")
+                    }
 
-                completionHandler(nil)
-            case let .failure(error):
-                completionHandler(error)
+                    completionHandler(nil)
+                case let .failure(error):
+                    completionHandler(error)
+                }
             }
         }
     }

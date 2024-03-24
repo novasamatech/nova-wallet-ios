@@ -26,10 +26,7 @@ final class NotificationService: UNNotificationServiceExtension {
             userInfo: bestAttemptContent.userInfo,
             decoder: JSONDecoder()
         ) else {
-            let result = NotificationContentResult.createUnsupportedResult(
-                for: LocalizationManager.shared.selectedLocale
-            )
-            contentHandler(result.toUserNotificationContent())
+            contentHandler(bestAttemptContent)
             return
         }
 

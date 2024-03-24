@@ -75,6 +75,12 @@ final class PushNotificationsServiceFacade {
         }
     }
 
+    private func refreshPushTokenIfNeeded() {
+        if let currentToken = statusService.getToken() {
+            updateWeb3PushToken(using: currentToken)
+        }
+    }
+
     private func processStatusChange(for oldStatus: PushNotificationsStatus, newStatus: PushNotificationsStatus) {
         guard isActive else {
             return
@@ -86,6 +92,8 @@ final class PushNotificationsServiceFacade {
             setupServicesForActiveStateIfNeeded()
 
             statusService.register()
+
+            refreshPushTokenIfNeeded()
         }
 
         if oldStatus == .active, newStatus != .active {
@@ -201,6 +209,11 @@ final class PushNotificationsServiceFacade {
             return
         }
 
+        guard !token.isEmpty else {
+            logger.warning("Empty token push token received. No update.")
+            return
+        }
+
         syncService.update(
             token: token,
             runningIn: nil
@@ -311,6 +324,10 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
 
                     if !settings.notificationsEnabled {
                         self?.statusService.disablePushNotifications()
+                    }
+
+                    if settings.notificationsEnabled {
+                        self?.refreshPushTokenIfNeeded()
                     }
 
                     completion(.success(()))

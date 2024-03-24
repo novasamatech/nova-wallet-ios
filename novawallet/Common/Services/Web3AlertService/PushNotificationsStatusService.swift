@@ -32,6 +32,8 @@ protocol PushNotificationsStatusServiceProtocol: AnyObject, ApplicationServicePr
     func updateAPNS(token: Data)
 
     func notificationsReadyOperation(with timeoutInSec: Int) -> BaseOperation<Void>
+
+    func getToken() -> String?
 }
 
 protocol PushNotificationsStatusServiceDelegate: AnyObject {
@@ -122,13 +124,13 @@ final class PushNotificationsStatusService: NSObject {
     }
 
     private func setupNotificationDelegates() {
-        Messaging.messaging().delegate = self
-        notificationCenter.delegate = self
+        let messaging = Messaging.messaging()
+        messaging.isAutoInitEnabled = false
+        messaging.delegate = self
     }
 
     private func clearNotificationDelegates() {
         Messaging.messaging().delegate = nil
-        notificationCenter.delegate = nil
     }
 }
 
@@ -161,11 +163,14 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
     }
 
     func deregister() {
-        Messaging.messaging().deleteToken { [weak self] optError in
+        let messaging = Messaging.messaging()
+
+        messaging.apnsToken = nil
+        messaging.deleteToken { [weak self] optError in
             if let error = optError {
                 self?.logger.error("FCM token remove failed: \(error)")
             } else {
-                self?.logger.error("FCM token removed")
+                self?.logger.debug("FCM token removed")
             }
 
             self?.updateStatus()
@@ -195,7 +200,7 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
     func updateAPNS(token: Data) {
         Messaging.messaging().apnsToken = token
 
-        updateTokensReadyState()
+        updateStatus()
     }
 
     func notificationsReadyOperation(with timeoutInSec: Int) -> BaseOperation<Void> {
@@ -234,11 +239,24 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
             switch status {
             case .success:
                 if let error = error {
+                    self.logger.error("Token waiting failed: \(error)")
                     throw error
+                } else {
+                    self.logger.debug("Token waiting completed")
                 }
             case .timedOut:
+                self.logger.warning("Token waiting timeout...")
                 throw PushNotificationsStatusServiceError.notifcationTokensWaitTimeout
             }
+        }
+    }
+
+    func getToken() -> String? {
+        switch statusObservable.state {
+        case .active:
+            return Messaging.messaging().fcmToken
+        case .authorized, .denied, .notDetermined, .unknown:
+            return nil
         }
     }
 }
@@ -246,32 +264,18 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
 extension PushNotificationsStatusService: MessagingDelegate {
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         if let fcmToken = fcmToken {
-            logger.debug("Did receive push token")
+            logger.debug("Did receive push token: \(fcmToken)")
             delegate?.didReceivePushNotifications(token: fcmToken)
         } else {
             logger.warning("Did receive empty push token")
         }
 
-        updateTokensReadyState()
+        updateStatus()
     }
 }
 
 extension PushNotificationsStatusService: ApplicationHandlerDelegate {
     func didReceiveWillEnterForeground(notification _: Notification) {
         updateStatus()
-    }
-}
-
-extension PushNotificationsStatusService: UNUserNotificationCenterDelegate {
-    func userNotificationCenter(
-        _: UNUserNotificationCenter,
-        willPresent _: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
-        if #available(iOS 14.0, *) {
-            completionHandler([.banner, .list, .badge, .sound])
-        } else {
-            completionHandler([.alert, .badge, .sound])
-        }
     }
 }
