@@ -75,6 +75,12 @@ final class PushNotificationsServiceFacade {
         }
     }
 
+    private func refreshPushTokenIfNeeded() {
+        if let currentToken = statusService.getToken() {
+            updateWeb3PushToken(using: currentToken)
+        }
+    }
+
     private func processStatusChange(for oldStatus: PushNotificationsStatus, newStatus: PushNotificationsStatus) {
         guard isActive else {
             return
@@ -87,9 +93,7 @@ final class PushNotificationsServiceFacade {
 
             statusService.register()
 
-            if let currentToken = statusService.getToken() {
-                updateWeb3PushToken(using: currentToken)
-            }
+            refreshPushTokenIfNeeded()
         }
 
         if oldStatus == .active, newStatus != .active {
@@ -320,6 +324,10 @@ extension PushNotificationsServiceFacade: PushNotificationsServiceFacadeProtocol
 
                     if !settings.notificationsEnabled {
                         self?.statusService.disablePushNotifications()
+                    }
+
+                    if settings.notificationsEnabled {
+                        self?.refreshPushTokenIfNeeded()
                     }
 
                     completion(.success(()))
