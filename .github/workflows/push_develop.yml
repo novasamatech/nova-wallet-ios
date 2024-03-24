@@ -63,7 +63,7 @@ jobs:
         env:
           GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
         run: |
-          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info-Dev.plist
+          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info.plist
 
           echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
 
