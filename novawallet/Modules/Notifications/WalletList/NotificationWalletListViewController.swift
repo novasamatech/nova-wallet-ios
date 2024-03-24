@@ -75,10 +75,13 @@ final class NotificationWalletListViewController: WalletsListViewController<
             )
         } else {
             rootView.actionView.actionButton.applyDisabledStyle()
-            rootView.actionView.actionButton.imageWithTitleView?.title = R.string.localizable.notificationsWalletListSelectionHint(
+
+            let title = R.string.localizable.notificationsWalletListSelectionHint(
                 format: 1,
                 preferredLanguages: selectedLocale.rLanguages
             )
+
+            rootView.actionView.actionButton.imageWithTitleView?.title = title
         }
         rootView.actionView.actionButton.isEnabled = isActionEnabled
     }
