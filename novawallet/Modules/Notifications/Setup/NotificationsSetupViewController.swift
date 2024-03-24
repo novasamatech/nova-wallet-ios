@@ -104,7 +104,21 @@ final class NotificationsSetupViewController: UIViewController, ViewHolder {
     }
 }
 
-extension NotificationsSetupViewController: NotificationsSetupViewProtocol {}
+extension NotificationsSetupViewController: NotificationsSetupViewProtocol {
+    func didStartEnabling() {
+        rootView.enableActionView.startLoading()
+
+        rootView.notNowButton.isEnabled = false
+        rootView.notNowButton.applyDisabledStyle()
+    }
+
+    func didStopEnabling() {
+        rootView.enableActionView.stopLoading()
+
+        rootView.notNowButton.isEnabled = true
+        rootView.notNowButton.applySecondaryEnabledStyle()
+    }
+}
 
 extension NotificationsSetupViewController: Localizable {
     func applyLocalization() {

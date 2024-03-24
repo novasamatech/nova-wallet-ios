@@ -1,6 +1,9 @@
 import Foundation
 
-protocol NotificationsSetupViewProtocol: ControllerBackedProtocol {}
+protocol NotificationsSetupViewProtocol: ControllerBackedProtocol {
+    func didStartEnabling()
+    func didStopEnabling()
+}
 
 protocol NotificationsSetupPresenterProtocol: AnyObject {
     func setup()

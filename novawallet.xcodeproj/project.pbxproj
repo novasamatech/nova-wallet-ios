@@ -408,6 +408,7 @@
 		0CC0F7F22BADEB1D002C49F6 /* notification-ext.release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7EF2BADEB1C002C49F6 /* notification-ext.release.xcconfig */; };
 		0CC0F7F32BADEB1D002C49F6 /* notification-ext.debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7F02BADEB1C002C49F6 /* notification-ext.debug.xcconfig */; };
 		0CC0F7F42BADEB1D002C49F6 /* notification-ext.dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7F12BADEB1C002C49F6 /* notification-ext.dev.xcconfig */; };
+		0CC0F7F72BB0710E002C49F6 /* ActionLoadingView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F7F62BB0710E002C49F6 /* ActionLoadingView+Style.swift */; };
 		0CC2E55E2A6AB2B7004092E7 /* StashItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */; };
 		0CC2E5602A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55F2A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift */; };
 		0CC2E5622A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E5612A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift */; };
@@ -4992,6 +4993,7 @@
 		0CC0F7EF2BADEB1C002C49F6 /* notification-ext.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "notification-ext.release.xcconfig"; sourceTree = "<group>"; };
 		0CC0F7F02BADEB1C002C49F6 /* notification-ext.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "notification-ext.debug.xcconfig"; sourceTree = "<group>"; };
 		0CC0F7F12BADEB1C002C49F6 /* notification-ext.dev.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "notification-ext.dev.xcconfig"; sourceTree = "<group>"; };
+		0CC0F7F62BB0710E002C49F6 /* ActionLoadingView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ActionLoadingView+Style.swift"; sourceTree = "<group>"; };
 		0CC2E55C2A6AAFFD004092E7 /* SubstrateDataModel18.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel18.xcdatamodel; sourceTree = "<group>"; };
 		0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashItemMapper.swift; sourceTree = "<group>"; };
 		0CC2E55F2A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRemoteSubscriptionService.swift; sourceTree = "<group>"; };
@@ -10060,6 +10062,16 @@
 				0CC0F7EF2BADEB1C002C49F6 /* notification-ext.release.xcconfig */,
 			);
 			path = Config;
+			sourceTree = "<group>";
+		};
+		0CC0F7F52BB070C6002C49F6 /* LoadableAction */ = {
+			isa = PBXGroup;
+			children = (
+				8479607D283B60AA0084E779 /* ActionLoadingView.swift */,
+				8479607F283B63240084E779 /* LoadableActionView.swift */,
+				0CC0F7F62BB0710E002C49F6 /* ActionLoadingView+Style.swift */,
+			);
+			path = LoadableAction;
 			sourceTree = "<group>";
 		};
 		0CC633522B30099F001BF257 /* LighSync */ = {
@@ -15567,6 +15579,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				0CC0F7F52BB070C6002C49F6 /* LoadableAction */,
 				0C9951CD2AE2BAA700B65615 /* PromotionBannerView */,
 				0C79C8932A7BDED700B171E3 /* TitleHorizontalMultivalueView */,
 				84F96FA32A136E0400EB70E2 /* GladingView */,
@@ -15640,8 +15653,6 @@
 				8446F5EF2817279600B7A86C /* HintListView.swift */,
 				8446F5F72819235B00B7A86C /* AssetIconView+Style.swift */,
 				8446F5F928192FF500B7A86C /* ListLoadingView.swift */,
-				8479607D283B60AA0084E779 /* ActionLoadingView.swift */,
-				8479607F283B63240084E779 /* LoadableActionView.swift */,
 				842806F42847A82500702F3A /* StackAccountSelectionCell.swift */,
 				84D2F1AB2774B3A00040C680 /* CustomSearchBar.swift */,
 				8448F7A12882ABF50080CEA9 /* CustomSearchView.swift */,
@@ -23098,6 +23109,7 @@
 				F409672626B29B04008CD244 /* UIScrollView+ScrollToPage.swift in Sources */,
 				84E0EE0E292D69A9008B2953 /* CallMetadata+TypeCheck.swift in Sources */,
 				844384AE28538F4700611CE2 /* AlephZeroRewardEngine.swift in Sources */,
+				0CC0F7F72BB0710E002C49F6 /* ActionLoadingView+Style.swift in Sources */,
 				846A2C4525271F0100731018 /* DateFormatter.swift in Sources */,
 				0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */,
 				8858917A29A700F000320896 /* DelegationReferendumVotersViewModelFactory.swift in Sources */,

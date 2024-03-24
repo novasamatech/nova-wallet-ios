@@ -19,8 +19,13 @@ final class NotificationsSetupViewLayout: UIView {
 
     let notifications = NotificationsView()
 
-    let enableButton: TriangularedButton = .create {
-        $0.applyDefaultStyle()
+    var enableButton: TriangularedButton {
+        enableActionView.actionButton
+    }
+
+    let enableActionView: LoadableActionView = .create {
+        $0.actionButton.applyDefaultStyle()
+        $0.actionLoadingView.applyPrimaryButtonEnabledStyle()
     }
 
     let notNowButton: TriangularedButton = .create {
@@ -80,8 +85,8 @@ final class NotificationsSetupViewLayout: UIView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addSubview(enableButton)
-        enableButton.snp.makeConstraints { make in
+        addSubview(enableActionView)
+        enableActionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.equalTo(notNowButton.snp.top).offset(-16)
             make.height.equalTo(UIConstants.actionHeight)
