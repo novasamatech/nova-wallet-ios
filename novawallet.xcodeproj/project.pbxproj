@@ -21311,6 +21311,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${PROJECT_DIR}/novawallet/GoogleService-Info.plist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
