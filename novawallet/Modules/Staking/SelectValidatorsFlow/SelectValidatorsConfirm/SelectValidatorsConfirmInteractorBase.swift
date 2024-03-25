@@ -12,16 +12,20 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let runtimeService: RuntimeCodingServiceProtocol
-    let extrinsicService: ExtrinsicServiceProtocol
     let durationOperationFactory: StakingDurationOperationFactoryProtocol
-    let signer: SigningWrapperProtocol
-    let operationManager: OperationManagerProtocol
+    let bondingAccountSigningFactory: BondingAccountSigningFactoryProtocol
+    lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var minBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
     private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
+    private(set) var extrinsicService: ExtrinsicServiceProtocol?
+    private(set) var signer: SigningWrapperProtocol?
+    private let operationQueue: OperationQueue
+    private let extrinsicServiceCallStore = CancellableCallStore()
+    private let signServiceCallStore = CancellableCallStore()
 
     init(
         balanceAccountAddress: AccountAddress,
@@ -29,29 +33,29 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        extrinsicService: ExtrinsicServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol,
-        signer: SigningWrapperProtocol,
-        currencyManager: CurrencyManagerProtocol
+        operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol,
+        bondingAccountSigningFactory: BondingAccountSigningFactoryProtocol
     ) {
         self.balanceAccountAddress = balanceAccountAddress
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.extrinsicService = extrinsicService
         self.runtimeService = runtimeService
         self.durationOperationFactory = durationOperationFactory
-        self.operationManager = operationManager
-        self.signer = signer
+        self.operationQueue = operationQueue
         self.chainAsset = chainAsset
+        self.bondingAccountSigningFactory = bondingAccountSigningFactory
         self.currencyManager = currencyManager
     }
 
     // MARK: - SelectValidatorsConfirmInteractorInputProtocol
 
     func setup() {
+        createSigningServices()
+
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
@@ -84,6 +88,46 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
     func submitNomination() {}
 
     func estimateFee() {}
+
+    func createSigningServices() {
+        createExtrinsicService()
+        createSigner()
+    }
+
+    func createSigner() {
+        let wrapper = bondingAccountSigningFactory.createSigner()
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: signServiceCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(signer):
+                self?.signer = signer
+            case let .failure(error):
+                self?.presenter.didReceive(createSigningServiceError: error)
+            }
+        }
+    }
+
+    func createExtrinsicService() {
+        let wrapper = bondingAccountSigningFactory.createExtrinsicService()
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: extrinsicServiceCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(service):
+                self?.extrinsicService = service
+                self?.estimateFee()
+            case let .failure(error):
+                self?.presenter.didReceive(createSigningServiceError: error)
+            }
+        }
+    }
 }
 
 extension SelectValidatorsConfirmInteractorBase: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {

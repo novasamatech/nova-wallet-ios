@@ -124,6 +124,7 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
         saveItems[lastIndex] = saveItems[lastIndex].replacingOrder(initialOrder)
 
         interactor?.save(items: saveItems)
+        view?.didReload()
     }
 
     func removeItem(at index: Int, section: Int) {

@@ -155,16 +155,22 @@ final class SelectValidatorsConfirmViewFactory {
 
         let stakingDurationFactory = stakingState.createStakingDurationOperationFactory()
 
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager,
             userStorageFacade: UserDataStorageFacade.shared
-        ).createService(account: selectedMetaAccount.chainAccount, chain: chainAsset.chain)
+        )
 
-        let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
-            for: selectedMetaAccount.metaId,
-            accountResponse: selectedMetaAccount.chainAccount
+        let signerFactory = SigningWrapperFactory(keystore: keystore)
+
+        let bondingSigningFactory = BondingAccountSigningFactory(
+            signingWrapperFactory: signerFactory,
+            controllerChainAccountResponse: selectedMetaAccount.chainAccount,
+            extrinsicServiceFactory: extrinsicServiceFactory,
+            accountRepositoryFactory: AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared),
+            chainAsset: stakingState.stakingOption.chainAsset,
+            stashAddress: selectedAccount.address
         )
 
         return InitiatedBondingConfirmInteractor(
@@ -173,12 +179,11 @@ final class SelectValidatorsConfirmViewFactory {
             stakingLocalSubscriptionFactory: stakingState.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             durationOperationFactory: stakingDurationFactory,
-            operationManager: operationManager,
-            signer: signer,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             nomination: nomination,
+            bondingAccountSigningFactory: bondingSigningFactory,
             currencyManager: currencyManager
         )
     }
@@ -203,32 +208,35 @@ final class SelectValidatorsConfirmViewFactory {
 
         let stakingDurationFactory = state.createStakingDurationOperationFactory()
 
-        let extrinsicSender = nomination.bonding.controllerAccount
-
-        let extrinsicService = ExtrinsicServiceFactory(
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager,
             userStorageFacade: UserDataStorageFacade.shared
-        ).createService(account: extrinsicSender.chainAccount, chain: chainAsset.chain)
-
-        let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
-            for: extrinsicSender.metaId,
-            accountResponse: extrinsicSender.chainAccount
         )
 
+        let signingWrapperFactory = SigningWrapperFactory(keystore: keystore)
+
         let accountRepository = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+
+        let bondingAccountSigningFactory = BondingAccountSigningFactory(
+            signingWrapperFactory: signingWrapperFactory,
+            controllerChainAccountResponse: nomination.bonding.controllerAccount.chainAccount,
+            extrinsicServiceFactory: extrinsicServiceFactory,
+            accountRepositoryFactory: accountRepository,
+            chainAsset: chainAsset,
+            stashAddress: nomination.bonding.stashAddress
+        )
 
         return ChangeTargetsConfirmInteractor(
             chainAsset: chainAsset,
             stakingLocalSubscriptionFactory: state.localSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            extrinsicService: extrinsicService,
+            bondingAccountSigningFactory: bondingAccountSigningFactory,
             runtimeService: runtimeService,
             durationOperationFactory: stakingDurationFactory,
-            operationManager: operationManager,
-            signer: signer,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             accountRepositoryFactory: accountRepository,
             nomination: nomination,
             currencyManager: currencyManager
