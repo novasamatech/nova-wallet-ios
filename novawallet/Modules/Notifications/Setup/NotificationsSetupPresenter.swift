@@ -46,7 +46,7 @@ extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
 
 extension NotificationsSetupPresenter: NotificationsSetupInteractorOutputProtocol {
     func didRegister(notificationStatus _: PushNotificationsStatus) {
-        wireframe.complete(on: view)
+        wireframe.saved(on: view)
     }
 
     func didReceive(error: Error) {

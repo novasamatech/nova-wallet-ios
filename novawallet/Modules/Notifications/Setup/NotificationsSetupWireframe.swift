@@ -12,6 +12,10 @@ final class NotificationsSetupWireframe: NotificationsSetupWireframeProtocol, Mo
     }
 
     func complete(on view: ControllerBackedProtocol?) {
+        view?.controller.dismiss(animated: true, completion: completion)
+    }
+
+    func saved(on view: ControllerBackedProtocol?) {
         let title = R.string.localizable.commonSaved(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
         )
