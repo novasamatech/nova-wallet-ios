@@ -1,6 +1,13 @@
 import Foundation
+import SoraFoundation
 
-final class NotificationsManagementWireframe: NotificationsManagementWireframeProtocol {
+final class NotificationsManagementWireframe: NotificationsManagementWireframeProtocol, ModalAlertPresenting {
+    let localizationManager: LocalizationManagerProtocol
+
+    init(localizationManager: LocalizationManagerProtocol) {
+        self.localizationManager = localizationManager
+    }
+
     func showWallets(
         from view: ControllerBackedProtocol?,
         initState: [Web3Alert.LocalWallet]?,
@@ -54,5 +61,17 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
 
     func complete(from view: ControllerBackedProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
+    }
+
+    func saved(on view: ControllerBackedProtocol?) {
+        let title = R.string.localizable
+            .commonSaved(preferredLanguages: localizationManager.selectedLocale.rLanguages)
+
+        presentSuccessNotification(title, from: view) {
+            // Completion is called after viewDidAppear so we need to schedule transition to the next run loop
+            DispatchQueue.main.async {
+                view?.controller.navigationController?.popViewController(animated: true)
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@ extension CurrencyManager {
     private convenience init?() {
         try? self.init(
             currencyRepository: CurrencyRepository.shared,
-            settingsManager: SettingsManager.shared,
+            settingsManager: SharedSettingsManager() ?? SettingsManager.shared,
             queue: OperationManagerFacade.sharedDefaultQueue
         )
     }

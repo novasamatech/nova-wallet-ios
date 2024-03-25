@@ -17,7 +17,9 @@ struct NotificationsManagementViewFactory {
             chainRegistry: ChainRegistryFacade.sharedRegistry
         )
 
-        let wireframe = NotificationsManagementWireframe()
+        let wireframe = NotificationsManagementWireframe(
+            localizationManager: LocalizationManager.shared
+        )
 
         let viewModelFactory = NotificationsManagemenViewModelFactory(
             quantityFormatter: NumberFormatter.quantity.localizableResource()

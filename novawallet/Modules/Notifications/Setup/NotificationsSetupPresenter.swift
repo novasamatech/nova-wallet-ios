@@ -27,6 +27,7 @@ extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
     }
 
     func enablePushNotifications() {
+        view?.didStartEnabling()
         interactor.enablePushNotifications()
     }
 
@@ -45,7 +46,7 @@ extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
 
 extension NotificationsSetupPresenter: NotificationsSetupInteractorOutputProtocol {
     func didRegister(notificationStatus _: PushNotificationsStatus) {
-        wireframe.complete(on: view)
+        wireframe.saved(on: view)
     }
 
     func didReceive(error: Error) {
@@ -56,6 +57,8 @@ extension NotificationsSetupPresenter: NotificationsSetupInteractorOutputProtoco
                 return
             }
         default:
+            view?.didStopEnabling()
+
             wireframe.presentRequestStatus(
                 on: view,
                 locale: localizationManager.selectedLocale

@@ -1,6 +1,9 @@
 import Foundation
 
-protocol NotificationsSetupViewProtocol: ControllerBackedProtocol {}
+protocol NotificationsSetupViewProtocol: ControllerBackedProtocol {
+    func didStartEnabling()
+    func didStopEnabling()
+}
 
 protocol NotificationsSetupPresenterProtocol: AnyObject {
     func setup()
@@ -22,6 +25,7 @@ protocol NotificationsSetupInteractorOutputProtocol: AnyObject {
 
 protocol NotificationsSetupWireframeProtocol: WebPresentable, AlertPresentable, CommonRetryable, ErrorPresentable {
     func complete(on view: ControllerBackedProtocol?)
+    func saved(on view: ControllerBackedProtocol?)
     func show(url: URL, from view: ControllerBackedProtocol?)
     func close(on view: ControllerBackedProtocol?)
 }

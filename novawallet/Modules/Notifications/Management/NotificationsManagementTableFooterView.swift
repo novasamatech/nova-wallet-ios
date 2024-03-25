@@ -28,7 +28,6 @@ final class NotificationsManagementTableFooterView: UITableViewHeaderFooterView 
 
         contentView.addSubview(content)
         content.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(16)
             make.bottom.leading.trailing.equalToSuperview()
         }
     }

@@ -326,7 +326,7 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
 
     func didReceiveSaveCompletion() {
         view?.stopLoading()
-        wireframe.complete(from: view)
+        wireframe.saved(on: view)
     }
 }
 
