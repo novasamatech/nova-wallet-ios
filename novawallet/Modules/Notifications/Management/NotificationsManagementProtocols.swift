@@ -37,17 +37,22 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
         initState: [Web3Alert.LocalWallet]?,
         completion: @escaping ([Web3Alert.LocalWallet]) -> Void
     )
+
     func showStakingRewardsSetup(
         from view: ControllerBackedProtocol?,
         selectedChains: Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?,
         completion: @escaping (Web3Alert.Selection<Set<Web3Alert.LocalChainId>>?) -> Void
     )
+
     func showGovSetup(
         from view: ControllerBackedProtocol?,
         settings: GovernanceNotificationsModel,
         completion: @escaping (GovernanceNotificationsModel) -> Void
     )
+
     func complete(from view: ControllerBackedProtocol?)
+
+    func saved(on view: ControllerBackedProtocol?)
 }
 
 enum NotificationsManagementError: Error {

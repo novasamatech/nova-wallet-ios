@@ -26,8 +26,11 @@ struct NotificationsSetupViewFactory {
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
             localPushSettingsFactory: PushNotificationSettingsFactory()
         )
-        let wireframe = NotificationsSetupWireframe()
-        wireframe.completion = completion
+
+        let wireframe = NotificationsSetupWireframe(
+            localizationManager: LocalizationManager.shared,
+            completion: completion
+        )
 
         let presenter = NotificationsSetupPresenter(
             interactor: interactor,
