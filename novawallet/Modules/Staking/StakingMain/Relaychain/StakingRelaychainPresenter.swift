@@ -251,6 +251,16 @@ final class StakingRelaychainPresenter {
             from: view
         )
     }
+
+    private func doForStashAccount(_ action: @escaping () -> Void) {
+        if let state = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
+            if state.commonData.address != state.stashItem.stash {
+                presentSwitchToStashAccountAlert(stashAddress: state.stashItem.stash)
+            } else {
+                action()
+            }
+        }
+    }
 }
 
 extension StakingRelaychainPresenter: StakingStateMachineDelegate {
@@ -370,15 +380,13 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
                 wireframe.showYourValidatorInfo(stashAddress, from: view)
             }
         case .addProxy:
-            if let state = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
-                if state.commonData.address != state.stashItem.stash {
-                    presentSwitchToStashAccountAlert(stashAddress: state.stashItem.stash)
-                } else {
-                    wireframe.showAddProxy(from: view)
-                }
+            doForStashAccount { [weak self] in
+                self?.wireframe.showAddProxy(from: self?.view)
             }
         case .editProxies:
-            wireframe.showEditProxies(from: view)
+            doForStashAccount { [weak self] in
+                self?.wireframe.showEditProxies(from: self?.view)
+            }
         default:
             logger?.warning("Unsupported action: \(action)")
         }

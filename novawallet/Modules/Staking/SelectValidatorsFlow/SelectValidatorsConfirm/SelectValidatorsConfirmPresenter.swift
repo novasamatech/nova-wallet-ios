@@ -339,4 +339,8 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
     func didReceive(feeError: Error) {
         handle(error: feeError)
     }
+
+    func didReceive(createSigningServiceError _: Error) {
+        interactor.createSigningServices()
+    }
 }

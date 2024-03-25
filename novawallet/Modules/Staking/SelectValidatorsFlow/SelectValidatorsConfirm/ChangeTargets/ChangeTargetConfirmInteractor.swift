@@ -11,11 +11,10 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        extrinsicService: ExtrinsicServiceProtocol,
+        bondingAccountSigningFactory: BondingAccountSigningFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol,
-        signer: SigningWrapperProtocol,
+        operationQueue: OperationQueue,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         nomination: PreparedNomination<ExistingBonding>,
         currencyManager: CurrencyManagerProtocol
@@ -33,12 +32,11 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             durationOperationFactory: durationOperationFactory,
-            operationManager: operationManager,
-            signer: signer,
-            currencyManager: currencyManager
+            operationQueue: operationQueue,
+            currencyManager: currencyManager,
+            bondingAccountSigningFactory: bondingAccountSigningFactory
         )
     }
 
@@ -166,7 +164,7 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             return
         }
 
-        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
+        extrinsicService?.estimateFee(closure, runningIn: .main) { [weak self] result in
             switch result {
             case let .success(info):
                 self?.presenter.didReceive(paymentInfo: info)
@@ -182,13 +180,14 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             return
         }
 
-        guard let closure = createExtrinsicBuilderClosure() else {
+        guard let closure = createExtrinsicBuilderClosure(),
+              let signer = signer else {
             return
         }
 
         presenter.didStartNomination()
 
-        extrinsicService.submit(
+        extrinsicService?.submit(
             closure,
             signer: signer,
             runningIn: .main

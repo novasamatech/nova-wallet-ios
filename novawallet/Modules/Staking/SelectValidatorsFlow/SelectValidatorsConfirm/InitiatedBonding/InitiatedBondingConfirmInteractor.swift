@@ -12,12 +12,11 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        extrinsicService: ExtrinsicServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol,
-        signer: SigningWrapperProtocol,
+        operationQueue: OperationQueue,
         nomination: PreparedNomination<InitiatedBonding>,
+        bondingAccountSigningFactory: BondingAccountSigningFactoryProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.nomination = nomination
@@ -29,12 +28,11 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             durationOperationFactory: durationOperationFactory,
-            operationManager: operationManager,
-            signer: signer,
-            currencyManager: currencyManager
+            operationQueue: operationQueue,
+            currencyManager: currencyManager,
+            bondingAccountSigningFactory: bondingAccountSigningFactory
         )
     }
 
@@ -117,7 +115,7 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
                     return
                 }
 
-                self?.extrinsicService.estimateFee(closure, runningIn: .main) { result in
+                self?.extrinsicService?.estimateFee(closure, runningIn: .main) { result in
                     switch result {
                     case let .success(info):
                         self?.presenter.didReceive(paymentInfo: info)
@@ -148,7 +146,7 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
                     return
                 }
 
-                self?.extrinsicService.submit(
+                self?.extrinsicService?.submit(
                     closure,
                     signer: signer,
                     runningIn: .main

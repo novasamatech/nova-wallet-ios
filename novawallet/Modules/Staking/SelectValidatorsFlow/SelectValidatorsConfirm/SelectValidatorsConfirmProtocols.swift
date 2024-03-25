@@ -20,6 +20,7 @@ protocol SelectValidatorsConfirmInteractorInputProtocol: AnyObject {
     func setup()
     func submitNomination()
     func estimateFee()
+    func createSigningServices()
 }
 
 protocol SelectValidatorsConfirmInteractorOutputProtocol: AnyObject {
@@ -37,6 +38,7 @@ protocol SelectValidatorsConfirmInteractorOutputProtocol: AnyObject {
 
     func didReceive(paymentInfo: ExtrinsicFeeProtocol)
     func didReceive(feeError: Error)
+    func didReceive(createSigningServiceError: Error)
 }
 
 protocol SelectValidatorsConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
