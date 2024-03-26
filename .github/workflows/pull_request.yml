@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-13-larger
+    runs-on: macos-13
 
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
