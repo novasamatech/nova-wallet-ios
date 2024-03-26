@@ -264,7 +264,7 @@ extension PushNotificationsStatusService: PushNotificationsStatusServiceProtocol
 extension PushNotificationsStatusService: MessagingDelegate {
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         if let fcmToken = fcmToken {
-            logger.debug("Did receive push token: \(fcmToken)")
+            logger.debug("Did receive push token")
             delegate?.didReceivePushNotifications(token: fcmToken)
         } else {
             logger.warning("Did receive empty push token")

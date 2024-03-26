@@ -409,6 +409,7 @@
 		0CC0F7F32BADEB1D002C49F6 /* notification-ext.debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7F02BADEB1C002C49F6 /* notification-ext.debug.xcconfig */; };
 		0CC0F7F42BADEB1D002C49F6 /* notification-ext.dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7F12BADEB1C002C49F6 /* notification-ext.dev.xcconfig */; };
 		0CC0F7F72BB0710E002C49F6 /* ActionLoadingView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F7F62BB0710E002C49F6 /* ActionLoadingView+Style.swift */; };
+		0CC0F80A2BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F8092BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift */; };
 		0CC2E55E2A6AB2B7004092E7 /* StashItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */; };
 		0CC2E5602A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55F2A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift */; };
 		0CC2E5622A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E5612A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift */; };
@@ -4994,6 +4995,7 @@
 		0CC0F7F02BADEB1C002C49F6 /* notification-ext.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "notification-ext.debug.xcconfig"; sourceTree = "<group>"; };
 		0CC0F7F12BADEB1C002C49F6 /* notification-ext.dev.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "notification-ext.dev.xcconfig"; sourceTree = "<group>"; };
 		0CC0F7F62BB0710E002C49F6 /* ActionLoadingView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ActionLoadingView+Style.swift"; sourceTree = "<group>"; };
+		0CC0F8092BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		0CC2E55C2A6AAFFD004092E7 /* SubstrateDataModel18.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel18.xcdatamodel; sourceTree = "<group>"; };
 		0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashItemMapper.swift; sourceTree = "<group>"; };
 		0CC2E55F2A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRemoteSubscriptionService.swift; sourceTree = "<group>"; };
@@ -11577,6 +11579,7 @@
 				773B2E462B757CFD00A3BC11 /* PushNotificationsStatusService.swift */,
 				0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */,
 				0C7802942BA6ABCC00254EED /* Web3AlertsWalletsUpdateService.swift */,
+				0CC0F8092BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift */,
 			);
 			path = Web3AlertService;
 			sourceTree = "<group>";
@@ -22401,6 +22404,7 @@
 				843074F928BF6201009D463B /* NoAccountSupportPresentable.swift in Sources */,
 				77F189402A49972300E8B933 /* UILabel+bind.swift in Sources */,
 				8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */,
+				0CC0F80A2BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift in Sources */,
 				847A259029B5D2710054F90C /* GovJsonLocalStorageHandler.swift in Sources */,
 				77C9BCCE2ACD691300022EA2 /* SwapAssetsOperationViewFactory.swift in Sources */,
 				84C6801024D6EE4500006BF5 /* PlusIndicatorView.swift in Sources */,
@@ -26202,7 +26206,7 @@
 				INFOPLIST_FILE = NovaPushNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NovaPushNotificationServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nova Foundation. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26213,7 +26217,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev-push-notifications";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan't M2 Dev";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -26242,7 +26246,7 @@
 				INFOPLIST_FILE = NovaPushNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NovaPushNotificationServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nova Foundation. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26280,7 +26284,7 @@
 				INFOPLIST_FILE = NovaPushNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NovaPushNotificationServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nova Foundation. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26317,7 +26321,7 @@
 				INFOPLIST_FILE = NovaPushNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NovaPushNotificationServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nova Foundation. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26527,14 +26531,14 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26546,7 +26550,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Ruslan't M2 Dev";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-gulnaz-dev";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-ruslan-dev";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -26568,7 +26572,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26716,7 +26720,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26830,7 +26834,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
