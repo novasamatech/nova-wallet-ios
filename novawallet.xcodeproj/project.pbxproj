@@ -26206,7 +26206,7 @@
 				INFOPLIST_FILE = NovaPushNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NovaPushNotificationServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nova Foundation. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26246,7 +26246,7 @@
 				INFOPLIST_FILE = NovaPushNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NovaPushNotificationServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nova Foundation. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26284,7 +26284,7 @@
 				INFOPLIST_FILE = NovaPushNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NovaPushNotificationServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nova Foundation. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26321,7 +26321,7 @@
 				INFOPLIST_FILE = NovaPushNotificationServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NovaPushNotificationServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nova Foundation. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26538,7 +26538,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26572,7 +26572,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26720,7 +26720,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -26834,7 +26834,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
