@@ -15,7 +15,7 @@ struct ProxyAccountModel: Hashable {
 
 extension ProxyAccountModel: Identifiable {
     var identifier: String {
-        type.id + "-" + accountId.toHexString()
+        type.id + "-" + accountId.toHex()
     }
 
     var isNotRevoked: Bool {

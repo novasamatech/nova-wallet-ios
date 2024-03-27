@@ -1,17 +1,6 @@
 import Foundation
 import RobinHood
 
-protocol CurrencyRepositoryProtocol {
-    func fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]>
-}
-
-final class CurrencyRepository: JsonFileRepository<[Currency]> {
-    static let shared = CurrencyRepository()
-
-    @Atomic(defaultValue: [])
-    private var currencies: [Currency]
-}
-
 extension CurrencyRepository: CurrencyRepositoryProtocol {
     func fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]> {
         guard currencies.isEmpty else {
@@ -33,4 +22,11 @@ extension CurrencyRepository: CurrencyRepositoryProtocol {
             dependencies: [fetchCurrenciesOperation]
         )
     }
+}
+
+final class CurrencyRepository: JsonFileRepository<[Currency]> {
+    static let shared = CurrencyRepository()
+
+    @Atomic(defaultValue: [])
+    private var currencies: [Currency]
 }

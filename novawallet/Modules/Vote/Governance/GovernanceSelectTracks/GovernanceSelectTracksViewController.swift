@@ -11,13 +11,13 @@ class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
 
     typealias GroupsPair = ViewModelViewPair<GovernanceSelectTrackViewModel.Group, RoundedButton>
 
-    let basePresenter: GovernanceSelectTracksPresenterProtocol
+    let basePresenter: SelectTracksPresenterProtocol
 
     private var tracks: [TracksPair] = []
     private var groups: [GroupsPair] = []
 
     init(
-        basePresenter: GovernanceSelectTracksPresenterProtocol,
+        basePresenter: SelectTracksPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.basePresenter = basePresenter

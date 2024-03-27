@@ -59,6 +59,14 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+      - name: Push Notifications Setup
+        env:
+          GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
+        run: |
+          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info-Dev.plist
+
+          echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
+
       - name: Bump version
         uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
         with:

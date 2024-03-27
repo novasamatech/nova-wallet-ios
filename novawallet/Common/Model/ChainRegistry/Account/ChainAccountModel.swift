@@ -17,7 +17,7 @@ extension ChainAccountModel: Identifiable {
     var identifier: String {
         [
             chainId,
-            accountId.toHexString(),
+            accountId.toHex(),
             "\(cryptoType)"
         ].joined(separator: "-")
     }

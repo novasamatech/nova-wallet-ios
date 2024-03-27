@@ -90,9 +90,10 @@ extension Observable where TState: Equatable {
     func addObserver(
         with owner: AnyObject,
         sendStateOnSubscription: Bool,
+        queue: DispatchQueue? = nil,
         closure: @escaping StateChangeClosure
     ) {
-        addObserver(with: owner, queue: nil, closure: closure)
+        addObserver(with: owner, queue: queue, closure: closure)
 
         if sendStateOnSubscription {
             closure(state, state)

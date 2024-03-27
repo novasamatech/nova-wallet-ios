@@ -16,21 +16,32 @@ enum UserStorageParams {
      *  - update mappings between CoreData Entities and App Models;
      *  - switch version of UserStorageParams.modelVersion;
      */
-    static let modelVersion: UserStorageVersion = .version12
+    static let modelVersion: UserStorageVersion = .version13
     static let modelDirectory: String = "UserDataModel.momd"
     static let databaseName = "UserDataModel.sqlite"
 
-    static let storageDirectoryURL: URL = {
+    static let deprecatedStorageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
             for: .documentDirectory,
             in: .userDomainMask
         ).first?.appendingPathComponent("CoreData")
-
         return baseURL!
     }()
 
-    static var storageURL: URL {
-        storageDirectoryURL.appendingPathComponent(databaseName)
+    static let sharedStorageDirectoryURL: URL = {
+        let baseURL = FileManager.default
+            .containerURL(
+                forSecurityApplicationGroupIdentifier: SharedContainerGroup.name
+            )?.appendingPathComponent("CoreData")
+        return baseURL!
+    }()
+
+    static var deprecatedStorageURL: URL {
+        deprecatedStorageDirectoryURL.appendingPathComponent(databaseName)
+    }
+
+    static var sharedStorageURL: URL {
+        sharedStorageDirectoryURL.appendingPathComponent(databaseName)
     }
 }
 
@@ -58,7 +69,7 @@ class UserDataStorageFacade: StorageFacadeProtocol {
         let modelURL = omoURL ?? momURL
 
         let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: UserStorageParams.storageDirectoryURL,
+            databaseDirectory: UserStorageParams.sharedStorageDirectoryURL,
             databaseName: UserStorageParams.databaseName,
             incompatibleModelStrategy: .ignore
         )
