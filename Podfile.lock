@@ -628,6 +628,9 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
+  - AppCheckCore (10.18.1):
+    - GoogleUtilities/Environment (~> 7.11)
+    - PromisesObjC (~> 2.3)
   - BigInt (5.2.0)
   - BoringSSL-GRPC (0.0.24):
     - BoringSSL-GRPC/Implementation (= 0.0.24)
@@ -646,6 +649,12 @@ PODS:
   - EthereumSignTypedDataUtil (0.1.2):
     - BigInt (~> 5.0)
     - CryptoSwift (~> 1.4)
+  - FirebaseAppCheck (10.23.0):
+    - AppCheckCore (~> 10.18)
+    - FirebaseAppCheckInterop (~> 10.17)
+    - FirebaseCore (~> 10.0)
+    - GoogleUtilities/Environment (~> 7.8)
+    - PromisesObjC (~> 2.1)
   - FirebaseAppCheckInterop (10.20.0)
   - FirebaseAuth (10.20.0):
     - FirebaseAppCheckInterop (~> 10.17)
@@ -928,6 +937,7 @@ DEPENDENCIES:
   - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
   - Cuckoo
   - EthereumSignTypedDataUtil (from `https://github.com/ERussel/EthereumSignTypedDataUtil.git`, tag `0.1.3`)
+  - FirebaseAppCheck
   - FirebaseAuth
   - FirebaseFirestore
   - FirebaseMessaging
@@ -957,11 +967,13 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - abseil
+    - AppCheckCore
     - BigInt
     - BoringSSL-GRPC
     - CocoaLumberjack
     - CryptoSwift
     - Cuckoo
+    - FirebaseAppCheck
     - FirebaseAppCheckInterop
     - FirebaseAuth
     - FirebaseCore
@@ -1080,6 +1092,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
+  AppCheckCore: d0d4bcb6f90fd9f69958da5350467b79026b38c7
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   CDMarkdownKit: ed78cf1a5c57dbe362054633a0f802f0534531ff
@@ -1087,6 +1100,7 @@ SPEC CHECKSUMS:
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
   EthereumSignTypedDataUtil: ae4e33b21e51ee046a86a65b02843090b8bbd3f9
+  FirebaseAppCheck: 4bb8047366c2c975583c9eff94235f8f2c5b342d
   FirebaseAppCheckInterop: e81bdb1cdb82f8e0cef353ba5018a8402682032c
   FirebaseAuth: 9c5c400d2c3055d8ae3a0284944c86fa95d48dac
   FirebaseCore: 28045c1560a2600d284b9c45a904fe322dc890b6
@@ -1138,6 +1152,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 3b521ee14d42ee2c4cb0b94d39d63cc62941a174
+PODFILE CHECKSUM: f49f46ea53259af80c0d510ab8e5fbbb638b1730
 
 COCOAPODS: 1.15.2
