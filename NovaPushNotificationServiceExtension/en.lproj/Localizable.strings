@@ -1,6 +1,6 @@
 "push.notification.receive.tokens.title" = "⬇️ Received";
 "push.notification.sent.tokens.title" = "💸 Sent";
-"push.notification.sent.tokens.wo.address.subtitle" = "Sent %@ to %@ on %@";
+"push.notification.sent.tokens.no.address.subtitle" = "Sent %@ %@ on %@";
 "push.notification.staking.reward.title" = "⭐️ New reward";
 "push.notification.staking.reward.subtitle" = "Received %@ from %@ staking";
 "push.notification.referendum.approved.title" = "✅ Referendum approved!";

@@ -40,7 +40,7 @@ extension PushNotification.TransferType {
                     preferredLanguages: locale.rLanguages
                 )
             } else {
-                return R.string.localizable.pushNotificationSentTokensWoAddressSubtitle(
+                return R.string.localizable.pushNotificationSentTokensNoAddressSubtitle(
                     amount,
                     priceString,
                     chainName,

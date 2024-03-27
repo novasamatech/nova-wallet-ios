@@ -1,6 +1,6 @@
 "push.notification.receive.tokens.title" = "⬇️ Получено";
 "push.notification.sent.tokens.title" = "💸 Отправлено";
-"push.notification.sent.tokens.wo.address.subtitle" = "Отправлено %@ на %@ в сети %@";
+"push.notification.sent.tokens.no.address.subtitle" = "Отправлено %@ %@ в сети %@";
 "push.notification.staking.reward.title" = "⭐️ Новая награда";
 "push.notification.staking.reward.subtitle" = "Получено %@ от %@ стейкинга";
 "push.notification.referendum.approved.title" = "✅ Референдум одобрен!";
