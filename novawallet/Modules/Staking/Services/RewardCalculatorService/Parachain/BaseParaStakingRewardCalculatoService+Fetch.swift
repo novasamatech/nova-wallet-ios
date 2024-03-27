@@ -1,19 +1,16 @@
 import Foundation
 
 extension BaseParaStakingRewardCalculatoService {
-    func updateTotalStaked() {
+    func updateTotalStaked() throws {
         totalStakedService?.throttle()
         totalStakedService = nil
 
         let storagePath = ParachainStaking.totalPath
 
-        guard let localKey = try? LocalStorageKeyFactory().createFromStoragePath(
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             storagePath,
             chainId: chainId
-        ) else {
-            logger.error("Can't encode local key")
-            return
-        }
+        )
 
         let repository = repositoryFactory.createChainStorageItemRepository()
 

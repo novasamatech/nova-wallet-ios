@@ -176,7 +176,7 @@ class BaseParaStakingRewardCalculatoService {
             try subscribeTotalIssuance()
             try subscribeInflationConfig()
             try subscribeParachainBondConfig()
-            updateTotalStaked()
+            try updateTotalStaked()
         } catch {
             logger.error("Can't make subscription")
         }
