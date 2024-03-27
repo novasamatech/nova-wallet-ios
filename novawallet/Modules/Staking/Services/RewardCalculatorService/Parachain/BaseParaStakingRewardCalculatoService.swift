@@ -32,7 +32,6 @@ class BaseParaStakingRewardCalculatoService {
     private(set) var parachainBondConfig: ParachainStaking.ParachainBondConfig?
 
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
-    private var roundProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     private var inflationProvider: AnyDataProvider<ParachainStaking.DecodedInflationConfig>?
     private var parachainBondProvider: AnyDataProvider<ParachainStaking.DecodedParachainBondConfig>?
 
@@ -175,9 +174,9 @@ class BaseParaStakingRewardCalculatoService {
     func subscribe() {
         do {
             try subscribeTotalIssuance()
-            try subscribeRound()
             try subscribeInflationConfig()
             try subscribeParachainBondConfig()
+            updateTotalStaked()
         } catch {
             logger.error("Can't make subscription")
         }
@@ -186,9 +185,6 @@ class BaseParaStakingRewardCalculatoService {
     func unsubscribe() {
         totalIssuanceProvider?.removeObserver(self)
         totalIssuanceProvider = nil
-
-        roundProvider?.removeObserver(self)
-        roundProvider = nil
 
         inflationProvider?.removeObserver(self)
         inflationProvider = nil
@@ -224,39 +220,6 @@ extension BaseParaStakingRewardCalculatoService {
         )
 
         totalIssuanceProvider?.addObserver(
-            self,
-            deliverOn: syncQueue,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-    }
-
-    private func subscribeRound() throws {
-        guard roundProvider == nil else {
-            return
-        }
-
-        roundProvider = try providerFactory.getRoundProvider(for: chainId)
-
-        let updateClosure: ([DataProviderChange<ParachainStaking.DecodedRoundInfo>]) -> Void
-
-        updateClosure = { [weak self] changes in
-            if let round = changes.reduceToLastChange()?.item {
-                self?.updateStaked(for: round)
-            }
-        }
-
-        let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.logger.error("Did receive error: \(error)")
-        }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
-        )
-
-        roundProvider?.addObserver(
             self,
             deliverOn: syncQueue,
             executing: updateClosure,
