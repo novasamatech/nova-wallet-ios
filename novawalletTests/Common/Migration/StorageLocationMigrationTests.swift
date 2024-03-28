@@ -55,9 +55,19 @@ final class StorageLocationMigrationTests: XCTestCase {
             )
             
             XCTAssertEqual(fetchedMetaIds, expectedMetaIds)
+            
+            let excludedFromBackup = try databaseDirectoryExistsAndExcludedFromBackup(sharedDatabaseDirectory)
+            XCTAssertTrue(excludedFromBackup)
         } catch {
             XCTFail("\(error)")
         }
+    }
+    
+    private func databaseDirectoryExistsAndExcludedFromBackup(_ url: URL) throws -> Bool {
+        var databaseStorageUrl = url
+        databaseStorageUrl.removeAllCachedResourceValues()
+        let resourceValues = try databaseStorageUrl.resourceValues(forKeys: [.isExcludedFromBackupKey])
+        return resourceValues.isExcludedFromBackup == true
     }
     
     private func createStorePathMigrator() -> Migrating {
