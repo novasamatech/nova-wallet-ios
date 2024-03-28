@@ -117,7 +117,8 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
             chainId: chainId,
             wallets: wallets,
             metaAccounts: metaAccounts
-        )
+        ) ?? address?.truncated
+
         let subtitle = type.subtitle(
             amount: balance?.amount ?? "",
             price: balance?.price ?? "",

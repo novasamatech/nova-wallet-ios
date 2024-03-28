@@ -27,11 +27,18 @@ final class StorePathMigrator: Migrating {
     }
 
     private func createSharedStoreDirectoryIfNotExists() throws {
+        var storeDirectory = sharedStoreDirectory
+
         var isDirectory: ObjCBool = false
         if
-            !fileManager.fileExists(atPath: sharedStoreDirectory.path, isDirectory: &isDirectory) ||
+            !fileManager.fileExists(atPath: storeDirectory.path, isDirectory: &isDirectory) ||
             !isDirectory.boolValue {
-            try fileManager.createDirectory(at: sharedStoreDirectory, withIntermediateDirectories: true)
+            try fileManager.createDirectory(at: storeDirectory, withIntermediateDirectories: true)
+
+            // we currently have settings that all databases excluded from backup
+            var resources = URLResourceValues()
+            resources.isExcludedFromBackup = true
+            try storeDirectory.setResourceValues(resources)
         }
     }
 
