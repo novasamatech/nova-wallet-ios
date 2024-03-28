@@ -410,6 +410,11 @@
 		0CC0F7F42BADEB1D002C49F6 /* notification-ext.dev.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7F12BADEB1C002C49F6 /* notification-ext.dev.xcconfig */; };
 		0CC0F7F72BB0710E002C49F6 /* ActionLoadingView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F7F62BB0710E002C49F6 /* ActionLoadingView+Style.swift */; };
 		0CC0F80A2BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F8092BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift */; };
+		0CC0F8222BB52C7E002C49F6 /* CloudBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F8212BB52C7E002C49F6 /* CloudBackup.swift */; };
+		0CC0F8252BB52EEC002C49F6 /* CloudBackupAvailability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F8242BB52EEC002C49F6 /* CloudBackupAvailability.swift */; };
+		0CC0F8272BB53376002C49F6 /* CloudBackupAvailabilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F8262BB53376002C49F6 /* CloudBackupAvailabilityService.swift */; };
+		0CC0F8292BB53ABC002C49F6 /* CloudIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F8282BB53ABC002C49F6 /* CloudIdentifiable.swift */; };
+		0CC0F82C2BB570C2002C49F6 /* CloudBackupOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC0F82B2BB570C2002C49F6 /* CloudBackupOperationFactory.swift */; };
 		0CC2E55E2A6AB2B7004092E7 /* StashItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */; };
 		0CC2E5602A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E55F2A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift */; };
 		0CC2E5622A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E5612A6E5C43004092E7 /* NominationPoolsAccountUpdatingService.swift */; };
@@ -4997,6 +5002,11 @@
 		0CC0F7F62BB0710E002C49F6 /* ActionLoadingView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ActionLoadingView+Style.swift"; sourceTree = "<group>"; };
 		0CC0F8092BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		0CC0F80B2BB331DE002C49F6 /* novawalletStaging.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = novawalletStaging.entitlements; sourceTree = "<group>"; };
+		0CC0F8212BB52C7E002C49F6 /* CloudBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackup.swift; sourceTree = "<group>"; };
+		0CC0F8242BB52EEC002C49F6 /* CloudBackupAvailability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupAvailability.swift; sourceTree = "<group>"; };
+		0CC0F8262BB53376002C49F6 /* CloudBackupAvailabilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupAvailabilityService.swift; sourceTree = "<group>"; };
+		0CC0F8282BB53ABC002C49F6 /* CloudIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudIdentifiable.swift; sourceTree = "<group>"; };
+		0CC0F82B2BB570C2002C49F6 /* CloudBackupOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupOperationFactory.swift; sourceTree = "<group>"; };
 		0CC2E55C2A6AAFFD004092E7 /* SubstrateDataModel18.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel18.xcdatamodel; sourceTree = "<group>"; };
 		0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashItemMapper.swift; sourceTree = "<group>"; };
 		0CC2E55F2A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRemoteSubscriptionService.swift; sourceTree = "<group>"; };
@@ -10077,6 +10087,34 @@
 			path = LoadableAction;
 			sourceTree = "<group>";
 		};
+		0CC0F8202BB52C6F002C49F6 /* CloudBackup */ = {
+			isa = PBXGroup;
+			children = (
+				0CC0F82A2BB57079002C49F6 /* Operations */,
+				0CC0F8232BB52EC8002C49F6 /* Availability */,
+				0CC0F8212BB52C7E002C49F6 /* CloudBackup.swift */,
+			);
+			path = CloudBackup;
+			sourceTree = "<group>";
+		};
+		0CC0F8232BB52EC8002C49F6 /* Availability */ = {
+			isa = PBXGroup;
+			children = (
+				0CC0F8242BB52EEC002C49F6 /* CloudBackupAvailability.swift */,
+				0CC0F8262BB53376002C49F6 /* CloudBackupAvailabilityService.swift */,
+				0CC0F8282BB53ABC002C49F6 /* CloudIdentifiable.swift */,
+			);
+			path = Availability;
+			sourceTree = "<group>";
+		};
+		0CC0F82A2BB57079002C49F6 /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+				0CC0F82B2BB570C2002C49F6 /* CloudBackupOperationFactory.swift */,
+			);
+			path = Operations;
+			sourceTree = "<group>";
+		};
 		0CC633522B30099F001BF257 /* LighSync */ = {
 			isa = PBXGroup;
 			children = (
@@ -12243,6 +12281,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0CC0F8202BB52C6F002C49F6 /* CloudBackup */,
 				77B011712B6CCCBB003A5868 /* Web3AlertService */,
 				77D2ED5D2B18A4E200A0E58C /* Proxy */,
 				0C500B252B0730FC00ABEE70 /* TransactionSubscription */,
@@ -23239,6 +23278,7 @@
 				846A683027469BD500D1A47A /* CrowdloanOffchainProviderFactory.swift in Sources */,
 				84C11F1C2842B869007F7C05 /* ParaStkCollatorFiltersViewModel.swift in Sources */,
 				77EF9A742B9ECE4D0034D619 /* PushNotificationsHandlerFactory.swift in Sources */,
+				0CC0F8292BB53ABC002C49F6 /* CloudIdentifiable.swift in Sources */,
 				88C5F080297F06F0001CCADE /* Array+safe.swift in Sources */,
 				840302E0292CE4030013F356 /* CodingFactory+TypeCheck.swift in Sources */,
 				845B891E2959611C00EE25B0 /* SecurityLayerInteractor.swift in Sources */,
@@ -23256,6 +23296,7 @@
 				844EFB5F265FCE180090ACB1 /* CrowdloanContributionInteractor.swift in Sources */,
 				8499FE6627BD15C800712589 /* DistributedUrlParser.swift in Sources */,
 				845BB8C025E4508800E5FCDC /* SS58FactoryExtensions.swift in Sources */,
+				0CC0F82C2BB570C2002C49F6 /* CloudBackupOperationFactory.swift in Sources */,
 				0C59E8E72AA61933001E11F3 /* ExternalAssetBalanceSubscriptionHandler.swift in Sources */,
 				F461740A260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift in Sources */,
 				84E25BF027E8EFB500290BF1 /* SubqueryAccumulateReward.swift in Sources */,
@@ -23688,6 +23729,7 @@
 				8454C21D2632A78900657DAD /* EventRecord.swift in Sources */,
 				84AE7AB527D39DCA00495267 /* NetworkViewModel.swift in Sources */,
 				0C9C64342A8D67AF004DC078 /* StakingNPoolsWireframe.swift in Sources */,
+				0CC0F8222BB52C7E002C49F6 /* CloudBackup.swift in Sources */,
 				779F1F8B2B4D807200EF1EE9 /* ProxyDepositView.swift in Sources */,
 				84C4C2F9255DB9510045B582 /* PinChangeInteractor.swift in Sources */,
 				840874D82978284B00ACFA55 /* GovernanceDelegateMetadataRemote.swift in Sources */,
@@ -24238,6 +24280,7 @@
 				0CAC02FD2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift in Sources */,
 				849ABE7C2628116F00011A2A /* NominationsReducer.swift in Sources */,
 				846CA77E2709A34D0011124C /* StakingAnalyticsLocalStorageSubscriber.swift in Sources */,
+				0CC0F8272BB53376002C49F6 /* CloudBackupAvailabilityService.swift in Sources */,
 				A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */,
 				844C3E772A09228200C4305F /* WalletChoosePresentable.swift in Sources */,
 				84AE7AB127D38C9400495267 /* DisplayAddressViewModel.swift in Sources */,
@@ -24489,6 +24532,7 @@
 				770F578B2A8A48FF005FD7C1 /* ButtonViewModel.swift in Sources */,
 				B1CCC5B7BF30F6ACA309B112 /* StakingRedeemViewController.swift in Sources */,
 				C21129B2B8D8B33BCBD5843E /* StakingRedeemViewFactory.swift in Sources */,
+				0CC0F8252BB52EEC002C49F6 /* CloudBackupAvailability.swift in Sources */,
 				85A093F6055DDD2E2E9253F2 /* ControllerAccountProtocols.swift in Sources */,
 				8846FFA629C850CE00796A7E /* AsciiDataString.swift in Sources */,
 				84C5ADEA28147BC2006D7388 /* InlineAlertView.swift in Sources */,
