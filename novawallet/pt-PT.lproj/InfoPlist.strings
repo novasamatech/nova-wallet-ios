@@ -1,5 +1,5 @@
-"NSCameraUsageDescription" = "Camera is used to scan QR codes with addresses, Polkadot Vault transactions, or connect via WalletConnect";
-"NSFaceIDUsageDescription" = "Face ID is used to authorize in Nova Wallet";
-"NSPhotoLibraryUsageDescription" = "Photo library access is used to allow selection of QR code with addresses, Polkadot Vault transactions, or connect via WalletConnect";
-"NSPhotoLibraryAddUsageDescription" = "Save transfer request as a qr code";
-"NSBluetoothAlwaysUsageDescription" = "Bluetooth is used to communicate with Ledger Nano X devices";
+"NSCameraUsageDescription" = "A câmera é usada para escanear códigos QR com endereços, transações do Polkadot Vault ou conectar via WalletConnect";
+"NSFaceIDUsageDescription" = "O Face ID é usado para autorizar no Nova Wallet";
+"NSPhotoLibraryUsageDescription" = "O acesso à biblioteca de fotos é usado para permitir a seleção de códigos QR com endereços, transações do Polkadot Vault ou conectar via WalletConnect";
+"NSPhotoLibraryAddUsageDescription" = "Salvar solicitação de transferência como um código QR";
+"NSBluetoothAlwaysUsageDescription" = "O Bluetooth é usado para se comunicar com dispositivos Ledger Nano X";

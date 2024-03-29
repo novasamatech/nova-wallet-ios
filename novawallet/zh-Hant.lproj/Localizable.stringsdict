@@ -12,10 +12,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>%li day</string>
         <key>other</key>
-        <string>%li days</string>
+        <string>%li天</string>
       </dict>
     </dict>
     <key>common.hours.format</key>
@@ -28,10 +26,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>%li hour</string>
         <key>other</key>
-        <string>%li hours</string>
+        <string>%li小时</string>
       </dict>
     </dict>
     <key>common.days.left.format</key>
@@ -44,10 +40,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>%li day left</string>
         <key>other</key>
-        <string>%li days left</string>
+        <string>剩余%li天</string>
       </dict>
     </dict>
     <key>staking.analytics.validators.eras.counter</key>
@@ -60,10 +54,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>%li era</string>
         <key>other</key>
-        <string>%li eras</string>
+        <string>%li 纪元</string>
       </dict>
     </dict>
     <key>common.minutes.format</key>
@@ -76,10 +68,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>%li minute</string>
         <key>other</key>
-        <string>%li minutes</string>
+        <string>%li 分钟</string>
       </dict>
     </dict>
     <key>common.every.days.format</key>
@@ -92,10 +82,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>everyday</string>
         <key>other</key>
-        <string>every %li days</string>
+        <string>每%li天</string>
       </dict>
     </dict>
     <key>common.in.tracks</key>
@@ -108,10 +96,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>1 track</string>
         <key>other</key>
-        <string>%li tracks</string>
+        <string>%li轨道</string>
       </dict>
     </dict>
     <key>common.networks.title</key>
@@ -124,10 +110,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>Network</string>
         <key>other</key>
-        <string>Networks</string>
+        <string>网络</string>
       </dict>
     </dict>
     <key>common.unsupported.count</key>
@@ -140,10 +124,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>1 unsupported</string>
         <key>other</key>
-        <string>%li unsupported</string>
+        <string>%li个不受支持</string>
       </dict>
     </dict>
     <key>missing.accounts.warning.format</key>
@@ -156,10 +138,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>%2$@ account is missing. Add account to the wallet in Settings</string>
         <key>other</key>
-        <string>%2$@ accounts are missing. Add accounts to the wallet in Settings</string>
+        <string>%2$@账户缺失。请在设置中将账户添加到钱包</string>
       </dict>
     </dict>
     <key>dapps.unsupported.networks.format</key>
@@ -172,10 +152,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>1 unsupported network hidden</string>
         <key>other</key>
-        <string>%li unsupported networks hidden</string>
+        <string>%li个不支持的网络被隐藏</string>
       </dict>
     </dict>
     <key>notifications.wallet.list.selection.hint</key>
@@ -188,10 +166,8 @@
         <string>NSStringPluralRuleType</string>
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
-        <key>one</key>
-        <string>Select at least %li wallet</string>
         <key>other</key>
-        <string>Select at least %li wallets</string>
+        <string>请至少选择%li个钱包</string>
       </dict>
     </dict>
   </dict>

@@ -13,9 +13,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%li day</string>
+        <string>%li día</string>
         <key>other</key>
-        <string>%li days</string>
+        <string>%li días</string>
       </dict>
     </dict>
     <key>common.hours.format</key>
@@ -29,9 +29,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%li hour</string>
+        <string>%li hora</string>
         <key>other</key>
-        <string>%li hours</string>
+        <string>%li horas</string>
       </dict>
     </dict>
     <key>common.days.left.format</key>
@@ -45,9 +45,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%li day left</string>
+        <string>%li día restante</string>
         <key>other</key>
-        <string>%li days left</string>
+        <string>%li días restantes</string>
       </dict>
     </dict>
     <key>staking.analytics.validators.eras.counter</key>
@@ -77,9 +77,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%li minute</string>
+        <string>%li minuto</string>
         <key>other</key>
-        <string>%li minutes</string>
+        <string>%li minutos</string>
       </dict>
     </dict>
     <key>common.every.days.format</key>
@@ -93,9 +93,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>everyday</string>
+        <string>todos los días</string>
         <key>other</key>
-        <string>every %li days</string>
+        <string>cada %li días</string>
       </dict>
     </dict>
     <key>common.in.tracks</key>
@@ -109,9 +109,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>1 track</string>
+        <string>1 pista</string>
         <key>other</key>
-        <string>%li tracks</string>
+        <string>%li pistas</string>
       </dict>
     </dict>
     <key>common.networks.title</key>
@@ -125,9 +125,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>Network</string>
+        <string>Red</string>
         <key>other</key>
-        <string>Networks</string>
+        <string>Redes</string>
       </dict>
     </dict>
     <key>common.unsupported.count</key>
@@ -141,9 +141,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>1 unsupported</string>
+        <string>1 no soportado</string>
         <key>other</key>
-        <string>%li unsupported</string>
+        <string>%li no soportados</string>
       </dict>
     </dict>
     <key>missing.accounts.warning.format</key>
@@ -157,9 +157,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%2$@ account is missing. Add account to the wallet in Settings</string>
+        <string>Falta la cuenta %2$@. Agrega la cuenta a la cartera en Configuraciones</string>
         <key>other</key>
-        <string>%2$@ accounts are missing. Add accounts to the wallet in Settings</string>
+        <string>Faltan las cuentas %2$@. Agrega las cuentas a la cartera en Configuraciones</string>
       </dict>
     </dict>
     <key>dapps.unsupported.networks.format</key>
@@ -173,9 +173,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>1 unsupported network hidden</string>
+        <string>1 red no soportada oculta</string>
         <key>other</key>
-        <string>%li unsupported networks hidden</string>
+        <string>%li redes no soportadas ocultas</string>
       </dict>
     </dict>
     <key>notifications.wallet.list.selection.hint</key>
@@ -189,9 +189,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>Select at least %li wallet</string>
+        <string>Selecciona al menos %li cartera</string>
         <key>other</key>
-        <string>Select at least %li wallets</string>
+        <string>Selecciona al menos %li carteras</string>
       </dict>
     </dict>
   </dict>

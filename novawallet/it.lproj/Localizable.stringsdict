@@ -13,9 +13,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%li day</string>
+        <string>%li giorno</string>
         <key>other</key>
-        <string>%li days</string>
+        <string>%li giorni</string>
       </dict>
     </dict>
     <key>common.hours.format</key>
@@ -29,9 +29,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%li hour</string>
+        <string>%li ora</string>
         <key>other</key>
-        <string>%li hours</string>
+        <string>%li ore</string>
       </dict>
     </dict>
     <key>common.days.left.format</key>
@@ -45,9 +45,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%li day left</string>
+        <string>%li giorno rimasto</string>
         <key>other</key>
-        <string>%li days left</string>
+        <string>%li giorni rimasti</string>
       </dict>
     </dict>
     <key>staking.analytics.validators.eras.counter</key>
@@ -63,7 +63,7 @@
         <key>one</key>
         <string>%li era</string>
         <key>other</key>
-        <string>%li eras</string>
+        <string>%lieras</string>
       </dict>
     </dict>
     <key>common.minutes.format</key>
@@ -77,9 +77,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%li minute</string>
+        <string>%li minuto</string>
         <key>other</key>
-        <string>%li minutes</string>
+        <string>%li minuti</string>
       </dict>
     </dict>
     <key>common.every.days.format</key>
@@ -93,9 +93,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>everyday</string>
+        <string>ogni giorno</string>
         <key>other</key>
-        <string>every %li days</string>
+        <string>ogni %li giorni</string>
       </dict>
     </dict>
     <key>common.in.tracks</key>
@@ -109,9 +109,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>1 track</string>
+        <string>1 traccia</string>
         <key>other</key>
-        <string>%li tracks</string>
+        <string>%li tracce</string>
       </dict>
     </dict>
     <key>common.networks.title</key>
@@ -125,9 +125,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>Network</string>
+        <string>Rete</string>
         <key>other</key>
-        <string>Networks</string>
+        <string>Reti</string>
       </dict>
     </dict>
     <key>common.unsupported.count</key>
@@ -141,9 +141,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>1 unsupported</string>
+        <string>1 non supportato</string>
         <key>other</key>
-        <string>%li unsupported</string>
+        <string>%li non supportati</string>
       </dict>
     </dict>
     <key>missing.accounts.warning.format</key>
@@ -157,9 +157,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%2$@ account is missing. Add account to the wallet in Settings</string>
+        <string>L'account %2$@ manca. Aggiungi l'account al portafoglio nelle Impostazioni</string>
         <key>other</key>
-        <string>%2$@ accounts are missing. Add accounts to the wallet in Settings</string>
+        <string>Gli account %2$@ mancano. Aggiungi gli account al portafoglio nelle Impostazioni</string>
       </dict>
     </dict>
     <key>dapps.unsupported.networks.format</key>
@@ -173,9 +173,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>1 unsupported network hidden</string>
+        <string>1 rete non supportata nascosta</string>
         <key>other</key>
-        <string>%li unsupported networks hidden</string>
+        <string>%li reti non supportate nascoste</string>
       </dict>
     </dict>
     <key>notifications.wallet.list.selection.hint</key>
@@ -189,9 +189,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>Select at least %li wallet</string>
+        <string>Seleziona almeno %li portafoglio</string>
         <key>other</key>
-        <string>Select at least %li wallets</string>
+        <string>Seleziona almeno %li portafogli</string>
       </dict>
     </dict>
   </dict>

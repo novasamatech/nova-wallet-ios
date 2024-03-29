@@ -1508,7 +1508,7 @@
 "notifications.management.wallets" = "Кошельки";
 "settings.push.notifications" = "Push-уведомления";
 "notifications.setup.title" = "Не пропустите ничего!";
-"notifications.setup.subtitle" = "Получайте уведомления об операциях кошелька, обновлениях демократии, наград стейкинга и безопасности, чтобы вы всегда быть в куре событий";
+"notifications.setup.subtitle" = "Получайте уведомления об операциях кошелька, обновлениях демократии, наград стейкинга и безопасности, чтобы всегда быть в куре событий";
 "notifications.setup.enable.push.notifications" = "Включить push-уведомления";
 "notifications.setup.terms" = "Включая push-уведомления, вы соглашаетесь с нашими %@ и %@";
 "common.terms.and.conditions" = "Условиями использования";
