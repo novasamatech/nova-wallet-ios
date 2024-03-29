@@ -1,6 +1,5 @@
 "push.notification.receive.tokens.title" = "⬇️ Ricevuto";
 "push.notification.sent.tokens.title" = "💸 Inviato";
-"push.notification.sent.tokens.no.address.subtitle" = "Inviati %@ a %@ su %@";
 "push.notification.staking.reward.title" = "✨ Nuova ricompensa";
 "push.notification.staking.reward.subtitle" = "Ricevuto %@ da staking %@";
 "push.notification.referendum.approved.title" = "✅ Referendum approvato!";
@@ -26,3 +25,4 @@
 "push.notification.unsupported.body" = "Contenuto del messaggio non supportato";
 "push.notification.sent.tokens.subtitle" = "Inviati %@ %@ a %@ su %@";
 "push.notification.receive.tokens.subtitle" = "Ricevuti %@ %@ su %@";
+"push.notification.sent.tokens.no.address.subtitle" = "Inviato %@ %@ il %@";
