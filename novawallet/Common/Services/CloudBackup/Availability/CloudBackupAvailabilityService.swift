@@ -1,34 +1,39 @@
 import Foundation
 
-final class CloudBackupAvailabilityService: BaseSyncService {
+protocol CloudBackupAvailabilityServiceProtocol: ApplicationServiceProtocol {
+    var stateObserver: Observable<CloudBackup.Availability> { get }
+}
+
+final class CloudBackupAvailabilityService {
     let fileManager: FileManager
+    let logger: LoggerProtocol
 
-    private(set) var state: Observable<CloudBackup.Availability> = .init(state: .notDetermined)
+    private(set) var stateObserver: Observable<CloudBackup.Availability> = .init(state: .notDetermined)
 
-    let notificationCenter: NotificationCenter
-
-    init(
-        fileManager: FileManager,
-        notificationCenter: NotificationCenter,
-        logger: LoggerProtocol = Logger.shared
-    ) {
+    init(fileManager: FileManager, logger: LoggerProtocol = Logger.shared) {
         self.fileManager = fileManager
-        self.notificationCenter = notificationCenter
-
-        super.init(logger: logger)
+        self.logger = logger
     }
 
     private func getCloudId() -> CloudIdentifiable? {
         fileManager.ubiquityIdentityToken.map { ICloudIdentifier(cloudId: $0) }
     }
 
-    override func performSyncUp() {
+    private func updateState() {
         let availability: CloudBackup.Availability = if let cloudId = getCloudId() {
-            .available(CloudBackup.Available(cloudId: cloudId, hasStorage: true))
+            .available(CloudBackup.Available(cloudId: cloudId))
         } else {
             .unavailable
         }
+
+        stateObserver.state = availability
+    }
+}
+
+extension CloudBackupAvailabilityService: CloudBackupAvailabilityServiceProtocol {
+    func setup() {
+        updateState()
     }
 
-    override func stopSyncUp() {}
+    func throttle() {}
 }

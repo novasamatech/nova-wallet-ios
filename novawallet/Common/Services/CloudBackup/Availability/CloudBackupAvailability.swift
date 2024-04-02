@@ -3,11 +3,10 @@ import Foundation
 extension CloudBackup {
     struct Available: Equatable {
         static func == (lhs: CloudBackup.Available, rhs: CloudBackup.Available) -> Bool {
-            lhs.cloudId.equals(to: rhs.cloudId) && (lhs.hasStorage == rhs.hasStorage)
+            lhs.cloudId.equals(to: rhs.cloudId)
         }
 
         let cloudId: CloudIdentifiable
-        let hasStorage: Bool
     }
 
     enum Availability: Equatable {

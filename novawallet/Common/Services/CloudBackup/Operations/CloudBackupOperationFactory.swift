@@ -9,7 +9,10 @@ enum CloudBackupOperationFactoryError: Error {
 
 protocol CloudBackupOperationFactoryProtocol {
     func createReadingOperation(for url: URL) -> BaseOperation<Data?>
-    func createWritingOperation(for url: URL, data: Data) -> BaseOperation<Void>
+    func createWritingOperation(
+        for url: URL,
+        dataClosure: @escaping () throws -> Data
+    ) -> BaseOperation<Void>
     func createDeletionOperation(for url: URL) -> BaseOperation<Void>
 }
 
@@ -57,10 +60,16 @@ final class CloudBackupOperationFactory {
         }
     }
 
-    func write(using coordinator: NSFileCoordinator, url: URL, data: Data) -> BaseOperation<Void> {
+    func write(
+        using coordinator: NSFileCoordinator,
+        url: URL,
+        dataClosure: @escaping () throws -> Data
+    ) -> BaseOperation<Void> {
         ClosureOperation {
             var coordinatorError: NSError?
             var writeError: Error?
+
+            let data = try dataClosure()
 
             coordinator.coordinate(
                 writingItemAt: url,
@@ -117,8 +126,11 @@ extension CloudBackupOperationFactory: CloudBackupOperationFactoryProtocol {
         read(using: fileCoordinator, fileManager: fileManager, url: url)
     }
 
-    func createWritingOperation(for url: URL, data: Data) -> BaseOperation<Void> {
-        write(using: fileCoordinator, url: url, data: data)
+    func createWritingOperation(
+        for url: URL,
+        dataClosure: @escaping () throws -> Data
+    ) -> BaseOperation<Void> {
+        write(using: fileCoordinator, url: url, dataClosure: dataClosure)
     }
 
     func createDeletionOperation(for url: URL) -> BaseOperation<Void> {
