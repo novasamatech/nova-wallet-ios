@@ -27,4 +27,15 @@ final class SwitchSettingsTableViewCell: SettingsBaseTableViewCell<UISwitch> {
 
         rightView.isOn = isOn
     }
+
+    func bind(icon: ImageViewModelProtocol?, title: String, isOn: Bool) {
+        super.bind(icon: icon, title: title)
+
+        rightView.isOn = isOn
+    }
+
+    override func set(active: Bool) {
+        super.set(active: active)
+        rightView.alpha = active ? 1 : 0.5
+    }
 }

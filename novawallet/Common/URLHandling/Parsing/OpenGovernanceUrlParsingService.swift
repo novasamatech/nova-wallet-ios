@@ -55,6 +55,31 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             return
         }
 
+        handle(
+            for: chainId,
+            type: queryItems[QueryKey.governanceType]
+        ) {
+            completion(.success(.gov(referendumIndex)))
+        }
+    }
+
+    func handle(
+        for chainId: ChainModel.Id,
+        type: String?,
+        completion: @escaping () -> Void
+    ) {
+        handle(
+            targetChainClosure: { $0.chainId == chainId },
+            type: type,
+            completion: completion
+        )
+    }
+
+    func handle(
+        targetChainClosure: @escaping (ChainModel) -> Bool,
+        type: String?,
+        completion: @escaping () -> Void
+    ) {
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: .main
@@ -64,19 +89,19 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             }
             let chains: [ChainModel] = changes.allChangedItems()
 
-            guard let chainModel = chains.first(where: { $0.chainId == chainId }) else {
+            guard let chainModel = chains.first(where: targetChainClosure) else {
                 return
             }
 
             self.chainRegistry.chainsUnsubscribe(self)
-            let type = queryItems[QueryKey.governanceType]
+
             switch Self.governanceType(for: chainModel, type: type) {
-            case let .failure(error):
+            case .failure:
                 break
             case let .success(type):
-                self.settings.governanceChainId = chainId
+                self.settings.governanceChainId = chainModel.chainId
                 self.settings.governanceType = type
-                completion(.success(.gov(referendumIndex)))
+                completion()
             }
         }
     }

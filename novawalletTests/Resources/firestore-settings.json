@@ -1,0 +1,37 @@
+{
+   "updatedAt":"2024-02-08T22:02:29Z",
+   "pushToken":"test-token",
+   "notifications":{
+      "tokenReceived": {
+          "type": "all"
+      },
+      "tokenSent": {
+          "type": "all"
+      },
+      "stakingReward": {
+          "type": "concrete",
+          "value": []
+      },
+      "transfer": { 
+          "type": "concrete",
+          "value": []
+      },
+      "govMyDelegatorVoted": { 
+          "type": "concrete",
+          "value": []
+      },
+      "govMyReferendumFinished": { 
+          "type": "concrete",
+          "value": []
+      }
+   },
+   "wallets":[
+      {
+         "baseEthereum":"0x7aa98aeb3afacf10021539d5412c7ac6afe0fb00",
+         "baseSubstrate":"1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ",
+         "chainSpecific":{
+            
+         }
+      }
+   ]
+}

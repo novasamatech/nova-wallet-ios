@@ -1,0 +1,3 @@
+#include "../../Pods/Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.dev.xcconfig"
+
+OTHER_SWIFT_FLAGS = $(inherited) "-DF_DEV"

@@ -159,6 +159,7 @@ class CrossChainTransferPresenter {
                 fee: networkFee,
                 total: senderUtilityBalanceCountingEd,
                 minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance,
+                asset: utilityAssetInfo,
                 locale: selectedLocale
             ),
 

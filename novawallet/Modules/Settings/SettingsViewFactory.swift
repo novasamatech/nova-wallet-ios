@@ -25,6 +25,8 @@ struct SettingsViewFactory {
             quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
@@ -32,7 +34,9 @@ struct SettingsViewFactory {
             currencyManager: currencyManager,
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
-            walletNotificationService: walletNotificationService
+            walletNotificationService: walletNotificationService,
+            pushNotificationsFacade: PushNotificationsServiceFacade.shared,
+            operationQueue: operationQueue
         )
 
         let wireframe = SettingsWireframe(dappMediator: dappMediator, proxySyncService: proxySyncService)

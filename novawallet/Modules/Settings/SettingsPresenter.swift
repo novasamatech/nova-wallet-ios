@@ -12,6 +12,7 @@ final class SettingsPresenter {
     private var isPinConfirmationOn: Bool = false
     private var biometrySettings: BiometrySettings?
     private var hasWalletsListUpdates: Bool = false
+    private var pushNotificationsStatus: PushNotificationsStatus?
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
@@ -38,7 +39,8 @@ final class SettingsPresenter {
         let parameters = SettingsParameters(
             walletConnectSessionsCount: walletConnectSessionsCount,
             isBiometricAuthOn: biometrySettings?.isEnabled,
-            isPinConfirmationOn: isPinConfirmationOn
+            isPinConfirmationOn: isPinConfirmationOn,
+            isNotificationsOn: pushNotificationsStatus == .active
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
@@ -204,6 +206,12 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
         case .wiki:
             show(url: config.wikiURL)
+        case .notifications:
+            guard pushNotificationsStatus != nil else {
+                return
+            }
+
+            wireframe.showManageNotifications(from: view)
         }
     }
 
@@ -295,6 +303,11 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
     func didReceiveWalletsState(hasUpdates: Bool) {
         hasWalletsListUpdates = hasUpdates
         updateAccountView()
+    }
+
+    func didReceive(pushNotificationsStatus: PushNotificationsStatus) {
+        self.pushNotificationsStatus = pushNotificationsStatus
+        updateView()
     }
 }
 

@@ -1,27 +1,17 @@
-protocol GovernanceSelectTracksViewProtocol: ControllerBackedProtocol {
-    func didReceiveTracks(viewModel: GovernanceSelectTrackViewModel)
-}
+protocol GovernanceSelectTracksViewProtocol: SelectTracksViewProtocol {}
 
-protocol GovernanceSelectTracksPresenterProtocol: AnyObject {
-    func setup()
-    func toggleTrackSelection(track: GovernanceSelectTrackViewModel.Track)
-    func select(group: GovernanceSelectTrackViewModel.Group)
-    func proceed()
-}
+protocol GovernanceSelectTracksPresenterProtocol: SelectTracksPresenterProtocol {}
 
-protocol GovernanceSelectTracksInteractorInputProtocol: AnyObject {
-    func setup()
+protocol GovernanceSelectTracksInteractorInputProtocol: SelectTracksInteractorInputProtocol {
     func remakeSubscriptions()
-    func retryTracksFetch()
 }
 
-protocol GovernanceSelectTracksInteractorOutputProtocol: AnyObject {
-    func didReceiveTracks(_ tracks: [GovernanceTrackInfoLocal])
+protocol GovernanceSelectTracksInteractorOutputProtocol: SelectTracksInteractorOutputProtocol {
     func didReceiveVotingResult(_ result: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>)
     func didReceiveError(_ error: GovernanceSelectTracksInteractorError)
 }
 
-protocol GovernanceSelectTracksWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol GovernanceSelectTracksWireframeProtocol: SelectTracksWireframeProtocol {
     func proceed(
         from view: ControllerBackedProtocol?,
         tracks: [GovernanceTrackInfoLocal]

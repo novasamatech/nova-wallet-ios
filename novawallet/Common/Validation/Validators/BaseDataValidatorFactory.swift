@@ -35,6 +35,7 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
         fee: ExtrinsicFeeProtocol?,
         total: BigUInt?,
         minBalance: BigUInt?,
+        asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
 }
@@ -242,6 +243,7 @@ extension BaseDataValidatingFactoryProtocol {
         fee: ExtrinsicFeeProtocol?,
         total: BigUInt?,
         minBalance: BigUInt?,
+        asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -249,7 +251,27 @@ extension BaseDataValidatingFactoryProtocol {
                 return
             }
 
-            self?.basePresentable.presentMinBalanceViolated(from: view, locale: locale)
+            let tokenFormatter = AssetBalanceFormatterFactory()
+                .createTokenFormatter(for: asset)
+                .value(for: locale)
+
+            let feeDecimal = fee?.amountForCurrentAccount?.decimal(assetInfo: asset) ?? 0
+            let minBalanceDecimal = minBalance?.decimal(assetInfo: asset) ?? 0
+            let feeAndMinBalanceDecimal = feeDecimal + minBalanceDecimal
+            let totalDecimal = total?.decimal(assetInfo: asset) ?? 0
+            let needToAddDecimal = max(feeAndMinBalanceDecimal - totalDecimal, 0)
+
+            let totalString = tokenFormatter.stringFromDecimal(totalDecimal)
+            let feeAndMinBalanceString = tokenFormatter.stringFromDecimal(feeAndMinBalanceDecimal)
+            let needToAddString = tokenFormatter.stringFromDecimal(needToAddDecimal)
+
+            self?.basePresentable.presentMinBalanceViolated(
+                from: view,
+                minBalanceForOperation: feeAndMinBalanceString ?? "",
+                currentBalance: totalString ?? "",
+                needToAddBalance: needToAddString ?? "",
+                locale: locale
+            )
 
         }, preservesCondition: {
             guard let feeAmount = fee?.amountForCurrentAccount else {

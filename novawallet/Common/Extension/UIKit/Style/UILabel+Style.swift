@@ -126,6 +126,11 @@ extension UILabel.Style {
         font: .regularSubheadline
     )
 
+    static let regularSubhedlineInactive = UILabel.Style(
+        textColor: R.color.colorIconInactive(),
+        font: .regularSubheadline
+    )
+
     static let regularSubhedlineSecondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .regularSubheadline
