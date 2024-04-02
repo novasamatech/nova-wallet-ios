@@ -4,6 +4,7 @@ excluded:
   - R.generated.swift
   - novawalletTests
   - novawalletIntegrationTests
+  - NovaPushNotificationServiceExtension/R.generated.swift
 identifier_name:
   excluded:
     - id

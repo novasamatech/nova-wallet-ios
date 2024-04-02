@@ -47,12 +47,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         case .staking:
             controller.selectedIndex = MainTabBarIndex.staking
         case let .gov(rederendumIndex):
-            controller.selectedIndex = MainTabBarIndex.vote
-            let govViewController = controller.viewControllers?[MainTabBarIndex.vote]
-            (govViewController as? UINavigationController)?.popToRootViewController(animated: true)
-            if let govController: VoteViewProtocol = govViewController?.contentViewController() {
-                govController.showReferendumsDetails(rederendumIndex)
-            }
+            openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
         case let .dApp(dApp):
             controller.selectedIndex = MainTabBarIndex.dapps
             let dappViewController = controller.viewControllers?[MainTabBarIndex.dapps]
@@ -61,6 +56,78 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
                 dappView.didReceive(dApp: dApp)
             }
         }
+    }
+
+    func presentScreenIfNeeded(
+        on view: MainTabBarViewProtocol?,
+        screen: PushNotification.OpenScreen
+    ) {
+        guard
+            let controller = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: controller) else {
+            return
+        }
+
+        switch screen {
+        case let .gov(rederendumIndex):
+            openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
+        case let .historyDetails(chainAsset):
+            openAssetDetailsScreen(in: controller, chainAsset: chainAsset)
+        case .error:
+            break
+        }
+    }
+
+    func presentPushNotificationsSetup(on view: MainTabBarViewProtocol?, completion: @escaping () -> Void) {
+        guard let setupPushNotificationsView = NotificationsSetupViewFactory.createView() else {
+            return
+        }
+
+        setupPushNotificationsView.controller.isModalInPresentation = true
+        view?.controller.present(
+            setupPushNotificationsView.controller,
+            animated: true,
+            completion: completion
+        )
+    }
+
+    private func openGovernanceScreen(
+        in controller: UITabBarController,
+        rederendumIndex: Referenda.ReferendumIndex
+    ) {
+        controller.selectedIndex = MainTabBarIndex.vote
+        let govViewController = controller.viewControllers?[MainTabBarIndex.vote]
+        (govViewController as? UINavigationController)?.popToRootViewController(animated: true)
+        if let govController: VoteViewProtocol = govViewController?.contentViewController() {
+            govController.showReferendumsDetails(rederendumIndex)
+        }
+    }
+
+    private func openAssetDetailsScreen(
+        in controller: UITabBarController,
+        chainAsset: ChainAsset
+    ) {
+        controller.selectedIndex = MainTabBarIndex.wallet
+        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
+
+        let operationState = AssetOperationState(
+            assetListObservable: .init(state: .init(value: .init())),
+            swapCompletionClosure: nil
+        )
+        guard let detailsView = AssetDetailsContainerViewFactory.createView(
+            chain: chainAsset.chain,
+            asset: chainAsset.asset,
+            operationState: operationState
+        ) else {
+            return
+        }
+
+        navigationController?.pushViewController(
+            detailsView.controller,
+            animated: true
+        )
     }
 
     // MARK: Private

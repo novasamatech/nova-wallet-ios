@@ -222,5 +222,25 @@
         <string>%li не поддерживаемых сетей скрыто</string>
       </dict>
     </dict>
+    <key>notifications.wallet.list.selection.hint</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Выберите хотя бы %li кошелек</string>
+        <key>few</key>
+        <string>Выберите хотя бы %li кошелька</string>
+        <key>many</key>
+        <string>Выберите хотя бы %li кошельков</string>
+        <key>other</key>
+        <string>Выберите хотя бы %li кошельков</string>
+      </dict>
+    </dict>
   </dict>
 </plist>

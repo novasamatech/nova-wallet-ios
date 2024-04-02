@@ -2,34 +2,38 @@ import Foundation
 import RobinHood
 
 final class CancellableCallStore {
-    private var cancellableCall: CancellableCall?
+    private(set) var operatingCall: OperatingCall?
 
-    func store(call: CancellableCall) {
-        cancellableCall = call
+    var hasCall: Bool {
+        operatingCall != nil
+    }
+
+    func store(call: OperatingCall) {
+        operatingCall = call
     }
 
     func clear() {
-        cancellableCall = nil
+        operatingCall = nil
     }
 
     func cancel() {
-        let copy = cancellableCall
-        cancellableCall = nil
+        let copy = operatingCall
+        operatingCall = nil
         copy?.cancel()
     }
 
-    func clearIfMatches(call: CancellableCall) -> Bool {
+    func clearIfMatches(call: OperatingCall) -> Bool {
         guard matches(call: call) else {
             return false
         }
 
-        cancellableCall = nil
+        operatingCall = nil
 
         return true
     }
 
     func matches(call: CancellableCall) -> Bool {
-        cancellableCall === call
+        operatingCall === call
     }
 }
 

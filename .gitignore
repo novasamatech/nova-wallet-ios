@@ -59,3 +59,5 @@ Tests/Mocks/ModuleMocks.swift
 Templates/
 # Misc
 **/.DS_Store
+GoogleService-Info-*.plist
+GoogleService-Info.plist

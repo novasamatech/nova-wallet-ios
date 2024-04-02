@@ -10,8 +10,8 @@ class WalletsListPresenter {
     let viewModelFactory: WalletsListViewModelFactoryProtocol
     let logger: LoggerProtocol
 
-    private(set) var viewModels: [WalletsListSectionViewModel] = []
-    private var chains: [ChainModel.Id: ChainModel] = [:]
+    var viewModels: [WalletsListSectionViewModel] = []
+    private(set) var chains: [ChainModel.Id: ChainModel] = [:]
 
     let walletsList: ListDifferenceCalculator<ManagedMetaAccountModel> = {
         let calculator = ListDifferenceCalculator<ManagedMetaAccountModel>(

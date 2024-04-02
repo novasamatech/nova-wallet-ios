@@ -1,0 +1,11 @@
+import UIKit
+
+final class WalletCheckboxTableViewCell: WalletsListTableViewCell<UIImageView> {
+    var checkmarkView: UIImageView { contentDisplayView.valueView }
+
+    override func bind(viewModel: WalletsListViewModel) {
+        super.bind(viewModel: viewModel)
+
+        checkmarkView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
+    }
+}

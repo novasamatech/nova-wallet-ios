@@ -16,6 +16,8 @@ final class SettingsInteractor {
     let biometryAuth: BiometryAuthProtocol
     let walletConnect: WalletConnectDelegateInputProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
+    let operationQueue: OperationQueue
+    let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -24,7 +26,9 @@ final class SettingsInteractor {
         currencyManager: CurrencyManagerProtocol,
         settingsManager: SettingsManagerProtocol,
         biometryAuth: BiometryAuthProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol
+        walletNotificationService: WalletNotificationServiceProtocol,
+        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
+        operationQueue: OperationQueue
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
@@ -32,6 +36,8 @@ final class SettingsInteractor {
         self.biometryAuth = biometryAuth
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
+        self.pushNotificationsFacade = pushNotificationsFacade
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -66,6 +72,12 @@ final class SettingsInteractor {
 
         presenter?.didReceiveWalletConnect(sessionsCount: count)
     }
+
+    private func providePushNotificationsStatus() {
+        pushNotificationsFacade.subscribeStatus(self) { [weak self] _, newStatus in
+            self?.presenter?.didReceive(pushNotificationsStatus: newStatus)
+        }
+    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
@@ -76,6 +88,7 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
+        providePushNotificationsStatus()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,

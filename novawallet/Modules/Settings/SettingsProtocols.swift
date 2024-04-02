@@ -41,6 +41,7 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(pinConfirmationEnabled: Bool)
     func didReceive(error: SettingsError)
     func didReceiveWalletsState(hasUpdates: Bool)
+    func didReceive(pushNotificationsStatus: PushNotificationsStatus)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
@@ -55,4 +56,5 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showAuthorization(completion: @escaping (Bool) -> Void)
     func showWalletConnect(from view: ControllerBackedProtocol?)
     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)
+    func showManageNotifications(from view: ControllerBackedProtocol?)
 }

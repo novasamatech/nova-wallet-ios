@@ -92,6 +92,15 @@ extension SettingsViewController: UITableViewDataSource {
 
         return cell
     }
+}
+
+extension SettingsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        let row = sections[indexPath.section].1[indexPath.row].row
+        presenter.actionRow(row)
+    }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header: SettingsSectionHeaderView = tableView.dequeueReusableHeaderFooterView()
@@ -102,15 +111,6 @@ extension SettingsViewController: UITableViewDataSource {
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         section == 0 ? 57.0 : 37.0
-    }
-}
-
-extension SettingsViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-
-        let row = sections[indexPath.section].1[indexPath.row].row
-        presenter.actionRow(row)
     }
 }
 
