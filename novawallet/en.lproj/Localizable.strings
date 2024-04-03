@@ -1520,3 +1520,6 @@
 "notifications.error.disabled.in.settings.title" = "Enable Notifications for Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Go to Settings → Tap \"Notifications\" → Turn on \"Allow Notifications\"";
 "notifications.wallet.list.limit.error.message" = "Unfortunately, there is currently a limit in push notifications for only %d of your wallets.";
+"wallet.name.input.placeholder" = "My new wallet name";
+"wallet.name.title" = "Name your wallet";
+"wallet.name.subtitle" = "Name will be used only locally in this application. You can edit it later";

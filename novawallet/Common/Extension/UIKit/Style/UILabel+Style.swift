@@ -143,7 +143,7 @@ extension UILabel.Style {
 
     static let secondaryScreenTitle = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
-        font: .boldTitle2
+        font: .boldTitle3
     )
 
     static let bottomSheetTitle = UILabel.Style(
@@ -163,7 +163,7 @@ extension UILabel.Style {
 
     static let boldTitle2Primary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
-        font: .boldTitle2
+        font: .boldTitle3
     )
 
     static let sourceCodePrimary = UILabel.Style(
