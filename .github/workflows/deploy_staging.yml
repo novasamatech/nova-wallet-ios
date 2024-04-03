@@ -52,6 +52,7 @@ jobs:
               echo "BUILD_PROVISION_PROFILE_BASE64=${{ secrets.STAGING_PROVISIONING_PROFILE_BASE64 }}" >> "$GITHUB_ENV"
           else
               echo "BUILD_PROVISION_PROFILE_BASE64=${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}" >> "$GITHUB_ENV"
+              echo "PUSH_NOTIFICATIONS_EXT_PROFILE_BASE64=${{ secrets.PUSH_NOTIFICATIONS_EXT_PROFILE_BASE64 }}" >> "$GITHUB_ENV"
           fi
 
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
@@ -64,11 +65,13 @@ jobs:
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          PUSH_NOTIFICATIONS_PP_PATH=$RUNNER_TEMP/push_notifications_build_pp.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+          echo -n "$PUSH_NOTIFICATIONS_EXT_PROFILE_BASE64" | base64 --decode --output $PUSH_NOTIFICATIONS_PP_PATH
 
           # create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -82,6 +85,7 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PUSH_NOTIFICATIONS_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Bump version
         uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
@@ -90,6 +94,14 @@ jobs:
           bundle-short-version-string: ${{ github.event.inputs.appVersion }}
           bundle-version: ${{github.run_number}}
           print-file: true
+
+      - name: Push Notifications Setup
+        env:
+          GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
+        run: |
+          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info-Dev.plist
+
+          echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
 
       - name: Archive
         env:

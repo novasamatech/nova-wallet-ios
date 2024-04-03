@@ -11,6 +11,12 @@ protocol WalletsListViewModelFactoryProtocol {
         locale: Locale
     ) -> [WalletsListSectionViewModel]
 
+    func createSectionViewModels(
+        for wallets: [ManagedMetaAccountModel],
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> [WalletsListSectionViewModel]
+
     func createItemViewModel(
         for wallet: ManagedMetaAccountModel,
         balancesCalculator: BalancesCalculating,
@@ -49,13 +55,21 @@ class WalletsListViewModelFactory {
     private func createSection(
         type: WalletsListSectionViewModel.SectionType,
         wallets: [ManagedMetaAccountModel],
-        balancesCalculator: BalancesCalculating,
+        balancesCalculator: BalancesCalculating?,
         locale: Locale
     ) -> WalletsListSectionViewModel? {
         let viewModels = wallets.filter { wallet in
             WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == type
         }.map { wallet in
-            createItemViewModel(for: wallet, balancesCalculator: balancesCalculator, locale: locale)
+            if let balancesCalculator = balancesCalculator {
+                return createItemViewModel(
+                    for: wallet,
+                    balancesCalculator: balancesCalculator,
+                    locale: locale
+                )
+            } else {
+                return createItemViewModel(for: wallet, locale: locale)
+            }
         }
 
         if !viewModels.isEmpty {
@@ -117,6 +131,28 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         )
     }
 
+    func createItemViewModel(
+        for wallet: ManagedMetaAccountModel,
+        locale _: Locale
+    ) -> WalletsListViewModel {
+        let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
+        let iconViewModel = optIcon.map { IdentifiableDrawableIconViewModel(
+            .init(icon: $0),
+            identifier: wallet.info.metaId
+        ) }
+
+        let walletViewModel = WalletView.ViewModel(
+            wallet: .init(icon: iconViewModel, name: wallet.info.name),
+            type: .regular("")
+        )
+
+        return WalletsListViewModel(
+            identifier: wallet.identifier,
+            walletViewModel: walletViewModel,
+            isSelected: isSelected(wallet: wallet)
+        )
+    }
+
     func createProxyItemViewModel(
         for wallet: ManagedMetaAccountModel,
         wallets: [ManagedMetaAccountModel],
@@ -167,10 +203,24 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         )
     }
 
-    // swiftlint:disable:next function_body_length
     func createSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
         balancesCalculator: BalancesCalculating,
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> [WalletsListSectionViewModel] {
+        internalCreateSectionViewModels(
+            for: wallets,
+            balancesCalculator: balancesCalculator,
+            chains: chains,
+            locale: locale
+        )
+    }
+
+    // swiftlint:disable:next function_body_length
+    private func internalCreateSectionViewModels(
+        for wallets: [ManagedMetaAccountModel],
+        balancesCalculator: BalancesCalculating?,
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletsListSectionViewModel] {
@@ -236,6 +286,19 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         }
 
         return sections
+    }
+
+    func createSectionViewModels(
+        for wallets: [ManagedMetaAccountModel],
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> [WalletsListSectionViewModel] {
+        internalCreateSectionViewModels(
+            for: wallets,
+            balancesCalculator: nil,
+            chains: chains,
+            locale: locale
+        )
     }
 
     func formatPrice(amount: Decimal, locale: Locale) -> String {

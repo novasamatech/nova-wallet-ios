@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "web3Alert-logo.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

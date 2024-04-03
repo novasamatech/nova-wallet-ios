@@ -43,6 +43,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createWalletConnectViewModel(from: parameters.walletConnectSessionsCount, locale: locale)
             ]),
             (.preferences, [
+                createNotificationsViewModel(row: .notifications, isOn: parameters.isNotificationsOn, locale: locale),
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
                 createLanguageViewModel(from: language, locale: locale)
             ]),
@@ -144,6 +145,21 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             row: row,
             title: .init(title: row.title(for: locale), icon: row.icon),
             accessory: .switchControl(isOn: isOn)
+        )
+    }
+
+    private func createNotificationsViewModel(
+        row: SettingsRow,
+        isOn: Bool,
+        locale: Locale
+    ) -> SettingsCellViewModel {
+        let accessory = isOn ? R.string.localizable.commonOn(preferredLanguages: locale.rLanguages) :
+            R.string.localizable.commonOff(preferredLanguages: locale.rLanguages)
+
+        return SettingsCellViewModel(
+            row: row,
+            title: .init(title: row.title(for: locale), icon: row.icon),
+            accessory: .init(optTitle: accessory)
         )
     }
 }

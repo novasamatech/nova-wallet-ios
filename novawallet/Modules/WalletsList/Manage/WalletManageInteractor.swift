@@ -78,6 +78,7 @@ extension WalletManageInteractor: WalletManageInteractorInputProtocol {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { result in
+            self.eventCenter.notify(with: AccountsRemovedManually())
             self.handleWalletsUpdate(result: result)
         }
     }

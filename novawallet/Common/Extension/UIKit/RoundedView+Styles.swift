@@ -2,6 +2,12 @@ import Foundation
 import SoraUI
 
 extension RoundedView {
+    func applyPrimaryButtonBackgroundStyle() {
+        applyEnabledBackgroundStyle()
+
+        fillColor = R.color.colorButtonBackgroundPrimary()!
+    }
+
     func applyDisabledBackgroundStyle() {
         strokeColor = .clear
         highlightedStrokeColor = .clear
