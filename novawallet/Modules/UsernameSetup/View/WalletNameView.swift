@@ -12,7 +12,22 @@ final class WalletNameView: UIView {
         label.textColor = R.color.colorTextSecondary()
     }
 
-    let walletNameInputView = TextInputView()
+    let inputBackgroundView: OverlayBlurBackgroundView = .create { view in
+        view.sideLength = 12
+        view.borderType = .none
+        view.overlayView.fillColor = R.color.colorBlockBackground()!
+        view.overlayView.strokeColor = R.color.colorCardActionsBorder()!
+        view.overlayView.strokeWidth = 1
+        view.blurView?.alpha = 0.5
+    }
+
+    let inputGladingView: GladingRectView = .create { view in
+        view.bind(model: .cardActionsStrokeGlading)
+    }
+
+    let walletNameInputView: TextInputView = .create { view in
+        view.roundedBackgroundView?.apply(style: .inputStrokeOnCardEditing)
+    }
 
     var locale = Locale.current {
         didSet {
@@ -59,15 +74,26 @@ final class WalletNameView: UIView {
             make.leading.top.equalToSuperview().inset(12)
         }
 
-        addSubview(walletNameInputView)
-        walletNameInputView.snp.makeConstraints { make in
+        addSubview(inputBackgroundView)
+        inputBackgroundView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview().inset(12)
+            make.height.equalTo(48)
+        }
+
+        inputBackgroundView.addSubview(inputGladingView)
+        inputGladingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        inputBackgroundView.addSubview(walletNameInputView)
+        walletNameInputView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
         addSubview(walletNameTitleLabel)
         walletNameTitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(12)
-            make.bottom.equalTo(walletNameInputView.snp.top).offset(-8)
+            make.bottom.equalTo(inputBackgroundView.snp.top).offset(-8)
         }
     }
 }
