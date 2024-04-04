@@ -19,7 +19,7 @@ final class ReferendumConvictionView: UIView {
 
     let votesView: UILabel = .create { view in
         view.textColor = R.color.colorTextPrimary()
-        view.font = .boldTitle2
+        view.font = .boldTitle3
         view.textAlignment = .center
     }
 

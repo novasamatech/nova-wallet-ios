@@ -39,7 +39,7 @@ final class CreateWatchOnlyViewLayout: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTextPrimary()
-        label.font = .boldTitle2
+        label.font = .boldTitle3
         return label
     }()
 

@@ -591,7 +591,6 @@
 "export.password.title" = "Set a new password";
 "export.password.proceed.set.title" = "Set password...";
 "export.password.proceed.confirm.title" = "Confirm password...";
-"wallet.nickname.create.title_v2_2_0" = "Create wallet name";
 "wallet.username.setup.choose.title_v2_2_0" = "Wallet name";
 "connection.error.message_v2_2_0" = "Please, check your connection or try again later";
 "common.invalid.derivation.path.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure";
@@ -1520,3 +1519,6 @@
 "notifications.error.disabled.in.settings.title" = "Enable Notifications for Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Go to Settings → Tap \"Notifications\" → Turn on \"Allow Notifications\"";
 "notifications.wallet.list.limit.error.message" = "Unfortunately, there is currently a limit in push notifications for only %d of your wallets.";
+"wallet.name.input.placeholder" = "My new wallet name";
+"wallet.name.title" = "Name your wallet";
+"wallet.name.subtitle" = "Name will be used only locally in this application. You can edit it later";

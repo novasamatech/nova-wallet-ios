@@ -3,38 +3,24 @@ import SnapKit
 import SoraUI
 
 final class UsernameSetupViewLayout: UIView {
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .boldTitle2
+    let titleLabel: UILabel = .create { label in
+        label.font = .boldTitle3
         label.textColor = R.color.colorTextPrimary()
-        label.numberOfLines = 0
-        return label
-    }()
+        label.textAlignment = .center
+    }
 
-    let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularFootnote
+    let subtitleLabel: UILabel = .create { label in
+        label.font = .semiBoldSubheadline
         label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
-        return label
-    }()
+        label.textAlignment = .center
+    }
 
-    let captionLabel: UILabel = {
-        let label = UILabel()
-        label.font = .caption1
-        label.textColor = R.color.colorTextSecondary()
-        label.numberOfLines = 0
-        return label
-    }()
+    let nameView = WalletNameView()
 
-    let walletNameTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularFootnote
-        label.textColor = R.color.colorTextSecondary()
-        return label
-    }()
-
-    let walletNameInputView = TextInputView()
+    var walletNameInputView: TextInputView {
+        nameView.walletNameInputView
+    }
 
     let proceedButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -58,31 +44,20 @@ final class UsernameSetupViewLayout: UIView {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(safeAreaLayoutGuide).inset(16.0)
+            make.top.equalTo(safeAreaLayoutGuide).inset(46)
+        }
+
+        addSubview(nameView)
+        nameView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalTo(titleLabel.snp.bottom).offset(24)
+            make.height.equalTo(200)
         }
 
         addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(8.0)
-        }
-
-        addSubview(walletNameTitleLabel)
-        walletNameTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(16.0)
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-        }
-
-        addSubview(walletNameInputView)
-        walletNameInputView.snp.makeConstraints { make in
-            make.top.equalTo(walletNameTitleLabel.snp.bottom).offset(8.0)
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-        }
-
-        addSubview(captionLabel)
-        captionLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(walletNameInputView.snp.bottom).offset(12.0)
+            make.top.equalTo(nameView.snp.bottom).offset(40)
         }
 
         addSubview(proceedButton)

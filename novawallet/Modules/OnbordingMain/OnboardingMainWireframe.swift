@@ -12,12 +12,14 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
     }
 
     func showAccountRestore(from view: OnboardingMainViewProtocol?) {
+        // TODO: Navigate to the new import screen
         presentSecretTypeSelection(from: view) { [weak self] secretSource in
             self?.presentAccountRestore(from: view, secretSource: secretSource)
         }
     }
 
     func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource) {
+        // TODO: Navigate to the new source import screen
         if
             let navigationController = view?.controller.navigationController,
             navigationController.viewControllers.count == 1,
@@ -36,38 +38,5 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
         if let navigationController = view?.controller.navigationController {
             navigationController.pushViewController(restorationController, animated: true)
         }
-    }
-
-    func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?) {
-        guard let watchOnlyView = CreateWatchOnlyViewFactory.createViewForOnboarding() else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
-    }
-
-    func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?, type: ParitySignerType) {
-        guard
-            let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createOnboardingView(
-                with: type
-            ) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(
-            paritySignerWelcomeView.controller,
-            animated: true
-        )
-    }
-
-    func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?) {
-        guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(for: .onboarding) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(
-            ledgerInstructions.controller,
-            animated: true
-        )
     }
 }
