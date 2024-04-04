@@ -183,7 +183,7 @@ class CrossChainTransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.notViolatingMinBalanceBeforePayingDeliveryFee(
+            dataValidatingFactory.notViolatingMinBalanceWhenDeliveryFeeEnabled(
                 for: .init(
                     amount: isOriginUtilityTransfer ? sendingAmount : 0,
                     originNetworkFee: networkFee?.amountForCurrentAccount,
