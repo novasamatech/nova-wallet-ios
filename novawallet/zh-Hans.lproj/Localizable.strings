@@ -595,7 +595,7 @@
 "wallet.username.setup.choose.title_v2_2_0" = "钱包名称";
 "connection.error.message_v2_2_0" = "请检查您的连接或稍后再试";
 "common.invalid.derivation.path.message_v2_2_0" = "您的派生路径包含不支持的符号或结构不正确";
-"onboarding.terms.and.conditions.1_v2_2_0" = "继续，即表示您同意我们的\n使用条款和隐私政策";
+"onboarding.terms.and.conditions.1_v2_2_0" = "继续即表示您同意我们的\n%@和%@";
 "wallet.receive.description_v2_2_0" = "让发送方扫描此 QR 码";
 "wallet.receive.title.format" = "接收 %@";
 "wallet.receive.share.title" = "分享 QR 码";

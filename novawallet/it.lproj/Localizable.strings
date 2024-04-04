@@ -595,7 +595,7 @@
 "wallet.username.setup.choose.title_v2_2_0" = "Nome del portafoglio";
 "connection.error.message_v2_2_0" = "Si prega di controllare la connessione o riprovare più tardi";
 "common.invalid.derivation.path.message_v2_2_0" = "Il tuo percorso di derivazione contiene simboli non supportati o ha una struttura non corretta";
-"onboarding.terms.and.conditions.1_v2_2_0" = "Continuando, accetti i nostri \nTermini e Condizioni e Informativa sulla Privacy";
+"onboarding.terms.and.conditions.1_v2_2_0" = "Continuando, accetti i nostri \n%@ e %@";
 "wallet.receive.description_v2_2_0" = "Fai scansionare questo QR code al mittente";
 "wallet.receive.title.format" = "Ricevi %@";
 "wallet.receive.share.title" = "Condividi codice QR";

@@ -595,7 +595,7 @@
 "wallet.username.setup.choose.title_v2_2_0" = "Cüzdan Adı";
 "connection.error.message_v2_2_0" = "Lütfen bağlantınızı kontrol edin veya daha sonra tekrar deneyin";
 "common.invalid.derivation.path.message_v2_2_0" = "Türetme yolu desteklenmeyen semboller içeriyor ya da yanlış yapıda";
-"onboarding.terms.and.conditions.1_v2_2_0" = "<font>Kullanım Şartlarımızı ve Gizlilik Politikamızı</font> kabul ettiğinizi onaylayarak devam edin";
+"onboarding.terms.and.conditions.1_v2_2_0" = "Devam ederek, %@ ve %@ kabul etmiş olursunuz";
 "wallet.receive.description_v2_2_0" = "Göndericiye bu QR kodunu taratın";
 "wallet.receive.title.format" = "%@ al";
 "wallet.receive.share.title" = "QR kodunu paylaş";
