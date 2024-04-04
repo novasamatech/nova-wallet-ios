@@ -67,7 +67,7 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    func notViolatingMinBalanceBeforePayingDeliveryFee(
+    func notViolatingMinBalanceWhenDeliveryFeeEnabled(
         for params: CrossChainValidationAtLeastEdForDeliveryFee,
         locale: Locale
     ) -> DataValidating
@@ -289,13 +289,15 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         })
     }
 
-    func notViolatingMinBalanceBeforePayingDeliveryFee(
+    func notViolatingMinBalanceWhenDeliveryFeeEnabled(
         for params: CrossChainValidationAtLeastEdForDeliveryFee,
         locale: Locale
     ) -> DataValidating {
         let assetInfo = utilityAssetInfo
         let networkFeeAmountInPlank = params.originNetworkFee ?? 0
         let networkFeeDecimal = networkFeeAmountInPlank.decimal(assetInfo: assetInfo)
+        let deliveryFeeInPlank = params.originDeliveryFee ?? 0
+        let deliveryFeeDecimal = deliveryFeeInPlank.decimal(assetInfo: assetInfo)
         let balanceDecimal = params.totalBalance?.decimal(assetInfo: assetInfo) ?? 0
         let minBalanceDecimal = params.minBalance?.decimal(assetInfo: assetInfo) ?? 0
         let crosschainHoldingDecimal = params.crosschainHolding?.decimal(assetInfo: assetInfo) ?? 0
@@ -308,7 +310,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
             let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetInfo)
 
-            let feeAndEd = networkFeeDecimal + minBalanceDecimal + crosschainHoldingDecimal
+            let feeAndEd = networkFeeDecimal + deliveryFeeDecimal + minBalanceDecimal + crosschainHoldingDecimal
             let availableDecimal = balanceDecimal >= feeAndEd ? balanceDecimal - feeAndEd : 0
 
             let availableString = tokenFormatter.value(for: locale).stringFromDecimal(availableDecimal) ?? ""
@@ -324,7 +326,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
                 return true
             }
 
-            return networkFeeDecimal + sendingDecimal + minBalanceDecimal <= balanceDecimal
+            return networkFeeDecimal + deliveryFeeDecimal + sendingDecimal + minBalanceDecimal <= balanceDecimal
         })
     }
 
