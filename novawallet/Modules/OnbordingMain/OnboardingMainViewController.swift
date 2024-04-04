@@ -43,21 +43,10 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
         let languages = selectedLocale.rLanguages
 
         let createTitle = R.string.localizable.onboardingCreateWallet(preferredLanguages: languages)
-        rootView.createButton.bind(title: createTitle, details: nil)
+        rootView.createButton.imageWithTitleView?.title = createTitle
 
         let importTitle = R.string.localizable.onboardingRestoreWallet(preferredLanguages: languages)
-        let importSubtitle = R.string.localizable.welcomeImportSubtitle(preferredLanguages: languages)
-        rootView.importButton.bind(title: importTitle, details: importSubtitle)
-
-        let watchOnlyTitle = R.string.localizable.welcomeWatchOnlyTitle(preferredLanguages: languages)
-        let watchOnlySubtitle = R.string.localizable.welcomeWatchOnlySubtitle(preferredLanguages: languages)
-        rootView.watchOnlyButton.bind(title: watchOnlyTitle, details: watchOnlySubtitle)
-
-        let hardwareWalletTitle = R.string.localizable.welcomeHardwareWalletTitle(preferredLanguages: languages)
-        let hardwareWalletSubtitle = R.string.localizable.welcomeHardwareWalletSubtitleV3_7(
-            preferredLanguages: languages
-        )
-        rootView.hardwareButton.bind(title: hardwareWalletTitle, details: hardwareWalletSubtitle)
+        rootView.importButton.imageWithTitleView?.title = importTitle
 
         let termsText = R.string.localizable.onboardingTermsAndConditions1_v2_2_0(
             preferredLanguages: languages
@@ -73,8 +62,6 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
 
         rootView.createButton.addTarget(self, action: #selector(actionSignup), for: .touchUpInside)
         rootView.importButton.addTarget(self, action: #selector(actionRestoreAccess), for: .touchUpInside)
-        rootView.watchOnlyButton.addTarget(self, action: #selector(actionCreateWatchOnly), for: .touchUpInside)
-        rootView.hardwareButton.addTarget(self, action: #selector(actionHardwareWallet), for: .touchUpInside)
     }
 
     @objc private func actionSignup() {
@@ -95,14 +82,6 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
                 presenter.activatePrivacy()
             }
         }
-    }
-
-    @objc private func actionCreateWatchOnly() {
-        presenter.activateWatchOnlyCreate()
-    }
-
-    @objc private func actionHardwareWallet() {
-        presenter.activateHardwareWalletCreate()
     }
 }
 

@@ -2,53 +2,29 @@ import UIKit
 import SoraUI
 
 final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
-    let backgroundView: UIImageView = {
-        let imageView = UIImageView(image: R.image.novabgSplash())
+    let backgroundView: UIImageView = .create { imageView in
+        imageView.image = R.image.novabgSplash()
         imageView.contentMode = .scaleAspectFill
-        return imageView
-    }()
+    }
 
-    let logo: UIImageView = {
-        let imageView = UIImageView(image: R.image.logo()!)
+    let logo: UIImageView = .create { imageView in
+        imageView.image = R.image.logo()
         imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
+    }
 
-    let termsLabel: UILabel = {
-        let label = UILabel()
+    let termsLabel: UILabel = .create { label in
         label.isUserInteractionEnabled = true
         label.numberOfLines = 0
         label.textAlignment = .center
-        return label
-    }()
+    }
 
-    let createButton: ButtonLargeControl = {
-        let button = ButtonLargeControl()
-        button.style = .primary
-        button.iconView.image = R.image.iconPlusFilled()
-        return button
-    }()
+    let createButton: TriangularedButton = .create { button in
+        button.applyDefaultStyle()
+    }
 
-    let importButton: ButtonLargeControl = {
-        let button = ButtonLargeControl()
-        button.style = .secondary
-        button.iconView.image = R.image.iconImportWallet()
-        return button
-    }()
-
-    let hardwareButton: ButtonLargeControl = {
-        let button = ButtonLargeControl()
-        button.style = .secondary
-        button.iconView.image = R.image.iconHardwareWallet()
-        return button
-    }()
-
-    let watchOnlyButton: ButtonLargeControl = {
-        let button = ButtonLargeControl()
-        button.style = .secondary
-        button.iconView.image = R.image.iconWatchOnly()
-        return button
-    }()
+    let importButton: TriangularedButton = .create { button in
+        button.applySecondaryDefaultStyle()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -80,42 +56,24 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
 
         addSubview(termsLabel)
         termsLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(20.0)
-            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
-        }
-
-        let bottomOffset = 16.0
-        let buttonsBaseWidth = 335.0
-
-        let buttonWidthMultiplier = isAdaptiveWidthDecreased ? designScaleRatio.width : 1.0
-        let buttonsWidth: CGFloat = buttonsBaseWidth * buttonWidthMultiplier
-
-        addSubview(watchOnlyButton)
-        watchOnlyButton.snp.makeConstraints { make in
-            make.bottom.equalTo(termsLabel.snp.top).offset(-bottomOffset)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(buttonsWidth)
-        }
-
-        addSubview(hardwareButton)
-        hardwareButton.snp.makeConstraints { make in
-            make.bottom.equalTo(watchOnlyButton.snp.top).offset(-10)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(buttonsWidth)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16)
         }
 
         addSubview(importButton)
         importButton.snp.makeConstraints { make in
-            make.bottom.equalTo(hardwareButton.snp.top).offset(-10.0)
+            make.bottom.equalTo(termsLabel.snp.top).offset(-24)
             make.centerX.equalToSuperview()
-            make.width.equalTo(buttonsWidth)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
         addSubview(createButton)
         createButton.snp.makeConstraints { make in
-            make.bottom.equalTo(importButton.snp.top).offset(-10.0)
+            make.bottom.equalTo(importButton.snp.top).offset(-12)
             make.centerX.equalToSuperview()
-            make.width.equalTo(buttonsWidth)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
     }
 }

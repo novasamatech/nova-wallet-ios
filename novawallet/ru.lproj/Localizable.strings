@@ -591,7 +591,6 @@
 "export.password.title" = "Установите пароль";
 "export.password.proceed.set.title" = "Установите пароль...";
 "export.password.proceed.confirm.title" = "Подтвердите пароль...";
-"wallet.nickname.create.title_v2_2_0" = "Назовите кошелёк";
 "wallet.username.setup.choose.title_v2_2_0" = "Имя кошелька";
 "connection.error.message_v2_2_0" = "Пожалуйста, проверьте ваше подключение или повторите позднее";
 "common.invalid.derivation.path.message_v2_2_0" = "Ваш путь деривации содержит неподдерживаемые символы или имеет некорректную структуру";
@@ -1520,3 +1519,6 @@
 "notifications.error.disabled.in.settings.title" = "Включите уведомления для Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Перейдите в Настройки → Нажмите \"Уведомления\" → Включите \"Разрешить уведомления\"";
 "notifications.wallet.list.limit.error.message" = "К сожалению, в настоящее время установлен лимит push-уведомлений только для %d ваших кошельков.";
+"wallet.name.input.placeholder" = "Новое имя кошелька";
+"wallet.name.title" = "Назовите кошелёк";
+"wallet.name.subtitle" = "Имя будет использоваться только локально в приложении. Вы сможете изменить его позже";

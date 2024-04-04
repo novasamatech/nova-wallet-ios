@@ -6,8 +6,6 @@ protocol OnboardingMainPresenterProtocol: AnyObject {
     func setup()
     func activateSignup()
     func activateAccountRestore()
-    func activateWatchOnlyCreate()
-    func activateHardwareWalletCreate()
     func activateTerms()
     func activatePrivacy()
 }
@@ -16,9 +14,6 @@ protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, Aler
     func showSignup(from view: OnboardingMainViewProtocol?)
     func showAccountRestore(from view: OnboardingMainViewProtocol?)
     func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource)
-    func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)
-    func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?, type: ParitySignerType)
-    func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?)
 }
 
 protocol OnboardingMainInteractorInputProtocol: AnyObject {

@@ -99,15 +99,15 @@ extension ReferendumVotingStatusView {
 private extension UILabel.Style {
     static let positiveStatusLabel = UILabel.Style(
         textColor: R.color.colorTextPositive(),
-        font: .boldTitle2
+        font: .boldTitle3
     )
     static let negativeStatusLabel = UILabel.Style(
         textColor: R.color.colorTextNegative(),
-        font: .boldTitle2
+        font: .boldTitle3
     )
     static let neutralStatusLabel = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
-        font: .boldTitle2
+        font: .boldTitle3
     )
     static let title = UILabel.Style.footnoteSecondary
 }

@@ -19,7 +19,7 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTextPrimary()
-        label.font = .boldTitle2
+        label.font = .boldTitle3
         label.numberOfLines = 0
         return label
     }()

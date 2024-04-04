@@ -16,7 +16,7 @@ extension MultiValueView {
 
         view.valueTop.numberOfLines = 0
         view.valueTop.textColor = R.color.colorTextPrimary()
-        view.valueTop.font = .boldTitle2
+        view.valueTop.font = .boldTitle3
         view.valueTop.textAlignment = .left
 
         view.valueBottom.numberOfLines = 0
