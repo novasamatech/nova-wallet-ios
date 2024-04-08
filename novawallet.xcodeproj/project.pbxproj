@@ -521,6 +521,7 @@
 		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
 		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
+		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
 		0CFA16132B0CD8A0007AF885 /* GovSpentAmountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */; };
 		0CFA16162B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */; };
 		0CFA16192B0CE709007AF885 /* UtilityPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16182B0CE709007AF885 /* UtilityPallet.swift */; };
@@ -5114,6 +5115,7 @@
 		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
 		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
 		0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameView.swift; sourceTree = "<group>"; };
+		0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupErrorPresentable.swift; sourceTree = "<group>"; };
 		0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountExtractor.swift; sourceTree = "<group>"; };
 		0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountBatchHandler.swift; sourceTree = "<group>"; };
 		0CFA16182B0CE709007AF885 /* UtilityPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityPallet.swift; sourceTree = "<group>"; };
@@ -9276,6 +9278,7 @@
 				E245CA0789F68382248F42C1 /* OnboardingWalletReadyViewController.swift */,
 				5D5DC7B09332A26867340281 /* OnboardingWalletReadyViewLayout.swift */,
 				9ABE2920D4A1EE12866F4E76 /* OnboardingWalletReadyViewFactory.swift */,
+				0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */,
 			);
 			path = OnboardingWalletReady;
 			sourceTree = "<group>";
@@ -25815,6 +25818,7 @@
 				C8171AF2893A4723F4F63E23 /* WalletConnectSessionsProtocols.swift in Sources */,
 				0CA50CB12AFE6F15005668CD /* GetTokenOptionsProtocols.swift in Sources */,
 				0C59E8D52AA5FC96001E11F3 /* ExternalAssetBalanceMapper.swift in Sources */,
+				0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */,
 				842E9EA42A2DC71000759972 /* StakingDashboardModel.swift in Sources */,
 				AB5EA0348C8E8C40FCA9DC86 /* WalletConnectSessionsWireframe.swift in Sources */,
 				B1F2C2241D9020687D469A27 /* WalletConnectSessionsPresenter.swift in Sources */,

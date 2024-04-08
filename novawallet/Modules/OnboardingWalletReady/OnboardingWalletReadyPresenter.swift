@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class OnboardingWalletReadyPresenter {
     weak var view: OnboardingWalletReadyViewProtocol?
@@ -6,15 +7,21 @@ final class OnboardingWalletReadyPresenter {
     let interactor: OnboardingWalletReadyInteractorInputProtocol
 
     let walletName: String
+    let logger: LoggerProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     init(
         interactor: OnboardingWalletReadyInteractorInputProtocol,
         wireframe: OnboardingWalletReadyWireframeProtocol,
-        walletName: String
+        walletName: String,
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.walletName = walletName
+        self.localizationManager = localizationManager
+        self.logger = logger
     }
 }
 
@@ -23,9 +30,44 @@ extension OnboardingWalletReadyPresenter: OnboardingWalletReadyPresenterProtocol
         view?.didReceive(walletName: walletName)
     }
 
-    func applyCloudBackup() {}
+    func applyCloudBackup() {
+        view?.didStartBackupLoading()
+        interactor.checkCloudBackupAvailability()
+    }
 
-    func applyManualBackup() {}
+    func applyManualBackup() {
+        wireframe.showManualBackup(from: view)
+    }
 }
 
-extension OnboardingWalletReadyPresenter: OnboardingWalletReadyInteractorOutputProtocol {}
+extension OnboardingWalletReadyPresenter: OnboardingWalletReadyInteractorOutputProtocol {
+    func didReceiveCloudBackupAvailable() {
+        wireframe.showCloudBackup(from: view)
+        view?.didStopBackupLoading()
+    }
+
+    func didReceive(error: OnboardingWalletReadyInteractorError) {
+        logger.error("Did receive error: \(error)")
+
+        guard let view else {
+            return
+        }
+
+        view.didStopBackupLoading()
+
+        switch error {
+        case .cloudBackupNotAvailable:
+            wireframe.presentCloudBackupUnavailable(
+                from: view,
+                locale: localizationManager.selectedLocale
+            )
+        case .notEnoughStorageInCloud:
+            wireframe.presentNotEnoughStorageForBackup(
+                from: view,
+                locale: localizationManager.selectedLocale
+            )
+        case .internalError:
+            wireframe.presentNoCloudConnection(from: view, locale: localizationManager.selectedLocale)
+        }
+    }
+}

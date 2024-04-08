@@ -10,8 +10,22 @@ protocol OnboardingWalletReadyPresenterProtocol: AnyObject {
     func applyManualBackup()
 }
 
-protocol OnboardingWalletReadyInteractorInputProtocol: AnyObject {}
+protocol OnboardingWalletReadyInteractorInputProtocol: AnyObject {
+    func checkCloudBackupAvailability()
+}
 
-protocol OnboardingWalletReadyInteractorOutputProtocol: AnyObject {}
+protocol OnboardingWalletReadyInteractorOutputProtocol: AnyObject {
+    func didReceiveCloudBackupAvailable()
+    func didReceive(error: OnboardingWalletReadyInteractorError)
+}
 
-protocol OnboardingWalletReadyWireframeProtocol: AnyObject {}
+protocol OnboardingWalletReadyWireframeProtocol: AlertPresentable, CloudBackupErrorPresentable {
+    func showCloudBackup(from view: OnboardingWalletReadyViewProtocol?)
+    func showManualBackup(from view: OnboardingWalletReadyViewProtocol?)
+}
+
+enum OnboardingWalletReadyInteractorError: Error {
+    case cloudBackupNotAvailable
+    case notEnoughStorageInCloud
+    case internalError(String)
+}

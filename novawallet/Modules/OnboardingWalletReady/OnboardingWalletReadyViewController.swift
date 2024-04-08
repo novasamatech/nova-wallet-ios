@@ -24,6 +24,7 @@ final class OnboardingWalletReadyViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
         presenter.setup()
     }
