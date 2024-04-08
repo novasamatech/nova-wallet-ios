@@ -36,7 +36,10 @@ final class HighlightingAttributedStringDecorator: AttributedStringDecoratorProt
                 options: [],
                 range: remainingRange
             )
-            if rangeOfPunctuation.location != NSNotFound {
+
+            if
+                rangeOfPunctuation.location != NSNotFound,
+                rangeOfPunctuation.location - remainingRange.location <= 1 {
                 resultAttributedString.addAttributes(attributes, range: rangeOfPunctuation)
             }
         }

@@ -6,15 +6,12 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
     typealias RootViewType = OnboardingMainViewLayout
 
     let presenter: OnboardingMainPresenterProtocol
-    let termDecorator: AttributedStringDecoratorProtocol
 
     init(
         presenter: OnboardingMainPresenterProtocol,
-        termDecorator: AttributedStringDecoratorProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.termDecorator = termDecorator
 
         super.init(nibName: nil, bundle: nil)
 
@@ -59,10 +56,14 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
         )
         rootView.hardwareButton.bind(title: hardwareWalletTitle, details: hardwareWalletSubtitle)
 
+        let marker = AttributedReplacementStringDecorator.marker
         let termsText = R.string.localizable.onboardingTermsAndConditions1_v2_2_0(
+            marker,
+            marker,
             preferredLanguages: languages
         )
 
+        let termDecorator = CompoundAttributedStringDecorator.legal(for: selectedLocale, marker: marker)
         let attributedText = NSAttributedString(string: termsText)
         rootView.termsLabel.attributedText = termDecorator.decorate(attributedString: attributedText)
     }

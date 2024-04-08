@@ -30,8 +30,6 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
 
         let applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared
 
-        let locale: Locale = LocalizationManager.shared.selectedLocale
-
         let legalData = LegalData(
             termsUrl: applicationConfig.termsURL,
             privacyPolicyUrl: applicationConfig.privacyPolicyURL
@@ -42,14 +40,11 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
             interactor: interactor,
             wireframe: wireframe,
             legalData: legalData,
-            locale: locale
+            locale: LocalizationManager.shared.selectedLocale
         )
-
-        let termDecorator = CompoundAttributedStringDecorator.legal(for: locale)
 
         let view = OnboardingMainViewController(
             presenter: presenter,
-            termDecorator: termDecorator,
             localizationManager: LocalizationManager.shared
         )
 
