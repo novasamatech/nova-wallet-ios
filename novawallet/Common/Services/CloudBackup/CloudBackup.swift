@@ -7,5 +7,5 @@ enum CloudBackup {
         "iCloud.io.novafoundation.novawallet.dev.Documents"
     }
 
-    static let requiredCloudSize: UInt64 = 2 * 1024 * 1024
+    static let requiredCloudSize: UInt64 = 10 * 1024 * 1024
 }
