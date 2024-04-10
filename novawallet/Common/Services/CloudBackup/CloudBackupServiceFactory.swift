@@ -6,18 +6,21 @@ final class ICloudBackupServiceFactory {
     let fileCoordinator: NSFileCoordinator
     let logger: LoggerProtocol
     let operationQueue: OperationQueue
+    let notificationCenter: NotificationCenter
 
     init(
         containerId: String = CloudBackup.containerId,
         fileManager: FileManager = FileManager.default,
         fileCoordinator: NSFileCoordinator = NSFileCoordinator(),
         operationQueue: OperationQueue,
+        notificationCenter: NotificationCenter = .default,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.containerId = containerId
         self.fileManager = fileManager
         self.fileCoordinator = fileCoordinator
         self.operationQueue = operationQueue
+        self.notificationCenter = notificationCenter
         self.logger = logger
     }
 }
@@ -42,7 +45,10 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
         return ICloudBackupStorageManager(
             baseUrl: baseUrl,
             operationFactory: operationFactory,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            workingQueue: .global(),
+            notificationCenter: notificationCenter,
+            logger: logger
         )
     }
 

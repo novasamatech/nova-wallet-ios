@@ -522,6 +522,8 @@
 		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
+		0CF8176F2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */; };
+		0CF817712BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817702BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift */; };
 		0CFA16132B0CD8A0007AF885 /* GovSpentAmountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */; };
 		0CFA16162B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */; };
 		0CFA16192B0CE709007AF885 /* UtilityPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16182B0CE709007AF885 /* UtilityPallet.swift */; };
@@ -5116,6 +5118,8 @@
 		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
 		0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameView.swift; sourceTree = "<group>"; };
 		0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupErrorPresentable.swift; sourceTree = "<group>"; };
+		0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUploadMonitoring.swift; sourceTree = "<group>"; };
+		0CF817702BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudBackupUploadMonitor.swift; sourceTree = "<group>"; };
 		0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountExtractor.swift; sourceTree = "<group>"; };
 		0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountBatchHandler.swift; sourceTree = "<group>"; };
 		0CFA16182B0CE709007AF885 /* UtilityPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityPallet.swift; sourceTree = "<group>"; };
@@ -10139,6 +10143,7 @@
 		0CC0F8202BB52C6F002C49F6 /* CloudBackup */ = {
 			isa = PBXGroup;
 			children = (
+				0CF8176D2BC6527B00CB9183 /* Monitor */,
 				0CC0F82A2BB57079002C49F6 /* Operations */,
 				0CC0F8232BB52EC8002C49F6 /* Availability */,
 				0CC0F8212BB52C7E002C49F6 /* CloudBackup.swift */,
@@ -10268,6 +10273,15 @@
 				0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		0CF8176D2BC6527B00CB9183 /* Monitor */ = {
+			isa = PBXGroup;
+			children = (
+				0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */,
+				0CF817702BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift */,
+			);
+			path = Monitor;
 			sourceTree = "<group>";
 		};
 		0CFA16142B0CD8A9007AF885 /* Parser */ = {
@@ -23567,6 +23581,7 @@
 				84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */,
 				84C5ADE628141D21006D7388 /* LinkView.swift in Sources */,
 				0C59E8DF2AA60DAB001E11F3 /* ExternalAssetBalanceServiceFactoryProtocol.swift in Sources */,
+				0CF817712BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift in Sources */,
 				84C2064028D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift in Sources */,
 				8469D5A628F5E8F20074FEE3 /* Staking.swift in Sources */,
 				848FFE8325E686C200652AA5 /* StorageDecodingOperation.swift in Sources */,
@@ -24958,6 +24973,7 @@
 				0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */,
 				0C3205DC2A89677B002EB914 /* EvmGasLimitProviderFactory.swift in Sources */,
 				8487580727EDEB9600495306 /* BorderedIconLabelView.swift in Sources */,
+				0CF8176F2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift in Sources */,
 				0C6F0C9E2A69723B007170C6 /* StartStakingStateProtocol.swift in Sources */,
 				84AE7AAD27D3839D00495267 /* StackCellViewModel.swift in Sources */,
 				848CC94628D9FC46009EB4B0 /* ConvictionVotingTally.swift in Sources */,

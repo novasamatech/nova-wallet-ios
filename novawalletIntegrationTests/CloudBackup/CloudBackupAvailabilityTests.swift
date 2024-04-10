@@ -29,10 +29,11 @@ final class CloudBackupAvailabilityTests: XCTestCase {
         let manager = factory.createStorageManager(for: baseUrl)
         
         let expectation = XCTestExpectation()
-        var checkError: CloudBackupStorageManagingError?
+        var checkError: CloudBackupUploadError?
         
         manager.checkStorage(
-            of: 10 * 1024 * 1024,
+            of: 1 * 1024,
+            timeoutInterval: 10,
             runningIn: .main
         ) { result in
             switch result {
@@ -45,7 +46,7 @@ final class CloudBackupAvailabilityTests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 10)
+        wait(for: [expectation], timeout: 120)
         
         if let checkError {
             XCTFail("\(checkError)")
