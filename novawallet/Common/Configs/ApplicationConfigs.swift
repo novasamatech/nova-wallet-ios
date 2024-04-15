@@ -159,7 +159,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
         #else
-            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
+            URL(string: "https://subquery-multi-staking-prod.k8s-1.novasama.co")!
         #endif
     }
 
