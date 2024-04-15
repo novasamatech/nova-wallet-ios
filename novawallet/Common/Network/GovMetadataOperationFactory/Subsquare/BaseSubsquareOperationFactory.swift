@@ -8,7 +8,7 @@ class BaseSubsquareOperationFactory {
     let timeout: TimeInterval
     let pageSize: Int
 
-    init(baseUrl: URL, chainId: String, pageSize: Int = 1000, timeout: TimeInterval = 10) {
+    init(baseUrl: URL, chainId: String, pageSize: Int = 100, timeout: TimeInterval = 10) {
         self.baseUrl = baseUrl
         self.chainId = chainId
         self.pageSize = pageSize

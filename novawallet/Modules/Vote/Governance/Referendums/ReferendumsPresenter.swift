@@ -419,7 +419,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         self.blockNumber = blockNumber
 
-        interactor.refresh()
+        interactor.refreshReferendums()
     }
 
     func didReceiveBlockTime(_ blockTime: BlockTime) {
@@ -479,7 +479,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
             }
         case .referendumsFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.refresh()
+                self?.interactor.refreshReferendums()
             }
         case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
              .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed:
