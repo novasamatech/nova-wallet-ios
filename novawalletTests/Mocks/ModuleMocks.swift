@@ -17675,36 +17675,6 @@ import Foundation
     
     
     
-     func activateWatchOnlyCreate()  {
-        
-    return cuckoo_manager.call("activateWatchOnlyCreate()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.activateWatchOnlyCreate())
-        
-    }
-    
-    
-    
-     func activateHardwareWalletCreate()  {
-        
-    return cuckoo_manager.call("activateHardwareWalletCreate()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.activateHardwareWalletCreate())
-        
-    }
-    
-    
-    
      func activateTerms()  {
         
     return cuckoo_manager.call("activateTerms()",
@@ -17757,16 +17727,6 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainPresenterProtocol.self, method: "activateAccountRestore()", parameterMatchers: matchers))
 	    }
 	    
-	    func activateWatchOnlyCreate() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainPresenterProtocol.self, method: "activateWatchOnlyCreate()", parameterMatchers: matchers))
-	    }
-	    
-	    func activateHardwareWalletCreate() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainPresenterProtocol.self, method: "activateHardwareWalletCreate()", parameterMatchers: matchers))
-	    }
-	    
 	    func activateTerms() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainPresenterProtocol.self, method: "activateTerms()", parameterMatchers: matchers))
@@ -17812,18 +17772,6 @@ import Foundation
 	    }
 	    
 	    @discardableResult
-	    func activateWatchOnlyCreate() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("activateWatchOnlyCreate()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func activateHardwareWalletCreate() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("activateHardwareWalletCreate()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func activateTerms() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("activateTerms()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -17859,18 +17807,6 @@ import Foundation
     
     
      func activateAccountRestore()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func activateWatchOnlyCreate()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func activateHardwareWalletCreate()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -17960,51 +17896,6 @@ import Foundation
     
     
     
-     func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)  {
-        
-    return cuckoo_manager.call("showWatchOnlyCreate(from: OnboardingMainViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showWatchOnlyCreate(from: view))
-        
-    }
-    
-    
-    
-     func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?, type: ParitySignerType)  {
-        
-    return cuckoo_manager.call("showParitySignerWalletCreation(from: OnboardingMainViewProtocol?, type: ParitySignerType)",
-            parameters: (view, type),
-            escapingParameters: (view, type),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showParitySignerWalletCreation(from: view, type: type))
-        
-    }
-    
-    
-    
-     func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?)  {
-        
-    return cuckoo_manager.call("showLedgerWalletCreation(from: OnboardingMainViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showLedgerWalletCreation(from: view))
-        
-    }
-    
-    
-    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
         
     return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
@@ -18072,21 +17963,6 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showAccountSecretImport(from: OnboardingMainViewProtocol?, source: SecretSource)", parameterMatchers: matchers))
 	    }
 	    
-	    func showWatchOnlyCreate<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?)> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showWatchOnlyCreate(from: OnboardingMainViewProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	    func showParitySignerWalletCreation<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, type: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?, ParitySignerType)> where M1.OptionalMatchedType == OnboardingMainViewProtocol, M2.MatchedType == ParitySignerType {
-	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?, ParitySignerType)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: type) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showParitySignerWalletCreation(from: OnboardingMainViewProtocol?, type: ParitySignerType)", parameterMatchers: matchers))
-	    }
-	    
-	    func showLedgerWalletCreation<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?)> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showLedgerWalletCreation(from: OnboardingMainViewProtocol?)", parameterMatchers: matchers))
-	    }
-	    
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
@@ -18137,24 +18013,6 @@ import Foundation
 	    }
 	    
 	    @discardableResult
-	    func showWatchOnlyCreate<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(OnboardingMainViewProtocol?), Void> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("showWatchOnlyCreate(from: OnboardingMainViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func showParitySignerWalletCreation<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, type: M2) -> Cuckoo.__DoNotUse<(OnboardingMainViewProtocol?, ParitySignerType), Void> where M1.OptionalMatchedType == OnboardingMainViewProtocol, M2.MatchedType == ParitySignerType {
-	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?, ParitySignerType)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: type) { $0.1 }]
-	        return cuckoo_manager.verify("showParitySignerWalletCreation(from: OnboardingMainViewProtocol?, type: ParitySignerType)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func showLedgerWalletCreation<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(OnboardingMainViewProtocol?), Void> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("showLedgerWalletCreation(from: OnboardingMainViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -18196,24 +18054,6 @@ import Foundation
     
     
      func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?, type: ParitySignerType)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

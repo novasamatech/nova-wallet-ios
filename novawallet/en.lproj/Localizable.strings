@@ -1522,3 +1522,11 @@
 "wallet.name.input.placeholder" = "My new wallet name";
 "wallet.name.title" = "Name your wallet";
 "wallet.name.subtitle" = "Name will be used only locally in this application. You can edit it later";
+"wallet.ready.title" = "Your wallet is ready";
+"wallet.ready.subtitle" = "Now lets back up your wallet. Backup will make sure that your funds are safe and sound, and you can always restore your wallet anytime";
+"common.backup.cloud.with.icon" = "☁️ Back up to Cloud";
+"common.backup.manually.with.icon" = "📝 Back up Manually";
+"cloud.backup.not.available.title" = "iCloud authentication failed";
+"cloud.backup.not.available.message" = "To use Cloud Backup, ensure you have logged into iCloud account, enabled iCloud Drive and granted Nova access to iCloud Drive in your device settings";
+"cloud.backup.not.enough.storage.title" = "Not Enough Storage";
+"cloud.backup.not.enough.storage.message" = "Please, ensure you have enough iCloud storage available. You can manage your storage in Settings.";
