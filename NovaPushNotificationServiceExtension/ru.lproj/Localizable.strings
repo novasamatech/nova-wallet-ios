@@ -1,6 +1,5 @@
 "push.notification.receive.tokens.title" = "⬇️ Получено";
 "push.notification.sent.tokens.title" = "💸 Отправлено";
-"push.notification.sent.tokens.no.address.subtitle" = "Отправлено %@ %@ в сети %@";
 "push.notification.staking.reward.title" = "⭐️ Новая награда";
 "push.notification.staking.reward.subtitle" = "Получено %@ от %@ стейкинга";
 "push.notification.referendum.approved.title" = "✅ Референдум одобрен!";
@@ -26,3 +25,4 @@
 "push.notification.unsupported.body" = "Новое сообщение не поддерживается";
 "push.notification.sent.tokens.subtitle" = "Отправлено %@ %@ для %@ в %@";
 "push.notification.receive.tokens.subtitle" = "Получено %@ %@ в %@";
+"push.notification.sent.tokens.no.address.subtitle" = "Отправлено %@ %@ в сети %@";

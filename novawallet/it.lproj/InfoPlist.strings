@@ -1,0 +1,5 @@
+"NSCameraUsageDescription" = "La fotocamera viene utilizzata per scannerizzare i codici QR con gli indirizzi, le transazioni di Polkadot Vault o per connettersi tramite WalletConnect";
+"NSFaceIDUsageDescription" = "Face ID viene utilizzato per autorizzare in Nova Wallet";
+"NSPhotoLibraryUsageDescription" = "L'accesso alla libreria fotografica viene utilizzato per consentire la selezione del codice QR con gli indirizzi, le transazioni di Polkadot Vault o la connessione tramite WalletConnect";
+"NSPhotoLibraryAddUsageDescription" = "Salva la richiesta di trasferimento come un codice QR";
+"NSBluetoothAlwaysUsageDescription" = "Bluetooth viene utilizzato per comunicare con i dispositivi Ledger Nano X";
