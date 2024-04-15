@@ -50,47 +50,52 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
             .foregroundColor: R.color.colorTextPrimary()!
         ]
 
-        let step1Decorator = HighlightingAttributedStringDecorator(
-            pattern: R.string.localizable.ledgerInstructionsStep1Highlighted(preferredLanguages: languages),
+        let marker = AttributedReplacementStringDecorator.marker
+        let step1Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string.localizable.ledgerInstructionsStep1Highlighted(preferredLanguages: languages)],
             attributes: highlitingAttributes
         )
 
         rootView.step1.descriptionLabel.attributedText = step1Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.ledgerInstructionsStep1(preferredLanguages: languages)
+                string: R.string.localizable.ledgerInstructionsStep1(marker, preferredLanguages: languages)
             )
         )
 
-        let step2Decorator = HighlightingAttributedStringDecorator(
-            pattern: R.string.localizable.ledgerInstructionsStep2Highlighted(preferredLanguages: languages),
+        let step2Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string.localizable.ledgerInstructionsStep2Highlighted(preferredLanguages: languages)],
             attributes: highlitingAttributes
         )
 
         rootView.step2.descriptionLabel.attributedText = step2Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.ledgerInstructionsStep2(preferredLanguages: languages)
+                string: R.string.localizable.ledgerInstructionsStep2(marker, preferredLanguages: languages)
             )
         )
 
-        let step3Decorator = HighlightingAttributedStringDecorator(
-            pattern: R.string.localizable.ledgerInstructionsStep3Highlighted(preferredLanguages: languages),
+        let step3Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string.localizable.ledgerInstructionsStep3Highlighted(preferredLanguages: languages)],
             attributes: highlitingAttributes
         )
 
         rootView.step3.descriptionLabel.attributedText = step3Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.ledgerInstructionsStep3(preferredLanguages: languages)
+                string: R.string.localizable.ledgerInstructionsStep3(marker, preferredLanguages: languages)
             )
         )
 
-        let step4Decorator = HighlightingAttributedStringDecorator(
-            pattern: R.string.localizable.ledgerInstructionsStep4Highlighted(preferredLanguages: languages),
+        let step4Decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [R.string.localizable.ledgerInstructionsStep4Highlighted(preferredLanguages: languages)],
             attributes: highlitingAttributes
         )
 
         rootView.step4.descriptionLabel.attributedText = step4Decorator.decorate(
             attributedString: NSAttributedString(
-                string: R.string.localizable.ledgerInstructionsStep4(preferredLanguages: languages)
+                string: R.string.localizable.ledgerInstructionsStep4(marker, preferredLanguages: languages)
             )
         )
     }
