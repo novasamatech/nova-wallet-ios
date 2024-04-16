@@ -38,13 +38,9 @@ struct NotificationsSetupViewFactory {
             legalData: legalData,
             localizationManager: LocalizationManager.shared
         )
-        let termDecorator = LocalizableResource {
-            CompoundAttributedStringDecorator.legal(for: $0)
-        }
 
         let view = NotificationsSetupViewController(
             presenter: presenter,
-            termDecorator: termDecorator,
             localizationManager: LocalizationManager.shared
         )
 

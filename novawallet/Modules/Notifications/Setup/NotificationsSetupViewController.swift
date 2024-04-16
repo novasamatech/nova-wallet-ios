@@ -5,15 +5,12 @@ final class NotificationsSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = NotificationsSetupViewLayout
 
     let presenter: NotificationsSetupPresenterProtocol
-    let termDecorator: LocalizableResource<AttributedStringDecoratorProtocol>
 
     init(
         presenter: NotificationsSetupPresenterProtocol,
-        termDecorator: LocalizableResource<AttributedStringDecoratorProtocol>,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.termDecorator = termDecorator
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -59,21 +56,17 @@ final class NotificationsSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        let termsConditions = R.string.localizable
-            .commonTermsAndConditions(preferredLanguages: selectedLocale.rLanguages)
-        let privacyPolicy = R.string.localizable
-            .commonPrivacyPolicy(preferredLanguages: selectedLocale.rLanguages)
-
+        let marker = AttributedReplacementStringDecorator.marker
         let termsText = strings.notificationsSetupTerms(
-            termsConditions,
-            privacyPolicy,
+            marker,
+            marker,
             preferredLanguages: selectedLocale.rLanguages
         )
 
         let attributedText = NSAttributedString(string: termsText)
-        rootView.termsLabel.attributedText = termDecorator.value(
-            for: selectedLocale
-        ).decorate(attributedString: attributedText)
+
+        let termDecorator = CompoundAttributedStringDecorator.legal(for: selectedLocale, marker: marker)
+        rootView.termsLabel.attributedText = termDecorator.decorate(attributedString: attributedText)
     }
 
     private func setupHandlers() {
