@@ -12,7 +12,7 @@ extension CloudBackup {
         let walletId: WalletId
         let substratePublicKey: String?
         let substrateAccountId: String?
-        let substrateCryptoType: CryptoType?
+        let substrateCryptoType: SubstrateCryptoType?
         let ethereumAddress: String?
         let ethereumPublicKey: String?
         let name: String
@@ -24,13 +24,20 @@ extension CloudBackup {
         let chainId: String
         let publicKey: String
         let accountId: String
-        let cryptoType: CryptoType?
+        let cryptoType: ChainAccountCryptoType
     }
 
-    enum CryptoType: String, Codable, Equatable {
+    enum SubstrateCryptoType: String, Codable, Equatable {
         case sr25519 = "SR25519"
         case ed25519 = "ED25519"
         case ecdsa = "ECDSA"
+    }
+
+    enum ChainAccountCryptoType: String, Codable, Equatable {
+        case sr25519 = "SR25519"
+        case ed25519 = "ED25519"
+        case substrateEcdsa = "SubstrateECDSA"
+        case ethereumEcdsa = "EthereumECDSA"
     }
 
     enum WalletType: String, Codable, Equatable {
@@ -51,7 +58,7 @@ extension CloudBackup {
             let entropy: String?
             let substrate: SubstrateSecrets?
             let ethereum: EthereumSecrets?
-            let chainAccounts: ChainAccountSecrets?
+            let chainAccounts: Set<ChainAccountSecrets>
             let additional: [String: String]
         }
 
@@ -70,7 +77,8 @@ extension CloudBackup {
             let accountId: String
             let entropy: String?
             let seed: String?
-            let keypair: KeypairSecrets
+            let keypair: KeypairSecrets?
+            let derivationPath: String?
         }
 
         struct KeypairSecrets: Codable, Equatable, Hashable {
