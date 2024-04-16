@@ -1,6 +1,6 @@
 import Foundation
 
 protocol CloudBackupFileModelConverting {
-    func convert(wallets: Set<MetaAccountModel>) throws -> Set<CloudBackup.FileModel.WalletPublicInfo>
-    func convert(fileModels: Set<CloudBackup.FileModel.WalletPublicInfo>) throws -> Set<MetaAccountModel>
+    func convertToPublicInfo(from wallets: Set<MetaAccountModel>) throws -> Set<CloudBackup.WalletPublicInfo>
+    func convertFromPublicInfo(models: Set<CloudBackup.WalletPublicInfo>) throws -> Set<MetaAccountModel>
 }
