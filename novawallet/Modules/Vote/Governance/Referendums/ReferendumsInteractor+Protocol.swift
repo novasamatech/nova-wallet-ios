@@ -46,18 +46,20 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
         if let chain = governanceState.settings.value?.chain {
             subscribeToBlockNumber(for: chain)
         }
+
+        if governanceState.settings.value != nil {
+            metadataProvider?.refresh()
+        }
     }
 
     func putOffline() {
         clearBlockNumberSubscription()
     }
 
-    func refresh() {
+    func refreshReferendums() {
         if governanceState.settings.value != nil {
             provideReferendumsIfNeeded()
             provideBlockTime()
-
-            metadataProvider?.refresh()
 
             provideOffchainVotingIfNeeded()
         }
