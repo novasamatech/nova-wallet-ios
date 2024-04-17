@@ -22,7 +22,7 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
     func saveSelected(option: GovernanceSelectedOption)
     func becomeOnline()
     func putOffline()
-    func refresh()
+    func refreshReferendums()
     func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?)
     func remakeSubscriptions()
     func retryBlockTime()
