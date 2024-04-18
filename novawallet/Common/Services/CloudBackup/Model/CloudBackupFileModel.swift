@@ -59,7 +59,6 @@ extension CloudBackup {
             let substrate: SubstrateSecrets?
             let ethereum: EthereumSecrets?
             let chainAccounts: Set<ChainAccountSecrets>
-            let additional: [String: String]
         }
 
         struct SubstrateSecrets: Codable, Equatable, Hashable {

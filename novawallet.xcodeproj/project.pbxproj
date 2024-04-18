@@ -521,6 +521,7 @@
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
 		0CEB4ED92AF371EF0048FD84 /* AssetConversionTxPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED82AF371EF0048FD84 /* AssetConversionTxPayment.swift */; };
 		0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */; };
+		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CF193D12A843DA9003F12F6 /* StakingTypeBalanceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */; };
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
@@ -5144,6 +5145,7 @@
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
 		0CEB4ED82AF371EF0048FD84 /* AssetConversionTxPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionTxPayment.swift; sourceTree = "<group>"; };
 		0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsExporting.swift; sourceTree = "<group>"; };
+		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingTypeBalanceFactory.swift; sourceTree = "<group>"; };
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
@@ -9560,6 +9562,7 @@
 				0CD54E4C2BCE3B89007B58E7 /* CloudBackupSecretsImporting.swift */,
 				0CD54E4E2BCE6C11007B58E7 /* CloudBackupValidating.swift */,
 				0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */,
+				0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -23155,6 +23158,7 @@
 				F4CE0FF3273453E30094CD8A /* AcalaContributionSetupWireframe.swift in Sources */,
 				8479607E283B60AA0084E779 /* ActionLoadingView.swift in Sources */,
 				841AB78D2993C87800A362E8 /* GovernanceDelegateSetupPresenter+UpdateView.swift in Sources */,
+				0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */,
 				84466B3A28B7653E00FA1E0D /* LedgerPerformOperationProtocols.swift in Sources */,
 				8430AB1726023D2D005B1066 /* BaseStashNextState.swift in Sources */,
 				84A6AB64290B021E001B57B2 /* CopyPresentable.swift in Sources */,
