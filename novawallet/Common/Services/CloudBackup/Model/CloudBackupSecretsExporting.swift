@@ -37,7 +37,7 @@ final class CloudBackupSecretsExporter {
         publicKey: Data,
         cryptoType: UInt8
     ) throws -> CloudBackup.DecryptedFileModel.KeypairSecrets? {
-        let publicKeyHex = publicKey.toHex(includePrefix: false)
+        let publicKeyHex = publicKey.toHex()
 
         switch MultiassetCryptoType(rawValue: cryptoType) {
         case .sr25519:
@@ -45,17 +45,13 @@ final class CloudBackupSecretsExporter {
                 throw CloudBackupSecretsExporterError.invalidSecret(cryptoType)
             }
 
-            let privateKeyHex = secretKey.prefix(CloudBackup.SecretsConstants.sr25519PrivateKeySize).toHex(
-                includePrefix: false
-            )
+            let privateKeyHex = secretKey.prefix(CloudBackup.SecretsConstants.sr25519PrivateKeySize).toHex()
 
-            let nonceHex = secretKey.suffix(CloudBackup.SecretsConstants.sr25519PrivateKeySize).toHex(
-                includePrefix: false
-            )
+            let nonceHex = secretKey.suffix(CloudBackup.SecretsConstants.sr25519PrivateKeySize).toHex()
 
             return .init(publicKey: publicKeyHex, privateKey: privateKeyHex, nonce: nonceHex)
         case .ed25519, .substrateEcdsa, .ethereumEcdsa:
-            let privateKeyHex = secretKey.toHex(includePrefix: false)
+            let privateKeyHex = secretKey.toHex()
             return .init(publicKey: publicKeyHex, privateKey: privateKeyHex, nonce: nil)
         case .none:
             throw CloudBackupSecretsExporterError.invalidSecret(cryptoType)
@@ -65,7 +61,7 @@ final class CloudBackupSecretsExporter {
     private func fetchEntropy(for wallet: MetaAccountModel, chainAccount: ChainAccountModel?) throws -> String? {
         let tag = KeystoreTagV2.entropyTagForMetaId(wallet.metaId, accountId: chainAccount?.accountId)
         let entropy = try keychain.loadIfKeyExists(tag)
-        return entropy?.toHex(includePrefix: false)
+        return entropy?.toHex()
     }
 
     private func fetchDerivationPath(
@@ -99,7 +95,7 @@ final class CloudBackupSecretsExporter {
 
         let seed = try keychain.loadIfKeyExists(tag)
 
-        return seed?.toHex(includePrefix: false)
+        return seed?.toHex()
     }
 
     private func fetchPrivateKey(
@@ -182,7 +178,7 @@ final class CloudBackupSecretsExporter {
         from wallet: MetaAccountModel
     ) throws -> Set<CloudBackup.DecryptedFileModel.ChainAccountSecrets> {
         let chainAccountSecrets = try wallet.chainAccounts.map { chainAccount in
-            let accountId = chainAccount.accountId.toHex(includePrefix: false)
+            let accountId = chainAccount.accountId.toHex()
             let entropyData = try fetchEntropy(for: wallet, chainAccount: chainAccount)
             let seed = try fetchSeed(
                 for: wallet,
@@ -278,9 +274,6 @@ extension CloudBackupSecretsExporter: CloudBackupSecretsExporting {
 
         let publicData = CloudBackup.PublicData(modifiedAt: modifiedAt, wallets: publicWalletsData)
 
-        return .init(
-            publicData: publicData,
-            privateData: encryptedInfo.toHex(includePrefix: false)
-        )
+        return .init(publicData: publicData, privateData: encryptedInfo.toHex())
     }
 }
