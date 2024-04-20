@@ -1,9 +1,12 @@
 import Foundation
+import SoraKeystore
 
 protocol CloudBackupServiceFactoryProtocol {
-    var baseUrl: URL? { get }
-
     func createAvailabilityService() -> CloudBackupAvailabilityServiceProtocol
     func createStorageManager(for baseUrl: URL) -> CloudBackupStorageManaging
     func createOperationFactory() -> CloudBackupOperationFactoryProtocol
+    func createFileManager() -> CloudBackupFileManaging
+    func createCodingManager() -> CloudBackupCoding
+    func createSecretsExporter(from keychain: KeystoreProtocol) -> CloudBackupSecretsExporting
+    func createUploadFactory() -> CloudBackupUploadFactoryProtocol
 }

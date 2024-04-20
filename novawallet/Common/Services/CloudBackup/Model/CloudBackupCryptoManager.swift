@@ -13,18 +13,14 @@ enum CloudBackupCryptoManagerError: Error {
     case invalidDecriptingData
 }
 
-extension CloudBackup {
-    enum ScryptSalsaCryptoManager {
-        static let saltLength: Int = 32
-        static let scryptN: UInt = 16384
-        static let scryptP: UInt = 1
-        static let scryptR: UInt = 8
-        static let nonceLength = 24
-        static let encryptionKeyLength: UInt = 32
-    }
-}
+final class CloudBackupScryptSalsaCryptoManager: CloudBackupCryptoManagerProtocol {
+    static let saltLength: Int = 32
+    static let scryptN: UInt = 16384
+    static let scryptP: UInt = 1
+    static let scryptR: UInt = 8
+    static let nonceLength = 24
+    static let encryptionKeyLength: UInt = 32
 
-extension CloudBackup.ScryptSalsaCryptoManager: CloudBackupCryptoManagerProtocol {
     func encrypt(data: Data, password: String) throws -> Data {
         guard let salt = Data.random(of: Self.saltLength) else {
             throw CloudBackupCryptoManagerError.randomFunctionFailed

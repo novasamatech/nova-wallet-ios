@@ -1,4 +1,5 @@
 import Foundation
+import SoraKeystore
 
 final class ICloudBackupServiceFactory {
     let containerId: String
@@ -26,12 +27,6 @@ final class ICloudBackupServiceFactory {
 }
 
 extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
-    var baseUrl: URL? {
-        fileManager.url(
-            forUbiquityContainerIdentifier: containerId
-        )?.appendingPathComponent("Documents", conformingTo: .directory)
-    }
-
     func createAvailabilityService() -> CloudBackupAvailabilityServiceProtocol {
         CloudBackupAvailabilityService(fileManager: fileManager, logger: logger)
     }
@@ -56,6 +51,33 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
         CloudBackupOperationFactory(
             fileCoordinator: fileCoordinator,
             fileManager: fileManager
+        )
+    }
+
+    func createFileManager() -> CloudBackupFileManaging {
+        ICloudBackupFileManager(fileManager: fileManager)
+    }
+
+    func createCodingManager() -> CloudBackupCoding {
+        CloudBackupCoder()
+    }
+
+    func createSecretsExporter(from keychain: KeystoreProtocol) -> CloudBackupSecretsExporting {
+        CloudBackupSecretsExporter(
+            walletConverter: CloudBackupFileModelConverter(),
+            cryptoManager: CloudBackupScryptSalsaCryptoManager(),
+            keychain: keychain
+        )
+    }
+
+    func createUploadFactory() -> CloudBackupUploadFactoryProtocol {
+        ICloudBackupUploadFactory(
+            operationFactory: createOperationFactory(),
+            operationQueue: operationQueue,
+            monitoringQueue: .global(),
+            notificationCenter: notificationCenter,
+            timeoutInterval: 30,
+            logger: logger
         )
     }
 }

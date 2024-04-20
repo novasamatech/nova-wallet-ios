@@ -1,7 +1,13 @@
 import Foundation
 import SoraKeystore
 
-enum CloudBackupServiceFacadeError: Error {}
+enum CloudBackupServiceFacadeError: Error {
+    case cloudNotAvailable
+    case backupReading(Error)
+    case facadeInternal(Error)
+    case backupExport(Error)
+    case backupUpload(Error)
+}
 
 protocol CloudBackupServiceFacadeProtocol {
     func enableBackup(
@@ -9,19 +15,11 @@ protocol CloudBackupServiceFacadeProtocol {
         keystore: KeystoreProtocol,
         password: String,
         runCompletionIn queue: DispatchQueue,
-        completionClosure: (Result<Void, CloudBackupServiceFacadeError>) -> Void
+        completionClosure: @escaping (Result<Void, CloudBackupServiceFacadeError>) -> Void
     )
 
-    func fetchRemoteBackup(
+    func checkBackupExists(
         runCompletionIn queue: DispatchQueue,
-        completionClosure: (Result<CloudBackup.EncryptedFileModel?, CloudBackupServiceFacadeError>) -> Void
-    )
-
-    func subscribeState(for obsever: AnyObject)
-    func unsubscribeState(for obsever: AnyObject)
-
-    func applyBackup(
-        runCompletionIn queue: DispatchQueue,
-        completionClosure: (Result<Void, CloudBackupServiceFacadeError>) -> Void
+        completionClosure: @escaping (Result<Bool, CloudBackupServiceFacadeError>) -> Void
     )
 }

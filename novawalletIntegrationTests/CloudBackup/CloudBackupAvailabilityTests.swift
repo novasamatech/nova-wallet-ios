@@ -21,7 +21,7 @@ final class CloudBackupAvailabilityTests: XCTestCase {
     func testEnoughStorage() {
         let factory = ICloudBackupServiceFactory(operationQueue: OperationQueue())
         
-        guard let baseUrl = factory.baseUrl else {
+        guard let baseUrl = factory.createFileManager().getBaseUrl() else {
             XCTFail("ICloud unavailable")
             return
         }
@@ -58,7 +58,7 @@ final class CloudBackupAvailabilityTests: XCTestCase {
         let serviceFactory = ICloudBackupServiceFactory(operationQueue: operationQueue)
         let operationFactory = serviceFactory.createOperationFactory()
         
-        guard let baseUrl = serviceFactory.baseUrl else {
+        guard let baseUrl = serviceFactory.createFileManager().getBaseUrl() else {
             XCTFail("ICloud unavailable")
             return
         }

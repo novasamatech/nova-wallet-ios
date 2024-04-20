@@ -28,7 +28,7 @@ extension OnboardingWalletReadyInteractor: OnboardingWalletReadyInteractorInputP
 
         guard
             case .available = availabilityService.stateObserver.state,
-            let url = factory.baseUrl else {
+            let url = factory.createFileManager().getBaseUrl() else {
             presenter?.didReceive(error: .cloudBackupNotAvailable)
             return
         }
