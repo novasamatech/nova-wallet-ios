@@ -37,11 +37,11 @@ class BaseStakingRecommendationMediator: AnyCancellableCleaning {
     }
 
     func updateRecommendation(for _: BigUInt) {
-        fatalError("Must be overriden by subclass")
+        fatalError("Must be overridden by subclass")
     }
 
     func performSetup() {
-        fatalError("Must be overriden by subclass")
+        fatalError("Must be overridden by subclass")
     }
 
     func cancelAllOperations() {

@@ -6,7 +6,7 @@ import RobinHood
  *  for sending asset and utility asset. Also price data fetch is required too.
  *
  *  This class is designed to locate afrometioned logic and intended to be
- *  overriden by concrete transfer interactor that depends on asset and network.
+ *  overridden by concrete transfer interactor that depends on asset and network.
  */
 class OnChainTransferBaseInteractor {
     weak var presenter: OnChainTransferSetupInteractorOutputProtocol?
@@ -85,7 +85,7 @@ class OnChainTransferBaseInteractor {
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        fatalError("Must be overriden by child class")
+        fatalError("Must be overridden by child class")
     }
 }
 

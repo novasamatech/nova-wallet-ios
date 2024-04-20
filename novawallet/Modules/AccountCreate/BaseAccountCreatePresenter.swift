@@ -79,11 +79,11 @@ class BaseAccountCreatePresenter {
     // MARK: - Processing
 
     internal func getAdvancedSettings() -> AdvancedWalletSettings? {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 
     internal func processProceed() {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 }
 

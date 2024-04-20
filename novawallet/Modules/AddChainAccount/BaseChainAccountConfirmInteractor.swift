@@ -35,7 +35,7 @@ class BaseChainAccountConfirmInteractor {
     }
 
     internal func createAccountUsingOperation(_: BaseOperation<MetaAccountModel>) {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 }
 

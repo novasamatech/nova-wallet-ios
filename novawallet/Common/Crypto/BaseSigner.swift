@@ -55,6 +55,6 @@ class BaseSigner: SignatureCreatorProtocol, AuthorizationPresentable {
     }
 
     func signData(_: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 }

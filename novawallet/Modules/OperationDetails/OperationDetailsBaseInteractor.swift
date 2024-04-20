@@ -98,7 +98,7 @@ class OperationDetailsBaseInteractor: AccountFetching, AnyCancellableCleaning {
     }
 
     func setupPriceHistorySubscription() {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 }
 

@@ -135,7 +135,7 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
         }
     }
 
-    // MARK: Overriden
+    // MARK: overridden
 
     override func setup() {
         super.setup()

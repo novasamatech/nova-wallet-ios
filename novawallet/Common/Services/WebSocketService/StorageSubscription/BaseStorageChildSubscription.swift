@@ -27,7 +27,7 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
         remoteItem _: ChainStorageItem?,
         blockHash _: Data?
     ) {
-        logger.warning("Must be overriden after inheritance")
+        logger.warning("Must be overridden after inheritance")
     }
 
     func processUpdate(_ data: Data?, blockHash: Data?) {

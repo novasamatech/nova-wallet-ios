@@ -19,7 +19,7 @@ class TriangularedBlurButton: BackgroundedContentControl {
         self.backgroundView as? BlockBackgroundView
     }
 
-    // MARK: Overriden initializers
+    // MARK: overridden initializers
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,7 +39,7 @@ class TriangularedBlurButton: BackgroundedContentControl {
 
     /**
          Creates and setups content and background views. This method **must not** be called
-         directly but can be overriden by subclass.
+         directly but can be overridden by subclass.
      */
     open func configure() {
         backgroundColor = UIColor.clear

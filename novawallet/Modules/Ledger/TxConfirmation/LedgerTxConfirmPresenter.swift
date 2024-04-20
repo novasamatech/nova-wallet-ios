@@ -77,7 +77,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         }
     }
 
-    // MARK: Overriden
+    // MARK: overridden
 
     override func selectDevice(at index: Int) {
         super.selectDevice(at: index)

@@ -100,19 +100,19 @@ class StartStakingConfirmPresenter {
     }
 
     func provideStakingType() {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func provideStakingDetails() {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func showStakingDetails() {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func stakingOption() -> SelectedStakingOption? {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     private func updateView() {
@@ -154,7 +154,7 @@ class StartStakingConfirmPresenter {
     }
 
     func createStakingSpecificValidations() -> [DataValidating] {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func createValidations() -> [DataValidating] {

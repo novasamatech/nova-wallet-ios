@@ -42,11 +42,11 @@ class BaseSyncService {
     }
 
     func performSyncUp() {
-        fatalError("Method must be overriden by child class")
+        fatalError("Method must be overridden by child class")
     }
 
     func stopSyncUp() {
-        fatalError("Method must be overriden by child class")
+        fatalError("Method must be overridden by child class")
     }
 
     func deactivate() {}

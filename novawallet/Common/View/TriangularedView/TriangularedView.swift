@@ -21,7 +21,7 @@ open class TriangularedView: ShadowShapeView {
         }
     }
 
-    // MARK: Overriden methods
+    // MARK: overridden methods
 
     override open var shapePath: UIBezierPath {
         let layerBounds: CGRect = bounds

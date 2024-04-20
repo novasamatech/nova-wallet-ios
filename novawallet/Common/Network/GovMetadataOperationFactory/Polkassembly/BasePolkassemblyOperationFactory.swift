@@ -14,11 +14,11 @@ class BasePolkassemblyOperationFactory {
     }
 
     func createPreviewQuery(for _: JSON?) -> String {
-        fatalError("Must be overriden by subclass")
+        fatalError("Must be overridden by subclass")
     }
 
     func createDetailsQuery(for _: ReferendumIdLocal, parameters _: JSON?) -> String {
-        fatalError("Must be overriden by subclass")
+        fatalError("Must be overridden by subclass")
     }
 
     private func createRequestFactory(
@@ -43,13 +43,13 @@ class BasePolkassemblyOperationFactory {
     func createPreviewResultFactory(
         for _: ChainModel.Id
     ) -> AnyNetworkResultFactory<[ReferendumMetadataPreview]> {
-        fatalError("Must be overriden by subclass")
+        fatalError("Must be overridden by subclass")
     }
 
     func createDetailsResultFactory(
         for _: ChainModel.Id
     ) -> AnyNetworkResultFactory<ReferendumMetadataLocal?> {
-        fatalError("Must be overriden by subclass")
+        fatalError("Must be overridden by subclass")
     }
 }
 

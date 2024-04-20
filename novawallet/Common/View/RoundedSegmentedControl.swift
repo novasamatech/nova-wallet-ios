@@ -103,7 +103,7 @@ class RoundedSegmentedControl: UIControl {
         selectedSegmentIndex >= 0 ? segments[selectedSegmentIndex] : nil
     }
 
-    // MARK: Overriden initializers
+    // MARK: overridden initializers
 
     override public init(frame: CGRect) {
         super.init(frame: frame)

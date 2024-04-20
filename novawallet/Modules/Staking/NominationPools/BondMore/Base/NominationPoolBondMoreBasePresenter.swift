@@ -42,19 +42,19 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     }
 
     func updateView() {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func provideFee() {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func getInputAmount() -> Decimal? {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func getInputAmountInPlank() -> BigUInt? {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func provideHints() {

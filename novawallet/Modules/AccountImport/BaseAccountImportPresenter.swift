@@ -192,19 +192,19 @@ class BaseAccountImportPresenter {
     }
 
     internal func processProceed() {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 
     internal func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 
     internal func shouldUseEthereumSeed() -> Bool {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 
     internal func getAdvancedSettings() -> AdvancedWalletSettings? {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 }
 

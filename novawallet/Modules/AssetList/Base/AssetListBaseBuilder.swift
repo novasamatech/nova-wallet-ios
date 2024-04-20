@@ -36,7 +36,7 @@ class AssetListBaseBuilder {
     }
 
     func rebuildModel() {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func rebuildModelImmediate() {

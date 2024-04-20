@@ -132,7 +132,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     }
 
     func getProxyAddress() -> AccountAddress {
-        fatalError("This function should be overriden")
+        fatalError("This function should be overridden")
     }
 
     func getProxyAccountId() -> AccountId? {

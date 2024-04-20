@@ -71,7 +71,7 @@ class ObservableSubscriptionSyncService<T: ObservableSubscriptionStateProtocol>:
     }
 
     func getRequests() throws -> [BatchStorageSubscriptionRequest] {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     override func stopSyncUp() {

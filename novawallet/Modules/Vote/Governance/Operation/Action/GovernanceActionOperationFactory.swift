@@ -18,7 +18,7 @@ class GovernanceActionOperationFactory {
         connection _: JSONRPCEngine,
         codingFactoryOperation _: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
-        fatalError("Must be overriden by child class")
+        fatalError("Must be overridden by child class")
     }
 
     private func createOpaqueCallParsingWrapper(

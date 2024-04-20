@@ -10,7 +10,7 @@ class StartStakingInfoWireframe: StartStakingInfoWireframeProtocol {
     }
 
     func showSetupAmount(from _: ControllerBackedProtocol?) {
-        fatalError("Must be overriden by subsclass")
+        fatalError("Must be overridden by subsclass")
     }
 
     func complete(from view: ControllerBackedProtocol?) {
