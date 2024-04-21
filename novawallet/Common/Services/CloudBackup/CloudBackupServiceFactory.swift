@@ -8,6 +8,8 @@ final class ICloudBackupServiceFactory {
     let logger: LoggerProtocol
     let operationQueue: OperationQueue
     let notificationCenter: NotificationCenter
+    let monitoringQueue: OperationQueue
+    let monitoringTimeout: TimeInterval
 
     init(
         containerId: String = CloudBackup.containerId,
@@ -15,6 +17,7 @@ final class ICloudBackupServiceFactory {
         fileCoordinator: NSFileCoordinator = NSFileCoordinator(),
         operationQueue: OperationQueue,
         notificationCenter: NotificationCenter = .default,
+        monitoringTimeout: TimeInterval = 30,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.containerId = containerId
@@ -22,6 +25,11 @@ final class ICloudBackupServiceFactory {
         self.fileCoordinator = fileCoordinator
         self.operationQueue = operationQueue
         self.notificationCenter = notificationCenter
+        self.monitoringTimeout = monitoringTimeout
+
+        monitoringQueue = OperationQueue()
+        monitoringQueue.maxConcurrentOperationCount = 1
+
         self.logger = logger
     }
 }
@@ -32,14 +40,20 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
     }
 
     func createStorageManager(for baseUrl: URL) -> CloudBackupStorageManaging {
-        let operationFactory = CloudBackupOperationFactory(
-            fileCoordinator: fileCoordinator,
-            fileManager: fileManager
+        let cloudOperationFactory = createOperationFactory()
+
+        let uploadOperationFactory = ICloudBackupUploadFactory(
+            operationFactory: cloudOperationFactory,
+            monitoringOperationQueue: monitoringQueue,
+            notificationCenter: notificationCenter,
+            timeoutInterval: monitoringTimeout,
+            logger: logger
         )
 
         return ICloudBackupStorageManager(
             baseUrl: baseUrl,
-            operationFactory: operationFactory,
+            cloudOperationFactory: cloudOperationFactory,
+            uploadOperationFactory: uploadOperationFactory,
             operationQueue: operationQueue,
             workingQueue: .global(),
             notificationCenter: notificationCenter,
@@ -73,10 +87,9 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
     func createUploadFactory() -> CloudBackupUploadFactoryProtocol {
         ICloudBackupUploadFactory(
             operationFactory: createOperationFactory(),
-            operationQueue: operationQueue,
-            monitoringQueue: .global(),
+            monitoringOperationQueue: monitoringQueue,
             notificationCenter: notificationCenter,
-            timeoutInterval: 30,
+            timeoutInterval: monitoringTimeout,
             logger: logger
         )
     }

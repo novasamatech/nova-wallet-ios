@@ -9,10 +9,7 @@ enum CloudBackupUploadError: Error {
 typealias CloudBackupUploadMonitoringClosure = (Result<Void, CloudBackupUploadError>) -> Void
 
 protocol CloudBackupUploadMonitoring {
-    func start(
-        runningIn queue: DispatchQueue,
-        completion closure: @escaping CloudBackupUploadMonitoringClosure
-    )
+    func start(with closure: @escaping CloudBackupUploadMonitoringClosure)
 
     func stop()
 }

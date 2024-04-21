@@ -11,12 +11,11 @@ final class ICloudBackupUploadMonitor {
     private var monitor: NSMetadataQuery?
     private var timeoutScheduler: Scheduler?
 
-    private var notificationQueue: DispatchQueue?
     private var closure: CloudBackupUploadMonitoringClosure?
 
     init(
         filename: String,
-        operationQueue: OperationQueue,
+        operationQueue: OperationQueue, // must be maxConcurrentOperation = 1
         notificationCenter: NotificationCenter,
         timeoutInteval: TimeInterval,
         logger: LoggerProtocol
@@ -73,9 +72,7 @@ final class ICloudBackupUploadMonitor {
         timeoutScheduler?.cancel()
         timeoutScheduler = nil
 
-        dispatchInQueueWhenPossible(notificationQueue) { [weak self] in
-            self?.closure?(result)
-        }
+        closure?(result)
     }
 }
 
@@ -86,15 +83,11 @@ extension ICloudBackupUploadMonitor: SchedulerDelegate {
 }
 
 extension ICloudBackupUploadMonitor: CloudBackupUploadMonitoring {
-    func start(
-        runningIn queue: DispatchQueue,
-        completion closure: @escaping CloudBackupUploadMonitoringClosure
-    ) {
+    func start(with closure: @escaping CloudBackupUploadMonitoringClosure) {
         guard monitor == nil else {
             return
         }
 
-        notificationQueue = queue
         self.closure = closure
 
         let metadataQuery = NSMetadataQuery()
@@ -131,7 +124,6 @@ extension ICloudBackupUploadMonitor: CloudBackupUploadMonitoring {
         monitor?.stop()
         monitor = nil
 
-        notificationQueue = nil
         closure = nil
     }
 }

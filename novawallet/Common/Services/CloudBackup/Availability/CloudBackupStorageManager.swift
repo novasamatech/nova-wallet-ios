@@ -16,22 +16,25 @@ enum ICloudBackupStorageManagerError: Error {
 
 final class ICloudBackupStorageManager {
     let baseUrl: URL
-    let operationFactory: CloudBackupOperationFactoryProtocol
-    let operationQueue: OperationQueue
+    let cloudOperationFactory: CloudBackupOperationFactoryProtocol
+    let uploadOperationFactory: CloudBackupUploadFactoryProtocol
     let notificationCenter: NotificationCenter
+    let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
 
     init(
         baseUrl: URL,
-        operationFactory: CloudBackupOperationFactoryProtocol,
+        cloudOperationFactory: CloudBackupOperationFactoryProtocol,
+        uploadOperationFactory: CloudBackupUploadFactoryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         notificationCenter: NotificationCenter,
         logger: LoggerProtocol
     ) {
         self.baseUrl = baseUrl
-        self.operationFactory = operationFactory
+        self.cloudOperationFactory = cloudOperationFactory
+        self.uploadOperationFactory = uploadOperationFactory
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.notificationCenter = notificationCenter
@@ -40,7 +43,7 @@ final class ICloudBackupStorageManager {
 
     private func writeFileAndMonitor(
         of size: UInt64,
-        timeoutInterval: TimeInterval,
+        timeoutInterval _: TimeInterval,
         runningIn queue: DispatchQueue,
         completionClosure: @escaping CloudBackupUploadMonitoringClosure
     ) {
@@ -57,60 +60,36 @@ final class ICloudBackupStorageManager {
             Data(repeating: 0, count: Int(size))
         }
 
-        let writingOperation = operationFactory.createWritingOperation(
+        let uploadWrapper = uploadOperationFactory.createUploadWrapper(
             for: fileUrl,
             dataClosure: { try dataOperation.extractNoCancellableResultData() }
         )
 
-        writingOperation.addDependency(dataOperation)
+        uploadWrapper.addDependency(operations: [dataOperation])
 
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: writingOperation,
-            dependencies: [dataOperation]
-        )
+        let totalWrapper = uploadWrapper.insertingHead(operations: [dataOperation])
 
         execute(
-            wrapper: wrapper,
+            wrapper: totalWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: workingQueue
         ) { [weak self] result in
-            guard let self else {
-                return
-            }
-
-            switch result {
-            case .success:
-                let monitor = ICloudBackupUploadMonitor(
-                    filename: fileUrl.lastPathComponent,
-                    operationQueue: OperationQueue(),
-                    notificationCenter: self.notificationCenter,
-                    timeoutInteval: timeoutInterval,
-                    logger: self.logger
-                )
-
-                monitor.start(runningIn: self.workingQueue) { [weak self] result in
-                    monitor.stop()
-
-                    self?.removeFileAndNotify(
-                        url: fileUrl,
-                        result: result,
-                        runningIn: queue,
-                        completionClosure: completionClosure
-                    )
-                }
-            case let .failure(error):
-                completionClosure(.failure(.internalError(error)))
-            }
+            self?.removeFileAndNotify(
+                url: fileUrl,
+                result: result,
+                runningIn: queue,
+                completionClosure: completionClosure
+            )
         }
     }
 
     private func removeFileAndNotify(
         url: URL,
-        result: Result<Void, CloudBackupUploadError>,
+        result: Result<Void, Error>,
         runningIn queue: DispatchQueue,
         completionClosure: @escaping CloudBackupUploadMonitoringClosure
     ) {
-        let deletionOperation = operationFactory.createDeletionOperation(for: url)
+        let deletionOperation = cloudOperationFactory.createDeletionOperation(for: url)
 
         execute(
             operation: deletionOperation,
@@ -119,10 +98,23 @@ final class ICloudBackupStorageManager {
         ) { [weak self] deletionResult in
             switch deletionResult {
             case .success:
-                completionClosure(result)
+                self?.complete(with: result, closure: completionClosure)
             case let .failure(error):
                 self?.logger.error("File deletion failed: \(error)")
-                completionClosure(result)
+                self?.complete(with: result, closure: completionClosure)
+            }
+        }
+    }
+
+    private func complete(with result: Result<Void, Error>, closure: CloudBackupUploadMonitoringClosure) {
+        switch result {
+        case let .success:
+            closure(.success(()))
+        case let .failure(error):
+            if let uploadError = error as? CloudBackupUploadError {
+                closure(.failure(uploadError))
+            } else {
+                closure(.failure(.internalError(error)))
             }
         }
     }

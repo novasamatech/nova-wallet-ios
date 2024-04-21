@@ -10,32 +10,30 @@ protocol CloudBackupUploadFactoryProtocol {
 
 final class ICloudBackupUploadFactory {
     let operationFactory: CloudBackupOperationFactoryProtocol
-    let operationQueue: OperationQueue
-    let monitoringQueue: DispatchQueue
+    let monitoringOperationQueue: OperationQueue
     let notificationCenter: NotificationCenter
     let timeoutInterval: TimeInterval
     let logger: LoggerProtocol
 
     init(
         operationFactory: CloudBackupOperationFactoryProtocol,
-        operationQueue: OperationQueue,
-        monitoringQueue: DispatchQueue,
+        monitoringOperationQueue: OperationQueue,
         notificationCenter: NotificationCenter,
         timeoutInterval: TimeInterval,
         logger: LoggerProtocol
     ) {
         self.operationFactory = operationFactory
-        self.operationQueue = operationQueue
-        self.monitoringQueue = monitoringQueue
+        self.monitoringOperationQueue = monitoringOperationQueue
         self.notificationCenter = notificationCenter
         self.timeoutInterval = timeoutInterval
         self.logger = logger
     }
+}
 
-    private func createUploadWrapper(
+extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
+    func createUploadWrapper(
         for fileUrl: URL,
-        dataClosure: @escaping () throws -> Data,
-        monitorInQueue: DispatchQueue
+        dataClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void> {
         let writeOperation = operationFactory.createWritingOperation(for: fileUrl) {
             try dataClosure()
@@ -43,7 +41,7 @@ final class ICloudBackupUploadFactory {
 
         let uploadMonitoring = ICloudBackupUploadMonitor(
             filename: fileUrl.lastPathComponent,
-            operationQueue: operationQueue,
+            operationQueue: monitoringOperationQueue,
             notificationCenter: notificationCenter,
             timeoutInteval: timeoutInterval,
             logger: logger
@@ -56,7 +54,7 @@ final class ICloudBackupUploadFactory {
             operationClosure: { completionClosure in
                 _ = try writeOperation.extractNoCancellableResultData()
 
-                uploadMonitoring.start(runningIn: monitorInQueue) { result in
+                uploadMonitoring.start { result in
                     uploadMonitoring.stop()
 
                     switch result {
@@ -72,18 +70,5 @@ final class ICloudBackupUploadFactory {
         uploadOperation.addDependency(writeOperation)
 
         return CompoundOperationWrapper(targetOperation: uploadOperation, dependencies: [writeOperation])
-    }
-}
-
-extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
-    func createUploadWrapper(
-        for fileUrl: URL,
-        dataClosure: @escaping () throws -> Data
-    ) -> CompoundOperationWrapper<Void> {
-        createUploadWrapper(
-            for: fileUrl,
-            dataClosure: dataClosure,
-            monitorInQueue: monitoringQueue
-        )
     }
 }
