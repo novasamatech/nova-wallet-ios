@@ -36,13 +36,13 @@ extension OnboardingWalletReadyPresenter: OnboardingWalletReadyPresenterProtocol
     }
 
     func applyManualBackup() {
-        wireframe.showManualBackup(from: view)
+        wireframe.showManualBackup(from: view, walletName: walletName)
     }
 }
 
 extension OnboardingWalletReadyPresenter: OnboardingWalletReadyInteractorOutputProtocol {
     func didReceiveCloudBackupAvailable() {
-        wireframe.showCloudBackup(from: view)
+        wireframe.showCloudBackup(from: view, walletName: walletName)
         view?.didStopBackupLoading()
     }
 
