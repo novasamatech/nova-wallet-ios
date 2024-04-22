@@ -61,10 +61,29 @@ class HintListView: UIView {
         setNeedsLayout()
     }
 
+    func bind(viewModels: [ViewModel]) {
+        updateHints(for: viewModels.count)
+
+        for (viewModel, hint) in zip(viewModels, hints) {
+            if let icon = viewModel.icon {
+                hint.imageView.image = icon
+            }
+
+            hint.detailsLabel.attributedText = viewModel.attributedText
+        }
+    }
+
     private func setupLayout() {
         addSubview(stackView)
         stackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+}
+
+extension HintListView {
+    struct ViewModel {
+        let icon: UIImage?
+        let attributedText: NSAttributedString
     }
 }

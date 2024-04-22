@@ -1,5 +1,6 @@
 import Foundation
 import SoraKeystore
+import SoraFoundation
 
 struct CloudBackupCreateViewFactory {
     static func createView(from walletName: String) -> CloudBackupCreateViewProtocol? {
@@ -8,7 +9,10 @@ struct CloudBackupCreateViewFactory {
 
         let presenter = CloudBackupCreatePresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = CloudBackupCreateViewController(presenter: presenter)
+        let view = CloudBackupCreateViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

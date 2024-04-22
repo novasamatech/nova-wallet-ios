@@ -188,6 +188,7 @@
 		0C38B5142B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5132B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
+		0C4394D42BD6661F00578761 /* PasswordInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D32BD6661F00578761 /* PasswordInputView.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
 		0C495B8C2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */; };
@@ -4819,6 +4820,7 @@
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
+		0C4394D32BD6661F00578761 /* PasswordInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordInputView.swift; sourceTree = "<group>"; };
 		0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+MotionEffect.swift"; sourceTree = "<group>"; };
 		0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialInterpolatingMotionEffect.swift; sourceTree = "<group>"; };
 		0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProxySenderResolver.swift; sourceTree = "<group>"; };
@@ -12582,6 +12584,7 @@
 				847999B72889510C00D1BAD2 /* TextInputViewDelegate.swift */,
 				849F1452294477DA00D9F9BA /* TextWithServiceInputView.swift */,
 				77740BC32AD8145500E8C06F /* PercentInputView.swift */,
+				0C4394D32BD6661F00578761 /* PasswordInputView.swift */,
 			);
 			path = TextInputView;
 			sourceTree = "<group>";
@@ -22510,6 +22513,7 @@
 				88D02FEE2942F00D00E26390 /* AssetDetailsOperation.swift in Sources */,
 				84EE2FB1289128E400A98816 /* WalletManageProtocols.swift in Sources */,
 				88AC186528CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift in Sources */,
+				0C4394D42BD6661F00578761 /* PasswordInputView.swift in Sources */,
 				8460E711284AB99E002896E9 /* ParaStkHintsViewModelFactory.swift in Sources */,
 				2A66CFAF25D10EDF0006E4C1 /* PhishingItem.swift in Sources */,
 				882C29AA28DC7B3D009CA4B6 /* SubstrateStorageMigrator.swift in Sources */,
