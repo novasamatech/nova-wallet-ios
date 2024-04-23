@@ -151,9 +151,9 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
         let isSecure = !textField.isSecureTextEntry
 
         if isSecure {
-            eyeButton.imageWithTitleView?.iconImage = R.image.iconEye()
+            eyeButton.imageWithTitleView?.iconImage = R.image.iconEyeShow()
         } else {
-            eyeButton.imageWithTitleView?.iconImage = R.image.iconNoEye()
+            eyeButton.imageWithTitleView?.iconImage = R.image.iconEyeHide()
         }
 
         textField.isSecureTextEntry = isSecure

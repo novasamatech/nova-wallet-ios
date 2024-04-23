@@ -20,8 +20,8 @@ protocol OnboardingWalletReadyInteractorOutputProtocol: AnyObject {
 }
 
 protocol OnboardingWalletReadyWireframeProtocol: AlertPresentable, CloudBackupErrorPresentable {
-    func showCloudBackup(from view: OnboardingWalletReadyViewProtocol?)
-    func showManualBackup(from view: OnboardingWalletReadyViewProtocol?)
+    func showCloudBackup(from view: OnboardingWalletReadyViewProtocol?, walletName: String)
+    func showManualBackup(from view: OnboardingWalletReadyViewProtocol?, walletName: String)
 }
 
 enum OnboardingWalletReadyInteractorError: Error {

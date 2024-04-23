@@ -21,13 +21,16 @@ final class CloudBackupScryptSalsaCryptoManager: CloudBackupCryptoManagerProtoco
     static let nonceLength = 24
     static let encryptionKeyLength: UInt = 32
 
+    func normalize(password: String) -> Data? {
+        password.decomposedStringWithCompatibilityMapping.data(using: .utf8)
+    }
+
     func encrypt(data: Data, password: String) throws -> Data {
         guard let salt = Data.random(of: Self.saltLength) else {
             throw CloudBackupCryptoManagerError.randomFunctionFailed
         }
 
-        // TODO: Normalize the password?
-        guard let passwordData = password.data(using: .utf8) else {
+        guard let passwordData = normalize(password: password) else {
             throw CloudBackupCryptoManagerError.invalidPasswordFormat
         }
 
@@ -49,8 +52,7 @@ final class CloudBackupScryptSalsaCryptoManager: CloudBackupCryptoManagerProtoco
     }
 
     func decrypt(data: Data, password: String) throws -> Data {
-        // TODO: Normalize the password?
-        guard let passwordData = password.data(using: .utf8) else {
+        guard let passwordData = normalize(password: password) else {
             throw CloudBackupCryptoManagerError.invalidPasswordFormat
         }
 
