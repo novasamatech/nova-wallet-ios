@@ -3,7 +3,9 @@ import UIKit
 final class CloudBackupCreateViewLayout: SCLoadableActionLayoutView {
     let titleView: MultiValueView = .create { view in
         view.valueTop.apply(style: .title3Primary)
+        view.valueTop.textAlignment = .left
         view.valueBottom.apply(style: .regularSubhedlineSecondary)
+        view.valueBottom.textAlignment = .left
         view.valueBottom.numberOfLines = 0
         view.spacing = 8
     }
@@ -16,11 +18,17 @@ final class CloudBackupCreateViewLayout: SCLoadableActionLayoutView {
         view.textField.returnKeyType = .done
     }
 
-    let hintView = HintListView()
-    
+    let hintView: HintListView = .create { view in
+        view.style = .init(
+            itemAlignment: .center,
+            iconWidth: 16,
+            iconContentMode: .scaleAspectFit
+        )
+    }
+
     override func setupStyle() {
         super.setupStyle()
-        
+
         genericActionView.actionButton.applyDefaultStyle()
     }
 

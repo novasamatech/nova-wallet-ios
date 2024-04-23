@@ -126,29 +126,29 @@ extension CloudBackupCreateViewController: CloudBackupCreateViewProtocol {
     func didRecieve(hints: [HintListView.ViewModel]) {
         rootView.hintView.bind(viewModels: hints)
     }
-    
+
     func didReceive(canContinue: Bool) {
         let actionButton = rootView.genericActionView.actionButton
         actionButton.isEnabled = canContinue
-        
+
         if canContinue {
             actionButton.applyEnabledStyle()
             actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-                preferredLanguages: selectedLocale
+                preferredLanguages: selectedLocale.rLanguages
             )
         } else {
             actionButton.applyDisabledStyle()
-            
+
             actionButton.imageWithTitleView?.title = R.string.localizable.commonEnterPassword(
-                preferredLanguages: selectedLocale
+                preferredLanguages: selectedLocale.rLanguages
             )
         }
     }
-    
+
     func didStartLoading() {
         rootView.genericActionView.startLoading()
     }
-    
+
     func didStopLoading() {
         rootView.genericActionView.stopLoading()
     }

@@ -5,6 +5,8 @@ final class OnboardingWalletReadyInteractor {
 
     let factory: CloudBackupServiceFactoryProtocol
 
+    private var storageManager: CloudBackupStorageManaging?
+
     init(factory: CloudBackupServiceFactoryProtocol) {
         self.factory = factory
     }
@@ -33,11 +35,11 @@ extension OnboardingWalletReadyInteractor: OnboardingWalletReadyInteractorInputP
             return
         }
 
-        let storageManager = factory.createStorageManager(for: url)
+        storageManager = factory.createStorageManager(for: url)
 
-        storageManager.checkStorage(
+        storageManager?.checkStorage(
             of: CloudBackup.requiredCloudSize,
-            timeoutInterval: 60,
+            timeoutInterval: 30,
             runningIn: .main
         ) { [weak self] result in
             switch result {

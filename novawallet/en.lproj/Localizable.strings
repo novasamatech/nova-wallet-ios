@@ -1532,8 +1532,8 @@
 "ledger.instructions.step4.highlighted" = "Select account";
 "cloud.backup.create.title" = "Create backup password";
 "cloud.backup.create.details" = "Please enter a password that will be used to recover your cloud backup. This password can't be recovered in the future, so be sure to remember it!";
-"cloud.backup.create.hint.min.char" = "Min. 8 characters";
-"cloud.backup.create.hint.numbers" = "Numbers";
+"cloud.backup.create.hint.min.char" = "Min. %@ characters";
+"cloud.backup.create.hint.numbers" = "Digits";
 "cloud.backup.create.hint.letters" = "Letters";
 "cloud.backup.create.hint.password.match" = "Password match";
 "common.enter.password" = "Enter password";

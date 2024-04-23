@@ -23,4 +23,6 @@ protocol CloudBackupCreateInteractorOutputProtocol: AnyObject {
     func didReceive(error: CloudBackupCreateInteractorError)
 }
 
-protocol CloudBackupCreateWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol CloudBackupCreateWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, CloudBackupErrorPresentable {
+    func proceed(from view: CloudBackupCreateViewProtocol?)
+}

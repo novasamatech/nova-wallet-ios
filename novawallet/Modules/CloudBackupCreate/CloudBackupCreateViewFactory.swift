@@ -7,7 +7,13 @@ struct CloudBackupCreateViewFactory {
         let interactor = createInteractor(for: walletName)
         let wireframe = CloudBackupCreateWireframe()
 
-        let presenter = CloudBackupCreatePresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = CloudBackupCreatePresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            hintsViewModelFactory: CloudBackPasswordViewModelFactory(),
+            passwordValidator: CloudBackupPasswordValidator(),
+            localizationManager: LocalizationManager.shared
+        )
 
         let view = CloudBackupCreateViewController(
             presenter: presenter,

@@ -108,7 +108,7 @@ final class ICloudBackupStorageManager {
 
     private func complete(with result: Result<Void, Error>, closure: CloudBackupUploadMonitoringClosure) {
         switch result {
-        case let .success:
+        case .success:
             closure(.success(()))
         case let .failure(error):
             if let uploadError = error as? CloudBackupUploadError {

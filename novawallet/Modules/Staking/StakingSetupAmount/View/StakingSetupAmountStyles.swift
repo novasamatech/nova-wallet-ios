@@ -1,7 +1,7 @@
 extension BorderedLabelView.Style {
     static let counter = BorderedLabelView.Style(
         text: .init(
-            textColor: R.color.colorTextTertiary()!,
+            textColor: R.color.colorTextSecondary()!,
             font: .semiBoldCaps2
         ),
         background: .init(

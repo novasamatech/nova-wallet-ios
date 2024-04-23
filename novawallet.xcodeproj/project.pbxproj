@@ -189,6 +189,9 @@
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C4394D42BD6661F00578761 /* PasswordInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D32BD6661F00578761 /* PasswordInputView.swift */; };
+		0C4394D72BD761D000578761 /* CloudBackupPasswordValidationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */; };
+		0C4394D92BD7626500578761 /* CloudBackupPasswordValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D82BD7626500578761 /* CloudBackupPasswordValidator.swift */; };
+		0C4394DB2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394DA2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
 		0C495B8C2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */; };
@@ -4821,6 +4824,9 @@
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
 		0C4394D32BD6661F00578761 /* PasswordInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordInputView.swift; sourceTree = "<group>"; };
+		0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupPasswordValidationResult.swift; sourceTree = "<group>"; };
+		0C4394D82BD7626500578761 /* CloudBackupPasswordValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupPasswordValidator.swift; sourceTree = "<group>"; };
+		0C4394DA2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackPasswordViewModelFactory.swift; sourceTree = "<group>"; };
 		0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+MotionEffect.swift"; sourceTree = "<group>"; };
 		0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialInterpolatingMotionEffect.swift; sourceTree = "<group>"; };
 		0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProxySenderResolver.swift; sourceTree = "<group>"; };
@@ -9747,6 +9753,17 @@
 			path = Predicate;
 			sourceTree = "<group>";
 		};
+		0C4394D52BD7617200578761 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0C7CF4D32BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift */,
+				0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */,
+				0C4394D82BD7626500578761 /* CloudBackupPasswordValidator.swift */,
+				0C4394DA2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		0C463FCE2A592ACD003E71C9 /* Effects */ = {
 			isa = PBXGroup;
 			children = (
@@ -11000,6 +11017,7 @@
 		47A0D9585B152172BA52336C /* CloudBackupCreate */ = {
 			isa = PBXGroup;
 			children = (
+				0C4394D52BD7617200578761 /* Model */,
 				15886E1D406F61B333A44A2E /* CloudBackupCreateProtocols.swift */,
 				5E1571F44EF81EF0A450E767 /* CloudBackupCreateWireframe.swift */,
 				7D0323C9CAE2D3068B1B599B /* CloudBackupCreatePresenter.swift */,
@@ -11007,7 +11025,6 @@
 				710F0BA5EC0F5D434217E5AA /* CloudBackupCreateViewController.swift */,
 				22CA3357C25A248302093251 /* CloudBackupCreateViewLayout.swift */,
 				AD26E02E5EA85D22062142CD /* CloudBackupCreateViewFactory.swift */,
-				0C7CF4D32BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift */,
 			);
 			path = CloudBackupCreate;
 			sourceTree = "<group>";
@@ -22219,6 +22236,7 @@
 				77AB555B2AA246CA0058814E /* OperationPoolRewardOrSlashViewModel.swift in Sources */,
 				849D3225291CC4A500D25839 /* MarkdownParsingOperationFactory.swift in Sources */,
 				0C79C8952A7BE01100B171E3 /* RelaychainStakingRecommendation.swift in Sources */,
+				0C4394D92BD7626500578761 /* CloudBackupPasswordValidator.swift in Sources */,
 				84D6D7FE27A7F4CD0094FC33 /* AssetListChainView.swift in Sources */,
 				7791076A2AB8CAF8000A4B17 /* CollectionViewContainerCell.swift in Sources */,
 				842D1E8424D197C900C30A7A /* KeyboardAdoptable.swift in Sources */,
@@ -22520,6 +22538,7 @@
 				0CCD18BF2BA1EF360068D73A /* AssetModel+Remote.swift in Sources */,
 				8487583E27F070B300495306 /* ApplicationSettingsPresentable.swift in Sources */,
 				84FEF3E32807E8000042CBE7 /* DAppBrowserPage.swift in Sources */,
+				0C4394D72BD761D000578761 /* CloudBackupPasswordValidationResult.swift in Sources */,
 				AEA2C1C02681E9EC0069492E /* ValidatorSearchViewLayout.swift in Sources */,
 				881BA30B29DC3DD400EB8C48 /* Data+baseEncoded.swift in Sources */,
 				0CAC01552A52E0CC0069413E /* AssetListModelHelpers.swift in Sources */,
@@ -23943,6 +23962,7 @@
 				84466B3E28B76A3E00FA1E0D /* LedgerPerformOperationPresenter.swift in Sources */,
 				8423B0E8251B2DAD00B8687C /* SubstrateOperationFactory.swift in Sources */,
 				8499FEC427BEC5F400712589 /* UniquesClassMetadata.swift in Sources */,
+				0C4394DB2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift in Sources */,
 				8436EDEF25896722004D9E97 /* PurchaseAggregator+Default.swift in Sources */,
 				84963D6C26F91810003FE8E4 /* RemoteSubscriptionService.swift in Sources */,
 				8444D137267117A200AF6D8C /* BifrostBonusService.swift in Sources */,

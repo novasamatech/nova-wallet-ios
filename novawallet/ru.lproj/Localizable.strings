@@ -1532,8 +1532,8 @@
 "ledger.instructions.step4.highlighted" = "Выберите аккаунт";
 "cloud.backup.create.title" = "Установить пароль бэкапа";
 "cloud.backup.create.details" = "Пожалуйста, введите пароль, который будет использоваться для восстановления вашего бэкапа. Этот пароль не может быть восстановлен и вам нужно запомнить его!";
-"cloud.backup.create.hint.min.char" = "Мин. 8 символов";
-"cloud.backup.create.hint.numbers" = "Числа";
+"cloud.backup.create.hint.min.char" = "Мин. %@ символов";
+"cloud.backup.create.hint.numbers" = "Цифры";
 "cloud.backup.create.hint.letters" = "Буквы";
 "cloud.backup.create.hint.password.match" = "Пароли совпадают";
 "common.enter.password" = "Введите пароль";

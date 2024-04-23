@@ -86,7 +86,7 @@ final class CloudBackupCreateInteractor {
 
 extension CloudBackupCreateInteractor: CloudBackupCreateInteractorInputProtocol {
     func createWallet(for password: String) {
-        guard isCreatingWallet else {
+        guard !isCreatingWallet else {
             presenter?.didReceive(error: .alreadyInProgress)
             return
         }
