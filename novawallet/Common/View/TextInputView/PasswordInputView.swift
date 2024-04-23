@@ -11,9 +11,9 @@ class PasswordInputView: BackgroundedContentControl {
     let textField: UITextField = .create { textField in
         textField.font = .regularSubheadline
         textField.textColor = R.color.colorTextPrimary()
+        textField.tintColor = R.color.colorTextPrimary()
         textField.clearButtonMode = .never
 
-        textField.keyboardType = .asciiCapableNumberPad
         textField.returnKeyType = .done
         textField.autocorrectionType = .no
         textField.autocapitalizationType = .none
