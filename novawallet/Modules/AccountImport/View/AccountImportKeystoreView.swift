@@ -67,7 +67,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         button.roundedBackgroundView?.strokeColor = .clear
         button.roundedBackgroundView?.highlightedStrokeColor = .clear
         button.roundedBackgroundView?.shadowOpacity = 0.0
-        button.imageWithTitleView?.iconImage = R.image.iconEye()
+        button.imageWithTitleView?.iconImage = R.image.iconEyeShow()
         return button
     }()
 
@@ -325,9 +325,9 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         let isSecure = !passwordView.textField.isSecureTextEntry
 
         if isSecure {
-            eyeButton.imageWithTitleView?.iconImage = R.image.iconEye()
+            eyeButton.imageWithTitleView?.iconImage = R.image.iconEyeShow()
         } else {
-            eyeButton.imageWithTitleView?.iconImage = R.image.iconNoEye()
+            eyeButton.imageWithTitleView?.iconImage = R.image.iconEyeHide()
         }
 
         passwordView.textField.isSecureTextEntry = isSecure

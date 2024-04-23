@@ -23,7 +23,7 @@ class PasswordInputView: BackgroundedContentControl {
     let watchPasswordButton: RoundedButton = .create { button in
         button.applyIconStyle()
 
-        let icon = R.image.iconEye()?.tinted(with: R.color.colorIconSecondary()!)
+        let icon = R.image.iconEyeShow()?.tinted(with: R.color.colorIconSecondary()!)
         button.imageWithTitleView?.iconImage = icon
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         button.contentInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
@@ -202,6 +202,9 @@ class PasswordInputView: BackgroundedContentControl {
 
     func applyControlsState() {
         textField.isSecureTextEntry = !showsPassword
+
+        let icon = showsPassword ? R.image.iconEyeHide() : R.image.iconEyeShow()
+        watchPasswordButton.imageWithTitleView?.iconImage = icon
     }
 
     func updateControlsState() {

@@ -46,7 +46,7 @@ final class AccountExportPasswordViewLayout: UIView {
         button.roundedBackgroundView?.strokeColor = .clear
         button.roundedBackgroundView?.highlightedStrokeColor = .clear
         button.roundedBackgroundView?.shadowOpacity = 0.0
-        button.imageWithTitleView?.iconImage = R.image.iconEye()
+        button.imageWithTitleView?.iconImage = R.image.iconEyeShow()
         return button
     }()
 
@@ -65,7 +65,7 @@ final class AccountExportPasswordViewLayout: UIView {
         button.roundedBackgroundView?.strokeColor = .clear
         button.roundedBackgroundView?.highlightedStrokeColor = .clear
         button.roundedBackgroundView?.shadowOpacity = 0.0
-        button.imageWithTitleView?.iconImage = R.image.iconEye()
+        button.imageWithTitleView?.iconImage = R.image.iconEyeShow()
         return button
     }()
 
