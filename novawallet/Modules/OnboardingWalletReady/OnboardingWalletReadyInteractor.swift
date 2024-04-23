@@ -9,11 +9,13 @@ final class OnboardingWalletReadyInteractor {
         self.factory = factory
     }
 
-    private func handleStorageManager(error: CloudBackupStorageManagingError) {
+    private func handleStorageManager(error: CloudBackupUploadError) {
         switch error {
         case let .internalError(details):
             presenter?.didReceive(error: .internalError(details))
-        case .notEnoughStorage:
+        case .timeout:
+            presenter?.didReceive(error: .timeout)
+        case .notEnoughSpace:
             presenter?.didReceive(error: .notEnoughStorageInCloud)
         }
     }
@@ -26,7 +28,7 @@ extension OnboardingWalletReadyInteractor: OnboardingWalletReadyInteractorInputP
 
         guard
             case .available = availabilityService.stateObserver.state,
-            let url = factory.baseUrl else {
+            let url = factory.createFileManager().getBaseUrl() else {
             presenter?.didReceive(error: .cloudBackupNotAvailable)
             return
         }
@@ -35,6 +37,7 @@ extension OnboardingWalletReadyInteractor: OnboardingWalletReadyInteractorInputP
 
         storageManager.checkStorage(
             of: CloudBackup.requiredCloudSize,
+            timeoutInterval: 60,
             runningIn: .main
         ) { [weak self] result in
             switch result {

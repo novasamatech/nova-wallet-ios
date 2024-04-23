@@ -27,5 +27,6 @@ protocol OnboardingWalletReadyWireframeProtocol: AlertPresentable, CloudBackupEr
 enum OnboardingWalletReadyInteractorError: Error {
     case cloudBackupNotAvailable
     case notEnoughStorageInCloud
-    case internalError(String)
+    case timeout
+    case internalError(Error)
 }

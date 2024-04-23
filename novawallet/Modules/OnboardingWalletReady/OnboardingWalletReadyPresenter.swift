@@ -66,7 +66,7 @@ extension OnboardingWalletReadyPresenter: OnboardingWalletReadyInteractorOutputP
                 from: view,
                 locale: localizationManager.selectedLocale
             )
-        case .internalError:
+        case .internalError, .timeout:
             wireframe.presentNoCloudConnection(from: view, locale: localizationManager.selectedLocale)
         }
     }
