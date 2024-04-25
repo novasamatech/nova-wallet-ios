@@ -1539,3 +1539,7 @@
 "common.enter.password" = "Enter password";
 "common.backup.password" = "Backup password";
 "common.confirm.password" = "Confirm password";
+"cloud.backup.create.bottom.sheet.title" = "Remember Backup Password";
+"cloud.backup.create.bottom.sheet.message" = " In the future, without backup password it is not possible to restore your wallets from Cloud Backup.\n%@";
+"cloud.backup.create.bottom.sheet.password" = "This password cannot be recovered.";
+"common.got.it" = "Got it";
