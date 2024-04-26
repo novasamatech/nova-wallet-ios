@@ -4,11 +4,13 @@ final class OnboardingWalletReadyInteractor {
     weak var presenter: OnboardingWalletReadyInteractorOutputProtocol?
 
     let factory: CloudBackupServiceFactoryProtocol
+    let serviceFacade: CloudBackupServiceFacadeProtocol
 
     private var storageManager: CloudBackupStorageManaging?
 
-    init(factory: CloudBackupServiceFactoryProtocol) {
+    init(factory: CloudBackupServiceFactoryProtocol, serviceFacade: CloudBackupServiceFacadeProtocol) {
         self.factory = factory
+        self.serviceFacade = serviceFacade
     }
 
     private func handleStorageManager(error: CloudBackupUploadError) {
@@ -19,6 +21,23 @@ final class OnboardingWalletReadyInteractor {
             presenter?.didReceive(error: .timeout)
         case .notEnoughSpace:
             presenter?.didReceive(error: .notEnoughStorageInCloud)
+        }
+    }
+
+    private func checkEnoughStorage(for url: URL) {
+        storageManager = factory.createStorageManager(for: url)
+
+        storageManager?.checkStorage(
+            of: CloudBackup.requiredCloudSize,
+            timeoutInterval: 30,
+            runningIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.didReceiveCloudBackupAvailable()
+            case let .failure(error):
+                self?.handleStorageManager(error: error)
+            }
         }
     }
 }
@@ -35,18 +54,16 @@ extension OnboardingWalletReadyInteractor: OnboardingWalletReadyInteractorInputP
             return
         }
 
-        storageManager = factory.createStorageManager(for: url)
-
-        storageManager?.checkStorage(
-            of: CloudBackup.requiredCloudSize,
-            timeoutInterval: 30,
-            runningIn: .main
-        ) { [weak self] result in
+        serviceFacade.checkBackupExists(runCompletionIn: .main) { [weak self] result in
             switch result {
-            case .success:
-                self?.presenter?.didReceiveCloudBackupAvailable()
+            case let .success(isBackupExists):
+                if isBackupExists {
+                    self?.presenter?.didDetectExistingCloudBackup()
+                } else {
+                    self?.checkEnoughStorage(for: url)
+                }
             case let .failure(error):
-                self?.handleStorageManager(error: error)
+                self?.presenter?.didReceive(error: .internalError(error))
             }
         }
     }

@@ -46,6 +46,14 @@ extension OnboardingWalletReadyPresenter: OnboardingWalletReadyInteractorOutputP
         view?.didStopBackupLoading()
     }
 
+    func didDetectExistingCloudBackup() {
+        wireframe.showExistingBackup(from: view) { [weak self] in
+            self?.wireframe.showRecoverBackup(from: self?.view)
+        }
+
+        view?.didStopBackupLoading()
+    }
+
     func didReceive(error: OnboardingWalletReadyInteractorError) {
         logger.error("Did receive error: \(error)")
 

@@ -12,4 +12,16 @@ final class OnboardingWalletReadyWireframe: OnboardingWalletReadyWireframeProtoc
     func showManualBackup(from _: OnboardingWalletReadyViewProtocol?, walletName _: String) {
         // TODO: Implement in separate task
     }
+
+    func showRecoverBackup(from _: OnboardingWalletReadyViewProtocol?) {
+        // TODO: Implement in separate task
+    }
+
+    func showExistingBackup(from view: OnboardingWalletReadyViewProtocol?, recoverClosure: @escaping () -> Void) {
+        guard let hintView = CloudBackupMessageSheetViewFactory.createBackupAlreadyExists(for: recoverClosure) else {
+            return
+        }
+
+        view?.controller.present(hintView.controller, animated: true)
+    }
 }
