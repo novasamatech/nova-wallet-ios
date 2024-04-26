@@ -511,6 +511,9 @@
 		0CD54E4B2BCE306C007B58E7 /* CloudBackupCryptoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD54E4A2BCE306B007B58E7 /* CloudBackupCryptoManager.swift */; };
 		0CD54E4D2BCE3B89007B58E7 /* CloudBackupSecretsImporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD54E4C2BCE3B89007B58E7 /* CloudBackupSecretsImporting.swift */; };
 		0CD54E4F2BCE6C11007B58E7 /* CloudBackupValidating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD54E4E2BCE6C11007B58E7 /* CloudBackupValidating.swift */; };
+		0CD846152BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */; };
+		0CD846172BDA5B040026B5CA /* AttributedString+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */; };
+		0CD846192BDA67AB0026B5CA /* MessageSheetFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846182BDA67AB0026B5CA /* MessageSheetFacade.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
@@ -5153,6 +5156,9 @@
 		0CD54E4A2BCE306B007B58E7 /* CloudBackupCryptoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCryptoManager.swift; sourceTree = "<group>"; };
 		0CD54E4C2BCE3B89007B58E7 /* CloudBackupSecretsImporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsImporting.swift; sourceTree = "<group>"; };
 		0CD54E4E2BCE6C11007B58E7 /* CloudBackupValidating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupValidating.swift; sourceTree = "<group>"; };
+		0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupMessageSheetViewFactory.swift; sourceTree = "<group>"; };
+		0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AttributedString+Style.swift"; sourceTree = "<group>"; };
+		0CD846182BDA67AB0026B5CA /* MessageSheetFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetFacade.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
@@ -10351,6 +10357,14 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		0CD846132BDA52410026B5CA /* CloudBackupMessageSheet */ = {
+			isa = PBXGroup;
+			children = (
+				0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */,
+			);
+			path = CloudBackupMessageSheet;
+			sourceTree = "<group>";
+		};
 		0CE550B42A4973BA00F0A7AC /* StakingUnbondSetup */ = {
 			isa = PBXGroup;
 			children = (
@@ -15270,6 +15284,7 @@
 		849013D224A9268D008F705E /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				0CD846132BDA52410026B5CA /* CloudBackupMessageSheet */,
 				0C0CB37C2AC5408000EAC516 /* AssetConversion */,
 				88C5F079297EE429001CCADE /* InAppUpdates */,
 				845B891A2959608D00EE25B0 /* SecurityLayer */,
@@ -15628,6 +15643,7 @@
 		8490145424A9403C008F705E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */,
 				0CCD18C02BA1EF7E0068D73A /* AssetBalance */,
 				849B036E2A15EE07009624D9 /* TransactionHistory */,
 				0C154A0D2A45995500932C3F /* CompoundComparator.swift */,
@@ -19605,6 +19621,7 @@
 			children = (
 				8465DA33298EC5D900C7CFF1 /* TitleDetails */,
 				8465DA32298EC5A800C7CFF1 /* Compound */,
+				0CD846182BDA67AB0026B5CA /* MessageSheetFacade.swift */,
 			);
 			path = MessageSheet;
 			sourceTree = "<group>";
@@ -22057,6 +22074,7 @@
 				88F34FD228FF045400712BDE /* BindableView.swift in Sources */,
 				8857E03128A6A22500260BA2 /* PriceAssetInfoFactory.swift in Sources */,
 				0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */,
+				0CD846172BDA5B040026B5CA /* AttributedString+Style.swift in Sources */,
 				846802A3265DA5530034F9B5 /* CrowdloanContributionSetupViewModel.swift in Sources */,
 				88D02FE52942EA7800E26390 /* AssetDetailsStyles.swift in Sources */,
 				84CAC1CC298A715900F78169 /* GovernanceOffchainVotesLocal.swift in Sources */,
@@ -23058,6 +23076,7 @@
 				840B3D6E289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift in Sources */,
 				F48EB5462722BB7000AE15ED /* AcalaBonusService.swift in Sources */,
 				0C626D212A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift in Sources */,
+				0CD846192BDA67AB0026B5CA /* MessageSheetFacade.swift in Sources */,
 				842E9E982A2A28A700759972 /* StakingDashboardProviderFactory.swift in Sources */,
 				845B07ED291594E1005785D3 /* DemocracyReferendum.swift in Sources */,
 				84466B4028B77B4500FA1E0D /* SignatureVerificationWrapper.swift in Sources */,
@@ -23917,6 +23936,7 @@
 				84BC7041289DBF62008A9758 /* QRDisplayView.swift in Sources */,
 				2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */,
 				845B07F329159C15005785D3 /* Democracy+CodingPath.swift in Sources */,
+				0CD846152BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift in Sources */,
 				847C96492553614F002D288F /* ExportRestoreJsonPresenter.swift in Sources */,
 				77EF9A722B9ECCA90034D619 /* PushNotificationOpenScreenFacade.swift in Sources */,
 				0C13DFD32AF949B400E5F355 /* BalanceViewModelFactoryFacade+Formatting.swift in Sources */,

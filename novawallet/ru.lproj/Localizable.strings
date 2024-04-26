@@ -1539,3 +1539,11 @@
 "common.enter.password" = "Введите пароль";
 "common.backup.password" = "Пароль бэкапа";
 "common.confirm.password" = "Подтвердите пароль";
+"cloud.backup.create.bottom.sheet.title" = "Запомните пароль бэкапа";
+"cloud.backup.create.bottom.sheet.message" = "В будущем, без пароля бэкапа вы не сможете восстановить кошельки из iCloud.\n%@";
+"cloud.backup.create.bottom.sheet.password" = "Это пароль нельзя восстановить.";
+"common.got.it" = "Понятно";
+"cloud.backup.existing.bottom.sheet.title" = "Обнаружен существующий бэкап";
+"cloud.backup.existing.bottom.sheet.message" = "%@ Все кошельки буду надёжно сохранены в iCloud.";
+"cloud.backup.existing.bottom.sheet.recover" = "Вы хотите восстановить ваши кошельки?";
+"common.recover.wallets" = "Восстановить Кошельки";

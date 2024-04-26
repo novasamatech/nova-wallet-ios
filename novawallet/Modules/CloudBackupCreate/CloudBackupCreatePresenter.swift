@@ -81,6 +81,10 @@ extension CloudBackupCreatePresenter: CloudBackupCreatePresenterProtocol {
     func activateContinue() {
         initiateWalletCreation()
     }
+
+    func activateOnAppear() {
+        wireframe.showPasswordHint(from: view)
+    }
 }
 
 extension CloudBackupCreatePresenter: CloudBackupCreateInteractorOutputProtocol {

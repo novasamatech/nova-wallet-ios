@@ -33,6 +33,12 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        presenter.activateOnAppear()
+    }
+
     private func setupHandlers() {
         rootView.genericActionView.actionButton.addTarget(
             self,

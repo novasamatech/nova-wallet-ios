@@ -10,4 +10,12 @@ final class CloudBackupCreateWireframe: CloudBackupCreateWireframeProtocol {
 
         rootAnimator.animateTransition(to: pincodeViewController)
     }
+
+    func showPasswordHint(from view: CloudBackupCreateViewProtocol?) {
+        guard let hintView = CloudBackupMessageSheetViewFactory.createBackupMessageSheet() else {
+            return
+        }
+
+        view?.controller.present(hintView.controller, animated: true)
+    }
 }

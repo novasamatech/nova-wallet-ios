@@ -12,6 +12,7 @@ protocol CloudBackupCreatePresenterProtocol: AnyObject {
     func applyEnterPasswordChange()
     func applyConfirmPasswordChange()
     func activateContinue()
+    func activateOnAppear()
 }
 
 protocol CloudBackupCreateInteractorInputProtocol: AnyObject {
@@ -23,6 +24,8 @@ protocol CloudBackupCreateInteractorOutputProtocol: AnyObject {
     func didReceive(error: CloudBackupCreateInteractorError)
 }
 
-protocol CloudBackupCreateWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, CloudBackupErrorPresentable {
+protocol CloudBackupCreateWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
+    CloudBackupErrorPresentable {
     func proceed(from view: CloudBackupCreateViewProtocol?)
+    func showPasswordHint(from view: CloudBackupCreateViewProtocol?)
 }
