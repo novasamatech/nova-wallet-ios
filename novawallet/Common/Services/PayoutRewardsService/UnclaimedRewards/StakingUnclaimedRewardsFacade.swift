@@ -53,13 +53,44 @@ final class StakingUnclaimedRewardsFacade {
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StakingUnclaimedReward]> {
-        StakingClaimedRewardsOperationFactory(
+        let legacyWrapper = createLedgerBasedWrapper(
+            for: validators,
+            codingFactoryClosure: codingFactoryClosure,
+            connection: connection
+        )
+
+        let claimedRewardsWrapper = StakingClaimedRewardsOperationFactory(
             requestFactory: requestFactory
         ).createWrapper(
             for: { validators },
             codingFactoryClosure: codingFactoryClosure,
             connection: connection
         )
+
+        let mergeOperation = ClosureOperation<[StakingUnclaimedReward]> {
+            let legacyResults = try legacyWrapper.targetOperation.extractNoCancellableResultData()
+            let pagedResults = try claimedRewardsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let legacyUnclaimed: Set<ResolvedValidatorEra> = Set(
+                legacyResults.map { ResolvedValidatorEra(validator: $0.accountId, era: $0.era) }
+            )
+
+            return pagedResults.filter { unclaimedReward in
+                let validatorEra = ResolvedValidatorEra(
+                    validator: unclaimedReward.accountId,
+                    era: unclaimedReward.era
+                )
+
+                return legacyUnclaimed.contains(validatorEra)
+            }
+        }
+
+        mergeOperation.addDependency(claimedRewardsWrapper.targetOperation)
+        mergeOperation.addDependency(legacyWrapper.targetOperation)
+
+        return claimedRewardsWrapper
+            .insertingHead(operations: legacyWrapper.allOperations)
+            .insertingTail(operation: mergeOperation)
     }
 }
 
@@ -76,45 +107,23 @@ extension StakingUnclaimedRewardsFacade: StakingUnclaimedRewardsFacadeProtocol {
             let pagedEra = try exposurePagedEra()
             let validators = try validatorsClosure()
 
-            let stakingLedgerItems = validators.filter { validator in
-                guard let pagedEra = pagedEra else {
-                    return true
-                }
-
-                return validator.era < pagedEra
-            }
-
-            let claimedBasedItems = validators.filter { validator in
-                guard let pagedEra = pagedEra else {
-                    return false
-                }
-
-                return validator.era >= pagedEra
-            }
-
-            var wrappers: [CompoundOperationWrapper<[StakingUnclaimedReward]>] = []
-
-            if !stakingLedgerItems.isEmpty {
-                let wrapper = self.createLedgerBasedWrapper(
-                    for: stakingLedgerItems,
-                    codingFactoryClosure: codingFactoryClosure,
-                    connection: connection
-                )
-
-                wrappers.append(wrapper)
-            }
-
-            if !claimedBasedItems.isEmpty {
+            if pagedEra != nil {
                 let wrapper = self.createClaimedBasedWrapper(
-                    for: claimedBasedItems,
+                    for: validators,
                     codingFactoryClosure: codingFactoryClosure,
                     connection: connection
                 )
 
-                wrappers.append(wrapper)
-            }
+                return [wrapper]
+            } else {
+                let wrapper = self.createLedgerBasedWrapper(
+                    for: validators,
+                    codingFactoryClosure: codingFactoryClosure,
+                    connection: connection
+                )
 
-            return wrappers
+                return [wrapper]
+            }
         }.longrunOperation()
 
         let mergeOperation = ClosureOperation<[StakingUnclaimedReward]> {
