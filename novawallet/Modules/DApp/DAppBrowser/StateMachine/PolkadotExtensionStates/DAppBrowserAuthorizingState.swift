@@ -41,7 +41,7 @@ final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
                 let nextState = DAppBrowserAuthorizedState(stateMachine: stateMachine)
                 try provideResponse(for: .authorize, result: true, nextState: nextState)
             } else {
-                let nextState = DAppBrowserDeniedState(stateMachine: stateMachine)
+                let nextState = DAppBrowserWaitingAuthState(stateMachine: stateMachine)
                 provideError(
                     for: .authorize,
                     errorMessage: PolkadotExtensionError.rejected.rawValue,
