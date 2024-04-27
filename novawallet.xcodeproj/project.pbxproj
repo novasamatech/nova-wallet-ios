@@ -1710,7 +1710,6 @@
 		842BDB28278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB27278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift */; };
 		842BDB2A278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB29278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift */; };
 		842BDB2C278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB2B278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift */; };
-		842BDB2E278C506F00AB4B5A /* DAppBrowserDeniedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB2D278C506F00AB4B5A /* DAppBrowserDeniedState.swift */; };
 		842BDB30278C57EB00AB4B5A /* DAppBrowserSigningState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB2F278C57EB00AB4B5A /* DAppBrowserSigningState.swift */; };
 		842D1E7924D063FD00C30A7A /* TriangularedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E7824D063FD00C30A7A /* TriangularedView.swift */; };
 		842D1E7B24D0667E00C30A7A /* TriangularedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E7A24D0667E00C30A7A /* TriangularedButton.swift */; };
@@ -6246,7 +6245,6 @@
 		842BDB27278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWaitingAuthState.swift; sourceTree = "<group>"; };
 		842BDB29278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAuthorizingState.swift; sourceTree = "<group>"; };
 		842BDB2B278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAuthorizedState.swift; sourceTree = "<group>"; };
-		842BDB2D278C506F00AB4B5A /* DAppBrowserDeniedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserDeniedState.swift; sourceTree = "<group>"; };
 		842BDB2F278C57EB00AB4B5A /* DAppBrowserSigningState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserSigningState.swift; sourceTree = "<group>"; };
 		842D1E7824D063FD00C30A7A /* TriangularedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangularedView.swift; sourceTree = "<group>"; };
 		842D1E7A24D0667E00C30A7A /* TriangularedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangularedButton.swift; sourceTree = "<group>"; };
@@ -12640,7 +12638,6 @@
 				842BDB27278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift */,
 				842BDB29278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift */,
 				842BDB2B278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift */,
-				842BDB2D278C506F00AB4B5A /* DAppBrowserDeniedState.swift */,
 				842BDB2F278C57EB00AB4B5A /* DAppBrowserSigningState.swift */,
 				84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */,
 				8476D3A027F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift */,
@@ -23442,7 +23439,6 @@
 				88D841D429436572008A5A0C /* RoundedButton+Styles.swift in Sources */,
 				84E25BF627E9A51D00290BF1 /* LeaseParam.swift in Sources */,
 				843939902636F88F0087658D /* YourValidatorsModel.swift in Sources */,
-				842BDB2E278C506F00AB4B5A /* DAppBrowserDeniedState.swift in Sources */,
 				8473F4B6282BE488007CC55A /* StakingRelaychainProtocols.swift in Sources */,
 				844D2A40281B0ED70049CF5E /* StackTableHeaderCell.swift in Sources */,
 				84A2A60A26B82B35000C6C6C /* ValidatorOperationFactory+Protocol.swift in Sources */,
