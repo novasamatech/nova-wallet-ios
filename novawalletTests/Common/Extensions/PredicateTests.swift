@@ -77,7 +77,7 @@ class PredicateTests: XCTestCase {
     func testWebsocketPredicate() {
         XCTAssertTrue(NSPredicate.websocket.evaluate(with: "wss://cc3-5.kusama.network"))
         XCTAssertTrue(NSPredicate.websocket.evaluate(with: "ws://cc3-5.kusama.network"))
-        XCTAssertTrue(NSPredicate.websocket.evaluate(with: "wss://ws.validator.dev.polkadot-rust.soramitsu.co.jp:443"))
+        XCTAssertTrue(NSPredicate.websocket.evaluate(with: "wss://ws.validator.dev.polkadot-rust.co.jp:443"))
         XCTAssertTrue(NSPredicate.websocket.evaluate(with: "wss://48.1.1.2/"))
         XCTAssertTrue(NSPredicate.websocket.evaluate(with: "ws://142.42.1.1:8080/"))
 
