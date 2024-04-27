@@ -514,6 +514,9 @@
 		0CD846152BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */; };
 		0CD846172BDA5B040026B5CA /* AttributedString+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */; };
 		0CD846192BDA67AB0026B5CA /* MessageSheetFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846182BDA67AB0026B5CA /* MessageSheetFacade.swift */; };
+		0CD846212BDCA9F60026B5CA /* WalletImportOptionPrimaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846202BDCA9F60026B5CA /* WalletImportOptionPrimaryView.swift */; };
+		0CD846232BDCAAE80026B5CA /* WalletImportOptionSecondaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846222BDCAAE80026B5CA /* WalletImportOptionSecondaryView.swift */; };
+		0CD846252BDCABEF0026B5CA /* WalletOptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846242BDCABEF0026B5CA /* WalletOptionViewModel.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
@@ -5165,6 +5168,9 @@
 		0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AttributedString+Style.swift"; sourceTree = "<group>"; };
 		0CD846182BDA67AB0026B5CA /* MessageSheetFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetFacade.swift; sourceTree = "<group>"; };
+		0CD846202BDCA9F60026B5CA /* WalletImportOptionPrimaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletImportOptionPrimaryView.swift; sourceTree = "<group>"; };
+		0CD846222BDCAAE80026B5CA /* WalletImportOptionSecondaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletImportOptionSecondaryView.swift; sourceTree = "<group>"; };
+		0CD846242BDCABEF0026B5CA /* WalletOptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletOptionViewModel.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
@@ -10423,6 +10429,16 @@
 				26F53332B25039CD43301CAF /* AccountManagement */,
 			);
 			path = ManageWallets;
+			sourceTree = "<group>";
+		};
+		0CD8461F2BDCA9DE0026B5CA /* View */ = {
+			isa = PBXGroup;
+			children = (
+				0CD846202BDCA9F60026B5CA /* WalletImportOptionPrimaryView.swift */,
+				0CD846222BDCAAE80026B5CA /* WalletImportOptionSecondaryView.swift */,
+				0CD846242BDCABEF0026B5CA /* WalletOptionViewModel.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		0CE550B42A4973BA00F0A7AC /* StakingUnbondSetup */ = {
@@ -19639,6 +19655,7 @@
 		90A23DC5F29924F7C315F602 /* OptionsList */ = {
 			isa = PBXGroup;
 			children = (
+				0CD8461F2BDCA9DE0026B5CA /* View */,
 				1F943B80311761462ECA5185 /* WalletImportOptionsProtocols.swift */,
 				D0C2C6656744FA89FA45B45E /* WalletImportOptionsWireframe.swift */,
 				BD6328AE79C92A96D9E8C04B /* WalletImportOptionsPresenter.swift */,
@@ -22170,6 +22187,7 @@
 				84D1110E26B931C20016D962 /* ChainModel.swift in Sources */,
 				84216FD1282797ED00479375 /* ParachainStakingCollatorServiceProtocol.swift in Sources */,
 				F458D3C12642B7D80055CB75 /* LearnMoreView.swift in Sources */,
+				0CD846252BDCABEF0026B5CA /* WalletOptionViewModel.swift in Sources */,
 				F4E17FCA272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift in Sources */,
 				8441D3C929E8015100070BA3 /* WalletConnectMetadata.swift in Sources */,
 				8434B604298D474D00FACF4C /* GovernanceAddDelegationTracksPresenter.swift in Sources */,
@@ -25801,6 +25819,7 @@
 				91201789084DD9A419CA8CD3 /* MarkdownDescriptionViewController.swift in Sources */,
 				84A0166929A4E6AC00C9D415 /* MarkdownDescriptionModel.swift in Sources */,
 				3A4743C7C74BE4F74F6390F6 /* MarkdownDescriptionViewLayout.swift in Sources */,
+				0CD846212BDCA9F60026B5CA /* WalletImportOptionPrimaryView.swift in Sources */,
 				773B2E452B75727900A3BC11 /* FirebaseHolder.swift in Sources */,
 				849FFFCD2980116A00A17471 /* GovernanceDelegateInfoError.swift in Sources */,
 				F8C0CA3DDBCB5E509295F099 /* MarkdownDescriptionViewFactory.swift in Sources */,
@@ -25910,6 +25929,7 @@
 				0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */,
 				841E54A07ACD3AD160A1250A /* InAppUpdatesViewController.swift in Sources */,
 				77C9BCD22ACD8AF400022EA2 /* SwapAssetsOperationViewController.swift in Sources */,
+				0CD846232BDCAAE80026B5CA /* WalletImportOptionSecondaryView.swift in Sources */,
 				DDA07514BEF3E2FD6EE1BB4E /* InAppUpdatesViewLayout.swift in Sources */,
 				32009DBB90D19ACD6D7B7A5C /* InAppUpdatesViewFactory.swift in Sources */,
 				77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */,
