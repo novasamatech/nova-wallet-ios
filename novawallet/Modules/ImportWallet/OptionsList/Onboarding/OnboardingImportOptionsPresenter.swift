@@ -128,7 +128,7 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
 extension OnboardingImportOptionsPresenter: OnboardingImportOptionsInteractorOutputProtocol {
     func didReceive(backupExists: Bool) {
         logger.debug("Backup exists: \(backupExists)")
-        
+
         view?.didStopLoading()
 
         if backupExists {
