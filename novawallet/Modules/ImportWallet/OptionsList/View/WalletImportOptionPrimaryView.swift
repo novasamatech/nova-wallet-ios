@@ -1,7 +1,9 @@
 import UIKit
 import SoraUI
 
-final class WalletImportOptionPrimaryView: RowView<GenericPairValueView<WalletImportOptionPrimaryBannerView, MultiValueView>> {
+final class WalletImportOptionPrimaryView: RowView<
+    GenericPairValueView<WalletImportOptionPrimaryBannerView, MultiValueView>
+> {
     var bannerView: UIImageView {
         rowContentView.fView.backgroundImageView
     }
@@ -33,10 +35,13 @@ final class WalletImportOptionPrimaryView: RowView<GenericPairValueView<WalletIm
     }
 
     private func setupStyle() {
+        contentInsets = .zero
+
         roundedBackgroundView.applyFilledBackgroundStyle()
         roundedBackgroundView.fillColor = R.color.colorButtonBackgroundSecondary()!
         roundedBackgroundView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         roundedBackgroundView.cornerRadius = 12
+        roundedBackgroundView.roundingCorners = .allCorners
 
         rowContentView.stackView.axis = .vertical
         rowContentView.spacing = 0
@@ -108,7 +113,13 @@ final class WalletImportOptionPrimaryBannerView: UIView {
         case .right:
             mainImageView.snp.remakeConstraints { make in
                 make.centerY.equalToSuperview()
-                make.centerX.equalTo(self.snp.right)
+                make.trailing.equalToSuperview()
+            }
+
+        case .bottom:
+            mainImageView.snp.remakeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.bottom.equalToSuperview()
             }
         }
     }

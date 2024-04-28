@@ -4,6 +4,7 @@ protocol CloudBackupErrorPresentable {
     func presentCloudBackupUnavailable(from view: ControllerBackedProtocol, locale: Locale)
     func presentNotEnoughStorageForBackup(from view: ControllerBackedProtocol, locale: Locale)
     func presentNoCloudConnection(from view: ControllerBackedProtocol, locale: Locale)
+    func presentBackupNotFound(from view: ControllerBackedProtocol, locale: Locale)
 }
 
 extension CloudBackupErrorPresentable where Self: AlertPresentable {
@@ -63,6 +64,23 @@ extension CloudBackupErrorPresentable where Self: AlertPresentable {
         )
 
         let message = R.string.localizable.connectionErrorMessage(
+            preferredLanguages: locale.rLanguages
+        )
+
+        present(
+            message: message,
+            title: title,
+            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            from: view
+        )
+    }
+
+    func presentBackupNotFound(from view: ControllerBackedProtocol, locale: Locale) {
+        let title = R.string.localizable.cloudBackupNotFoundTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
+        let message = R.string.localizable.cloudBackupNotFoundMessage(
             preferredLanguages: locale.rLanguages
         )
 

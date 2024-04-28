@@ -31,6 +31,7 @@ final class WalletImportOptionSecondaryView: RowView<IconDetailsView> {
         roundedBackgroundView.fillColor = R.color.colorButtonBackgroundSecondary()!
         roundedBackgroundView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         roundedBackgroundView.cornerRadius = 12
+        roundedBackgroundView.roundingCorners = .allCorners
 
         rowContentView.mode = .iconDetails
         rowContentView.stackView.axis = .horizontal

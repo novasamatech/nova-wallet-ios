@@ -5,6 +5,7 @@ struct WalletImportOptionViewModel {
         enum PrimaryImagePosition {
             case center
             case right
+            case bottom
         }
 
         typealias ActionClosure = () -> Void
