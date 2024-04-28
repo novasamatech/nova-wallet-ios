@@ -73,7 +73,11 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 preferredLanguages: selectedLocale.rLanguages
                             ),
                             onAction: { [weak self] in
-                                self?.wireframe.showHardwareImport(from: self?.view)
+                                guard let self else {
+                                    return
+                                }
+
+                                self.wireframe.showHardwareImport(from: self.view, locale: self.selectedLocale)
                             }
                         )
                     ),

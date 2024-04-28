@@ -520,6 +520,7 @@
 		0CD846272BDDF43A0026B5CA /* UIImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846262BDDF43A0026B5CA /* UIImage+Resize.swift */; };
 		0CD8462C2BDE0D260026B5CA /* OnboardingImportOptionsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8462B2BDE0D260026B5CA /* OnboardingImportOptionsProtocols.swift */; };
 		0CD8462E2BDE10C20026B5CA /* OnboardingImportOptionsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8462D2BDE10C20026B5CA /* OnboardingImportOptionsPresenter.swift */; };
+		0CD846302BDE61310026B5CA /* WalletImportOptionsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8462F2BDE61310026B5CA /* WalletImportOptionsWireframe.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
@@ -5177,6 +5178,7 @@
 		0CD846262BDDF43A0026B5CA /* UIImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize.swift"; sourceTree = "<group>"; };
 		0CD8462B2BDE0D260026B5CA /* OnboardingImportOptionsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingImportOptionsProtocols.swift; sourceTree = "<group>"; };
 		0CD8462D2BDE10C20026B5CA /* OnboardingImportOptionsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingImportOptionsPresenter.swift; sourceTree = "<group>"; };
+		0CD8462F2BDE61310026B5CA /* WalletImportOptionsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletImportOptionsWireframe.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
@@ -10454,6 +10456,7 @@
 				1F943B80311761462ECA5185 /* WalletImportOptionsProtocols.swift */,
 				29DCA6A494C36F24FAA624A1 /* WalletImportOptionsViewController.swift */,
 				E8A74671D9D0AEF3F6E1A9BF /* WalletImportOptionsViewLayout.swift */,
+				0CD8462F2BDE61310026B5CA /* WalletImportOptionsWireframe.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -23231,6 +23234,7 @@
 				84F4B2352A30D73900113DDD /* StakingDashboardSection.swift in Sources */,
 				845C40792702571200BFA50B /* StakingRemoteSubscriptionService.swift in Sources */,
 				8468B86A24F63CBA00B76BC6 /* AddAccount+AccountImportInteractor.swift in Sources */,
+				0CD846302BDE61310026B5CA /* WalletImportOptionsWireframe.swift in Sources */,
 				0C9ECB5A2A4A9AB400BDCA73 /* AssetListAccountCell.swift in Sources */,
 				8846F72729D6BAD700B8B776 /* Data+base10.swift in Sources */,
 				849FFFD0298020C900A17471 /* GovernanceDelegationConstants.swift in Sources */,

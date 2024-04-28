@@ -1,15 +1,31 @@
 import Foundation
 
-final class OnboardingImportOptionsWireframe: OnboardingImportOptionsWireframeProtocol {
-    func showCloudImport(from _: WalletImportOptionsViewProtocol?) {}
+final class OnboardingImportOptionsWireframe: WalletImportOptionsWireframe, OnboardingImportOptionsWireframeProtocol {
+    func showCloudImport(from _: WalletImportOptionsViewProtocol?) {
+        // TODO: Implement in the next task
+    }
 
-    func showPassphraseImport(from _: WalletImportOptionsViewProtocol?) {}
+    func showPassphraseImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .mnemonic)
+    }
 
-    func showHardwareImport(from _: WalletImportOptionsViewProtocol?) {}
+    func showHardwareImport(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
+        showHardwareWalletSelection(from: view, locale: locale)
+    }
 
-    func showWatchOnlyImport(from _: WalletImportOptionsViewProtocol?) {}
+    func showWatchOnlyImport(from view: WalletImportOptionsViewProtocol?) {
+        guard let watchOnlyView = CreateWatchOnlyViewFactory.createViewForOnboarding() else {
+            return
+        }
 
-    func showSeedImport(from _: WalletImportOptionsViewProtocol?) {}
+        view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
+    }
 
-    func showRestoreJsonImport(from _: WalletImportOptionsViewProtocol?) {}
+    func showSeedImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .seed)
+    }
+
+    func showRestoreJsonImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .keystore)
+    }
 }
