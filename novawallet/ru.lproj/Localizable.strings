@@ -1547,3 +1547,11 @@
 "cloud.backup.existing.bottom.sheet.message" = "%@ Все кошельки буду надёжно сохранены в iCloud.";
 "cloud.backup.existing.bottom.sheet.recover" = "Вы хотите восстановить ваши кошельки?";
 "common.recover.wallets" = "Восстановить Кошельки";
+"common.cloud.backup" = "Облачный бэкап";
+"common.passphrase" = "Секретная фраза";
+"common.hardware.wallet" = "Аппаратный кошелёк";
+"common.watch.only" = "Watch-only";
+"cloud.import.description" = "Восстановить кошелёк из облака";
+"passphrase.import.description" = "Используйте секретную фразу из 12, 15, 18, 21 или 24 слов";
+"hardware.wallet.import.description" = "Polkadot Vault, Parity Signer или Ledger";
+"wallet.import.title" = "Выберите опцию импорта кошелька";

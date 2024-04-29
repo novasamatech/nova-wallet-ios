@@ -12,9 +12,12 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
     }
 
     func showAccountRestore(from view: OnboardingMainViewProtocol?) {
-        // TODO: Navigate to the new import screen
-        presentSecretTypeSelection(from: view) { [weak self] secretSource in
-            self?.presentAccountRestore(from: view, secretSource: secretSource)
+        guard let importView = OnboardingImportOptionsViewFactory.createView() else {
+            return
+        }
+
+        if let navigationController = view?.controller.navigationController {
+            navigationController.pushViewController(importView.controller, animated: true)
         }
     }
 
@@ -29,9 +32,9 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
     }
 
     private func presentAccountRestore(from view: OnboardingMainViewProtocol?, secretSource: SecretSource) {
-        guard let restorationController = AccountImportViewFactory
-            .createViewForOnboarding(for: secretSource)?.controller
-        else {
+        guard let restorationController = AccountImportViewFactory.createViewForOnboarding(
+            for: secretSource
+        )?.controller else {
             return
         }
 
