@@ -1555,3 +1555,8 @@
 "passphrase.import.description" = "Используйте секретную фразу из 12, 15, 18, 21 или 24 слов";
 "hardware.wallet.import.description" = "Polkadot Vault, Parity Signer или Ledger";
 "wallet.import.title" = "Выберите опцию импорта кошелька";
+"cloud.backup.not.found.title" = "Бэкап не найден";
+"cloud.backup.not.found.message" = "К сожалению, Бэкап с вашими кошельками не найден.";
+"cloud.backup.import.title" = "Введите пароль от бэкапа";
+"cloud.backup.import.subtitle" = "Пожалуйста, введите пароль установленный во время бэкапа";
+"common.forgot.password.button" = "Забыли пароль?";

@@ -1557,3 +1557,6 @@
 "wallet.import.title" = "Choose how you would like to import your wallet";
 "cloud.backup.not.found.title" = "Backup Not Found";
 "cloud.backup.not.found.message" = "Unfortunately, Backup with your wallets has not been found.";
+"cloud.backup.import.title" = "Enter backup password";
+"cloud.backup.import.subtitle" = "Please enter the password you created during the backup process";
+"common.forgot.password.button" = "Forgot Password?";
