@@ -74,11 +74,17 @@ final class MessageSheetViewLayout<
         buttonsStackView = stackView
     }
 
-    func setupMainActionButton() {
+    func setupMainActionButton(for actionType: MessageSheetAction.ActionType) {
         setupButtonsStackViewIfNeeded()
 
         let button = TriangularedButton()
-        button.applyDefaultStyle()
+
+        switch actionType {
+        case .normal:
+            button.applyDefaultStyle()
+        case .destructive:
+            button.applyDestructiveDefaultStyle()
+        }
 
         buttonsStackView?.addArrangedSubview(button)
 

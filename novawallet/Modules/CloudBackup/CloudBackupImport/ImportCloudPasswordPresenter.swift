@@ -30,9 +30,25 @@ extension ImportCloudPasswordPresenter: ImportCloudPasswordPresenterProtocol {
         view?.didReceive(passwordViewModel: viewModel)
     }
 
-    func activateForgotPassword() {}
+    func activateForgotPassword() {
+        wireframe.showCloudBackupDelete(
+            from: view,
+            reason: .forgotPassword,
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.logger.info("Backup removed due to no password")
+        }
+    }
 
-    func activateContinue() {}
+    func activateContinue() {
+        wireframe.showCloudBackupDelete(
+            from: view,
+            reason: .brokenOrEmpty,
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.logger.info("Backup removed due to damage")
+        }
+    }
 }
 
 extension ImportCloudPasswordPresenter: ImportCloudPasswordInteractorOutputProtocol {}

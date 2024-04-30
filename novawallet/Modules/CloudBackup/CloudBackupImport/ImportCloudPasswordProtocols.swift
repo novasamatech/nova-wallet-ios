@@ -1,6 +1,6 @@
 import SoraFoundation
 
-protocol ImportCloudPasswordViewProtocol: ControllerBackedProtocol {
+protocol ImportCloudPasswordViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceive(passwordViewModel: InputViewModelProtocol)
 }
 
@@ -14,4 +14,4 @@ protocol ImportCloudPasswordInteractorInputProtocol: AnyObject {}
 
 protocol ImportCloudPasswordInteractorOutputProtocol: AnyObject {}
 
-protocol ImportCloudPasswordWireframeProtocol: AnyObject {}
+protocol ImportCloudPasswordWireframeProtocol: ErrorPresentable, CloudBackupDeletePresentable {}

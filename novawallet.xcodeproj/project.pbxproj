@@ -521,6 +521,7 @@
 		0CD8462C2BDE0D260026B5CA /* OnboardingImportOptionsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8462B2BDE0D260026B5CA /* OnboardingImportOptionsProtocols.swift */; };
 		0CD8462E2BDE10C20026B5CA /* OnboardingImportOptionsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8462D2BDE10C20026B5CA /* OnboardingImportOptionsPresenter.swift */; };
 		0CD846302BDE61310026B5CA /* WalletImportOptionsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8462F2BDE61310026B5CA /* WalletImportOptionsWireframe.swift */; };
+		0CD8463C2BE0EE210026B5CA /* CloudBackupDeletePresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8463B2BE0EE210026B5CA /* CloudBackupDeletePresentable.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
@@ -5187,6 +5188,7 @@
 		0CD8462B2BDE0D260026B5CA /* OnboardingImportOptionsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingImportOptionsProtocols.swift; sourceTree = "<group>"; };
 		0CD8462D2BDE10C20026B5CA /* OnboardingImportOptionsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingImportOptionsPresenter.swift; sourceTree = "<group>"; };
 		0CD8462F2BDE61310026B5CA /* WalletImportOptionsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletImportOptionsWireframe.swift; sourceTree = "<group>"; };
+		0CD8463B2BE0EE210026B5CA /* CloudBackupDeletePresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupDeletePresentable.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
@@ -10401,6 +10403,7 @@
 			isa = PBXGroup;
 			children = (
 				0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */,
+				0CD8463B2BE0EE210026B5CA /* CloudBackupDeletePresentable.swift */,
 			);
 			path = CloudBackupMessageSheet;
 			sourceTree = "<group>";
@@ -25875,6 +25878,7 @@
 				0E71EA5AE04940824AEA01C7 /* GovernanceUnlockSetupViewLayout.swift in Sources */,
 				E28F3762EAC9A4E5D21342D4 /* GovernanceUnlockSetupViewFactory.swift in Sources */,
 				AE6C737BD94BCD88A06287E2 /* MarkdownDescriptionProtocols.swift in Sources */,
+				0CD8463C2BE0EE210026B5CA /* CloudBackupDeletePresentable.swift in Sources */,
 				62B2298F132DB0CE0794DD7A /* MarkdownDescriptionWireframe.swift in Sources */,
 				A05C2B3458F12EFE1633D917 /* MarkdownDescriptionPresenter.swift in Sources */,
 				91201789084DD9A419CA8CD3 /* MarkdownDescriptionViewController.swift in Sources */,

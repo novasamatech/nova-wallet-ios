@@ -101,6 +101,16 @@ extension ImportCloudPasswordViewController: ImportCloudPasswordViewProtocol {
     func didReceive(passwordViewModel: InputViewModelProtocol) {
         rootView.passwordView.bind(inputViewModel: passwordViewModel)
     }
+
+    func didStartLoading() {
+        rootView.containerView.isUserInteractionEnabled = false
+        rootView.genericActionView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.containerView.isUserInteractionEnabled = true
+        rootView.genericActionView.stopLoading()
+    }
 }
 
 extension ImportCloudPasswordViewController: Localizable {

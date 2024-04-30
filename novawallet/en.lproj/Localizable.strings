@@ -1560,3 +1560,12 @@
 "cloud.backup.import.title" = "Enter backup password";
 "cloud.backup.import.subtitle" = "Please enter the password you created during the backup process";
 "common.forgot.password.button" = "Forgot Password?";
+"cloud.backup.broken.title" = "Backup found but empty or broken";
+"cloud.backup.broken.message" = "An issue has been identified with your backup. You have the option to delete the current backup and create a new one. %@ before proceeding.";
+"cloud.backup.broken.highlighted" = "Ensure you have saved Passphrases for all wallets";
+"cloud.backup.no.password.title" = "Have you lost your password?";
+"cloud.backup.no.password.message" = "%@ It's exclusively yours, securely stored, inaccessible to others. Without the backup password, restoring wallets from iCloud is impossible. If lost, delete the current backup to create a new one with a fresh password. %@";
+"cloud.backup.no.password.highlighted1" = "Unfortunately, your password cannot be recovered.";
+"cloud.backup.no.password.highlighted2" = "Alternatively, use Passphrase for restoration.";
+"common.delete.backup" = "Delete Backup";
+"cloud.backup.delete.confirmation" = "Are you sure you want to delete Cloud Backup?\nCurrent backup with your wallets will be permanently deleted!";
