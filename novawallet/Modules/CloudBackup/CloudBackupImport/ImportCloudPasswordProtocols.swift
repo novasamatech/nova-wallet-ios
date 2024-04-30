@@ -1,11 +1,12 @@
 import SoraFoundation
 
-protocol ImportCloudPasswordViewProtocol: AnyObject {
+protocol ImportCloudPasswordViewProtocol: ControllerBackedProtocol {
     func didReceive(passwordViewModel: InputViewModelProtocol)
 }
 
 protocol ImportCloudPasswordPresenterProtocol: AnyObject {
     func setup()
+    func activateForgotPassword()
     func activateContinue()
 }
 

@@ -17,9 +17,7 @@ final class ImportCloudPasswordViewLayout: SCLoadableActionLayoutView {
     }
 
     let forgetPasswordButton: RoundedButton = .create { button in
-        button.applyLinkStyle()
-        button.imageWithTitleView?.titleFont = .semiBoldFootnote
-        button.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()!
+        button.applyTextStyle()
     }
 
     var actionButton: TriangularedButton {

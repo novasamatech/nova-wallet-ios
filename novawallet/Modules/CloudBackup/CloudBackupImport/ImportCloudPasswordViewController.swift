@@ -6,9 +6,11 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
 
     let presenter: ImportCloudPasswordPresenterProtocol
 
-    init(presenter: ImportCloudPasswordPresenterProtocol) {
+    init(presenter: ImportCloudPasswordPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -28,28 +30,70 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    private func setupHandlers() {
-        rootView.actionButton.addTarget(self, action: #selector(actionContinue), for: .touchUpInside)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        rootView.passwordView.textField.becomeFirstResponder()
     }
-    
+
+    private func setupHandlers() {
+        rootView.forgetPasswordButton.addTarget(self, action: #selector(actionForgotPassword), for: .touchUpInside)
+        rootView.actionButton.addTarget(self, action: #selector(actionContinue), for: .touchUpInside)
+        rootView.passwordView.addTarget(self, action: #selector(actionPasswordChanged), for: .editingChanged)
+    }
+
     private func setupLocalization() {
         rootView.titleLabel.text = R.string.localizable.cloudBackupImportTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
-        
+
         rootView.subtitleLabel.text = R.string.localizable.cloudBackupImportSubtitle(
             preferredLanguages: selectedLocale.rLanguages
         )
-        
+
+        let passwordPlaceholder = NSAttributedString(
+            string: R.string.localizable.commonBackupPassword(preferredLanguages: selectedLocale.rLanguages),
+            attributes: [
+                .foregroundColor: R.color.colorHintText()!,
+                .font: UIFont.regularSubheadline
+            ]
+        )
+
+        rootView.passwordView.textField.attributedPlaceholder = passwordPlaceholder
+
         rootView.forgetPasswordButton.imageWithTitleView?.title = R.string.localizable.commonForgotPasswordButton(
             preferredLanguages: selectedLocale.rLanguages
         )
-        
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue()
+
+        applyActionStyle()
     }
-    
+
+    private func applyActionStyle() {
+        if let viewModel = rootView.passwordView.inputViewModel, viewModel.inputHandler.completed {
+            rootView.actionButton.isEnabled = true
+            rootView.actionButton.applyEnabledStyle()
+            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else {
+            rootView.actionButton.isEnabled = false
+            rootView.actionButton.applyDisabledStyle()
+            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonEnterPassword(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+    }
+
     @objc func actionContinue() {
         presenter.activateContinue()
+    }
+
+    @objc func actionForgotPassword() {
+        presenter.activateForgotPassword()
+    }
+
+    @objc func actionPasswordChanged() {
+        applyActionStyle()
     }
 }
 
