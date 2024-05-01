@@ -84,6 +84,15 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
         )
     }
 
+    func createSecretsImporter(to keychain: KeystoreProtocol) -> CloudBackupSecretsImporting {
+        CloudBackupSecretsImporter(
+            walletConverter: CloudBackupFileModelConverter(),
+            cryptoManager: CloudBackupScryptSalsaCryptoManager(),
+            validator: ICloudBackupValidator(),
+            keychain: keychain
+        )
+    }
+
     func createUploadFactory() -> CloudBackupUploadFactoryProtocol {
         ICloudBackupUploadFactory(
             operationFactory: createOperationFactory(),

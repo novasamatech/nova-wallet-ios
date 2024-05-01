@@ -17,7 +17,7 @@ enum CloudBackupSecretsImportingError: Error {
 }
 
 final class CloudBackupSecretsImporter {
-    let keychain: Keychain
+    let keychain: KeystoreProtocol
     let walletConverter: CloudBackupFileModelConverting
     let cryptoManager: CloudBackupCryptoManagerProtocol
     let validator: CloudBackupValidating
@@ -26,7 +26,7 @@ final class CloudBackupSecretsImporter {
         walletConverter: CloudBackupFileModelConverting,
         cryptoManager: CloudBackupCryptoManagerProtocol,
         validator: CloudBackupValidating,
-        keychain: Keychain
+        keychain: KeystoreProtocol
     ) {
         self.walletConverter = walletConverter
         self.cryptoManager = cryptoManager

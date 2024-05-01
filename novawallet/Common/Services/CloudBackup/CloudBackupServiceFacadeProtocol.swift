@@ -1,5 +1,6 @@
 import Foundation
 import SoraKeystore
+import RobinHood
 
 enum CloudBackupServiceFacadeError: Error {
     case cloudNotAvailable
@@ -7,6 +8,9 @@ enum CloudBackupServiceFacadeError: Error {
     case facadeInternal(Error)
     case backupExport(Error)
     case backupUpload(Error)
+    case backupDelete(Error)
+    case backupDecoding(Error)
+    case noBackup
 }
 
 protocol CloudBackupServiceFacadeProtocol {
@@ -14,6 +18,19 @@ protocol CloudBackupServiceFacadeProtocol {
         wallets: Set<MetaAccountModel>,
         keystore: KeystoreProtocol,
         password: String,
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Void, CloudBackupServiceFacadeError>) -> Void
+    )
+
+    func importBackup(
+        to repository: AnyDataProviderRepository<MetaAccountModel>,
+        keystore: KeystoreProtocol,
+        password: String,
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Set<MetaAccountModel>, CloudBackupServiceFacadeError>) -> Void
+    )
+
+    func deleteBackup(
         runCompletionIn queue: DispatchQueue,
         completionClosure: @escaping (Result<Void, CloudBackupServiceFacadeError>) -> Void
     )

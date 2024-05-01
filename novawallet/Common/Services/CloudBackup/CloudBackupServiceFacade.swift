@@ -13,6 +13,54 @@ final class CloudBackupServiceFacade {
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
     }
+
+    private func createImportWrapper(
+        for fileUrl: URL,
+        using keystore: KeystoreProtocol,
+        password: String
+    ) -> CompoundOperationWrapper<Set<MetaAccountModel>> {
+        let secretsImporter = serviceFactory.createSecretsImporter(to: keystore)
+        let decodingManager = serviceFactory.createCodingManager()
+
+        let readingOperation = serviceFactory.createOperationFactory().createReadingOperation(for: fileUrl)
+
+        let decodingOperation = ClosureOperation<CloudBackup.EncryptedFileModel> {
+            guard let data = try readingOperation.extractNoCancellableResultData() else {
+                throw CloudBackupServiceFacadeError.noBackup
+            }
+
+            do {
+                return try decodingManager.decode(data: data)
+            } catch {
+                throw CloudBackupServiceFacadeError.backupDecoding(error)
+            }
+        }
+
+        decodingOperation.addDependency(readingOperation)
+
+        let importOperation = ClosureOperation<Set<MetaAccountModel>> {
+            let encryptedModel = try decodingOperation.extractNoCancellableResultData()
+
+            guard !encryptedModel.publicData.wallets.isEmpty else {
+                return []
+            }
+
+            let wallets = try secretsImporter.importBackup(
+                from: encryptedModel,
+                password: password,
+                onlyWallets: []
+            )
+
+            return wallets
+        }
+
+        importOperation.addDependency(decodingOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: importOperation,
+            dependencies: [readingOperation, decodingOperation]
+        )
+    }
 }
 
 extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
@@ -77,6 +125,85 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
                 } else {
                     completionClosure(.failure(.backupUpload(error)))
                 }
+            }
+        }
+    }
+
+    func importBackup(
+        to repository: AnyDataProviderRepository<MetaAccountModel>,
+        keystore: KeystoreProtocol,
+        password: String,
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Set<MetaAccountModel>, CloudBackupServiceFacadeError>) -> Void
+    ) {
+        let fileManager = serviceFactory.createFileManager()
+
+        guard let fileUrl = fileManager.getFileUrl() else {
+            dispatchInQueueWhenPossible(queue) {
+                completionClosure(.failure(.cloudNotAvailable))
+            }
+            return
+        }
+
+        let importWrapper = createImportWrapper(for: fileUrl, using: keystore, password: password)
+
+        let saveOperation = repository.saveOperation({
+            let wallets = try importWrapper.targetOperation.extractNoCancellableResultData()
+            return Array(wallets)
+        }, {
+            []
+        })
+
+        saveOperation.addDependency(importWrapper.targetOperation)
+
+        execute(
+            wrapper: importWrapper.insertingTail(operation: saveOperation),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: queue
+        ) { result in
+            switch result {
+            case .success:
+                do {
+                    let wallets = try importWrapper.targetOperation.extractNoCancellableResultData()
+                    completionClosure(.success(wallets))
+                } catch {
+                    completionClosure(.failure(.facadeInternal(error)))
+                }
+            case let .failure(error):
+                if let facadeError = error as? CloudBackupServiceFacadeError {
+                    completionClosure(.failure(facadeError))
+                } else {
+                    completionClosure(.failure(.facadeInternal(error)))
+                }
+            }
+        }
+    }
+
+    func deleteBackup(
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Void, CloudBackupServiceFacadeError>) -> Void
+    ) {
+        let fileManager = serviceFactory.createFileManager()
+
+        guard let fileUrl = fileManager.getFileUrl() else {
+            dispatchInQueueWhenPossible(queue) {
+                completionClosure(.failure(.cloudNotAvailable))
+            }
+            return
+        }
+
+        let deletionOperation = serviceFactory.createOperationFactory().createDeletionOperation(for: fileUrl)
+
+        execute(
+            operation: deletionOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: queue
+        ) { result in
+            switch result {
+            case .success:
+                completionClosure(.success(()))
+            case let .failure(error):
+                completionClosure(.failure(.backupDelete(error)))
             }
         }
     }

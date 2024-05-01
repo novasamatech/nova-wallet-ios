@@ -36,7 +36,7 @@ extension ImportCloudPasswordPresenter: ImportCloudPasswordPresenterProtocol {
             reason: .forgotPassword,
             locale: localizationManager.selectedLocale
         ) { [weak self] in
-            self?.logger.info("Backup removed due to no password")
+            self?.interactor.deleteBackup()
         }
     }
 
@@ -51,4 +51,12 @@ extension ImportCloudPasswordPresenter: ImportCloudPasswordPresenterProtocol {
     }
 }
 
-extension ImportCloudPasswordPresenter: ImportCloudPasswordInteractorOutputProtocol {}
+extension ImportCloudPasswordPresenter: ImportCloudPasswordInteractorOutputProtocol {
+    func didImportBackup() {}
+
+    func didDeleteBackup() {}
+
+    func didReceive(error: ImportCloudPasswordError) {
+        logger.error("Error: \(error)")
+    }
+}

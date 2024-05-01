@@ -10,8 +10,17 @@ protocol ImportCloudPasswordPresenterProtocol: AnyObject {
     func activateContinue()
 }
 
-protocol ImportCloudPasswordInteractorInputProtocol: AnyObject {}
+protocol ImportCloudPasswordInteractorInputProtocol: AnyObject {
+    func importBackup(for password: String)
+    func deleteBackup()
+}
 
-protocol ImportCloudPasswordInteractorOutputProtocol: AnyObject {}
+protocol ImportCloudPasswordInteractorOutputProtocol: AnyObject {
+    func didImportBackup()
+    func didDeleteBackup()
+    func didReceive(error: ImportCloudPasswordError)
+}
 
 protocol ImportCloudPasswordWireframeProtocol: ErrorPresentable, CloudBackupDeletePresentable {}
+
+enum ImportCloudPasswordError: Error {}
