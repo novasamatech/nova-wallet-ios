@@ -916,6 +916,13 @@
 "ledger.details.hint" = "This wallet is paired with Ledger. Nova will help you to form any operations you want, and you will be requested to sign them using Ledger";
 "ledger.instructions.title" = "Connect Ledger Nano X";
 "ledger.instructions.link" = "Ledger’s official Bluetooth Connection Guide";
+"ledger.instructions.step1" = "Make sure %@ to your Ledger device using Ledger Live app";
+"ledger.instructions.step1.highlighted" = "Network app is installed";
+"ledger.instructions.step2" = "%@ on your Ledger device";
+"ledger.instructions.step2.highlighted" = "Open the network app";
+"ledger.instructions.step3" = "Allow Nova Wallet to %@";
+"ledger.instructions.step3.highlighted" = "access Bluetooth";
+"ledger.instructions.step4.highlighted" = "Select account";
 "welcome.hardware.wallet.subtitle.v3_7" = "Use Polkadot Vault, Ledger or Parity Signer";
 "ledger.sign.transaction.details" = "Press both buttons on your %@ to approve the transaction";
 "common.transaction.expired" = "Transaction has expired";
@@ -1512,11 +1519,4 @@
 "notifications.error.disabled.in.settings.title" = "Enable Notifications for Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Go to Settings → Tap \"Notifications\" → Turn on \"Allow Notifications\"";
 "notifications.wallet.list.limit.error.message" = "Unfortunately, there is currently a limit in push notifications for only %d of your wallets.";
-"ledger.instructions.step1" = "Make sure %@ to your Ledger device using Ledger Live app";
-"ledger.instructions.step1.highlighted" = "Network app is installed";
-"ledger.instructions.step2" = "%@ on your Ledger device";
-"ledger.instructions.step2.highlighted" = "Open the network app";
-"ledger.instructions.step3" = "Allow Nova Wallet to %@";
-"ledger.instructions.step3.highlighted" = "access Bluetooth";
 "ledger.instructions.step4" = "%@ to add to wallet";
-"ledger.instructions.step4.highlighted" = "Select account";

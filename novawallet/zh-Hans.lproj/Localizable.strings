@@ -916,6 +916,13 @@
 "ledger.details.hint" = "这个钱包与Ledger配对。Nova将帮助您形成任何您想要的操作，并且您将被要求使用Ledger签名";
 "ledger.instructions.title" = "连接Ledger Nano X";
 "ledger.instructions.link" = "Ledger官方蓝牙连接指南";
+"ledger.instructions.step1" = "确保%@到您的Ledger设备中，使用Ledger Live应用";
+"ledger.instructions.step1.highlighted" = "已安装网络应用";
+"ledger.instructions.step2" = "在您的Ledger设备上%@";
+"ledger.instructions.step2.highlighted" = "打开网络应用程序";
+"ledger.instructions.step3" = "允许Nova Wallet%@";
+"ledger.instructions.step3.highlighted" = "访问蓝牙";
+"ledger.instructions.step4.highlighted" = "选择账户";
 "welcome.hardware.wallet.subtitle.v3_7" = "使用Polkadot Vault、Ledger或Parity Signer";
 "ledger.sign.transaction.details" = "按下您%@上的两个按钮以批准交易";
 "common.transaction.expired" = "交易已过期";
@@ -1512,11 +1519,4 @@
 "notifications.error.disabled.in.settings.title" = "为Nova Wallet启用通知";
 "notifications.error.disabled.in.settings.message" = "前往设置→点击\"通知\"→开启\"允许通知\"";
 "notifications.wallet.list.limit.error.message" = "遗憾的是，您的钱包当前只允许有限的%li个推送通知。";
-"ledger.instructions.step1" = "确保%@到您的Ledger设备中，使用Ledger Live应用";
-"ledger.instructions.step1.highlighted" = "已安装网络应用";
-"ledger.instructions.step2" = "在您的Ledger设备上%@";
-"ledger.instructions.step2.highlighted" = "打开网络应用程序";
-"ledger.instructions.step3" = "允许Nova Wallet%@";
-"ledger.instructions.step3.highlighted" = "访问蓝牙";
 "ledger.instructions.step4" = "%@添加到钱包";
-"ledger.instructions.step4.highlighted" = "选择账户";

@@ -916,6 +916,13 @@
 "ledger.details.hint" = "Questo portafoglio è abbinato a Ledger. Nova ti aiuterà a effettuare qualsiasi operazione desideri e ti verrà richiesto di firmarle usando Ledger";
 "ledger.instructions.title" = "Collega Ledger Nano X";
 "ledger.instructions.link" = "Guida ufficiale alla connessione Bluetooth di Ledger";
+"ledger.instructions.step1" = "Assicurati che l'app di %@ sul tuo dispositivo Ledger utilizzando l'app Ledger Live";
+"ledger.instructions.step1.highlighted" = "L'app Network è installata";
+"ledger.instructions.step2" = "%@ sul tuo dispositivo Ledger";
+"ledger.instructions.step2.highlighted" = "Apri l'app Network";
+"ledger.instructions.step3" = "Consenti a Nova Wallet di %@";
+"ledger.instructions.step3.highlighted" = "accesso Bluetooth";
+"ledger.instructions.step4.highlighted" = "Seleziona account";
 "welcome.hardware.wallet.subtitle.v3_7" = "Usa Polkadot Vault, Ledger o Parity Signer";
 "ledger.sign.transaction.details" = "Premi entrambi i pulsanti sul tuo %@ per approvare la transazione";
 "common.transaction.expired" = "Transazione scaduta";
@@ -1512,11 +1519,4 @@
 "notifications.error.disabled.in.settings.title" = "Abilita le notifiche per Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Vai alle Impostazioni → Tocca \"Notifiche\" → Attiva \"Permetti notifiche\"";
 "notifications.wallet.list.limit.error.message" = "Sfortunatamente, attualmente c'è un limite nelle notifiche push per solo %li dei tuoi portafogli.";
-"ledger.instructions.step1" = "Assicurati che l'app di %@ sul tuo dispositivo Ledger utilizzando l'app Ledger Live";
-"ledger.instructions.step1.highlighted" = "L'app Network è installata";
-"ledger.instructions.step2" = "%@ sul tuo dispositivo Ledger";
-"ledger.instructions.step2.highlighted" = "Apri l'app Network";
-"ledger.instructions.step3" = "Consenti a Nova Wallet di %@";
-"ledger.instructions.step3.highlighted" = "accesso Bluetooth";
 "ledger.instructions.step4" = "%@ da aggiungere al portafoglio";
-"ledger.instructions.step4.highlighted" = "Seleziona account";

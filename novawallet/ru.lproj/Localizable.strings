@@ -916,6 +916,13 @@
 "ledger.details.hint" = "Этот кошелёк добавлен из Ledger устройства. Nova Wallet поможет создать любую операцию, и вам будет необходимо подписать ее с помощью Ledger устройства";
 "ledger.instructions.title" = "Подключите Ledger Nano X";
 "ledger.instructions.link" = "Инструкция по подключению Ledger";
+"ledger.instructions.step1" = "Удостоверьтесь, что %@ на Ваше устройство Ledger, используя приложение Ledger Live";
+"ledger.instructions.step1.highlighted" = "приложение Сети установлено";
+"ledger.instructions.step2" = "%@ на Вашем Ledger устройстве";
+"ledger.instructions.step2.highlighted" = "Откройте приложение Сети";
+"ledger.instructions.step3" = "Разрешите Nova Wallet %@";
+"ledger.instructions.step3.highlighted" = "доступ к Bluetooth";
+"ledger.instructions.step4.highlighted" = "Выберите аккаунт";
 "welcome.hardware.wallet.subtitle.v3_7" = "Использовать Polkadot Vault, Ledger или Parity Signer";
 "ledger.sign.transaction.details" = "Нажмите обе кнопки на Вашем %@ для подтверждения транзакции";
 "common.transaction.expired" = "Срок действия транзакции истек";
@@ -1512,11 +1519,4 @@
 "notifications.error.disabled.in.settings.title" = "Включите уведомления для Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Перейдите в Настройки → Нажмите \"Уведомления\" → Включите \"Разрешить уведомления\"";
 "notifications.wallet.list.limit.error.message" = "К сожалению, в настоящее время установлен лимит push-уведомлений только для %d ваших кошельков.";
-"ledger.instructions.step1" = "Удостоверьтесь, что %@ на Ваше устройство Ledger, используя приложение Ledger Live";
-"ledger.instructions.step1.highlighted" = "приложение Сети установлено";
-"ledger.instructions.step2" = "%@ на Вашем Ledger устройстве";
-"ledger.instructions.step2.highlighted" = "Откройте приложение Сети";
-"ledger.instructions.step3" = "Разрешите Nova Wallet %@";
-"ledger.instructions.step3.highlighted" = "доступ к Bluetooth";
 "ledger.instructions.step4" = "%@ для добавления в кошелёк";
-"ledger.instructions.step4.highlighted" = "Выберите аккаунт";

@@ -916,6 +916,13 @@
 "ledger.details.hint" = "Esta cartera está emparejada con Ledger. Nova te ayudará a formar cualquier operación que desees, y se te solicitará firmarlas usando un dispositivo Ledger";
 "ledger.instructions.title" = "Conecta Ledger Nano X";
 "ledger.instructions.link" = "Guía Oficial de Conexión Bluetooth de Ledger";
+"ledger.instructions.step1" = "Asegúrate de que %@ en tu dispositivo Ledger usando la aplicación Ledger Live";
+"ledger.instructions.step1.highlighted" = "La aplicación de la Red está instalada";
+"ledger.instructions.step2" = "%@ en su dispositivo Ledger";
+"ledger.instructions.step2.highlighted" = "Abra la aplicación de la Red";
+"ledger.instructions.step3" = "Permite a Nova Wallet el %@";
+"ledger.instructions.step3.highlighted" = "acceso a Bluetooth";
+"ledger.instructions.step4.highlighted" = "Seleccione cuenta";
 "welcome.hardware.wallet.subtitle.v3_7" = "Usar Polkadot Vault, Ledger o Parity Signer";
 "ledger.sign.transaction.details" = "Pulse ambos botones en su %@ para aprobar la transacción";
 "common.transaction.expired" = "La transacción ha expirado";
@@ -1512,11 +1519,4 @@
 "notifications.error.disabled.in.settings.title" = "Habilita las Notificaciones para Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Ve a Ajustes → Toca \"Notificaciones\" → Activa \"Permitir Notificaciones\"";
 "notifications.wallet.list.limit.error.message" = "Desafortunadamente, actualmente hay un límite en las notificaciones push para solo %li de tus carteras.";
-"ledger.instructions.step1" = "Asegúrate de que %@ en tu dispositivo Ledger usando la aplicación Ledger Live";
-"ledger.instructions.step1.highlighted" = "La aplicación de la Red está instalada";
-"ledger.instructions.step2" = "%@ en su dispositivo Ledger";
-"ledger.instructions.step2.highlighted" = "Abra la aplicación de la Red";
-"ledger.instructions.step3" = "Permite a Nova Wallet el %@";
-"ledger.instructions.step3.highlighted" = "acceso a Bluetooth";
 "ledger.instructions.step4" = "%@ para agregarla a la billetera";
-"ledger.instructions.step4.highlighted" = "Seleccione cuenta";

@@ -916,6 +916,13 @@
 "ledger.details.hint" = "Esta carteira está pareada com o Ledger. Nova ajudará você a formar quaisquer operações que desejar, e você será solicitado a assiná-las usando o Ledger";
 "ledger.instructions.title" = "Conecte o Ledger Nano X";
 "ledger.instructions.link" = "Guia Oficial de Conexão Bluetooth da Ledger";
+"ledger.instructions.step1" = "Certifique-se de que o %@ no seu dispositivo Ledger usando o aplicativo Ledger Live";
+"ledger.instructions.step1.highlighted" = "Aplicativo da rede está instalado";
+"ledger.instructions.step2" = "%@ no seu dispositivo Ledger";
+"ledger.instructions.step2.highlighted" = "Abra o aplicativo da rede";
+"ledger.instructions.step3" = "Permitir que a Nova Wallet %@";
+"ledger.instructions.step3.highlighted" = "acesso ao Bluetooth";
+"ledger.instructions.step4.highlighted" = "Selecione a conta";
 "welcome.hardware.wallet.subtitle.v3_7" = "Use Polkadot Vault, Ledger ou Parity Signer";
 "ledger.sign.transaction.details" = "Pressione ambos os botões no seu %@ para aprovar a transação";
 "common.transaction.expired" = "A transação expirou";
@@ -1512,11 +1519,4 @@
 "notifications.error.disabled.in.settings.title" = "Ative Notificações para a Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Vá para Configurações → Toque em \"Notificações\" → Ative \"Permitir Notificações\"";
 "notifications.wallet.list.limit.error.message" = "Infelizmente, atualmente existe um limite nas notificações push para apenas %li das suas carteiras.";
-"ledger.instructions.step1" = "Certifique-se de que o %@ no seu dispositivo Ledger usando o aplicativo Ledger Live";
-"ledger.instructions.step1.highlighted" = "Aplicativo da rede está instalado";
-"ledger.instructions.step2" = "%@ no seu dispositivo Ledger";
-"ledger.instructions.step2.highlighted" = "Abra o aplicativo da rede";
-"ledger.instructions.step3" = "Permitir que a Nova Wallet %@";
-"ledger.instructions.step3.highlighted" = "acesso ao Bluetooth";
 "ledger.instructions.step4" = "%@ para adicionar à carteira";
-"ledger.instructions.step4.highlighted" = "Selecione a conta";

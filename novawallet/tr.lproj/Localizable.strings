@@ -916,6 +916,13 @@
 "ledger.details.hint" = "Bu cüzdan Ledger ile eşleştirildi. Nova istediğiniz herhangi bir işlemi oluşturmanıza yardımcı olacak ve bunları Ledger kullanarak imzalamanız istenecektir.";
 "ledger.instructions.title" = "Ledger Nano X’i bağlayın";
 "ledger.instructions.link" = "Ledger’ın resmi Bluetooth Bağlantı Kılavuzu";
+"ledger.instructions.step1" = "Ledger Live uygulamasını kullanarak Ledger cihazınızda %@ olduğundan emin olun";
+"ledger.instructions.step1.highlighted" = "Ağ uygulaması yüklendi";
+"ledger.instructions.step2" = "Ledger cihazınızda %@";
+"ledger.instructions.step2.highlighted" = "Ağ uygulamasını açın";
+"ledger.instructions.step3" = "Nova Cüzdan'ın %@ izin verin";
+"ledger.instructions.step3.highlighted" = "Bluetooth'a erişim sağlayın";
+"ledger.instructions.step4.highlighted" = "Hesap seçin";
 "welcome.hardware.wallet.subtitle.v3_7" = "Polkadot Vault, Ledger veya Parity Signer kullanın";
 "ledger.sign.transaction.details" = "İşlemi onaylamak için %@ üzerindeki her iki düğmeye basın";
 "common.transaction.expired" = "İşlem süresi doldu";
@@ -1512,11 +1519,4 @@
 "notifications.error.disabled.in.settings.title" = "Nova Wallet için Bildirimleri Etkinleştirin";
 "notifications.error.disabled.in.settings.message" = "Ayarlar'a gidin \nightarrow \"Bildirimler\"'e dokunun \nightarrow \"Bildirimlere İzin Ver\"'i açın";
 "notifications.wallet.list.limit.error.message" = "Maalesef, şu anda cüzdanlarınızın sadece %li'ine yönelik push bildirimleri için bir limit bulunmaktadır.";
-"ledger.instructions.step1" = "Ledger Live uygulamasını kullanarak Ledger cihazınızda %@ olduğundan emin olun";
-"ledger.instructions.step1.highlighted" = "Ağ uygulaması yüklendi";
-"ledger.instructions.step2" = "Ledger cihazınızda %@";
-"ledger.instructions.step2.highlighted" = "Ağ uygulamasını açın";
-"ledger.instructions.step3" = "Nova Cüzdan'ın %@ izin verin";
-"ledger.instructions.step3.highlighted" = "Bluetooth'a erişim sağlayın";
 "ledger.instructions.step4" = "Cüzdana eklenecek %@";
-"ledger.instructions.step4.highlighted" = "Hesap seçin";
