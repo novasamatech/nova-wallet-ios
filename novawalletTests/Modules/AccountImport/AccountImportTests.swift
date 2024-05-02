@@ -107,7 +107,7 @@ class AccountImportTests: XCTestCase {
 
         // then
 
-        wait(for: [expectation, completeExpectation], timeout: Constants.defaultExpectationDuration)
+        wait(for: [expectation, completeExpectation], timeout: 10)
 
         guard let selectedAccount = settings.value else {
             XCTFail("Unexpected empty account")

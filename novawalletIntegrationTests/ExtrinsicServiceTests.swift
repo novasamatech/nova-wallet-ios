@@ -50,11 +50,13 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
         
+        let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
+        
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
-            extensions: DefaultExtrinsicExtension.extensions(),
+            extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
         )
@@ -95,11 +97,13 @@ class ExtrinsicServiceTests: XCTestCase {
         
         let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
 
+        let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
+        
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
-            extensions: DefaultExtrinsicExtension.extensions(),
+            extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
         )

@@ -75,6 +75,6 @@ class AccountExportPasswordTests: XCTestCase {
 
         // then
 
-        wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+        wait(for: [expectation], timeout: 10)
     }
 }
