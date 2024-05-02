@@ -486,6 +486,7 @@
 		0CD3A67C2AEAA3B90059BBEC /* AssetConversionFeeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD3A67B2AEAA3B90059BBEC /* AssetConversionFeeService.swift */; };
 		0CD3A67E2AEAAB670059BBEC /* AssetHubFeeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD3A67D2AEAAB670059BBEC /* AssetHubFeeService.swift */; };
 		0CD3A6802AEAC3C90059BBEC /* CompoundOperationWrapper+Add.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD3A67F2AEAC3C90059BBEC /* CompoundOperationWrapper+Add.swift */; };
+		0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
@@ -5080,6 +5081,7 @@
 		0CD3A67B2AEAA3B90059BBEC /* AssetConversionFeeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFeeService.swift; sourceTree = "<group>"; };
 		0CD3A67D2AEAAB670059BBEC /* AssetHubFeeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubFeeService.swift; sourceTree = "<group>"; };
 		0CD3A67F2AEAC3C90059BBEC /* CompoundOperationWrapper+Add.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CompoundOperationWrapper+Add.swift"; sourceTree = "<group>"; };
+		0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredValidatorsProvider.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
@@ -15915,6 +15917,7 @@
 				84216FD92827B25F00479375 /* StorageItemSyncService.swift */,
 				841E554C282DAA8000C8438F /* ParachainStakingServiceFactory.swift */,
 				84C3420A283187D800156569 /* BlockTimeEstimationService.swift */,
+				0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -24496,6 +24499,7 @@
 				88FB7DD12950720800784E08 /* ContainerProtocols.swift in Sources */,
 				840AE2E529C9AF9C008FF665 /* EtherscanWalletHistoryDecodable.swift in Sources */,
 				772B1C7D2A93837800A19061 /* StartStakingCustomValidatorListWireframe.swift in Sources */,
+				0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */,
 				77AAE2202AFB00CB006872CC /* OperationSwapModel.swift in Sources */,
 				8465DA35298EC5FB00C7CFF1 /* TitleDetailsSheetLayout.swift in Sources */,
 				AEE5FB1C264A610C002B8FDC /* StakingRewardDestSetupLayout.swift in Sources */,
