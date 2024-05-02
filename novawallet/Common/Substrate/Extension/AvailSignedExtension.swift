@@ -51,10 +51,7 @@ extension AvailSignedExtension {
             }
 
             return [
-                DefaultExtrinsicExtensionCoder(
-                    name: ChargeAssetTxPayment.name,
-                    extraType: extraType
-                )
+                DefaultExtrinsicExtensionCoder(name: extensionName, extraType: extraType)
             ]
         }
     }
