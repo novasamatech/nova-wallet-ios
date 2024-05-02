@@ -50,7 +50,7 @@ final class RuntimeHelper {
         let data = try Data(contentsOf: url)
         let basisNodes = BasisNodes.allNodes(
             for: runtimeMetadataContainer.metadata,
-            customExtensions: DefaultExtrinsicExtension.getCoders(for: runtimeMetadataContainer.metadata)
+            customExtensions: DefaultSignedExtensionCoders.createDefaultCoders(for: runtimeMetadataContainer.metadata)
         )
         let registry = try TypeRegistry
             .createFromTypesDefinition(data: data,
@@ -98,7 +98,7 @@ final class RuntimeHelper {
             return try TypeRegistryCatalog.createFromSiDefinition(
                 versioningData: networkData,
                 runtimeMetadata: metadata,
-                customExtensions: DefaultExtrinsicExtension.getCoders(for: runtimeMetadataContainer.metadata),
+                customExtensions: DefaultSignedExtensionCoders.createDefaultCoders(for: runtimeMetadataContainer.metadata),
                 customTypeMapper: SiDataTypeMapper(),
                 customNameMapper: ScaleInfoCamelCaseMapper()
             )
