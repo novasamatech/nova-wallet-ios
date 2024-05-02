@@ -195,11 +195,13 @@ class AutocompounDelegateStakeTests: XCTestCase {
 
         let senderResolutionFactory = ExtrinsicSenderResolutionFactoryStub(accountId: delegator, chain: chain)
         
+        let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
+        
         extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeProvider,
             senderResolvingFactory: senderResolutionFactory,
-            extensions: DefaultExtrinsicExtension.extensions(),
+            extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
@@ -268,12 +270,14 @@ class AutocompounDelegateStakeTests: XCTestCase {
             accountId: AccountId.random(of: chain.accountIdSize)!,
             chain: chain
         )
+        
+        let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
 
         extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeProvider,
             senderResolvingFactory: senderResolutionFactory,
-            extensions: DefaultExtrinsicExtension.extensions(),
+            extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: OperationQueue())
         )
