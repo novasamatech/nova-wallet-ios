@@ -58,6 +58,7 @@ struct StartStakingInfoViewFactory {
             eventCenter: EventCenter.shared,
             syncOperationQueue: operationQueue,
             repositoryOperationQueue: operationQueue,
+            applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared
         )
 
@@ -158,6 +159,7 @@ struct StartStakingInfoViewFactory {
             eventCenter: EventCenter.shared,
             syncOperationQueue: operationQueue,
             repositoryOperationQueue: operationQueue,
+            applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared
         )
 

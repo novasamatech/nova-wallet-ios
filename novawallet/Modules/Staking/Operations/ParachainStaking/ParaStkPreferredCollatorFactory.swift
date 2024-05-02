@@ -13,6 +13,7 @@ final class ParaStkPreferredCollatorFactory {
     let identityOperationFactory: IdentityOperationFactoryProtocol
     let collatorService: ParachainStakingCollatorServiceProtocol
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
+    let preferredCollatorProvider: PreferredValidatorsProviding
     let operationQueue: OperationQueue
 
     init(
@@ -22,6 +23,7 @@ final class ParaStkPreferredCollatorFactory {
         collatorService: ParachainStakingCollatorServiceProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
         identityOperationFactory: IdentityOperationFactoryProtocol,
+        preferredCollatorProvider: PreferredValidatorsProviding,
         operationQueue: OperationQueue
     ) {
         self.chain = chain
@@ -30,6 +32,7 @@ final class ParaStkPreferredCollatorFactory {
         self.rewardService = rewardService
         self.collatorService = collatorService
         self.identityOperationFactory = identityOperationFactory
+        self.preferredCollatorProvider = preferredCollatorProvider
         self.operationQueue = operationQueue
     }
 
@@ -72,13 +75,7 @@ final class ParaStkPreferredCollatorFactory {
 
 extension ParaStkPreferredCollatorFactory: ParaStkPreferredCollatorFactoryProtocol {
     func createPreferredCollatorWrapper() -> CompoundOperationWrapper<DisplayAddress?> {
-        let preferredCollators = StakingConstants.preferredValidatorIds(for: chain)
-
-        guard !preferredCollators.isEmpty else {
-            return CompoundOperationWrapper.createWithResult(nil)
-        }
-
-        let collatorsSet = Set(preferredCollators)
+        let preferredCollatorsWrapper = preferredCollatorProvider.createPreferredValidatorsWrapper(for: chain)
 
         let collatorsOperation = collatorService.fetchInfoOperation()
         let rewardOperation = rewardService.fetchCalculatorOperation()
@@ -86,6 +83,13 @@ extension ParaStkPreferredCollatorFactory: ParaStkPreferredCollatorFactoryProtoc
         let mergeOperation = ClosureOperation<AccountId?> {
             let collators = try collatorsOperation.extractNoCancellableResultData().collators
             let rewardsCalculator = try rewardOperation.extractNoCancellableResultData()
+            let preferredCollators = try preferredCollatorsWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard !preferredCollators.isEmpty else {
+                return nil
+            }
+
+            let collatorsSet = Set(preferredCollators)
 
             let optCollator = collators
                 .filter { collatorsSet.contains($0.accountId) }
@@ -106,15 +110,16 @@ extension ParaStkPreferredCollatorFactory: ParaStkPreferredCollatorFactoryProtoc
             return optCollator?.accountId
         }
 
+        mergeOperation.addDependency(preferredCollatorsWrapper.targetOperation)
         mergeOperation.addDependency(collatorsOperation)
         mergeOperation.addDependency(rewardOperation)
 
         let resultWrapper = createResultWrapper(dependingOn: mergeOperation)
         resultWrapper.addDependency(operations: [mergeOperation])
 
-        let dependencies = [collatorsOperation, rewardOperation] + [mergeOperation] +
-            resultWrapper.dependencies
+        let dependencies = preferredCollatorsWrapper.allOperations +
+            [collatorsOperation, rewardOperation, mergeOperation]
 
-        return CompoundOperationWrapper(targetOperation: resultWrapper.targetOperation, dependencies: dependencies)
+        return resultWrapper.insertingHead(operations: dependencies)
     }
 }

@@ -94,14 +94,13 @@ final class SelectValidatorsStartViewFactory {
         let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)
 
         let interactor = SelectValidatorsStartInteractor(
+            chain: chainAsset.chain,
             runtimeService: runtimeService,
             connection: connection,
             operationFactory: operationFactory,
             maxNominationsOperationFactory: maxNominationsFactory,
             operationQueue: operationQueue,
-            preferredValidators: StakingConstants.preferredValidatorIds(
-                for: chainAsset.chain
-            ),
+            preferredValidatorsProvider: stakingState.preferredValidatorsProvider,
             stakingAmount: stakingAmount
         )
 

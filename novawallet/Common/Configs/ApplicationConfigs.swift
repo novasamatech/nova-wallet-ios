@@ -23,6 +23,7 @@ protocol ApplicationConfigProtocol {
     var xcmTransfersURL: URL { get }
     var multistakingURL: URL { get }
     var dAppsListURL: URL { get }
+    var preferredValidatorsURL: URL { get }
     var governanceDAppsListURL: URL { get }
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
@@ -168,6 +169,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps_dev.json")!
+        #endif
+    }
+
+    var preferredValidatorsURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/nova_validators.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/nova_validators.json")!
         #endif
     }
 
