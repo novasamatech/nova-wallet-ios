@@ -12,6 +12,10 @@ extension Decimal {
         Decimal(value) / 1_000_000_000
     }
 
+    static func fromSubstrateQuintill(value: BigUInt) -> Decimal? {
+        fromSubstrateAmount(value, precision: 18)
+    }
+
     init?(_ bigUInt: BigUInt) {
         self.init(string: String(bigUInt))
     }

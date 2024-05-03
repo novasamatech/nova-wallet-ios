@@ -1,15 +1,17 @@
 import Foundation
 import SubstrateSdk
+import BigInt
 
 enum RewardCalculatorParams {
     case noParams
     case inflation(parachainsCount: Int)
+    case vara(inflation: BigUInt)
 
     var parachainsCount: Int? {
         switch self {
         case let .inflation(parachainsCount):
             return parachainsCount
-        case .noParams:
+        case .noParams, .vara:
             return nil
         }
     }
