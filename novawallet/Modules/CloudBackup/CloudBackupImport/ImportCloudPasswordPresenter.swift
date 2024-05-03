@@ -23,6 +23,17 @@ final class ImportCloudPasswordPresenter {
         self.logger = logger
         self.localizationManager = localizationManager
     }
+
+    private func showBrokenOrEmptyDeleteConfirmation() {
+        wireframe.showCloudBackupDelete(
+            from: view,
+            reason: .brokenOrEmpty,
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.view?.didStartLoading()
+            self?.interactor.deleteBackup()
+        }
+    }
 }
 
 extension ImportCloudPasswordPresenter: ImportCloudPasswordPresenterProtocol {
@@ -36,27 +47,54 @@ extension ImportCloudPasswordPresenter: ImportCloudPasswordPresenterProtocol {
             reason: .forgotPassword,
             locale: localizationManager.selectedLocale
         ) { [weak self] in
+            self?.view?.didStartLoading()
             self?.interactor.deleteBackup()
         }
     }
 
     func activateContinue() {
-        wireframe.showCloudBackupDelete(
-            from: view,
-            reason: .brokenOrEmpty,
-            locale: localizationManager.selectedLocale
-        ) { [weak self] in
-            self?.logger.info("Backup removed due to damage")
+        guard viewModel.inputHandler.completed else {
+            return
         }
+
+        let password = viewModel.inputHandler.normalizedValue
+
+        view?.didStartLoading()
+        interactor.importBackup(for: password)
     }
 }
 
 extension ImportCloudPasswordPresenter: ImportCloudPasswordInteractorOutputProtocol {
-    func didImportBackup() {}
+    func didImportBackup() {
+        view?.didStopLoading()
 
-    func didDeleteBackup() {}
+        wireframe.proceedAfterImport(from: view)
+    }
+
+    func didDeleteBackup() {
+        view?.didStopLoading()
+
+        wireframe.proceedAfterDelete(from: view, locale: localizationManager.selectedLocale)
+    }
 
     func didReceive(error: ImportCloudPasswordError) {
         logger.error("Error: \(error)")
+
+        guard let view else {
+            return
+        }
+
+        view.didStopLoading()
+
+        switch error {
+        case .backupBroken, .emptyBackup:
+            showBrokenOrEmptyDeleteConfirmation()
+        case .invalidPassword:
+            wireframe.presentInvalidBackupPassword(from: view, locale: localizationManager.selectedLocale)
+        case .deleteFailed, .importInternal:
+            wireframe.presentNoCloudConnection(from: view, locale: localizationManager.selectedLocale)
+        case .selectedWallet:
+            _ = wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
+        }
     }
 }

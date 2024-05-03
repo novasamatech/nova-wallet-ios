@@ -1569,3 +1569,6 @@
 "cloud.backup.no.password.highlighted2" = "Alternatively, use Passphrase for restoration.";
 "common.delete.backup" = "Delete Backup";
 "cloud.backup.delete.confirmation" = "Are you sure you want to delete Cloud Backup?\nCurrent backup with your wallets will be permanently deleted!";
+"common.password.invalid.title" = "Password is invalid";
+"common.password.invalid.message" = "Your password was incorrect, please try again.";
+"cloud.backup.deleted" = "Cloud Backup has been deleted successfully";

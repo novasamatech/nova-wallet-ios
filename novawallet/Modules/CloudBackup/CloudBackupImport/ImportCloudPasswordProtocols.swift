@@ -21,6 +21,17 @@ protocol ImportCloudPasswordInteractorOutputProtocol: AnyObject {
     func didReceive(error: ImportCloudPasswordError)
 }
 
-protocol ImportCloudPasswordWireframeProtocol: ErrorPresentable, CloudBackupDeletePresentable {}
+protocol ImportCloudPasswordWireframeProtocol: ErrorPresentable, CloudBackupDeletePresentable,
+    CloudBackupErrorPresentable {
+    func proceedAfterImport(from view: ImportCloudPasswordViewProtocol?)
+    func proceedAfterDelete(from view: ImportCloudPasswordViewProtocol?, locale: Locale)
+}
 
-enum ImportCloudPasswordError: Error {}
+enum ImportCloudPasswordError: Error {
+    case importInternal(Error)
+    case backupBroken(Error)
+    case emptyBackup
+    case invalidPassword
+    case deleteFailed(Error)
+    case selectedWallet(Error?)
+}

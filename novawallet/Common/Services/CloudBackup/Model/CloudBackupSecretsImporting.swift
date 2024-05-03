@@ -13,6 +13,7 @@ protocol CloudBackupSecretsImporting {
 
 enum CloudBackupSecretsImportingError: Error {
     case decodingFailed(Error)
+    case decryptionFailed(Error)
     case validationFailed
 }
 
@@ -34,6 +35,14 @@ final class CloudBackupSecretsImporter {
         self.keychain = keychain
     }
 
+    private func decrypt(data: Data, password: String) throws -> Data {
+        do {
+            return try cryptoManager.decrypt(data: data, password: password)
+        } catch {
+            throw CloudBackupSecretsImportingError.decryptionFailed(error)
+        }
+    }
+
     private func decodePrivate(
         from backup: CloudBackup.EncryptedFileModel,
         password: String
@@ -41,14 +50,18 @@ final class CloudBackupSecretsImporter {
         do {
             let encryptedData = try Data(hexString: backup.privateData)
 
-            let decryptedData = try cryptoManager.decrypt(data: encryptedData, password: password)
+            let decryptedData = try decrypt(data: encryptedData, password: password)
 
             return try JSONDecoder().decode(
                 CloudBackup.DecryptedFileModel.PrivateData.self,
                 from: decryptedData
             )
         } catch {
-            throw CloudBackupSecretsImportingError.decodingFailed(error)
+            if let importError = error as? CloudBackupSecretsImportingError {
+                throw importError
+            } else {
+                throw CloudBackupSecretsImportingError.decodingFailed(error)
+            }
         }
     }
 

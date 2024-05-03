@@ -34,7 +34,7 @@ struct ImportCloudPasswordViewFactory {
 
         let walletRepository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
-        ).createMetaAccountRepository(
+        ).createManagedMetaAccountRepository(
             for: nil,
             sortDescriptors: []
         )
@@ -44,6 +44,7 @@ struct ImportCloudPasswordViewFactory {
         return .init(
             cloudBackupFacade: serviceFacade,
             walletRepository: walletRepository,
+            selectedWalletSettings: SelectedWalletSettings.shared,
             keystore: keystore
         )
     }

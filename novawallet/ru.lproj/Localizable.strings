@@ -1569,3 +1569,6 @@
 "cloud.backup.no.password.highlighted2" = "Альтернативно, вы можете использовать Секретную фразу для восставновления кошелька.";
 "common.delete.backup" = "Удалить Бэкап";
 "cloud.backup.delete.confirmation" = "Вы уверены, что хотите удалить бэкап?\Текущий бэкап с Вашими кошельками будет удалён навсегда!";
+"common.password.invalid.title" = "Неверный пароль";
+"common.password.invalid.message" = "Вы ввели неверный пароль, пожалуйста попробуйте ещё раз.";
+"cloud.backup.deleted" = "Бэкап успешно удалён";

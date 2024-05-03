@@ -45,13 +45,19 @@ final class CloudBackupServiceFacade {
                 return []
             }
 
-            let wallets = try secretsImporter.importBackup(
-                from: encryptedModel,
-                password: password,
-                onlyWallets: []
-            )
+            do {
+                let wallets = try secretsImporter.importBackup(
+                    from: encryptedModel,
+                    password: password,
+                    onlyWallets: nil
+                )
 
-            return wallets
+                return wallets
+            } catch let CloudBackupSecretsImportingError.decodingFailed(innerError) {
+                throw CloudBackupServiceFacadeError.backupDecoding(innerError)
+            } catch CloudBackupSecretsImportingError.decryptionFailed {
+                throw CloudBackupServiceFacadeError.invalidBackupPassword
+            }
         }
 
         importOperation.addDependency(decodingOperation)
@@ -131,7 +137,7 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
     }
 
     func importBackup(
-        to repository: AnyDataProviderRepository<MetaAccountModel>,
+        to repository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         keystore: KeystoreProtocol,
         password: String,
         runCompletionIn queue: DispatchQueue,
@@ -150,7 +156,13 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
 
         let saveOperation = repository.saveOperation({
             let wallets = try importWrapper.targetOperation.extractNoCancellableResultData()
-            return Array(wallets)
+            return wallets.enumerated().map { index, wallet in
+                ManagedMetaAccountModel(
+                    info: wallet,
+                    isSelected: index == 0,
+                    order: UInt32(index)
+                )
+            }
         }, {
             []
         })

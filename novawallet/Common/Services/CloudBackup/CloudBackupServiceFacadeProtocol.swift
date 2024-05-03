@@ -10,6 +10,7 @@ enum CloudBackupServiceFacadeError: Error {
     case backupUpload(Error)
     case backupDelete(Error)
     case backupDecoding(Error)
+    case invalidBackupPassword
     case noBackup
 }
 
@@ -23,7 +24,7 @@ protocol CloudBackupServiceFacadeProtocol {
     )
 
     func importBackup(
-        to repository: AnyDataProviderRepository<MetaAccountModel>,
+        to repository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         keystore: KeystoreProtocol,
         password: String,
         runCompletionIn queue: DispatchQueue,

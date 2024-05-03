@@ -32,7 +32,7 @@ final class CloudBackupOperationFactory {
             var optData: Data?
 
             coordinator.coordinate(
-                writingItemAt: url,
+                readingItemAt: url,
                 options: [],
                 error: &coordinatorError
             ) { actualUrl in
