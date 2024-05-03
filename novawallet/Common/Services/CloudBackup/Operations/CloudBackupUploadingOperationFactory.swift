@@ -4,6 +4,7 @@ import RobinHood
 protocol CloudBackupUploadFactoryProtocol {
     func createUploadWrapper(
         for fileUrl: URL,
+        timeoutInterval: TimeInterval,
         dataClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void>
 }
@@ -12,20 +13,17 @@ final class ICloudBackupUploadFactory {
     let operationFactory: CloudBackupOperationFactoryProtocol
     let monitoringOperationQueue: OperationQueue
     let notificationCenter: NotificationCenter
-    let timeoutInterval: TimeInterval
     let logger: LoggerProtocol
 
     init(
         operationFactory: CloudBackupOperationFactoryProtocol,
         monitoringOperationQueue: OperationQueue,
         notificationCenter: NotificationCenter,
-        timeoutInterval: TimeInterval,
         logger: LoggerProtocol
     ) {
         self.operationFactory = operationFactory
         self.monitoringOperationQueue = monitoringOperationQueue
         self.notificationCenter = notificationCenter
-        self.timeoutInterval = timeoutInterval
         self.logger = logger
     }
 }
@@ -33,6 +31,7 @@ final class ICloudBackupUploadFactory {
 extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
     func createUploadWrapper(
         for fileUrl: URL,
+        timeoutInterval: TimeInterval,
         dataClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void> {
         let writeOperation = operationFactory.createWritingOperation(for: fileUrl) {

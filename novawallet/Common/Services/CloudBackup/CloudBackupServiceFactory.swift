@@ -9,7 +9,6 @@ final class ICloudBackupServiceFactory {
     let operationQueue: OperationQueue
     let notificationCenter: NotificationCenter
     let monitoringQueue: OperationQueue
-    let monitoringTimeout: TimeInterval
 
     init(
         containerId: String = CloudBackup.containerId,
@@ -17,7 +16,6 @@ final class ICloudBackupServiceFactory {
         fileCoordinator: NSFileCoordinator = NSFileCoordinator(),
         operationQueue: OperationQueue,
         notificationCenter: NotificationCenter = .default,
-        monitoringTimeout: TimeInterval = 30,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.containerId = containerId
@@ -25,7 +23,6 @@ final class ICloudBackupServiceFactory {
         self.fileCoordinator = fileCoordinator
         self.operationQueue = operationQueue
         self.notificationCenter = notificationCenter
-        self.monitoringTimeout = monitoringTimeout
 
         monitoringQueue = OperationQueue()
         monitoringQueue.maxConcurrentOperationCount = 1
@@ -46,7 +43,6 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
             operationFactory: cloudOperationFactory,
             monitoringOperationQueue: monitoringQueue,
             notificationCenter: notificationCenter,
-            timeoutInterval: monitoringTimeout,
             logger: logger
         )
 
@@ -98,7 +94,6 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
             operationFactory: createOperationFactory(),
             monitoringOperationQueue: monitoringQueue,
             notificationCenter: notificationCenter,
-            timeoutInterval: monitoringTimeout,
             logger: logger
         )
     }

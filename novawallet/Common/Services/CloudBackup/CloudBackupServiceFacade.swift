@@ -102,6 +102,7 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
 
         let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
             for: fileUrl,
+            timeoutInterval: CloudBackup.backupSaveTimeout,
             dataClosure: {
                 try dataOperation.extractNoCancellableResultData()
             }

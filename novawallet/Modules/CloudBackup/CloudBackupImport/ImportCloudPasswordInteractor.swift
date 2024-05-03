@@ -8,7 +8,7 @@ final class ImportCloudPasswordInteractor {
     let cloudBackupFacade: CloudBackupServiceFacadeProtocol
     let walletRepository: AnyDataProviderRepository<MetaAccountModel>
     let keystore: KeystoreProtocol
-    
+
     init(
         cloudBackupFacade: CloudBackupServiceFacadeProtocol,
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
@@ -27,16 +27,14 @@ extension ImportCloudPasswordInteractor: ImportCloudPasswordInteractorInputProto
             keystore: keystore,
             password: password,
             runCompletionIn: .main
-        ) { result in
-            
+        ) { _ in
         }
     }
 
     func deleteBackup() {
         cloudBackupFacade.deleteBackup(
             runCompletionIn: .main
-        ) { result in
-            
+        ) { _ in
         }
     }
 }

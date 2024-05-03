@@ -29,7 +29,7 @@ final class OnboardingWalletReadyInteractor {
 
         storageManager?.checkStorage(
             of: CloudBackup.requiredCloudSize,
-            timeoutInterval: 30,
+            timeoutInterval: CloudBackup.backupSaveTimeout,
             runningIn: .main
         ) { [weak self] result in
             switch result {

@@ -56,8 +56,7 @@ final class ICloudBackupUploadMonitor {
         if isUploaded {
             stopAndNotify(with: .success(()))
         } else if !isUploading, let error = uploadError {
-            let monitorError = CloudBackupUploadError(icloudError: error)
-            stopAndNotify(with: .failure(monitorError))
+            logger.error("Uploading error: \(error)")
         } else if isUploading {
             logger.debug("Uploading progress \(filename): \(progress ?? 0)")
         } else {

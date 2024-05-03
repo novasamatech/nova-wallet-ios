@@ -31,14 +31,14 @@ struct ImportCloudPasswordViewFactory {
             serviceFactory: serviceFactory,
             operationQueue: operationQueue
         )
-        
+
         let walletRepository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
         ).createMetaAccountRepository(
             for: nil,
             sortDescriptors: []
         )
-        
+
         let keystore = Keychain()
 
         return .init(
