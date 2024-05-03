@@ -9,7 +9,8 @@ final class ParaStkSelectCollatorsPresenter {
     let wireframe: ParaStkSelectCollatorsWireframeProtocol
     let interactor: ParaStkSelectCollatorsInteractorInputProtocol
 
-    private var collatorsInfoResult: Result<[CollatorSelectionInfo], Error>?
+    private var allCollators: [CollatorSelectionInfo]?
+    private var preferredCollators: Set<AccountId>?
     private var price: PriceData?
 
     private var sorting: CollatorsSortType = .rewards
@@ -20,14 +21,12 @@ final class ParaStkSelectCollatorsPresenter {
 
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let preferredCollators: Set<AccountId>
     let logger: LoggerProtocol
 
     init(
         interactor: ParaStkSelectCollatorsInteractorInputProtocol,
         wireframe: ParaStkSelectCollatorsWireframeProtocol,
         delegate: ParaStkSelectCollatorsDelegate,
-        preferredCollators: Set<AccountId>,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -36,7 +35,6 @@ final class ParaStkSelectCollatorsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.delegate = delegate
-        self.preferredCollators = preferredCollators
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         self.logger = logger
@@ -175,14 +173,12 @@ final class ParaStkSelectCollatorsPresenter {
 
     private func provideState() {
         do {
-            guard let collatorsInfo = try collatorsInfoResult?.get() else {
+            guard let allCollators else {
                 view?.didReceive(state: .loading)
                 return
             }
 
-            let collatorsViewModels = try collatorsInfo.map { collatorInfo in
-                try createViewModel(for: collatorInfo)
-            }
+            let collatorsViewModels = try allCollators.map { try createViewModel(for: $0) }
 
             let headerViewModel = createHeaderViewModel(for: collatorsViewModels.count)
 
@@ -207,10 +203,8 @@ final class ParaStkSelectCollatorsPresenter {
         }
     }
 
-    private func applySortingAndSaveResult(_ result: Result<[CollatorSelectionInfo], Error>) {
-        collatorsInfoResult = result.map {
-            $0.sortedByType(sorting, preferredCollators: preferredCollators)
-        }
+    private func applySortingAndSaveResult(_ result: [CollatorSelectionInfo]) {
+        allCollators = result.sortedByType(sorting, preferredCollators: preferredCollators ?? [])
     }
 }
 
@@ -222,18 +216,18 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
     }
 
     func refresh() {
-        collatorsInfoResult = nil
+        allCollators = nil
+        preferredCollators = nil
+
         provideState()
 
         interactor.refresh()
     }
 
     func selectCollator(at index: Int) {
-        guard let collators = try? collatorsInfoResult?.get() else {
+        guard let collator = allCollators?[index] else {
             return
         }
-
-        let collator = collators[index]
 
         delegate?.didSelect(collator: collator)
 
@@ -241,42 +235,30 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
     }
 
     func presentCollator(at index: Int) {
-        guard let collators = try? collatorsInfoResult?.get() else {
+        guard let collator = allCollators?[index] else {
             return
         }
-
-        let collator = collators[index]
 
         wireframe.showCollatorInfo(from: view, collatorInfo: collator)
     }
 
     func presentSearch() {
-        guard
-            let collatorsInfo = try? collatorsInfoResult?.get(),
-            let delegate = delegate else {
+        guard let allCollators, let delegate else {
             return
         }
 
-        wireframe.showSearch(
-            from: view,
-            for: collatorsInfo,
-            delegate: delegate
-        )
+        wireframe.showSearch(from: view, for: allCollators, delegate: delegate)
     }
 
     func presenterFilters() {
-        wireframe.showFilters(
-            from: view,
-            for: sorting,
-            delegate: self
-        )
+        wireframe.showFilters(from: view, for: sorting, delegate: self)
     }
 
     func clearFilters() {
         sorting = CollatorsSortType.defaultType
 
-        if let collatorsInfoResult = collatorsInfoResult {
-            applySortingAndSaveResult(collatorsInfoResult)
+        if let allCollators {
+            applySortingAndSaveResult(allCollators)
         }
 
         provideState()
@@ -284,19 +266,46 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
 }
 
 extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsInteractorOutputProtocol {
-    func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>) {
-        applySortingAndSaveResult(result)
+    func didReceiveAllCollators(_ collators: [CollatorSelectionInfo]) {
+        logger.debug("All collators: \(collators)")
+
+        applySortingAndSaveResult(collators)
+
         provideState()
     }
 
-    func didReceivePrice(result: Result<PriceData?, Error>) {
-        switch result {
-        case let .success(price):
-            self.price = price
+    func didReceivePreferredCollators(_ collators: [AccountId]) {
+        logger.debug("Preferred collators: \(collators)")
 
-            provideState()
-        case let .failure(error):
-            logger.error("Did receive error: \(error)")
+        preferredCollators = Set(collators)
+
+        if let allCollators {
+            applySortingAndSaveResult(allCollators)
+        }
+
+        provideState()
+    }
+
+    func didReceivePrice(_ priceData: PriceData?) {
+        logger.debug("Price: \(String(describing: priceData))")
+
+        price = priceData
+
+        provideState()
+    }
+
+    func didReceiveError(_ error: ParaStkSelectCollatorsInteractorError) {
+        logger.error("Error: \(error)")
+
+        switch error {
+        case .allCollatorsFailed, .preferredCollatorsFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refresh()
+            }
+        case .priceFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retrySubscription()
+            }
         }
     }
 }
@@ -313,8 +322,8 @@ extension ParaStkSelectCollatorsPresenter: ParaStkCollatorFiltersDelegate {
     func didReceiveCollator(sorting: CollatorsSortType) {
         self.sorting = sorting
 
-        if let collatorsInfoResult = collatorsInfoResult {
-            applySortingAndSaveResult(collatorsInfoResult)
+        if let allCollators {
+            applySortingAndSaveResult(allCollators)
         }
 
         provideState()
