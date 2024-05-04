@@ -5,6 +5,7 @@ protocol CloudBackupErrorPresentable {
     func presentNotEnoughStorageForBackup(from view: ControllerBackedProtocol, locale: Locale)
     func presentNoCloudConnection(from view: ControllerBackedProtocol, locale: Locale)
     func presentBackupNotFound(from view: ControllerBackedProtocol, locale: Locale)
+    func presentInvalidBackupPassword(from view: ControllerBackedProtocol, locale: Locale)
 }
 
 extension CloudBackupErrorPresentable where Self: AlertPresentable {
@@ -81,6 +82,23 @@ extension CloudBackupErrorPresentable where Self: AlertPresentable {
         )
 
         let message = R.string.localizable.cloudBackupNotFoundMessage(
+            preferredLanguages: locale.rLanguages
+        )
+
+        present(
+            message: message,
+            title: title,
+            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            from: view
+        )
+    }
+
+    func presentInvalidBackupPassword(from view: ControllerBackedProtocol, locale: Locale) {
+        let title = R.string.localizable.commonPasswordInvalidTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
+        let message = R.string.localizable.commonPasswordInvalidMessage(
             preferredLanguages: locale.rLanguages
         )
 

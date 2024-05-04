@@ -8,5 +8,6 @@ protocol CloudBackupServiceFactoryProtocol {
     func createFileManager() -> CloudBackupFileManaging
     func createCodingManager() -> CloudBackupCoding
     func createSecretsExporter(from keychain: KeystoreProtocol) -> CloudBackupSecretsExporting
+    func createSecretsImporter(to keychain: KeystoreProtocol) -> CloudBackupSecretsImporting
     func createUploadFactory() -> CloudBackupUploadFactoryProtocol
 }

@@ -43,7 +43,7 @@ final class ICloudBackupStorageManager {
 
     private func writeFileAndMonitor(
         of size: UInt64,
-        timeoutInterval _: TimeInterval,
+        timeoutInterval: TimeInterval,
         runningIn queue: DispatchQueue,
         completionClosure: @escaping CloudBackupUploadMonitoringClosure
     ) {
@@ -62,6 +62,7 @@ final class ICloudBackupStorageManager {
 
         let uploadWrapper = uploadOperationFactory.createUploadWrapper(
             for: fileUrl,
+            timeoutInterval: timeoutInterval,
             dataClosure: { try dataOperation.extractNoCancellableResultData() }
         )
 

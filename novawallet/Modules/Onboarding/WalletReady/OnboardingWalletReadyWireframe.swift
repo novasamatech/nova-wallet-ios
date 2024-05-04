@@ -13,8 +13,15 @@ final class OnboardingWalletReadyWireframe: OnboardingWalletReadyWireframeProtoc
         // TODO: Implement in separate task
     }
 
-    func showRecoverBackup(from _: OnboardingWalletReadyViewProtocol?) {
-        // TODO: Implement in separate task
+    func showRecoverBackup(from view: OnboardingWalletReadyViewProtocol?) {
+        guard let cloudImportView = ImportCloudPasswordViewFactory.createView() else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            cloudImportView.controller,
+            animated: true
+        )
     }
 
     func showExistingBackup(from view: OnboardingWalletReadyViewProtocol?, recoverClosure: @escaping () -> Void) {

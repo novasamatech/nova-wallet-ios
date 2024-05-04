@@ -1,8 +1,12 @@
 import Foundation
 
 final class OnboardingImportOptionsWireframe: WalletImportOptionsWireframe, OnboardingImportOptionsWireframeProtocol {
-    func showCloudImport(from _: WalletImportOptionsViewProtocol?) {
-        // TODO: Implement in the next task
+    func showCloudImport(from view: WalletImportOptionsViewProtocol?) {
+        guard let cloudImportView = ImportCloudPasswordViewFactory.createView() else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(cloudImportView.controller, animated: true)
     }
 
     func showPassphraseImport(from view: WalletImportOptionsViewProtocol?) {

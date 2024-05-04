@@ -13,11 +13,12 @@ protocol CloudBackupSecretsImporting {
 
 enum CloudBackupSecretsImportingError: Error {
     case decodingFailed(Error)
+    case decryptionFailed(Error)
     case validationFailed
 }
 
 final class CloudBackupSecretsImporter {
-    let keychain: Keychain
+    let keychain: KeystoreProtocol
     let walletConverter: CloudBackupFileModelConverting
     let cryptoManager: CloudBackupCryptoManagerProtocol
     let validator: CloudBackupValidating
@@ -26,12 +27,20 @@ final class CloudBackupSecretsImporter {
         walletConverter: CloudBackupFileModelConverting,
         cryptoManager: CloudBackupCryptoManagerProtocol,
         validator: CloudBackupValidating,
-        keychain: Keychain
+        keychain: KeystoreProtocol
     ) {
         self.walletConverter = walletConverter
         self.cryptoManager = cryptoManager
         self.validator = validator
         self.keychain = keychain
+    }
+
+    private func decrypt(data: Data, password: String) throws -> Data {
+        do {
+            return try cryptoManager.decrypt(data: data, password: password)
+        } catch {
+            throw CloudBackupSecretsImportingError.decryptionFailed(error)
+        }
     }
 
     private func decodePrivate(
@@ -41,14 +50,18 @@ final class CloudBackupSecretsImporter {
         do {
             let encryptedData = try Data(hexString: backup.privateData)
 
-            let decryptedData = try cryptoManager.decrypt(data: encryptedData, password: password)
+            let decryptedData = try decrypt(data: encryptedData, password: password)
 
             return try JSONDecoder().decode(
                 CloudBackup.DecryptedFileModel.PrivateData.self,
                 from: decryptedData
             )
         } catch {
-            throw CloudBackupSecretsImportingError.decodingFailed(error)
+            if let importError = error as? CloudBackupSecretsImportingError {
+                throw importError
+            } else {
+                throw CloudBackupSecretsImportingError.decodingFailed(error)
+            }
         }
     }
 

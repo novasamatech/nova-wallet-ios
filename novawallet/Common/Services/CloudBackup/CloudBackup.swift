@@ -8,4 +8,7 @@ enum CloudBackup {
     }
 
     static let requiredCloudSize: UInt64 = 10 * 1024 * 1024
+
+    static let storageCheckTimeout: TimeInterval = 15
+    static let backupSaveTimeout: TimeInterval = 15
 }
