@@ -2,7 +2,9 @@ import Foundation
 import SubstrateSdk
 
 protocol RewardCalculatorParamsServiceFactoryProtocol {
-    func createRewardCalculatorParamsService() -> RewardCalculatorParamsServiceProtocol
+    func createRewardCalculatorParamsService(
+        for chainId: ChainModel.Id
+    ) -> RewardCalculatorParamsServiceProtocol
 }
 
 final class RewardCalculatorParamsServiceFactory {
@@ -22,17 +24,34 @@ final class RewardCalculatorParamsServiceFactory {
         self.runtimeService = runtimeService
         self.operationQueue = operationQueue
     }
-}
 
-extension RewardCalculatorParamsServiceFactory: RewardCalculatorParamsServiceFactoryProtocol {
-    func createRewardCalculatorParamsService() -> RewardCalculatorParamsServiceProtocol {
-        switch stakingType {
-        case .relaychain, .nominationPools:
-            return InflationRewardCalculatorParamsService(
+    private func createRelaychainParamService(
+        for chainId: ChainModel.Id
+    ) -> RewardCalculatorParamsServiceProtocol {
+        switch chainId {
+        case KnowChainId.vara:
+            VaraRewardParamsService(
+                connection: connection,
+                runtimeCodingService: runtimeService,
+                operationQueue: operationQueue
+            )
+        default:
+            InflationRewardCalculatorParamsService(
                 connection: connection,
                 runtimeService: runtimeService,
                 operationQueue: operationQueue
             )
+        }
+    }
+}
+
+extension RewardCalculatorParamsServiceFactory: RewardCalculatorParamsServiceFactoryProtocol {
+    func createRewardCalculatorParamsService(
+        for chainId: ChainModel.Id
+    ) -> RewardCalculatorParamsServiceProtocol {
+        switch stakingType {
+        case .relaychain, .nominationPools:
+            return createRelaychainParamService(for: chainId)
         default:
             return NoRewardCalculatorParamsService()
         }

@@ -10,7 +10,7 @@ protocol RewardCalculatorEngineFactoryProtocol {
     ) -> RewardCalculatorEngineProtocol
 }
 
-final class RewardCalculatorEngineFactory: RewardCalculatorEngineFactoryProtocol {
+final class RewardCalculatorEngineFactory {
     let chainId: ChainModel.Id
     let stakingType: StakingType
     let assetPrecision: Int16
@@ -21,6 +21,38 @@ final class RewardCalculatorEngineFactory: RewardCalculatorEngineFactoryProtocol
         self.assetPrecision = assetPrecision
     }
 
+    private func createRelaychainCalculator(
+        for totalIssuance: BigUInt,
+        params: RewardCalculatorParams,
+        validators: [EraValidatorInfo],
+        eraDurationInSeconds: TimeInterval
+    ) -> RewardCalculatorEngineProtocol {
+        switch params {
+        case .noParams, .inflation:
+            let config = InflationCurveRewardConfig.config(for: chainId)
+            return InflationCurveRewardEngine(
+                chainId: chainId,
+                assetPrecision: assetPrecision,
+                totalIssuance: totalIssuance,
+                validators: validators,
+                eraDurationInSeconds: eraDurationInSeconds,
+                config: config,
+                parachainsCount: params.parachainsCount ?? 0
+            )
+        case let .vara(inflation):
+            return VaraRewardEngine(
+                chainId: chainId,
+                assetPrecision: assetPrecision,
+                annualInflation: inflation,
+                totalIssuance: totalIssuance,
+                validators: validators,
+                eraDurationInSeconds: eraDurationInSeconds
+            )
+        }
+    }
+}
+
+extension RewardCalculatorEngineFactory: RewardCalculatorEngineFactoryProtocol {
     func createRewardCalculator(
         for totalIssuance: BigUInt,
         params: RewardCalculatorParams,
@@ -43,15 +75,11 @@ final class RewardCalculatorEngineFactory: RewardCalculatorEngineFactoryProtocol
                 treasuryPercentage: treasuryPercentage
             )
         default:
-            let config = InflationCurveRewardConfig.config(for: chainId)
-            return InflationCurveRewardEngine(
-                chainId: chainId,
-                assetPrecision: assetPrecision,
-                totalIssuance: totalIssuance,
+            return createRelaychainCalculator(
+                for: totalIssuance,
+                params: params,
                 validators: validators,
-                eraDurationInSeconds: eraDurationInSeconds,
-                config: config,
-                parachainsCount: params.parachainsCount ?? 0
+                eraDurationInSeconds: eraDurationInSeconds
             )
         }
     }

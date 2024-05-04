@@ -163,7 +163,7 @@ final class RewardCalculatorService {
     private func subscribe() {
         totalIssuanceDataProvider = subscribeTotalIssuance(for: chainId, callbackQueue: syncQueue)
 
-        paramsService = rewardCalculatorParamsFactory.createRewardCalculatorParamsService()
+        paramsService = rewardCalculatorParamsFactory.createRewardCalculatorParamsService(for: chainId)
         paramsService?.subcribe(using: syncQueue) { [weak self] result in
             switch result {
             case let .success(params):
