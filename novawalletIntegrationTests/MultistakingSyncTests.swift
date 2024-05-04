@@ -55,6 +55,11 @@ final class MultistakingSyncTests: XCTestCase {
             repositoryFactory: multistakingRepositoryFactory,
             operationQueue: operationQueue
         )
+        
+        let subqueryFactory = SubqueryMultistakingProxy(
+            configProvider: StakingGlobalConfigProvider(configUrl: ApplicationConfig.shared.stakingGlobalConfigURL),
+            operationQueue: operationQueue
+        )
 
         let syncService = MultistakingSyncService(
             wallet: wallet,
@@ -62,7 +67,7 @@ final class MultistakingSyncTests: XCTestCase {
             providerFactory: providerFactory,
             multistakingRepositoryFactory: multistakingRepositoryFactory,
             substrateRepositoryFactory: substrateRepositoryFactory,
-            offchainOperationFactory: SubqueryMultistakingOperationFactory(url: ApplicationConfig.shared.multistakingURL)
+            offchainOperationFactory: subqueryFactory
         )
 
         // when

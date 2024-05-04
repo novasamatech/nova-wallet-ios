@@ -21,7 +21,7 @@ protocol ApplicationConfigProtocol {
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
     var xcmTransfersURL: URL { get }
-    var multistakingURL: URL { get }
+    var stakingGlobalConfigURL: URL { get }
     var dAppsListURL: URL { get }
     var preferredValidatorsURL: URL { get }
     var governanceDAppsListURL: URL { get }
@@ -156,11 +156,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    var multistakingURL: URL {
+    var stakingGlobalConfigURL: URL {
         #if F_RELEASE
-            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/global_config.json")!
         #else
-            URL(string: "https://subquery-multi-staking-prod.k8s-1.novasama.co")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/global_config_dev.json")!
         #endif
     }
 
