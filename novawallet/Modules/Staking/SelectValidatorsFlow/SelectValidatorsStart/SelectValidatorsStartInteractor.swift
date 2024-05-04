@@ -5,7 +5,7 @@ import IrohaCrypto
 import BigInt
 
 final class SelectValidatorsStartInteractor: RuntimeConstantFetching {
-    weak var presenter: SelectValidatorsStartInteractorOutputProtocol!
+    weak var presenter: SelectValidatorsStartInteractorOutputProtocol?
 
     let chain: ChainModel
     let operationFactory: ValidatorOperationFactoryProtocol
@@ -58,7 +58,7 @@ final class SelectValidatorsStartInteractor: RuntimeConstantFetching {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter.didReceiveValidators(result: result)
+            self?.presenter?.didReceiveValidators(result: result)
         }
     }
 
@@ -74,7 +74,7 @@ final class SelectValidatorsStartInteractor: RuntimeConstantFetching {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter.didReceiveMaxNominations(result: result)
+            self?.presenter?.didReceiveMaxNominations(result: result)
         }
     }
 }
