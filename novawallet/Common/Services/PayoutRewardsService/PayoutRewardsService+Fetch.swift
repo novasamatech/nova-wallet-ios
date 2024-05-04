@@ -214,16 +214,18 @@ extension PayoutRewardsService {
         dependingOn unclaimedRewards: @escaping () throws -> [StakingUnclaimedReward],
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) throws -> CompoundOperationWrapper<[ResolvedValidatorEra: ValidatorPrefs]> {
-        let keys: () throws -> [ResolvedValidatorEra] = {
+        let keysOperation = ClosureOperation<[ResolvedValidatorEra]> {
             try unclaimedRewards().map { ResolvedValidatorEra(validator: $0.accountId, era: $0.era) }.distinct()
         }
 
         let keyParams1: () throws -> [StringScaleMapper<EraIndex>] = {
-            try keys().map { StringScaleMapper(value: $0.era) }
+            let keys = try keysOperation.extractNoCancellableResultData()
+            return keys.map { StringScaleMapper(value: $0.era) }
         }
 
         let keyParams2: () throws -> [BytesCodable] = {
-            try keys().map { BytesCodable(wrappedValue: $0.validator) }
+            let keys = try keysOperation.extractNoCancellableResultData()
+            return keys.map { BytesCodable(wrappedValue: $0.validator) }
         }
 
         let wrapper: CompoundOperationWrapper<[StorageResponse<ValidatorPrefs>]> =
@@ -235,9 +237,11 @@ extension PayoutRewardsService {
                 storagePath: Staking.eraValidatorPrefs
             )
 
+        wrapper.addDependency(operations: [keysOperation])
+
         let mergeOperation = ClosureOperation<[ResolvedValidatorEra: ValidatorPrefs]> {
             let responses = try wrapper.targetOperation.extractNoCancellableResultData()
-            let keys = try keys()
+            let keys = try keysOperation.extractNoCancellableResultData()
 
             return responses.enumerated().reduce(into: [ResolvedValidatorEra: ValidatorPrefs]()) { result, item in
                 guard let value = item.element.value else {
@@ -251,7 +255,9 @@ extension PayoutRewardsService {
 
         wrapper.allOperations.forEach { mergeOperation.addDependency($0) }
 
-        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: wrapper.allOperations)
+        return wrapper
+            .insertingHead(operations: [keysOperation])
+            .insertingTail(operation: mergeOperation)
     }
 
     // swiftlint:disable:next function_parameter_count

@@ -278,6 +278,8 @@
 		0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B862BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift */; };
 		0C846B892BE50BF2000EBFC2 /* VaraRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B882BE50BF2000EBFC2 /* VaraRewardEngine.swift */; };
 		0C846B8B2BE52FBD000EBFC2 /* VaraRewardParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8A2BE52FBD000EBFC2 /* VaraRewardParamsService.swift */; };
+		0C846B8D2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8C2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift */; };
+		0C846B902BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */; };
 		0C85FF222B6C001900FC0014 /* HydraExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF212B6C001900FC0014 /* HydraExtrinsicService.swift */; };
 		0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */; };
 		0C85FF262B6CB9B400FC0014 /* HydraCallPathFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF252B6CB9B400FC0014 /* HydraCallPathFactory.swift */; };
@@ -4872,6 +4874,8 @@
 		0C846B862BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPreferredValidatorsProvider.swift; sourceTree = "<group>"; };
 		0C846B882BE50BF2000EBFC2 /* VaraRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaraRewardEngine.swift; sourceTree = "<group>"; };
 		0C846B8A2BE52FBD000EBFC2 /* VaraRewardParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaraRewardParamsService.swift; sourceTree = "<group>"; };
+		0C846B8C2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingProxy.swift; sourceTree = "<group>"; };
+		0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingGlobalConfigProvider.swift; sourceTree = "<group>"; };
 		0C85FF212B6C001900FC0014 /* HydraExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicService.swift; sourceTree = "<group>"; };
 		0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicConverter.swift; sourceTree = "<group>"; };
 		0C85FF252B6CB9B400FC0014 /* HydraCallPathFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraCallPathFactory.swift; sourceTree = "<group>"; };
@@ -9818,6 +9822,14 @@
 			isa = PBXGroup;
 			children = (
 				0C846B862BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift */,
+			);
+			path = Staking;
+			sourceTree = "<group>";
+		};
+		0C846B8E2BE5F05A000EBFC2 /* Staking */ = {
+			isa = PBXGroup;
+			children = (
+				0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */,
 			);
 			path = Staking;
 			sourceTree = "<group>";
@@ -15806,6 +15818,7 @@
 		8490150124AB6BEA008F705E /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				0C846B8E2BE5F05A000EBFC2 /* Staking */,
 				84E8BA1029FFB38600FD9F40 /* Ethereum */,
 				84953F642934B2C90033F47D /* Etherscan */,
 				84C9CF39291AE30F002BF328 /* GovMetadataOperationFactory */,
@@ -16176,6 +16189,7 @@
 				84DC3CE6279679230038E2ED /* SubqueryHistory+Wallet.swift */,
 				84C355BC29892885005072CF /* SubqueryBaseOperationFactory.swift */,
 				8455F18F2A1DC56E003F072D /* SubqueryMultistakingOperationFactory.swift */,
+				0C846B8C2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift */,
 			);
 			path = Subquery;
 			sourceTree = "<group>";
@@ -24073,6 +24087,7 @@
 				84C1DBBA29C0A11200F295A5 /* XcmTransferService+Fee.swift in Sources */,
 				77C9BCD02ACD8A3600022EA2 /* SwapAssetsOperationViewLayout.swift in Sources */,
 				845B081529190056005785D3 /* Gov1UnlockReferendum.swift in Sources */,
+				0C846B8D2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift in Sources */,
 				77C3D7D72B5E824700997BA0 /* StakingRemoveProxyProtocols.swift in Sources */,
 				84B24FB02A2F7B6F00F9BF59 /* StakingDashboardMoreOptionsCell.swift in Sources */,
 				77799ADD2A74219A00B7E564 /* ButtonState.swift in Sources */,
@@ -25898,6 +25913,7 @@
 				F3719F7C2AD0B75FC271DCE9 /* NPoolsRedeemViewFactory.swift in Sources */,
 				92984DFE797C52644C084377 /* SwapSetupProtocols.swift in Sources */,
 				5B02D050E6E067906A05B46B /* SwapSetupWireframe.swift in Sources */,
+				0C846B902BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift in Sources */,
 				3EE29545824B68594751769C /* SwapSetupPresenter.swift in Sources */,
 				54813408A51B4AEBA3EED0A5 /* SwapSetupInteractor.swift in Sources */,
 				8786222ADF4643BE7A6FBBEB /* SwapSetupViewController.swift in Sources */,

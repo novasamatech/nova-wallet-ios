@@ -8,6 +8,7 @@ struct StakingConstants {
     static let recommendedPoolIds: [ChainModel.Id: NominationPools.PoolId] = [
         KnowChainId.polkadot: 54,
         KnowChainId.kusama: 160,
-        KnowChainId.alephZero: 74
+        KnowChainId.alephZero: 74,
+        KnowChainId.vara: 65
     ]
 }

@@ -48,8 +48,11 @@ final class SubqueryMultistakingTests: XCTestCase {
 
         let chainAssets = ChainsStore(chainRegistry: chainRegistry).getAllStakebleAssets()
 
-        let operationFactory = SubqueryMultistakingOperationFactory(
-            url: ApplicationConfig.shared.multistakingURL
+        let operationQueue = OperationQueue()
+        
+        let operationFactory = SubqueryMultistakingProxy(
+            configProvider: StakingGlobalConfigProvider(configUrl: ApplicationConfig.shared.stakingGlobalConfigURL),
+            operationQueue: operationQueue
         )
 
         let wrapper = operationFactory.createWrapper(
@@ -59,7 +62,7 @@ final class SubqueryMultistakingTests: XCTestCase {
             chainAssets: chainAssets
         )
 
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
 
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }

@@ -27,7 +27,7 @@ final class PushNotificationSettingsFactory: PushNotificationSettingsFactoryProt
             updatedAt: Date(),
             wallets: [web3Wallet],
             notifications: .init(
-                stakingReward: nil,
+                stakingReward: .all,
                 tokenSent: .all,
                 tokenReceived: .all
             )
