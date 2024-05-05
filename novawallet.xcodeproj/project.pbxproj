@@ -26294,7 +26294,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
 				CODE_SIGN_ENTITLEMENTS = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -26316,7 +26316,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan Nova Wallet Push Development";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev-extension";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -26334,7 +26334,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
 				CODE_SIGN_ENTITLEMENTS = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionDev.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
@@ -26356,7 +26356,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev-extension";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan Nova Wallet Push Development";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev-extension";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -26630,7 +26630,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
@@ -26649,7 +26649,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Ruslan't M2 Dev";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan Nova Wallet Development";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -26813,7 +26813,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDev.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
@@ -26832,7 +26832,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan Nova Wallet Development";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
