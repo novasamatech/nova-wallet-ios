@@ -280,6 +280,8 @@
 		0C846B8B2BE52FBD000EBFC2 /* VaraRewardParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8A2BE52FBD000EBFC2 /* VaraRewardParamsService.swift */; };
 		0C846B8D2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8C2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift */; };
 		0C846B902BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */; };
+		0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */; };
+		0C846B952BE69417000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */; };
 		0C85FF222B6C001900FC0014 /* HydraExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF212B6C001900FC0014 /* HydraExtrinsicService.swift */; };
 		0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */; };
 		0C85FF262B6CB9B400FC0014 /* HydraCallPathFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF252B6CB9B400FC0014 /* HydraCallPathFactory.swift */; };
@@ -4876,6 +4878,8 @@
 		0C846B8A2BE52FBD000EBFC2 /* VaraRewardParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaraRewardParamsService.swift; sourceTree = "<group>"; };
 		0C846B8C2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingProxy.swift; sourceTree = "<group>"; };
 		0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingGlobalConfigProvider.swift; sourceTree = "<group>"; };
+		0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0C85FF212B6C001900FC0014 /* HydraExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicService.swift; sourceTree = "<group>"; };
 		0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicConverter.swift; sourceTree = "<group>"; };
 		0C85FF252B6CB9B400FC0014 /* HydraCallPathFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraCallPathFactory.swift; sourceTree = "<group>"; };
@@ -11710,6 +11714,7 @@
 				849013A924A80984008F705E /* Products */,
 				77CAF4332B8E96A400E4297C /* Info.plist */,
 				0CCD18AC2BA162B00068D73A /* Localizable.strings */,
+				0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */,
 			);
 			path = NovaPushNotificationServiceExtension;
 			sourceTree = "<group>";
@@ -15020,6 +15025,7 @@
 				84C07EDA24AF1924008FC35B /* InfoPlist.strings */,
 				8490146024A94373008F705E /* Localizable.strings */,
 				AE74EC1725FCF09000C494E7 /* Localizable.stringsdict */,
+				0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */,
 			);
 			path = novawallet;
 			sourceTree = "<group>";
@@ -21285,6 +21291,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C846B952BE69417000EBFC2 /* PrivacyInfo.xcprivacy in Resources */,
 				0CC0F7F42BADEB1D002C49F6 /* notification-ext.dev.xcconfig in Resources */,
 				0CC0F7F32BADEB1D002C49F6 /* notification-ext.debug.xcconfig in Resources */,
 				0CC0F7F22BADEB1D002C49F6 /* notification-ext.release.xcconfig in Resources */,
@@ -21307,6 +21314,7 @@
 				848E6BE1276328B500C91022 /* PublicSans-Medium.otf in Resources */,
 				84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */,
 				849013FC24A92A05008F705E /* novawallet.release.xcconfig in Resources */,
+				0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */,
 				8490145E24A94373008F705E /* Localizable.strings in Resources */,
 				8477DAA32888329800129B45 /* watchOnlyPreset.json in Resources */,
 				AE74EC1525FCF09000C494E7 /* Localizable.stringsdict in Resources */,
@@ -26805,6 +26813,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_ENTITLEMENTS = novawallet/novawalletDev.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
