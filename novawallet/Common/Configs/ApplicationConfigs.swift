@@ -21,8 +21,9 @@ protocol ApplicationConfigProtocol {
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
     var xcmTransfersURL: URL { get }
-    var multistakingURL: URL { get }
+    var stakingGlobalConfigURL: URL { get }
     var dAppsListURL: URL { get }
+    var preferredValidatorsURL: URL { get }
     var governanceDAppsListURL: URL { get }
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
@@ -131,9 +132,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v18/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v19/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v18/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v19/chains_dev.json")!
         #endif
     }
 
@@ -155,11 +156,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    var multistakingURL: URL {
+    var stakingGlobalConfigURL: URL {
         #if F_RELEASE
-            URL(string: "https://api.subquery.network/sq/nova-wallet/subquery-staking")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/global_config.json")!
         #else
-            URL(string: "https://subquery-multi-staking-prod.k8s-1.novasama.co")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/global_config_dev.json")!
         #endif
     }
 
@@ -168,6 +169,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps_dev.json")!
+        #endif
+    }
+
+    var preferredValidatorsURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/nova_validators.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/nova_validators.json")!
         #endif
     }
 

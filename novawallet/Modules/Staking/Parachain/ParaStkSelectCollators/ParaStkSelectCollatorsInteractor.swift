@@ -1,7 +1,7 @@
 import UIKit
 import RobinHood
 
-final class ParaStkSelectCollatorsInteractor {
+final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
     weak var presenter: ParaStkSelectCollatorsInteractorOutputProtocol?
 
     var chain: ChainModel { chainAsset.chain }
@@ -12,6 +12,7 @@ final class ParaStkSelectCollatorsInteractor {
     let connection: ChainConnection
     let runtimeProvider: RuntimeProviderProtocol
     let collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol
+    let preferredCollatorsProvider: PreferredValidatorsProviding
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
 
@@ -24,6 +25,7 @@ final class ParaStkSelectCollatorsInteractor {
         connection: ChainConnection,
         runtimeProvider: RuntimeProviderProtocol,
         collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
+        preferredCollatorsProvider: PreferredValidatorsProviding,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -33,10 +35,28 @@ final class ParaStkSelectCollatorsInteractor {
         self.rewardService = rewardService
         self.connection = connection
         self.runtimeProvider = runtimeProvider
+        self.preferredCollatorsProvider = preferredCollatorsProvider
         self.collatorOperationFactory = collatorOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
+    }
+
+    private func providePreferredCollators() {
+        let wrapper = preferredCollatorsProvider.createPreferredValidatorsWrapper(for: chain)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(collators):
+                self?.presenter?.didReceivePreferredCollators(collators)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.allCollatorsFailed(error))
+            }
+        }
     }
 
     private func provideElectedCollatorsInfo() {
@@ -48,32 +68,44 @@ final class ParaStkSelectCollatorsInteractor {
             chainFormat: chain.chainFormat
         )
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let electedCollators = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveCollators(result: .success(electedCollators))
-                } catch {
-                    self?.presenter?.didReceiveCollators(result: .failure(error))
-                }
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(collators):
+                self?.presenter?.didReceiveAllCollators(collators)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.allCollatorsFailed(error))
             }
         }
+    }
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    private func updatePriceSubscription() {
+        clear(streamableProvider: &priceProvider)
+
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }
 
 extension ParaStkSelectCollatorsInteractor: ParaStkSelectCollatorsInteractorInputProtocol {
     func setup() {
         provideElectedCollatorsInfo()
+        providePreferredCollators()
 
-        if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-        }
+        updatePriceSubscription()
     }
 
     func refresh() {
         provideElectedCollatorsInfo()
+        providePreferredCollators()
+    }
+
+    func retrySubscription() {
+        updatePriceSubscription()
     }
 }
 
@@ -82,17 +114,21 @@ extension ParaStkSelectCollatorsInteractor: PriceLocalStorageSubscriber, PriceLo
         result: Result<PriceData?, Error>,
         priceId _: AssetModel.PriceId
     ) {
-        presenter?.didReceivePrice(result: result)
+        switch result {
+        case let .success(priceData):
+            presenter?.didReceivePrice(priceData)
+        case let .failure(error):
+            presenter?.didReceiveError(.priceFailed(error))
+        }
     }
 }
 
 extension ParaStkSelectCollatorsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard presenter != nil,
-              let priceId = chainAsset.asset.priceId else {
+        guard presenter != nil, chainAsset.asset.priceId != nil else {
             return
         }
 
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        updatePriceSubscription()
     }
 }

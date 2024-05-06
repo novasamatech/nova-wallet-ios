@@ -26,13 +26,10 @@ struct ParaStkSelectCollatorsViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let preferredCollators = Set(StakingConstants.preferredValidatorIds(for: chainAsset.chain))
-
         let presenter = ParaStkSelectCollatorsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            preferredCollators: preferredCollators,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager,
@@ -91,6 +88,7 @@ struct ParaStkSelectCollatorsViewFactory {
             connection: connection,
             runtimeProvider: runtimeProvider,
             collatorOperationFactory: collatorOperationFactory,
+            preferredCollatorsProvider: state.preferredCollatorsProvider,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue

@@ -11,6 +11,7 @@ protocol RelaychainStakingSharedStateProtocol: AnyObject {
     var localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
     var eraValidatorService: EraValidatorServiceProtocol { get }
     var rewardCalculatorService: RewardCalculatorServiceProtocol { get }
+    var preferredValidatorsProvider: PreferredValidatorsProviding { get }
 
     func setup(for accountId: AccountId?) throws
     func throttle()
@@ -33,6 +34,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     let proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let rewardCalculatorService: RewardCalculatorServiceProtocol
+    let preferredValidatorsProvider: PreferredValidatorsProviding
     let logger: LoggerProtocol
     let proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?
 
@@ -52,6 +54,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol,
         rewardCalculatorService: RewardCalculatorServiceProtocol,
+        preferredValidatorsProvider: PreferredValidatorsProviding,
         timeModel: StakingTimeModel,
         logger: LoggerProtocol
     ) {
@@ -64,6 +67,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         self.proxyLocalSubscriptionFactory = proxyLocalSubscriptionFactory
         self.eraValidatorService = eraValidatorService
         self.rewardCalculatorService = rewardCalculatorService
+        self.preferredValidatorsProvider = preferredValidatorsProvider
         self.timeModel = timeModel
         self.logger = logger
     }

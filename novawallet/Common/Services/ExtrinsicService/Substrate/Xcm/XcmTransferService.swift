@@ -65,10 +65,12 @@ final class XcmTransferService {
             chainModel: chain
         )
 
+        let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)
+
         return ExtrinsicOperationFactory(
             chain: chain,
             runtimeRegistry: runtimeProvider,
-            customExtensions: DefaultExtrinsicExtension.extensions(),
+            customExtensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             senderResolvingFactory: senderResolvingFactory,
             operationManager: OperationManager(operationQueue: operationQueue)
