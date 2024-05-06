@@ -9,7 +9,8 @@ class SelectValidatorsStartTests: XCTestCase {
         let recomendedValidators = WestendStub.recommendedValidators
 
         try performTest(
-            for: nil,
+            for: ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 42),
+            selectedTargets: nil,
             allValidators: allValidators,
             expectedRecommendedValidators: recomendedValidators,
             expectedViewModel: SelectValidatorsStartViewModel(
@@ -25,7 +26,8 @@ class SelectValidatorsStartTests: XCTestCase {
         let recomendedValidators = WestendStub.recommendedValidators
 
         try performTest(
-            for: recomendedValidators.map { $0.toSelected(for: nil) },
+            for: ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 42),
+            selectedTargets: recomendedValidators.map { $0.toSelected(for: nil) },
             allValidators: allValidators,
             expectedRecommendedValidators: recomendedValidators,
             expectedViewModel: SelectValidatorsStartViewModel(
@@ -37,7 +39,8 @@ class SelectValidatorsStartTests: XCTestCase {
     }
 
     private func performTest(
-        for selectedTargets: [SelectedValidatorInfo]?,
+        for chain: ChainModel,
+        selectedTargets: [SelectedValidatorInfo]?,
         allValidators: [ElectedValidatorInfo],
         expectedRecommendedValidators: [ElectedValidatorInfo],
         expectedViewModel: SelectValidatorsStartViewModel,
@@ -54,12 +57,13 @@ class SelectValidatorsStartTests: XCTestCase {
         let operationQueue = OperationQueue()
         
         let interactor = SelectValidatorsStartInteractor(
+            chain: chain,
             runtimeService: runtimeService,
             connection: connection,
             operationFactory: operationFactory,
             maxNominationsOperationFactory: MaxNominationsOperationFactory(operationQueue: operationQueue),
             operationQueue: operationQueue,
-            preferredValidators: [],
+            preferredValidatorsProvider: MockPreferredValidatorsProvider(),
             stakingAmount: 0
         )
 

@@ -24,6 +24,7 @@ enum StakingMainViewFactory {
             eventCenter: EventCenter.shared,
             syncOperationQueue: OperationManagerFacade.sharedDefaultQueue,
             repositoryOperationQueue: OperationManagerFacade.sharedDefaultQueue,
+            applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared
         )
 

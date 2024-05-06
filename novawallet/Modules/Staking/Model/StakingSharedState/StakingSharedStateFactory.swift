@@ -60,6 +60,7 @@ final class StakingSharedStateFactory {
     let proxySyncService: ProxySyncServiceProtocol?
     let syncOperationQueue: OperationQueue
     let repositoryOperationQueue: OperationQueue
+    let applicationConfig: ApplicationConfigProtocol
     let logger: LoggerProtocol
 
     init(
@@ -69,6 +70,7 @@ final class StakingSharedStateFactory {
         eventCenter: EventCenterProtocol,
         syncOperationQueue: OperationQueue,
         repositoryOperationQueue: OperationQueue,
+        applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
         self.storageFacade = storageFacade
@@ -77,6 +79,7 @@ final class StakingSharedStateFactory {
         self.eventCenter = eventCenter
         self.syncOperationQueue = syncOperationQueue
         self.repositoryOperationQueue = repositoryOperationQueue
+        self.applicationConfig = applicationConfig
         self.logger = logger
     }
 
@@ -275,6 +278,10 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
 
         let services = try createRelaychainCommonServices(for: consensus, chainAsset: stakingOption.chainAsset)
 
+        let preferredValidatorsProvider = PreferredValidatorsProvider(
+            remoteUrl: applicationConfig.preferredValidatorsURL
+        )
+
         return RelaychainStakingSharedState(
             consensus: consensus,
             stakingOption: stakingOption,
@@ -285,6 +292,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             proxyLocalSubscriptionFactory: services.proxySubscriptionFactory,
             eraValidatorService: services.eraValidatorService,
             rewardCalculatorService: services.rewardCalculatorService,
+            preferredValidatorsProvider: preferredValidatorsProvider,
             timeModel: services.timeModel,
             logger: logger
         )
@@ -379,6 +387,10 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             logger: logger
         )
 
+        let preferredValidatorsProvider = PreferredValidatorsProvider(
+            remoteUrl: applicationConfig.preferredValidatorsURL
+        )
+
         return ParachainStakingSharedState(
             stakingOption: stakingOption,
             chainRegistry: chainRegistry,
@@ -389,6 +401,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             blockTimeService: blockTimeService,
             stakingLocalSubscriptionFactory: localSubscriptionFactory,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
+            preferredCollatorsProvider: preferredValidatorsProvider,
             logger: logger
         )
     }
@@ -405,6 +418,10 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             eraValidatorService: relaychainServices.eraValidatorService
         )
 
+        let preferredValidatorsProvider = PreferredValidatorsProvider(
+            remoteUrl: applicationConfig.preferredValidatorsURL
+        )
+
         return RelaychainStartStakingState(
             stakingType: selectedStakingType,
             consensus: consensus,
@@ -419,6 +436,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             npAccountSubscriptionServiceFactory: nominationPoolsService.accountSubscriptionServiceFactory,
             npLocalSubscriptionFactory: nominationPoolsService.localSubscriptionFactory,
             activePoolsService: nominationPoolsService.activePoolsService,
+            preferredValidatorsProvider: preferredValidatorsProvider,
             logger: logger
         )
     }

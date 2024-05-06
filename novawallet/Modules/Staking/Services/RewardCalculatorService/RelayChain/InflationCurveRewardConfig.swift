@@ -35,19 +35,39 @@ struct InflationCurveRewardConfig {
 }
 
 extension InflationCurveRewardConfig {
+    static func createPolkadot() -> InflationCurveRewardConfig {
+        InflationCurveRewardConfig(
+            idealStake: 0.75,
+            fallof: 0.05,
+            minAnnualInflation: 0.025,
+            maxAnnualInflation: 0.1,
+            maxParachainsCount: 60,
+            parachainsReserve: 0.2
+        )
+    }
+
+    static func createAvail() -> InflationCurveRewardConfig {
+        // Source: https://github.com/availproject/avail/blob/main/runtime/src/constants.rs#L223
+        InflationCurveRewardConfig(
+            idealStake: 0.5,
+            fallof: 0.05,
+            minAnnualInflation: 0.01,
+            maxAnnualInflation: 0.05
+        )
+    }
+
+    static func createDefault() -> InflationCurveRewardConfig {
+        InflationCurveRewardConfig()
+    }
+
     static func config(for chainId: ChainModel.Id) -> InflationCurveRewardConfig {
         switch chainId {
         case KnowChainId.polkadot:
-            return InflationCurveRewardConfig(
-                idealStake: 0.75,
-                fallof: 0.05,
-                minAnnualInflation: 0.025,
-                maxAnnualInflation: 0.1,
-                maxParachainsCount: 60,
-                parachainsReserve: 0.2
-            )
+            createPolkadot()
+        case KnowChainId.avail, KnowChainId.availTuringTestnet:
+            createAvail()
         default:
-            return InflationCurveRewardConfig()
+            createDefault()
         }
     }
 }
