@@ -1572,3 +1572,4 @@
 "common.password.invalid.title" = "Password is invalid";
 "common.password.invalid.message" = "Your password was incorrect, please try again.";
 "cloud.backup.deleted" = "Cloud Backup has been deleted successfully";
+"common.backup" = "Backup";

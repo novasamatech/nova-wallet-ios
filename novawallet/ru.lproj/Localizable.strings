@@ -1572,3 +1572,4 @@
 "common.password.invalid.title" = "Неверный пароль";
 "common.password.invalid.message" = "Вы ввели неверный пароль, пожалуйста попробуйте ещё раз.";
 "cloud.backup.deleted" = "Бэкап успешно удалён";
+"common.backup" = "Бэкап";
