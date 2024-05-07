@@ -13,6 +13,7 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
     var relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
     var eraValidatorService: EraValidatorServiceProtocol { get }
     var relaychainRewardCalculatorService: RewardCalculatorServiceProtocol { get }
+    var preferredValidatorsProvider: PreferredValidatorsProviding { get }
 
     var npRemoteSubscriptionService: NominationPoolsRemoteSubscriptionServiceProtocol? { get }
     var npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol? { get }
@@ -49,6 +50,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     let relaychainLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol
     let relaychainRewardCalculatorService: RewardCalculatorServiceProtocol
+    let preferredValidatorsProvider: PreferredValidatorsProviding
     let logger: LoggerProtocol
 
     let npRemoteSubscriptionService: NominationPoolsRemoteSubscriptionServiceProtocol?
@@ -82,6 +84,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         npAccountSubscriptionServiceFactory: NominationPoolsAccountUpdatingFactoryProtocol?,
         npLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         activePoolsService: EraNominationPoolsServiceProtocol?,
+        preferredValidatorsProvider: PreferredValidatorsProviding,
         logger: LoggerProtocol
     ) {
         self.stakingType = stakingType
@@ -97,6 +100,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
         self.npAccountSubscriptionServiceFactory = npAccountSubscriptionServiceFactory
         self.npLocalSubscriptionFactory = npLocalSubscriptionFactory
         self.activePoolsService = activePoolsService
+        self.preferredValidatorsProvider = preferredValidatorsProvider
         self.logger = logger
     }
 

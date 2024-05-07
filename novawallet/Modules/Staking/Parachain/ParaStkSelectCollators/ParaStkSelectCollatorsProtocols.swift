@@ -15,14 +15,17 @@ protocol ParaStkSelectCollatorsPresenterProtocol: AnyObject {
 protocol ParaStkSelectCollatorsInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
+    func retrySubscription()
 }
 
 protocol ParaStkSelectCollatorsInteractorOutputProtocol: AnyObject {
-    func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>)
-    func didReceivePrice(result: Result<PriceData?, Error>)
+    func didReceiveAllCollators(_ collators: [CollatorSelectionInfo])
+    func didReceivePreferredCollators(_ collators: [AccountId])
+    func didReceivePrice(_ priceData: PriceData?)
+    func didReceiveError(_ error: ParaStkSelectCollatorsInteractorError)
 }
 
-protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func close(view: ParaStkSelectCollatorsViewProtocol?)
 
     func showFilters(
@@ -45,4 +48,10 @@ protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresent
 
 protocol ParaStkSelectCollatorsDelegate: AnyObject {
     func didSelect(collator: CollatorSelectionInfo)
+}
+
+enum ParaStkSelectCollatorsInteractorError: Error {
+    case allCollatorsFailed(Error)
+    case preferredCollatorsFailed(Error)
+    case priceFailed(Error)
 }

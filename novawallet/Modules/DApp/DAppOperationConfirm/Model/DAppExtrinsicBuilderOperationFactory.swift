@@ -38,6 +38,10 @@ final class DAppExtrinsicBuilderOperationFactory {
 
             let address = MultiAddress.accoundId(sender.account.accountId)
 
+            let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(
+                for: result.account.chainId
+            )
+
             var builder: ExtrinsicBuilderProtocol = try ExtrinsicBuilder(
                 specVersion: extrinsic.specVersion,
                 transactionVersion: extrinsic.transactionVersion,
@@ -48,7 +52,10 @@ final class DAppExtrinsicBuilderOperationFactory {
             .with(address: address)
             .with(nonce: UInt32(extrinsic.nonce))
             .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
-            .adding(extrinsicExtension: ChargeAssetTxPayment())
+
+            for signedExtension in signedExtensionFactory.createExtensions() {
+                builder = builder.adding(extrinsicExtension: signedExtension)
+            }
 
             builder = try result.extrinsic.method.accept(builder: builder)
 

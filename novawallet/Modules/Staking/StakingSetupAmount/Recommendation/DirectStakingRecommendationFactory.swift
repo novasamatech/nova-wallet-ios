@@ -10,27 +10,33 @@ protocol DirectStakingRecommendationFactoryProtocol: AnyObject {
 }
 
 final class DirectStakingRecommendationFactory {
+    let chain: ChainModel
     let runtimeProvider: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let operationFactory: ValidatorOperationFactoryProtocol
     let maxNominationsOperationFactory: MaxNominationsOperationFactoryProtocol
     let clusterLimit: Int
-    let preferredValidators: [AccountId]
+    let preferredValidatorsProvider: PreferredValidatorsProviding
+    let operationQueue: OperationQueue
 
     init(
+        chain: ChainModel,
         runtimeProvider: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
         operationFactory: ValidatorOperationFactoryProtocol,
         maxNominationsOperationFactory: MaxNominationsOperationFactoryProtocol,
         clusterLimit: Int = StakingConstants.targetsClusterLimit,
-        preferredValidators: [AccountId]
+        preferredValidatorsProvider: PreferredValidatorsProviding,
+        operationQueue: OperationQueue
     ) {
+        self.chain = chain
         self.runtimeProvider = runtimeProvider
         self.connection = connection
         self.operationFactory = operationFactory
         self.maxNominationsOperationFactory = maxNominationsOperationFactory
         self.clusterLimit = clusterLimit
-        self.preferredValidators = preferredValidators
+        self.preferredValidatorsProvider = preferredValidatorsProvider
+        self.operationQueue = operationQueue
     }
 
     private func createRecommendationOperation(
@@ -63,7 +69,17 @@ final class DirectStakingRecommendationFactory {
 
 extension DirectStakingRecommendationFactory: DirectStakingRecommendationFactoryProtocol {
     func createValidatorsRecommendationWrapper(for amount: BigUInt) -> CompoundOperationWrapper<PreparedValidators> {
-        let validatorsWrapper = operationFactory.allPreferred(for: preferredValidators)
+        let preferredValidatorsWrapper = preferredValidatorsProvider.createPreferredValidatorsWrapper(for: chain)
+
+        let validatorsWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let preferredValidators = try preferredValidatorsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return self.operationFactory.allPreferred(for: preferredValidators)
+        }
+
+        validatorsWrapper.addDependency(wrapper: preferredValidatorsWrapper)
 
         let maxNominationsWrapper = maxNominationsOperationFactory.createNominationsQuotaWrapper(
             for: amount,
@@ -80,7 +96,8 @@ extension DirectStakingRecommendationFactory: DirectStakingRecommendationFactory
         recommendationOperation.addDependency(maxNominationsWrapper.targetOperation)
         recommendationOperation.addDependency(validatorsWrapper.targetOperation)
 
-        let dependecies = validatorsWrapper.allOperations + maxNominationsWrapper.allOperations
+        let dependecies = preferredValidatorsWrapper.allOperations + validatorsWrapper.allOperations +
+            maxNominationsWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: recommendationOperation, dependencies: dependecies)
     }

@@ -138,6 +138,7 @@ struct ParaStkStakeSetupViewFactory {
                 collatorService: collatorService,
                 rewardService: rewardService,
                 identityOperationFactory: identityOperationFactory,
+                preferredCollatorProvider: state.preferredCollatorsProvider,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             )
         } else {

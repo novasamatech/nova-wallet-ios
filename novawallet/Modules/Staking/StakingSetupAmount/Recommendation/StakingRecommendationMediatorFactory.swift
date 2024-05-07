@@ -70,12 +70,14 @@ final class StakingRecommendationMediatorFactory {
         let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)
 
         return DirectStakingRecommendationFactory(
+            chain: chain,
             runtimeProvider: runtimeService,
             connection: connection,
             operationFactory: validatorOperationFactory,
             maxNominationsOperationFactory: maxNominationsFactory,
             clusterLimit: StakingConstants.targetsClusterLimit,
-            preferredValidators: StakingConstants.preferredValidatorIds(for: chain)
+            preferredValidatorsProvider: state.preferredValidatorsProvider,
+            operationQueue: operationQueue
         )
     }
 }

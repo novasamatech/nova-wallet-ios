@@ -24,7 +24,7 @@ extension ExtrinsicServiceFactoryProtocol {
         createService(
             account: account,
             chain: chain,
-            extensions: DefaultExtrinsicExtension.extensions()
+            extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions()
         )
     }
 
@@ -36,7 +36,9 @@ extension ExtrinsicServiceFactoryProtocol {
         createService(
             account: account,
             chain: chain,
-            extensions: DefaultExtrinsicExtension.extensions(payingFeeIn: feeAssetConversionId)
+            extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions(
+                payingFeeIn: feeAssetConversionId
+            )
         )
     }
 
@@ -47,7 +49,7 @@ extension ExtrinsicServiceFactoryProtocol {
         createOperationFactory(
             account: account,
             chain: chain,
-            extensions: DefaultExtrinsicExtension.extensions()
+            extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions()
         )
     }
 
@@ -59,7 +61,9 @@ extension ExtrinsicServiceFactoryProtocol {
         createOperationFactory(
             account: account,
             chain: chain,
-            extensions: DefaultExtrinsicExtension.extensions(payingFeeIn: feeAssetConversionId)
+            extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions(
+                payingFeeIn: feeAssetConversionId
+            )
         )
     }
 }

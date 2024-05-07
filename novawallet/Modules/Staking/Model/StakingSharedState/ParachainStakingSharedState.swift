@@ -10,6 +10,7 @@ protocol ParachainStakingSharedStateProtocol: AnyObject {
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
     var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol { get }
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
+    var preferredCollatorsProvider: PreferredValidatorsProviding { get }
     var logger: LoggerProtocol { get }
 
     var sharedOperation: SharedOperationProtocol? { get }
@@ -29,6 +30,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let preferredCollatorsProvider: PreferredValidatorsProviding
     let logger: LoggerProtocol
 
     private var globalRemoteSubscription: UUID?
@@ -46,6 +48,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         blockTimeService: BlockTimeEstimationServiceProtocol,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        preferredCollatorsProvider: PreferredValidatorsProviding,
         logger: LoggerProtocol
     ) {
         self.stakingOption = stakingOption
@@ -57,6 +60,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         self.blockTimeService = blockTimeService
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
+        self.preferredCollatorsProvider = preferredCollatorsProvider
         self.logger = logger
     }
 
