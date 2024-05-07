@@ -16,6 +16,12 @@ final class CloudBackupSettingsPresenter {
 
 extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     func setup() {}
+
+    func toggleICloudBackup() {}
+
+    func activateManualBackup() {
+        wireframe.showManualBackup(from: view)
+    }
 }
 
 extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProtocol {}

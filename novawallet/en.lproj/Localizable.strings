@@ -1573,3 +1573,9 @@
 "common.password.invalid.message" = "Your password was incorrect, please try again.";
 "cloud.backup.deleted" = "Cloud Backup has been deleted successfully";
 "common.backup" = "Backup";
+"common.icloud" = "iCloud";
+"backup.settings.cloud.subtitle" = "An encrypted copy of all your wallets are safely stored using your Apple iCloud. Even if you install Nova on a new device you will be able to easily access your wallets.";
+"common.backup.icloud" = "Back up to iCloud";
+"common.manual" = "Manual";
+"backup.settings.manual.subtitle" = "You can manually write down your Passphrase to be sure that everything is safe";
+"common.backup.manual" = "Back up manually";

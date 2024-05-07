@@ -534,6 +534,7 @@
 		0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
+		0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
 		0CE550B62A49741400F0A7AC /* StakingUnbondSetupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B52A49741400F0A7AC /* StakingUnbondSetupTests.swift */; };
 		0CE5BF4A6BC02563113DFDB8 /* GovernanceDelegateInfoInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7E7AAE54BF5E6A35BDD29B /* GovernanceDelegateInfoInteractor.swift */; };
@@ -5220,6 +5221,7 @@
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
+		0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsView.swift; sourceTree = "<group>"; };
 		0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingDuration+Localizable.swift"; sourceTree = "<group>"; };
 		0CE550B52A49741400F0A7AC /* StakingUnbondSetupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondSetupTests.swift; sourceTree = "<group>"; };
 		0CE629D42AA9B5E200E250BD /* BalanceViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceViewModel.swift; sourceTree = "<group>"; };
@@ -10554,6 +10556,14 @@
 				0CD8462D2BDE10C20026B5CA /* OnboardingImportOptionsPresenter.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		0CE1A0502BE9E97C008206ED /* View */ = {
+			isa = PBXGroup;
+			children = (
+				0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		0CE550B42A4973BA00F0A7AC /* StakingUnbondSetup */ = {
@@ -19869,6 +19879,7 @@
 		A02225ED200C65ACA99181A9 /* CloudBackupSettings */ = {
 			isa = PBXGroup;
 			children = (
+				0CE1A0502BE9E97C008206ED /* View */,
 				4F8CE3D9F9EFB6852E99B972 /* CloudBackupSettingsProtocols.swift */,
 				97B4637D6CD42C7BE4579AF1 /* CloudBackupSettingsWireframe.swift */,
 				18AFA9612CE9D32E08F6DBED /* CloudBackupSettingsPresenter.swift */,
@@ -22648,6 +22659,7 @@
 				841221A628F13BA100715C82 /* GovernanceServiceFactory.swift in Sources */,
 				F4F3C3CB265BB12200C58400 /* CustomValidatorListViewModelFactory.swift in Sources */,
 				0C37AFB72B555F1400009ECA /* StakingValidatorExposureFacade.swift in Sources */,
+				0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */,
 				84E9A05028F000AB00551DC4 /* ReferendumMetadataLocal.swift in Sources */,
 				84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */,
 				84DA03D12758AA6800E8B326 /* BaseAccountImportWireframe.swift in Sources */,

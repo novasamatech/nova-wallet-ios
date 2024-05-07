@@ -28,12 +28,59 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
         presenter.setup()
     }
 
+    private func setupHandlers() {
+        rootView.cloudBackupActionControl.switchControl.addTarget(
+            self,
+            action: #selector(actionIcloudSwitch),
+            for: .valueChanged
+        )
+
+        rootView.manualBackupActionControl.addTarget(
+            self,
+            action: #selector(actionManualBackup),
+            for: .touchUpInside
+        )
+    }
+
     private func setupLocalization() {
         title = R.string.localizable.commonBackup(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.cloudBackupTitleLabel.text = R.string.localizable.commonCloudBackup(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.cloudBackupSubtitleLabel.text = R.string.localizable.backupSettingsCloudSubtitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.cloudBackupActionControl.titleLabel.text = R.string.localizable.commonBackupIcloud(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.manualBackupTitleLabel.text = R.string.localizable.commonManual(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.manualBackupSubtitleLabel.text = R.string.localizable.backupSettingsManualSubtitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.manualBackupActionControl.titleLabel.text = R.string.localizable.commonBackupManual(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+
+    @objc func actionIcloudSwitch() {
+        presenter.toggleICloudBackup()
+    }
+
+    @objc func actionManualBackup() {
+        presenter.activateManualBackup()
     }
 }
 

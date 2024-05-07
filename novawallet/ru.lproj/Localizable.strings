@@ -1573,3 +1573,9 @@
 "common.password.invalid.message" = "Вы ввели неверный пароль, пожалуйста попробуйте ещё раз.";
 "cloud.backup.deleted" = "Бэкап успешно удалён";
 "common.backup" = "Бэкап";
+"common.icloud" = "iCloud";
+"backup.settings.cloud.subtitle" = "Зашифрованная копия ваших кошельков надёжно хранится в Apple iCloud. Когда вы установите Nova на другое устройство вы сможете легко получить доступ к кошелькам.";
+"common.backup.icloud" = "Сохранить в iCloud";
+"common.manual" = "Вручную";
+"backup.settings.manual.subtitle" = "Вы можете вручную записать Вашу секретную фразу чтобы удостовериться, что всё в безопасности";
+"common.backup.manual" = "Бэкап вручную";

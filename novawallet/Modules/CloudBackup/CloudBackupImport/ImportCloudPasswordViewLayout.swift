@@ -3,7 +3,7 @@ import SoraUI
 
 final class ImportCloudPasswordViewLayout: SCLoadableActionLayoutView {
     let titleLabel: UILabel = .create { label in
-        label.apply(style: .boldTitle2Primary)
+        label.apply(style: .boldTitle3Primary)
         label.numberOfLines = 0
     }
 
