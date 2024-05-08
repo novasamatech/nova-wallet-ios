@@ -33,6 +33,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         guard
             let connection = WebSocketEngine(
                 urls: urls,
+                connectionFactory: TCPWebSocketConnectionFactory(),
                 customNodeSwitcher: nodeSwitcher,
                 healthCheckMethod: healthCheckMethod,
                 name: chain.name,
