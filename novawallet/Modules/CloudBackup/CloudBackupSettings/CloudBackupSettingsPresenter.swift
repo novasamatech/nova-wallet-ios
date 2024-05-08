@@ -22,6 +22,14 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     func activateManualBackup() {
         wireframe.showManualBackup(from: view)
     }
+
+    func activateSyncAction() {
+        // TODO: Implement in separate task
+    }
+
+    func activateSyncIssue() {
+        // TODO: Implement in separate task
+    }
 }
 
 extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProtocol {}

@@ -45,6 +45,8 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
             action: #selector(actionManualBackup),
             for: .touchUpInside
         )
+
+        rootView.settingsView.delegate = self
     }
 
     private func setupLocalization() {
@@ -85,6 +87,16 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
 }
 
 extension CloudBackupSettingsViewController: CloudBackupSettingsViewProtocol {}
+
+extension CloudBackupSettingsViewController: CloudBackupSettingsViewDelegate {
+    func didSelectSettingsAction() {
+        presenter?.activateSyncAction()
+    }
+
+    func didSelectIssueAction() {
+        presenter?.activateSyncIssue()
+    }
+}
 
 extension CloudBackupSettingsViewController: Localizable {
     func applyLocalization() {

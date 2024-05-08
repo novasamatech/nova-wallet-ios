@@ -4,6 +4,8 @@ protocol CloudBackupSettingsPresenterProtocol: AnyObject {
     func setup()
     func toggleICloudBackup()
     func activateManualBackup()
+    func activateSyncAction()
+    func activateSyncIssue()
 }
 
 protocol CloudBackupSettingsInteractorInputProtocol: AnyObject {}

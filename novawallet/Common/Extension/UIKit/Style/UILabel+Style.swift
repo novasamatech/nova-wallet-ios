@@ -71,6 +71,11 @@ extension UILabel.Style {
         font: .semiBoldFootnote
     )
 
+    static let semiboldFootnoteAccentText = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .semiBoldFootnote
+    )
+
     static let semiboldCalloutPositive = UILabel.Style(
         textColor: R.color.colorTextPositive(),
         font: .semiBoldCallout

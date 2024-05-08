@@ -18,6 +18,8 @@ final class CloudBackupSettingsViewLayout: ScrollableContainerLayoutView {
         view.preferredHeight = 52
     }
 
+    let settingsView = CloudBackupSettingsView()
+
     let manualBackupTitleLabel: UILabel = .create { label in
         label.apply(style: .boldTitle3Primary)
     }
@@ -42,7 +44,8 @@ final class CloudBackupSettingsViewLayout: ScrollableContainerLayoutView {
 
         addArrangedSubview(cloudBackupTitleLabel, spacingAfter: 8)
         addArrangedSubview(cloudBackupSubtitleLabel, spacingAfter: 16)
-        addArrangedSubview(cloudBackupActionControl, spacingAfter: 32)
+        addArrangedSubview(cloudBackupActionControl, spacingAfter: 12)
+        addArrangedSubview(settingsView, spacingAfter: 32)
         addArrangedSubview(manualBackupTitleLabel, spacingAfter: 8)
         addArrangedSubview(manualBackupSubtitleLabel, spacingAfter: 16)
         addArrangedSubview(manualBackupActionControl)

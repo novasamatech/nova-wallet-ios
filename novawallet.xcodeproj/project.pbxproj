@@ -535,6 +535,7 @@
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */; };
+		0CE1A0572BEBCC46008206ED /* CloudBackupSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A0562BEBCC46008206ED /* CloudBackupSettingsViewModel.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
 		0CE550B62A49741400F0A7AC /* StakingUnbondSetupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B52A49741400F0A7AC /* StakingUnbondSetupTests.swift */; };
 		0CE5BF4A6BC02563113DFDB8 /* GovernanceDelegateInfoInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7E7AAE54BF5E6A35BDD29B /* GovernanceDelegateInfoInteractor.swift */; };
@@ -5222,6 +5223,7 @@
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
 		0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsView.swift; sourceTree = "<group>"; };
+		0CE1A0562BEBCC46008206ED /* CloudBackupSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModel.swift; sourceTree = "<group>"; };
 		0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingDuration+Localizable.swift"; sourceTree = "<group>"; };
 		0CE550B52A49741400F0A7AC /* StakingUnbondSetupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondSetupTests.swift; sourceTree = "<group>"; };
 		0CE629D42AA9B5E200E250BD /* BalanceViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceViewModel.swift; sourceTree = "<group>"; };
@@ -10564,6 +10566,14 @@
 				0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		0CE1A0552BEBCC34008206ED /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				0CE1A0562BEBCC46008206ED /* CloudBackupSettingsViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		0CE550B42A4973BA00F0A7AC /* StakingUnbondSetup */ = {
@@ -19879,6 +19889,7 @@
 		A02225ED200C65ACA99181A9 /* CloudBackupSettings */ = {
 			isa = PBXGroup;
 			children = (
+				0CE1A0552BEBCC34008206ED /* ViewModel */,
 				0CE1A0502BE9E97C008206ED /* View */,
 				4F8CE3D9F9EFB6852E99B972 /* CloudBackupSettingsProtocols.swift */,
 				97B4637D6CD42C7BE4579AF1 /* CloudBackupSettingsWireframe.swift */,
@@ -23791,6 +23802,7 @@
 				0CA719852B789111000B086E /* HydraOmnipoolQuoteParams.swift in Sources */,
 				0CFA161E2B0CED07007AF885 /* GovTreasurySpentAmountHandler.swift in Sources */,
 				0CB64E692B01F798008F268F /* TransferSetupOriginSelectionWireframe.swift in Sources */,
+				0CE1A0572BEBCC46008206ED /* CloudBackupSettingsViewModel.swift in Sources */,
 				8428765424ADDE0200D91AD8 /* SettingsViewModelFactory.swift in Sources */,
 				843612C1278FE62900DC739E /* DAppOperationConfirmInteractorError.swift in Sources */,
 				84E1CD02260DCC62001E81B5 /* SwitchAccount+OnboardingMainWireframe.swift in Sources */,
