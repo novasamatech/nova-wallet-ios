@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     weak var presenter: GovernanceYourDelegationsInteractorOutputProtocol?

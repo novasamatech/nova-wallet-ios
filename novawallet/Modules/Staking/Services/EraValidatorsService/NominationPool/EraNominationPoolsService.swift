@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning {
     private struct PendingRequest {

@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCancellableCleaning {
     weak var basePresenter: GovernanceUnlockInteractorOutputProtocol?

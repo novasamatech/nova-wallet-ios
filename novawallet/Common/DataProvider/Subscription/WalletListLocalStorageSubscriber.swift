@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol WalletListLocalStorageSubscriber where Self: AnyObject {
     var walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol { get }

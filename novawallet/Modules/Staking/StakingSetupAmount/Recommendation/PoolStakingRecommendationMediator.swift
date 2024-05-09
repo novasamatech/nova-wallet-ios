@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import RobinHood
+import Operation_iOS
 
 final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator {
     let restrictionsBuilder: RelaychainStakingRestrictionsBuilding

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol PhishingSiteVerifing {
     func verify(host: String, completion: @escaping (Result<Bool, Error>) -> Void)

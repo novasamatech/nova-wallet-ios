@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 class LongrunOperation<T>: BaseOperation<T> {
     let longrun: AnyLongrun<T>

@@ -1,6 +1,6 @@
 import Foundation
 import CoreImage
-import RobinHood
+import Operation_iOS
 
 enum QRCreationOperationError: Error {
     case generatorUnavailable

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol OffchainMultistakingUpdateServiceProtocol: ObservableSyncServiceProtocol, ApplicationServiceProtocol {
     func apply(newChainAssets: Set<ChainAsset>)

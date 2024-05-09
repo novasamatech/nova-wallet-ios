@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-import RobinHood
+import Operation_iOS
 import BigInt
 
 extension Multistaking.DashboardItem: Identifiable {

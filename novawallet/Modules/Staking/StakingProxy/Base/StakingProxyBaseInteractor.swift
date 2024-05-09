@@ -1,6 +1,6 @@
 import UIKit
 import BigInt
-import RobinHood
+import Operation_iOS
 
 class StakingProxyBaseInteractor: RuntimeConstantFetching,
     StakingProxyBaseInteractorInputProtocol, AnyProviderAutoCleaning {

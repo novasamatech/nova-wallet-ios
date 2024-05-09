@@ -1,5 +1,5 @@
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 import IrohaCrypto
 
 final class StakingRewardDestSetupInteractor: AccountFetching {

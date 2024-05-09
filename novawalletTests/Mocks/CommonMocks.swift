@@ -1230,7 +1230,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
@@ -1494,7 +1494,7 @@ import Cuckoo
 
 import Foundation
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 
 
  class MockAccountRepositoryFactoryProtocol: AccountRepositoryFactoryProtocol, Cuckoo.ProtocolMock {
@@ -2570,7 +2570,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockDataOperationFactoryProtocol: DataOperationFactoryProtocol, Cuckoo.ProtocolMock {
@@ -2670,7 +2670,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 
@@ -2771,7 +2771,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 
@@ -3904,7 +3904,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockRuntimeFilesOperationFactoryProtocol: RuntimeFilesOperationFactoryProtocol, Cuckoo.ProtocolMock {
@@ -4100,7 +4100,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 
@@ -4328,7 +4328,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockRuntimeCodingServiceProtocol: RuntimeCodingServiceProtocol, Cuckoo.ProtocolMock {
@@ -4428,7 +4428,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 
@@ -4691,7 +4691,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockRuntimeProviderFactoryProtocol: RuntimeProviderFactoryProtocol, Cuckoo.ProtocolMock {
@@ -4954,7 +4954,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 
@@ -5671,7 +5671,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockStakingAccountUpdatingServiceProtocol: StakingAccountUpdatingServiceProtocol, Cuckoo.ProtocolMock {
@@ -6060,7 +6060,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 
@@ -6702,7 +6702,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockStakingServiceFactoryProtocol: StakingServiceFactoryProtocol, Cuckoo.ProtocolMock {

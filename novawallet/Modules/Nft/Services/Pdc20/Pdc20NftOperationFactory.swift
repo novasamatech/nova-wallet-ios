@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol Pdc20NftOperationFactoryProtocol {
     func fetchNfts(for address: String, network: String) -> CompoundOperationWrapper<Pdc20NftResponse>

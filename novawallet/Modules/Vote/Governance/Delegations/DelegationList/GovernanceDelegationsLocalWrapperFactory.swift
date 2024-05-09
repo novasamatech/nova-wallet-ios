@@ -1,6 +1,6 @@
 import SubstrateSdk
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 typealias GovernanceOffchainDelegationsLocal = GovernanceDelegationAdditions<[GovernanceOffchainDelegation]>
 

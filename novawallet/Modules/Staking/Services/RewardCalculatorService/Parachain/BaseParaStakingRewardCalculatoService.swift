@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 class BaseParaStakingRewardCalculatoService {
     static let queueLabelPrefix = "com.novawallet.parastk.rewcalculator"

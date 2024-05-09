@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol ParaStkPreferredCollatorFactoryProtocol {
     func createPreferredCollatorWrapper() -> CompoundOperationWrapper<DisplayAddress?>

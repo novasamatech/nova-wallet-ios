@@ -2,7 +2,7 @@ import XCTest
 import SoraKeystore
 import SubstrateSdk
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 @testable import novawallet
 
 class PayoutRewardsServiceTests: XCTestCase {

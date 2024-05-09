@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol StakingDashboardBuilderProtocol {
     func applyWallet(model: MetaAccountModel)

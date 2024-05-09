@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol AssetsUpdatingServiceProtocol: ApplicationServiceProtocol {
     func update(selectedMetaAccount: MetaAccountModel)

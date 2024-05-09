@@ -1,7 +1,7 @@
 import XCTest
 import SubstrateSdk
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 @testable import novawallet
 
 class KeystoreExportWrapperTests: XCTestCase {

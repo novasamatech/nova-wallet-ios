@@ -1,5 +1,5 @@
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class CrowdloanOnChainSyncService: BaseSyncService {
     private let operationFactory: CrowdloanOperationFactoryProtocol

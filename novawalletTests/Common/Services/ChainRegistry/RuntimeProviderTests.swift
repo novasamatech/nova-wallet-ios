@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import Cuckoo
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 class RuntimeProviderTests: XCTestCase {
