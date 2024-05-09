@@ -4,28 +4,28 @@ import Operation_iOS
 final class OperationManagerFacade {
     static let sharedDefaultQueue: OperationQueue = {
         let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 30
+        // queue.maxConcurrentOperationCount = 30
         return queue
     }()
 
     static let runtimeBuildingQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
-        operationQueue.maxConcurrentOperationCount = 15
+        // operationQueue.maxConcurrentOperationCount = 15
         return operationQueue
     }()
 
     static let runtimeSyncQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
-        operationQueue.maxConcurrentOperationCount = 30
+        // operationQueue.maxConcurrentOperationCount = 30
         return operationQueue
     }()
 
     static let fileDownloadQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
-        operationQueue.maxConcurrentOperationCount = 15
+        // operationQueue.maxConcurrentOperationCount = 15
         return operationQueue
     }()
 
@@ -39,13 +39,13 @@ final class OperationManagerFacade {
     static let assetsRepositoryQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
-        operationQueue.maxConcurrentOperationCount = 30
+        // operationQueue.maxConcurrentOperationCount = 30
         return operationQueue
     }()
 
     static let nftQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 15
+        // operationQueue.maxConcurrentOperationCount = 15
         return operationQueue
     }()
 

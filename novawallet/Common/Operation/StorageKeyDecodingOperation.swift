@@ -52,64 +52,50 @@ final class StorageKeyDecodingOperation<T: JSONListConvertible>: BaseOperation<[
         return try T(jsonList: values, context: context.toRawContext())
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
+    override func performAsync(_ callback: @escaping (Result<[T], Error>) -> Void) throws {
+        guard let factory = codingFactory else {
+            throw StorageKeyDecodingError.missingCoderFactory
         }
 
-        if result != nil {
-            return
+        guard let dataList = dataList else {
+            throw StorageKeyDecodingError.missingDataList
         }
 
-        do {
-            guard let factory = codingFactory else {
-                throw StorageKeyDecodingError.missingCoderFactory
-            }
-
-            guard let dataList = dataList else {
-                throw StorageKeyDecodingError.missingDataList
-            }
-
-            guard let entry = factory.metadata.getStorageMetadata(
-                in: path.moduleName,
-                storageName: path.itemName
-            ) else {
-                throw StorageKeyEncodingOperationError.invalidStoragePath
-            }
-
-            let models: [T] = try dataList.map { data in
-                switch entry.type {
-                case let .map(entry):
-                    return try extractKeys(
-                        from: data,
-                        keyTypes: [entry.key],
-                        hashers: [entry.hasher],
-                        codingFactory: factory
-                    )
-                case let .doubleMap(entry):
-                    return try extractKeys(
-                        from: data,
-                        keyTypes: [entry.key1, entry.key2],
-                        hashers: [entry.hasher, entry.key2Hasher],
-                        codingFactory: factory
-                    )
-                case let .nMap(entry):
-                    return try extractKeys(
-                        from: data,
-                        keyTypes: entry.keyVec,
-                        hashers: entry.hashers,
-                        codingFactory: factory
-                    )
-                case .plain:
-                    return try T(jsonList: [], context: nil)
-                }
-            }
-
-            result = .success(models)
-        } catch {
-            result = .failure(error)
+        guard let entry = factory.metadata.getStorageMetadata(
+            in: path.moduleName,
+            storageName: path.itemName
+        ) else {
+            throw StorageKeyEncodingOperationError.invalidStoragePath
         }
+
+        let models: [T] = try dataList.map { data in
+            switch entry.type {
+            case let .map(entry):
+                return try extractKeys(
+                    from: data,
+                    keyTypes: [entry.key],
+                    hashers: [entry.hasher],
+                    codingFactory: factory
+                )
+            case let .doubleMap(entry):
+                return try extractKeys(
+                    from: data,
+                    keyTypes: [entry.key1, entry.key2],
+                    hashers: [entry.hasher, entry.key2Hasher],
+                    codingFactory: factory
+                )
+            case let .nMap(entry):
+                return try extractKeys(
+                    from: data,
+                    keyTypes: entry.keyVec,
+                    hashers: entry.hashers,
+                    codingFactory: factory
+                )
+            case .plain:
+                return try T(jsonList: [], context: nil)
+            }
+        }
+
+        callback(.success(models))
     }
 }

@@ -30,64 +30,50 @@ final class NMapKeyEncodingOperation: BaseOperation<[Data]> {
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
+    override func performAsync(_ callback: @escaping (Result<[Data], Error>) -> Void) throws {
+        guard let factory = codingFactory, let keys = keys else {
+            throw StorageKeyEncodingOperationError.missingRequiredParams
         }
 
-        if result != nil {
-            return
+        guard let entry = factory.metadata.getStorageMetadata(
+            in: path.moduleName,
+            storageName: path.itemName
+        ) else {
+            throw StorageKeyEncodingOperationError.invalidStoragePath
         }
 
-        do {
-            guard let factory = codingFactory, let keys = keys else {
-                throw StorageKeyEncodingOperationError.missingRequiredParams
-            }
+        guard case let .nMap(nMapEntry) = entry.type else {
+            throw StorageKeyEncodingOperationError.incompatibleStorageType
+        }
 
-            guard let entry = factory.metadata.getStorageMetadata(
-                in: path.moduleName,
+        let encodedKeys: [Data] = try keys.map { key in
+            let initRawKey = try storageKeyFactory.createStorageKey(
+                moduleName: path.moduleName,
                 storageName: path.itemName
-            ) else {
-                throw StorageKeyEncodingOperationError.invalidStoragePath
-            }
+            )
 
-            guard case let .nMap(nMapEntry) = entry.type else {
-                throw StorageKeyEncodingOperationError.incompatibleStorageType
-            }
+            let paramsCount = nMapEntry.hashers.count
+            let encodedKey = try Array(0 ..< paramsCount).reduce(initRawKey) { partialKey, index in
+                let paramType = nMapEntry.keyVec[index]
+                let hasher = nMapEntry.hashers[index]
 
-            let encodedKeys: [Data] = try keys.map { key in
-                let initRawKey = try storageKeyFactory.createStorageKey(
-                    moduleName: path.moduleName,
-                    storageName: path.itemName
+                let encoder = factory.createEncoder()
+                try key.appendSubkey(
+                    to: encoder,
+                    type: paramType,
+                    index: index
                 )
 
-                let paramsCount = nMapEntry.hashers.count
-                let encodedKey = try Array(0 ..< paramsCount).reduce(initRawKey) { partialKey, index in
-                    let paramType = nMapEntry.keyVec[index]
-                    let hasher = nMapEntry.hashers[index]
+                let encodedParam = try encoder.encode()
 
-                    let encoder = factory.createEncoder()
-                    try key.appendSubkey(
-                        to: encoder,
-                        type: paramType,
-                        index: index
-                    )
+                let subkey = try hasher.hash(data: encodedParam)
 
-                    let encodedParam = try encoder.encode()
-
-                    let subkey = try hasher.hash(data: encodedParam)
-
-                    return partialKey + subkey
-                }
-
-                return encodedKey
+                return partialKey + subkey
             }
 
-            result = .success(encodedKeys)
-        } catch {
-            result = .failure(error)
+            return encodedKey
         }
+
+        callback(.success(encodedKeys))
     }
 }

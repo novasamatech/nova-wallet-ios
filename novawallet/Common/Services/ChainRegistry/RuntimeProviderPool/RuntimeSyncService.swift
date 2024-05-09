@@ -59,7 +59,7 @@ final class RuntimeSyncService {
         operationQueue: OperationQueue,
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         dataHasher: StorageHasher = .twox256,
-        rpcTimeout: Int = Int.max,
+        rpcTimeout: Int = Int(UInt16.max),
         logger: LoggerProtocol? = nil
     ) {
         self.repository = repository
