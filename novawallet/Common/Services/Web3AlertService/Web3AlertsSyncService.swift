@@ -141,46 +141,40 @@ final class Web3AlertsSyncService: BaseSyncService {
     private func remoteSaveOperation(
         settings: Web3Alert.LocalSettings
     ) -> BaseOperation<Void> {
-        AsyncClosureOperation(
-            cancelationClosure: {},
-            operationClosure: { responseClosure in
-                let database = Firestore.firestore()
-                let documentRef = database.collection("users").document(settings.remoteIdentifier)
-                let encoder = Firestore.Encoder()
-                encoder.dateEncodingStrategy = .iso8601
-                try documentRef.setData(
-                    from: Web3Alert.RemoteSettings(from: settings),
-                    merge: false,
-                    encoder: encoder
-                ) { error in
-                    if let error = error {
-                        responseClosure(.failure(error))
-                    } else {
-                        responseClosure(.success(()))
-                    }
+        AsyncClosureOperation { responseClosure in
+            let database = Firestore.firestore()
+            let documentRef = database.collection("users").document(settings.remoteIdentifier)
+            let encoder = Firestore.Encoder()
+            encoder.dateEncodingStrategy = .iso8601
+            try documentRef.setData(
+                from: Web3Alert.RemoteSettings(from: settings),
+                merge: false,
+                encoder: encoder
+            ) { error in
+                if let error = error {
+                    responseClosure(.failure(error))
+                } else {
+                    responseClosure(.success(()))
                 }
             }
-        )
+        }
     }
 
     private func remoteDeleteOperation(
         for remoteIdentifier: String
     ) -> BaseOperation<Void> {
-        AsyncClosureOperation(
-            cancelationClosure: {},
-            operationClosure: { responseClosure in
-                let database = Firestore.firestore()
-                let documentRef = database.collection("users").document(remoteIdentifier)
+        AsyncClosureOperation { responseClosure in
+            let database = Firestore.firestore()
+            let documentRef = database.collection("users").document(remoteIdentifier)
 
-                documentRef.delete { optError in
-                    if let error = optError {
-                        responseClosure(.failure(error))
-                    } else {
-                        responseClosure(.success(()))
-                    }
+            documentRef.delete { optError in
+                if let error = optError {
+                    responseClosure(.failure(error))
+                } else {
+                    responseClosure(.success(()))
                 }
             }
-        )
+        }
     }
 
     private func localSaveOperation(settings: Web3Alert.LocalSettings) -> BaseOperation<Void> {

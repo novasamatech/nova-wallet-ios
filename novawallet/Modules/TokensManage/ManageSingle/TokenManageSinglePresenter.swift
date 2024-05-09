@@ -89,7 +89,7 @@ extension TokenManageSinglePresenter: TokenManageSinglePresenterProtocol {
 }
 
 extension TokenManageSinglePresenter: TokensManageInteractorOutputProtocol {
-    func didReceiveChainModel(changes: [RobinHood.DataProviderChange<ChainModel>]) {
+    func didReceiveChainModel(changes: [Operation_iOS.DataProviderChange<ChainModel>]) {
         chains = changes.mergeToDict(chains)
         updateToken()
         updateTokenView()

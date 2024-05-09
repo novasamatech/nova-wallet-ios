@@ -953,7 +953,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.10`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `c878c3651aa4573b4f89aa202a03bd922d338554`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `ea47d90460f508f0c58549d709fc307b9be773af`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1038,7 +1038,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
-    :commit: c878c3651aa4573b4f89aa202a03bd922d338554
+    :commit: ea47d90460f508f0c58549d709fc307b9be773af
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -1075,7 +1075,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
-    :commit: c878c3651aa4573b4f89aa202a03bd922d338554
+    :commit: ea47d90460f508f0c58549d709fc307b9be773af
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -1137,7 +1137,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 867607a51eafadc6402b5c6f6acc0d8efdb98746
-  SubstrateSdk: f80b48f3bf1bb8fb82d789a68364acafa677f592
+  SubstrateSdk: e8f25fb1ab746f93ee045a559dde1b3f7684f54a
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1152,6 +1152,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: b7c9f57d6c7b1bc743b39490f8e657e408721484
+PODFILE CHECKSUM: 273e6fdbc98f88c1c5c264869bec3d2efa5acfd2
 
 COCOAPODS: 1.15.2

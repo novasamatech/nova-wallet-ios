@@ -178,21 +178,24 @@ final class RuntimeProvider {
     func fetchCoderFactoryOperation() -> BaseOperation<RuntimeCoderFactoryProtocol> {
         let requestId = UUID()
 
-        return AsyncClosureOperation(cancelationClosure: { [weak self] in
-            self?.cancelRequest(for: requestId)
-        }) { [weak self] responseClosure in
-            if let strongSelf = self {
-                strongSelf.fetchCoderFactory(assigning: requestId, runCompletionIn: nil) { maybeFactory in
-                    if let factory = maybeFactory {
-                        responseClosure(.success(factory))
-                    } else {
-                        responseClosure(nil)
+        return AsyncClosureOperation(
+            operationClosure: { [weak self] responseClosure in
+                if let strongSelf = self {
+                    strongSelf.fetchCoderFactory(assigning: requestId, runCompletionIn: nil) { maybeFactory in
+                        if let factory = maybeFactory {
+                            responseClosure(.success(factory))
+                        } else {
+                            responseClosure(.failure(RuntimeProviderError.providerUnavailable))
+                        }
                     }
+                } else {
+                    responseClosure(.failure(RuntimeProviderError.providerUnavailable))
                 }
-            } else {
-                responseClosure(.failure(RuntimeProviderError.providerUnavailable))
+            },
+            cancelationClosure: { [weak self] in
+                self?.cancelRequest(for: requestId)
             }
-        }
+        )
     }
 }
 
