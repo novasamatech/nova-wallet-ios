@@ -3,8 +3,8 @@ import UIKit
 final class WalletView: GenericTitleValueView<
     WalletIconView,
     GenericPairValueView<IconDetailsView, GenericPairValueView<UILabel, IconDetailsView>>
-> {
-    private var viewModel: ViewModel?
+>, WalletViewProtocol {
+    var viewModel: ViewModel?
 
     var iconImageView: UIImageView { titleView.iconViewImageView }
     var networkImageView: UIImageView { titleView.networkIconImageView }
@@ -111,17 +111,7 @@ extension WalletView {
         }
     }
 
-    func cancelImagesLoading() {
-        cancelIconLoading(info: viewModel?.wallet)
-        cancelProxyIconsLoading(info: viewModel?.proxyInfo)
-    }
-
-    private func cancelIconLoading(info: ViewModel.WalletInfo?) {
-        info?.icon?.cancel(on: iconImageView)
-        iconImageView.image = nil
-    }
-
-    private func cancelProxyIconsLoading(info: ViewModel.ProxyInfo?) {
+    func cancelProxyIconsLoading(info: ViewModel.ProxyInfo?) {
         info?.networkIcon?.cancel(on: networkImageView)
         networkImageView.image = nil
 
@@ -131,31 +121,7 @@ extension WalletView {
         titleView.clear()
     }
 
-    func bind(viewModel: ViewModel) {
-        bind(wallet: viewModel.wallet)
-
-        switch viewModel.type {
-        case let .regular(balanceViewModel):
-            bind(regular: balanceViewModel)
-        case let .proxy(proxyViewModel):
-            bind(proxy: proxyViewModel)
-        }
-
-        self.viewModel = viewModel
-    }
-
-    private func bind(wallet viewModel: ViewModel.WalletInfo) {
-        cancelImagesLoading()
-
-        viewModel.icon?.loadImage(
-            on: iconImageView,
-            targetSize: WalletIconView.Constants.iconSize,
-            animated: true
-        )
-        titleLabel.text = viewModel.name
-    }
-
-    private func bind(regular viewModel: ViewModel.BalanceInfo) {
+    func bind(regular viewModel: ViewModel.BalanceInfo) {
         subtitleLabel.text = viewModel
         subtitleDetailsLabel.text = nil
         networkImageView.isHidden = true
@@ -163,7 +129,7 @@ extension WalletView {
         indicatorImageView.isHidden = true
     }
 
-    private func bind(proxy viewModel: ViewModel.ProxyInfo) {
+    func bind(proxy viewModel: ViewModel.ProxyInfo) {
         viewModel.networkIcon?.loadImage(
             on: networkImageView,
             targetSize: WalletIconView.Constants.networkIconSize,
