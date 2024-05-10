@@ -879,7 +879,7 @@ PODS:
     - SoraUI/Controls
   - SoraUI/Skrull (1.13.0)
   - Sourcery (1.4.1)
-  - Starscream (4.0.10)
+  - Starscream (4.0.4)
   - SubstrateSdk (3.0.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
@@ -952,7 +952,7 @@ DEPENDENCIES:
   - SoraKeystore (~> 1.0.0)
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
-  - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.10`)
+  - Starscream (from `https://github.com/daltoniam/Starscream.git`, tag `4.0.8`)
   - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `ea47d90460f508f0c58549d709fc307b9be773af`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
@@ -1035,8 +1035,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/UIkit-iOS.git
     :tag: 1.13.0
   Starscream:
-    :git: https://github.com/ERussel/Starscream.git
-    :tag: 4.0.10
+    :git: https://github.com/daltoniam/Starscream.git
+    :tag: 4.0.8
   SubstrateSdk:
     :commit: ea47d90460f508f0c58549d709fc307b9be773af
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
@@ -1072,8 +1072,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/UIkit-iOS.git
     :tag: 1.13.0
   Starscream:
-    :git: https://github.com/ERussel/Starscream.git
-    :tag: 4.0.10
+    :git: https://github.com/daltoniam/Starscream.git
+    :tag: 4.0.8
   SubstrateSdk:
     :commit: ea47d90460f508f0c58549d709fc307b9be773af
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
@@ -1136,7 +1136,7 @@ SPEC CHECKSUMS:
   SoraKeystore: 92cff6e2a12f212dd64ed089970ff7c365247b1c
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
-  Starscream: 867607a51eafadc6402b5c6f6acc0d8efdb98746
+  Starscream: c5d70811b01d9ada7fdeb2132bc47fc893b6b0c9
   SubstrateSdk: e8f25fb1ab746f93ee045a559dde1b3f7684f54a
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
@@ -1152,6 +1152,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 273e6fdbc98f88c1c5c264869bec3d2efa5acfd2
+PODFILE CHECKSUM: 47594408f28b168220cf60a8f071cd9cb4ab171b
 
 COCOAPODS: 1.15.2
