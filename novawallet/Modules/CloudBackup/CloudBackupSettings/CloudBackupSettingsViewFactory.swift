@@ -6,7 +6,13 @@ struct CloudBackupSettingsViewFactory {
         let interactor = CloudBackupSettingsInteractor()
         let wireframe = CloudBackupSettingsWireframe()
 
-        let presenter = CloudBackupSettingsPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = CloudBackupSettingsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: CloudBackupSettingsViewModelFactory(),
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
 
         let view = CloudBackupSettingsViewController(
             presenter: presenter,

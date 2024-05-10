@@ -1579,3 +1579,12 @@
 "common.manual" = "Вручную";
 "backup.settings.manual.subtitle" = "Вы можете вручную записать Вашу секретную фразу чтобы удостовериться, что всё в безопасности";
 "common.backup.manual" = "Бэкап вручную";
+"cloud.backup.unsynced" = "Бэкап Не Сихронизирован";
+"cloud.backup.syncing" = "Бэкап Синхронизируется...";
+"cloud.backup.disabled" = "Бэкап Отключён";
+"cloud.backup.synced" = "Бэкап Синхронизирован";
+"cloud.backup.last.synced.format" = "Последняя синх.: %@";
+"cloud.backup.disabled.description" = "Включите его для создания бэкапа";
+"cloud.backup.review.icloud.issue" = "Просмотр проблемы iCloud";
+"cloud.backup.enter.password.issue" = "Ввести Пароль";
+"cloud.backup.review.backup.updates" = "Просмотр Обновлений в Бэкапе";

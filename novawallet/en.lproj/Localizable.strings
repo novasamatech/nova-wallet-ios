@@ -1579,3 +1579,12 @@
 "common.manual" = "Manual";
 "backup.settings.manual.subtitle" = "You can manually write down your Passphrase to be sure that everything is safe";
 "common.backup.manual" = "Back up manually";
+"cloud.backup.unsynced" = "Backup Unsynced";
+"cloud.backup.syncing" = "Backup Syncing...";
+"cloud.backup.disabled" = "Backup Disabled";
+"cloud.backup.synced" = "Backup Synced";
+"cloud.backup.last.synced.format" = "Last sync: %@";
+"cloud.backup.disabled.description" = "Turn it on to create a wallets backup";
+"cloud.backup.review.icloud.issue" = "Review iCloud Issue";
+"cloud.backup.enter.password.issue" = "Enter Backup Password";
+"cloud.backup.review.backup.updates" = "Review Backup Updates";
