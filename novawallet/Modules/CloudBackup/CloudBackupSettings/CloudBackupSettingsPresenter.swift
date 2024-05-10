@@ -15,7 +15,16 @@ final class CloudBackupSettingsPresenter {
 }
 
 extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
-    func setup() {}
+    func setup() {
+        view?.didReceive(
+            viewModel: .init(
+                status: .syncing,
+                title: "Backup syncing",
+                lastSynced: nil,
+                issue: "Review backup updates"
+            )
+        )
+    }
 
     func toggleICloudBackup() {}
 

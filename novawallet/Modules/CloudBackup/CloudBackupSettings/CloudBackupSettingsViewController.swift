@@ -86,15 +86,19 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
     }
 }
 
-extension CloudBackupSettingsViewController: CloudBackupSettingsViewProtocol {}
+extension CloudBackupSettingsViewController: CloudBackupSettingsViewProtocol {
+    func didReceive(viewModel: CloudBackupSettingsViewModel) {
+        rootView.settingsView.bind(viewModel: viewModel)
+    }
+}
 
 extension CloudBackupSettingsViewController: CloudBackupSettingsViewDelegate {
-    func didSelectSettingsAction() {
-        presenter?.activateSyncAction()
+    func didSelectSyncAction() {
+        presenter.activateSyncAction()
     }
 
     func didSelectIssueAction() {
-        presenter?.activateSyncIssue()
+        presenter.activateSyncIssue()
     }
 }
 

@@ -1,4 +1,6 @@
-protocol CloudBackupSettingsViewProtocol: ControllerBackedProtocol {}
+protocol CloudBackupSettingsViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: CloudBackupSettingsViewModel)
+}
 
 protocol CloudBackupSettingsPresenterProtocol: AnyObject {
     func setup()

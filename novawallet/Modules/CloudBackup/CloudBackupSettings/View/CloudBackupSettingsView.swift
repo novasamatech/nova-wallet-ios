@@ -11,18 +11,23 @@ final class CloudBackupSettingsView: UIView {
 
     let syncCell = CloudBackupActionCell()
 
-    let issueCell: StackTableCell?
+    private(set) var issueCell: StackInfoTableCell?
 
     weak var delegate: CloudBackupSettingsViewDelegate?
 
     convenience init() {
         self.init(frame: .zero)
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func setupHandlers() {
@@ -33,13 +38,14 @@ final class CloudBackupSettingsView: UIView {
         )
     }
 
-    private func setupIssueCellIfNeeded() -> StackActionCell {
+    private func setupIssueCellIfNeeded() -> StackInfoTableCell {
         if let issueCell {
             return issueCell
         }
 
-        let issueCell = StackTableCell()
+        let issueCell = StackInfoTableCell()
         issueCell.titleLabel.apply(style: .semiboldFootnoteAccentText)
+        issueCell.accessoryImageView.image = nil
 
         issueCell.addTarget(
             self,
@@ -64,13 +70,13 @@ final class CloudBackupSettingsView: UIView {
         if let issue = viewModel.issue {
             let issueCell = setupIssueCellIfNeeded()
             issueCell.titleLabel.text = issue
-        } else if let actionCell {
-            actionCell.removeFromSuperview()
-            actionCell = nil
+        } else if let issueCell {
+            issueCell.removeFromSuperview()
+            self.issueCell = nil
         }
 
         switch viewModel.status {
-        case .synced, .disabled:
+        case .disabled, .syncing:
             syncCell.isUserInteractionEnabled = false
         case .unsynced, .synced:
             syncCell.isUserInteractionEnabled = true
@@ -78,6 +84,9 @@ final class CloudBackupSettingsView: UIView {
     }
 
     private func setupLayout() {
+        tableView.setCustomHeight(64, at: 0)
+        tableView.setCustomHeight(42, at: 1)
+
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -118,6 +127,16 @@ final class CloudBackupActionCell: RowView<
         rowContentView.valueView
     }
 
+    convenience init() {
+        self.init(frame: .zero)
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupStyle()
+    }
+
     func bind(status: CloudBackupSettingsViewModel.Status, title: String, lastSynced: String?) {
         statusView.bind(status: status)
 
@@ -132,16 +151,22 @@ final class CloudBackupActionCell: RowView<
     }
 
     private func setupStyle() {
+        rowContentView.titleView.makeHorizontal()
         rowContentView.titleView.spacing = 12
         labelsView.spacing = 2
 
         titleLabel.apply(style: .semiboldBodyPrimary)
-        subtitleLabel.apply(style: .caption1Primary)
+        titleLabel.textAlignment = .left
+        subtitleLabel.apply(style: .caption1Secondary)
+        subtitleLabel.textAlignment = .left
     }
 }
 
+extension CloudBackupActionCell: StackTableViewCellProtocol {}
+
 final class CloudBackupActionStateView: UIView {
     let backgroundView: RoundedView = .create { view in
+        view.applyFilledBackgroundStyle()
         view.cornerRadius = 20
     }
 
@@ -176,7 +201,7 @@ final class CloudBackupActionStateView: UIView {
             iconView.image = R.image.iconBackupDisabled()
             activityIndicator.stopAnimating()
         case .unsynced:
-            backgroundView.fillColor = R.color.colorWarningBlockBackground()
+            backgroundView.fillColor = R.color.colorWarningBlockBackground()!
             iconView.image = R.image.iconBackupUnsynced()
             activityIndicator.stopAnimating()
         case .syncing:
