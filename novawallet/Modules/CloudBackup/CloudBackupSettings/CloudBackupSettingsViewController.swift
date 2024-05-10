@@ -52,7 +52,7 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string.localizable.commonBackup(preferredLanguages: selectedLocale.rLanguages)
 
-        rootView.cloudBackupTitleLabel.text = R.string.localizable.commonCloudBackup(
+        rootView.cloudBackupTitleLabel.text = R.string.localizable.commonIcloud(
             preferredLanguages: selectedLocale.rLanguages
         )
 
