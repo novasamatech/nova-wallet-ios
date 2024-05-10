@@ -120,6 +120,8 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
             return
         }
 
+        backupView.controller.hidesBottomBarWhenPushed = true
+
         view?.controller.navigationController?.pushViewController(
             backupView.controller,
             animated: true
