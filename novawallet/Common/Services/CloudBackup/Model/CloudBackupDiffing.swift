@@ -17,11 +17,13 @@ enum CloudBackupChange: Equatable, Hashable {
     case updatedMetadata(local: MetaAccountModel, remote: MetaAccountModel)
 }
 
+typealias CloudBackupDiff = Set<CloudBackupChange>
+
 protocol CloudBackupDiffCalculating {
     func calculateBetween(
         wallets: Set<MetaAccountModel>,
         publicBackupInfo: CloudBackup.PublicData
-    ) throws -> Set<CloudBackupChange>
+    ) throws -> CloudBackupDiff
 }
 
 final class CloudBackupDiffCalculator {

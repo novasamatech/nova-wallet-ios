@@ -242,6 +242,11 @@
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
 		0C626D212A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D202A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift */; };
+		0C6390892BF06C700015D467 /* CloudBackupSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390882BF06C700015D467 /* CloudBackupSyncService.swift */; };
+		0C63908B2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */; };
+		0C63908D2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */; };
+		0C6390912BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */; };
+		0C6390932BF0931C0015D467 /* CloudBackupMetadataManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390922BF0931C0015D467 /* CloudBackupMetadataManaging.swift */; };
 		0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102A2A73816000E44634 /* StakingSharedStateFactory.swift */; };
 		0C66102D2A73828800E44634 /* RelaychainStakingSharedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */; };
 		0C66102F2A78E9D700E44634 /* RelaychainStartStakingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102E2A78E9D700E44634 /* RelaychainStartStakingState.swift */; };
@@ -4921,6 +4926,11 @@
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
 		0C626D202A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNPoolsViewModelFactory.swift; sourceTree = "<group>"; };
+		0C6390882BF06C700015D467 /* CloudBackupSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncService.swift; sourceTree = "<group>"; };
+		0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdateMonitoring.swift; sourceTree = "<group>"; };
+		0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudBackupUpdateMonitor.swift; sourceTree = "<group>"; };
+		0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdateCalculationFactory.swift; sourceTree = "<group>"; };
+		0C6390922BF0931C0015D467 /* CloudBackupMetadataManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupMetadataManaging.swift; sourceTree = "<group>"; };
 		0C66102A2A73816000E44634 /* StakingSharedStateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSharedStateFactory.swift; sourceTree = "<group>"; };
 		0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingSharedState.swift; sourceTree = "<group>"; };
 		0C66102E2A78E9D700E44634 /* RelaychainStartStakingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStartStakingState.swift; sourceTree = "<group>"; };
@@ -9691,6 +9701,7 @@
 				0CED3A0D2BD17AD400B1E994 /* CloudBackupDiffing.swift */,
 				0C7CF4CB2BD374930015DD45 /* CloudBackupFileManaging.swift */,
 				0C7CF4CD2BD3784B0015DD45 /* CloudBackupCoding.swift */,
+				0C6390922BF0931C0015D467 /* CloudBackupMetadataManaging.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -10359,6 +10370,7 @@
 				0CA26D8C2BBBB5BA0086748F /* CloudBackupServiceFactoryProtocol.swift */,
 				0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */,
 				0C7CF4C92BD36E480015DD45 /* CloudBackupServiceFacade.swift */,
+				0C6390882BF06C700015D467 /* CloudBackupSyncService.swift */,
 			);
 			path = CloudBackup;
 			sourceTree = "<group>";
@@ -10379,6 +10391,7 @@
 			children = (
 				0CC0F82B2BB570C2002C49F6 /* CloudBackupOperationFactory.swift */,
 				0C7CF4CF2BD384190015DD45 /* CloudBackupUploadingOperationFactory.swift */,
+				0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */,
 			);
 			path = Operations;
 			sourceTree = "<group>";
@@ -10613,6 +10626,8 @@
 			children = (
 				0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */,
 				0CF817702BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift */,
+				0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */,
+				0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */,
 			);
 			path = Monitor;
 			sourceTree = "<group>";
@@ -22544,6 +22559,7 @@
 				84AE7AAF27D38B1800495267 /* DrawableIconViewModel.swift in Sources */,
 				849976D027B3AC0100B14A6C /* MetamaskEvent.swift in Sources */,
 				0CE629DD2AA9B6BF00E250BD /* RewardDestinationViewModel.swift in Sources */,
+				0C63908D2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift in Sources */,
 				849976BC27B25A6600B14A6C /* DAppTransportModel.swift in Sources */,
 				771901A42AE7E48800D9C918 /* SwapBaseProtocols.swift in Sources */,
 				84D2F1B32775A3220040C680 /* ExtrinsicJSONProcessor.swift in Sources */,
@@ -22685,6 +22701,7 @@
 				880CC0AA29E7F151008C7F65 /* EquilibriumLocksSubscription.swift in Sources */,
 				8490145324A93FD1008F705E /* NovaLoadingViewFactory.swift in Sources */,
 				8472976C260B1CAD009B86D0 /* InitiatedBondingConfirmInteractor.swift in Sources */,
+				0C6390912BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift in Sources */,
 				887C450029AC7ED600950F98 /* DelegationReferendumVotersModel.swift in Sources */,
 				84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */,
 				84D8F17124D856D300AF43E9 /* SNAddressType+ViewModel.swift in Sources */,
@@ -23567,6 +23584,7 @@
 				8488D5DB298167D10019B388 /* GovernanceDelegateTypeView.swift in Sources */,
 				84CC726228AF8C7A003429E7 /* LedgerApplicationRequest.swift in Sources */,
 				849AFEBD26DCCE3A00B65924 /* SubqueryResponse.swift in Sources */,
+				0C6390892BF06C700015D467 /* CloudBackupSyncService.swift in Sources */,
 				84CFF1E426526FBC00DB7CF7 /* StakingBondMorePresenter.swift in Sources */,
 				842D1E7924D063FD00C30A7A /* TriangularedView.swift in Sources */,
 				AE2C84E925EF98D500986716 /* ValidatorInfoViewFactory.swift in Sources */,
@@ -23937,6 +23955,7 @@
 				84E63C1728FFC69A0093534A /* DiscreteGradientSlider.swift in Sources */,
 				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
 				84FC190D29B7EE1600BCCAA5 /* MultiExtrinsicFeeProxy.swift in Sources */,
+				0C63908B2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift in Sources */,
 				844C3E6F2A08E74D00C4305F /* BalanceCalculator.swift in Sources */,
 				8814774029B07B66001E98A1 /* DelegateGroupActionTitleControl.swift in Sources */,
 				F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */,
@@ -24745,6 +24764,7 @@
 				0C59E8F82AA76833001E11F3 /* OperationDetailsContractProvider.swift in Sources */,
 				6BAF97802DB9C640515F47C7 /* StakingMainInteractor.swift in Sources */,
 				84BF12A128CFCD70007AA576 /* ParaStkYieldBoostStartError.swift in Sources */,
+				0C6390932BF0931C0015D467 /* CloudBackupMetadataManaging.swift in Sources */,
 				8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */,
 				0C3205E32A897B5A002EB914 /* ExtrinsicValidationProvider.swift in Sources */,
 				840D929F278D8D2E0007B979 /* DAppBrowserInteractorError.swift in Sources */,

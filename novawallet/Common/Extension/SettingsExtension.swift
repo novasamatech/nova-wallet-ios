@@ -18,6 +18,7 @@ enum SettingsKey: String {
     case polkadotStakingPromoSeen
     case notificationsEnabled
     case notificationsSetupSeen
+    case lastCloudBackupTimestamp
 }
 
 extension SettingsManagerProtocol {
@@ -193,6 +194,16 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.notificationsSetupSeen.rawValue)
+        }
+    }
+    
+    var lastCloudBackupTimestampSeen: TimeInterval? {
+        get {
+            double(for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+        }
+        
+        set {
+            set(value: newValue, for: SettingsKey.lastCloudBackupTimestamp.rawValue)
         }
     }
 }
