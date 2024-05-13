@@ -1588,3 +1588,4 @@
 "cloud.backup.review.icloud.issue" = "Review iCloud Issue";
 "cloud.backup.enter.password.issue" = "Enter Backup Password";
 "cloud.backup.review.backup.updates" = "Review Backup Updates";
+"backup.select.wallet.title" = "Select a wallet to back up";

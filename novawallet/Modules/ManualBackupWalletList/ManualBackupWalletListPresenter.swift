@@ -41,8 +41,7 @@ final class ManualBackupWalletListPresenter: WalletsListPresenter {
 
 extension ManualBackupWalletListPresenter: ManualBackupWalletListPresenterProtocol {
     func title() -> String {
-        // TODO: Localize
-        "Select a wallet to back up"
+        R.string.localizable.backupSelectWalletTitle(preferredLanguages: selectedLocale.rLanguages)
     }
 
     func selectItem(at index: Int, section: Int) {
