@@ -1,10 +1,15 @@
 import UIKit
 
 final class ManualBackupWalletListViewLayout: WalletsListViewLayout {
-    let titleLabel: UILabel = {
-        let label = UILabel(style: .boldTitle2Primary)
-        label.lineBreakMode = .byWordWrapping
+    override var tableView: UITableView {
+        get { groupedTableView }
+        set { groupedTableView = newValue }
+    }
 
-        return label
+    private var groupedTableView: UITableView = {
+        let view = UITableView(frame: .zero, style: .grouped)
+        view.separatorStyle = .none
+        view.backgroundColor = .clear
+        return view
     }()
 }

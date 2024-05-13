@@ -22,7 +22,7 @@ final class ManualBackupWalletListPresenter: WalletsListPresenter {
             logger: logger
         )
     }
-    
+
     override func filterIgnoredWallet(
         changes: [DataProviderChange<ManagedMetaAccountModel>]
     ) -> [DataProviderChange<ManagedMetaAccountModel>] {
@@ -34,13 +34,27 @@ final class ManualBackupWalletListPresenter: WalletsListPresenter {
                 return true
             }
         }
-        
+
         return super.filterIgnoredWallet(changes: changes)
     }
 }
 
 extension ManualBackupWalletListPresenter: ManualBackupWalletListPresenterProtocol {
+    func title() -> String {
+        // TODO: Localize
+        "Select a wallet to back up"
+    }
+
     func selectItem(at index: Int, section: Int) {
-        print("row \(index), section \(section)")
+        let identifier = viewModels[section].items[index].identifier
+
+        guard let wallet = walletsList.allItems.first(where: { $0.identifier == identifier }) else {
+            return
+        }
+
+        wireframe?.showBackupAttention(
+            from: baseView,
+            wallet: wallet.info
+        )
     }
 }
