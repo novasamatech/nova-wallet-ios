@@ -17,9 +17,18 @@ enum CloudBackupSyncResult: Equatable {
         }
     }
 
+    enum Issue: Equatable {
+        case missingOrInvalidPassword
+        case remoteReadingFailed
+        case remoteDecodingFailed
+        case internalFailure
+    }
+
     case noUpdates
     case updateLocal(State)
     case updateRemote(State)
+    case unionLocalAndRemote(State)
+    case issue(Issue)
 }
 
 protocol CloudBackupUpdateCalculationFactoryProtocol {
@@ -28,6 +37,7 @@ protocol CloudBackupUpdateCalculationFactoryProtocol {
 
 enum CloudBackupUpdateCalculationError: Error {
     case missingOrInvalidPassword
+    case invalidPublicData
 }
 
 final class CloudBackupUpdateCalculationFactory {
@@ -53,6 +63,51 @@ final class CloudBackupUpdateCalculationFactory {
         self.cryptoManager = cryptoManager
         self.diffManager = diffManager
     }
+
+    private func createDiffOperation(
+        dependingOn walletsOperation: BaseOperation<[MetaAccountModel]>,
+        decodingOperation: BaseOperation<CloudBackup.PublicData?>
+    ) -> ClosureOperation<CloudBackupSyncResult> {
+        ClosureOperation<CloudBackupSyncResult> {
+            do {
+                let wallets = try walletsOperation.extractNoCancellableResultData()
+
+                guard let publicData = try decodingOperation.extractNoCancellableResultData() else {
+                    let state = CloudBackupSyncResult.State.createFromLocalWallets(Set(wallets))
+                    return .updateRemote(state)
+                }
+
+                let diff = try self.diffManager.calculateBetween(
+                    wallets: Set(wallets),
+                    publicBackupInfo: publicData
+                )
+
+                guard !diff.isEmpty else {
+                    return .noUpdates
+                }
+
+                let state = CloudBackupSyncResult.State(localWallets: Set(wallets), changes: diff)
+
+                guard let lastSyncTime = self.syncMetadataManager.getLastSyncDate() else {
+                    return .unionLocalAndRemote(state)
+                }
+
+                if lastSyncTime < publicData.modifiedAt {
+                    return .updateLocal(state)
+                } else {
+                    return .updateRemote(state)
+                }
+            } catch CloudBackupUpdateCalculationError.missingOrInvalidPassword {
+                return .issue(.missingOrInvalidPassword)
+            } catch CloudBackupUpdateCalculationError.invalidPublicData {
+                return .issue(.remoteDecodingFailed)
+            } catch CloudBackupOperationFactoryError.readingFailed {
+                return .issue(.remoteReadingFailed)
+            } catch {
+                return .issue(.internalFailure)
+            }
+        }
+    }
 }
 
 extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFactoryProtocol {
@@ -61,12 +116,12 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
         let remoteFileOperation = backupOperationFactory.createReadingOperation(for: fileUrl)
 
         let decodingOperation = ClosureOperation<CloudBackup.PublicData?> {
-            let data = try remoteFileOperation.extractNoCancellableResultData()
-
-            let optEncryptedModel = try data.map { try self.decodingManager.decode(data: $0) }
-
-            guard let encryptedModel = optEncryptedModel else {
+            guard let data = try remoteFileOperation.extractNoCancellableResultData() else {
                 return nil
+            }
+
+            guard let encryptedModel = try? self.decodingManager.decode(data: data) else {
+                throw CloudBackupUpdateCalculationError.invalidPublicData
             }
 
             guard let password = try self.syncMetadataManager.getPassword() else {
@@ -74,42 +129,21 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
             }
 
             let privateData = try Data(hexString: encryptedModel.privateData)
-            _ = try self.cryptoManager.decrypt(data: privateData, password: password)
+            let optDecryption = try? self.cryptoManager.decrypt(data: privateData, password: password)
+
+            if optDecryption == nil {
+                throw CloudBackupUpdateCalculationError.missingOrInvalidPassword
+            }
 
             return encryptedModel.publicData
         }
 
         decodingOperation.addDependency(remoteFileOperation)
 
-        let diffOperation = ClosureOperation<CloudBackupSyncResult> {
-            let wallets = try walletsOperation.extractNoCancellableResultData()
-
-            guard let publicData = try decodingOperation.extractNoCancellableResultData() else {
-                let state = CloudBackupSyncResult.State.createFromLocalWallets(Set(wallets))
-                return .updateRemote(state)
-            }
-
-            let diff = try self.diffManager.calculateBetween(
-                wallets: Set(wallets),
-                publicBackupInfo: publicData
-            )
-
-            guard !diff.isEmpty else {
-                return .noUpdates
-            }
-
-            let state = CloudBackupSyncResult.State(localWallets: Set(wallets), changes: diff)
-
-            guard let lastSyncTime = self.syncMetadataManager.getLastSyncDate() else {
-                return .updateLocal(state)
-            }
-
-            if lastSyncTime < publicData.modifiedAt {
-                return .updateLocal(state)
-            } else {
-                return .updateRemote(state)
-            }
-        }
+        let diffOperation = createDiffOperation(
+            dependingOn: walletsOperation,
+            decodingOperation: decodingOperation
+        )
 
         diffOperation.addDependency(decodingOperation)
 

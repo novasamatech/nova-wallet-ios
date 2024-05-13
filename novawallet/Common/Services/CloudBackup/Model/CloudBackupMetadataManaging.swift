@@ -9,6 +9,8 @@ protocol CloudBackupSyncMetadataManaging {
     func getPassword() throws -> String?
     func savePassword(_ newValue: String?) throws
     func hasPassword() throws -> Bool
+
+    var isBackupEnabled: Bool { get set }
 }
 
 enum CloudBackupSyncMetadataManagingError: Error {
@@ -26,6 +28,16 @@ final class CloudBackupSyncMetadataManager {
 }
 
 extension CloudBackupSyncMetadataManager: CloudBackupSyncMetadataManaging {
+    var isBackupEnabled: Bool {
+        get {
+            settings.isCloudBackupEnabled
+        }
+
+        set {
+            settings.isCloudBackupEnabled = newValue
+        }
+    }
+
     func getLastSyncDate() -> UInt64? {
         settings.lastCloudBackupTimestampSeen
     }

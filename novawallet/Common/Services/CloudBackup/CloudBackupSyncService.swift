@@ -3,6 +3,16 @@ import SoraKeystore
 import SubstrateSdk
 import RobinHood
 
+protocol CloudBackupSyncServiceProtocol: SyncServiceProtocol {
+    func subscribeSyncResult(
+        _ object: AnyObject,
+        notifyingIn queue: DispatchQueue,
+        closure: @escaping (CloudBackupSyncResult) -> Void
+    )
+
+    func unsubscribeSyncResult(_ object: AnyObject)
+}
+
 final class CloudBackupSyncService: BaseSyncService, AnyCancellableCleaning {
     let updateCalculationFactory: CloudBackupUpdateCalculationFactoryProtocol
     let remoteFileUrl: URL
@@ -53,5 +63,37 @@ final class CloudBackupSyncService: BaseSyncService, AnyCancellableCleaning {
 
     override func stopSyncUp() {
         cancellableStore.cancel()
+    }
+}
+
+extension CloudBackupSyncService {
+    func subscribeSyncResult(
+        _ object: AnyObject,
+        notifyingIn queue: DispatchQueue,
+        closure: @escaping (CloudBackupSyncResult) -> Void
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        syncObservable.addObserver(
+            with: object,
+            sendStateOnSubscription: true,
+            queue: queue
+        ) { _, newState in
+            closure(newState)
+        }
+    }
+
+    func unsubscribeSyncResult(_ object: AnyObject) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        syncObservable.removeObserver(by: object)
     }
 }

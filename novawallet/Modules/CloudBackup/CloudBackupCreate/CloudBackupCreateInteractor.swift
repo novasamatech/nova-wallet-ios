@@ -33,7 +33,7 @@ final class CloudBackupCreateInteractor {
         password: String,
         proxyKeystore: KeychainProxyProtocol
     ) {
-        cloudBackupFacade.enableBackup(
+        cloudBackupFacade.createBackup(
             wallets: [wallet],
             keystore: proxyKeystore,
             password: password,

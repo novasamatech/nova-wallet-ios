@@ -19,6 +19,7 @@ enum SettingsKey: String {
     case notificationsEnabled
     case notificationsSetupSeen
     case lastCloudBackupTimestamp
+    case cloudBackupEnabled
 }
 
 extension SettingsManagerProtocol {
@@ -205,6 +206,16 @@ extension SettingsManagerProtocol {
         set {
             let stringValue = newValue.map { String($0) }
             set(value: stringValue, for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+        }
+    }
+
+    var isCloudBackupEnabled: Bool {
+        get {
+            bool(for: SettingsKey.cloudBackupEnabled.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.cloudBackupEnabled.rawValue)
         }
     }
 }
