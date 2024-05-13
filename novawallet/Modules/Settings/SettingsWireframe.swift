@@ -115,6 +115,19 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         )
     }
 
+    func showBackup(from view: ControllerBackedProtocol?) {
+        guard let backupView = CloudBackupSettingsViewFactory.createView() else {
+            return
+        }
+
+        backupView.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.pushViewController(
+            backupView.controller,
+            animated: true
+        )
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {
