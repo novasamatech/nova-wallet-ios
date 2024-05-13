@@ -1,4 +1,4 @@
-protocol BackupAttentionViewProtocol: AnyObject {}
+protocol BackupAttentionViewProtocol: ControllerBackedProtocol {}
 
 protocol BackupAttentionPresenterProtocol: AnyObject {
     func setup()

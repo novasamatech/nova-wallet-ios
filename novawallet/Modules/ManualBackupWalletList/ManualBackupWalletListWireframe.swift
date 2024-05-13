@@ -1,10 +1,21 @@
 import Foundation
 
-final class ManualBackupWalletListWireframe: ManualBackupWalletListWireframeProtocol {
+final class ManualBackupWalletListWireframe: ManualBackupWalletListWireframeProtocol, AuthorizationPresentable {
     func showBackupAttention(
-        from _: WalletsListViewProtocol?,
+        from view: WalletsListViewProtocol?,
         wallet _: MetaAccountModel
     ) {
-        // TODO: Show Pass Code auth before routing further
+        guard let backupAttentionView = BackupAttentionViewFactory.createView() else {
+            return
+        }
+
+        authorize(animated: true, cancellable: true) { [weak self] completed in
+            guard let self, completed else { return }
+
+            view?.controller.navigationController?.pushViewController(
+                backupAttentionView.controller,
+                animated: true
+            )
+        }
     }
 }
