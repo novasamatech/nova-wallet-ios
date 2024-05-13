@@ -1,7 +1,7 @@
 import Foundation
 import SoraKeystore
 
-protocol CloudBackupSyncMetadataManaging {
+protocol CloudBackupSyncMetadataManaging: AnyObject {
     func getLastSyncDate() -> UInt64?
     func saveLastSyncDate(_ newDate: UInt64?)
     func hasLastSyncDate() -> Bool

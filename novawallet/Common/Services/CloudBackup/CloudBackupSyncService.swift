@@ -66,7 +66,7 @@ final class CloudBackupSyncService: BaseSyncService, AnyCancellableCleaning {
     }
 }
 
-extension CloudBackupSyncService {
+extension CloudBackupSyncService: CloudBackupSyncServiceProtocol {
     func subscribeSyncResult(
         _ object: AnyObject,
         notifyingIn queue: DispatchQueue,
