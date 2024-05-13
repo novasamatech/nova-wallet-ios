@@ -4,67 +4,54 @@ import SubstrateSdk
 import RobinHood
 
 final class CloudBackupSyncService: BaseSyncService, AnyCancellableCleaning {
-    let keychain: KeystoreProtocol
-    let walletsRepository: AnyDataProviderRepository<MetaAccountModel>
-    let backupOperationFactory: CloudBackupOperationFactoryProtocol
-    let decodingManager: CloudBackupCoding
-    let diffManager: CloudBackupDiffCalculating
+    let updateCalculationFactory: CloudBackupUpdateCalculationFactoryProtocol
     let remoteFileUrl: URL
-    
+
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
-    
-    private var wrapper: CompoundOperationWrapper<CloudBackupDiff>
+
+    private var syncObservable: Observable<CloudBackupSyncResult> = .init(state: .noUpdates)
+
+    private var cancellableStore = CancellableCallStore()
 
     init(
         remoteFileUrl: URL,
-        walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
-        backupOperationFactory: CloudBackupOperationFactoryProtocol,
-        decodingManager: CloudBackupCoding,
-        diffManager: CloudBackupDiffCalculating,
+        updateCalculationFactory: CloudBackupUpdateCalculationFactoryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue = DispatchQueue.global(),
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         logger: LoggerProtocol = Logger.shared
     ) {
         self.remoteFileUrl = remoteFileUrl
-        self.walletsRepository = walletsRepository
-        self.backupOperationFactory = backupOperationFactory
-        self.decodingManager = decodingManager
-        self.diffManager = diffManager
+        self.updateCalculationFactory = updateCalculationFactory
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
-        
+
         super.init(retryStrategy: retryStrategy, logger: logger)
     }
 
     override func performSyncUp() {
-        let walletsOperation = walletsRepository.fetchAllOperation(with: RepositoryFetchOptions())
-        let remoteFileOperation = backupOperationFactory.createReadingOperation(for: remoteFileUrl)
-        
-        let decodingOperation = ClosureOperation<CloudBackup.PublicData?> {
-            let data = try remoteFileOperation.extractNoCancellableResultData()
-            
-            return try data.map { try self.decodingManager.decode(data: $0).publicData }
-        }
-        
-        decodingOperation.addDependency(remoteFileOperation)
-        
-        let diffOperation = ClosureOperation<CloudBackupDiff> {
-            let wallets = try walletsOperation.extractNoCancellableResultData()
-            
-            guard let publicData = try decodingOperation.extractNoCancellableResultData() else {
-                return []
+        let updateCalculationWrapper = updateCalculationFactory.createUpdateCalculation(for: remoteFileUrl)
+
+        executeCancellable(
+            wrapper: updateCalculationWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: cancellableStore,
+            runningCallbackIn: workingQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case let .success(update):
+                self?.logger.debug("Backup sync update: \(update)")
+                self?.syncObservable.state = update
+                self?.completeImmediate(nil)
+            case let .failure(error):
+                self?.completeImmediate(error)
             }
-            
-            return diffManager.calculateBetween(
-                wallets: Set(wallets),
-                publicBackupInfo: publicData
-            )
         }
     }
 
     override func stopSyncUp() {
-        clear(cancellable: &wrapper)
+        cancellableStore.cancel()
     }
 }

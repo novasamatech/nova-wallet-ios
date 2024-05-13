@@ -8,6 +8,7 @@ enum CloudBackupUpdateStatus {
     case noFile
     case downloaded
     case notDownloaded
+    case unknown
 }
 
 typealias CloudBackupUpdateMonitoringClosure = (Result<CloudBackupUpdateStatus, CloudBackupUpdateMonitorError>) -> Void

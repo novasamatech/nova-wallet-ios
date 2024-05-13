@@ -21,7 +21,7 @@ final class ICloudBackupUpdateMonitor {
         self.filename = filename
         self.logger = logger
     }
-    
+
     @objc private func queryDidUpdate(_ notification: Notification) {
         logger.debug("Query did update \(filename): \(notification)")
 
@@ -44,17 +44,19 @@ final class ICloudBackupUpdateMonitor {
             return
         }
 
-        let status = item.value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey)
+        let status = item.value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String
 
         logger.debug("Cloud backup status: \(String(describing: status))")
-        
+
         switch status {
-        case nil, 
-            NSMetadataUbiquitousItemDownloadingStatusNotDownloaded,
-            NSMetadataUbiquitousItemDownloadingStatusDownloaded:
+        case nil,
+             NSMetadataUbiquitousItemDownloadingStatusNotDownloaded,
+             NSMetadataUbiquitousItemDownloadingStatusDownloaded:
             closure?(.success(.notDownloaded))
         case NSMetadataUbiquitousItemDownloadingStatusCurrent:
             closure?(.success(.downloaded))
+        default:
+            closure?(.success(.unknown))
         }
     }
 }

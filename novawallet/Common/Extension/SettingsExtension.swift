@@ -196,14 +196,15 @@ extension SettingsManagerProtocol {
             set(value: newValue, for: SettingsKey.notificationsSetupSeen.rawValue)
         }
     }
-    
-    var lastCloudBackupTimestampSeen: TimeInterval? {
+
+    var lastCloudBackupTimestampSeen: UInt64? {
         get {
-            double(for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+            string(for: SettingsKey.lastCloudBackupTimestamp.rawValue).flatMap { UInt64($0) }
         }
-        
+
         set {
-            set(value: newValue, for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+            let stringValue = newValue.map { String($0) }
+            set(value: stringValue, for: SettingsKey.lastCloudBackupTimestamp.rawValue)
         }
     }
 }
