@@ -27,8 +27,9 @@ class MortalEraFactoryTests: XCTestCase {
 
             let connection = chainRegistry.getConnection(for: chainId)!
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
+            let chain = chainRegistry.getChain(for: chainId)!
 
-            let operationFactory = MortalEraOperationFactory()
+            let operationFactory = MortalEraOperationFactory(chain: chain)
             let wrapper = operationFactory.createOperation(from: connection, runtimeService: runtimeService)
 
             let operationQueue = OperationQueue()
