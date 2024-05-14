@@ -1,6 +1,6 @@
 import UIKit
 
-final class WalletCheckboxTableViewCell: WalletsListTableViewCell<UIImageView> {
+final class WalletCheckboxTableViewCell: WalletsListTableViewCell<WalletView, UIImageView> {
     var checkmarkView: UIImageView { contentDisplayView.valueView }
 
     override func bind(viewModel: WalletsListViewModel) {

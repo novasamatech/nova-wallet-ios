@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class WalletManageTableViewCell: WalletsListTableViewCell<UIImageView> {
+final class WalletManageTableViewCell<V: WalletViewProtocol>: WalletsListTableViewCell<V, UIImageView> {
     private lazy var reorderingAnimator = BlockViewAnimator()
 
     var disclosureIndicatorView: UIImageView { contentDisplayView.valueView }

@@ -1588,3 +1588,4 @@
 "cloud.backup.review.icloud.issue" = "Просмотр проблемы iCloud";
 "cloud.backup.enter.password.issue" = "Ввести Пароль";
 "cloud.backup.review.backup.updates" = "Просмотр Обновлений в Бэкапе";
+"backup.select.wallet.title" = "Выберите кошелек для бэкапа";
