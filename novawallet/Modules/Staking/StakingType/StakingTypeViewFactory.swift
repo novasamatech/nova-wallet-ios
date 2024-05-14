@@ -69,7 +69,8 @@ enum StakingTypeViewFactory {
 
         let recommendationFactory = StakingRecommendationMediatorFactory(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         guard

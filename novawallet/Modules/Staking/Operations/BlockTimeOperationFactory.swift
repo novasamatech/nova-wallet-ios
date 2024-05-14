@@ -6,6 +6,10 @@ protocol BlockTimeOperationFactoryProtocol {
         from runtimeService: RuntimeCodingServiceProtocol,
         blockTimeEstimationService: BlockTimeEstimationServiceProtocol
     ) -> CompoundOperationWrapper<BlockTime>
+
+    func createExpectedBlockTimeWrapper(
+        from runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<BlockTime>
 }
 
 final class BlockTimeOperationFactory {
@@ -99,5 +103,21 @@ extension BlockTimeOperationFactory: BlockTimeOperationFactoryProtocol {
         let dependencies = [codingFactoryOperation, estimatedOperation] + expectedWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
+    func createExpectedBlockTimeWrapper(
+        from runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<BlockTime> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let expectedWrapper = createExpectedBlockTimeWrapper(
+            dependingOn: codingFactoryOperation,
+            chainDefaultTime: chain.defaultBlockTimeMillis,
+            fallbackTime: fallbackBlockTime,
+            fallbackThreshold: Self.fallbackThreshold
+        )
+
+        expectedWrapper.addDependency(operations: [codingFactoryOperation])
+
+        return expectedWrapper.insertingHead(operations: [codingFactoryOperation])
     }
 }
