@@ -214,7 +214,8 @@ struct StartStakingConfirmViewFactory {
     ) -> RelaychainStakingRestrictionsBuilding? {
         let factory = StakingRecommendationMediatorFactory(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         switch stakingOption {

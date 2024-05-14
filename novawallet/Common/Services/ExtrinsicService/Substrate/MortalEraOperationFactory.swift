@@ -6,8 +6,13 @@ import BigInt
 final class MortalEraOperationFactory {
     static let fallbackMaxHashCount: BlockNumber = 250
     static let maxFinalityLag: BlockNumber = 5
-    static let fallbackPeriod: Moment = 6 * 1000
     static let mortalPeriod: UInt64 = 5 * 60 * 1000
+
+    private let blockTimeOperationFactory: BlockTimeOperationFactory
+
+    init(chain: ChainModel) {
+        blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
+    }
 
     private func createFinalizedHeaderOperation(
         from connection: JSONRPCEngine
@@ -109,43 +114,10 @@ final class MortalEraOperationFactory {
         )
     }
 
-    private func createBlockTimeOperation(
-        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<Moment> {
-        let expectedBlockTimeOperation = PrimitiveConstantOperation<Moment>(path: .babeBlockTime)
-        expectedBlockTimeOperation.configurationBlock = {
-            do {
-                expectedBlockTimeOperation.codingFactory = try codingFactoryOperation
-                    .extractNoCancellableResultData()
-            } catch {
-                expectedBlockTimeOperation.result = .failure(error)
-            }
-        }
-
-        let minimumPeriodOperation = PrimitiveConstantOperation<Moment>(path: .minimumPeriodBetweenBlocks)
-        minimumPeriodOperation.configurationBlock = {
-            do {
-                minimumPeriodOperation.codingFactory = try codingFactoryOperation
-                    .extractNoCancellableResultData()
-            } catch {
-                minimumPeriodOperation.result = .failure(error)
-            }
-        }
-
-        let mapOperation = ClosureOperation<Moment> {
-            let expectedBlockTime = try? expectedBlockTimeOperation.extractNoCancellableResultData()
-            let minimumPeriod = try? minimumPeriodOperation.extractNoCancellableResultData()
-
-            return (expectedBlockTime ?? minimumPeriod) ?? Moment(Self.fallbackPeriod)
-        }
-
-        mapOperation.addDependency(expectedBlockTimeOperation)
-        mapOperation.addDependency(minimumPeriodOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: [expectedBlockTimeOperation, minimumPeriodOperation]
-        )
+    private func createBlockTimeWrapper(
+        for runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<BlockTime> {
+        blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtimeService)
     }
 
     private func createBlockHashCountOperation(
@@ -184,9 +156,7 @@ final class MortalEraOperationFactory {
             dependingOn: codingFactoryOperation
         )
 
-        let blockTimeWrapper = createBlockTimeOperation(
-            dependingOn: codingFactoryOperation
-        )
+        let blockTimeWrapper = createBlockTimeWrapper(for: runtimeService)
 
         blockHashCountWrapper.addDependency(operations: [codingFactoryOperation])
         blockTimeWrapper.addDependency(operations: [codingFactoryOperation])
@@ -200,7 +170,7 @@ final class MortalEraOperationFactory {
                 throw BaseOperationError.unexpectedDependentResult
             }
 
-            let unmappedPeriod = (Self.mortalPeriod / UInt64(blockTime)) + UInt64(Self.maxFinalityLag)
+            let unmappedPeriod = (Self.mortalPeriod / blockTime) + UInt64(Self.maxFinalityLag)
 
             return min(UInt64(blockHashCount), unmappedPeriod)
         }
