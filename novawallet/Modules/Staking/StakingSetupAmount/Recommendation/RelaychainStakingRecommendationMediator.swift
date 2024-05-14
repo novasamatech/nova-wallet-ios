@@ -20,11 +20,7 @@ class BaseStakingRecommendationMediator: AnyCancellableCleaning {
 
     var recommendation: RelaychainStakingRecommendation?
     var amount: BigUInt?
-    var pendingOperation: CancellableCall? {
-        didSet {
-            logger.debug("Wrapper: \(String(describing: pendingOperation))")
-        }
-    }
+    var pendingOperation: CancellableCall?
 
     let logger: LoggerProtocol
 
