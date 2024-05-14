@@ -1,5 +1,4 @@
 protocol ManualBackupWalletListPresenterProtocol: WalletsListPresenterProtocol {
-    func title() -> String
     func selectItem(at index: Int, section: Int)
 }
 

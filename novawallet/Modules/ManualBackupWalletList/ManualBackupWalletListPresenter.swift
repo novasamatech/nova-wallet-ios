@@ -35,15 +35,11 @@ final class ManualBackupWalletListPresenter: WalletsListPresenter {
             }
         }
 
-        return super.filterIgnoredWallet(changes: changes)
+        return super.filterIgnoredWallet(changes: secrets)
     }
 }
 
 extension ManualBackupWalletListPresenter: ManualBackupWalletListPresenterProtocol {
-    func title() -> String {
-        R.string.localizable.backupSelectWalletTitle(preferredLanguages: selectedLocale.rLanguages)
-    }
-
     func selectItem(at index: Int, section: Int) {
         let identifier = viewModels[section].items[index].identifier
 
