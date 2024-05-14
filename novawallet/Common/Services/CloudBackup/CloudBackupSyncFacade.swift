@@ -1,8 +1,6 @@
 import Foundation
 
 protocol CloudBackupSyncFacadeProtocol: ApplicationServiceProtocol {
-    var isCloudBackupEnabled: Bool { get }
-
     func enableBackup(
         for password: String?,
         runCompletionIn queue: DispatchQueue,
@@ -21,6 +19,8 @@ protocol CloudBackupSyncFacadeProtocol: ApplicationServiceProtocol {
     )
 
     func unsubscribeState(_ observer: AnyObject)
+
+    func syncUp()
 }
 
 final class CloudBackupSyncFacade {
@@ -115,10 +115,6 @@ final class CloudBackupSyncFacade {
 }
 
 extension CloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
-    var isCloudBackupEnabled: Bool {
-        syncMetadataManager.isBackupEnabled
-    }
-
     func enableBackup(
         for password: String?,
         runCompletionIn queue: DispatchQueue,
@@ -234,5 +230,9 @@ extension CloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
         clearSyncService()
 
         stateObservable.state = .disabled
+    }
+
+    func syncUp() {
+        syncService?.syncUp()
     }
 }

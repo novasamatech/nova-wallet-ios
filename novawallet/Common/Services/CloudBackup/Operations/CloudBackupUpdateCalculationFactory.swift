@@ -17,6 +17,12 @@ enum CloudBackupSyncResult: Equatable {
         }
     }
 
+    enum Changes: Equatable {
+        case updateLocal(State)
+        case updateRemote
+        case unionLocalAndRemote(State)
+    }
+
     enum Issue: Equatable {
         case missingOrInvalidPassword
         case remoteReadingFailed
@@ -25,9 +31,7 @@ enum CloudBackupSyncResult: Equatable {
     }
 
     case noUpdates
-    case updateLocal(State)
-    case updateRemote(State)
-    case unionLocalAndRemote(State)
+    case changes(Changes)
     case issue(Issue)
 }
 
@@ -73,8 +77,7 @@ final class CloudBackupUpdateCalculationFactory {
                 let wallets = try walletsOperation.extractNoCancellableResultData()
 
                 guard let publicData = try decodingOperation.extractNoCancellableResultData() else {
-                    let state = CloudBackupSyncResult.State.createFromLocalWallets(Set(wallets))
-                    return .updateRemote(state)
+                    return .changes(.updateRemote)
                 }
 
                 let diff = try self.diffManager.calculateBetween(
@@ -89,13 +92,13 @@ final class CloudBackupUpdateCalculationFactory {
                 let state = CloudBackupSyncResult.State(localWallets: Set(wallets), changes: diff)
 
                 guard let lastSyncTime = self.syncMetadataManager.getLastSyncDate() else {
-                    return .unionLocalAndRemote(state)
+                    return .changes(.unionLocalAndRemote(state))
                 }
 
                 if lastSyncTime < publicData.modifiedAt {
-                    return .updateLocal(state)
+                    return .changes(.updateLocal(state))
                 } else {
-                    return .updateRemote(state)
+                    return .changes(.updateRemote)
                 }
             } catch CloudBackupUpdateCalculationError.missingOrInvalidPassword {
                 return .issue(.missingOrInvalidPassword)
