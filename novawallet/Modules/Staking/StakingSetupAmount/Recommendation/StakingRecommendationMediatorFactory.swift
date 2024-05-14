@@ -27,13 +27,16 @@ protocol StakingRecommendationMediatorFactoryProtocol {
 final class StakingRecommendationMediatorFactory {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 
     private func createDirectStakingRecommendationFactory(
@@ -95,7 +98,8 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
         return DirectStakingRecommendationMediator(
             recommendationFactory: recommendationFactory,
             restrictionsBuilder: restrictionsBuilder,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
     }
 
@@ -133,7 +137,8 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             restrictionsBuilder: restrictionsBuilder,
             operationFactory: operationFactory,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
     }
 
@@ -151,7 +156,8 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
             chainAsset: state.chainAsset,
             directStakingMediator: directStakingMediator,
             nominationPoolsMediator: poolMediator,
-            directStakingRestrictionsBuilder: directStakingRestrictionsBuilder
+            directStakingRestrictionsBuilder: directStakingRestrictionsBuilder,
+            logger: logger
         )
     }
 

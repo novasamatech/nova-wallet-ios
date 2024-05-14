@@ -113,13 +113,13 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         customExtensions: [ExtrinsicExtension],
         engine: JSONRPCEngine,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
-        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory(),
+        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil,
         operationManager: OperationManagerProtocol
     ) {
         self.chain = chain
         self.senderResolvingFactory = senderResolvingFactory
         self.customExtensions = customExtensions
-        self.eraOperationFactory = eraOperationFactory
+        self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
 
         super.init(
             runtimeRegistry: runtimeRegistry,
