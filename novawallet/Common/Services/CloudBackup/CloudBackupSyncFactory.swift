@@ -34,7 +34,7 @@ extension CloudBackupSyncFactory: CloudBackupSyncFactoryProtocol {
     func createSyncService(for remoteFileUrl: URL) -> CloudBackupSyncServiceProtocol {
         let updateCalculationFactory = CloudBackupUpdateCalculationFactory(
             syncMetadataManager: syncMetadataManaging,
-            walletsRepository: accountsRepositoryFactory.createMetaAccountRepository(
+            walletsRepository: accountsRepositoryFactory.createManagedMetaAccountRepository(
                 for: NSPredicate.cloudSyncableWallets,
                 sortDescriptors: []
             ),

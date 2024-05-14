@@ -5,12 +5,12 @@ import IrohaCrypto
 
 enum CloudBackupSyncResult: Equatable {
     struct State: Equatable {
-        let localWallets: Set<MetaAccountModel>
+        let localWallets: Set<ManagedMetaAccountModel>
         let changes: CloudBackupDiff
 
-        static func createFromLocalWallets(_ wallets: Set<MetaAccountModel>) -> Self {
+        static func createFromLocalWallets(_ wallets: Set<ManagedMetaAccountModel>) -> Self {
             let changes = wallets.map { wallet in
-                CloudBackupChange.delete(local: wallet)
+                CloudBackupChange.delete(local: wallet.info)
             }
 
             return .init(localWallets: wallets, changes: Set(changes))
@@ -46,7 +46,7 @@ enum CloudBackupUpdateCalculationError: Error {
 
 final class CloudBackupUpdateCalculationFactory {
     let syncMetadataManager: CloudBackupSyncMetadataManaging
-    let walletsRepository: AnyDataProviderRepository<MetaAccountModel>
+    let walletsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let backupOperationFactory: CloudBackupOperationFactoryProtocol
     let decodingManager: CloudBackupCoding
     let cryptoManager: CloudBackupCryptoManagerProtocol
@@ -54,7 +54,7 @@ final class CloudBackupUpdateCalculationFactory {
 
     init(
         syncMetadataManager: CloudBackupSyncMetadataManaging,
-        walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
+        walletsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         backupOperationFactory: CloudBackupOperationFactoryProtocol,
         decodingManager: CloudBackupCoding,
         cryptoManager: CloudBackupCryptoManagerProtocol,
@@ -69,7 +69,7 @@ final class CloudBackupUpdateCalculationFactory {
     }
 
     private func createDiffOperation(
-        dependingOn walletsOperation: BaseOperation<[MetaAccountModel]>,
+        dependingOn walletsOperation: BaseOperation<[ManagedMetaAccountModel]>,
         decodingOperation: BaseOperation<CloudBackup.PublicData?>
     ) -> ClosureOperation<CloudBackupSyncResult> {
         ClosureOperation<CloudBackupSyncResult> {
@@ -81,7 +81,7 @@ final class CloudBackupUpdateCalculationFactory {
                 }
 
                 let diff = try self.diffManager.calculateBetween(
-                    wallets: Set(wallets),
+                    wallets: Set(wallets.map(\.info)),
                     publicBackupInfo: publicData
                 )
 

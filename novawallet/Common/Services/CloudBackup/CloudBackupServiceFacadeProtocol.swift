@@ -40,4 +40,10 @@ protocol CloudBackupServiceFacadeProtocol {
         runCompletionIn queue: DispatchQueue,
         completionClosure: @escaping (Result<Bool, CloudBackupServiceFacadeError>) -> Void
     )
+
+    func syncUpdate(
+        _ update: CloudBackupSyncResult.Changes,
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Void, CloudBackupServiceFacadeError>) -> Void
+    )
 }
