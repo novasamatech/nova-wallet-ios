@@ -10,13 +10,13 @@ enum CloudBackupSyncResult: Equatable {
         let changes: CloudBackupDiff
         let syncTime: UInt64
     }
-    
-    struct UpdateRemote {
+
+    struct UpdateRemote: Equatable {
         let localWallets: Set<ManagedMetaAccountModel>
         let syncTime: UInt64
     }
-    
-    struct UpdateByUnion {
+
+    struct UpdateByUnion: Equatable {
         let localWallets: Set<ManagedMetaAccountModel>
         let remoteModel: CloudBackup.EncryptedFileModel
         let addingWallets: Set<MetaAccountModel>
@@ -83,13 +83,13 @@ final class CloudBackupUpdateCalculationFactory {
                 let wallets = try walletsOperation.extractNoCancellableResultData()
 
                 let syncTime = UInt64(Date().timeIntervalSince1970)
-                
+
                 guard let remoteModel = try decodingOperation.extractNoCancellableResultData() else {
                     let state = CloudBackupSyncResult.UpdateRemote(
-                        localWallets: Set(wallets.map(\.info)),
+                        localWallets: Set(wallets),
                         syncTime: syncTime
                     )
-                    
+
                     return .changes(.updateRemote(state))
                 }
 
@@ -106,10 +106,10 @@ final class CloudBackupUpdateCalculationFactory {
                     let state = CloudBackupSyncResult.UpdateByUnion(
                         localWallets: Set(wallets),
                         remoteModel: remoteModel,
-                        addingWallets: diff.getNewWallets(),
+                        addingWallets: diff.deriveNewWallets(),
                         syncTime: syncTime
                     )
-                    
+
                     return .changes(.updateByUnion(state))
                 }
 
@@ -120,7 +120,7 @@ final class CloudBackupUpdateCalculationFactory {
                         changes: diff,
                         syncTime: syncTime
                     )
-                    
+
                     return .changes(.updateLocal(state))
                 } else {
                     let state = CloudBackupSyncResult.UpdateRemote(localWallets: Set(wallets), syncTime: syncTime)

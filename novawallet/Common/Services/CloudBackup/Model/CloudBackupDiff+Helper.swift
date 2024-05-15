@@ -1,8 +1,8 @@
 import Foundation
 
 extension CloudBackupDiff {
-    func getNewWallets() -> Set<MetaAccountModel> {
-        let newWallets = self.compactMap { change in
+    func deriveNewWallets() -> Set<MetaAccountModel> {
+        let newWallets: [MetaAccountModel] = compactMap { change in
             switch change {
             case let .new(remote):
                 return remote
@@ -10,7 +10,7 @@ extension CloudBackupDiff {
                 return nil
             }
         }
-        
-        return Set(newWallets)
+
+        return Set<MetaAccountModel>(newWallets)
     }
 }

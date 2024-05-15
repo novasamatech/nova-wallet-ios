@@ -254,10 +254,4 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
             }
         }
     }
-
-    func syncUpdate(
-        _: CloudBackupSyncResult.Changes,
-        runCompletionIn _: DispatchQueue,
-        completionClosure _: @escaping (Result<Void, CloudBackupServiceFacadeError>) -> Void
-    ) {}
 }
