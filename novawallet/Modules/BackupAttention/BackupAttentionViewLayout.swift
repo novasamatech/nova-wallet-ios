@@ -81,6 +81,7 @@ extension BackupAttentionViewLayout {
 private extension BackupAttentionViewLayout {
     func setupLayout() {
         addSubview(checkBoxScrollableView)
+        checkBoxScrollableView.containerView.scrollContentBottomOffset = UIConstants.scrollBottomOffset
         checkBoxScrollableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -148,4 +149,5 @@ private extension BackupAttentionViewLayout {
 
 private extension UIConstants {
     static let bottomBlurViewHeight: CGFloat = 118
+    static let scrollBottomOffset: CGFloat = bottomBlurViewHeight + 16
 }
