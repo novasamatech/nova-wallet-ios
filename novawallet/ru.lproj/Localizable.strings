@@ -1589,3 +1589,12 @@
 "cloud.backup.enter.password.issue" = "Ввести Пароль";
 "cloud.backup.review.backup.updates" = "Просмотр Обновлений в Бэкапе";
 "backup.select.wallet.title" = "Выберите кошелек для бэкапа";
+"backup.attention.title" = "Не сообщайте свою секретную фразу!";
+"backup.attention.description" = "Пожалуйста, внимательно прочитайте следующее перед просмотром резервной копии";
+"backup.attention.passphrase.description" = "Эта секретная фраза дает вам полный и постоянный доступ ко всем подключенным кошелькам и находящимся в них средствам.\n%@";
+"backup.attention.passphrase.description.highlighted" = "НЕ ДЕЛИТЕСЬ ЕЙ.";
+"backup.attention.passphrase.write.description" = "Не вводите свою секретную фразу ни в какие формы и сайты.\n%@";
+"backup.attention.passphrase.write.description.highlighted" = "СРЕДСТВА МОГУТ БЫТЬ ПОТЕРЯНЫ НАВСЕГДА.";
+"backup.attention.passphrase.support.description" = "Служба поддержки или администраторы никогда и ни при каких обстоятельствах не будут запрашивать вашу секретную фразу.\n%@";
+"backup.attention.passphrase.support.description.highlighted" = "ОСТЕРЕГАЙТЕСЬ ПОДРАЖАТЕЛЕЙ.";
+"backup.attention.aggree.button.title" = "Просмотрите и примите, чтобы продолжить";
