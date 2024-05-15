@@ -40,7 +40,7 @@ final class ValidatorOperationFactory {
         let keyParams: () throws -> [String] = {
             let activeEra = try activeEraClosure()
             let duration = try slashDefer.extractNoCancellableResultData()
-            let startEra = max(activeEra - duration, 0)
+            let startEra = activeEra > duration ? activeEra - duration : 0
             return (startEra ... activeEra).map { String($0) }
         }
 

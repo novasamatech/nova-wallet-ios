@@ -15,12 +15,15 @@ final class HybridStakingRecommendationMediator: BaseStakingRecommendationMediat
         chainAsset: ChainAsset,
         directStakingMediator: RelaychainStakingRecommendationMediating,
         nominationPoolsMediator: RelaychainStakingRecommendationMediating,
-        directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding
+        directStakingRestrictionsBuilder: RelaychainStakingRestrictionsBuilding,
+        logger: LoggerProtocol
     ) {
         self.chainAsset = chainAsset
         self.directStakingMediator = directStakingMediator
         self.nominationPoolsMediator = nominationPoolsMediator
         self.directStakingRestrictionsBuilder = directStakingRestrictionsBuilder
+
+        super.init(logger: logger)
     }
 
     private func updateValidationFactory() {
@@ -83,11 +86,14 @@ extension HybridStakingRecommendationMediator: RelaychainStakingRestrictionsBuil
 
         updateValidationFactory()
 
+        logger.debug("Restrictions: \(restrictions)")
+
         isReady = true
         updateRecommendationIfReady()
     }
 
     func restrictionsBuilder(_: RelaychainStakingRestrictionsBuilding, didReceive error: Error) {
+        logger.debug("Restrictions error: \(error)")
         delegate?.didReceiveRecommendation(error: error)
     }
 }
@@ -105,10 +111,13 @@ extension HybridStakingRecommendationMediator: RelaychainStakingRecommendationDe
             validationFactory: CombinedStakingValidationFactory(factories: factories)
         )
 
+        logger.debug("Recommendation: \(hybridRecommendation)")
+
         delegate?.didReceive(recommendation: hybridRecommendation, amount: amount)
     }
 
     func didReceiveRecommendation(error: Error) {
+        logger.error("Error: \(error)")
         delegate?.didReceiveRecommendation(error: error)
     }
 }
