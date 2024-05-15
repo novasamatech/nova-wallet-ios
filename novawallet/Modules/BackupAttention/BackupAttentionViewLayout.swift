@@ -10,6 +10,7 @@ final class BackupAttentionViewLayout: UIView {
         view.layer.borderWidth = 1
         view.layer.borderColor = R.color.colorContainerBorder()?.cgColor
         view.layer.cornerRadius = 16
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.sideLength = 16
         view.cornerCut = [.topLeft, .topRight]
     }
