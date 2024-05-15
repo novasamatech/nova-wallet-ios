@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 import SoraFoundation
 
 final class BackupAttentionViewController: UIViewController, ViewHolder {
@@ -6,13 +7,20 @@ final class BackupAttentionViewController: UIViewController, ViewHolder {
 
     let presenter: BackupAttentionPresenterProtocol
 
+    private var appearanceAnimator: ViewAnimatorProtocol?
+    private var disappearanceAnimator: ViewAnimatorProtocol?
+
     init(
         presenter: BackupAttentionPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        appearanceAnimator: ViewAnimatorProtocol?,
+        disappearanceAnimator: ViewAnimatorProtocol?
     ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
+        self.appearanceAnimator = appearanceAnimator
+        self.disappearanceAnimator = disappearanceAnimator
     }
 
     @available(*, unavailable)
@@ -21,7 +29,10 @@ final class BackupAttentionViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = BackupAttentionViewLayout()
+        view = BackupAttentionViewLayout(
+            appearanceAnimator: appearanceAnimator,
+            disappearanceAnimator: disappearanceAnimator
+        )
     }
 
     override func viewDidLoad() {

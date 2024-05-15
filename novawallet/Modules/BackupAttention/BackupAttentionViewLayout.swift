@@ -14,6 +14,20 @@ final class BackupAttentionViewLayout: UIView {
         view.cornerCut = [.topLeft, .topRight]
     }
 
+    private var viewModel: Model?
+    private var appearanceAnimator: ViewAnimatorProtocol?
+    private var disappearanceAnimator: ViewAnimatorProtocol?
+
+    convenience init(
+        appearanceAnimator: ViewAnimatorProtocol?,
+        disappearanceAnimator: ViewAnimatorProtocol?
+    ) {
+        self.init(frame: .zero)
+
+        self.appearanceAnimator = appearanceAnimator
+        self.disappearanceAnimator = disappearanceAnimator
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -26,8 +40,12 @@ final class BackupAttentionViewLayout: UIView {
     }
 
     func bind(viewModel: Model) {
-        let agreeButton = makeAgreeButton(for: viewModel.button)
-        setupAgreeButton(with: agreeButton)
+        if viewModel.button != self.viewModel?.button {
+            let agreeButton = makeAgreeButton(for: viewModel.button)
+            setupAgreeButton(with: agreeButton)
+        }
+
+        self.viewModel = viewModel
         checkBoxScrollableView.bind(viewModel: viewModel.rows)
     }
 }
@@ -40,9 +58,20 @@ extension BackupAttentionViewLayout {
         let button: ButtonModel
     }
 
-    enum ButtonModel {
+    enum ButtonModel: Equatable {
         case active(title: String)
         case inactive(title: String)
+
+        static func == (lhs: ButtonModel, rhs: ButtonModel) -> Bool {
+            switch (lhs, rhs) {
+            case (.active, .active):
+                return true
+            case (.inactive, .inactive):
+                return true
+            default:
+                return false
+            }
+        }
     }
 }
 
@@ -82,15 +111,37 @@ private extension BackupAttentionViewLayout {
         }
     }
 
-    func setupAgreeButton(with control: UIControl) {
-        agreeButton?.removeFromSuperview()
-        agreeButton = control
+    func setupAgreeButton(with button: UIControl) {
+        guard let agreeButton else {
+            showButtonWithAnimation(button)
+            return
+        }
 
-        blurredBottomView.addSubview(control)
-        control.snp.makeConstraints { make in
+        changeButtonWithAnimation(button)
+    }
+
+    func changeButtonWithAnimation(_ button: UIControl) {
+        guard let agreeButton else { return }
+
+        disappearanceAnimator?.animate(view: agreeButton) { [weak self] _ in
+            guard let self else { return }
+            agreeButton.removeFromSuperview()
+
+            showButtonWithAnimation(button)
+        }
+    }
+
+    func showButtonWithAnimation(_ button: UIControl) {
+        button.alpha = 0
+        agreeButton = button
+
+        blurredBottomView.addSubview(button)
+        button.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(UIConstants.triangularedViewHeight)
         }
+
+        appearanceAnimator?.animate(view: button, completionBlock: nil)
     }
 }
 
