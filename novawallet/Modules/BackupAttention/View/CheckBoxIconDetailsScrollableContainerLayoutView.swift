@@ -17,6 +17,12 @@ final class CheckBoxIconDetailsScrollableView: ScrollableContainerLayoutView {
         checkBoxViews.forEach { addArrangedSubview($0, spacingAfter: 12) }
     }
 
+    override func setupStyle() {
+        super.setupStyle()
+
+        containerView.scrollView.showsVerticalScrollIndicator = false
+    }
+
     func bind(viewModel: Model) {
         checkBoxViews
             .enumerated()
