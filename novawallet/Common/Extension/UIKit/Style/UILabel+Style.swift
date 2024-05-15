@@ -171,6 +171,11 @@ extension UILabel.Style {
         font: .boldTitle3
     )
 
+    static let boldTitle3Warning = UILabel.Style(
+        textColor: R.color.colorTextWarning()!,
+        font: .boldTitle3
+    )
+
     static let sourceCodePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .regularFootnote

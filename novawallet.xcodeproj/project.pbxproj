@@ -1037,7 +1037,6 @@
 		766FE2FAB8509BF0F56EA3C0 /* ParaStkCollatorInfoProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3B8502E5BF8CDD7ACE2DD0 /* ParaStkCollatorInfoProtocols.swift */; };
 		76B0B7147181747A7CEDDDF6 /* GovernanceUnavailableTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E25CF67173500E0AC19387 /* GovernanceUnavailableTracksViewController.swift */; };
 		76CF8508C6936FC9941F3C3E /* TokensManageAddProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C995D640129977CAB05982EC /* TokensManageAddProtocols.swift */; };
-		76D7EAF1CC96F41CDF257600 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345B09EE6CA56A0F931885DE /* BackupAttentionInteractor.swift */; };
 		770898612BA23A7400FACD2B /* PushNotificationNamespace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770898602BA23A7300FACD2B /* PushNotificationNamespace.swift */; };
 		770898622BA23A7C00FACD2B /* PushNotificationNamespace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770898602BA23A7300FACD2B /* PushNotificationNamespace.swift */; };
 		770955712AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */; };
@@ -5469,7 +5468,6 @@
 		33DE8A571FE8D0431FD934A9 /* Pods-novawalletAll-novawallet.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.dev.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.dev.xcconfig"; sourceTree = "<group>"; };
 		33DFAA0EEEA7F99C6D1CF4B1 /* ReferendumFullDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsPresenter.swift; sourceTree = "<group>"; };
 		340D78F99A4FCDC04C012ED3 /* StakingRebagConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRebagConfirmInteractor.swift; sourceTree = "<group>"; };
-		345B09EE6CA56A0F931885DE /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
 		3531B386DEF40108C34E7232 /* ReferendumVoteConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteConfirmViewLayout.swift; sourceTree = "<group>"; };
 		3543AE2CAA63AC0A20D532B6 /* StakingConfirmProxyViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingConfirmProxyViewLayout.swift; sourceTree = "<group>"; };
 		3558BD7D1B8CA1409BE74879 /* AccountManagementInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountManagementInteractor.swift; sourceTree = "<group>"; };
@@ -11081,14 +11079,14 @@
 			path = ExportMnemonicConfirm;
 			sourceTree = "<group>";
 		};
-		2DC075E12BF249F000868563 /* Common */ = {
+		2DC075E12BF249F000868563 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */,
 				2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */,
 				2DC075E42BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift */,
 			);
-			path = Common;
+			path = View;
 			sourceTree = "<group>";
 		};
 		2DD9DB902BED2C2C00F68665 /* WalletView */ = {
@@ -20979,11 +20977,10 @@
 		D477B7DE4061DD489AA44B0F /* BackupAttention */ = {
 			isa = PBXGroup;
 			children = (
-				2DC075E12BF249F000868563 /* Common */,
+				2DC075E12BF249F000868563 /* View */,
 				D67A4A418E0DEB44B713C7B8 /* BackupAttentionProtocols.swift */,
 				95C9CEA5DD3DE9EDEB77BDCF /* BackupAttentionWireframe.swift */,
 				5E7FCF0833F3907EA3CE89CD /* BackupAttentionPresenter.swift */,
-				345B09EE6CA56A0F931885DE /* BackupAttentionInteractor.swift */,
 				C2D8A1ACC06F8EA9CE6C982B /* BackupAttentionViewController.swift */,
 				DE464662C38D81D8F6E55E01 /* BackupAttentionViewLayout.swift */,
 				2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */,
@@ -26666,7 +26663,6 @@
 				7C42FEDE4DFA920154010F83 /* BackupAttentionProtocols.swift in Sources */,
 				59F89408D66E20CE7E556D35 /* BackupAttentionWireframe.swift in Sources */,
 				33A1043748224F10548AACB0 /* BackupAttentionPresenter.swift in Sources */,
-				76D7EAF1CC96F41CDF257600 /* BackupAttentionInteractor.swift in Sources */,
 				40E5A7D9511B8760A2CCEB06 /* BackupAttentionViewController.swift in Sources */,
 				403472F848E2D71B296980DC /* BackupAttentionViewLayout.swift in Sources */,
 				AC24319E26F417DF02F45ABA /* BackupAttentionViewFactory.swift in Sources */,

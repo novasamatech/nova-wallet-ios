@@ -12,7 +12,7 @@ final class CheckBoxIconDetailsScrollableView: ScrollableContainerLayoutView {
     override func setupLayout() {
         super.setupLayout()
 
-        addArrangedSubview(titleView, spacingAfter: 12)
+        addArrangedSubview(titleView, spacingAfter: 16)
 
         checkBoxViews.forEach { addArrangedSubview($0, spacingAfter: 12) }
     }

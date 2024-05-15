@@ -1,18 +1,18 @@
 import Foundation
+import SoraFoundation
 
 final class BackupAttentionPresenter {
     weak var view: BackupAttentionViewProtocol?
     let wireframe: BackupAttentionWireframeProtocol
-    let interactor: BackupAttentionInteractorInputProtocol
 
     private var checkBoxViewModels: [CheckBoxIconDetailsView.Model] = []
 
     init(
-        interactor: BackupAttentionInteractorInputProtocol,
-        wireframe: BackupAttentionWireframeProtocol
+        wireframe: BackupAttentionWireframeProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
-        self.interactor = interactor
         self.wireframe = wireframe
+        self.localizationManager = localizationManager
     }
 }
 
@@ -24,12 +24,9 @@ extension BackupAttentionPresenter: BackupAttentionPresenterProtocol {
     }
 }
 
-extension BackupAttentionPresenter: BackupAttentionInteractorOutputProtocol {}
-
 private extension BackupAttentionPresenter {
+    // swiftlint:disable function_body_length
     func makeInitialViewModel() -> BackupAttentionViewLayout.Model {
-        // TODO: Localize
-
         let onCheckClosure: (UUID) -> Void = { [weak self] id in
             self?.changeCheckBoxState(for: id)
             self?.updateView()
@@ -39,30 +36,73 @@ private extension BackupAttentionPresenter {
             rows: .init(rows: [
                 .init(
                     image: R.image.iconAttentionPassphrase(),
-                    text: .init(closure: { _ in
-                        .raw("Having the recovery phrase means having total and permanent access to all connected wallets and the money within them.")
-                    }),
+                    text: .attributed(
+                        NSAttributedString.coloredItems(
+                            [
+                                R.string.localizable.backupAttentionPassphraseDescriptionHighlighted(
+                                    preferredLanguages: selectedLocale.rLanguages
+                                )
+                            ],
+                            formattingClosure: { items in
+                                R.string.localizable.backupAttentionPassphraseDescription(
+                                    items[0],
+                                    preferredLanguages: selectedLocale.rLanguages
+                                )
+                            },
+                            color: R.color.colorTextPrimary()!
+                        )
+                    ),
                     checked: false,
                     onCheck: onCheckClosure
                 ),
                 .init(
                     image: R.image.iconAttentionPassphraseWrite(),
-                    text: .init(closure: { _ in
-                        .raw("Having the recovery phrase means having total and permanent access to all connected wallets and the money within them.")
-                    }),
+                    text: .attributed(
+                        NSAttributedString.coloredItems(
+                            [
+                                R.string.localizable.backupAttentionPassphraseWriteDescriptionHighlighted(
+                                    preferredLanguages: selectedLocale.rLanguages
+                                )
+                            ],
+                            formattingClosure: { items in
+                                R.string.localizable.backupAttentionPassphraseWriteDescription(
+                                    items[0],
+                                    preferredLanguages: selectedLocale.rLanguages
+                                )
+                            },
+                            color: R.color.colorTextPrimary()!
+                        )
+                    ),
                     checked: false,
                     onCheck: onCheckClosure
                 ),
                 .init(
                     image: R.image.iconAttentionPassphraseSupport(),
-                    text: .init(closure: { _ in
-                        .raw("Having the recovery phrase means having total and permanent access to all connected wallets and the money within them.")
-                    }),
+                    text: .attributed(
+                        NSAttributedString.coloredItems(
+                            [
+                                R.string.localizable.backupAttentionPassphraseSupportDescriptionHighlighted(
+                                    preferredLanguages: selectedLocale.rLanguages
+                                )
+                            ],
+                            formattingClosure: { items in
+                                R.string.localizable.backupAttentionPassphraseSupportDescription(
+                                    items[0],
+                                    preferredLanguages: selectedLocale.rLanguages
+                                )
+                            },
+                            color: R.color.colorTextPrimary()!
+                        )
+                    ),
                     checked: false,
                     onCheck: onCheckClosure
                 )
             ]),
-            button: .inactive
+            button: .inactive(
+                title: R.string.localizable.backupAttentionAggreeButtonTitle(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            )
         )
     }
 
@@ -72,13 +112,20 @@ private extension BackupAttentionPresenter {
     }
 
     func makeViewModel() -> BackupAttentionViewLayout.Model {
-        BackupAttentionViewLayout.Model(
+        let activeButtonTitle = R.string.localizable.commonContinue(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        let inactiveButtonTitle = R.string.localizable.backupAttentionAggreeButtonTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        return BackupAttentionViewLayout.Model(
             rows: .init(rows: checkBoxViewModels),
             button: checkBoxViewModels
                 .filter { $0.checked }
                 .count == checkBoxViewModels.count
-                ? .active
-                : .inactive
+                ? .active(title: activeButtonTitle)
+                : .inactive(title: inactiveButtonTitle)
         )
     }
 
@@ -94,5 +141,13 @@ private extension BackupAttentionPresenter {
             checked: !current.checked,
             onCheck: current.onCheck
         )
+    }
+}
+
+// MARK: Localizable
+
+extension BackupAttentionPresenter: Localizable {
+    func applyLocalization() {
+        updateView()
     }
 }

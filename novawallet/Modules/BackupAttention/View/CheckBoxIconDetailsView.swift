@@ -26,7 +26,8 @@ final class CheckBoxIconDetailsView: RowView<GenericPairValueView<UIImageView, I
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        configure()
+        setupLayout()
+        setupStyle()
         updateCheckboxState()
     }
 
@@ -35,8 +36,7 @@ final class CheckBoxIconDetailsView: RowView<GenericPairValueView<UIImageView, I
         attentionImageView.image = viewModel.image
         checked = viewModel.checked
 
-        // TODO: Localize
-        switch viewModel.text.value(for: Locale.current) {
+        switch viewModel.text {
         case let .attributed(text):
             detailsLabel.attributedText = text
         case let .raw(text):
@@ -60,7 +60,7 @@ extension CheckBoxIconDetailsView {
         let id = UUID()
 
         let image: UIImage?
-        let text: LocalizableResource<Text>
+        let text: Text
         let checked: Bool
 
         let onCheck: (UUID) -> Void
@@ -83,14 +83,8 @@ extension CheckBoxIconDetailsView {
 // MARK: Private
 
 private extension CheckBoxIconDetailsView {
-    func configure() {
-        rowContentView.makeVertical()
-        rowContentView.spacing = 12
-        rowContentView.stackView.distribution = .fill
-
-        attentionImageView.snp.makeConstraints { make in
-            make.size.equalTo(26)
-        }
+    func setupStyle() {
+        detailsLabel.apply(style: .regularSubhedlineSecondary)
 
         roundedBackgroundView.applyFilledBackgroundStyle()
         roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
@@ -98,6 +92,18 @@ private extension CheckBoxIconDetailsView {
         roundedBackgroundView.cornerRadius = 12.0
 
         attentionImageView.contentMode = .scaleAspectFit
+    }
+
+    func setupLayout() {
+        rowContentView.makeVertical()
+        rowContentView.spacing = 16
+        rowContentView.stackView.distribution = .fill
+        rowContentView.sView.spacing = 14
+        rowContentView.sView.stackView.alignment = .top
+
+        attentionImageView.snp.makeConstraints { make in
+            make.size.equalTo(26)
+        }
 
         contentInsets.left = 12
         contentInsets.right = 12

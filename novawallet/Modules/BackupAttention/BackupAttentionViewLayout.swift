@@ -7,6 +7,9 @@ final class BackupAttentionViewLayout: UIView {
     var agreeButton: UIControl?
 
     var blurredBottomView: BlockBackgroundView = .create { view in
+        view.layer.borderWidth = 1
+        view.layer.borderColor = R.color.colorContainerBorder()?.cgColor
+        view.layer.cornerRadius = 16
         view.sideLength = 16
         view.cornerCut = [.topLeft, .topRight]
     }
@@ -34,7 +37,12 @@ final class BackupAttentionViewLayout: UIView {
 extension BackupAttentionViewLayout {
     struct Model {
         let rows: CheckBoxIconDetailsScrollableView.Model
-        let button: ButtonViewModel
+        let button: ButtonModel
+    }
+
+    enum ButtonModel {
+        case active(title: String)
+        case inactive(title: String)
     }
 }
 
@@ -49,22 +57,25 @@ private extension BackupAttentionViewLayout {
 
         addSubview(blurredBottomView)
         blurredBottomView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
+            // hiding the border on edges of screen
+            make.leading.equalToSuperview().offset(-1)
+            make.trailing.bottom.equalToSuperview().offset(1)
+
             make.height.equalTo(UIConstants.bottomBlurViewHeight)
         }
     }
 
-    func makeAgreeButton(for viewModel: ButtonViewModel) -> UIControl {
+    func makeAgreeButton(for viewModel: ButtonModel) -> UIControl {
         switch viewModel {
-        case .active:
+        case let .active(title):
             let button = TriangularedButton()
-            button.imageWithTitleView?.title = R.string.localizable.commonContinue()
+            button.imageWithTitleView?.title = title
             button.applyEnabledStyle()
 
             return button
-        default:
+        case let .inactive(title):
             let button = TriangularedBlurButton()
-            button.imageWithTitleView?.title = R.string.localizable.commonContinue()
+            button.imageWithTitleView?.title = title
             button.applyDisabledStyle()
 
             return button
