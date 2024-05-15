@@ -86,7 +86,7 @@ private extension BackupAttentionViewLayout {
 
         addSubview(blurredBottomView)
         blurredBottomView.snp.makeConstraints { make in
-            // hiding the border on edges of screen
+            // hiding the border at the edges of the screen
             make.leading.equalToSuperview().offset(-1)
             make.trailing.bottom.equalToSuperview().offset(1)
 
