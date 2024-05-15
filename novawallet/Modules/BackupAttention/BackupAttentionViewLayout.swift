@@ -6,11 +6,12 @@ final class BackupAttentionViewLayout: UIView {
 
     var agreeButton: UIControl?
 
-    var blurredBottomView: BlockBackgroundView = .create { view in
-        view.layer.borderWidth = 1
-        view.layer.borderColor = R.color.colorContainerBorder()?.cgColor
-        view.layer.cornerRadius = 16
-        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+    var blurredBottomView: OverlayBlurBackgroundView = .create { view in
+        view.borderType = .none
+        view.overlayView.fillColor = R.color.colorBlockBackground()!
+        view.overlayView.strokeColor = R.color.colorContainerBorder()!
+        view.overlayView.strokeWidth = 1.5
+
         view.sideLength = 16
         view.cornerCut = [.topLeft, .topRight]
     }
@@ -31,13 +32,17 @@ final class BackupAttentionViewLayout: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        setupLayout()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+
+        setupLayout()
     }
 
     func bind(viewModel: Model) {
@@ -81,18 +86,18 @@ extension BackupAttentionViewLayout {
 private extension BackupAttentionViewLayout {
     func setupLayout() {
         addSubview(checkBoxScrollableView)
-        checkBoxScrollableView.containerView.scrollContentBottomOffset = UIConstants.scrollBottomOffset
+        checkBoxScrollableView.containerView.scrollContentBottomOffset = UIConstants.scrollBottomOffset(for: self)
         checkBoxScrollableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
         addSubview(blurredBottomView)
         blurredBottomView.snp.makeConstraints { make in
-            // hiding the border at the edges of the screen
-            make.leading.equalToSuperview().offset(-1)
-            make.trailing.bottom.equalToSuperview().offset(1)
+            make.height.equalTo(UIConstants.bottomBlurViewHeight(for: self))
 
-            make.height.equalTo(UIConstants.bottomBlurViewHeight)
+            // hiding the border at the edges of the screen
+            make.leading.equalToSuperview().offset(-0.5)
+            make.trailing.bottom.equalToSuperview().offset(0.5)
         }
     }
 
@@ -148,6 +153,11 @@ private extension BackupAttentionViewLayout {
 }
 
 private extension UIConstants {
-    static let bottomBlurViewHeight: CGFloat = 118
-    static let scrollBottomOffset: CGFloat = bottomBlurViewHeight + 16
+    static func bottomBlurViewHeight(for view: UIView) -> CGFloat {
+        view.safeAreaInsets.bottom + 84
+    }
+
+    static func scrollBottomOffset(for view: UIView) -> CGFloat {
+        view.safeAreaInsets.bottom + bottomBlurViewHeight(for: view) + 16
+    }
 }
