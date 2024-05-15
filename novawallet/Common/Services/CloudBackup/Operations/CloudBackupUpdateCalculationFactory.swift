@@ -4,23 +4,29 @@ import SoraKeystore
 import IrohaCrypto
 
 enum CloudBackupSyncResult: Equatable {
-    struct State: Equatable {
+    struct UpdateLocal: Equatable {
         let localWallets: Set<ManagedMetaAccountModel>
+        let remoteModel: CloudBackup.EncryptedFileModel
         let changes: CloudBackupDiff
-
-        static func createFromLocalWallets(_ wallets: Set<ManagedMetaAccountModel>) -> Self {
-            let changes = wallets.map { wallet in
-                CloudBackupChange.delete(local: wallet.info)
-            }
-
-            return .init(localWallets: wallets, changes: Set(changes))
-        }
+        let syncTime: UInt64
+    }
+    
+    struct UpdateRemote {
+        let localWallets: Set<ManagedMetaAccountModel>
+        let syncTime: UInt64
+    }
+    
+    struct UpdateByUnion {
+        let localWallets: Set<ManagedMetaAccountModel>
+        let remoteModel: CloudBackup.EncryptedFileModel
+        let addingWallets: Set<MetaAccountModel>
+        let syncTime: UInt64
     }
 
     enum Changes: Equatable {
-        case updateLocal(State)
-        case updateRemote
-        case unionLocalAndRemote(State)
+        case updateLocal(UpdateLocal)
+        case updateRemote(UpdateRemote)
+        case updateByUnion(UpdateByUnion)
     }
 
     enum Issue: Equatable {
@@ -70,35 +76,55 @@ final class CloudBackupUpdateCalculationFactory {
 
     private func createDiffOperation(
         dependingOn walletsOperation: BaseOperation<[ManagedMetaAccountModel]>,
-        decodingOperation: BaseOperation<CloudBackup.PublicData?>
+        decodingOperation: BaseOperation<CloudBackup.EncryptedFileModel?>
     ) -> ClosureOperation<CloudBackupSyncResult> {
         ClosureOperation<CloudBackupSyncResult> {
             do {
                 let wallets = try walletsOperation.extractNoCancellableResultData()
 
-                guard let publicData = try decodingOperation.extractNoCancellableResultData() else {
-                    return .changes(.updateRemote)
+                let syncTime = UInt64(Date().timeIntervalSince1970)
+                
+                guard let remoteModel = try decodingOperation.extractNoCancellableResultData() else {
+                    let state = CloudBackupSyncResult.UpdateRemote(
+                        localWallets: Set(wallets.map(\.info)),
+                        syncTime: syncTime
+                    )
+                    
+                    return .changes(.updateRemote(state))
                 }
 
                 let diff = try self.diffManager.calculateBetween(
                     wallets: Set(wallets.map(\.info)),
-                    publicBackupInfo: publicData
+                    publicBackupInfo: remoteModel.publicData
                 )
 
                 guard !diff.isEmpty else {
                     return .noUpdates
                 }
 
-                let state = CloudBackupSyncResult.State(localWallets: Set(wallets), changes: diff)
-
                 guard let lastSyncTime = self.syncMetadataManager.getLastSyncDate() else {
-                    return .changes(.unionLocalAndRemote(state))
+                    let state = CloudBackupSyncResult.UpdateByUnion(
+                        localWallets: Set(wallets),
+                        remoteModel: remoteModel,
+                        addingWallets: diff.getNewWallets(),
+                        syncTime: syncTime
+                    )
+                    
+                    return .changes(.updateByUnion(state))
                 }
 
-                if lastSyncTime < publicData.modifiedAt {
+                if lastSyncTime < remoteModel.publicData.modifiedAt {
+                    let state = CloudBackupSyncResult.UpdateLocal(
+                        localWallets: Set(wallets),
+                        remoteModel: remoteModel,
+                        changes: diff,
+                        syncTime: syncTime
+                    )
+                    
                     return .changes(.updateLocal(state))
                 } else {
-                    return .changes(.updateRemote)
+                    let state = CloudBackupSyncResult.UpdateRemote(localWallets: Set(wallets), syncTime: syncTime)
+                    return .changes(.updateRemote(state))
                 }
             } catch CloudBackupUpdateCalculationError.missingOrInvalidPassword {
                 return .issue(.missingOrInvalidPassword)
@@ -118,7 +144,7 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
         let walletsOperation = walletsRepository.fetchAllOperation(with: RepositoryFetchOptions())
         let remoteFileOperation = backupOperationFactory.createReadingOperation(for: fileUrl)
 
-        let decodingOperation = ClosureOperation<CloudBackup.PublicData?> {
+        let decodingOperation = ClosureOperation<CloudBackup.EncryptedFileModel?> {
             guard let data = try remoteFileOperation.extractNoCancellableResultData() else {
                 return nil
             }
@@ -138,7 +164,7 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
                 throw CloudBackupUpdateCalculationError.missingOrInvalidPassword
             }
 
-            return encryptedModel.publicData
+            return encryptedModel
         }
 
         decodingOperation.addDependency(remoteFileOperation)

@@ -18,108 +18,97 @@ final class CloudBackupUpdateApplicationFactory {
     let walletsUpdater: WalletUpdateMediating
     let keystore: KeystoreProtocol
     let syncMetadata: CloudBackupSyncMetadataManaging
+    let operationQueue: OperationQueue
 
     init(
         serviceFactory: CloudBackupServiceFactoryProtocol,
         walletRepositoryFactory: AccountRepositoryFactoryProtocol,
         walletsUpdater: WalletUpdateMediating,
         keystore: KeystoreProtocol,
-        syncMetadata: CloudBackupSyncMetadataManaging
+        syncMetadata: CloudBackupSyncMetadataManaging,
+        operationQueue: OperationQueue
     ) {
         self.serviceFactory = serviceFactory
         self.walletRepositoryFactory = walletRepositoryFactory
+        self.walletsUpdater = walletsUpdater
         self.keystore = keystore
         self.syncMetadata = syncMetadata
+        self.operationQueue = operationQueue
     }
-    
-    private func createReadWrapper() -> CompoundOperationWrapper<CloudBackup.EncryptedFileModel> {
-        let fileManager = serviceFactory.createFileManager()
-        
-        guard let remoteFileUrl = fileManager.getFileUrl() else {
-            return CompoundOperationWrapper.createWithError(
-                CloudBackupUpdateApplicationFactoryError.cloudUnavailable
+
+    private func createRemoteExportOperation(
+        dependingOn walletsOperation: BaseOperation<[MetaAccountModel]>,
+        syncMetadata: CloudBackupSyncMetadataManaging
+    ) -> BaseOperation<CloudBackup.EncryptedFileModel> {
+        let exporter = serviceFactory.createSecretsExporter(from: keystore)
+
+        return ClosureOperation {
+            let wallets = try walletsOperation.extractNoCancellableResultData()
+
+            guard let password = try syncMetadata.getPassword() else {
+                throw CloudBackupUpdateApplicationFactoryError.missingPassword
+            }
+
+            let syncedTime = UInt64(Date().timeIntervalSince1970)
+
+            return try exporter.backup(
+                wallets: Set(wallets),
+                password: password,
+                modifiedAt: syncedTime
             )
         }
-        
-        let operationFactory = serviceFactory.createOperationFactory()
-        let readOperation = operationFactory.createReadingOperation(for: remoteFileUrl)
-        
-        let decoder = serviceFactory.createCodingManager()
-        
-        let decoderOperation = ClosureOperation<CloudBackup.EncryptedFileModel> {
-            guard let data = readOperation.extractNoCancellableResultData() else {
-                throw CloudBackupUpdateApplicationFactoryError.noRemoteFile
-            }
-            
-            return decoder.decode(data: data)
-        }
-        
-        decoderOperation.addDependency(readOperation)
-        
-        return CompoundOperationWrapper(targetOperation: decoderOperation, dependencies: [readOperation])
     }
-    
+
     private func createRemoteSecretsImportOperation(
-        for state: CloudBackupSyncResult.State,
+        from remoteModel: CloudBackup.EncryptedFileModel,
+        changes: CloudBackupDiff,
         syncMetadata: CloudBackupSyncMetadataManaging,
-        dependingOn readOperation: BaseOperation<CloudBackup.EncryptedFileModel>
     ) -> BaseOperation<Void> {
         let secretsImporter = serviceFactory.createSecretsImporter(to: keystore)
-        
+
         return ClosureOperation<Void> {
-            let model = try readOperation.extractNoCancellableResultData()
-            
-            let walletIdsToUpdateSecrets = state.changes.compactMap { change in
+            let walletIdsToUpdateSecrets = changes.compactMap { change in
                 switch change {
                 case let .new(remote):
                     return remote.metaId
-                case .updatedChainAccounts(_, let remote, _):
+                case let .updatedChainAccounts(_, remote, _):
                     return remote.metaId
                 case .delete, .updatedMetadata:
                     return nil
                 }
             }
-            
+
             guard !walletIdsToUpdateSecrets.isEmpty else {
                 return
             }
-            
-            guard let password = syncMetadata.getPassword() else {
+
+            guard let password = try syncMetadata.getPassword() else {
                 throw CloudBackupUpdateApplicationFactoryError.missingPassword
             }
-            
-            try secretsImporter.importBackup(
-                from: model,
+
+            _ = try secretsImporter.importBackup(
+                from: remoteModel,
                 password: password,
-                onlyWallets: walletIdsToUpdateSecrets
+                onlyWallets: Set(walletIdsToUpdateSecrets)
             )
         }
     }
-    
-    private func createUpdateLocalWrapper(
-        for state: CloudBackupSyncResult.State
-    ) -> CompoundOperationWrapper<Void> {
-        let readWrapper = createReadWrapper()
-        let secretsImportOperation = createRemoteSecretsImportOperation(
-            for: state,
-            syncMetadata: syncMetadata,
-            dependingOn: readWrapper.targetOperation
-        )
-        
-        secretsImportOperation.addDependency(readWrapper.targetOperation)
-        
-        let changesOperation = ClosureOperation {
-            _ = secretsImportOperation.extractNoCancellableResultData()
-            
-            let maxOrder = state.localWallets.max(by: { $0.order < $1.order })
-            let walletsById = Array(state.localWallets).reduceToDict()
-            
+
+    private func localChangesDeriveOperation(
+        from changes: CloudBackupDiff,
+        dependingOn walletsOperation: BaseOperation<[ManagedMetaAccountModel]>
+    ) -> BaseOperation<SyncChanges<ManagedMetaAccountModel>> {
+        ClosureOperation {
+            let localWallets = try walletsOperation.extractNoCancellableResultData()
+            let maxOrder = localWallets.max(by: { $0.order < $1.order })?.order
+            let walletsById = localWallets.reduceToDict()
+
             var newOrUpdatedWallets: [ManagedMetaAccountModel] = []
             var removedWallets: [ManagedMetaAccountModel] = []
-            
-            var nextOrder = maxOrder.map { $0 + 1} ?? 0
-            
-            for change in state.changes {
+
+            var nextOrder = maxOrder.map { $0 + 1 } ?? 0
+
+            for change in changes {
                 switch change {
                 case let .new(remote):
                     newOrUpdatedWallets.append(
@@ -129,9 +118,9 @@ final class CloudBackupUpdateApplicationFactory {
                             order: nextOrder
                         )
                     )
-                    
+
                     nextOrder += 1
-                case .updatedChainAccounts(_, let remote, _):
+                case let .updatedChainAccounts(_, remote, _):
                     if let local = walletsById[remote.metaId] {
                         newOrUpdatedWallets.append(
                             ManagedMetaAccountModel(
@@ -141,7 +130,7 @@ final class CloudBackupUpdateApplicationFactory {
                             )
                         )
                     }
-                case .updatedMetadata(_, let remote):
+                case let .updatedMetadata(_, remote):
                     if let local = walletsById[remote.metaId] {
                         newOrUpdatedWallets.append(
                             ManagedMetaAccountModel(
@@ -157,10 +146,125 @@ final class CloudBackupUpdateApplicationFactory {
                     }
                 }
             }
-            
+
             return SyncChanges(newOrUpdatedItems: newOrUpdatedWallets, removedItems: removedWallets)
         }
+    }
+
+    private func createUpdateLocalWrapper(
+        for state: CloudBackupSyncResult.UpdateLocal
+    ) -> CompoundOperationWrapper<Void> {
+        let walletsOperation = walletRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        ).fetchAllOperation(with: RepositoryFetchOptions())
         
-        let updateOperation = walletsUpdater.saveChanges({ try changesOperation.extractNoCancellableResultData() })
+        let secretsImportOperation = createRemoteSecretsImportOperation(
+            from: state.remoteModel,
+            changes: state.changes,
+            syncMetadata: syncMetadata
+        )
+
+        let changesOperation = localChangesDeriveOperation(
+            from: state.changes,
+            dependingOn: walletsOperation
+        )
+        
+        changesOperation.addDependency(walletsOperation)
+
+        let updateWrapper = walletsUpdater.saveChanges {
+            // make sure secrets imported correctly before saving wallets
+            try secretsImportOperation.extractNoCancellableResultData()
+            return try changesOperation.extractNoCancellableResultData()
+        }
+
+        updateWrapper.addDependency(operations: [secretsImportOperation, changesOperation])
+
+        let mappingOperation = ClosureOperation {
+            _ = try updateWrapper.targetOperation.extractNoCancellableResultData()
+        }
+        
+        mappingOperation.addDependency(updateWrapper.targetOperation)
+        
+        return updateWrapper
+            .insertingTail(operation: mappingOperation)
+            .insertingHead(
+                operations: [walletsOperation, secretsImportOperation, changesOperation]
+            )
+    }
+
+    private func createUpdateRemoteWrapper() -> CompoundOperationWrapper<Void> {
+        guard let remoteUrl = serviceFactory.createFileManager().getFileUrl() else {
+            return CompoundOperationWrapper.createWithError(
+                CloudBackupUpdateApplicationFactoryError.cloudUnavailable
+            )
+        }
+
+        let walletsRepository = walletRepositoryFactory.createMetaAccountRepository(
+            for: NSPredicate.cloudSyncableWallets,
+            sortDescriptors: []
+        )
+
+        let allWalletsOperation = walletsRepository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        let exportOperation = createRemoteExportOperation(
+            dependingOn: allWalletsOperation,
+            syncMetadata: syncMetadata
+        )
+
+        exportOperation.addDependency(allWalletsOperation)
+
+        let coder = serviceFactory.createCodingManager()
+        let encodingOperation = ClosureOperation<Data> {
+            let remoteModel = try exportOperation.extractNoCancellableResultData()
+            return try coder.encode(backup: remoteModel)
+        }
+
+        encodingOperation.addDependency(exportOperation)
+
+        let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
+            for: remoteUrl,
+            timeoutInterval: CloudBackup.backupSaveTimeout
+        ) {
+            try encodingOperation.extractNoCancellableResultData()
+        }
+
+        uploadWrapper.addDependency(operations: [encodingOperation])
+
+        return uploadWrapper.insertingHead(
+                operations: [allWalletsOperation, exportOperation, encodingOperation]
+            )
+    }
+
+    private func createLocalRemoteUnionWrapper(
+        for state: CloudBackupSyncResult.State
+    ) -> CompoundOperationWrapper<Void> {
+        let newChanges = state.changes.filter { change in
+            switch change {
+            case .new:
+                return true
+            case .delete, .updatedMetadata, .updatedChainAccounts:
+                return false
+            }
+        }
+
+        let newState = CloudBackupSyncResult.State(
+            localWallets: state.localWallets,
+            changes: newChanges
+        )
+
+        let localUpdateWrapper = createUpdateLocalWrapper(for: newState)
+
+        let remoteUpdateWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            _ = try localUpdateWrapper.targetOperation.extractNoCancellableResultData()
+
+            return self.createUpdateRemoteWrapper()
+        }
+
+        remoteUpdateWrapper.addDependency(wrapper: localUpdateWrapper)
+
+        return remoteUpdateWrapper.insertingHead(operations: localUpdateWrapper.allOperations)
     }
 }
