@@ -1,6 +1,6 @@
 import UIKit
 
-final class BackupAttentionViewController: UIViewController {
+final class BackupAttentionViewController: UIViewController, ViewHolder {
     typealias RootViewType = BackupAttentionViewLayout
 
     let presenter: BackupAttentionPresenterProtocol
@@ -26,4 +26,8 @@ final class BackupAttentionViewController: UIViewController {
     }
 }
 
-extension BackupAttentionViewController: BackupAttentionViewProtocol {}
+extension BackupAttentionViewController: BackupAttentionViewProtocol {
+    func didReceive(_ viewModel: BackupAttentionViewLayout.Model) {
+        rootView.bind(viewModel: viewModel)
+    }
+}
