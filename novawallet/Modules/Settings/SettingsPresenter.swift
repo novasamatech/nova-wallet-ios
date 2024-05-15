@@ -212,6 +212,20 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
 
             wireframe.showManageNotifications(from: view)
+        case .pay:
+            let purchaseAction = PurchaseAction(
+                title: "Mercuryo",
+                // swiftlint:disable:next line_length
+                url: URL(string: "https://exchange.mercuryo.io/?widget_id=4ce98182-ed76-4933-ba1b-b85e4a51d75a&type=sell&fiat_currency=EUR&fix_fiat_currency=true&fix_payment_method=true&payment_method=fiat_card")!,
+                icon: R.image.iconMercuryo()!,
+                displayURL: "mercuryo.io"
+            )
+
+            wireframe.showPurchaseTokens(
+                from: view,
+                action: purchaseAction,
+                delegate: self
+            )
         }
     }
 
@@ -324,5 +338,11 @@ extension SettingsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
+    }
+}
+
+extension SettingsPresenter: PurchaseDelegate {
+    func purchaseDidComplete() {
+        wireframe.showCardIssueDidComplete(from: view, locale: selectedLocale)
     }
 }

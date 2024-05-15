@@ -20,6 +20,7 @@ enum SettingsRow {
     case walletConnect
     case wiki
     case notifications
+    case pay
 }
 
 extension SettingsRow {
@@ -62,6 +63,8 @@ extension SettingsRow {
             return R.string.localizable.settingsWiki(preferredLanguages: locale.rLanguages)
         case .notifications:
             return R.string.localizable.settingsPushNotifications(preferredLanguages: locale.rLanguages)
+        case .pay:
+            return R.string.localizable.commonPay(preferredLanguages: locale.rLanguages)
         }
     }
 
@@ -103,6 +106,8 @@ extension SettingsRow {
             return R.image.iconWiki()!
         case .notifications:
             return R.image.iconNotiifcation()!
+        case .pay:
+            return R.image.iconPayCard()!
         }
     }
 }

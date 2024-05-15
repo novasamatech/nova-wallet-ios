@@ -46,7 +46,8 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
     EmailPresentable, WalletSwitchPresentable, ApplicationSettingsPresentable,
-    OperationAuthPresentable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
+    OperationAuthPresentable, WalletConnectScanPresentable, WalletConnectErrorPresentable,
+    PurchasePresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)
@@ -57,4 +58,5 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showWalletConnect(from view: ControllerBackedProtocol?)
     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)
     func showManageNotifications(from view: ControllerBackedProtocol?)
+    func showCardIssueDidComplete(from view: ControllerBackedProtocol?, locale: Locale)
 }
