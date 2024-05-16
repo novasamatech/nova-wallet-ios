@@ -12,8 +12,6 @@ struct GovernanceDelegateListBlockParams {
 extension GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListByBlockNumber(
         _ params: GovernanceDelegateListBlockParams,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]?> {
@@ -36,10 +34,7 @@ extension GovernanceDelegateListFactoryProtocol {
             }
 
             return self.fetchDelegateListWrapper(
-                for: activityBlockNumber,
-                chain: chain,
-                connection: connection,
-                runtimeService: runtimeService
+                for: activityBlockNumber
             )
         }
 

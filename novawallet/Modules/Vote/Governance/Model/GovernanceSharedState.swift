@@ -229,11 +229,17 @@ final class GovernanceSharedState {
                 emptyIdentitiesWhenNoStorage: true
             )
 
-            return GovernanceDelegateListOperationFactory(
-                statsOperationFactory: statsOperationFactory,
-                metadataOperationFactory: delegateMetadataFactory,
+            let identityProxyFactory = IdentityProxyFactory(
+                originChain: option.chain,
                 chainRegistry: chainRegistry,
                 identityOperationFactory: identityOperationFactory
+            )
+
+            return GovernanceDelegateListOperationFactory(
+                chain: option.chain,
+                statsOperationFactory: statsOperationFactory,
+                metadataOperationFactory: delegateMetadataFactory,
+                identityProxyFactory: identityProxyFactory
             )
         }
     }

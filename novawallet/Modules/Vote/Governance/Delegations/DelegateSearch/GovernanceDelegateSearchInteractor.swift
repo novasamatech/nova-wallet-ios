@@ -7,7 +7,6 @@ final class GovernanceDelegateSearchInteractor {
 
     let delegateListOperationFactory: GovernanceDelegateListFactoryProtocol
     let lastVotedDays: Int
-    let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
     let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
     let identityProxyFactory: IdentityProxyFactoryProtocol
@@ -23,7 +22,6 @@ final class GovernanceDelegateSearchInteractor {
     init(
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
         lastVotedDays: Int,
-        connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
         metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
         identityProxyFactory: IdentityProxyFactoryProtocol,
@@ -35,7 +33,6 @@ final class GovernanceDelegateSearchInteractor {
     ) {
         self.delegateListOperationFactory = delegateListOperationFactory
         self.lastVotedDays = lastVotedDays
-        self.connection = connection
         self.runtimeService = runtimeService
         self.metadataProvider = metadataProvider
         self.identityProxyFactory = identityProxyFactory
@@ -58,8 +55,6 @@ final class GovernanceDelegateSearchInteractor {
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: blockTimeFactory
             ),
-            chain: chain,
-            connection: connection,
             runtimeService: runtimeService,
             operationManager: OperationManager(operationQueue: operationQueue)
         )

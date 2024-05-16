@@ -67,7 +67,6 @@ struct GovernanceDelegateSearchViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
-            let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let blockTimeService = state.blockTimeService,
             let delegateListOperationFactory = state.createOffchainDelegateListFactory(for: settings) else {
@@ -94,7 +93,6 @@ struct GovernanceDelegateSearchViewFactory {
         return .init(
             delegateListOperationFactory: delegateListOperationFactory,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
-            connection: connection,
             runtimeService: runtimeService,
             metadataProvider: metadataProvider,
             identityProxyFactory: identityProxyFactory,
