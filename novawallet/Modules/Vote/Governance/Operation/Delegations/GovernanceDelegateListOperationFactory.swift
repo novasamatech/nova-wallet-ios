@@ -7,7 +7,7 @@ final class GovernanceDelegateListOperationFactory {
     let metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let identityOperationFactory: IdentityOperationFactoryProtocol
-    
+
     init(
         statsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
         metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol,
@@ -65,8 +65,8 @@ final class GovernanceDelegateListOperationFactory {
     private func createDelegateListWrapper(
         from statsWrapper: CompoundOperationWrapper<[GovernanceDelegateStats]>,
         chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        connection _: JSONRPCEngine,
+        runtimeService _: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]> {
         let metadataOperation = metadataOperationFactory.fetchMetadataOperation(for: chain)
 

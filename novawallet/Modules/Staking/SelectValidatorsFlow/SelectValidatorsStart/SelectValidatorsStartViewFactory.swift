@@ -85,7 +85,7 @@ final class SelectValidatorsStartViewFactory {
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
         )
-        
+
         let operationFactory = ValidatorOperationFactory(
             chainInfo: chainAsset.chainAssetInfo,
             eraValidatorService: eraValidatorService,

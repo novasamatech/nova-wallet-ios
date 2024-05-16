@@ -7,9 +7,6 @@ final class DelegationReferendumVotersInteractor {
 
     let votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol
     let referendumId: ReferendumIdLocal
-    let chain: ChainModel
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
     let votersType: ReferendumVotersType
 
@@ -18,27 +15,18 @@ final class DelegationReferendumVotersInteractor {
     init(
         referendumId: ReferendumIdLocal,
         votersType: ReferendumVotersType,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
         votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.votersLocalWrapperFactory = votersLocalWrapperFactory
         self.referendumId = referendumId
-        self.chain = chain
-        self.connection = connection
-        self.runtimeService = runtimeService
-        self.operationQueue = operationQueue
         self.votersType = votersType
+        self.operationQueue = operationQueue
     }
 
     private func fetchVoters() {
         let wrapper = votersLocalWrapperFactory.createWrapper(
-            for: .init(referendumId: referendumId, isAye: votersType == .ayes),
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
+            for: .init(referendumId: referendumId, isAye: votersType == .ayes)
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in

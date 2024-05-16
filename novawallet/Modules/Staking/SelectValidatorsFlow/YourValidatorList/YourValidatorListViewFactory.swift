@@ -84,7 +84,7 @@ struct YourValidatorListViewFactory {
             chainRegistry: chainRegistry,
             identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
         )
-        
+
         let validatorOperationFactory = ValidatorOperationFactory(
             chainInfo: chainAsset.chainAssetInfo,
             eraValidatorService: eraValidatorService,

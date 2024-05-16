@@ -18,7 +18,7 @@ struct StakingProxyManagementViewFactory {
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManagerFacade.sharedManager
         )
-        
+
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
         let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,

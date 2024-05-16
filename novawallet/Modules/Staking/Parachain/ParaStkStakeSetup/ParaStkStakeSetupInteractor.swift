@@ -200,7 +200,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     }
 
     private func provideIdentities(for delegations: [AccountId]) {
-        let wrapper = identityOperationFactory.createIdentityWrapper(for: { delegations })
+        let wrapper = identityProxyFactory.createIdentityWrapper(for: { delegations })
 
         executeCancellable(
             wrapper: wrapper,

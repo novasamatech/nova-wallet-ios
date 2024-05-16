@@ -143,7 +143,7 @@ struct ReferendumDetailsViewFactory {
             requestFactory: requestFactory,
             emptyIdentitiesWhenNoStorage: true
         )
-        
+
         let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,

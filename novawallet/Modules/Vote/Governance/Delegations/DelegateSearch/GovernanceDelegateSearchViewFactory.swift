@@ -83,6 +83,12 @@ struct GovernanceDelegateSearchViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
 
         return .init(
@@ -91,7 +97,7 @@ struct GovernanceDelegateSearchViewFactory {
             connection: connection,
             runtimeService: runtimeService,
             metadataProvider: metadataProvider,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,

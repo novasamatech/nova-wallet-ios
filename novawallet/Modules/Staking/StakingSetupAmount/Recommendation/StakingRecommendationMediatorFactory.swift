@@ -59,7 +59,7 @@ final class StakingRecommendationMediatorFactory {
         let identityOperationFactory = IdentityOperationFactory(
             requestFactory: storageRequestFactory
         )
-        
+
         let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,

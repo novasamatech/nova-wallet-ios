@@ -194,11 +194,18 @@ final class GovernanceSharedState {
                 emptyIdentitiesWhenNoStorage: true
             )
 
+            let identityProxyFactory = IdentityProxyFactory(
+                originChain: option.chain,
+                chainRegistry: chainRegistry,
+                identityOperationFactory: identityOperationFactory
+            )
+
             let fetchOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
 
             return GovernanceOffchainVotingWrapperFactory(
+                chain: option.chain,
                 operationFactory: fetchOperationFactory,
-                identityOperationFactory: identityOperationFactory
+                identityProxyFactory: identityProxyFactory
             )
         }
     }

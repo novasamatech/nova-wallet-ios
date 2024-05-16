@@ -88,6 +88,12 @@ struct ParaStkYieldBoostSetupViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
@@ -123,9 +129,8 @@ struct ParaStkYieldBoostSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             rewardService: rewardService,
             connection: connection,
-            runtimeProvider: runtimeProvider,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             yieldBoostProviderFactory: ParaStkYieldBoostProviderFactory.shared,
             yieldBoostOperationFactory: yieldBoostOperationFactory,
             currencyManager: currencyManager,

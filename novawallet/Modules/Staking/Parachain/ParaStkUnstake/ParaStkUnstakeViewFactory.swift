@@ -107,7 +107,7 @@ struct ParaStkUnstakeViewFactory {
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
         )
-        
+
         let stakingDurationFactory = ParaStkDurationOperationFactory(
             storageRequestFactory: requestFactory,
             blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)

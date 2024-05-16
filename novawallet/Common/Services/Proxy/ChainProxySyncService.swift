@@ -47,9 +47,9 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
         )
-        
+
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        self.identityProxyFactory = IdentityProxyFactory(
+        identityProxyFactory = IdentityProxyFactory(
             originChain: chainModel,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory

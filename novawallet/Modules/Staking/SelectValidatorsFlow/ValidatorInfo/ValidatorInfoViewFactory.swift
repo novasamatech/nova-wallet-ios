@@ -98,7 +98,7 @@ extension ValidatorInfoViewFactory {
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManagerFacade.sharedManager
         )
-        
+
         let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,

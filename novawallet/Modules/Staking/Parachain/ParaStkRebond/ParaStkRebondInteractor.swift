@@ -44,7 +44,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
         self.feeProxy = feeProxy
         self.signer = signer
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }

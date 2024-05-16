@@ -143,7 +143,7 @@ extension ParaStkUnstakeInteractor: ParaStkUnstakeInteractorInputProtocol {
     func fetchIdentities(for collatorIds: [AccountId]) {
         clear(cancellable: &identitiesCancellable)
 
-        let wrapper = identityOperationFactory.createIdentityWrapperByAccountId(for: { collatorIds })
+        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { collatorIds })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

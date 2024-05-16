@@ -69,7 +69,7 @@ struct GovernanceDelegateInfoViewFactory {
             requestFactory: state.requestFactory,
             emptyIdentitiesWhenNoStorage: true
         )
-        
+
         let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
