@@ -1,4 +1,4 @@
-protocol BackupMnemonicCardViewProtocol: AnyObject {}
+protocol BackupMnemonicCardViewProtocol: ControllerBackedProtocol {}
 
 protocol BackupMnemonicCardPresenterProtocol: AnyObject {
     func setup()

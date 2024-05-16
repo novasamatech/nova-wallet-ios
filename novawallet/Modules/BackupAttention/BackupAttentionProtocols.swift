@@ -6,4 +6,6 @@ protocol BackupAttentionPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol BackupAttentionWireframeProtocol: AnyObject {}
+protocol BackupAttentionWireframeProtocol: AnyObject {
+    func showMnemonic(from view: BackupAttentionViewProtocol?)
+}

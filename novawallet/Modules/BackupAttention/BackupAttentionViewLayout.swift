@@ -65,7 +65,7 @@ extension BackupAttentionViewLayout {
     }
 
     enum ButtonModel: Equatable {
-        case active(title: String)
+        case active(title: String, action: () -> Void)
         case inactive(title: String)
 
         static func == (lhs: ButtonModel, rhs: ButtonModel) -> Bool {
@@ -103,7 +103,7 @@ private extension BackupAttentionViewLayout {
 
     func makeAgreeButton(for viewModel: ButtonModel) -> UIControl {
         switch viewModel {
-        case let .active(title):
+        case let .active(title, _):
             let button = TriangularedButton()
             button.imageWithTitleView?.title = title
             button.applyEnabledStyle()
@@ -119,6 +119,8 @@ private extension BackupAttentionViewLayout {
     }
 
     func setupAgreeButton(with button: UIControl) {
+        button.addTarget(self, action: #selector(continueAction), for: .touchUpInside)
+
         guard let agreeButton else {
             showButtonWithAnimation(button)
             return
@@ -149,6 +151,12 @@ private extension BackupAttentionViewLayout {
         }
 
         appearanceAnimator?.animate(view: button, completionBlock: nil)
+    }
+
+    @objc func continueAction() {
+        guard case let .active(_, action) = viewModel?.button else { return }
+
+        action()
     }
 }
 
