@@ -13,6 +13,8 @@ final class ConnectionFactory {
     let logger: SDKLoggerProtocol
     let operationQueue: OperationQueue
 
+    let tlsSupportProvider = ConnectionTLSSupportProvider()
+
     init(logger: SDKLoggerProtocol, operationQueue: OperationQueue) {
         self.logger = logger
         self.operationQueue = operationQueue
@@ -25,7 +27,10 @@ enum ConnectionFactoryError: Error {
 
 extension ConnectionFactory: ConnectionFactoryProtocol {
     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection {
-        let urls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
+        let urlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
+        let urls = urlModels.map(\.url)
+
+        tlsSupportProvider.add(support: urlModels)
 
         let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
@@ -33,7 +38,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         guard
             let connection = WebSocketEngine(
                 urls: urls,
-                connectionFactory: ConnectionTransportFactory(chainId: chain.chainId),
+                connectionFactory: ConnectionTransportFactory(tlsSupportProvider: tlsSupportProvider),
                 customNodeSwitcher: nodeSwitcher,
                 healthCheckMethod: healthCheckMethod,
                 name: chain.name,
@@ -47,7 +52,10 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     func updateConnection(_ connection: ChainConnection, chain: ChainModel) {
-        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
+        let newUrlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
+        let newUrls = newUrlModels.map(\.url)
+
+        tlsSupportProvider.add(support: newUrlModels)
 
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
@@ -55,7 +63,10 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection {
-        let urls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
+        let urlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
+        let urls = urlModels.map(\.url)
+
+        tlsSupportProvider.add(support: urlModels)
 
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
 
@@ -75,14 +86,17 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel) {
-        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
+        let newUrlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
+        let newUrls = newUrlModels.map(\.url)
+
+        tlsSupportProvider.add(support: newUrlModels)
 
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
         }
     }
 
-    private func extractNodeUrls(from chain: ChainModel, schema: String) -> [URL] {
+    private func extractNodeUrls(from chain: ChainModel, schema: String) -> [ConnectionTLSSupport] {
         let filteredNodes = chain.nodes.filter { $0.url.hasPrefix(schema) }
 
         let nodes: [ChainNodeModel]
@@ -97,13 +111,19 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         return nodes.compactMap { node in
             let builder = URLBuilder(urlTemplate: node.url)
 
-            return try? builder.buildBy { apiKeyType in
+            let optUrl = try? builder.buildBy { apiKeyType in
                 guard let apiKey = ConnectionApiKeys.getKey(by: apiKeyType) else {
                     throw CommonError.undefined
                 }
 
                 return apiKey
             }
+
+            guard let url = optUrl else {
+                return nil
+            }
+
+            return ConnectionTLSSupport(url: url, supportsTLS12: node.supportsTls12)
         }
     }
 }
