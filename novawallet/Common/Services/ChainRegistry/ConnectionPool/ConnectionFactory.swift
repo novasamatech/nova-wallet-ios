@@ -63,10 +63,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection {
-        let urlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
-        let urls = urlModels.map(\.url)
-
-        tlsSupportProvider.add(support: urlModels)
+        let urls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https).map(\.url)
 
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
 
@@ -86,10 +83,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel) {
-        let newUrlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
-        let newUrls = newUrlModels.map(\.url)
-
-        tlsSupportProvider.add(support: newUrlModels)
+        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https).map(\.url)
 
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
