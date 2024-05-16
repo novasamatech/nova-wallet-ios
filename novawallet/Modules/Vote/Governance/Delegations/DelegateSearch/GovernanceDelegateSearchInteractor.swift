@@ -10,7 +10,7 @@ final class GovernanceDelegateSearchInteractor {
     let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
     let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
@@ -26,7 +26,7 @@ final class GovernanceDelegateSearchInteractor {
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
         metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
@@ -38,7 +38,7 @@ final class GovernanceDelegateSearchInteractor {
         self.connection = connection
         self.runtimeService = runtimeService
         self.metadataProvider = metadataProvider
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
@@ -126,12 +126,7 @@ extension GovernanceDelegateSearchInteractor: GovernanceDelegateSearchInteractor
     }
 
     func performDelegateSearch(accountId: AccountId) {
-        let wrapper = identityOperationFactory.createIdentityWrapperByAccountId(
-            for: { [accountId] },
-            engine: connection,
-            runtimeService: runtimeService,
-            chainFormat: chain.chainFormat
-        )
+        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { [accountId] })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

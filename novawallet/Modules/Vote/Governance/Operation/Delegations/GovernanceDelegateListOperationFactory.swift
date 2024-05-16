@@ -5,32 +5,34 @@ import SubstrateSdk
 final class GovernanceDelegateListOperationFactory {
     let statsOperationFactory: GovernanceDelegateStatsFactoryProtocol
     let metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol
+    let chainRegistry: ChainRegistryProtocol
     let identityOperationFactory: IdentityOperationFactoryProtocol
-
+    
     init(
         statsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
         metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         identityOperationFactory: IdentityOperationFactoryProtocol
     ) {
         self.statsOperationFactory = statsOperationFactory
         self.metadataOperationFactory = metadataOperationFactory
+        self.chainRegistry = chainRegistry
         self.identityOperationFactory = identityOperationFactory
     }
 
     private func createIdentityWrapper(
         dependingOn statsOperation: BaseOperation<[GovernanceDelegateStats]>,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        chain: ChainModel
     ) -> CompoundOperationWrapper<[AccountId: AccountIdentity]> {
-        identityOperationFactory.createIdentityWrapperByAccountId(
+        IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        ).createIdentityWrapperByAccountId(
             for: {
                 let stats = try statsOperation.extractNoCancellableResultData()
                 return try stats.map { try $0.address.toAccountId() }
-            },
-            engine: connection,
-            runtimeService: runtimeService,
-            chainFormat: chain.chainFormat
+            }
         )
     }
 
@@ -70,9 +72,7 @@ final class GovernanceDelegateListOperationFactory {
 
         let identityWrapper = createIdentityWrapper(
             dependingOn: statsWrapper.targetOperation,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
+            chain: chain
         )
 
         identityWrapper.addDependency(wrapper: statsWrapper)

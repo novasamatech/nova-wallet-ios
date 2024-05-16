@@ -59,6 +59,12 @@ final class StakingRecommendationMediatorFactory {
         let identityOperationFactory = IdentityOperationFactory(
             requestFactory: storageRequestFactory
         )
+        
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         let validatorOperationFactory = ValidatorOperationFactory(
             chainInfo: state.chainAsset.chainAssetInfo,
@@ -67,7 +73,7 @@ final class StakingRecommendationMediatorFactory {
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityOperationFactory: identityOperationFactory
+            identityProxyFactory: identityProxyFactory
         )
 
         let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)

@@ -225,6 +225,7 @@ final class GovernanceSharedState {
             return GovernanceDelegateListOperationFactory(
                 statsOperationFactory: statsOperationFactory,
                 metadataOperationFactory: delegateMetadataFactory,
+                chainRegistry: chainRegistry,
                 identityOperationFactory: identityOperationFactory
             )
         }

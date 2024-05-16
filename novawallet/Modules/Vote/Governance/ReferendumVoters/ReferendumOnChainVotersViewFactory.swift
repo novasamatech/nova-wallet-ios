@@ -75,12 +75,18 @@ struct ReferendumOnChainVotersViewFactory {
             requestFactory: requestFactory,
             emptyIdentitiesWhenNoStorage: true
         )
+        
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         return ReferendumVotersInteractor(
             referendumIndex: referendum.index,
             chain: chain,
             referendumsOperationFactory: referendumsOperationFactory,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue

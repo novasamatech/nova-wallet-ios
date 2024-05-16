@@ -26,12 +26,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
             try eraValidatorsOperation.extractNoCancellableResultData().validators.map(\.accountId)
         }
 
-        let identityWrapper = identityOperationFactory.createIdentityWrapper(
-            for: accountIdsClosure,
-            engine: engine,
-            runtimeService: runtimeService,
-            chainFormat: chainInfo.chain
-        )
+        let identityWrapper = identityProxyFactory.createIdentityWrapper(for: accountIdsClosure)
 
         identityWrapper.allOperations.forEach { $0.addDependency(eraValidatorsOperation) }
 
@@ -80,12 +75,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]> {
         let targets = nomination.targets.distinct()
 
-        let identityWrapper = identityOperationFactory.createIdentityWrapper(
-            for: { targets },
-            engine: engine,
-            runtimeService: runtimeService,
-            chainFormat: chainInfo.chain
-        )
+        let identityWrapper = identityProxyFactory.createIdentityWrapper(for: { targets })
 
         let electedValidatorsOperation = eraValidatorService.fetchInfoOperation()
 
@@ -157,12 +147,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
             try activeValidatorsStakeInfoWrapper.targetOperation.extractNoCancellableResultData().map(\.key)
         }
 
-        let identitiesWrapper = identityOperationFactory.createIdentityWrapper(
-            for: validatorIds,
-            engine: engine,
-            runtimeService: runtimeService,
-            chainFormat: chainInfo.chain
-        )
+        let identitiesWrapper = identityProxyFactory.createIdentityWrapper(for: validatorIds)
 
         identitiesWrapper.allOperations.forEach {
             $0.addDependency(activeValidatorsStakeInfoWrapper.targetOperation)
@@ -216,12 +201,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
 
         validatorsStakeInfoWrapper.allOperations.forEach { $0.addDependency(eraValidatorsOperation) }
 
-        let identitiesWrapper = identityOperationFactory.createIdentityWrapper(
-            for: { accountIds },
-            engine: engine,
-            runtimeService: runtimeService,
-            chainFormat: chainFormat
-        )
+        let identitiesWrapper = identityProxyFactory.createIdentityWrapper(for: { accountIds })
 
         let mergeOperation = ClosureOperation<[SelectedValidatorInfo]> {
             let validatorsStakeInfo = try validatorsStakeInfoWrapper.targetOperation
@@ -280,12 +260,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         let chainFormat = chainInfo.chain
         let assetInfo = chainInfo.asset
 
-        let identitiesWrapper = identityOperationFactory.createIdentityWrapper(
-            for: { accountIdList },
-            engine: engine,
-            runtimeService: runtimeService,
-            chainFormat: chainFormat
-        )
+        let identitiesWrapper = identityProxyFactory.createIdentityWrapper(for: { accountIdList })
 
         let validatorPrefsWrapper = createValidatorPrefsWrapper(for: accountIdList)
 
