@@ -104,7 +104,7 @@ enum ReferendumTrackType {
             Self.bigSpender:
             return StaticImageViewModel(image: R.image.iconGovTreasury()!)
         default:
-            return nil
+            return StaticImageViewModel(image: R.image.iconGovUniversalTrack()!)
         }
     }
 
