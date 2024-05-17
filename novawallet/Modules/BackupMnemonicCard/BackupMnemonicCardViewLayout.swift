@@ -30,6 +30,7 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
             frame: .zero,
             collectionViewLayout: layout
         )
+        collectionView.allowsSelection = false
         collectionView.registerCellClass(Cell.self)
         collectionView.registerClass(
             TitleCollectionHeaderView.self,

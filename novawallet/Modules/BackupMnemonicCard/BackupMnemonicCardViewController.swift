@@ -47,6 +47,7 @@ final class BackupMnemonicCardViewController: UIViewController, ViewHolder {
         setupView()
         presenter.setup()
         setupLocalization()
+        setupBarButtonItem()
     }
 }
 
@@ -79,16 +80,14 @@ extension BackupMnemonicCardViewController: UICollectionViewDataSource, UICollec
         viewForSupplementaryElementOfKind kind: String,
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryViewWithType(
+        let view = collectionView.dequeueReusableSupplementaryViewWithType(
             TitleCollectionHeaderView.self,
             forSupplementaryViewOfKind: kind,
             for: indexPath
         )!
-        header.contentInsets = UIConstants.headerContentInsets
-        header.titleLabel.apply(style: .semiboldSubhedlineSecondary)
-        header.titleLabel.text = "Please do not share with anyone" // TODO: Localize
+        setupCollectionHeader(view)
 
-        return header
+        return view
     }
 
     func collectionView(
@@ -137,6 +136,8 @@ extension BackupMnemonicCardViewController: BackupMnemonicCardViewLayoutDelegate
     }
 }
 
+// MARK: Private
+
 private extension BackupMnemonicCardViewController {
     func setupView() {
         rootView.collectionView.dataSource = self
@@ -182,10 +183,50 @@ private extension BackupMnemonicCardViewController {
         return buttonTitleStr
     }
 
+    func setupCollectionHeader(_ view: TitleCollectionHeaderView) {
+        view.contentInsets = UIConstants.headerContentInsets
+        view.titleLabel.apply(style: .semiboldSubhedlineSecondary)
+        view.titleLabel.attributedText = NSAttributedString.coloredItems(
+            [
+                R.string.localizable.mnemonicCardRevealedHeaderMessageHighlighted(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            ],
+            formattingClosure: { items in
+                R.string.localizable.mnemonicCardRevealedHeaderMessage(
+                    items[0],
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            },
+            color: R.color.colorTextPrimary()!
+        )
+    }
+
     func setupLocalization() {
-        rootView.coverMessageView.fView.text = R.string.localizable.mnemonicCardCoverMessageTitle(preferredLanguages: selectedLocale.rLanguages)
-        rootView.coverMessageView.sView.text = R.string.localizable.mnemonicCardCoverMessageMessage(preferredLanguages: selectedLocale.rLanguages)
-        rootView.titleView.text = R.string.localizable.commonPassphrase(preferredLanguages: selectedLocale.rLanguages)
+        rootView.coverMessageView.fView.text = R.string.localizable.mnemonicCardCoverMessageTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        rootView.coverMessageView.sView.text = R.string.localizable.mnemonicCardCoverMessageMessage(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        rootView.titleView.text = R.string.localizable.commonPassphrase(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+
+    func setupBarButtonItem() {
+        let advancedItem = UIBarButtonItem(
+            image: R.image.iconOptions()?.tinted(with: R.color.colorIconChip()!),
+            style: .plain,
+            target: self,
+            action: #selector(advancedTapped)
+        )
+
+        navigationItem.rightBarButtonItem = advancedItem
+    }
+
+    @objc func advancedTapped() {
+        presenter.advancedTapped()
     }
 }
 

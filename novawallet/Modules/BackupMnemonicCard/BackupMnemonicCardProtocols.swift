@@ -7,6 +7,7 @@ protocol BackupMnemonicCardViewProtocol: ControllerBackedProtocol {
 protocol BackupMnemonicCardPresenterProtocol: AnyObject {
     func setup()
     func mnemonicCardTapped()
+    func advancedTapped()
 }
 
 protocol BackupMnemonicCardInteractorInputProtocol: AnyObject {
@@ -18,4 +19,6 @@ protocol BackupMnemonicCardInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol BackupMnemonicCardWireframeProtocol: AnyObject {}
+protocol BackupMnemonicCardWireframeProtocol: AnyObject {
+    func showAdvancedExport(from view: BackupMnemonicCardViewProtocol?)
+}

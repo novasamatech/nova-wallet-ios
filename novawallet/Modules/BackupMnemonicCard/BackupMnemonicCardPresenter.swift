@@ -50,6 +50,10 @@ extension BackupMnemonicCardPresenter: BackupMnemonicCardPresenterProtocol {
     func mnemonicCardTapped() {
         interactor.fetchMnemonic()
     }
+
+    func advancedTapped() {
+        wireframe.showAdvancedExport(from: view)
+    }
 }
 
 extension BackupMnemonicCardPresenter: BackupMnemonicCardInteractorOutputProtocol {
