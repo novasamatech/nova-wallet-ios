@@ -36,27 +36,13 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
 
         let chain = selectedChainAsset.chain
 
-        guard
-            let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            presenter?.didReceiveError(ChainRegistryError.connectionUnavailable)
-            return
-        }
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable)
-            return
-        }
-
         let collatorService = sharedState.collatorService
         let rewardService = sharedState.rewardCalculationService
 
         let wrapper = collatorsOperationFactory.selectedCollatorsInfoOperation(
             for: collators,
             collatorService: collatorService,
-            rewardService: rewardService,
-            connection: connection,
-            runtimeProvider: runtimeService,
-            chainFormat: chain.chainFormat
+            rewardService: rewardService
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in

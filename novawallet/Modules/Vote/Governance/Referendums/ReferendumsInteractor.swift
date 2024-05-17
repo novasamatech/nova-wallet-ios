@@ -319,19 +319,14 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
             let offchainOperationFactory = governanceState.createOffchainAllVotesFactory(
                 for: option
             ),
-            let address = selectedMetaAccount.fetch(for: option.chain.accountRequest())?.toAddress(),
-            let connection = governanceState.chainRegistry.getConnection(for: option.chain.chainId),
-            let runtimeProvider = governanceState.chainRegistry.getRuntimeProvider(for: option.chain.chainId) else {
+            let address = selectedMetaAccount.fetch(for: option.chain.accountRequest())?.toAddress() else {
             return
         }
 
         clear(cancellable: &offchainVotingCancellable)
 
         let votingWrapper = offchainOperationFactory.createWrapper(
-            for: address,
-            chain: option.chain,
-            connection: connection,
-            runtimeService: runtimeProvider
+            for: address
         )
 
         votingWrapper.targetOperation.completionBlock = { [weak self] in

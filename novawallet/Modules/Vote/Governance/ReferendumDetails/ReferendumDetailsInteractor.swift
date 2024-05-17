@@ -13,7 +13,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -44,7 +44,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         runtimeProvider: RuntimeProviderProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
@@ -59,7 +59,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
@@ -177,12 +177,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
         let accountIdsClosure: () throws -> [AccountId] = { Array(accountIds) }
 
-        let wrapper = identityOperationFactory.createIdentityWrapper(
-            for: accountIdsClosure,
-            engine: connection,
-            runtimeService: runtimeProvider,
-            chainFormat: chain.chainFormat
-        )
+        let wrapper = identityProxyFactory.createIdentityWrapper(for: accountIdsClosure)
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
