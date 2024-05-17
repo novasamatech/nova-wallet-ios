@@ -51,6 +51,8 @@ final class BackupMnemonicCardViewController: UIViewController, ViewHolder {
     }
 }
 
+// MARK: BackupMnemonicCardViewProtocol
+
 extension BackupMnemonicCardViewController: BackupMnemonicCardViewProtocol {
     func update(with viewModel: ViewModel) {
         setupNavigationBarTitle(with: viewModel)
@@ -239,6 +241,8 @@ extension BackupMnemonicCardViewController: Localizable {
         setupLocalization()
     }
 }
+
+// MARK: UIConstants
 
 private extension UIConstants {
     static let walletIconSize = CGSize(width: 28, height: 28)

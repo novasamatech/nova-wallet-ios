@@ -35,6 +35,8 @@ final class BackupMnemonicCardPresenter {
     }
 }
 
+// MARK: BackupMnemonicCardPresenterProtocol
+
 extension BackupMnemonicCardPresenter: BackupMnemonicCardPresenterProtocol {
     func setup() {
         print(view)
@@ -55,6 +57,8 @@ extension BackupMnemonicCardPresenter: BackupMnemonicCardPresenterProtocol {
         wireframe.showAdvancedExport(from: view)
     }
 }
+
+// MARK: BackupMnemonicCardInteractorOutputProtocol
 
 extension BackupMnemonicCardPresenter: BackupMnemonicCardInteractorOutputProtocol {
     func didReceive(mnemonic: IRMnemonicProtocol) {
