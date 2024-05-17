@@ -242,6 +242,15 @@
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
 		0C626D212A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D202A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift */; };
+		0C6390892BF06C700015D467 /* CloudBackupSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390882BF06C700015D467 /* CloudBackupSyncService.swift */; };
+		0C63908B2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */; };
+		0C63908D2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */; };
+		0C6390912BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */; };
+		0C6390932BF0931C0015D467 /* CloudBackupMetadataManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390922BF0931C0015D467 /* CloudBackupMetadataManaging.swift */; };
+		0C6390952BF1FD4F0015D467 /* CloudBackupSyncFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390942BF1FD4F0015D467 /* CloudBackupSyncFacade.swift */; };
+		0C6390972BF236AB0015D467 /* CloudBackupSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390962BF236AB0015D467 /* CloudBackupSyncState.swift */; };
+		0C6390992BF239240015D467 /* CloudBackupSyncFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390982BF239240015D467 /* CloudBackupSyncFactory.swift */; };
+		0C63909B2BF23E3A0015D467 /* NSPredicate+CloudBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63909A2BF23E3A0015D467 /* NSPredicate+CloudBackup.swift */; };
 		0C63909D2BF34A970015D467 /* ConnectionTransportFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63909C2BF34A970015D467 /* ConnectionTransportFactory.swift */; };
 		0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102A2A73816000E44634 /* StakingSharedStateFactory.swift */; };
 		0C66102D2A73828800E44634 /* RelaychainStakingSharedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */; };
@@ -507,6 +516,8 @@
 		0CCDB2F92B75E21F007BC5D6 /* HydraStableswapQuoteParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2F82B75E21F007BC5D6 /* HydraStableswapQuoteParams.swift */; };
 		0CCDB2FB2B75E938007BC5D6 /* HydraStableswapQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCDB2FA2B75E938007BC5D6 /* HydraStableswapQuoteFactory.swift */; };
 		0CCE25212A44306200286709 /* TransactionHistoryPhishingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */; };
+		0CCE3AAA2BF395DC00D55F03 /* CloudBackupUpdateApplicationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCE3AA92BF395DC00D55F03 /* CloudBackupUpdateApplicationFactory.swift */; };
+		0CCE3AAC2BF4762000D55F03 /* CloudBackupDiff+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCE3AAB2BF4762000D55F03 /* CloudBackupDiff+Helper.swift */; };
 		0CD1F4D100ED82D137AB9834 /* ParaStkStakeSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F1EEBF48485F02BF690A4 /* ParaStkStakeSetupViewController.swift */; };
 		0CD352932ACAD7A500B3E446 /* AssetHubExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */; };
 		0CD352952ACAF59900B3E446 /* BigRational.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352942ACAF59900B3E446 /* BigRational.swift */; };
@@ -4938,6 +4949,15 @@
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
 		0C626D202A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNPoolsViewModelFactory.swift; sourceTree = "<group>"; };
+		0C6390882BF06C700015D467 /* CloudBackupSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncService.swift; sourceTree = "<group>"; };
+		0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdateMonitoring.swift; sourceTree = "<group>"; };
+		0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudBackupUpdateMonitor.swift; sourceTree = "<group>"; };
+		0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdateCalculationFactory.swift; sourceTree = "<group>"; };
+		0C6390922BF0931C0015D467 /* CloudBackupMetadataManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupMetadataManaging.swift; sourceTree = "<group>"; };
+		0C6390942BF1FD4F0015D467 /* CloudBackupSyncFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncFacade.swift; sourceTree = "<group>"; };
+		0C6390962BF236AB0015D467 /* CloudBackupSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncState.swift; sourceTree = "<group>"; };
+		0C6390982BF239240015D467 /* CloudBackupSyncFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncFactory.swift; sourceTree = "<group>"; };
+		0C63909A2BF23E3A0015D467 /* NSPredicate+CloudBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+CloudBackup.swift"; sourceTree = "<group>"; };
 		0C63909C2BF34A970015D467 /* ConnectionTransportFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTransportFactory.swift; sourceTree = "<group>"; };
 		0C66102A2A73816000E44634 /* StakingSharedStateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSharedStateFactory.swift; sourceTree = "<group>"; };
 		0C66102C2A73828800E44634 /* RelaychainStakingSharedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingSharedState.swift; sourceTree = "<group>"; };
@@ -5213,6 +5233,8 @@
 		0CCDB2F82B75E21F007BC5D6 /* HydraStableswapQuoteParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapQuoteParams.swift; sourceTree = "<group>"; };
 		0CCDB2FA2B75E938007BC5D6 /* HydraStableswapQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapQuoteFactory.swift; sourceTree = "<group>"; };
 		0CCE25202A44306200286709 /* TransactionHistoryPhishingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryPhishingFilter.swift; sourceTree = "<group>"; };
+		0CCE3AA92BF395DC00D55F03 /* CloudBackupUpdateApplicationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdateApplicationFactory.swift; sourceTree = "<group>"; };
+		0CCE3AAB2BF4762000D55F03 /* CloudBackupDiff+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupDiff+Helper.swift"; sourceTree = "<group>"; };
 		0CD352922ACAD7A500B3E446 /* AssetHubExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicService.swift; sourceTree = "<group>"; };
 		0CD352942ACAF59900B3E446 /* BigRational.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigRational.swift; sourceTree = "<group>"; };
 		0CD352962ACAFADA00B3E446 /* AssetConversionOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionOperationFactory.swift; sourceTree = "<group>"; };
@@ -9723,6 +9745,10 @@
 				0CED3A0D2BD17AD400B1E994 /* CloudBackupDiffing.swift */,
 				0C7CF4CB2BD374930015DD45 /* CloudBackupFileManaging.swift */,
 				0C7CF4CD2BD3784B0015DD45 /* CloudBackupCoding.swift */,
+				0C6390922BF0931C0015D467 /* CloudBackupMetadataManaging.swift */,
+				0C6390962BF236AB0015D467 /* CloudBackupSyncState.swift */,
+				0C63909A2BF23E3A0015D467 /* NSPredicate+CloudBackup.swift */,
+				0CCE3AAB2BF4762000D55F03 /* CloudBackupDiff+Helper.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -10391,6 +10417,9 @@
 				0CA26D8C2BBBB5BA0086748F /* CloudBackupServiceFactoryProtocol.swift */,
 				0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */,
 				0C7CF4C92BD36E480015DD45 /* CloudBackupServiceFacade.swift */,
+				0C6390882BF06C700015D467 /* CloudBackupSyncService.swift */,
+				0C6390942BF1FD4F0015D467 /* CloudBackupSyncFacade.swift */,
+				0C6390982BF239240015D467 /* CloudBackupSyncFactory.swift */,
 			);
 			path = CloudBackup;
 			sourceTree = "<group>";
@@ -10411,6 +10440,8 @@
 			children = (
 				0CC0F82B2BB570C2002C49F6 /* CloudBackupOperationFactory.swift */,
 				0C7CF4CF2BD384190015DD45 /* CloudBackupUploadingOperationFactory.swift */,
+				0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */,
+				0CCE3AA92BF395DC00D55F03 /* CloudBackupUpdateApplicationFactory.swift */,
 			);
 			path = Operations;
 			sourceTree = "<group>";
@@ -10645,6 +10676,8 @@
 			children = (
 				0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */,
 				0CF817702BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift */,
+				0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */,
+				0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */,
 			);
 			path = Monitor;
 			sourceTree = "<group>";
@@ -22616,6 +22649,7 @@
 				84AE7AAF27D38B1800495267 /* DrawableIconViewModel.swift in Sources */,
 				849976D027B3AC0100B14A6C /* MetamaskEvent.swift in Sources */,
 				0CE629DD2AA9B6BF00E250BD /* RewardDestinationViewModel.swift in Sources */,
+				0C63908D2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift in Sources */,
 				849976BC27B25A6600B14A6C /* DAppTransportModel.swift in Sources */,
 				771901A42AE7E48800D9C918 /* SwapBaseProtocols.swift in Sources */,
 				84D2F1B32775A3220040C680 /* ExtrinsicJSONProcessor.swift in Sources */,
@@ -22757,6 +22791,7 @@
 				880CC0AA29E7F151008C7F65 /* EquilibriumLocksSubscription.swift in Sources */,
 				8490145324A93FD1008F705E /* NovaLoadingViewFactory.swift in Sources */,
 				8472976C260B1CAD009B86D0 /* InitiatedBondingConfirmInteractor.swift in Sources */,
+				0C6390912BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift in Sources */,
 				887C450029AC7ED600950F98 /* DelegationReferendumVotersModel.swift in Sources */,
 				84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */,
 				84D8F17124D856D300AF43E9 /* SNAddressType+ViewModel.swift in Sources */,
@@ -22943,6 +22978,7 @@
 				778D979D2A24D21B002BA681 /* AssetsOperationViewLayout.swift in Sources */,
 				84F1CB3C27CF42B80095D523 /* NftListItemWithPriceCell.swift in Sources */,
 				84EE2FAB289120AF00A98816 /* WalletManageInteractor.swift in Sources */,
+				0CCE3AAA2BF395DC00D55F03 /* CloudBackupUpdateApplicationFactory.swift in Sources */,
 				842876B424AE059700D91AD8 /* SocialMessage.swift in Sources */,
 				849014BC24AA87E4008F705E /* PinSetupInteractor.swift in Sources */,
 				8468119728E6C90F00BF54F1 /* VoteProtocols.swift in Sources */,
@@ -23434,6 +23470,7 @@
 				8448F7A42882E21E0080CEA9 /* SearchMatch.swift in Sources */,
 				84F4B2352A30D73900113DDD /* StakingDashboardSection.swift in Sources */,
 				845C40792702571200BFA50B /* StakingRemoteSubscriptionService.swift in Sources */,
+				0C6390992BF239240015D467 /* CloudBackupSyncFactory.swift in Sources */,
 				8468B86A24F63CBA00B76BC6 /* AddAccount+AccountImportInteractor.swift in Sources */,
 				0CD846302BDE61310026B5CA /* WalletImportOptionsWireframe.swift in Sources */,
 				0C9ECB5A2A4A9AB400BDCA73 /* AssetListAccountCell.swift in Sources */,
@@ -23640,6 +23677,7 @@
 				8488D5DB298167D10019B388 /* GovernanceDelegateTypeView.swift in Sources */,
 				84CC726228AF8C7A003429E7 /* LedgerApplicationRequest.swift in Sources */,
 				849AFEBD26DCCE3A00B65924 /* SubqueryResponse.swift in Sources */,
+				0C6390892BF06C700015D467 /* CloudBackupSyncService.swift in Sources */,
 				84CFF1E426526FBC00DB7CF7 /* StakingBondMorePresenter.swift in Sources */,
 				842D1E7924D063FD00C30A7A /* TriangularedView.swift in Sources */,
 				AE2C84E925EF98D500986716 /* ValidatorInfoViewFactory.swift in Sources */,
@@ -24010,6 +24048,7 @@
 				84E63C1728FFC69A0093534A /* DiscreteGradientSlider.swift in Sources */,
 				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
 				84FC190D29B7EE1600BCCAA5 /* MultiExtrinsicFeeProxy.swift in Sources */,
+				0C63908B2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift in Sources */,
 				844C3E6F2A08E74D00C4305F /* BalanceCalculator.swift in Sources */,
 				8814774029B07B66001E98A1 /* DelegateGroupActionTitleControl.swift in Sources */,
 				F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */,
@@ -24582,6 +24621,7 @@
 				0C59E8D12AA5FAC5001E11F3 /* PooledAssetBalance.swift in Sources */,
 				84953F70293615D20033F47D /* AssetHistoryFactoryFacade.swift in Sources */,
 				84F13F1C26F2B8C2006725FF /* JSONRPCError+Presentable.swift in Sources */,
+				0C6390952BF1FD4F0015D467 /* CloudBackupSyncFacade.swift in Sources */,
 				84BAFCD226AF5EE700871E86 /* IconDetailsView.swift in Sources */,
 				0C495B9F2B452DA100B8D339 /* ProxyResolutionPathFinder.swift in Sources */,
 				841E5563282E9EF400C8438F /* ParachainStakingCommonData.swift in Sources */,
@@ -24651,6 +24691,7 @@
 				84333BD7285682EC00C76A4F /* ValidatorsSelectionParams.swift in Sources */,
 				84C3F77B2601F08B00D47501 /* NominationViewModel.swift in Sources */,
 				846A2C4B2529F99400731018 /* AccountRepositoryFactory.swift in Sources */,
+				0CCE3AAC2BF4762000D55F03 /* CloudBackupDiff+Helper.swift in Sources */,
 				0C79C89E2A7BEF1200B171E3 /* NominationPoolRecommendationFactory.swift in Sources */,
 				0C85FF2A2B6D230100FC0014 /* AssetHubReQuoteService.swift in Sources */,
 				AE528E4D26852C380058935A /* ValidatorSearchViewModel.swift in Sources */,
@@ -24819,6 +24860,7 @@
 				0C59E8F82AA76833001E11F3 /* OperationDetailsContractProvider.swift in Sources */,
 				6BAF97802DB9C640515F47C7 /* StakingMainInteractor.swift in Sources */,
 				84BF12A128CFCD70007AA576 /* ParaStkYieldBoostStartError.swift in Sources */,
+				0C6390932BF0931C0015D467 /* CloudBackupMetadataManaging.swift in Sources */,
 				8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */,
 				0C3205E32A897B5A002EB914 /* ExtrinsicValidationProvider.swift in Sources */,
 				840D929F278D8D2E0007B979 /* DAppBrowserInteractorError.swift in Sources */,
@@ -25358,6 +25400,7 @@
 				2B1E63AF98584341D670FB40 /* MoonbeamTermsViewController.swift in Sources */,
 				B1B0F4818510EB082ACA83AB /* MoonbeamTermsViewLayout.swift in Sources */,
 				0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */,
+				0C6390972BF236AB0015D467 /* CloudBackupSyncState.swift in Sources */,
 				77A6F5BA2A2E2AAD004AFD1A /* BuyAssetOperationWireframe.swift in Sources */,
 				84FBECFF2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift in Sources */,
 				97F1D128D46B072D68940FC4 /* MoonbeamTermsViewFactory.swift in Sources */,
@@ -25586,6 +25629,7 @@
 				84EF8D3E288FDA2100265346 /* WalletListLocalStorageSubscriber.swift in Sources */,
 				0C9525E72A7AFA2C00BD724D /* ValueResolver.swift in Sources */,
 				84DD261429ACA9030032A598 /* VotersInfoOperationFactory.swift in Sources */,
+				0C63909B2BF23E3A0015D467 /* NSPredicate+CloudBackup.swift in Sources */,
 				11C6F4CD5B167DE4E9E7F654 /* DAppPhishingWireframe.swift in Sources */,
 				77DF40492B7FE7B700ABDB53 /* ChainNotificationSettingsViewLayout.swift in Sources */,
 				4014ED301AA53DA0B07B4221 /* DAppPhishingPresenter.swift in Sources */,
