@@ -4,7 +4,7 @@ import SoraKeystore
 import IrohaCrypto
 
 final class CloudBackupFacadeTests: XCTestCase {
-    func testEnableBackup() {
+    func testCreateBackup() {
         do {
             // given
             let keystore = InMemoryKeychain()
@@ -28,7 +28,7 @@ final class CloudBackupFacadeTests: XCTestCase {
             let expectation = XCTestExpectation()
             var operationResult: Result<Void, CloudBackupServiceFacadeError>?
             
-            facade.enableBackup(
+            facade.createBackup(
                 wallets: [wallet],
                 keystore: keystore,
                 password: password,

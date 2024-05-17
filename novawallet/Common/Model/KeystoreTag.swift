@@ -11,6 +11,7 @@ enum KeystoreTag: String, CaseIterable {
 
 enum KeystoreTagV2: String, CaseIterable {
     case pincode
+    case cloudBackupPassword
 
     static func substrateSecretKeyTagForMetaId(
         _ metaId: String,

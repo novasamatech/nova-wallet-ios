@@ -70,7 +70,7 @@ final class CloudBackupServiceFacade {
 }
 
 extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
-    func enableBackup(
+    func createBackup(
         wallets: Set<MetaAccountModel>,
         keystore: KeystoreProtocol,
         password: String,
@@ -89,7 +89,6 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
         let exporter = serviceFactory.createSecretsExporter(from: keystore)
         let encoder = serviceFactory.createCodingManager()
 
-        // TODO: Save modification date locally
         let modifiedAt = UInt64(Date().timeIntervalSince1970)
 
         let dataOperation = ClosureOperation<Data> {
