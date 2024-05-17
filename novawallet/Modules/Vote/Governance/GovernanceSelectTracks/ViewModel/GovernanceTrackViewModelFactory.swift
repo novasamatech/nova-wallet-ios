@@ -40,11 +40,9 @@ extension GovernanceTrackViewModelFactory: GovernanceTrackViewModelFactoryProtoc
         chain: ChainModel,
         locale: Locale
     ) -> ReferendumInfoView.Track {
-        let type = ReferendumTrackType(rawValue: track.name)
-
-        return ReferendumInfoView.Track(
-            title: type?.title(for: locale)?.uppercased() ?? "",
-            icon: type?.imageViewModel(for: chain)
+        ReferendumInfoView.Track(
+            title: ReferendumTrackType.title(for: track.name, locale: locale).uppercased(),
+            icon: ReferendumTrackType.imageViewModel(for: track.name, chain: chain)
         )
     }
 
@@ -56,9 +54,10 @@ extension GovernanceTrackViewModelFactory: GovernanceTrackViewModelFactoryProtoc
             return nil
         }
 
-        let trackName = ReferendumTrackType(rawValue: firstTrack.name)?.title(
-            for: locale
-        )?.firstLetterCapitalized() ?? firstTrack.name
+        let trackName = ReferendumTrackType.title(
+            for: firstTrack.name,
+            locale: locale
+        ).firstLetterCapitalized()
 
         if tracks.count > 1 {
             let otherTracks = quantityFormatter.value(for: locale).string(
