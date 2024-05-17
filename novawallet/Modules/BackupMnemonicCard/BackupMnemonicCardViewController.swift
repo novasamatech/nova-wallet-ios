@@ -216,7 +216,7 @@ private extension BackupMnemonicCardViewController {
 
     func setupBarButtonItem() {
         let advancedItem = UIBarButtonItem(
-            image: R.image.iconOptions()?.tinted(with: R.color.colorIconChip()!),
+            image: R.image.iconOptions()?.tinted(with: R.color.colorIconPrimary()!),
             style: .plain,
             target: self,
             action: #selector(advancedTapped)
