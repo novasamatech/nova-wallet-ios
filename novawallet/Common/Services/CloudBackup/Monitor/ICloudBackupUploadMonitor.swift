@@ -5,6 +5,7 @@ final class ICloudBackupUploadMonitor {
     let notificationCenter: NotificationCenter
     let filename: String
     let operationQueue: OperationQueue
+    let workingQueue: DispatchQueue
     let timeoutInterval: TimeInterval
     let logger: LoggerProtocol
 
@@ -16,12 +17,14 @@ final class ICloudBackupUploadMonitor {
     init(
         filename: String,
         operationQueue: OperationQueue, // must be maxConcurrentOperation = 1
+        workingQueue: DispatchQueue,
         notificationCenter: NotificationCenter,
         timeoutInteval: TimeInterval,
         logger: LoggerProtocol
     ) {
         self.notificationCenter = notificationCenter
         self.operationQueue = operationQueue
+        self.workingQueue = workingQueue
         self.filename = filename
         timeoutInterval = timeoutInteval
         self.logger = logger
@@ -115,7 +118,7 @@ extension ICloudBackupUploadMonitor: CloudBackupUploadMonitoring {
             metadataQuery.start()
         }
 
-        timeoutScheduler = Scheduler(with: self)
+        timeoutScheduler = Scheduler(with: self, callbackQueue: workingQueue)
         timeoutScheduler?.notifyAfter(timeoutInterval)
     }
 
