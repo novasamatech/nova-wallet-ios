@@ -175,6 +175,7 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
         )
 
         diffOperation.addDependency(decodingOperation)
+        diffOperation.addDependency(walletsOperation)
 
         return CompoundOperationWrapper(
             targetOperation: diffOperation,

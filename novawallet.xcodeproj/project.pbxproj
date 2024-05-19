@@ -188,6 +188,14 @@
 		0C38B5142B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5132B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
+		0C41D20E2BF77F85000950EE /* CloudBackupSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D20D2BF77F85000950EE /* CloudBackupSyncTests.swift */; };
+		0C41D2102BF7814A000950EE /* MockCloudBackupServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D20F2BF7814A000950EE /* MockCloudBackupServiceFactory.swift */; };
+		0C41D2122BF78389000950EE /* MockCloudBackupFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2112BF78389000950EE /* MockCloudBackupFileManager.swift */; };
+		0C41D2142BF78395000950EE /* MockCloudBackupStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2132BF78395000950EE /* MockCloudBackupStorageManager.swift */; };
+		0C41D2162BF798CD000950EE /* MockCloudBackupUploadFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2152BF798CD000950EE /* MockCloudBackupUploadFactory.swift */; };
+		0C41D2182BF89799000950EE /* MockCloudBackupOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2172BF89799000950EE /* MockCloudBackupOperationFactory.swift */; };
+		0C41D21A2BF899EF000950EE /* MockCloudBackupAvailabilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2192BF899EF000950EE /* MockCloudBackupAvailabilityService.swift */; };
+		0C41D21C2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D21B2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift */; };
 		0C4394D42BD6661F00578761 /* PasswordInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D32BD6661F00578761 /* PasswordInputView.swift */; };
 		0C4394D72BD761D000578761 /* CloudBackupPasswordValidationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */; };
 		0C4394D92BD7626500578761 /* CloudBackupPasswordValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D82BD7626500578761 /* CloudBackupPasswordValidator.swift */; };
@@ -4895,6 +4903,14 @@
 		0C38B5132B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodaDotDetailsInteractor.swift; sourceTree = "<group>"; };
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
+		0C41D20D2BF77F85000950EE /* CloudBackupSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncTests.swift; sourceTree = "<group>"; };
+		0C41D20F2BF7814A000950EE /* MockCloudBackupServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupServiceFactory.swift; sourceTree = "<group>"; };
+		0C41D2112BF78389000950EE /* MockCloudBackupFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupFileManager.swift; sourceTree = "<group>"; };
+		0C41D2132BF78395000950EE /* MockCloudBackupStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupStorageManager.swift; sourceTree = "<group>"; };
+		0C41D2152BF798CD000950EE /* MockCloudBackupUploadFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupUploadFactory.swift; sourceTree = "<group>"; };
+		0C41D2172BF89799000950EE /* MockCloudBackupOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupOperationFactory.swift; sourceTree = "<group>"; };
+		0C41D2192BF899EF000950EE /* MockCloudBackupAvailabilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupAvailabilityService.swift; sourceTree = "<group>"; };
+		0C41D21B2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupSyncMetadataManager.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
 		0C4394D32BD6661F00578761 /* PasswordInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordInputView.swift; sourceTree = "<group>"; };
 		0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupPasswordValidationResult.swift; sourceTree = "<group>"; };
@@ -9899,6 +9915,21 @@
 			path = Predicate;
 			sourceTree = "<group>";
 		};
+		0C41D20C2BF77F57000950EE /* CloudBackup */ = {
+			isa = PBXGroup;
+			children = (
+				0C41D20D2BF77F85000950EE /* CloudBackupSyncTests.swift */,
+				0C41D20F2BF7814A000950EE /* MockCloudBackupServiceFactory.swift */,
+				0C41D2112BF78389000950EE /* MockCloudBackupFileManager.swift */,
+				0C41D2132BF78395000950EE /* MockCloudBackupStorageManager.swift */,
+				0C41D2152BF798CD000950EE /* MockCloudBackupUploadFactory.swift */,
+				0C41D2172BF89799000950EE /* MockCloudBackupOperationFactory.swift */,
+				0C41D2192BF899EF000950EE /* MockCloudBackupAvailabilityService.swift */,
+				0C41D21B2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift */,
+			);
+			path = CloudBackup;
+			sourceTree = "<group>";
+		};
 		0C4394D52BD7617200578761 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -13922,6 +13953,7 @@
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0C41D20C2BF77F57000950EE /* CloudBackup */,
 				84300B2D26C110C400D64514 /* ChainRegistry */,
 				8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */,
 				881BA30629DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift */,
@@ -26689,6 +26721,7 @@
 				84B7C714289BFA79001A3566 /* AccountCreateTests.swift in Sources */,
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
+				0C41D21A2BF899EF000950EE /* MockCloudBackupAvailabilityService.swift in Sources */,
 				0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */,
 				8836AF4828AA49AB00A94EDD /* Currency+btc.swift in Sources */,
 				842D1E8E24D2091A00C30A7A /* CommonMocks.swift in Sources */,
@@ -26697,6 +26730,7 @@
 				84B7C72D289BFA79001A3566 /* ValidatorSearchTests.swift in Sources */,
 				841B45292603D91800C08693 /* EraValidatorsServiceStub.swift in Sources */,
 				84F47D652667804100F7647A /* CrowdloanBonusServiceStub.swift in Sources */,
+				0C41D20E2BF77F85000950EE /* CloudBackupSyncTests.swift in Sources */,
 				8828C05828B4A67000555CB6 /* Prism.swift in Sources */,
 				844D229125EE5CD600C022F7 /* DataProviderStub.swift in Sources */,
 				842D1E8124D0BEF400C30A7A /* RTests.swift in Sources */,
@@ -26751,7 +26785,9 @@
 				847F2D5727AB08D200AFD476 /* GradientColorFactoryTests.swift in Sources */,
 				84B7C73F289BFA79001A3566 /* WalletPurchaseProvidersTests.swift in Sources */,
 				8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */,
+				0C41D2162BF798CD000950EE /* MockCloudBackupUploadFactory.swift in Sources */,
 				847CD46626416D0900E1542F /* SlashesOperationFactoryStub.swift in Sources */,
+				0C41D21C2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift in Sources */,
 				84B7C71F289BFA79001A3566 /* CrowdloanContributionConfirmTests.swift in Sources */,
 				84F4388525DA4F2A00AEDA56 /* NetworkMockManager.swift in Sources */,
 				84F4389225DA505300AEDA56 /* NetworkBaseTests.swift in Sources */,
@@ -26762,6 +26798,7 @@
 				84B7C717289BFA79001A3566 /* DAppAuthConfirmTests.swift in Sources */,
 				84F4387F25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift in Sources */,
 				84B7C730289BFA79001A3566 /* CustomValidatorListTests.swift in Sources */,
+				0C41D2122BF78389000950EE /* MockCloudBackupFileManager.swift in Sources */,
 				84B7C741289BFA79001A3566 /* AccountConfirmTests.swift in Sources */,
 				771056062B717E0400EE2C20 /* PushNotificationParsingTests.swift in Sources */,
 				8434C9EA2540AE51009E4191 /* ExtrinsicEraTests.swift in Sources */,
@@ -26802,6 +26839,7 @@
 				84B7C710289BFA79001A3566 /* CrowdloanYourContributionsTests.swift in Sources */,
 				8476D39827F431D5004D9A7A /* MockApplicationService.swift in Sources */,
 				84B7C731289BFA79001A3566 /* ValidatorInfoTests.swift in Sources */,
+				0C41D2102BF7814A000950EE /* MockCloudBackupServiceFactory.swift in Sources */,
 				845B822326EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift in Sources */,
 				84B7C71C289BFA79001A3566 /* DAppTxDetailsTests.swift in Sources */,
 				84B66A1426FDF29A0038B963 /* WalletLocalSubscriptionFactoryStub.swift in Sources */,
@@ -26812,6 +26850,8 @@
 				844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */,
 				84F4A910255001D2000CF0A3 /* KeystoreExportWrapperTests.swift in Sources */,
 				8836AF4A28AA4B9300A94EDD /* CurrencyRepositoryTests.swift in Sources */,
+				0C41D2142BF78395000950EE /* MockCloudBackupStorageManager.swift in Sources */,
+				0C41D2182BF89799000950EE /* MockCloudBackupOperationFactory.swift in Sources */,
 				846CA778270911920011124C /* StakingLocalSubscriptionFactoryStub.swift in Sources */,
 				AE805FCA26B42AE200007CE9 /* ValidatorOperationFactoryStub.swift in Sources */,
 				84B7C73E289BFA79001A3566 /* StakingRebondConfirmationTests.swift in Sources */,
