@@ -22,12 +22,6 @@ final class ScrollableContainerView: UIView {
         }
     }
 
-    var scrollContentBottomOffset: CGFloat = 0 {
-        didSet {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: scrollContentBottomOffset, right: 0)
-        }
-    }
-
     init(axis: NSLayoutConstraint.Axis, respectsSafeArea: Bool = true) {
         self.respectsSafeArea = respectsSafeArea
 

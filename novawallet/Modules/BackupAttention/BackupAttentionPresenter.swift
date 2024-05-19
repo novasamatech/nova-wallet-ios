@@ -19,7 +19,7 @@ final class BackupAttentionPresenter {
 extension BackupAttentionPresenter: BackupAttentionPresenterProtocol {
     func setup() {
         let initialViewModel = makeInitialViewModel()
-        checkBoxViewModels = initialViewModel.rows.rows
+        checkBoxViewModels = initialViewModel.rows
         view?.didReceive(initialViewModel)
     }
 }
@@ -33,7 +33,7 @@ private extension BackupAttentionPresenter {
         }
 
         return BackupAttentionViewLayout.Model(
-            rows: .init(rows: [
+            rows: [
                 .init(
                     image: R.image.iconAttentionPassphrase(),
                     text: .attributed(
@@ -97,7 +97,7 @@ private extension BackupAttentionPresenter {
                     checked: false,
                     onCheck: onCheckClosure
                 )
-            ]),
+            ],
             button: .inactive(
                 title: R.string.localizable.backupAttentionAggreeButtonTitle(
                     preferredLanguages: selectedLocale.rLanguages
@@ -120,7 +120,7 @@ private extension BackupAttentionPresenter {
         )
 
         return BackupAttentionViewLayout.Model(
-            rows: .init(rows: checkBoxViewModels),
+            rows: checkBoxViewModels,
             button: checkBoxViewModels
                 .filter { $0.checked }
                 .count == checkBoxViewModels.count

@@ -722,7 +722,6 @@
 		2CEFF4C2574F0AABE0E9BF89 /* ReferendumVoteSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A058D4A585F253CBF2968D /* ReferendumVoteSetupViewController.swift */; };
 		2CF2F93AF862CF54FC46B560 /* PurchaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D44421CCD7AD220A05CD0E /* PurchaseInteractor.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
-		2DC075E52BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E42BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift */; };
 		2DC075E72BF4B41300868563 /* TriangularedBlurButton+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E62BF4B41300868563 /* TriangularedBlurButton+Style.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
@@ -5427,7 +5426,6 @@
 		2BE0492B98AB9C1540846B39 /* StakingPayoutConfirmationViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingPayoutConfirmationViewFactory.swift; sourceTree = "<group>"; };
 		2C3F5511D2E7AC283FF021E8 /* GovernanceRevokeDelegationConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmProtocols.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
-		2DC075E42BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsScrollableContainerLayoutView.swift; sourceTree = "<group>"; };
 		2DC075E62BF4B41300868563 /* TriangularedBlurButton+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TriangularedBlurButton+Style.swift"; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
@@ -10965,14 +10963,6 @@
 			path = AccountManagement;
 			sourceTree = "<group>";
 		};
-		2766D57013B870CD1EF8E956 /* BackupAttention */ = {
-			isa = PBXGroup;
-			children = (
-				0230A59C182D7758DC5F3F8B /* BackupAttentionTests.swift */,
-			);
-			path = BackupAttention;
-			sourceTree = "<group>";
-		};
 		288677D19FEB54E369E6B619 /* Slippage */ = {
 			isa = PBXGroup;
 			children = (
@@ -11074,7 +11064,6 @@
 			children = (
 				2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */,
 				2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */,
-				2DC075E42BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -23652,7 +23641,6 @@
 				84443BA226C123F100C33B5D /* Data+Random.swift in Sources */,
 				84C6800E24D6ECE800006BF5 /* ExpandableActionControl.swift in Sources */,
 				8490148424AA27C1008F705E /* OperationManagerFacade.swift in Sources */,
-				2DC075E52BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift in Sources */,
 				842A738827DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift in Sources */,
 				77FFB2B12B0D392A00C7C879 /* OpenStakingUrlParsingService.swift in Sources */,
 				8499FE7527BE490700712589 /* UniquesAccountKey.swift in Sources */,
