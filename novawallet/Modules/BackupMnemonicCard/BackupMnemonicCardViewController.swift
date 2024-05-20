@@ -105,9 +105,11 @@ extension BackupMnemonicCardViewController: UICollectionViewDataSource, UICollec
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithType(Cell.self, for: indexPath)!
-        cell.view.view.attributedText = createIndexedWordAttributedString(
-            for: words[indexPath.item],
-            index: indexPath.item
+
+        cell.view.view.attributedText = NSAttributedString.coloredItems(
+            ["\(indexPath.row + 1)"],
+            formattingClosure: { String(format: "%@ \(words[indexPath.row])", $0[0]) },
+            color: R.color.colorTextSecondary()!
         )
 
         return cell
@@ -149,40 +151,18 @@ private extension BackupMnemonicCardViewController {
 
     func setupNavigationBarTitle(with viewModel: ViewModel) {
         let iconDetailsView: IconDetailsView = .create(with: { view in
+            view.detailsLabel.apply(style: .semiboldBodyPrimary)
+            view.detailsLabel.text = viewModel.walletViewModel.name
             view.iconWidth = UIConstants.walletIconSize.width
 
-            viewModel.walletIcon?.loadImage(
+            viewModel.walletViewModel.imageViewModel?.loadImage(
                 on: view.imageView,
                 targetSize: UIConstants.walletIconSize,
                 animated: true
             )
-            view.detailsLabel.apply(style: .semiboldBodyPrimary)
-            view.detailsLabel.text = viewModel.walletName
         })
 
         navigationItem.titleView = iconDetailsView
-    }
-
-    func createIndexedWordAttributedString(for word: String, index: Int) -> NSAttributedString {
-        let buttonTitleStr = NSMutableAttributedString(
-            string: "\(index + 1)",
-            attributes: [
-                .foregroundColor: R.color.colorTextSecondary()!,
-                .font: UIFont.p2Paragraph
-            ]
-        )
-
-        let wordAttributedStr = NSAttributedString(
-            string: "  \(word)",
-            attributes: [
-                .foregroundColor: R.color.colorTextPrimary()!,
-                .font: UIFont.p2Paragraph
-            ]
-        )
-
-        buttonTitleStr.append(wordAttributedStr)
-
-        return buttonTitleStr
     }
 
     func setupCollectionHeader(_ view: TitleCollectionHeaderView) {

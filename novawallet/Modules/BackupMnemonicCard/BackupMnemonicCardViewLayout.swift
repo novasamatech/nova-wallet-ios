@@ -135,8 +135,7 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
 
 extension BackupMnemonicCardViewLayout {
     struct Model {
-        var walletName: String
-        var walletIcon: IdentifiableDrawableIconViewModel?
+        var walletViewModel: DisplayWalletViewModel
         var state: State
     }
 

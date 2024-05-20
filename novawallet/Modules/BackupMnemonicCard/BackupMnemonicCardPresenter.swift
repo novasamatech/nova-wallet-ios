@@ -1,6 +1,7 @@
 import Foundation
 import IrohaCrypto
 import SubstrateSdk
+import SoraFoundation
 
 final class BackupMnemonicCardPresenter {
     weak var view: BackupMnemonicCardViewProtocol?
@@ -10,28 +11,22 @@ final class BackupMnemonicCardPresenter {
     private var mnemonic: IRMnemonicProtocol?
     private var metaAccount: MetaAccountModel
 
-    private var iconGenerator = NovaIconGenerator()
+    private let walletViewModelFactory = WalletAccountViewModelFactory()
+    private let logger: LoggerProtocol
+    private let localizationManager: LocalizationManagerProtocol
 
     init(
         interactor: BackupMnemonicCardInteractor,
         wireframe: BackupMnemonicCardWireframeProtocol,
-        metaAccount: MetaAccountModel
+        metaAccount: MetaAccountModel,
+        localizationManager: LocalizationManager,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.metaAccount = metaAccount
-    }
-
-    private func generateIcon() -> IdentifiableDrawableIconViewModel? {
-        let optIcon = metaAccount.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
-        let iconViewModel = optIcon.map {
-            IdentifiableDrawableIconViewModel(
-                .init(icon: $0),
-                identifier: metaAccount.metaId
-            )
-        }
-
-        return iconViewModel
+        self.localizationManager = localizationManager
+        self.logger = logger
     }
 }
 
@@ -39,14 +34,7 @@ final class BackupMnemonicCardPresenter {
 
 extension BackupMnemonicCardPresenter: BackupMnemonicCardPresenterProtocol {
     func setup() {
-        print(view)
-        view?.update(with:
-            .init(
-                walletName: metaAccount.name,
-                walletIcon: generateIcon(),
-                state: .mnemonicNotVisible
-            )
-        )
+        updateView()
     }
 
     func mnemonicCardTapped() {
@@ -64,14 +52,49 @@ extension BackupMnemonicCardPresenter: BackupMnemonicCardInteractorOutputProtoco
     func didReceive(mnemonic: IRMnemonicProtocol) {
         self.mnemonic = mnemonic
 
+        updateView()
+    }
+
+    func didReceive(error: Error) {
+        logger.error("Did receive error: \(error)")
+
+        if !wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale) {
+            _ = wireframe.present(
+                error: CommonError.dataCorruption,
+                from: view,
+                locale: localizationManager.selectedLocale
+            )
+        }
+    }
+}
+
+// MARK: Private
+
+private extension BackupMnemonicCardPresenter {
+    func updateView() {
+        guard let walletViewModel = try? walletViewModelFactory.createDisplayViewModel(from: metaAccount) else {
+            return
+        }
+
         view?.update(with:
             .init(
-                walletName: metaAccount.name,
-                walletIcon: generateIcon(),
-                state: .mnemonicVisible(words: mnemonic.allWords())
+                walletViewModel: walletViewModel,
+                state: {
+                    if let mnemonic {
+                        .mnemonicVisible(words: mnemonic.allWords())
+                    } else {
+                        .mnemonicNotVisible
+                    }
+                }()
             )
         )
     }
+}
 
-    func didReceive(error _: Error) {}
+// MARK: Localizable
+
+extension BackupMnemonicCardPresenter: Localizable {
+    func applyLocalization() {
+        updateView()
+    }
 }

@@ -19,6 +19,6 @@ protocol BackupMnemonicCardInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol BackupMnemonicCardWireframeProtocol: AnyObject {
+protocol BackupMnemonicCardWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showAdvancedExport(from view: BackupMnemonicCardViewProtocol?)
 }

@@ -10,7 +10,7 @@ struct BackupMnemonicCardViewFactory {
         let interactor = BackupMnemonicCardInteractor(
             metaAccount: metaAccount,
             keystore: keychain,
-            operationManager: OperationManagerFacade.sharedManager
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let wireframe = BackupMnemonicCardWireframe()
@@ -18,7 +18,8 @@ struct BackupMnemonicCardViewFactory {
         let presenter = BackupMnemonicCardPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            metaAccount: metaAccount
+            metaAccount: metaAccount,
+            localizationManager: LocalizationManager.shared
         )
 
         let appearanceAnimator = FadeAnimator(

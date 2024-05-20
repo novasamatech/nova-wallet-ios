@@ -8,16 +8,16 @@ final class BackupMnemonicCardInteractor {
 
     private let metaAccount: MetaAccountModel
     private let keystore: KeystoreProtocol
-    private let operationManager: OperationManagerProtocol
+    private let operationQueue: OperationQueue
 
     init(
         metaAccount: MetaAccountModel,
         keystore: KeystoreProtocol,
-        operationManager: OperationManagerProtocol
+        operationQueue: OperationQueue
     ) {
         self.metaAccount = metaAccount
         self.keystore = keystore
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
     }
 }
 
@@ -37,19 +37,24 @@ extension BackupMnemonicCardInteractor: BackupMnemonicCardInteractorInputProtoco
             return try IRMnemonicCreator().mnemonic(fromEntropy: entropy)
         }
 
-        exportOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
+        execute(
+            operation: exportOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
                 do {
                     let mnemonic = try exportOperation
-                        .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+                        .extractNoCancellableResultData()
 
                     self?.presenter?.didReceive(mnemonic: mnemonic)
                 } catch {
                     self?.presenter?.didReceive(error: error)
                 }
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
             }
         }
-
-        operationManager.enqueue(operations: [exportOperation], in: .transient)
     }
 }
