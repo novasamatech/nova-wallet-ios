@@ -15,7 +15,7 @@ enum CloudBackupServiceFacadeError: Error {
 }
 
 protocol CloudBackupServiceFacadeProtocol {
-    func enableBackup(
+    func createBackup(
         wallets: Set<MetaAccountModel>,
         keystore: KeystoreProtocol,
         password: String,

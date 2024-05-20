@@ -72,10 +72,18 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
         CloudBackupCoder()
     }
 
+    func createCryptoManager() -> CloudBackupCryptoManagerProtocol {
+        CloudBackupScryptSalsaCryptoManager()
+    }
+
+    func createDiffCalculator() -> CloudBackupDiffCalculating {
+        CloudBackupDiffCalculator(converter: CloudBackupFileModelConverter())
+    }
+
     func createSecretsExporter(from keychain: KeystoreProtocol) -> CloudBackupSecretsExporting {
         CloudBackupSecretsExporter(
             walletConverter: CloudBackupFileModelConverter(),
-            cryptoManager: CloudBackupScryptSalsaCryptoManager(),
+            cryptoManager: createCryptoManager(),
             keychain: keychain
         )
     }
@@ -83,7 +91,7 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
     func createSecretsImporter(to keychain: KeystoreProtocol) -> CloudBackupSecretsImporting {
         CloudBackupSecretsImporter(
             walletConverter: CloudBackupFileModelConverter(),
-            cryptoManager: CloudBackupScryptSalsaCryptoManager(),
+            cryptoManager: createCryptoManager(),
             validator: ICloudBackupValidator(),
             keychain: keychain
         )
