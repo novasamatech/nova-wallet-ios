@@ -5,6 +5,6 @@ protocol ManualBackupWalletListPresenterProtocol: WalletsListPresenterProtocol {
 protocol ManualBackupWalletListWireframeProtocol: WalletsListWireframeProtocol {
     func showBackupAttention(
         from view: WalletsListViewProtocol?,
-        wallet: MetaAccountModel
+        metaAccount: MetaAccountModel
     )
 }

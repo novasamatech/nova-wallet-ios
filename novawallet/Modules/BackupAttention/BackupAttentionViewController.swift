@@ -7,9 +7,6 @@ final class BackupAttentionViewController: UIViewController, ViewHolder {
 
     let presenter: BackupAttentionPresenterProtocol
 
-    private var appearanceAnimator: ViewAnimatorProtocol?
-    private var disappearanceAnimator: ViewAnimatorProtocol?
-
     init(
         presenter: BackupAttentionPresenterProtocol,
         localizationManager: LocalizationManagerProtocol

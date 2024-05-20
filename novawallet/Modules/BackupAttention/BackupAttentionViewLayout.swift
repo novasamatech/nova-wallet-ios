@@ -16,14 +16,14 @@ final class BackupAttentionViewLayout: ScrollableContainerLayoutView {
         $0.cornerCut = [.topLeft, .topRight]
     }
 
-    let agreeButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-
-        return button
-    }()
+    let agreeButton: TriangularedButton = .create {
+        $0.applyDefaultStyle()
+        $0.addTarget(self, action: #selector(continueAction), for: .touchUpInside)
+    }
 
     var footerHeightConstraint: Constraint?
+
+    private var viewModel: Model?
 
     override func safeAreaInsetsDidChange() {
         super.safeAreaInsetsDidChange()
@@ -62,8 +62,10 @@ final class BackupAttentionViewLayout: ScrollableContainerLayoutView {
     }
 
     func bind(viewModel: Model) {
+        self.viewModel = viewModel
+
         switch viewModel.button {
-        case let .active(title):
+        case let .active(title, action):
             agreeButton.imageWithTitleView?.title = title
             agreeButton.applyEnabledStyle()
             agreeButton.isEnabled = true
@@ -89,8 +91,8 @@ extension BackupAttentionViewLayout {
         let button: ButtonModel
     }
 
-    enum ButtonModel: Equatable {
-        case active(title: String)
+    enum ButtonModel {
+        case active(title: String, action: () -> Void)
         case inactive(title: String)
     }
 }
@@ -104,6 +106,12 @@ private extension BackupAttentionViewLayout {
 
     func updateStackButtonOffset() {
         stackView.layoutMargins.bottom = UIConstants.scrollBottomOffset(for: self)
+    }
+
+    @objc func continueAction() {
+        guard case let .active(_, action) = viewModel?.button else { return }
+
+        action()
     }
 }
 

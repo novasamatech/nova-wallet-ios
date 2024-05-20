@@ -90,7 +90,7 @@ extension CloudBackup {
         let privateDate: PrivateData
     }
 
-    struct EncryptedFileModel: Codable {
+    struct EncryptedFileModel: Codable, Equatable {
         let publicData: CloudBackup.PublicData
         let privateData: String
     }
