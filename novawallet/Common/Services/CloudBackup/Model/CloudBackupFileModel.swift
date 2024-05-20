@@ -48,7 +48,7 @@ extension CloudBackup {
         case polkadotVault = "POLKADOT_VAULT"
     }
 
-    struct DecryptedFileModel {
+    struct DecryptedFileModel: Equatable {
         struct PrivateData: Codable, Equatable {
             let wallets: Set<WalletPrivateInfo>
         }
