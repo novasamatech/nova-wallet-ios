@@ -95,13 +95,19 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
         backgroundImageView.image = R.image.cardBg()
         backgroundImageView.contentMode = .scaleAspectFill
 
-        collectionView.backgroundView = backgroundImageView
-        collectionView.backgroundView?.layer.borderWidth = 1.0
-        collectionView.backgroundView?.layer.borderColor = R.color.colorContainerBorder()?.cgColor
-        collectionView.backgroundView?.layer.cornerRadius = UIConstants.cardCornerRadius
-        collectionView.backgroundView?.layer.masksToBounds = true
-        collectionView.backgroundView?.clipsToBounds = true
         collectionView.backgroundColor = .clear
+        collectionView.backgroundView = backgroundImageView
+
+        setupStyleForCard(collectionView.backgroundView)
+        setupStyleForCard(coverView)
+    }
+
+    func setupStyleForCard(_ view: UIView?) {
+        view?.layer.borderWidth = 1.0
+        view?.layer.borderColor = R.color.colorContainerBorder()?.cgColor
+        view?.layer.cornerRadius = UIConstants.cardCornerRadius
+        view?.layer.masksToBounds = true
+        view?.clipsToBounds = true
     }
 
     func showMnemonics() {
