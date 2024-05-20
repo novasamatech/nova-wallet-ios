@@ -1,6 +1,6 @@
 import UIKit
 
-final class AdvancedExportViewController: UIViewController {
+final class AdvancedExportViewController: UIViewController, ViewHolder {
     typealias RootViewType = AdvancedExportViewLayout
 
     let presenter: AdvancedExportPresenterProtocol
@@ -26,4 +26,8 @@ final class AdvancedExportViewController: UIViewController {
     }
 }
 
-extension AdvancedExportViewController: AdvancedExportViewProtocol {}
+extension AdvancedExportViewController: AdvancedExportViewProtocol {
+    func update(with viewModel: AdvancedExportViewLayout.Model) {
+        rootView.bind(with: viewModel)
+    }
+}

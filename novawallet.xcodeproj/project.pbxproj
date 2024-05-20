@@ -735,12 +735,15 @@
 		2CB0411DAB3CE25911B6B64A /* BackupMnemonicCardInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3946892F9E6BC45259B0833 /* BackupMnemonicCardInteractor.swift */; };
 		2CEFF4C2574F0AABE0E9BF89 /* ReferendumVoteSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A058D4A585F253CBF2968D /* ReferendumVoteSetupViewController.swift */; };
 		2CF2F93AF862CF54FC46B560 /* PurchaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D44421CCD7AD220A05CD0E /* PurchaseInteractor.swift */; };
+		2D039DE22BFBB08400A928E5 /* AdvancedExportNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE12BFBB08400A928E5 /* AdvancedExportNetworkView.swift */; };
+		2D039DE42BFBB2FE00A928E5 /* AdvancedExportRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE32BFBB2FE00A928E5 /* AdvancedExportRowView.swift */; };
 		2D221CBE2BF753620053E36C /* ContentSizedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */; };
 		2D221CC02BF753C30053E36C /* MnemonicWordCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
+		2DE4EBCF2BFB515E005E2D81 /* AdvancedExportData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4EBCE2BFB515E005E2D81 /* AdvancedExportData.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -5350,8 +5353,8 @@
 		15886E1D406F61B333A44A2E /* CloudBackupCreateProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateProtocols.swift; sourceTree = "<group>"; };
 		15A4DFCC4236D25A3D59F809 /* DAppBrowserInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserInteractor.swift; sourceTree = "<group>"; };
 		15AC3897EC736F5096949BBC /* NominationPoolSearchViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolSearchViewFactory.swift; sourceTree = "<group>"; };
-		15DD6F8FF5A73F29F7980D4F /* BackupMnemonicCardViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupMnemonicCardViewLayout.swift; sourceTree = "<group>"; };
 		15C1E5B04B82499FEE87B0D6 /* AdvancedExportProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdvancedExportProtocols.swift; sourceTree = "<group>"; };
+		15DD6F8FF5A73F29F7980D4F /* BackupMnemonicCardViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupMnemonicCardViewLayout.swift; sourceTree = "<group>"; };
 		15E09DD01C1CC61EA5CDED9C /* InAppUpdatesInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InAppUpdatesInteractor.swift; sourceTree = "<group>"; };
 		15E1472817503D3FB44BDC46 /* GovernanceDelegateSetupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateSetupInteractor.swift; sourceTree = "<group>"; };
 		16A05911AC400226DD29AE20 /* DAppWalletAuthViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppWalletAuthViewLayout.swift; sourceTree = "<group>"; };
@@ -5465,6 +5468,8 @@
 		2AFF4BA1274D1E5C00D790B4 /* UsernameSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSetupViewLayout.swift; sourceTree = "<group>"; };
 		2BE0492B98AB9C1540846B39 /* StakingPayoutConfirmationViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingPayoutConfirmationViewFactory.swift; sourceTree = "<group>"; };
 		2C3F5511D2E7AC283FF021E8 /* GovernanceRevokeDelegationConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmProtocols.swift; sourceTree = "<group>"; };
+		2D039DE12BFBB08400A928E5 /* AdvancedExportNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedExportNetworkView.swift; sourceTree = "<group>"; };
+		2D039DE32BFBB2FE00A928E5 /* AdvancedExportRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedExportRowView.swift; sourceTree = "<group>"; };
 		2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedCollectionView.swift; sourceTree = "<group>"; };
 		2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCollectionCell.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
@@ -5473,6 +5478,7 @@
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
+		2DE4EBCE2BFB515E005E2D81 /* AdvancedExportData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedExportData.swift; sourceTree = "<group>"; };
 		2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmInteractor.swift; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E5C5EE99A4B73789BE23039 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; sourceTree = "<group>"; };
@@ -11122,6 +11128,15 @@
 			path = ExportMnemonicConfirm;
 			sourceTree = "<group>";
 		};
+		2D039DE02BFBB06D00A928E5 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2D039DE12BFBB08400A928E5 /* AdvancedExportNetworkView.swift */,
+				2D039DE32BFBB2FE00A928E5 /* AdvancedExportRowView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		2D221CBC2BF753480053E36C /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -12689,6 +12704,7 @@
 		83E40C50AB7C021C24DABF28 /* AdvancedExport */ = {
 			isa = PBXGroup;
 			children = (
+				2D039DE02BFBB06D00A928E5 /* View */,
 				15C1E5B04B82499FEE87B0D6 /* AdvancedExportProtocols.swift */,
 				F6B6B5BC6580FB580D3CF2AE /* AdvancedExportWireframe.swift */,
 				8EB218244A61B9743D9ACF69 /* AdvancedExportPresenter.swift */,
@@ -12696,6 +12712,7 @@
 				4FD12F1DC3720B6C172357E4 /* AdvancedExportViewController.swift */,
 				BA882AB8E1A1DEBF638AD684 /* AdvancedExportViewLayout.swift */,
 				B2DCC4EC5B1982D7B5E4F24A /* AdvancedExportViewFactory.swift */,
+				2DE4EBCE2BFB515E005E2D81 /* AdvancedExportData.swift */,
 			);
 			path = AdvancedExport;
 			sourceTree = "<group>";
@@ -22962,6 +22979,7 @@
 				77CC82A52A984EDA002D022F /* UINavigaionController+Pop.swift in Sources */,
 				84E4897329A79017008726FA /* SkeletonDecoration+View.swift in Sources */,
 				2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */,
+				2D039DE42BFBB2FE00A928E5 /* AdvancedExportRowView.swift in Sources */,
 				845B07FF2916F529005785D3 /* Gov1SubscriptionFactory.swift in Sources */,
 				888A3B6528F73DC300E15BD2 /* ReferendumVotingStatusView.swift in Sources */,
 				0C13DFE12AFBBAF600E5F355 /* SwapBaseViewModelFactory.swift in Sources */,
@@ -23167,6 +23185,7 @@
 				88F34FD928FFE68B00712BDE /* YourVoteRow.swift in Sources */,
 				84D8F15F24D8179000AF43E9 /* TitleWithSubtitleViewModel.swift in Sources */,
 				AEE5FB0126415E2A002B8FDC /* StakingRebondSetupInteractor.swift in Sources */,
+				2D039DE22BFBB08400A928E5 /* AdvancedExportNetworkView.swift in Sources */,
 				84C1B98624F5424700FE5470 /* ChainAccountViewModelFactory.swift in Sources */,
 				847A25B928D7BB1F006AC9F5 /* BalancesTransferEvent.swift in Sources */,
 				84E258A52893D27E00DC8A51 /* AddressScanPresentable.swift in Sources */,
@@ -25205,6 +25224,7 @@
 				77D326EA2B98DF900055FE88 /* TransferType.swift in Sources */,
 				8498534F2A17390900993977 /* PalletAssets.swift in Sources */,
 				845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */,
+				2DE4EBCF2BFB515E005E2D81 /* AdvancedExportData.swift in Sources */,
 				0C37AFC12B56EBC000009ECA /* MaxNominationsOperationFactory.swift in Sources */,
 				0C0E0A952B3E89D200865F10 /* ExtrinsicWrapperResult.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,

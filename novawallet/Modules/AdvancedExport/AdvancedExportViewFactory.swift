@@ -1,11 +1,24 @@
 import Foundation
+import SoraKeystore
+import SoraFoundation
 
 struct AdvancedExportViewFactory {
-    static func createView() -> AdvancedExportViewProtocol? {
-        let interactor = AdvancedExportInteractor()
+    static func createView(
+        with metaAccount: MetaAccountModel,
+        chain: ChainModel?
+    ) -> AdvancedExportViewProtocol? {
+        let keystore = Keychain()
+
+        let interactor = AdvancedExportInteractor(keystore: keystore)
         let wireframe = AdvancedExportWireframe()
 
-        let presenter = AdvancedExportPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = AdvancedExportPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: LocalizationManager.shared,
+            metaAccount: metaAccount,
+            chain: chain
+        )
 
         let view = AdvancedExportViewController(presenter: presenter)
 

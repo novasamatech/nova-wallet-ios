@@ -1,11 +1,20 @@
-protocol AdvancedExportViewProtocol: AnyObject {}
+protocol AdvancedExportViewProtocol: ControllerBackedProtocol {
+    func update(with viewModel: AdvancedExportViewLayout.Model)
+}
 
 protocol AdvancedExportPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol AdvancedExportInteractorInputProtocol: AnyObject {}
+protocol AdvancedExportInteractorInputProtocol: AnyObject {
+    func requestExportOptions(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel?
+    )
+}
 
-protocol AdvancedExportInteractorOutputProtocol: AnyObject {}
+protocol AdvancedExportInteractorOutputProtocol: AnyObject {
+    func didReceive(exportData: AdvancedExportData)
+}
 
 protocol AdvancedExportWireframeProtocol: AnyObject {}
