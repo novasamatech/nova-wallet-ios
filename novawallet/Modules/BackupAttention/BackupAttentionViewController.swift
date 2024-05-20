@@ -7,20 +7,13 @@ final class BackupAttentionViewController: UIViewController, ViewHolder {
 
     let presenter: BackupAttentionPresenterProtocol
 
-    private var appearanceAnimator: ViewAnimatorProtocol?
-    private var disappearanceAnimator: ViewAnimatorProtocol?
-
     init(
         presenter: BackupAttentionPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol,
-        appearanceAnimator: ViewAnimatorProtocol?,
-        disappearanceAnimator: ViewAnimatorProtocol?
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
-        self.appearanceAnimator = appearanceAnimator
-        self.disappearanceAnimator = disappearanceAnimator
     }
 
     @available(*, unavailable)
@@ -29,10 +22,7 @@ final class BackupAttentionViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = BackupAttentionViewLayout(
-            appearanceAnimator: appearanceAnimator,
-            disappearanceAnimator: disappearanceAnimator
-        )
+        view = BackupAttentionViewLayout()
     }
 
     override func viewDidLoad() {
@@ -46,8 +36,8 @@ final class BackupAttentionViewController: UIViewController, ViewHolder {
         let title = R.string.localizable.backupAttentionTitle(preferredLanguages: selectedLocale.rLanguages)
         let description = R.string.localizable.backupAttentionDescription(preferredLanguages: selectedLocale.rLanguages)
 
-        rootView.checkBoxScrollableView.titleView.titleLabel.text = title
-        rootView.checkBoxScrollableView.titleView.descriptionLabel.text = description
+        rootView.titleView.titleLabel.text = title
+        rootView.titleView.descriptionLabel.text = description
     }
 }
 

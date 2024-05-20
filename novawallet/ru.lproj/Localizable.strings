@@ -1597,7 +1597,7 @@
 "backup.attention.passphrase.write.description.highlighted" = "СРЕДСТВА МОГУТ БЫТЬ ПОТЕРЯНЫ НАВСЕГДА.";
 "backup.attention.passphrase.support.description" = "Служба поддержки или администраторы никогда и ни при каких обстоятельствах не будут запрашивать вашу секретную фразу.\n%@";
 "backup.attention.passphrase.support.description.highlighted" = "ОСТЕРЕГАЙТЕСЬ ПОДРАЖАТЕЛЕЙ.";
-"backup.attention.aggree.button.title" = "Просмотрите и примите, чтобы продолжить";
+"backup.attention.aggree.button.title" = "Проверьте и примите";
 "mnemonic.card.cover.message.title" = "Нажмите для показа";
 "mnemonic.card.cover.message.message" = "Убедитесь, что никто не видит ваш экран, и не делайте скриншотов";
 "mnemonic.card.revealed.header.message" = "Пожалуйста, %@ никому";

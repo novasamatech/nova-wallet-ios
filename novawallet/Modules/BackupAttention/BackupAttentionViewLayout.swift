@@ -1,58 +1,85 @@
 import UIKit
 import SoraUI
+import SnapKit
 
-final class BackupAttentionViewLayout: UIView {
-    var checkBoxScrollableView = CheckBoxIconDetailsScrollableView()
+final class BackupAttentionViewLayout: ScrollableContainerLayoutView {
+    var titleView = BackupAttentionTableTitleView()
 
-    var agreeButton: UIControl?
+    var checkBoxViews: [CheckBoxIconDetailsView] = [
+        .init(frame: .zero),
+        .init(frame: .zero),
+        .init(frame: .zero)
+    ]
 
-    var blurredBottomView: OverlayBlurBackgroundView = .create { view in
-        view.borderType = .none
-        view.overlayView.fillColor = R.color.colorBlockBackground()!
-        view.overlayView.strokeColor = R.color.colorContainerBorder()!
-        view.overlayView.strokeWidth = 1.5
-
-        view.sideLength = 16
-        view.cornerCut = [.topLeft, .topRight]
+    let footer: BlurBackgroundView = .create {
+        $0.sideLength = UIConstants.footerCornerRadius
+        $0.cornerCut = [.topLeft, .topRight]
     }
+
+    let agreeButton: TriangularedButton = .create {
+        $0.applyDefaultStyle()
+        $0.addTarget(self, action: #selector(continueAction), for: .touchUpInside)
+    }
+
+    var footerHeightConstraint: Constraint?
 
     private var viewModel: Model?
-    private var appearanceAnimator: ViewAnimatorProtocol?
-    private var disappearanceAnimator: ViewAnimatorProtocol?
-
-    convenience init(
-        appearanceAnimator: ViewAnimatorProtocol?,
-        disappearanceAnimator: ViewAnimatorProtocol?
-    ) {
-        self.init(frame: .zero)
-
-        self.appearanceAnimator = appearanceAnimator
-        self.disappearanceAnimator = disappearanceAnimator
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     override func safeAreaInsetsDidChange() {
         super.safeAreaInsetsDidChange()
 
-        setupLayout()
+        updateFooterHeight()
+        updateStackButtonOffset()
+    }
+
+    override func setupLayout() {
+        super.setupLayout()
+
+        addArrangedSubview(titleView, spacingAfter: 16)
+
+        checkBoxViews.forEach { addArrangedSubview($0, spacingAfter: 12) }
+
+        addSubview(footer)
+        footer.snp.makeConstraints { make in
+            footerHeightConstraint = make.height.equalTo(UIConstants.bottomBlurViewHeight(for: self)).constraint
+
+            // hiding the border at the edges of the screen
+            make.leading.equalToSuperview().offset(-0.5)
+            make.trailing.bottom.equalToSuperview().offset(0.5)
+        }
+
+        footer.addSubview(agreeButton)
+        agreeButton.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.height.equalTo(UIConstants.triangularedViewHeight)
+        }
+    }
+
+    override func setupStyle() {
+        super.setupStyle()
+
+        containerView.scrollView.showsVerticalScrollIndicator = false
     }
 
     func bind(viewModel: Model) {
-        if viewModel.button != self.viewModel?.button {
-            let agreeButton = makeAgreeButton(for: viewModel.button)
-            setupAgreeButton(with: agreeButton)
+        self.viewModel = viewModel
+
+        switch viewModel.button {
+        case let .active(title, action):
+            agreeButton.imageWithTitleView?.title = title
+            agreeButton.applyEnabledStyle()
+            agreeButton.isEnabled = true
+        case let .inactive(title):
+            agreeButton.imageWithTitleView?.title = title
+            agreeButton.applyDisabledStyle()
+            agreeButton.isEnabled = false
         }
 
-        self.viewModel = viewModel
-        checkBoxScrollableView.bind(viewModel: viewModel.rows)
+        checkBoxViews
+            .enumerated()
+            .forEach { $0.element.bind(viewModel: viewModel.rows[$0.offset]) }
+
+        setNeedsLayout()
     }
 }
 
@@ -60,97 +87,25 @@ final class BackupAttentionViewLayout: UIView {
 
 extension BackupAttentionViewLayout {
     struct Model {
-        let rows: CheckBoxIconDetailsScrollableView.Model
+        let rows: [CheckBoxIconDetailsView.Model]
         let button: ButtonModel
     }
 
-    enum ButtonModel: Equatable {
+    enum ButtonModel {
         case active(title: String, action: () -> Void)
         case inactive(title: String)
-
-        static func == (lhs: ButtonModel, rhs: ButtonModel) -> Bool {
-            switch (lhs, rhs) {
-            case (.active, .active):
-                return true
-            case (.inactive, .inactive):
-                return true
-            default:
-                return false
-            }
-        }
     }
 }
 
 // MARK: Private
 
 private extension BackupAttentionViewLayout {
-    func setupLayout() {
-        addSubview(checkBoxScrollableView)
-        checkBoxScrollableView.containerView.scrollContentBottomOffset = UIConstants.scrollBottomOffset(for: self)
-        checkBoxScrollableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        addSubview(blurredBottomView)
-        blurredBottomView.snp.makeConstraints { make in
-            make.height.equalTo(UIConstants.bottomBlurViewHeight(for: self))
-
-            // hiding the border at the edges of the screen
-            make.leading.equalToSuperview().offset(-0.5)
-            make.trailing.bottom.equalToSuperview().offset(0.5)
-        }
+    func updateFooterHeight() {
+        footerHeightConstraint?.layoutConstraints.first?.constant = UIConstants.bottomBlurViewHeight(for: self)
     }
 
-    func makeAgreeButton(for viewModel: ButtonModel) -> UIControl {
-        switch viewModel {
-        case let .active(title, _):
-            let button = TriangularedButton()
-            button.imageWithTitleView?.title = title
-            button.applyEnabledStyle()
-
-            return button
-        case let .inactive(title):
-            let button = TriangularedBlurButton()
-            button.imageWithTitleView?.title = title
-            button.applyDisabledStyle()
-
-            return button
-        }
-    }
-
-    func setupAgreeButton(with button: UIControl) {
-        button.addTarget(self, action: #selector(continueAction), for: .touchUpInside)
-
-        guard let agreeButton else {
-            showButtonWithAnimation(button)
-            return
-        }
-
-        changeButtonWithAnimation(button)
-    }
-
-    func changeButtonWithAnimation(_ button: UIControl) {
-        guard let agreeButton else { return }
-
-        disappearanceAnimator?.animate(view: agreeButton) { [weak self] _ in
-            guard let self else { return }
-            agreeButton.removeFromSuperview()
-
-            showButtonWithAnimation(button)
-        }
-    }
-
-    func showButtonWithAnimation(_ button: UIControl) {
-        button.alpha = 0
-        agreeButton = button
-
-        blurredBottomView.addSubview(button)
-        button.snp.makeConstraints { make in
-            make.leading.trailing.top.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.height.equalTo(UIConstants.triangularedViewHeight)
-        }
-
-        appearanceAnimator?.animate(view: button, completionBlock: nil)
+    func updateStackButtonOffset() {
+        stackView.layoutMargins.bottom = UIConstants.scrollBottomOffset(for: self)
     }
 
     @objc func continueAction() {
@@ -160,7 +115,11 @@ private extension BackupAttentionViewLayout {
     }
 }
 
+// MARK: UIConstants
+
 private extension UIConstants {
+    static let footerCornerRadius: CGFloat = 16
+    static let footerBorderWidth: CGFloat = 16
     static func bottomBlurViewHeight(for view: UIView) -> CGFloat {
         view.safeAreaInsets.bottom + 84
     }

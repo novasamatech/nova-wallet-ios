@@ -2,10 +2,10 @@ import UIKit
 import SoraUI
 
 final class BackupAttentionTableTitleView: GenericPairValueView<
-    UIView,
+    DAppIconView,
     GenericPairValueView<UILabel, UILabel>
 > {
-    var warningIconContainerView: UIView { fView }
+    var warningIconView: DAppIconView { fView }
 
     var titleLabel: UILabel { sView.fView }
 
@@ -24,11 +24,9 @@ final class BackupAttentionTableTitleView: GenericPairValueView<
 
 private extension BackupAttentionTableTitleView {
     func setupStyle() {
-        warningIconContainerView.backgroundColor = R.color.colorContainerBackground()
-        warningIconContainerView.layer.cornerRadius = 10
-        warningIconContainerView.clipsToBounds = true
-        warningIconContainerView.layer.borderWidth = 0.5
-        warningIconContainerView.layer.borderColor = R.color.colorContainerBorder()?.cgColor
+        warningIconView.backgroundView.cornerRadius = UIConstants.warningIconCornerRadius
+        warningIconView.backgroundView.strokeWidth = UIConstants.warningIconStrokeWidth
+        warningIconView.backgroundView.strokeColor = R.color.colorContainerBorder()!
 
         titleLabel.apply(style: .boldTitle3Warning)
         titleLabel.textAlignment = .center
@@ -47,7 +45,8 @@ private extension BackupAttentionTableTitleView {
         stackView.alignment = .center
         sView.spacing = 8
 
-        warningIconContainerView.snp.makeConstraints { make in
+        warningIconView.contentInsets = UIConstants.warningIconContentInsets
+        warningIconView.snp.makeConstraints { make in
             make.size.equalTo(64)
         }
 
@@ -55,18 +54,14 @@ private extension BackupAttentionTableTitleView {
     }
 
     func setupImage() {
-        let image = R.image.iconWarningApp()
-        let warningIconImageView = UIImageView(image: image)
-
-        warningIconImageView.contentMode = .scaleAspectFit
-
-        warningIconContainerView.addSubview(warningIconImageView)
-
-        warningIconImageView.snp.makeConstraints { make in
-            make.centerX.centerY.equalToSuperview()
-            make.size.equalTo(40)
-        }
-
-        setNeedsLayout()
+        warningIconView.imageView.image = R.image.iconWarningApp()
     }
+}
+
+// MARK: UIConstants
+
+private extension UIConstants {
+    static let warningIconStrokeWidth: CGFloat = 0.5
+    static let warningIconCornerRadius: CGFloat = 10
+    static let warningIconContentInsets: UIEdgeInsets = .init(top: 12, left: 12, bottom: 12, right: 12)
 }

@@ -737,8 +737,6 @@
 		2D221CBE2BF753620053E36C /* ContentSizedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */; };
 		2D221CC02BF753C30053E36C /* MnemonicWordCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
-		2DC075E52BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E42BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift */; };
-		2DC075E72BF4B41300868563 /* TriangularedBlurButton+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E62BF4B41300868563 /* TriangularedBlurButton+Style.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
@@ -5462,8 +5460,6 @@
 		2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedCollectionView.swift; sourceTree = "<group>"; };
 		2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCollectionCell.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
-		2DC075E42BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsScrollableContainerLayoutView.swift; sourceTree = "<group>"; };
-		2DC075E62BF4B41300868563 /* TriangularedBlurButton+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TriangularedBlurButton+Style.swift"; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
@@ -11126,7 +11122,6 @@
 			children = (
 				2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */,
 				2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */,
-				2DC075E42BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -15981,7 +15976,6 @@
 				84CCBFBB2509709500180F4F /* UIBarButtonItem+Style.swift */,
 				84D331AE2519E8080078D044 /* TriangularedView+Style.swift */,
 				84585A2E251BFC8400390F7A /* TriangularedButton+Style.swift */,
-				2DC075E62BF4B41300868563 /* TriangularedBlurButton+Style.swift */,
 				84D97EC72520D32000F07405 /* PolkadotIcon+Image.swift */,
 				F462B363260C88050005AB01 /* UITableView+Reuse.swift */,
 				AEF505A82620249F0098574D /* UIColor+HEX.swift */,
@@ -23724,7 +23718,6 @@
 				84443BA226C123F100C33B5D /* Data+Random.swift in Sources */,
 				84C6800E24D6ECE800006BF5 /* ExpandableActionControl.swift in Sources */,
 				8490148424AA27C1008F705E /* OperationManagerFacade.swift in Sources */,
-				2DC075E52BF47CA300868563 /* CheckBoxIconDetailsScrollableContainerLayoutView.swift in Sources */,
 				842A738827DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift in Sources */,
 				77FFB2B12B0D392A00C7C879 /* OpenStakingUrlParsingService.swift in Sources */,
 				8499FE7527BE490700712589 /* UniquesAccountKey.swift in Sources */,
@@ -23906,7 +23899,6 @@
 				84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */,
 				849014BF24AA87E4008F705E /* ScreenAuthorizationProtocol.swift in Sources */,
 				84CB2250270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift in Sources */,
-				2DC075E72BF4B41300868563 /* TriangularedBlurButton+Style.swift in Sources */,
 				77CBD39E2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift in Sources */,
 				84F96FA52A136E1B00EB70E2 /* GladingCardView.swift in Sources */,
 				8448221826B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift in Sources */,
