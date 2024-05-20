@@ -25,7 +25,7 @@ final class BackupAttentionTableTitleView: GenericPairValueView<
 private extension BackupAttentionTableTitleView {
     func setupStyle() {
         warningIconView.backgroundView.cornerRadius = UIConstants.warningIconCornerRadius
-        warningIconView.backgroundView.strokeWidth = warningIconStrokeWidth
+        warningIconView.backgroundView.strokeWidth = UIConstants.warningIconStrokeWidth
         warningIconView.backgroundView.strokeColor = R.color.colorContainerBorder()!
 
         titleLabel.apply(style: .boldTitle3Warning)

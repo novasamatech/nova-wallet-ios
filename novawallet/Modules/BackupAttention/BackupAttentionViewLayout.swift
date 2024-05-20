@@ -16,12 +16,9 @@ final class BackupAttentionViewLayout: ScrollableContainerLayoutView {
         $0.cornerCut = [.topLeft, .topRight]
     }
 
-    let agreeButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-
-        return button
-    }()
+    let agreeButton: TriangularedButton = .create {
+        $0.applyDefaultStyle()
+    }
 
     var footerHeightConstraint: Constraint?
 
