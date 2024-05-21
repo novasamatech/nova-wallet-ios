@@ -1589,3 +1589,16 @@
 "cloud.backup.enter.password.issue" = "Enter Backup Password";
 "cloud.backup.review.backup.updates" = "Review Backup Updates";
 "backup.select.wallet.title" = "Select a wallet to back up";
+"backup.attention.title" = "Do not share your passphrase!";
+"backup.attention.description" = "Please read the following carefully before viewing your backup";
+"backup.attention.passphrase.description" = "This passphrase gives you total and permanent access to all connected wallets and the funds within them.\n%@";
+"backup.attention.passphrase.description.highlighted" = "DO NOT SHARE IT.";
+"backup.attention.passphrase.write.description" = "Do not enter your Passphrase into any form or website.\n%@";
+"backup.attention.passphrase.write.description.highlighted" = "FUNDS MAY BE LOST FOREVER.";
+"backup.attention.passphrase.support.description" = "Support or admins will never request your Passphrase under any circumstances.\n%@";
+"backup.attention.passphrase.support.description.highlighted" = "BEWARE OF IMPERSONATORS.";
+"backup.attention.aggree.button.title" = "Review & Accept to Continue";
+"mnemonic.card.cover.message.title" = "Tap to reveal";
+"mnemonic.card.cover.message.message" = "Make sure no one can see your screen and do not take screenshots";
+"mnemonic.card.revealed.header.message" = "Please %@ anyone";
+"mnemonic.card.revealed.header.message.highlighted" = "do not share with";

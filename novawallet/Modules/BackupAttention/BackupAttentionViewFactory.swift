@@ -1,16 +1,22 @@
 import Foundation
+import SoraFoundation
+import SoraUI
 
 struct BackupAttentionViewFactory {
-    static func createView() -> BackupAttentionViewProtocol? {
-        let interactor = BackupAttentionInteractor()
-        let wireframe = BackupAttentionWireframe()
+    static func createView(with metaAccount: MetaAccountModel) -> BackupAttentionViewProtocol? {
+        let wireframe = BackupAttentionWireframe(metaAccount: metaAccount)
 
-        let presenter = BackupAttentionPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = BackupAttentionPresenter(
+            wireframe: wireframe,
+            localizationManager: LocalizationManager.shared
+        )
 
-        let view = BackupAttentionViewController(presenter: presenter)
+        let view = BackupAttentionViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }

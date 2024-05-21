@@ -49,7 +49,7 @@ extension ManualBackupWalletListPresenter: ManualBackupWalletListPresenterProtoc
 
         wireframe?.showBackupAttention(
             from: baseView,
-            wallet: wallet.info
+            metaAccount: wallet.info
         )
     }
 }
