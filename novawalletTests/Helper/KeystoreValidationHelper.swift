@@ -47,10 +47,6 @@ enum KeystoreValidationHelper {
             return false
         }
         
-        if try !keystore.checkKey(for: KeystoreTagV2.ethereumSeedTagForMetaId(wallet.metaId)) {
-            return false
-        }
-        
         if try !keystore.checkKey(for: KeystoreTagV2.substrateSecretKeyTagForMetaId(wallet.metaId)) {
             return false
         }
