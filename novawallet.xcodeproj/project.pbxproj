@@ -738,6 +738,7 @@
 		2D039DE22BFBB08400A928E5 /* AdvancedExportNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE12BFBB08400A928E5 /* AdvancedExportNetworkView.swift */; };
 		2D039DE42BFBB2FE00A928E5 /* AdvancedExportRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE32BFBB2FE00A928E5 /* AdvancedExportRowView.swift */; };
 		2D039DE62BFC8D4000A928E5 /* GenericBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE52BFC8D4000A928E5 /* GenericBackgroundView.swift */; };
+		2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */; };
 		2D221CBE2BF753620053E36C /* ContentSizedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */; };
 		2D221CC02BF753C30053E36C /* MnemonicWordCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
@@ -5472,6 +5473,7 @@
 		2D039DE12BFBB08400A928E5 /* AdvancedExportNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedExportNetworkView.swift; sourceTree = "<group>"; };
 		2D039DE32BFBB2FE00A928E5 /* AdvancedExportRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedExportRowView.swift; sourceTree = "<group>"; };
 		2D039DE52BFC8D4000A928E5 /* GenericBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericBackgroundView.swift; sourceTree = "<group>"; };
+		2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
 		2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedCollectionView.swift; sourceTree = "<group>"; };
 		2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCollectionCell.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
@@ -16278,6 +16280,7 @@
 				84C6800C24D6ECC200006BF5 /* ActionView */,
 				842D1E7724D063E500C30A7A /* TriangularedView */,
 				8467FD4024ED3C72005D486C /* AlignableContentControl.swift */,
+				2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */,
 				84C5ADE928147BC2006D7388 /* InlineAlertView.swift */,
 				843910DA253F90C400E3C217 /* NovaWindow.swift */,
 				8460E11C2542011200826F55 /* DetailsTriangularedView.swift */,
@@ -26095,6 +26098,7 @@
 				0CCDB2F72B75DFD4007BC5D6 /* HydraStableswapFlowState.swift in Sources */,
 				84AC794A297FEAFF00E284DE /* GovernanceDelegateDetails.swift in Sources */,
 				77E304B22AEFC0F3006FD6F0 /* SwapNetworkFeeSheetViewController.swift in Sources */,
+				2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */,
 				84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */,
 				84A5915E292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift in Sources */,
 				CD4240B756F20C338A8B3589 /* LedgerInstructionsWireframe.swift in Sources */,
