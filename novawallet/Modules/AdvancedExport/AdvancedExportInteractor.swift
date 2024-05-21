@@ -11,7 +11,10 @@ final class AdvancedExportInteractor {
 }
 
 extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
-    func requestExportOptions(metaAccount: MetaAccountModel, chain: ChainModel?) {
+    func requestExportOptions(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel?
+    ) {
         do {
             let substrateExportData = try substrateExportData(
                 for: metaAccount,
@@ -32,6 +35,31 @@ extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
 
             presenter?.didReceive(exportData: exportData)
         } catch {}
+    }
+
+    func requestSeedForSubstrate(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel?
+    ) {
+        var accountId: AccountId?
+
+        if let chain {
+            accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+        }
+
+        let seedTag = KeystoreTagV2.substrateSeedTagForMetaId(
+            metaAccount.metaId,
+            accountId: accountId
+        )
+
+        if
+            let _ = try? keystore.checkKey(for: seedTag),
+            let seed = try? keystore.loadIfKeyExists(seedTag) {
+            presenter?.didReceive(
+                seed: seed,
+                for: chain?.name ?? "Polkadot"
+            )
+        }
     }
 }
 
@@ -77,6 +105,7 @@ private extension AdvancedExportInteractor {
         }
 
         return .init(
+            name: "Ethereum",
             availableOptions: options,
             derivationPath: derivationPath,
             cryptoType: MultiassetCryptoType.ethereumEcdsa
@@ -118,6 +147,7 @@ private extension AdvancedExportInteractor {
         )
 
         return .init(
+            name: chain?.name ?? "Polkadot",
             availableOptions: options,
             derivationPath: try derivationPath(for: derivationTag),
             cryptoType: MultiassetCryptoType(rawValue: metaAccount.substrateCryptoType!)!

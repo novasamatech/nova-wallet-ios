@@ -19,8 +19,8 @@ class AdvancedExportRowView: GenericPairValueView<
     var leftTitle: UILabel { fView.fView }
     var rightTitle: UILabel { fView.sView }
     var blockBackgroundView: RoundedView { sView.roundedBackgroundView }
-    var mainContentLabel: UILabel { sView.rowContentView.fView }
-    var secondaryContentLabel: UILabel { sView.rowContentView.sView }
+    var mainContentLabel: UILabel { contentLabelsVStack.fView }
+    var secondaryContentLabel: UILabel { contentLabelsVStack.sView }
 
     var blockView: RowView<
         GenericPairValueView<
@@ -31,10 +31,7 @@ class AdvancedExportRowView: GenericPairValueView<
 
     var coverView: UIView?
 
-    var hasInteractableContent: Bool {
-        get { blockView.hasInteractableContent }
-        set { blockView.hasInteractableContent = newValue }
-    }
+    var type: RowType = .none
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -59,8 +56,8 @@ class AdvancedExportRowView: GenericPairValueView<
         blockView.contentInsets = Constants.stackedLabelContentInset
     }
 
-    func setHiddenContent(with coverView: UIView) {
-        self.coverView = coverView
+    func setHiddenContent() {
+        guard let coverView else { return }
 
         blockView.addSubview(coverView)
 
@@ -71,7 +68,21 @@ class AdvancedExportRowView: GenericPairValueView<
 
     func setShowingContent() {
         coverView?.removeFromSuperview()
-        coverView = nil
+    }
+
+    func setupButtonStyle() {
+        mainContentLabel.apply(style: .semiboldSubhedlineAccent)
+        mainContentLabel.numberOfLines = 1
+        mainContentLabel.textAlignment = .center
+        secondaryContentLabel.isHidden = true
+        blockView.contentInsets = Constants.singleLabelContentInset
+    }
+}
+
+extension AdvancedExportRowView {
+    enum RowType: Hashable {
+        case none
+        case chainSecret(chainName: String)
     }
 }
 

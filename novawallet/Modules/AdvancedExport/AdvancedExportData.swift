@@ -10,6 +10,7 @@ struct AdvancedExportData {
 }
 
 struct AdvancedExportChainData {
+    let name: String
     let availableOptions: [SecretSource]
     let derivationPath: String?
     let cryptoType: MultiassetCryptoType

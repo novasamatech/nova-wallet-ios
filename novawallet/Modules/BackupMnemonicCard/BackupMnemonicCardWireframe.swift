@@ -13,6 +13,10 @@ final class BackupMnemonicCardWireframe: BackupMnemonicCardWireframeProtocol {
             return
         }
 
-        view?.controller.present(advancedExport.controller, animated: true)
+        let navigationController = NovaNavigationController(
+            rootViewController: advancedExport.controller
+        )
+
+        view?.controller.present(navigationController, animated: true)
     }
 }

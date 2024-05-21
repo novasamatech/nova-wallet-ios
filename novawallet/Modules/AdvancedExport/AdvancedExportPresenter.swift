@@ -39,6 +39,16 @@ extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
 
         view?.update(with: viewModel)
     }
+
+    func didReceive(
+        seed: Data,
+        for chainName: String
+    ) {
+        view?.showSecret(
+            seed.toHexWithPrefix(),
+            for: chainName
+        )
+    }
 }
 
 // MARK: Private
@@ -76,40 +86,69 @@ private extension AdvancedExportPresenter {
     }
 
     func createViewModelForSubstrate(with model: AdvancedExportChainData) -> AdvancedExportViewLayout.NetworkModel {
-        var blocks: [AdvancedExportViewLayout.NetworkModel.Block] = [
-            .secret(model: .init(
-                blockLeftTitle: R.string.localizable.secretTypeSeedTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                blockRightTitle: R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                hidden: true,
-                coverText: R.string.localizable.mnemonicCardCoverMessageTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                onCoverTap: { print("SUBSTRATE_SEED_TAPPED") },
-                secret: nil
-            )),
+        var blocks: [AdvancedExportViewLayout.NetworkModel.Block] = []
 
-            .cryptoType(model: .init(
-                blockLeftTitle: R.string.localizable.commonCryptoType(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                contentMainText: model.cryptoType.titleForLocale(selectedLocale),
-                contentSecondaryText: model.cryptoType.subtitleForLocale(selectedLocale)
-            ))
-        ]
+        let showSeed = model.availableOptions.contains(where: { $0 == .seed })
+        let showJSONExport = model.availableOptions.contains(where: { $0 == .keystore })
 
-        if let derivationPath = model.derivationPath {
+        if showSeed {
             blocks.append(
-                .derivationPath(model: .init(
-                    blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
+                .secret(model: .init(
+                    blockLeftTitle: R.string.localizable.secretTypeSeedTitle(
                         preferredLanguages: selectedLocale.rLanguages
                     ),
-                    content: model.derivationPath
+                    blockRightTitle: R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    hidden: true,
+                    coverText: R.string.localizable.mnemonicCardCoverMessageTitle(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    onCoverTap: { [weak self] in self?.didTapSubstrateSecretCover() },
+                    secret: nil,
+                    chainName: model.name
                 ))
             )
+        }
+
+        if showJSONExport {
+            blocks.append(
+                .jsonExport(model: .init(
+                    blockLeftTitle: R.string.localizable.importRecoveryJson(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    buttonTitle: R.string.localizable.advancedExportJsonButtonTitle(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    action: {
+                        // TODO: route with wireframe
+                        print("ROUTE")
+                    }
+                ))
+            )
+        }
+
+        if showSeed {
+            blocks.append(
+                .cryptoType(model: .init(
+                    blockLeftTitle: R.string.localizable.commonCryptoType(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    contentMainText: model.cryptoType.titleForLocale(selectedLocale),
+                    contentSecondaryText: model.cryptoType.subtitleForLocale(selectedLocale)
+                ))
+            )
+
+            if let derivationPath = model.derivationPath {
+                blocks.append(
+                    .derivationPath(model: .init(
+                        blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
+                            preferredLanguages: selectedLocale.rLanguages
+                        ),
+                        content: model.derivationPath
+                    ))
+                )
+            }
         }
 
         return .init(
@@ -132,7 +171,8 @@ private extension AdvancedExportPresenter {
                     preferredLanguages: selectedLocale.rLanguages
                 ),
                 onCoverTap: { print("SUBSTRATE_SEED_TAPPED") },
-                secret: nil
+                secret: nil,
+                chainName: model.name
             )),
 
             .cryptoType(model: .init(
@@ -162,6 +202,13 @@ private extension AdvancedExportPresenter {
         return .init(
             name: "Ethereum",
             blocks: blocks
+        )
+    }
+
+    func didTapSubstrateSecretCover() {
+        interactor.requestSeedForSubstrate(
+            metaAccount: metaAccount,
+            chain: chain
         )
     }
 }

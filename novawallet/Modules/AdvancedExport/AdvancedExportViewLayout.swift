@@ -20,6 +20,41 @@ final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
             }
         }
     }
+
+    func showSecret(
+        _ secret: String,
+        for chainName: String
+    ) {
+        let enumeratedView = stackView
+            .arrangedSubviews
+            .enumerated()
+            .map { (offset: $0.offset, element: $0.element as? AdvancedExportRowView) }
+            .first { enumeratedView in
+                guard
+                    case let .chainSecret(rowChainName) = enumeratedView.element?.type,
+                    chainName == rowChainName
+                else {
+                    return false
+                }
+
+                return true
+            }
+
+        guard
+            let index = enumeratedView?.offset,
+            let view = enumeratedView?.element
+        else { return }
+
+//        view.removeFromSuperview()
+        view.setShowingContent()
+        view.mainContentLabel.text = secret
+
+//        insertArrangedSubview(
+//            view,
+//            at: index,
+//            spacingAfter: 16
+//        )
+    }
 }
 
 // MARK: Private
@@ -46,7 +81,7 @@ private extension AdvancedExportViewLayout {
             case let .derivationPath(model):
                 resultView = createDerivationPathRow(with: model)
             case let .jsonExport(model):
-                resultView = UIView()
+                resultView = createJSONExportRow(for: model)
             }
 
             addArrangedSubview(resultView, spacingAfter: 16)
@@ -60,9 +95,11 @@ private extension AdvancedExportViewLayout {
             view.leftTitle.text = model.blockLeftTitle
             view.rightTitle.text = model.blockRightTitle
             view.mainContentLabel.text = model.secret
+            view.type = .chainSecret(chainName: model.chainName)
+            view.coverView = createBlurCoverView(for: model)
 
             if model.hidden {
-                view.setHiddenContent(with: createBlurCoverView(for: model))
+                view.setHiddenContent()
                 view.isUserInteractionEnabled = true
             } else {
                 view.isUserInteractionEnabled = false
@@ -94,6 +131,17 @@ private extension AdvancedExportViewLayout {
             view.textAlignment = .left
             view.text = model.name
             view.isUserInteractionEnabled = false
+        }
+    }
+
+    func createJSONExportRow(for model: NetworkModel.ExportJSON) -> AdvancedExportRowView {
+        .create { view in
+            view.setupButtonStyle()
+            view.leftTitle.text = model.blockLeftTitle
+            view.mainContentLabel.text = model.buttonTitle
+
+            let tapGesture = BindableGestureRecognizer(action: model.action)
+            view.addGestureRecognizer(tapGesture)
         }
     }
 
@@ -144,6 +192,7 @@ extension AdvancedExportViewLayout {
             let coverText: String?
             let onCoverTap: () -> Void
             let secret: String?
+            let chainName: String
         }
 
         struct ExportJSON {

@@ -20,7 +20,10 @@ struct AdvancedExportViewFactory {
             chain: chain
         )
 
-        let view = AdvancedExportViewController(presenter: presenter)
+        let view = AdvancedExportViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

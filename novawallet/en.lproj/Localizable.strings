@@ -1604,3 +1604,4 @@
 "mnemonic.card.revealed.header.message" = "Please %@ anyone";
 "mnemonic.card.revealed.header.message.highlighted" = "do not share with";
 "advanced.export.header.message" = "Do not share any of this information with anyone - If you do you will permanently and irretreveably lose all of your assets";
+"advanced.export.json.button.title" = "Export JSON file";
