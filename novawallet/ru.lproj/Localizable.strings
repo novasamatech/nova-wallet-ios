@@ -1603,3 +1603,5 @@
 "mnemonic.card.cover.message.message" = "Убедитесь, что никто не видит ваш экран, и не делайте скриншотов";
 "mnemonic.card.revealed.header.message" = "Пожалуйста, %@ никому";
 "mnemonic.card.revealed.header.message.highlighted" = "не сообщайте";
+"advanced.export.header.message" = "Не передавайте никому эту информацию - в противном случае вы навсегда и безвозвратно потеряете все свои активы";
+"advanced.export.json.button.title" = "Экспортировать JSON-файл";
