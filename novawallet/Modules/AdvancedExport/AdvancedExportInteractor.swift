@@ -41,25 +41,36 @@ extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
         metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) {
-        var accountId: AccountId?
-
-        if let chain {
-            accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+        guard let secret = fetchSecret(
+            with: metaAccount,
+            chain: chain,
+            chainType: .substrate
+        ) else {
+            return
         }
 
-        let seedTag = KeystoreTagV2.substrateSeedTagForMetaId(
-            metaAccount.metaId,
-            accountId: accountId
+        presenter?.didReceive(
+            seed: secret,
+            for: chain?.name ?? ChainType.substrate.rawValue
         )
+    }
 
-        if
-            let _ = try? keystore.checkKey(for: seedTag),
-            let seed = try? keystore.loadIfKeyExists(seedTag) {
-            presenter?.didReceive(
-                seed: seed,
-                for: chain?.name ?? "Polkadot"
-            )
+    func requestKeyForEthereum(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel?
+    ) {
+        guard let secret = fetchSecret(
+            with: metaAccount,
+            chain: chain,
+            chainType: .ethereum
+        ) else {
+            return
         }
+
+        presenter?.didReceive(
+            seed: secret,
+            for: chain?.name ?? ChainType.ethereum.rawValue
+        )
     }
 }
 
@@ -105,7 +116,7 @@ private extension AdvancedExportInteractor {
         }
 
         return .init(
-            name: "Ethereum",
+            name: ChainType.ethereum.rawValue,
             availableOptions: options,
             derivationPath: derivationPath,
             cryptoType: MultiassetCryptoType.ethereumEcdsa
@@ -147,7 +158,7 @@ private extension AdvancedExportInteractor {
         )
 
         return .init(
-            name: chain?.name ?? "Polkadot",
+            name: chain?.name ?? ChainType.substrate.rawValue,
             availableOptions: options,
             derivationPath: try derivationPath(for: derivationTag),
             cryptoType: MultiassetCryptoType(rawValue: metaAccount.substrateCryptoType!)!
@@ -160,5 +171,39 @@ private extension AdvancedExportInteractor {
         }
 
         return String(data: derivationPathData, encoding: .utf8)
+    }
+
+    func fetchSecret(
+        with metaAccount: MetaAccountModel,
+        chain: ChainModel?,
+        chainType: ChainType
+    ) -> Data? {
+        var accountId: AccountId?
+
+        if let chain {
+            accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+        }
+
+        let keystoreTag: String = switch chainType {
+        case .ethereum:
+            KeystoreTagV2.ethereumSecretKeyTagForMetaId(
+                metaAccount.metaId,
+                accountId: accountId
+            )
+        case .substrate:
+            KeystoreTagV2.substrateSeedTagForMetaId(
+                metaAccount.metaId,
+                accountId: accountId
+            )
+        }
+
+        return try? keystore.loadIfKeyExists(keystoreTag)
+    }
+}
+
+private extension AdvancedExportInteractor {
+    enum ChainType: String {
+        case substrate = "Polkadot"
+        case ethereum = "Ethereum"
     }
 }

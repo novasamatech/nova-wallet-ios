@@ -128,31 +128,29 @@ private extension AdvancedExportPresenter {
             )
         }
 
-        if showSeed {
+        blocks.append(
+            .cryptoType(model: .init(
+                blockLeftTitle: R.string.localizable.commonCryptoType(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                contentMainText: model.cryptoType.titleForLocale(selectedLocale),
+                contentSecondaryText: model.cryptoType.subtitleForLocale(selectedLocale)
+            ))
+        )
+
+        if let derivationPath = model.derivationPath {
             blocks.append(
-                .cryptoType(model: .init(
-                    blockLeftTitle: R.string.localizable.commonCryptoType(
+                .derivationPath(model: .init(
+                    blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
                         preferredLanguages: selectedLocale.rLanguages
                     ),
-                    contentMainText: model.cryptoType.titleForLocale(selectedLocale),
-                    contentSecondaryText: model.cryptoType.subtitleForLocale(selectedLocale)
+                    content: model.derivationPath
                 ))
             )
-
-            if let derivationPath = model.derivationPath {
-                blocks.append(
-                    .derivationPath(model: .init(
-                        blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
-                            preferredLanguages: selectedLocale.rLanguages
-                        ),
-                        content: model.derivationPath
-                    ))
-                )
-            }
         }
 
         return .init(
-            name: "Polkadot",
+            name: model.name,
             blocks: blocks
         )
     }
@@ -170,7 +168,7 @@ private extension AdvancedExportPresenter {
                 coverText: R.string.localizable.mnemonicCardCoverMessageTitle(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
-                onCoverTap: { print("SUBSTRATE_SEED_TAPPED") },
+                onCoverTap: { [weak self] in self?.didTapEthereumSecretCover() },
                 secret: nil,
                 chainName: model.name
             )),
@@ -200,13 +198,20 @@ private extension AdvancedExportPresenter {
         }
 
         return .init(
-            name: "Ethereum",
+            name: model.name,
             blocks: blocks
         )
     }
 
     func didTapSubstrateSecretCover() {
         interactor.requestSeedForSubstrate(
+            metaAccount: metaAccount,
+            chain: chain
+        )
+    }
+
+    func didTapEthereumSecretCover() {
+        interactor.requestKeyForEthereum(
             metaAccount: metaAccount,
             chain: chain
         )

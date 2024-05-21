@@ -22,6 +22,11 @@ protocol AdvancedExportInteractorInputProtocol: AnyObject {
         metaAccount: MetaAccountModel,
         chain: ChainModel?
     )
+
+    func requestKeyForEthereum(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel?
+    )
 }
 
 protocol AdvancedExportInteractorOutputProtocol: AnyObject {

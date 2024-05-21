@@ -7,27 +7,15 @@ class AdvancedExportRowView: GenericPairValueView<
         UILabel,
         UILabel
     >,
-    RowView<
-        GenericPairValueView<
-            UILabel,
-            UILabel
-        >
-    >
+    GenericBackgroundView<MultiValueView>
 > {
     private var titleHStack: GenericPairValueView<UILabel, UILabel> { fView }
-    private var contentLabelsVStack: GenericPairValueView<UILabel, UILabel> { sView.rowContentView }
+    private var contentLabels: MultiValueView { sView.wrappedView }
+    var blockView: GenericBackgroundView<MultiValueView> { sView }
     var leftTitle: UILabel { fView.fView }
     var rightTitle: UILabel { fView.sView }
-    var blockBackgroundView: RoundedView { sView.roundedBackgroundView }
-    var mainContentLabel: UILabel { contentLabelsVStack.fView }
-    var secondaryContentLabel: UILabel { contentLabelsVStack.sView }
-
-    var blockView: RowView<
-        GenericPairValueView<
-            UILabel,
-            UILabel
-        >
-    > { sView }
+    var mainContentLabel: UILabel { contentLabels.valueTop }
+    var secondaryContentLabel: UILabel { contentLabels.valueBottom }
 
     var coverView: UIView?
 
@@ -91,11 +79,10 @@ extension AdvancedExportRowView {
 private extension AdvancedExportRowView {
     func setupLayout() {
         spacing = Constants.titleBlockSpacing
-        contentLabelsVStack.spacing = Constants.contentLabelsSpacing
+        contentLabels.spacing = Constants.contentLabelsSpacing
 
         titleHStack.makeHorizontal()
         titleHStack.stackView.distribution = .fillEqually
-        contentLabelsVStack.makeVertical()
     }
 
     func setupStyle() {
@@ -105,11 +92,14 @@ private extension AdvancedExportRowView {
         leftTitle.textAlignment = .left
         rightTitle.textAlignment = .right
 
+        mainContentLabel.textAlignment = .left
+        secondaryContentLabel.textAlignment = .left
+
         setContentSingleLabel()
 
-        blockBackgroundView.cornerRadius = Constants.cornerRadius
-        blockBackgroundView.roundingCorners = .allCorners
-        blockBackgroundView.fillColor = R.color.colorBlockBackground()!
+        blockView.cornerRadius = Constants.cornerRadius
+        blockView.roundingCorners = .allCorners
+        blockView.fillColor = R.color.colorBlockBackground()!
     }
 }
 
