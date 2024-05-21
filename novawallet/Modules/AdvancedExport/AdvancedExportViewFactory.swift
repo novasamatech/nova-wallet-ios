@@ -16,6 +16,7 @@ struct AdvancedExportViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared,
+            logger: Logger.shared,
             metaAccount: metaAccount,
             chain: chain
         )

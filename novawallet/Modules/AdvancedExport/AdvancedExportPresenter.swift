@@ -6,6 +6,9 @@ final class AdvancedExportPresenter {
     let wireframe: AdvancedExportWireframeProtocol
     let interactor: AdvancedExportInteractorInputProtocol
 
+    private let logger: LoggerProtocol
+    private let localizationManager: LocalizationManagerProtocol
+
     private let metaAccount: MetaAccountModel
     private var chain: ChainModel?
 
@@ -13,11 +16,13 @@ final class AdvancedExportPresenter {
         interactor: AdvancedExportInteractorInputProtocol,
         wireframe: AdvancedExportWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol,
         metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.logger = logger
         self.metaAccount = metaAccount
         self.chain = chain
         self.localizationManager = localizationManager
@@ -48,6 +53,18 @@ extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
             seed.toHexWithPrefix(),
             for: chainName
         )
+    }
+
+    func didReceive(_ error: Error) {
+        logger.error("Did receive error: \(error)")
+
+        if !wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale) {
+            _ = wireframe.present(
+                error: CommonError.dataCorruption,
+                from: view,
+                locale: localizationManager.selectedLocale
+            )
+        }
     }
 }
 
@@ -120,9 +137,8 @@ private extension AdvancedExportPresenter {
                     buttonTitle: R.string.localizable.advancedExportJsonButtonTitle(
                         preferredLanguages: selectedLocale.rLanguages
                     ),
-                    action: {
-                        // TODO: route with wireframe
-                        print("ROUTE")
+                    action: { [weak self] in
+                        self?.wireframe.showExportRestoreJSON(from: view)
                     }
                 ))
             )

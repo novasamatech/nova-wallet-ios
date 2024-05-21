@@ -32,6 +32,9 @@ protocol AdvancedExportInteractorInputProtocol: AnyObject {
 protocol AdvancedExportInteractorOutputProtocol: AnyObject {
     func didReceive(exportData: AdvancedExportData)
     func didReceive(seed: Data, for chainName: String)
+    func didReceive(_ error: Error)
 }
 
-protocol AdvancedExportWireframeProtocol: AnyObject {}
+protocol AdvancedExportWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func showExportRestoreJSON(from view: AdvancedExportViewProtocol?)
+}

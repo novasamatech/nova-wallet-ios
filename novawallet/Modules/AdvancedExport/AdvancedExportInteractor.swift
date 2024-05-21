@@ -34,7 +34,9 @@ extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
             )
 
             presenter?.didReceive(exportData: exportData)
-        } catch {}
+        } catch {
+            presenter?.didReceive(error)
+        }
     }
 
     func requestSeedForSubstrate(
@@ -77,6 +79,33 @@ extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
 // MARK: Private
 
 private extension AdvancedExportInteractor {
+    func fetchSecret(
+        with metaAccount: MetaAccountModel,
+        chain: ChainModel?,
+        chainType: ChainType
+    ) -> Data? {
+        var accountId: AccountId?
+
+        if let chain {
+            accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+        }
+
+        let keystoreTag: String = switch chainType {
+        case .ethereum:
+            KeystoreTagV2.ethereumSecretKeyTagForMetaId(
+                metaAccount.metaId,
+                accountId: accountId
+            )
+        case .substrate:
+            KeystoreTagV2.substrateSeedTagForMetaId(
+                metaAccount.metaId,
+                accountId: accountId
+            )
+        }
+
+        return try? keystore.loadIfKeyExists(keystoreTag)
+    }
+
     func ethereumExportData(
         for metaAccount: MetaAccountModel,
         chain: ChainModel?
@@ -171,33 +200,6 @@ private extension AdvancedExportInteractor {
         }
 
         return String(data: derivationPathData, encoding: .utf8)
-    }
-
-    func fetchSecret(
-        with metaAccount: MetaAccountModel,
-        chain: ChainModel?,
-        chainType: ChainType
-    ) -> Data? {
-        var accountId: AccountId?
-
-        if let chain {
-            accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
-        }
-
-        let keystoreTag: String = switch chainType {
-        case .ethereum:
-            KeystoreTagV2.ethereumSecretKeyTagForMetaId(
-                metaAccount.metaId,
-                accountId: accountId
-            )
-        case .substrate:
-            KeystoreTagV2.substrateSeedTagForMetaId(
-                metaAccount.metaId,
-                accountId: accountId
-            )
-        }
-
-        return try? keystore.loadIfKeyExists(keystoreTag)
     }
 }
 

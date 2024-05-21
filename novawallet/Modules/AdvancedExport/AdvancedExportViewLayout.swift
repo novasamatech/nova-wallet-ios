@@ -25,35 +25,19 @@ final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
         _ secret: String,
         for chainName: String
     ) {
-        let enumeratedView = stackView
+        let secretView = stackView
             .arrangedSubviews
-            .enumerated()
-            .map { (offset: $0.offset, element: $0.element as? AdvancedExportRowView) }
-            .first { enumeratedView in
-                guard
-                    case let .chainSecret(rowChainName) = enumeratedView.element?.type,
-                    chainName == rowChainName
-                else {
+            .compactMap { $0 as? AdvancedExportRowView }
+            .first { view in
+                guard case let .chainSecret(rowChainName) = view.type else {
                     return false
                 }
 
-                return true
+                return chainName == rowChainName
             }
 
-        guard
-            let index = enumeratedView?.offset,
-            let view = enumeratedView?.element
-        else { return }
-
-//        view.removeFromSuperview()
-        view.setShowingContent()
-        view.mainContentLabel.text = secret
-
-//        insertArrangedSubview(
-//            view,
-//            at: index,
-//            spacingAfter: 16
-//        )
+        secretView.setShowingContent()
+        secretView.mainContentLabel.text = secret
     }
 }
 
@@ -224,19 +208,5 @@ extension AdvancedExportViewLayout {
 
     struct Model {
         let sections: [Section]
-    }
-}
-
-private final class BindableGestureRecognizer: UITapGestureRecognizer {
-    private var action: () -> Void
-
-    init(action: @escaping () -> Void) {
-        self.action = action
-        super.init(target: nil, action: nil)
-        addTarget(self, action: #selector(execute))
-    }
-
-    @objc private func execute() {
-        action()
     }
 }
