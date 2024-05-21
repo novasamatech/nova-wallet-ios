@@ -7,10 +7,11 @@ final class AdvancedExportPresenter {
     let interactor: AdvancedExportInteractorInputProtocol
 
     private let logger: LoggerProtocol
-    private let localizationManager: LocalizationManagerProtocol
 
     private let metaAccount: MetaAccountModel
     private var chain: ChainModel?
+
+    private let viewModelFactory = AdvancedExportViewModelFactory()
 
     init(
         interactor: AdvancedExportInteractorInputProtocol,
@@ -40,7 +41,13 @@ extension AdvancedExportPresenter: AdvancedExportPresenterProtocol {
 
 extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
     func didReceive(exportData: AdvancedExportData) {
-        let viewModel = createViewModel(for: exportData)
+        let viewModel = viewModelFactory.createViewModel(
+            for: exportData,
+            selectedLocale: selectedLocale,
+            onTapSubstrateSecret: { [weak self] in self?.didTapSubstrateSecretCover() },
+            onTapEthereumSecret: { [weak self] in self?.didTapEthereumSecretCover() },
+            onTapExportJSON: { [weak self] in self?.wireframe.showExportRestoreJSON(from: self?.view) }
+        )
 
         view?.update(with: viewModel)
     }
@@ -58,7 +65,13 @@ extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
     func didReceive(_ error: Error) {
         logger.error("Did receive error: \(error)")
 
-        if !wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale) {
+        guard let localizationManager else { return }
+
+        if !wireframe.present(
+            error: error,
+            from: view,
+            locale: localizationManager.selectedLocale
+        ) {
             _ = wireframe.present(
                 error: CommonError.dataCorruption,
                 from: view,
@@ -71,154 +84,6 @@ extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
 // MARK: Private
 
 private extension AdvancedExportPresenter {
-    func createViewModel(for exportData: AdvancedExportData) -> AdvancedExportViewLayout.Model {
-        var sections: [AdvancedExportViewLayout.Section] = []
-
-        sections.append(
-            .headerMessage(
-                text: R.string.localizable.advancedExportHeaderMessage(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-            )
-        )
-
-        exportData.chains.forEach { chain in
-            switch chain {
-            case let .substrate(model):
-                sections.append(
-                    .network(model: createViewModelForSubstrate(with: model))
-                )
-            case let .ethereum(model):
-                guard model.availableOptions.contains(where: { $0 == .keystore }) else { return }
-
-                sections.append(
-                    .network(model: createViewModelForEthereum(with: model))
-                )
-            }
-        }
-
-        return .init(
-            sections: sections
-        )
-    }
-
-    func createViewModelForSubstrate(with model: AdvancedExportChainData) -> AdvancedExportViewLayout.NetworkModel {
-        var blocks: [AdvancedExportViewLayout.NetworkModel.Block] = []
-
-        let showSeed = model.availableOptions.contains(where: { $0 == .seed })
-        let showJSONExport = model.availableOptions.contains(where: { $0 == .keystore })
-
-        if showSeed {
-            blocks.append(
-                .secret(model: .init(
-                    blockLeftTitle: R.string.localizable.secretTypeSeedTitle(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    blockRightTitle: R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    hidden: true,
-                    coverText: R.string.localizable.mnemonicCardCoverMessageTitle(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    onCoverTap: { [weak self] in self?.didTapSubstrateSecretCover() },
-                    secret: nil,
-                    chainName: model.name
-                ))
-            )
-        }
-
-        if showJSONExport {
-            blocks.append(
-                .jsonExport(model: .init(
-                    blockLeftTitle: R.string.localizable.importRecoveryJson(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    buttonTitle: R.string.localizable.advancedExportJsonButtonTitle(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    action: { [weak self] in
-                        self?.wireframe.showExportRestoreJSON(from: view)
-                    }
-                ))
-            )
-        }
-
-        blocks.append(
-            .cryptoType(model: .init(
-                blockLeftTitle: R.string.localizable.commonCryptoType(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                contentMainText: model.cryptoType.titleForLocale(selectedLocale),
-                contentSecondaryText: model.cryptoType.subtitleForLocale(selectedLocale)
-            ))
-        )
-
-        if let derivationPath = model.derivationPath {
-            blocks.append(
-                .derivationPath(model: .init(
-                    blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    content: model.derivationPath
-                ))
-            )
-        }
-
-        return .init(
-            name: model.name,
-            blocks: blocks
-        )
-    }
-
-    func createViewModelForEthereum(with model: AdvancedExportChainData) -> AdvancedExportViewLayout.NetworkModel {
-        var blocks: [AdvancedExportViewLayout.NetworkModel.Block] = [
-            .secret(model: .init(
-                blockLeftTitle: R.string.localizable.secretTypePrivateKeyTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                blockRightTitle: R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                hidden: true,
-                coverText: R.string.localizable.mnemonicCardCoverMessageTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                onCoverTap: { [weak self] in self?.didTapEthereumSecretCover() },
-                secret: nil,
-                chainName: model.name
-            )),
-
-            .cryptoType(model: .init(
-                blockLeftTitle: R.string.localizable.commonCryptoType(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                contentMainText: R.string.localizable.ecdsaSelectionTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                contentSecondaryText: R.string.localizable.ecdsaSelectionSubtitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-            ))
-        ]
-
-        if let derivationPath = model.derivationPath {
-            blocks.append(
-                .derivationPath(model: .init(
-                    blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    content: model.derivationPath
-                ))
-            )
-        }
-
-        return .init(
-            name: model.name,
-            blocks: blocks
-        )
-    }
-
     func didTapSubstrateSecretCover() {
         interactor.requestSeedForSubstrate(
             metaAccount: metaAccount,

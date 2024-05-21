@@ -739,6 +739,7 @@
 		2D039DE42BFBB2FE00A928E5 /* AdvancedExportRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE32BFBB2FE00A928E5 /* AdvancedExportRowView.swift */; };
 		2D039DE62BFC8D4000A928E5 /* GenericBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE52BFC8D4000A928E5 /* GenericBackgroundView.swift */; };
 		2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */; };
+		2D039DEA2BFCAB9000A928E5 /* AdvancedExportViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE92BFCAB9000A928E5 /* AdvancedExportViewModelFactory.swift */; };
 		2D221CBE2BF753620053E36C /* ContentSizedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */; };
 		2D221CC02BF753C30053E36C /* MnemonicWordCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
@@ -5474,6 +5475,7 @@
 		2D039DE32BFBB2FE00A928E5 /* AdvancedExportRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedExportRowView.swift; sourceTree = "<group>"; };
 		2D039DE52BFC8D4000A928E5 /* GenericBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericBackgroundView.swift; sourceTree = "<group>"; };
 		2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
+		2D039DE92BFCAB9000A928E5 /* AdvancedExportViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedExportViewModelFactory.swift; sourceTree = "<group>"; };
 		2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedCollectionView.swift; sourceTree = "<group>"; };
 		2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCollectionCell.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
@@ -12716,6 +12718,7 @@
 				4FD12F1DC3720B6C172357E4 /* AdvancedExportViewController.swift */,
 				BA882AB8E1A1DEBF638AD684 /* AdvancedExportViewLayout.swift */,
 				B2DCC4EC5B1982D7B5E4F24A /* AdvancedExportViewFactory.swift */,
+				2D039DE92BFCAB9000A928E5 /* AdvancedExportViewModelFactory.swift */,
 				2DE4EBCE2BFB515E005E2D81 /* AdvancedExportData.swift */,
 			);
 			path = AdvancedExport;
@@ -25697,6 +25700,7 @@
 				842EBB2B289091B400B952D8 /* WalletSelectionTableViewCell.swift in Sources */,
 				3DD5BEEA01B8C52530A5FF00 /* NftDetailsViewLayout.swift in Sources */,
 				A2F7908210A0398EDBBA89BD /* NftDetailsViewFactory.swift in Sources */,
+				2D039DEA2BFCAB9000A928E5 /* AdvancedExportViewModelFactory.swift in Sources */,
 				84ABB3342A16150400B5E95A /* LegacyWalletQRCoderFactory.swift in Sources */,
 				5E6D69D84220119BA5362358 /* OperationDetailsProtocols.swift in Sources */,
 				81544BD01F6AD0197588D3C5 /* OperationDetailsWireframe.swift in Sources */,
