@@ -3,9 +3,9 @@ import Foundation
 final class ManualBackupWalletListWireframe: ManualBackupWalletListWireframeProtocol, AuthorizationPresentable {
     func showBackupAttention(
         from view: WalletsListViewProtocol?,
-        wallet _: MetaAccountModel
+        metaAccount: MetaAccountModel
     ) {
-        guard let backupAttentionView = BackupAttentionViewFactory.createView() else {
+        guard let backupAttentionView = BackupAttentionViewFactory.createView(with: metaAccount) else {
             return
         }
 

@@ -124,7 +124,7 @@ private extension BackupAttentionPresenter {
             button: checkBoxViewModels
                 .filter { $0.checked }
                 .count == checkBoxViewModels.count
-                ? .active(title: activeButtonTitle)
+                ? .active(title: activeButtonTitle, action: continueTapped)
                 : .inactive(title: inactiveButtonTitle)
         )
     }
@@ -141,6 +141,10 @@ private extension BackupAttentionPresenter {
             checked: !current.checked,
             onCheck: current.onCheck
         )
+    }
+
+    func continueTapped() {
+        wireframe.showMnemonic(from: view)
     }
 }
 
