@@ -36,8 +36,8 @@ final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
                 return chainName == rowChainName
             }
 
-        secretView.setShowingContent()
-        secretView.mainContentLabel.text = secret
+        secretView?.setShowingContent()
+        secretView?.mainContentLabel.text = secret
     }
 }
 
