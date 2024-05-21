@@ -1605,3 +1605,7 @@
 "mnemonic.card.revealed.header.message.highlighted" = "do not share with";
 "advanced.export.header.message" = "Do not share any of this information with anyone - If you do you will permanently and irretreveably lose all of your assets";
 "advanced.export.json.button.title" = "Export JSON file";
+"chain.accounts.list.header" = "Select the key to back up";
+"chain.accounts.list.default.title" = "Default accounts";
+"chain.accounts.list.default.header" = "Accounts with default key";
+"chain.accounts.list.custom.header" = "Accounts with custom key";
