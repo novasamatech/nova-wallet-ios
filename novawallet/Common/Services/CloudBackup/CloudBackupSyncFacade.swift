@@ -171,6 +171,8 @@ extension CloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
             return
         }
 
+        syncMetadataManager.isBackupEnabled = false
+
         clearSyncService()
 
         stateObservable.state = .disabled(lastSyncDate: syncMetadataManager.getLastSyncDate())

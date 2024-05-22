@@ -12,13 +12,21 @@ protocol CloudBackupSettingsPresenterProtocol: AnyObject {
 
 protocol CloudBackupSettingsInteractorInputProtocol: AnyObject {
     func setup()
-    func apply(changes: CloudBackupSyncResult.Changes)
+    func enableBackup()
+    func disableBackup()
+    func retryStateFetch()
 }
 
 protocol CloudBackupSettingsInteractorOutputProtocol: AnyObject {
     func didReceive(state: CloudBackupSyncState)
+    func didReceive(error: CloudBackupSettingsInteractorError)
 }
 
-protocol CloudBackupSettingsWireframeProtocol: AnyObject {
+protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentable, CloudBackupErrorPresentable {
     func showManualBackup(from view: CloudBackupSettingsViewProtocol?)
+}
+
+enum CloudBackupSettingsInteractorError: Error {
+    case enableBackup(Error)
+    case disableBackup(Error)
 }

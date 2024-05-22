@@ -89,6 +89,9 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
 extension CloudBackupSettingsViewController: CloudBackupSettingsViewProtocol {
     func didReceive(viewModel: CloudBackupSettingsViewModel) {
         rootView.settingsView.bind(viewModel: viewModel)
+
+        rootView.cloudBackupActionControl.switchControl.isOn = viewModel.status.isEnabled
+        rootView.cloudBackupActionControl.switchControl.isEnabled = !viewModel.status.isSyncing
     }
 }
 

@@ -42,7 +42,24 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
         interactor.setup()
     }
 
-    func toggleICloudBackup() {}
+    func toggleICloudBackup() {
+        guard let cloudBackupState else {
+            return
+        }
+
+        switch cloudBackupState {
+        case .disabled:
+            self.cloudBackupState = nil
+
+            interactor.enableBackup()
+        case .unavailable, .enabled:
+            self.cloudBackupState = .disabled(lastSyncDate: nil)
+
+            interactor.disableBackup()
+        }
+
+        provideViewModel()
+    }
 
     func activateManualBackup() {
         wireframe.showManualBackup(from: view)
@@ -63,6 +80,21 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
 
         cloudBackupState = state
         provideViewModel()
+    }
+
+    func didReceive(error: CloudBackupSettingsInteractorError) {
+        logger.error("Error: \(error)")
+
+        switch error {
+        case .enableBackup, .disableBackup:
+            interactor.retryStateFetch()
+
+            guard let view else {
+                return
+            }
+
+            wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
+        }
     }
 }
 

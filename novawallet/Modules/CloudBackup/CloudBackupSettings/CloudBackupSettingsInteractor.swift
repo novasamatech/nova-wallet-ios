@@ -32,6 +32,8 @@ final class CloudBackupSettingsInteractor {
     }
 
     private func subscribeBackupState() {
+        cloudBackupSyncFacade.unsubscribeState(self)
+
         cloudBackupSyncFacade.subscribeState(
             self,
             notifyingIn: .main
@@ -46,5 +48,30 @@ extension CloudBackupSettingsInteractor: CloudBackupSettingsInteractorInputProto
         subscribeBackupState()
     }
 
-    func apply(changes _: CloudBackupSyncResult.Changes) {}
+    func retryStateFetch() {
+        subscribeBackupState()
+    }
+
+    func enableBackup() {
+        cloudBackupSyncFacade.enableBackup(
+            for: nil,
+            runCompletionIn: .main
+        ) { [weak self] result in
+            guard case let .failure(error) = result else {
+                return
+            }
+
+            self?.presenter?.didReceive(error: .enableBackup(error))
+        }
+    }
+
+    func disableBackup() {
+        cloudBackupSyncFacade.disableBackup(runCompletionIn: .main) { [weak self] result in
+            guard case let .failure(error) = result else {
+                return
+            }
+
+            self?.presenter?.didReceive(error: .disableBackup(error))
+        }
+    }
 }
