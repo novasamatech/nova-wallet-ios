@@ -34,7 +34,7 @@ final class CloudBackupSyncFacade {
     private var remoteMonitor: CloudBackupUpdateMonitoring?
 
     private let mutex = NSLock()
-    private var stateObservable: Observable<CloudBackupSyncState> = .init(state: .disabled)
+    private var stateObservable: Observable<CloudBackupSyncState>
 
     init(
         syncFactory: CloudBackupSyncFactoryProtocol,
@@ -48,6 +48,8 @@ final class CloudBackupSyncFacade {
         self.syncFactory = syncFactory
         self.workingQueue = workingQueue
         self.logger = logger
+
+        stateObservable = .init(state: .disabled(lastSyncDate: syncMetadataManager.getLastSyncDate()))
     }
 
     private func handle(syncResult: CloudBackupSyncResult) {
@@ -55,7 +57,10 @@ final class CloudBackupSyncFacade {
             return
         }
 
-        stateObservable.state = .enabled(syncResult)
+        stateObservable.state = .enabled(
+            syncResult,
+            lastSyncDate: syncMetadataManager.getLastSyncDate()
+        )
     }
 
     private func setupCloudSyncService(for remoteFileUrl: URL) {
@@ -91,11 +96,11 @@ final class CloudBackupSyncFacade {
         }
 
         guard let remoteUrl = fileManager.getFileUrl() else {
-            stateObservable.state = .unavailable
+            stateObservable.state = .unavailable(lastSyncDate: syncMetadataManager.getLastSyncDate())
             return
         }
 
-        stateObservable.state = .enabled(nil)
+        stateObservable.state = .enabled(nil, lastSyncDate: syncMetadataManager.getLastSyncDate())
 
         remoteMonitor = syncFactory.createRemoteUpdatesMonitor(for: remoteUrl.lastPathComponent)
         remoteMonitor?.start { [weak self] _ in
@@ -168,7 +173,7 @@ extension CloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
 
         clearSyncService()
 
-        stateObservable.state = .disabled
+        stateObservable.state = .disabled(lastSyncDate: syncMetadataManager.getLastSyncDate())
 
         dispatchInQueueWhenPossible(queue) {
             completionClosure(.success(()))
@@ -213,7 +218,7 @@ extension CloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
         }
 
         guard syncMetadataManager.isBackupEnabled else {
-            stateObservable.state = .disabled
+            stateObservable.state = .disabled(lastSyncDate: syncMetadataManager.getLastSyncDate())
             return
         }
 
@@ -229,7 +234,7 @@ extension CloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
 
         clearSyncService()
 
-        stateObservable.state = .disabled
+        stateObservable.state = .disabled(lastSyncDate: syncMetadataManager.getLastSyncDate())
     }
 
     func syncUp() {

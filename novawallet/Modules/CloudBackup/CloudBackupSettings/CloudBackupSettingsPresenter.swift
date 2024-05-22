@@ -8,6 +8,8 @@ final class CloudBackupSettingsPresenter {
     let viewModelFactory: CloudBackupSettingsViewModelFactoryProtocol
     let logger: LoggerProtocol
 
+    private var cloudBackupState: CloudBackupSyncState?
+
     init(
         interactor: CloudBackupSettingsInteractorInputProtocol,
         wireframe: CloudBackupSettingsWireframeProtocol,
@@ -24,12 +26,8 @@ final class CloudBackupSettingsPresenter {
     }
 
     private func provideViewModel() {
-        // TODO: Update view model based on state
-
         let viewModel = viewModelFactory.createViewModel(
-            from: .synced,
-            lastSync: Date(),
-            issue: nil,
+            with: cloudBackupState,
             locale: selectedLocale
         )
 
@@ -40,6 +38,8 @@ final class CloudBackupSettingsPresenter {
 extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     func setup() {
         provideViewModel()
+
+        interactor.setup()
     }
 
     func toggleICloudBackup() {}
@@ -57,7 +57,14 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     }
 }
 
-extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProtocol {}
+extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProtocol {
+    func didReceive(state: CloudBackupSyncState) {
+        logger.debug("New state: \(state)")
+
+        cloudBackupState = state
+        provideViewModel()
+    }
+}
 
 extension CloudBackupSettingsPresenter: Localizable {
     func applyLocalization() {

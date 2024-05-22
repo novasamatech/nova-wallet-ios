@@ -7,7 +7,7 @@ protocol CloudBackupSyncFactoryProtocol {
 
 final class CloudBackupSyncFactory {
     let syncMetadataManaging: CloudBackupSyncMetadataManaging
-    let accountsRepositoryFactory: AccountRepositoryFactoryProtocol
+    let walletsRepositoryFactory: AccountRepositoryFactoryProtocol
     let serviceFactory: CloudBackupServiceFactoryProtocol
     let operationQueue: OperationQueue
     let notificationCenter: NotificationCenter
@@ -16,14 +16,14 @@ final class CloudBackupSyncFactory {
     init(
         serviceFactory: CloudBackupServiceFactoryProtocol,
         syncMetadataManaging: CloudBackupSyncMetadataManaging,
-        accountsRepositoryFactory: AccountRepositoryFactoryProtocol,
+        walletsRepositoryFactory: AccountRepositoryFactoryProtocol,
         notificationCenter: NotificationCenter,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.serviceFactory = serviceFactory
         self.syncMetadataManaging = syncMetadataManaging
-        self.accountsRepositoryFactory = accountsRepositoryFactory
+        self.walletsRepositoryFactory = walletsRepositoryFactory
         self.operationQueue = operationQueue
         self.notificationCenter = notificationCenter
         self.logger = logger
@@ -34,7 +34,7 @@ extension CloudBackupSyncFactory: CloudBackupSyncFactoryProtocol {
     func createSyncService(for remoteFileUrl: URL) -> CloudBackupSyncServiceProtocol {
         let updateCalculationFactory = CloudBackupUpdateCalculationFactory(
             syncMetadataManager: syncMetadataManaging,
-            walletsRepository: accountsRepositoryFactory.createManagedMetaAccountRepository(
+            walletsRepository: walletsRepositoryFactory.createManagedMetaAccountRepository(
                 for: NSPredicate.cloudSyncableWallets,
                 sortDescriptors: []
             ),

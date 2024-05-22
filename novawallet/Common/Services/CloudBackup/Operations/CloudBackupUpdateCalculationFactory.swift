@@ -102,7 +102,7 @@ final class CloudBackupUpdateCalculationFactory {
                     return .noUpdates
                 }
 
-                guard let lastSyncTime = self.syncMetadataManager.getLastSyncDate() else {
+                guard let lastSyncTime = self.syncMetadataManager.getLastSyncTimestamp() else {
                     let state = CloudBackupSyncResult.UpdateByUnion(
                         localWallets: Set(wallets),
                         remoteModel: remoteModel,
