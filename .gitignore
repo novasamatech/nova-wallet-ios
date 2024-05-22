@@ -61,3 +61,4 @@ Templates/
 **/.DS_Store
 GoogleService-Info-*.plist
 GoogleService-Info.plist
+.ruby-version
