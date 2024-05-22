@@ -43,15 +43,8 @@ extension BackupMnemonicCardInteractor: BackupMnemonicCardInteractorInputProtoco
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case .success:
-                do {
-                    let mnemonic = try exportOperation
-                        .extractNoCancellableResultData()
-
-                    self?.presenter?.didReceive(mnemonic: mnemonic)
-                } catch {
-                    self?.presenter?.didReceive(error: error)
-                }
+            case let .success(mnemonic):
+                self?.presenter?.didReceive(mnemonic: mnemonic)
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)
             }
