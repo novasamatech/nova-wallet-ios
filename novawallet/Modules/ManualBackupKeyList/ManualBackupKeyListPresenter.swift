@@ -32,6 +32,8 @@ final class ManualBackupKeyListPresenter {
     }
 }
 
+// MARK: ManualBackupKeyListPresenterProtocol
+
 extension ManualBackupKeyListPresenter: ManualBackupKeyListPresenterProtocol {
     func setup() {
         interactor.setup()
@@ -43,6 +45,8 @@ extension ManualBackupKeyListPresenter: ManualBackupKeyListPresenterProtocol {
         view?.updateNavbar(with: walletViewModel)
     }
 }
+
+// MARK: ManualBackupKeyListInteractorOutputProtocol
 
 extension ManualBackupKeyListPresenter: ManualBackupKeyListInteractorOutputProtocol {
     func didReceive(_ chainsChange: [DataProviderChange<ChainModel>]) {
@@ -60,6 +64,8 @@ extension ManualBackupKeyListPresenter: ManualBackupKeyListInteractorOutputProto
     func didReceive(_: Error) {}
 }
 
+// MARK: Private
+
 private extension ManualBackupKeyListPresenter {
     func createViewModel(from sortedChains: SortedChains) -> ManualBackupKeyListViewLayout.Model {
         let listHeaderText = R.string.localizable.chainAccountsListHeader(
@@ -75,7 +81,7 @@ private extension ManualBackupKeyListPresenter {
         )
     }
 
-    func createDefaultChainsSection(for _: [ChainModel]) -> ManualBackupKeyListViewLayout.Sections {
+    func createDefaultChainsSection(for chains: [ChainModel]) -> ManualBackupKeyListViewLayout.Sections {
         let defaultChainsHeaderText = R.string.localizable.chainAccountsListDefaultHeader(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
         )
@@ -90,7 +96,7 @@ private extension ManualBackupKeyListPresenter {
                 accounts: [
                     .init(
                         title: defaultChainsTitleText,
-                        subtitle: ""
+                        subtitle: formattedString(for: chains)
                     )
                 ]
             )
@@ -142,6 +148,36 @@ private extension ManualBackupKeyListPresenter {
             defaultChains: defaultChains,
             customChains: customChains
         )
+    }
+
+    func formattedString(for defaultChains: [ChainModel]) -> String {
+        let chainsToMention = defaultChains.count > 1
+            ? defaultChains.prefix(2)
+            : defaultChains.prefix(1)
+        let separator = ", "
+        let restCount = defaultChains.count - chainsToMention.count
+
+        return chainsToMention
+            .map(\.name)
+            .reduce(into: "") { partialResult, name in
+                guard !partialResult.isEmpty else {
+                    partialResult += name
+
+                    return
+                }
+
+                var result = [partialResult, name].joined(separator: separator)
+
+                if chainsToMention.last?.name == name, restCount > 0 {
+                    let othersString = R.string.localizable.chainAccountsListDefaultSubtitle(
+                        restCount,
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    )
+                    result = [result, othersString].joined(separator: ", ")
+                }
+
+                partialResult = result
+            }
     }
 }
 

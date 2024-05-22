@@ -2,7 +2,7 @@ import UIKit
 
 final class ManualBackupKeyListViewController: UIViewController, ViewHolder {
     typealias RootViewType = ManualBackupKeyListViewLayout
-    typealias CustomChainCell = CustomChainTableViewCell
+    typealias ChainCell = ManualBackupChainTableViewCell
     typealias ViewModel = RootViewType.Model
 
     let presenter: ManualBackupKeyListPresenterProtocol
@@ -58,37 +58,31 @@ extension ManualBackupKeyListViewController: UITableViewDataSource, UITableViewD
     ) -> UITableViewCell {
         guard let viewModel else { return UITableViewCell() }
 
-        let cell: UITableViewCell
+        let chainCell = tableView.dequeueReusableCellWithType(
+            ChainCell.self,
+            forIndexPath: indexPath
+        )
 
         switch viewModel.accountsSections[indexPath.section] {
         case let .defaultKeys(viewModel):
-            cell = UITableViewCell()
+            chainCell.networkIconView.image = R.image.iconNova()!
+            chainCell.networkLabel.text = viewModel.accounts[indexPath.row].title
+            chainCell.secondaryLabel.text = viewModel.accounts[indexPath.row].subtitle
+            chainCell.secondaryLabel.isHidden = false
         case let .customKeys(viewModel):
-            let customChainsCell = tableView.dequeueReusableCellWithType(
-                CustomChainCell.self,
-                forIndexPath: indexPath
-            )
-            customChainsCell.bind(with: viewModel.accounts[indexPath.row].network)
-            cell = customChainsCell
+            chainCell.bind(with: viewModel.accounts[indexPath.row].network)
         }
 
-        cell.selectionStyle = .none
+        chainCell.selectionStyle = .none
 
-        return cell
+        return chainCell
     }
 
     func tableView(
         _: UITableView,
-        heightForRowAt indexPath: IndexPath
+        heightForRowAt _: IndexPath
     ) -> CGFloat {
-        guard let viewModel else { return 0 }
-
-        return switch viewModel.accountsSections[indexPath.section] {
-        case .defaultKeys:
-            Constants.cellHeight
-        case .customKeys:
-            Constants.cellHeight + CustomChainCell.Constants.bottomOffsetForSpacing
-        }
+        Constants.cellHeight + ChainCell.Constants.bottomOffsetForSpacing
     }
 
     func tableView(
@@ -152,7 +146,7 @@ extension ManualBackupKeyListViewController: ManualBackupKeyListViewProtocol {
 
 private extension ManualBackupKeyListViewController {
     func setup() {
-        rootView.tableView.registerClassForCell(CustomChainCell.self)
+        rootView.tableView.registerClassForCell(ChainCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
 
         rootView.tableView.dataSource = self

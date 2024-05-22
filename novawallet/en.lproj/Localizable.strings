@@ -1607,5 +1607,6 @@
 "advanced.export.json.button.title" = "Export JSON file";
 "chain.accounts.list.header" = "Select the key to back up";
 "chain.accounts.list.default.title" = "Default accounts";
+"chain.accounts.list.default.subtitle" = "+%d others";
 "chain.accounts.list.default.header" = "Accounts with default key";
 "chain.accounts.list.custom.header" = "Accounts with custom key";

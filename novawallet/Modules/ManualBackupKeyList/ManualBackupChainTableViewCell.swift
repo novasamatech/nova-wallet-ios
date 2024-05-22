@@ -1,9 +1,10 @@
 import UIKit
 import SoraUI
 
-final class CustomChainTableViewCell: PlainBaseTableViewCell<ChainAccountView> {
+final class ManualBackupChainTableViewCell: PlainBaseTableViewCell<ChainAccountView> {
     var networkIconView: UIImageView { contentDisplayView.networkIconView }
     var networkLabel: UILabel { contentDisplayView.networkLabel }
+    var secondaryLabel: UILabel { contentDisplayView.secondaryLabel }
     var actionIconView: UIImageView { contentDisplayView.actionIconView }
 
     override func setupStyle() {
@@ -39,6 +40,8 @@ final class CustomChainTableViewCell: PlainBaseTableViewCell<ChainAccountView> {
     }
 
     func bind(with viewModel: NetworkViewModel) {
+        secondaryLabel.isHidden = true
+
         viewModel.icon?.loadImage(
             on: networkIconView,
             targetSize: Constants.iconSize,
@@ -49,7 +52,7 @@ final class CustomChainTableViewCell: PlainBaseTableViewCell<ChainAccountView> {
     }
 }
 
-extension CustomChainTableViewCell {
+extension ManualBackupChainTableViewCell {
     enum Constants {
         static let cornerRadius: CGFloat = 12
         static let iconSize: CGSize = .init(width: 36, height: 36)
