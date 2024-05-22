@@ -46,6 +46,8 @@ extension ManualBackupKeyListPresenter: ManualBackupKeyListInteractorOutputProto
             for: metaAccount
         )
         let viewModel = createViewModel(from: sortedChains)
+
+        view?.update(with: viewModel)
     }
 
     func didReceive(_: Error) {}
@@ -66,9 +68,7 @@ private extension ManualBackupKeyListPresenter {
         )
     }
 
-    func createDefaultChainsSection(for chains: [ChainModel]) -> ManualBackupKeyListViewLayout.Sections {
-        let sortedDefaultChains = sorted(chains, for: metaAccount)
-
+    func createDefaultChainsSection(for _: [ChainModel]) -> ManualBackupKeyListViewLayout.Sections {
         let defaultChainsHeaderText = R.string.localizable.chainAccountsListDefaultHeader(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
         )
@@ -79,7 +79,7 @@ private extension ManualBackupKeyListPresenter {
 
         return .defaultKeys(
             .init(
-                headerText: defaultChainsHeaderText,
+                headerText: defaultChainsHeaderText.uppercased(),
                 accounts: [
                     .init(
                         title: defaultChainsTitleText,
@@ -91,10 +91,15 @@ private extension ManualBackupKeyListPresenter {
     }
 
     func createCustomChainsSection(for chains: [ChainModel]) -> ManualBackupKeyListViewLayout.Sections {
-        let customChainsViewModels = sorted(chains, for: metaAccount).compactMap {
-            [weak self] chain in
-            self?.networkViewModelFactory.createViewModel(from: chain)
-        }
+        let customChainsViewModels = chains
+            .compactMap { [weak self] chain -> ManualBackupKeyListViewLayout.CustomAccount? in
+                guard let self else { return .none }
+
+                return ManualBackupKeyListViewLayout.CustomAccount(
+                    network: networkViewModelFactory.createViewModel(from: chain),
+                    chainId: chain.chainId
+                )
+            }
 
         let customChainsHeaderText = R.string.localizable.chainAccountsListCustomHeader(
             preferredLanguages: localizationManager.selectedLocale.rLanguages
@@ -102,7 +107,7 @@ private extension ManualBackupKeyListPresenter {
 
         return .customKeys(
             .init(
-                headerText: customChainsHeaderText,
+                headerText: customChainsHeaderText.uppercased(),
                 accounts: customChainsViewModels
             )
         )

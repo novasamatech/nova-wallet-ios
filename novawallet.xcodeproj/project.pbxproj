@@ -742,6 +742,7 @@
 		2D039DE62BFC8D4000A928E5 /* GenericBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE52BFC8D4000A928E5 /* GenericBackgroundView.swift */; };
 		2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */; };
 		2D039DEA2BFCAB9000A928E5 /* AdvancedExportViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE92BFCAB9000A928E5 /* AdvancedExportViewModelFactory.swift */; };
+		2D077E472BFDCB8700FE422E /* CustomChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* CustomChainTableViewCell.swift */; };
 		2D221CBE2BF753620053E36C /* ContentSizedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */; };
 		2D221CC02BF753C30053E36C /* MnemonicWordCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
@@ -5486,6 +5487,7 @@
 		2D039DE52BFC8D4000A928E5 /* GenericBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericBackgroundView.swift; sourceTree = "<group>"; };
 		2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
 		2D039DE92BFCAB9000A928E5 /* AdvancedExportViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedExportViewModelFactory.swift; sourceTree = "<group>"; };
+		2D077E462BFDCB8700FE422E /* CustomChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomChainTableViewCell.swift; sourceTree = "<group>"; };
 		2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedCollectionView.swift; sourceTree = "<group>"; };
 		2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCollectionCell.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
@@ -11141,6 +11143,7 @@
 			isa = PBXGroup;
 			children = (
 				563A4A21DA446F9EC59D7DAD /* ManualBackupKeyListProtocols.swift */,
+				2D077E462BFDCB8700FE422E /* CustomChainTableViewCell.swift */,
 				2CB02245B44D5D1036626E24 /* ManualBackupKeyListWireframe.swift */,
 				A6D59DCB2D2148A8DFF4F099 /* ManualBackupKeyListPresenter.swift */,
 				8CA7AD4DAF33E6758420BBD6 /* ManualBackupKeyListInteractor.swift */,
@@ -23410,6 +23413,7 @@
 				8428768624AE046300D91AD8 /* LanguageSelectionPresenter.swift in Sources */,
 				84CA407A2A036886004BB71E /* PlainBaseTableViewCell.swift in Sources */,
 				8490152724ABCC40008F705E /* NumberFormatter.swift in Sources */,
+				2D077E472BFDCB8700FE422E /* CustomChainTableViewCell.swift in Sources */,
 				77CC82A32A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift in Sources */,
 				0C77B5692A837D4000B5AE08 /* StaticValidatorListViewFactory.swift in Sources */,
 				846A2C4325271CDE00731018 /* TransactionType.swift in Sources */,

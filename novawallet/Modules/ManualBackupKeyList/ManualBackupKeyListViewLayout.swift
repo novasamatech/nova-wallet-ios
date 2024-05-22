@@ -1,18 +1,28 @@
 import UIKit
 
-final class ManualBackupKeyListViewLayout: UIView {
+final class ManualBackupKeyListViewLayout: UIView, TableHeaderLayoutUpdatable {
     lazy var tableView: UITableView = {
-        let view = UITableView(frame: .zero, style: .grouped)
+        let view = UITableView(frame: .zero, style: .insetGrouped)
         view.separatorStyle = .none
         view.backgroundColor = .clear
-        view.contentInset = .init(top: 0, left: 16, bottom: 0, right: 16)
+        view.directionalLayoutMargins = .init(
+            top: 0,
+            leading: 16,
+            bottom: 0,
+            trailing: 16
+        )
+
+        view.sectionFooterHeight = 0
 
         return view
     }()
 
+    let headerView = MultiValueView.createTableHeaderView(with: .zero)
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        setupStyle()
         setupLayout()
     }
 
@@ -21,12 +31,32 @@ final class ManualBackupKeyListViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        updateHeaderLayout()
+    }
+}
+
+// MARK: Private
+
+private extension ManualBackupKeyListViewLayout {
+    func updateHeaderLayout() {
+        updateTableHeaderLayout(headerView)
+    }
+
+    func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.bottom.equalToSuperview()
         }
+
+        tableView.tableHeaderView = headerView
+    }
+
+    func setupStyle() {
+        backgroundColor = R.color.colorSecondaryScreenBackground()
     }
 }
 

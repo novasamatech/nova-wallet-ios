@@ -9,7 +9,6 @@ struct ManualBackupKeyListViewFactory {
         let networkViewModelFactory = NetworkViewModelFactory()
 
         let interactor = ManualBackupKeyListInteractor(
-            metaAccount: metaAccount,
             chainRegistry: chainRegistry
         )
 
@@ -18,6 +17,7 @@ struct ManualBackupKeyListViewFactory {
         let presenter = ManualBackupKeyListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            metaAccount: metaAccount,
             networkViewModelFactory: networkViewModelFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared

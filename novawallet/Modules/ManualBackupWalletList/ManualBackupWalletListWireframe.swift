@@ -18,4 +18,18 @@ final class ManualBackupWalletListWireframe: ManualBackupWalletListWireframeProt
             )
         }
     }
+
+    func showChainAccountsList(
+        from view: WalletsListViewProtocol?,
+        metaAccount: MetaAccountModel
+    ) {
+        guard let backupAccountsList = ManualBackupKeyListViewFactory.createView(with: metaAccount) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            backupAccountsList.controller,
+            animated: true
+        )
+    }
 }

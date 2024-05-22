@@ -7,4 +7,9 @@ protocol ManualBackupWalletListWireframeProtocol: WalletsListWireframeProtocol {
         from view: WalletsListViewProtocol?,
         metaAccount: MetaAccountModel
     )
+
+    func showChainAccountsList(
+        from view: WalletsListViewProtocol?,
+        metaAccount: MetaAccountModel
+    )
 }

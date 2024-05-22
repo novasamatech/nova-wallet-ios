@@ -2,7 +2,7 @@ import UIKit
 
 final class ManualBackupKeyListViewController: UIViewController, ViewHolder {
     typealias RootViewType = ManualBackupKeyListViewLayout
-    typealias CustomChainCell = PlainBaseTableViewCell<ChainAccountView>
+    typealias CustomChainCell = CustomChainTableViewCell
 
     let presenter: ManualBackupKeyListPresenterProtocol
 
@@ -61,43 +61,40 @@ extension ManualBackupKeyListViewController: UITableViewDataSource, UITableViewD
 
         switch viewModel.accountsSections[indexPath.section] {
         case let .defaultKeys(viewModel):
-            let defaultChainsCell = tableView.dequeueReusableCellWithType(
-                CustomChainCell.self,
-                forIndexPath: indexPath
-            )
-            cell.contentDisplayView.networkIconView.image = R.image.iconNova()
-            cell.contentDisplayView.networkLabel.text = viewModel.accounts[indexPath.row].title
-            cell = defaultChainsCell
-//            subtitle = viewModel.accounts[indexPath.row].subtitle
+            cell = UITableViewCell()
         case let .customKeys(viewModel):
             let customChainsCell = tableView.dequeueReusableCellWithType(
                 CustomChainCell.self,
                 forIndexPath: indexPath
             )
-            viewModel.accounts[indexPath.row].network.icon?.loadImage(
-                on: cell.contentDisplayView.networkIconView,
-                targetSize: CGSize(width: 36, height: 36),
-                animated: true
-            )
-            cell.contentDisplayView.networkLabel.text = viewModel.accounts[indexPath.row].network.name
+            customChainsCell.bind(with: viewModel.accounts[indexPath.row].network)
             cell = customChainsCell
         }
+
+        cell.selectionStyle = .none
 
         return cell
     }
 
     func tableView(
         _: UITableView,
-        heightForRowAt _: IndexPath
+        heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        64
+        guard let viewModel else { return 0 }
+
+        return switch viewModel.accountsSections[indexPath.section] {
+        case .defaultKeys:
+            Constants.cellHeight
+        case .customKeys:
+            Constants.cellHeight + CustomChainCell.Constants.bottomOffsetForSpacing
+        }
     }
 
     func tableView(
         _: UITableView,
         heightForHeaderInSection _: Int
     ) -> CGFloat {
-        53
+        Constants.headerHeight
     }
 
     func tableView(
@@ -114,6 +111,8 @@ extension ManualBackupKeyListViewController: UITableViewDataSource, UITableViewD
             String()
         }
 
+        header.horizontalOffset = 0
+        header.titleLabel.apply(style: .semiboldCaps2Secondary)
         header.titleLabel.text = text
 
         return header
@@ -126,6 +125,7 @@ extension ManualBackupKeyListViewController: ManualBackupKeyListViewProtocol {
     func update(with viewModel: ManualBackupKeyListViewLayout.Model) {
         self.viewModel = viewModel
 
+        rootView.headerView.bind(topValue: viewModel.listHeaderText, bottomValue: nil)
         rootView.tableView.reloadData()
     }
 }
@@ -134,10 +134,19 @@ extension ManualBackupKeyListViewController: ManualBackupKeyListViewProtocol {
 
 private extension ManualBackupKeyListViewController {
     func setup() {
-        rootView.tableView.registerClassForCell(Cell.self)
+        rootView.tableView.registerClassForCell(CustomChainCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
 
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
+    }
+}
+
+// MARK: Constants
+
+private extension ManualBackupKeyListViewController {
+    enum Constants {
+        static let cellHeight: CGFloat = 64
+        static let headerHeight: CGFloat = 53
     }
 }
