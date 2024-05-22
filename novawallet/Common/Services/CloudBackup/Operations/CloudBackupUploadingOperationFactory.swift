@@ -41,6 +41,7 @@ extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
         let uploadMonitoring = ICloudBackupUploadMonitor(
             filename: fileUrl.lastPathComponent,
             operationQueue: monitoringOperationQueue,
+            workingQueue: DispatchQueue.global(),
             notificationCenter: notificationCenter,
             timeoutInteval: timeoutInterval,
             logger: logger
