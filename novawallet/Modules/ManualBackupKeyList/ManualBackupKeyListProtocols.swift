@@ -7,6 +7,8 @@ protocol ManualBackupKeyListViewProtocol: ControllerBackedProtocol {
 
 protocol ManualBackupKeyListPresenterProtocol: AnyObject {
     func setup()
+    func didTapDefaultKey()
+    func didTapCustomKey(with chainId: ChainModel.Id)
 }
 
 protocol ManualBackupKeyListInteractorInputProtocol: AnyObject {
@@ -15,7 +17,16 @@ protocol ManualBackupKeyListInteractorInputProtocol: AnyObject {
 
 protocol ManualBackupKeyListInteractorOutputProtocol: AnyObject {
     func didReceive(_ chainsChange: [DataProviderChange<ChainModel>])
-    func didReceive(_ error: Error)
 }
 
-protocol ManualBackupKeyListWireframeProtocol: AnyObject {}
+protocol ManualBackupKeyListWireframeProtocol: AnyObject {
+    func showDefaultAccountBackup(
+        from view: ManualBackupKeyListViewProtocol?,
+        with metaAccount: MetaAccountModel
+    )
+    func showCustomKeyAccountBackup(
+        from view: ManualBackupKeyListViewProtocol?,
+        with metaAccount: MetaAccountModel,
+        chain: ChainModel
+    )
+}

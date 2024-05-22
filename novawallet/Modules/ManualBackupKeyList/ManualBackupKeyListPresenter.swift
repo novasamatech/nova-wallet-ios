@@ -44,6 +44,19 @@ extension ManualBackupKeyListPresenter: ManualBackupKeyListPresenterProtocol {
 
         view?.updateNavbar(with: walletViewModel)
     }
+
+    func didTapDefaultKey() {
+        wireframe.showDefaultAccountBackup(
+            from: view,
+            with: metaAccount
+        )
+    }
+
+    func didTapCustomKey(with chainId: ChainModel.Id) {
+        guard let chain = chains[chainId] else { return }
+
+        wireframe.showCustomKeyAccountBackup(from: view, with: metaAccount, chain: chain)
+    }
 }
 
 // MARK: ManualBackupKeyListInteractorOutputProtocol
@@ -60,8 +73,6 @@ extension ManualBackupKeyListPresenter: ManualBackupKeyListInteractorOutputProto
 
         view?.update(with: viewModel)
     }
-
-    func didReceive(_: Error) {}
 }
 
 // MARK: Private
@@ -173,7 +184,7 @@ private extension ManualBackupKeyListPresenter {
                         restCount,
                         preferredLanguages: localizationManager.selectedLocale.rLanguages
                     )
-                    result = [result, othersString].joined(separator: ", ")
+                    result = [result, othersString].joined(separator: separator)
                 }
 
                 partialResult = result

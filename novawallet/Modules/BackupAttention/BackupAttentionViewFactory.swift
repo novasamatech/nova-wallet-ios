@@ -3,7 +3,7 @@ import SoraFoundation
 import SoraUI
 
 struct BackupAttentionViewFactory {
-    static func createView(with metaAccount: MetaAccountModel) -> BackupAttentionViewProtocol? {
+    static func createView(with metaAccount: MetaAccountModel, chain _: ChainModel?) -> BackupAttentionViewProtocol? {
         let wireframe = BackupAttentionWireframe(metaAccount: metaAccount)
 
         let presenter = BackupAttentionPresenter(

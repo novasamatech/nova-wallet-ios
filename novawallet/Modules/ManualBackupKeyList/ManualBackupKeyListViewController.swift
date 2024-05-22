@@ -112,6 +112,21 @@ extension ManualBackupKeyListViewController: UITableViewDataSource, UITableViewD
 
         return header
     }
+
+    func tableView(
+        _: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+        guard let viewModel else { return }
+
+        switch viewModel.accountsSections[indexPath.section] {
+        case .defaultKeys:
+            presenter.didTapDefaultKey()
+        case let .customKeys(model):
+            let id = model.accounts[indexPath.row].chainId
+            presenter.didTapCustomKey(with: id)
+        }
+    }
 }
 
 // MARK: ManualBackupKeyListViewProtocol

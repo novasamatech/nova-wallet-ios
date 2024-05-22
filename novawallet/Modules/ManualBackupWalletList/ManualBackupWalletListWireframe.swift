@@ -5,7 +5,10 @@ final class ManualBackupWalletListWireframe: ManualBackupWalletListWireframeProt
         from view: WalletsListViewProtocol?,
         metaAccount: MetaAccountModel
     ) {
-        guard let backupAttentionView = BackupAttentionViewFactory.createView(with: metaAccount) else {
+        guard let backupAttentionView = BackupAttentionViewFactory.createView(
+            with: metaAccount,
+            chain: .none
+        ) else {
             return
         }
 
