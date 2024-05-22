@@ -1,11 +1,11 @@
-protocol BackupAttentionViewProtocol: ControllerBackedProtocol {}
+protocol BackupAttentionViewProtocol: ControllerBackedProtocol {
+    func didReceive(_ viewModel: BackupAttentionViewLayout.Model)
+}
 
 protocol BackupAttentionPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol BackupAttentionInteractorInputProtocol: AnyObject {}
-
-protocol BackupAttentionInteractorOutputProtocol: AnyObject {}
-
-protocol BackupAttentionWireframeProtocol: AnyObject {}
+protocol BackupAttentionWireframeProtocol: AnyObject {
+    func showMnemonic(from view: BackupAttentionViewProtocol?)
+}
