@@ -9,9 +9,11 @@ final class BackupMnemonicCardPresenter {
     let interactor: BackupMnemonicCardInteractor
 
     private var mnemonic: IRMnemonicProtocol?
-    private var metaAccount: MetaAccountModel
+    private var chain: ChainModel?
+    private let metaAccount: MetaAccountModel
 
     private let walletViewModelFactory = WalletAccountViewModelFactory()
+    private let networkViewModelFactory: NetworkViewModelFactoryProtocol
     private let logger: LoggerProtocol
     private let localizationManager: LocalizationManagerProtocol
 
@@ -19,12 +21,16 @@ final class BackupMnemonicCardPresenter {
         interactor: BackupMnemonicCardInteractor,
         wireframe: BackupMnemonicCardWireframeProtocol,
         metaAccount: MetaAccountModel,
+        chain: ChainModel?,
+        networkViewModelFactory: NetworkViewModelFactoryProtocol,
         localizationManager: LocalizationManager,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.metaAccount = metaAccount
+        self.chain = chain
+        self.networkViewModelFactory = networkViewModelFactory
         self.localizationManager = localizationManager
         self.logger = logger
     }
@@ -83,6 +89,13 @@ private extension BackupMnemonicCardPresenter {
         view?.update(with:
             .init(
                 walletViewModel: walletViewModel,
+                networkViewModel: {
+                    if let chain {
+                        networkViewModelFactory.createViewModel(from: chain)
+                    } else {
+                        .none
+                    }
+                }(),
                 state: {
                     if let mnemonic {
                         .mnemonicVisible(words: mnemonic.allWords())

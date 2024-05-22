@@ -2,13 +2,21 @@ import Foundation
 
 final class BackupAttentionWireframe: BackupAttentionWireframeProtocol {
     private let metaAccount: MetaAccountModel
+    private var chain: ChainModel?
 
-    init(metaAccount: MetaAccountModel) {
+    init(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel?
+    ) {
         self.metaAccount = metaAccount
+        self.chain = chain
     }
 
     func showMnemonic(from view: BackupAttentionViewProtocol?) {
-        guard let backupMnemonicCardView = BackupMnemonicCardViewFactory.createView(with: metaAccount) else {
+        guard let backupMnemonicCardView = BackupMnemonicCardViewFactory.createView(
+            with: metaAccount,
+            chain: chain
+        ) else {
             return
         }
 

@@ -57,6 +57,10 @@ extension BackupMnemonicCardViewController: BackupMnemonicCardViewProtocol {
     func update(with viewModel: ViewModel) {
         setupNavigationBarTitle(with: viewModel)
 
+        if let networkViewModel = viewModel.networkViewModel {
+            rootView.showNetwork(with: networkViewModel)
+        }
+
         switch viewModel.state {
         case let .mnemonicVisible(words: words):
             self.words = words
