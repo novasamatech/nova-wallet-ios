@@ -2,6 +2,7 @@ import RobinHood
 
 protocol ManualBackupKeyListViewProtocol: ControllerBackedProtocol {
     func update(with viewModel: ManualBackupKeyListViewLayout.Model)
+    func updateNavbar(with viewModel: DisplayWalletViewModel)
 }
 
 protocol ManualBackupKeyListPresenterProtocol: AnyObject {

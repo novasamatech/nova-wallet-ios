@@ -3,6 +3,7 @@ import UIKit
 final class ManualBackupKeyListViewController: UIViewController, ViewHolder {
     typealias RootViewType = ManualBackupKeyListViewLayout
     typealias CustomChainCell = CustomChainTableViewCell
+    typealias ViewModel = RootViewType.Model
 
     let presenter: ManualBackupKeyListPresenterProtocol
 
@@ -126,7 +127,24 @@ extension ManualBackupKeyListViewController: ManualBackupKeyListViewProtocol {
         self.viewModel = viewModel
 
         rootView.headerView.bind(topValue: viewModel.listHeaderText, bottomValue: nil)
+        rootView.updateHeaderLayout()
         rootView.tableView.reloadData()
+    }
+
+    func updateNavbar(with viewModel: DisplayWalletViewModel) {
+        let iconDetailsView: IconDetailsView = .create(with: { view in
+            view.detailsLabel.apply(style: .semiboldBodyPrimary)
+            view.detailsLabel.text = viewModel.name
+            view.iconWidth = Constants.walletIconSize.width
+
+            viewModel.imageViewModel?.loadImage(
+                on: view.imageView,
+                targetSize: Constants.walletIconSize,
+                animated: true
+            )
+        })
+
+        navigationItem.titleView = iconDetailsView
     }
 }
 
@@ -148,5 +166,9 @@ private extension ManualBackupKeyListViewController {
     enum Constants {
         static let cellHeight: CGFloat = 64
         static let headerHeight: CGFloat = 53
+        static let walletIconSize: CGSize = .init(
+            width: 28,
+            height: 28
+        )
     }
 }

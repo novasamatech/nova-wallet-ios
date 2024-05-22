@@ -8,6 +8,7 @@ final class ManualBackupKeyListPresenter {
     let interactor: ManualBackupKeyListInteractorInputProtocol
 
     private let metaAccount: MetaAccountModel
+    private let walletViewModelFactory = WalletAccountViewModelFactory()
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
     private let localizationManager: LocalizationManagerProtocol
     private let logger: Logger
@@ -34,6 +35,12 @@ final class ManualBackupKeyListPresenter {
 extension ManualBackupKeyListPresenter: ManualBackupKeyListPresenterProtocol {
     func setup() {
         interactor.setup()
+
+        guard let walletViewModel = try? walletViewModelFactory.createDisplayViewModel(from: metaAccount) else {
+            return
+        }
+
+        view?.updateNavbar(with: walletViewModel)
     }
 }
 

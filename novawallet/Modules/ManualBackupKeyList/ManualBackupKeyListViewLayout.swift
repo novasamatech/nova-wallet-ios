@@ -5,6 +5,7 @@ final class ManualBackupKeyListViewLayout: UIView, TableHeaderLayoutUpdatable {
         let view = UITableView(frame: .zero, style: .insetGrouped)
         view.separatorStyle = .none
         view.backgroundColor = .clear
+        view.sectionFooterHeight = 0
         view.directionalLayoutMargins = .init(
             top: 0,
             leading: 16,
@@ -12,12 +13,15 @@ final class ManualBackupKeyListViewLayout: UIView, TableHeaderLayoutUpdatable {
             trailing: 16
         )
 
-        view.sectionFooterHeight = 0
-
         return view
     }()
 
-    let headerView = MultiValueView.createTableHeaderView(with: .zero)
+    let headerView: MultiValueView = {
+        let view = MultiValueView.createTableHeaderView()
+        view.stackView.layoutMargins.bottom = 0
+
+        return view
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -36,15 +40,15 @@ final class ManualBackupKeyListViewLayout: UIView, TableHeaderLayoutUpdatable {
 
         updateHeaderLayout()
     }
+
+    func updateHeaderLayout() {
+        updateTableHeaderLayout(headerView)
+    }
 }
 
 // MARK: Private
 
 private extension ManualBackupKeyListViewLayout {
-    func updateHeaderLayout() {
-        updateTableHeaderLayout(headerView)
-    }
-
     func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints {
