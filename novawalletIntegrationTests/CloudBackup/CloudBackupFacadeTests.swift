@@ -4,6 +4,20 @@ import SoraKeystore
 import IrohaCrypto
 
 final class CloudBackupFacadeTests: XCTestCase {
+    func testSyncMetadataSaved() throws {
+        let syncMetadataManager = CloudBackupSyncMetadataManager(
+            settings: SettingsManager.shared,
+            keystore: Keychain()
+        )
+        
+        let password = "testPassword"
+        try syncMetadataManager.enableBackup(for: password)
+        
+        XCTAssertTrue(syncMetadataManager.isBackupEnabled)
+        XCTAssertEqual(password, try syncMetadataManager.getPassword())
+        XCTAssertNotNil(syncMetadataManager.getLastSyncDate())
+    }
+    
     func testCreateBackup() {
         do {
             // given

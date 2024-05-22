@@ -204,8 +204,11 @@ extension SettingsManagerProtocol {
         }
 
         set {
-            let stringValue = newValue.map { String($0) }
-            set(value: stringValue, for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+            if let value = newValue {
+                set(value: String(value), for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+            } else {
+                removeValue(for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+            }
         }
     }
 

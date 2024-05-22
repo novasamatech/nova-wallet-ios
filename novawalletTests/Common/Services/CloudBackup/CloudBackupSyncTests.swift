@@ -400,7 +400,7 @@ final class CloudBackupSyncTests: XCTestCase {
         let syncService = CloudBackupSyncFactory(
             serviceFactory: serviceFactory,
             syncMetadataManaging: syncMetadataManager,
-            accountsRepositoryFactory: accountsRepositoryFactory,
+            walletsRepositoryFactory: accountsRepositoryFactory,
             notificationCenter: NotificationCenter.default,
             operationQueue: operationQueue,
             logger: Logger.shared
