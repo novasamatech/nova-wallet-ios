@@ -13,7 +13,10 @@ final class MainTabBarInteractor {
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
+    let backupApplicationFactory: CloudBackupUpdateApplicationFactoryProtocol
     let settingsManager: SettingsManagerProtocol
+    let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     deinit {
         stopServices()
@@ -25,18 +28,25 @@ final class MainTabBarInteractor {
         keystoreImportService: KeystoreImportServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
+        backupApplicationFactory: CloudBackupUpdateApplicationFactoryProtocol,
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol,
-        settingsManager: SettingsManagerProtocol
+        settingsManager: SettingsManagerProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.eventCenter = eventCenter
         self.keystoreImportService = keystoreImportService
         self.screenOpenService = screenOpenService
         self.pushScreenOpenService = pushScreenOpenService
+        self.backupApplicationFactory = backupApplicationFactory
         self.serviceCoordinator = serviceCoordinator
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
         self.settingsManager = settingsManager
+        self.operationQueue = operationQueue
+        self.logger = logger
+
         self.inAppUpdatesService.setup()
 
         startServices()
@@ -72,6 +82,45 @@ final class MainTabBarInteractor {
             }
         }
     }
+
+    private func subscribeCloudBackupUpdates() {
+        serviceCoordinator.cloudBackupSyncFacade.unsubscribeState(self)
+
+        serviceCoordinator.cloudBackupSyncFacade.subscribeState(self, notifyingIn: .main) { [weak self] state in
+            self?.logger.debug("Backup state: \(state)")
+
+            switch state {
+            case .disabled, .unavailable:
+                break
+            case let .enabled(cloudBackupSyncResult, _):
+                self?.securedLayer.scheduleExecutionIfAuthorized {
+                    guard case let .changes(changes) = cloudBackupSyncResult else {
+                        return
+                    }
+
+                    self?.processCloudBackup(changes: changes)
+                }
+            }
+        }
+    }
+
+    private func processCloudBackup(changes: CloudBackupSyncResult.Changes) {
+        if changes.isCritical {
+            presenter?.didRequestReviewCloud(changes: changes)
+        } else {
+            let wrapper = backupApplicationFactory.createUpdateApplyOperation(for: changes)
+
+            execute(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                if case let .failure(error) = result {
+                    self?.logger.error("Unexpected cloud apply error: \(error)")
+                }
+            }
+        }
+    }
 }
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
@@ -93,6 +142,8 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         }
 
         showPushNotificationsSetupIfNeeded()
+
+        subscribeCloudBackupUpdates()
     }
 
     func setPushNotificationsSetupScreenSeen() {

@@ -4,31 +4,9 @@ final class CloudBackupSettingsInteractor {
     weak var presenter: CloudBackupSettingsInteractorOutputProtocol?
 
     let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
-    let cloudBackupApplicationFactory: CloudBackupUpdateApplicationFactoryProtocol
-    let operationQueue: OperationQueue
 
-    init(
-        cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol,
-        cloudBackupApplicationFactory: CloudBackupUpdateApplicationFactoryProtocol,
-        operationQueue: OperationQueue
-    ) {
+    init(cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol) {
         self.cloudBackupSyncFacade = cloudBackupSyncFacade
-        self.cloudBackupApplicationFactory = cloudBackupApplicationFactory
-        self.operationQueue = operationQueue
-
-        startService()
-    }
-
-    deinit {
-        stopService()
-    }
-
-    private func startService() {
-        cloudBackupSyncFacade.setup()
-    }
-
-    private func stopService() {
-        cloudBackupSyncFacade.throttle()
     }
 
     private func subscribeBackupState() {

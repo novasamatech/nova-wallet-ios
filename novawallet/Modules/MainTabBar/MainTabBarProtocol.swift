@@ -18,6 +18,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestImportAccount(source: SecretSource)
     func didRequestScreenOpen(_ screen: UrlHandlingScreen)
     func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen)
+    func didRequestReviewCloud(changes: CloudBackupSyncResult.Changes)
     func didRequestPushNotificationsSetupOpen()
 }
 
