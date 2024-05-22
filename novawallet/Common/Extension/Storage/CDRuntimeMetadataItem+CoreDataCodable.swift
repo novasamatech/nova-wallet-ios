@@ -9,6 +9,8 @@ extension CDRuntimeMetadataItem: CoreDataCodable {
         identifier = item.chain
         version = Int32(bitPattern: item.version)
         txVersion = Int32(bitPattern: item.txVersion)
+        localMigratorVersion = Int32(bitPattern: item.localMigratorVersion)
+        opaque = item.opaque
         metadata = item.metadata
     }
 
@@ -19,5 +21,7 @@ extension CDRuntimeMetadataItem: CoreDataCodable {
         try container.encode(metadata, forKey: .metadata)
         try container.encode(UInt32(bitPattern: version), forKey: .version)
         try container.encode(UInt32(bitPattern: txVersion), forKey: .txVersion)
+        try container.encode(UInt32(bitPattern: localMigratorVersion), forKey: .localMigratorVersion)
+        try container.encode(opaque, forKey: .opaque)
     }
 }
