@@ -1605,3 +1605,8 @@
 "mnemonic.card.revealed.header.message.highlighted" = "не сообщайте";
 "advanced.export.header.message" = "Не передавайте никому эту информацию - в противном случае вы навсегда и безвозвратно потеряете все свои активы";
 "advanced.export.json.button.title" = "Экспортировать JSON-файл";
+"chain.accounts.list.header" = "Выберите ключ для бэкапа";
+"chain.accounts.list.default.title" = "Аккаунты по умолчанию";
+"chain.accounts.list.default.subtitle" = "+%d других";
+"chain.accounts.list.default.header" = "Аккаунты с ключом по умолчанию";
+"chain.accounts.list.custom.header" = "Аккаунты с пользовательским ключом";
