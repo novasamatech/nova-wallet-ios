@@ -8,6 +8,7 @@ final class CloudBackupCreateInteractor {
 
     let walletName: String
     let cloudBackupFacade: CloudBackupServiceFacadeProtocol
+    let syncMetadataManager: CloudBackupSyncMetadataManaging
     let walletSettings: SelectedWalletSettings
     let persistentKeystore: KeystoreProtocol
     let operationQueue: OperationQueue
@@ -19,13 +20,22 @@ final class CloudBackupCreateInteractor {
         cloudBackupFacade: CloudBackupServiceFacadeProtocol,
         walletSettings: SelectedWalletSettings,
         persistentKeystore: KeystoreProtocol,
+        syncMetadataManager: CloudBackupSyncMetadataManaging,
         operationQueue: OperationQueue
     ) {
         self.walletName = walletName
         self.cloudBackupFacade = cloudBackupFacade
         self.walletSettings = walletSettings
         self.persistentKeystore = persistentKeystore
+        self.syncMetadataManager = syncMetadataManager
         self.operationQueue = operationQueue
+    }
+
+    private func enableBackupAndComplete(for password: String) {
+        // we already saved the wallet better to ask a user to resolve the password in settings
+        try? syncMetadataManager.enableBackup(for: password)
+
+        didComplete(with: .success(()))
     }
 
     private func backup(
@@ -41,7 +51,12 @@ final class CloudBackupCreateInteractor {
         ) { result in
             switch result {
             case .success:
-                self.saveWallet(wallet, proxyKeystore: proxyKeystore, persistentKeystore: self.persistentKeystore)
+                self.saveWallet(
+                    wallet,
+                    proxyKeystore: proxyKeystore,
+                    persistentKeystore: self.persistentKeystore,
+                    password: password
+                )
             case let .failure(error):
                 self.didComplete(with: .failure(.backup(error)))
             }
@@ -51,7 +66,8 @@ final class CloudBackupCreateInteractor {
     private func saveWallet(
         _ wallet: MetaAccountModel,
         proxyKeystore: KeychainProxyProtocol,
-        persistentKeystore: KeystoreProtocol
+        persistentKeystore: KeystoreProtocol,
+        password: String
     ) {
         let saveOperation = ClosureOperation<Void> {
             try proxyKeystore.flushToActual(persistentStore: persistentKeystore)
@@ -65,7 +81,7 @@ final class CloudBackupCreateInteractor {
         ) { result in
             switch result {
             case .success:
-                self.didComplete(with: .success(()))
+                self.enableBackupAndComplete(for: password)
             case let .failure(error):
                 self.didComplete(with: .failure(.walletSave(error)))
             }

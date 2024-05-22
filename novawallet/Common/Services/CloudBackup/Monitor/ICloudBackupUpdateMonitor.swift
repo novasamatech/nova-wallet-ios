@@ -9,6 +9,7 @@ final class ICloudBackupUpdateMonitor {
     private var monitor: NSMetadataQuery?
 
     private var closure: CloudBackupUpdateMonitoringClosure?
+    private var notificationQueue: DispatchQueue?
 
     init(
         filename: String,
@@ -39,8 +40,12 @@ final class ICloudBackupUpdateMonitor {
             let monitor,
             monitor.resultCount > 0,
             let item = monitor.result(at: 0) as? NSMetadataItem else {
-            closure?(.success(.noFile))
             logger.warning("No update metadata found for: \(filename)")
+
+            dispatchInQueueWhenPossible(notificationQueue) { [weak self] in
+                self?.closure?(.success(.noFile))
+            }
+
             return
         }
 
@@ -52,22 +57,29 @@ final class ICloudBackupUpdateMonitor {
         case nil,
              NSMetadataUbiquitousItemDownloadingStatusNotDownloaded,
              NSMetadataUbiquitousItemDownloadingStatusDownloaded:
-            closure?(.success(.notDownloaded))
+            dispatchInQueueWhenPossible(notificationQueue) { [weak self] in
+                self?.closure?(.success(.notDownloaded))
+            }
         case NSMetadataUbiquitousItemDownloadingStatusCurrent:
-            closure?(.success(.downloaded))
+            dispatchInQueueWhenPossible(notificationQueue) { [weak self] in
+                self?.closure?(.success(.downloaded))
+            }
         default:
-            closure?(.success(.unknown))
+            dispatchInQueueWhenPossible(notificationQueue) { [weak self] in
+                self?.closure?(.success(.unknown))
+            }
         }
     }
 }
 
 extension ICloudBackupUpdateMonitor: CloudBackupUpdateMonitoring {
-    func start(with closure: @escaping CloudBackupUpdateMonitoringClosure) {
+    func start(notifyingIn queue: DispatchQueue, with closure: @escaping CloudBackupUpdateMonitoringClosure) {
         guard monitor == nil else {
             return
         }
 
         self.closure = closure
+        notificationQueue = queue
 
         let metadataQuery = NSMetadataQuery()
         metadataQuery.predicate = NSPredicate(format: "%K == %@", NSMetadataItemFSNameKey, filename)
@@ -101,5 +113,6 @@ extension ICloudBackupUpdateMonitor: CloudBackupUpdateMonitoring {
         monitor = nil
 
         closure = nil
+        notificationQueue = nil
     }
 }

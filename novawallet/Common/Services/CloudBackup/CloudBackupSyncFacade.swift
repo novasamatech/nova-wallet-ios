@@ -103,7 +103,7 @@ final class CloudBackupSyncFacade {
         stateObservable.state = .enabled(nil, lastSyncDate: syncMetadataManager.getLastSyncDate())
 
         remoteMonitor = syncFactory.createRemoteUpdatesMonitor(for: remoteUrl.lastPathComponent)
-        remoteMonitor?.start { [weak self] _ in
+        remoteMonitor?.start(notifyingIn: workingQueue) { [weak self] _ in
             self?.mutex.lock()
 
             defer {

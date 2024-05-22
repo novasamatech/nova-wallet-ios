@@ -14,7 +14,7 @@ enum CloudBackupUpdateStatus {
 typealias CloudBackupUpdateMonitoringClosure = (Result<CloudBackupUpdateStatus, CloudBackupUpdateMonitorError>) -> Void
 
 protocol CloudBackupUpdateMonitoring {
-    func start(with closure: @escaping CloudBackupUpdateMonitoringClosure)
+    func start(notifyingIn queue: DispatchQueue, with closure: @escaping CloudBackupUpdateMonitoringClosure)
 
     func stop()
 }

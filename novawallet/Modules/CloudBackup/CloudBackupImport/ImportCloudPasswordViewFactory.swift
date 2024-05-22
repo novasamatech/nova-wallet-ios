@@ -45,6 +45,10 @@ struct ImportCloudPasswordViewFactory {
             cloudBackupFacade: serviceFacade,
             walletRepository: walletRepository,
             selectedWalletSettings: SelectedWalletSettings.shared,
+            syncMetadataManager: CloudBackupSyncMetadataManager(
+                settings: SettingsManager.shared,
+                keystore: keystore
+            ),
             keystore: keystore
         )
     }

@@ -8,17 +8,20 @@ final class ImportCloudPasswordInteractor {
     let cloudBackupFacade: CloudBackupServiceFacadeProtocol
     let walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let selectedWalletSettings: SelectedWalletSettings
+    let syncMetadataManager: CloudBackupSyncMetadataManaging
     let keystore: KeystoreProtocol
 
     init(
         cloudBackupFacade: CloudBackupServiceFacadeProtocol,
         walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         selectedWalletSettings: SelectedWalletSettings,
+        syncMetadataManager: CloudBackupSyncMetadataManaging,
         keystore: KeystoreProtocol
     ) {
         self.cloudBackupFacade = cloudBackupFacade
         self.walletRepository = walletRepository
         self.selectedWalletSettings = selectedWalletSettings
+        self.syncMetadataManager = syncMetadataManager
         self.keystore = keystore
     }
 
@@ -33,7 +36,14 @@ final class ImportCloudPasswordInteractor {
         }
     }
 
-    private func setupSelectedWallet() {
+    private func enableBackupAndComplete(for password: String) {
+        // we already saved the wallet better to ask a user to resolve the password in settings
+        try? syncMetadataManager.enableBackup(for: password)
+
+        presenter?.didImportBackup()
+    }
+
+    private func setupSelectedWallet(for password: String) {
         selectedWalletSettings.setup(runningCompletionIn: .main) { [weak self] result in
             switch result {
             case let .success(optWallet):
@@ -42,7 +52,7 @@ final class ImportCloudPasswordInteractor {
                     return
                 }
 
-                self?.presenter?.didImportBackup()
+                self?.enableBackupAndComplete(for: password)
             case let .failure(error):
                 self?.presenter?.didReceive(error: .selectedWallet(error))
             }
@@ -61,7 +71,7 @@ extension ImportCloudPasswordInteractor: ImportCloudPasswordInteractorInputProto
             switch result {
             case let .success(wallets):
                 if !wallets.isEmpty {
-                    self?.setupSelectedWallet()
+                    self?.setupSelectedWallet(for: password)
                 } else {
                     self?.presenter?.didReceive(error: .emptyBackup)
                 }

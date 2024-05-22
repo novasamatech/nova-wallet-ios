@@ -17,6 +17,13 @@ extension CloudBackupSyncMetadataManaging {
     func getLastSyncDate() -> Date? {
         getLastSyncTimestamp().map { Date(timeIntervalSince1970: TimeInterval($0)) }
     }
+
+    func enableBackup(for password: String?) throws {
+        try savePassword(password)
+
+        saveLastSyncTimestamp(UInt64(Date().timeIntervalSince1970))
+        isBackupEnabled = true
+    }
 }
 
 enum CloudBackupSyncMetadataManagingError: Error {
