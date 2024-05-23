@@ -80,6 +80,15 @@ final class RuntimeSnapshotFactory {
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata
+            case let .v15(metadata):
+                catalog = try TypeRegistryCatalog.createFromSiDefinition(
+                    versioningData: chainTypes,
+                    runtimeMetadata: metadata,
+                    customExtensions: signedExtensionFactory.createCoders(for: metadata),
+                    customTypeMapper: CustomSiMappers.all,
+                    customNameMapper: ScaleInfoCamelCaseMapper()
+                )
+                runtimeMetadata = metadata
             }
 
             return RuntimeSnapshot(
@@ -100,7 +109,9 @@ final class RuntimeSnapshotFactory {
         return CompoundOperationWrapper(targetOperation: snapshotOperation, dependencies: dependencies)
     }
 
-    private func createWrapperForCommonTypes(for chain: RuntimeProviderChain) -> CompoundOperationWrapper<RuntimeSnapshot?> {
+    private func createWrapperForCommonTypes(
+        for chain: RuntimeProviderChain
+    ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let commonTypesFetchOperation = filesOperationFactory.fetchCommonTypesOperation()
 
         let runtimeMetadataOperation = repository.fetchOperation(
@@ -137,6 +148,15 @@ final class RuntimeSnapshotFactory {
                 )
                 runtimeMetadata = metadata
             case let .v14(metadata):
+                catalog = try TypeRegistryCatalog.createFromSiDefinition(
+                    versioningData: commonTypes,
+                    runtimeMetadata: metadata,
+                    customExtensions: signedExtensionFactory.createCoders(for: metadata),
+                    customTypeMapper: CustomSiMappers.all,
+                    customNameMapper: ScaleInfoCamelCaseMapper()
+                )
+                runtimeMetadata = metadata
+            case let .v15(metadata):
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: commonTypes,
                     runtimeMetadata: metadata,
@@ -211,6 +231,15 @@ final class RuntimeSnapshotFactory {
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata
+            case let .v15(metadata):
+                catalog = try TypeRegistryCatalog.createFromSiDefinition(
+                    versioningData: ownTypes,
+                    runtimeMetadata: metadata,
+                    customExtensions: signedExtensionFactory.createCoders(for: metadata),
+                    customTypeMapper: CustomSiMappers.all,
+                    customNameMapper: ScaleInfoCamelCaseMapper()
+                )
+                runtimeMetadata = metadata
             }
 
             return RuntimeSnapshot(
@@ -253,6 +282,28 @@ final class RuntimeSnapshotFactory {
 
             switch runtimeMetadataContainer.runtimeMetadata {
             case let .v14(metadata):
+                let augmentationFactory = RuntimeAugmentationFactory()
+
+                let result = !chain.isEthereumBased ? augmentationFactory.createSubstrateAugmentation(for: metadata) :
+                    augmentationFactory.createEthereumBasedAugmentation(for: metadata)
+
+                let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)
+
+                catalog = try TypeRegistryCatalog.createFromSiDefinition(
+                    runtimeMetadata: metadata,
+                    additionalNodes: result.additionalNodes.nodes,
+                    customExtensions: signedExtensionFactory.createCoders(for: metadata),
+                    customTypeMapper: CustomSiMappers.all,
+                    customNameMapper: ScaleInfoCamelCaseMapper()
+                )
+                runtimeMetadata = metadata
+                
+                if !result.additionalNodes.notMatch.isEmpty {
+                    logger.warning("No \(chain.name) type matching: \(result.additionalNodes.notMatch)")
+                } else {
+                    logger.debug("Types matching succeed for \(chain.name)")
+                }
+            case let .v15(metadata):
                 let augmentationFactory = RuntimeAugmentationFactory()
 
                 let result = !chain.isEthereumBased ? augmentationFactory.createSubstrateAugmentation(for: metadata) :

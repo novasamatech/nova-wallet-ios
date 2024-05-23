@@ -26,17 +26,14 @@ final class RuntimeFetchOperationFactoryTests: XCTestCase {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         
-        guard
-            let connection = chainRegistry.getConnection(for: chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
         
         let operationQueue = OperationQueue()
         
         let wrapper = RuntimeFetchOperationFactory(operationQueue: operationQueue).createMetadataFetchWrapper(
-            for: connection,
-            runtimeService: runtimeService
+            for: connection
         )
         
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)

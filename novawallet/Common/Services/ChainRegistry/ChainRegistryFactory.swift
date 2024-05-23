@@ -49,6 +49,7 @@ final class ChainRegistryFactory {
 
         let runtimeSyncService = RuntimeSyncService(
             repository: AnyDataProviderRepository(runtimeMetadataRepository),
+            runtimeFetchFactory: RuntimeFetchOperationFactory(operationQueue: OperationManagerFacade.runtimeSyncQueue),
             filesOperationFactory: filesOperationFactory,
             dataOperationFactory: dataFetchOperationFactory,
             eventCenter: EventCenter.shared,

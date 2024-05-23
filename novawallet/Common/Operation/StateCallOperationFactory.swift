@@ -3,11 +3,18 @@ import SubstrateSdk
 import RobinHood
 
 typealias StateCallRequestParamsClosure = (DynamicScaleEncoding, RuntimeJsonContext) throws -> Void
+typealias StateCallRawParamClosure = () throws -> Data
 
 protocol StateCallResultDecoding {
     associatedtype Result
 
     func decode(data: Data, using codingFactory: RuntimeCoderFactoryProtocol) throws -> Result
+}
+
+protocol StateCallStaticResultDecoding {
+    associatedtype Result
+
+    func decode(data: Data) throws -> Result
 }
 
 struct StateCallResultFromTypeNameDecoder<T: Decodable>: StateCallResultDecoding {
@@ -25,7 +32,7 @@ struct StateCallResultFromTypeNameDecoder<T: Decodable>: StateCallResultDecoding
     }
 }
 
-struct StateCallResultFromScaleTypeDecoder<T: ScaleCodable>: StateCallResultDecoding {
+struct StateCallResultFromScaleTypeDecoder<T: ScaleCodable>: StateCallResultDecoding, StateCallStaticResultDecoding {
     typealias Result = T
 
     func decode(data: Data, using codingFactory: RuntimeCoderFactoryProtocol) throws -> T {
@@ -33,12 +40,21 @@ struct StateCallResultFromScaleTypeDecoder<T: ScaleCodable>: StateCallResultDeco
 
         return try decoder.read()
     }
+
+    func decode(data: Data) throws -> T {
+        let decoder = try ScaleDecoder(data: data)
+        return try T(scaleDecoder: decoder)
+    }
 }
 
-struct StateCallRawDataDecoder: StateCallResultDecoding {
+struct StateCallRawDataDecoder: StateCallResultDecoding, StateCallStaticResultDecoding {
     typealias Result = Data
 
     func decode(data: Data, using _: RuntimeCoderFactoryProtocol) throws -> Data {
+        data
+    }
+
+    func decode(data: Data) throws -> Data {
         data
     }
 }
@@ -51,6 +67,13 @@ protocol StateCallRequestFactoryProtocol {
         connection: JSONRPCEngine,
         resultDecoder: Decoder
     ) -> CompoundOperationWrapper<V> where Decoder.Result == V
+
+    func createStaticCodingWrapper<V, D: StateCallStaticResultDecoding>(
+        for functionName: String,
+        paramsClosure: StateCallRawParamClosure?,
+        connection: JSONRPCEngine,
+        decoder: D
+    ) -> CompoundOperationWrapper<V> where D.Result == V
 }
 
 extension StateCallRequestFactoryProtocol {
@@ -155,6 +178,48 @@ extension StateCallRequestFactory: StateCallRequestFactoryProtocol {
             let resultData = try Data(hexString: result)
 
             return try resultDecoder.decode(data: resultData, using: coderFactory)
+        }
+
+        mapOperation.addDependency(infoOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [requestOperation, infoOperation])
+    }
+
+    func createStaticCodingWrapper<V, D: StateCallStaticResultDecoding>(
+        for functionName: String,
+        paramsClosure: StateCallRawParamClosure?,
+        connection: JSONRPCEngine,
+        decoder: D
+    ) -> CompoundOperationWrapper<V> where D.Result == V {
+        let requestOperation = ClosureOperation<StateCallRpc.Request> {
+            let param = try paramsClosure?() ?? Data()
+
+            return StateCallRpc.Request(builtInFunction: functionName) { container in
+                try container.encode(param.toHex(includePrefix: true))
+            }
+        }
+
+        let infoOperation = JSONRPCOperation<StateCallRpc.Request, String>(
+            engine: connection,
+            method: StateCallRpc.method,
+            timeout: rpcTimeout
+        )
+
+        infoOperation.configurationBlock = {
+            do {
+                infoOperation.parameters = try requestOperation.extractNoCancellableResultData()
+            } catch {
+                infoOperation.result = .failure(error)
+            }
+        }
+
+        infoOperation.addDependency(requestOperation)
+
+        let mapOperation = ClosureOperation<V> {
+            let result = try infoOperation.extractNoCancellableResultData()
+            let resultData = try Data(hexString: result)
+
+            return try decoder.decode(data: resultData)
         }
 
         mapOperation.addDependency(infoOperation)

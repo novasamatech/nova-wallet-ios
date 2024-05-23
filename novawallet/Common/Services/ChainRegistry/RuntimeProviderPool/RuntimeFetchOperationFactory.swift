@@ -9,8 +9,7 @@ struct RawRuntimeMetadata {
 
 protocol RuntimeFetchOperationFactoryProtocol {
     func createMetadataFetchWrapper(
-        for connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<RawRuntimeMetadata>
 }
 
@@ -26,44 +25,33 @@ final class RuntimeFetchOperationFactory {
     }
 
     private func createVersionedMetadataWrapper(
-        for connection: JSONRPCEngine,
-        runtimeProvider: RuntimeCodingServiceProtocol
+        for connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<Data> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
         let requestFactory = StateCallRequestFactory(rpcTimeout: JSONRPCTimeout.hour)
-        let versionRequestWrapper: CompoundOperationWrapper<[UInt32]> = requestFactory.createWrapper(
+        let versionRequestWrapper: CompoundOperationWrapper<[UInt32]> = requestFactory.createStaticCodingWrapper(
             for: Self.availableVersionsCall,
             paramsClosure: nil,
-            codingFactoryClosure: {
-                try codingFactoryOperation.extractNoCancellableResultData()
-            },
-            connection: connection
+            connection: connection,
+            decoder: StateCallResultFromScaleTypeDecoder()
         )
 
-        versionRequestWrapper.addDependency(operations: [codingFactoryOperation])
-
-        let metadataRequestWrapper = requestFactory.createRawDataWrapper(
+        let metadataRequestWrapper: CompoundOperationWrapper<Data> = requestFactory.createStaticCodingWrapper(
             for: Self.metadataAtVersionCall,
-            paramsClosure: { encoder, _ in
+            paramsClosure: {
                 let versions = try versionRequestWrapper.targetOperation.extractNoCancellableResultData()
                 guard let maxVersion = versions.filter({ $0 <= Self.latestSupportedVersion }).max() else {
                     throw BaseOperationError.unexpectedDependentResult
                 }
 
-                try encoder.append(encodable: maxVersion)
+                return try maxVersion.scaleEncoded()
             },
-            codingFactoryClosure: {
-                try codingFactoryOperation.extractNoCancellableResultData()
-            },
-            connection: connection
+            connection: connection,
+            decoder: StateCallRawDataDecoder()
         )
 
         metadataRequestWrapper.addDependency(wrapper: versionRequestWrapper)
 
-        return metadataRequestWrapper
-            .insertingHead(operations: versionRequestWrapper.allOperations)
-            .insertingHead(operations: [codingFactoryOperation])
+        return metadataRequestWrapper.insertingHead(operations: versionRequestWrapper.allOperations)
     }
 
     private func createLegacyMetadataWrapper(for connection: JSONRPCEngine) -> CompoundOperationWrapper<Data> {
@@ -87,15 +75,12 @@ final class RuntimeFetchOperationFactory {
 
 extension RuntimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol {
     func createMetadataFetchWrapper(
-        for connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<RawRuntimeMetadata> {
-        let versionedMetadataWrapper = createVersionedMetadataWrapper(
-            for: connection,
-            runtimeProvider: runtimeService
-        )
+        let versionedMetadataWrapper = createVersionedMetadataWrapper(for: connection)
 
-        let resultWrapper: CompoundOperationWrapper<RawRuntimeMetadata> = OperationCombiningService.compoundNonOptionalWrapper(
+        let resultWrapper: CompoundOperationWrapper<RawRuntimeMetadata>
+        resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             do {
