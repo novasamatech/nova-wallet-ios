@@ -549,6 +549,7 @@
 "secret.type.keystore.title" = "Restore JSON";
 "secret.type.keystore.subtitle" = "JSON file";
 "secret.type.seed.title" = "Raw seed";
+"secret.type.private.key.title" = "Private key";
 "secret.type.seed.subtitle" = "Hexadecimal string";
 "secret.type.mnemonic.title" = "Mnemonic phrase";
 "secret.type.mnemonic.subtitle" = "12, 15, 18, 21 or 24-word phrase";
@@ -1602,3 +1603,5 @@
 "mnemonic.card.cover.message.message" = "Make sure no one can see your screen and do not take screenshots";
 "mnemonic.card.revealed.header.message" = "Please %@ anyone";
 "mnemonic.card.revealed.header.message.highlighted" = "do not share with";
+"advanced.export.header.message" = "Do not share any of this information with anyone - If you do you will permanently and irretreveably lose all of your assets";
+"advanced.export.json.button.title" = "Export JSON file";

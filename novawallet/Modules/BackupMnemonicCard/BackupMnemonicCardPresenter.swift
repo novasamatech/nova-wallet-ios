@@ -42,7 +42,11 @@ extension BackupMnemonicCardPresenter: BackupMnemonicCardPresenterProtocol {
     }
 
     func advancedTapped() {
-        wireframe.showAdvancedExport(from: view)
+        wireframe.showAdvancedExport(
+            from: view,
+            with: metaAccount,
+            chain: nil
+        )
     }
 }
 

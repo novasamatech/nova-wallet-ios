@@ -41,6 +41,11 @@ extension UILabel.Style {
         font: .semiBoldSubheadline
     )
 
+    static let semiboldSubhedlineAccent = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .semiBoldSubheadline
+    )
+
     static let semiboldBodyPrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .semiBoldBody

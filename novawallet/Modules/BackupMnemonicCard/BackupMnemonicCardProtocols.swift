@@ -20,5 +20,9 @@ protocol BackupMnemonicCardInteractorOutputProtocol: AnyObject {
 }
 
 protocol BackupMnemonicCardWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showAdvancedExport(from view: BackupMnemonicCardViewProtocol?)
+    func showAdvancedExport(
+        from view: BackupMnemonicCardViewProtocol?,
+        with metaAccount: MetaAccountModel,
+        chain: ChainModel?
+    )
 }
