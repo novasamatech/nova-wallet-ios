@@ -84,11 +84,10 @@ private extension AdvancedExportInteractor {
         chain: ChainModel?,
         chainType: ChainType
     ) -> Data? {
-        var accountId: AccountId?
-
-        if let chain {
-            accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
-        }
+        var accountId = try? accountId(
+            for: chain,
+            metaAccount: metaAccount
+        )
 
         let keystoreTag: String = switch chainType {
         case .ethereum:
@@ -110,29 +109,17 @@ private extension AdvancedExportInteractor {
         for metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) throws -> AdvancedExportChainData {
-        var accountResponse: ChainAccountResponse?
-        var accountId: AccountId?
-        var secretTag: String?
         var options: [SecretSource] = []
 
-        if let chain, chain.isEthereumBased {
-            accountResponse = metaAccount.fetch(for: chain.accountRequest())
+        var accountId = try accountId(
+            for: chain,
+            metaAccount: metaAccount
+        )
 
-            guard let accountResponse else {
-                throw ChainAccountFetchingError.accountNotExists
-            }
-
-            accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
-            secretTag = KeystoreTagV2.ethereumSecretKeyTagForMetaId(
-                metaAccount.metaId,
-                accountId: accountId
-            )
-        } else if let _ = metaAccount.ethereumAddress {
-            secretTag = KeystoreTagV2.ethereumSecretKeyTagForMetaId(
-                metaAccount.metaId,
-                accountId: nil
-            )
-        }
+        let secretTag = KeystoreTagV2.ethereumSecretKeyTagForMetaId(
+            metaAccount.metaId,
+            accountId: accountId
+        )
 
         let derivationTag = KeystoreTagV2.ethereumDerivationTagForMetaId(
             metaAccount.metaId,
@@ -140,7 +127,7 @@ private extension AdvancedExportInteractor {
         )
         let derivationPath = try derivationPath(for: derivationTag)
 
-        if let secretTag, try keystore.checkKey(for: secretTag) {
+        if try keystore.checkKey(for: secretTag) {
             options.append(.keystore)
         }
 
@@ -156,22 +143,16 @@ private extension AdvancedExportInteractor {
         for metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) throws -> AdvancedExportChainData {
-        var accountResponse: ChainAccountResponse?
-        var accountId: AccountId?
+        var accountResponse = try accountResponse(
+            for: chain,
+            metaAccount: metaAccount
+        )
+
         var options: [SecretSource] = []
-
-        if let chain {
-            accountResponse = metaAccount.fetch(for: chain.accountRequest())
-            guard let accountResponse else {
-                throw ChainAccountFetchingError.accountNotExists
-            }
-
-            accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
-        }
 
         let seedTag = KeystoreTagV2.substrateSeedTagForMetaId(
             metaAccount.metaId,
-            accountId: accountId
+            accountId: accountResponse?.accountId
         )
         let hasSeed = try keystore.checkKey(for: seedTag)
 
@@ -183,7 +164,7 @@ private extension AdvancedExportInteractor {
 
         let derivationTag = KeystoreTagV2.substrateDerivationTagForMetaId(
             metaAccount.metaId,
-            accountId: accountId
+            accountId: accountResponse?.accountId
         )
 
         return .init(
@@ -200,6 +181,36 @@ private extension AdvancedExportInteractor {
         }
 
         return String(data: derivationPathData, encoding: .utf8)
+    }
+
+    func accountId(
+        for chain: ChainModel?,
+        metaAccount: MetaAccountModel
+    ) throws -> AccountId? {
+        if let chain {
+            guard let accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest()) else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
+            return accountId
+        }
+
+        return .none
+    }
+
+    func accountResponse(
+        for chain: ChainModel?,
+        metaAccount: MetaAccountModel
+    ) throws -> ChainAccountResponse? {
+        if let chain {
+            guard let accountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
+            return accountResponse
+        }
+
+        return .none
     }
 }
 

@@ -6,6 +6,7 @@ final class AdvancedExportPresenter {
     let wireframe: AdvancedExportWireframeProtocol
     let interactor: AdvancedExportInteractorInputProtocol
 
+    private let localizationManager: LocalizationManagerProtocol
     private let logger: LoggerProtocol
 
     private let metaAccount: MetaAccountModel
@@ -23,10 +24,10 @@ final class AdvancedExportPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.localizationManager = localizationManager
         self.logger = logger
         self.metaAccount = metaAccount
         self.chain = chain
-        self.localizationManager = localizationManager
     }
 }
 
@@ -43,7 +44,7 @@ extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
     func didReceive(exportData: AdvancedExportData) {
         let viewModel = viewModelFactory.createViewModel(
             for: exportData,
-            selectedLocale: selectedLocale,
+            selectedLocale: localizationManager.selectedLocale,
             onTapSubstrateSecret: { [weak self] in self?.didTapSubstrateSecretCover() },
             onTapEthereumSecret: { [weak self] in self?.didTapEthereumSecretCover() },
             onTapExportJSON: { [weak self] in self?.wireframe.showExportRestoreJSON(from: self?.view) }
@@ -64,8 +65,6 @@ extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
 
     func didReceive(_ error: Error) {
         logger.error("Did receive error: \(error)")
-
-        guard let localizationManager else { return }
 
         if !wireframe.present(
             error: error,
@@ -97,10 +96,4 @@ private extension AdvancedExportPresenter {
             chain: chain
         )
     }
-}
-
-// MARK: Localizable
-
-extension AdvancedExportPresenter: Localizable {
-    func applyLocalization() {}
 }

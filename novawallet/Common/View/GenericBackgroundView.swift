@@ -83,7 +83,7 @@ private extension GenericBackgroundView {
         shadowOpacity = 0.0
         strokeWidth = 0.0
         fillColor = .clear
-        cornerRadius = 0.0
-        roundingCorners = []
+        cornerRadius = 12
+        roundingCorners = .allCorners
     }
 }

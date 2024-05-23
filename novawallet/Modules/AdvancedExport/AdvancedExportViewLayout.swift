@@ -7,6 +7,17 @@ final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
         view.textAlignment = .left
     }
 
+    lazy var networkView = AssetListChainView()
+    lazy var networkContainerView: UIView = .create { [weak self] view in
+        guard let self else { return }
+
+        view.addSubview(networkView)
+
+        networkView.snp.makeConstraints { make in
+            make.leading.bottom.top.equalToSuperview()
+        }
+    }
+
     func bind(with viewModel: Model) {
         viewModel.sections.forEach { section in
             switch section {
