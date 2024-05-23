@@ -22,21 +22,30 @@ final class AdvancedExportViewModelFactory {
             switch chain {
             case let .substrate(model):
                 sections.append(
-                    .network(model: createViewModelForSubstrate(
+                    .network(model: createViewModelForNetwork(
                         with: model,
                         selectedLocale: selectedLocale,
+                        showSecret: model.availableOptions.contains(where: { $0 == .seed }),
+                        secretType: .seed,
+                        showJSONExport: model.availableOptions.contains(where: { $0 == .keystore }),
                         onTapSecret: onTapSubstrateSecret,
                         onTapExportJSON: onTapExportJSON
                     ))
                 )
             case let .ethereum(model):
-                guard model.availableOptions.contains(where: { $0 == .keystore }) else { return }
+                let showSecret = model.availableOptions.contains(where: { $0 == .keystore })
+
+                guard showSecret else { return }
 
                 sections.append(
-                    .network(model: createViewModelForEthereum(
+                    .network(model: createViewModelForNetwork(
                         with: model,
                         selectedLocale: selectedLocale,
-                        onTapSecret: onTapEthereumSecret
+                        showSecret: showSecret,
+                        secretType: .keystore,
+                        showJSONExport: false,
+                        onTapSecret: onTapEthereumSecret,
+                        onTapExportJSON: onTapExportJSON
                     ))
                 )
             }
@@ -48,23 +57,29 @@ final class AdvancedExportViewModelFactory {
     }
 
     // swiftlint:disable function_body_length
-    func createViewModelForSubstrate(
+    func createViewModelForNetwork(
         with model: AdvancedExportChainData,
         selectedLocale: Locale,
+        showSecret: Bool,
+        secretType: SecretSource,
+        showJSONExport: Bool,
         onTapSecret: @escaping () -> Void,
         onTapExportJSON: @escaping () -> Void
     ) -> AdvancedExportViewLayout.NetworkModel {
         var blocks: [AdvancedExportViewLayout.NetworkModel.Block] = []
 
-        let showSeed = model.availableOptions.contains(where: { $0 == .seed })
-        let showJSONExport = model.availableOptions.contains(where: { $0 == .keystore })
+        let secretTitle = secretType == .seed
+            ? R.string.localizable.secretTypeSeedTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            : R.string.localizable.secretTypePrivateKeyTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
 
-        if showSeed {
+        if showSecret {
             blocks.append(
                 .secret(model: .init(
-                    blockLeftTitle: R.string.localizable.secretTypeSeedTitle(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
+                    blockLeftTitle: secretTitle,
                     blockRightTitle: R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
                         preferredLanguages: selectedLocale.rLanguages
                     ),
@@ -102,58 +117,6 @@ final class AdvancedExportViewModelFactory {
                 contentSecondaryText: model.cryptoType.subtitleForLocale(selectedLocale)
             ))
         )
-
-        if let derivationPath = model.derivationPath {
-            blocks.append(
-                .derivationPath(model: .init(
-                    blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    content: model.derivationPath
-                ))
-            )
-        }
-
-        return .init(
-            name: model.name,
-            blocks: blocks
-        )
-    }
-
-    func createViewModelForEthereum(
-        with model: AdvancedExportChainData,
-        selectedLocale: Locale,
-        onTapSecret: @escaping () -> Void
-    ) -> AdvancedExportViewLayout.NetworkModel {
-        var blocks: [AdvancedExportViewLayout.NetworkModel.Block] = [
-            .secret(model: .init(
-                blockLeftTitle: R.string.localizable.secretTypePrivateKeyTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                blockRightTitle: R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                hidden: true,
-                coverText: R.string.localizable.mnemonicCardCoverMessageTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                onCoverTap: onTapSecret,
-                secret: nil,
-                chainName: model.name
-            )),
-
-            .cryptoType(model: .init(
-                blockLeftTitle: R.string.localizable.commonCryptoType(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                contentMainText: R.string.localizable.ecdsaSelectionTitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                contentSecondaryText: R.string.localizable.ecdsaSelectionSubtitle(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-            ))
-        ]
 
         if let derivationPath = model.derivationPath {
             blocks.append(
