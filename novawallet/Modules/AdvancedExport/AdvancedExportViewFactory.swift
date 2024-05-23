@@ -12,11 +12,17 @@ struct AdvancedExportViewFactory {
         let interactor = AdvancedExportInteractor(keystore: keystore)
         let wireframe = AdvancedExportWireframe()
 
+        let networkViewModelFactory = NetworkViewModelFactory()
+        let advancedExportViewModelFactory = AdvancedExportViewModelFactory(
+            networkViewModelFactory: networkViewModelFactory
+        )
+
         let presenter = AdvancedExportPresenter(
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared,
+            viewModelFactory: advancedExportViewModelFactory,
             metaAccount: metaAccount,
             chain: chain
         )

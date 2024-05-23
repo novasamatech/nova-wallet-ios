@@ -48,6 +48,22 @@ extension AdvancedExportViewController: AdvancedExportViewProtocol {
     func update(with viewModel: AdvancedExportViewLayout.Model) {
         rootView.bind(with: viewModel)
     }
+    
+    func updateNavbar(with viewModel: DisplayWalletViewModel) {
+        let iconDetailsView: IconDetailsView = .create(with: { view in
+            view.detailsLabel.apply(style: .semiboldBodyPrimary)
+            view.detailsLabel.text = viewModel.name
+            view.iconWidth = Constants.walletIconSize.width
+
+            viewModel.imageViewModel?.loadImage(
+                on: view.imageView,
+                targetSize: Constants.walletIconSize,
+                animated: true
+            )
+        })
+
+        navigationItem.titleView = iconDetailsView
+    }
 
     func showSecret(
         _ secret: String,

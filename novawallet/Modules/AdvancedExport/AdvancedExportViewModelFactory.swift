@@ -1,14 +1,37 @@
 import Foundation
 
 final class AdvancedExportViewModelFactory {
+    private let networkViewModelFactory: NetworkViewModelFactoryProtocol
+
+    init(networkViewModelFactory: NetworkViewModelFactoryProtocol) {
+        self.networkViewModelFactory = networkViewModelFactory
+    }
+
     func createViewModel(
         for exportData: AdvancedExportData,
+        chain: ChainModel?,
         selectedLocale: Locale,
         onTapSubstrateSecret: @escaping () -> Void,
         onTapEthereumSecret: @escaping () -> Void,
         onTapExportJSON: @escaping () -> Void
     ) -> AdvancedExportViewLayout.Model {
         var sections: [AdvancedExportViewLayout.Section] = []
+
+        if let chain {
+            sections.append(
+                .networkView(
+                    networkViewModelFactory.createViewModel(from: chain)
+                )
+            )
+
+            sections.append(
+                .headerTitle(
+                    text: R.string.localizable.advancedExportCustomKeyHeaderTitle(
+                        preferredLanguages: selectedLocale.rLanguages
+                    )
+                )
+            )
+        }
 
         sections.append(
             .headerMessage(

@@ -1,12 +1,6 @@
 import UIKit
 
 final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
-    let headerMessageLabel: UILabel = .create { view in
-        view.apply(style: .regularSubhedlineSecondary)
-        view.numberOfLines = 0
-        view.textAlignment = .left
-    }
-
     lazy var networkView = AssetListChainView()
     lazy var networkContainerView: UIView = .create { [weak self] view in
         guard let self else { return }
@@ -21,13 +15,14 @@ final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
     func bind(with viewModel: Model) {
         viewModel.sections.forEach { section in
             switch section {
+            case let .networkView(model):
+                addNetworkView(with: model)
+            case let .headerTitle(text):
+                addHeader(with: text, style: .boldTitle3Primary, spacingAfter: 12)
             case let .headerMessage(text):
-                addHeaderMessage(with: text)
+                addHeader(with: text, style: .regularSubhedlineSecondary, spacingAfter: 32)
             case let .network(model):
                 addArrangedSubviews(for: model)
-            case let .headerTitle(text):
-                // TODO: Implement
-                break
             }
         }
     }
@@ -55,14 +50,24 @@ final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
 // MARK: Private
 
 private extension AdvancedExportViewLayout {
-    func addHeaderMessage(with text: String) {
-        headerMessageLabel.text = text
-        addArrangedSubview(headerMessageLabel, spacingAfter: 32)
+    func addNetworkView(with viewModel: NetworkViewModel) {
+        addArrangedSubview(networkContainerView, spacingAfter: 16)
+        networkView.bind(viewModel: viewModel)
+    }
+
+    func addHeader(
+        with text: String,
+        style: UILabel.Style,
+        spacingAfter: CGFloat
+    ) {
+        let header = createHeaderLabel(with: style, text: text)
+        header.text = text
+        addArrangedSubview(header, spacingAfter: spacingAfter)
     }
 
     func addArrangedSubviews(for network: NetworkModel) {
         addArrangedSubview(
-            createNetworkTitleLabel(for: network),
+            createHeaderLabel(with: .boldTitle3Primary, text: network.name),
             spacingAfter: 16
         )
 
@@ -120,15 +125,6 @@ private extension AdvancedExportViewLayout {
         }
     }
 
-    func createNetworkTitleLabel(for model: NetworkModel) -> UILabel {
-        .create { view in
-            view.apply(style: .title3Primary)
-            view.textAlignment = .left
-            view.text = model.name
-            view.isUserInteractionEnabled = false
-        }
-    }
-
     func createJSONExportRow(for model: NetworkModel.ExportJSON) -> AdvancedExportRowView {
         .create { view in
             view.setupButtonStyle()
@@ -166,6 +162,18 @@ private extension AdvancedExportViewLayout {
         imageView.addGestureRecognizer(tapGesture)
 
         return imageView
+    }
+
+    func createHeaderLabel(
+        with style: UILabel.Style,
+        text: String
+    ) -> UILabel {
+        .create { view in
+            view.apply(style: style)
+            view.numberOfLines = 0
+            view.textAlignment = .left
+            view.text = text
+        }
     }
 }
 
@@ -212,6 +220,7 @@ extension AdvancedExportViewLayout {
     }
 
     enum Section {
+        case networkView(NetworkViewModel)
         case headerTitle(text: String)
         case headerMessage(text: String)
         case network(model: NetworkModel)

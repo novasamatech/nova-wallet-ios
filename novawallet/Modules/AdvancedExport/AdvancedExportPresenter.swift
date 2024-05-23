@@ -12,13 +12,15 @@ final class AdvancedExportPresenter {
     private let metaAccount: MetaAccountModel
     private var chain: ChainModel?
 
-    private let viewModelFactory = AdvancedExportViewModelFactory()
+    private let viewModelFactory: AdvancedExportViewModelFactory
+    private let walletViewModelFactory = WalletAccountViewModelFactory()
 
     init(
         interactor: AdvancedExportInteractorInputProtocol,
         wireframe: AdvancedExportWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol,
+        viewModelFactory: AdvancedExportViewModelFactory,
         metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) {
@@ -26,6 +28,7 @@ final class AdvancedExportPresenter {
         self.wireframe = wireframe
         self.localizationManager = localizationManager
         self.logger = logger
+        self.viewModelFactory = viewModelFactory
         self.metaAccount = metaAccount
         self.chain = chain
     }
@@ -37,6 +40,15 @@ extension AdvancedExportPresenter: AdvancedExportPresenterProtocol {
             metaAccount: metaAccount,
             chain: chain
         )
+        
+        guard
+            let chain,
+            let walletViewModel = try? walletViewModelFactory.createDisplayViewModel(from: metaAccount)
+        else {
+            return
+        }
+
+        view?.updateNavbar(with: walletViewModel)
     }
 }
 
@@ -44,6 +56,7 @@ extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
     func didReceive(exportData: AdvancedExportData) {
         let viewModel = viewModelFactory.createViewModel(
             for: exportData,
+            chain: chain,
             selectedLocale: localizationManager.selectedLocale,
             onTapSubstrateSecret: { [weak self] in self?.didTapSubstrateSecretCover() },
             onTapEthereumSecret: { [weak self] in self?.didTapEthereumSecretCover() },

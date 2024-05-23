@@ -2,6 +2,7 @@ import Foundation
 
 protocol AdvancedExportViewProtocol: ControllerBackedProtocol {
     func update(with viewModel: AdvancedExportViewLayout.Model)
+    func updateNavbar(with viewModel: DisplayWalletViewModel)
     func showSecret(
         _ secret: String,
         for chainName: String
