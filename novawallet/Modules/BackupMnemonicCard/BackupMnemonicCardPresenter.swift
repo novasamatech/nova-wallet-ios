@@ -51,7 +51,7 @@ extension BackupMnemonicCardPresenter: BackupMnemonicCardPresenterProtocol {
         wireframe.showAdvancedExport(
             from: view,
             with: metaAccount,
-            chain: nil
+            chain: chain
         )
     }
 }
