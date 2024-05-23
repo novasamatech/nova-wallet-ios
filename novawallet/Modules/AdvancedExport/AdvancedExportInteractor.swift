@@ -15,23 +15,40 @@ extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
         metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) {
+        var exportSubstrate: Bool {
+            if let chain {
+                !chain.isEthereumBased
+            } else {
+                metaAccount.substrateAccountId != .none
+            }
+        }
+
+        var exportEthereum: Bool {
+            if let chain {
+                chain.isEthereumBased
+            } else {
+                metaAccount.ethereumAddress != .none
+            }
+        }
+
+        var chains: [AdvancedExportData.ChainType] = []
+
         do {
-            let substrateExportData = try substrateExportData(
-                for: metaAccount,
-                chain: chain
-            )
-
-            let ethereumExportData = try ethereumExportData(
-                for: metaAccount,
-                chain: chain
-            )
-
-            let exportData = AdvancedExportData(
-                chains: [
-                    .substrate(substrateExportData),
-                    .ethereum(ethereumExportData)
-                ]
-            )
+            if exportSubstrate {
+                let chainExportData = try substrateExportData(
+                    for: metaAccount,
+                    chain: chain
+                )
+                chains.append(.substrate(chainExportData))
+            }
+            if exportEthereum {
+                let chainExportData = try ethereumExportData(
+                    for: metaAccount,
+                    chain: chain
+                )
+                chains.append(.ethereum(chainExportData))
+            }
+            let exportData = AdvancedExportData(chains: chains)
 
             presenter?.didReceive(exportData: exportData)
         } catch {
