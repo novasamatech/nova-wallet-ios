@@ -25,4 +25,18 @@ final class BackupAttentionWireframe: BackupAttentionWireframeProtocol {
             animated: true
         )
     }
+
+    func showExportSecrets(from view: BackupAttentionViewProtocol?) {
+        guard let exportView = ExportViewFactory.createView(
+            with: metaAccount,
+            chain: chain
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            exportView.controller,
+            animated: true
+        )
+    }
 }

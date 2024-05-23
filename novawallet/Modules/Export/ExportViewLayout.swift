@@ -1,6 +1,6 @@
 import UIKit
 
-final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
+final class ExportViewLayout: ScrollableContainerLayoutView {
     lazy var networkView = AssetListChainView()
     lazy var networkContainerView: UIView = .create { [weak self] view in
         guard let self else { return }
@@ -33,7 +33,7 @@ final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
     ) {
         let secretView = stackView
             .arrangedSubviews
-            .compactMap { $0 as? AdvancedExportRowView }
+            .compactMap { $0 as? ExportRowView }
             .first { view in
                 guard case let .chainSecret(rowChainName) = view.type else {
                     return false
@@ -49,7 +49,7 @@ final class AdvancedExportViewLayout: ScrollableContainerLayoutView {
 
 // MARK: Private
 
-private extension AdvancedExportViewLayout {
+private extension ExportViewLayout {
     func addNetworkView(with viewModel: NetworkViewModel) {
         addArrangedSubview(networkContainerView, spacingAfter: 16)
         networkView.bind(viewModel: viewModel)
@@ -88,7 +88,7 @@ private extension AdvancedExportViewLayout {
         }
     }
 
-    func createSecretRow(with model: NetworkModel.Secret) -> AdvancedExportRowView {
+    func createSecretRow(with model: NetworkModel.Secret) -> ExportRowView {
         .create { view in
             view.setContentSingleLabel()
             view.mainContentLabel.apply(style: .regularSubhedlinePrimary)
@@ -107,7 +107,7 @@ private extension AdvancedExportViewLayout {
         }
     }
 
-    func createCryptoTypeRow(with model: NetworkModel.CryptoType) -> AdvancedExportRowView {
+    func createCryptoTypeRow(with model: NetworkModel.CryptoType) -> ExportRowView {
         .create { view in
             view.setContentStackedLabels()
             view.mainContentLabel.text = model.contentMainText
@@ -116,7 +116,7 @@ private extension AdvancedExportViewLayout {
         }
     }
 
-    func createDerivationPathRow(with model: NetworkModel.DerivationPath) -> AdvancedExportRowView {
+    func createDerivationPathRow(with model: NetworkModel.DerivationPath) -> ExportRowView {
         .create { view in
             view.setContentSingleLabel()
             view.leftTitle.text = model.blockLeftTitle
@@ -125,7 +125,7 @@ private extension AdvancedExportViewLayout {
         }
     }
 
-    func createJSONExportRow(for model: NetworkModel.ExportJSON) -> AdvancedExportRowView {
+    func createJSONExportRow(for model: NetworkModel.ExportJSON) -> ExportRowView {
         .create { view in
             view.setupButtonStyle()
             view.leftTitle.text = model.blockLeftTitle
@@ -179,7 +179,7 @@ private extension AdvancedExportViewLayout {
 
 // MARK: Model
 
-extension AdvancedExportViewLayout {
+extension ExportViewLayout {
     struct NetworkModel {
         enum Block {
             case secret(model: Secret)

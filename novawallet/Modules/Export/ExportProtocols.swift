@@ -1,19 +1,20 @@
 import Foundation
 
-protocol AdvancedExportViewProtocol: ControllerBackedProtocol {
-    func update(with viewModel: AdvancedExportViewLayout.Model)
+protocol ExportViewProtocol: ControllerBackedProtocol {
+    func update(with viewModel: ExportViewLayout.Model)
     func updateNavbar(with viewModel: DisplayWalletViewModel)
+    func updateNavbar(with text: String)
     func showSecret(
         _ secret: String,
         for chainName: String
     )
 }
 
-protocol AdvancedExportPresenterProtocol: AnyObject {
+protocol ExportPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol AdvancedExportInteractorInputProtocol: AnyObject {
+protocol ExportInteractorInputProtocol: AnyObject {
     func requestExportOptions(
         metaAccount: MetaAccountModel,
         chain: ChainModel?
@@ -30,12 +31,12 @@ protocol AdvancedExportInteractorInputProtocol: AnyObject {
     )
 }
 
-protocol AdvancedExportInteractorOutputProtocol: AnyObject {
-    func didReceive(exportData: AdvancedExportData)
+protocol ExportInteractorOutputProtocol: AnyObject {
+    func didReceive(exportData: ExportData)
     func didReceive(seed: Data, for chainName: String)
     func didReceive(_ error: Error)
 }
 
-protocol AdvancedExportWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showExportRestoreJSON(from view: AdvancedExportViewProtocol?)
+protocol ExportWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func showExportRestoreJSON(from view: ExportViewProtocol?)
 }

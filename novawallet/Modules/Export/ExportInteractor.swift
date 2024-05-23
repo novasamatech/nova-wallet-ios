@@ -1,7 +1,7 @@
 import SoraKeystore
 
-final class AdvancedExportInteractor {
-    weak var presenter: AdvancedExportInteractorOutputProtocol?
+final class ExportInteractor {
+    weak var presenter: ExportInteractorOutputProtocol?
 
     private let keystore: KeystoreProtocol
 
@@ -10,7 +10,7 @@ final class AdvancedExportInteractor {
     }
 }
 
-extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
+extension ExportInteractor: ExportInteractorInputProtocol {
     func requestExportOptions(
         metaAccount: MetaAccountModel,
         chain: ChainModel?
@@ -31,7 +31,7 @@ extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
             }
         }
 
-        var chains: [AdvancedExportData.ChainType] = []
+        var chains: [ExportData.ChainType] = []
 
         do {
             if exportSubstrate {
@@ -48,7 +48,7 @@ extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
                 )
                 chains.append(.ethereum(chainExportData))
             }
-            let exportData = AdvancedExportData(chains: chains)
+            let exportData = ExportData(chains: chains)
 
             presenter?.didReceive(exportData: exportData)
         } catch {
@@ -95,7 +95,7 @@ extension AdvancedExportInteractor: AdvancedExportInteractorInputProtocol {
 
 // MARK: Private
 
-private extension AdvancedExportInteractor {
+private extension ExportInteractor {
     func fetchSecret(
         with metaAccount: MetaAccountModel,
         chain: ChainModel?,
@@ -125,7 +125,7 @@ private extension AdvancedExportInteractor {
     func ethereumExportData(
         for metaAccount: MetaAccountModel,
         chain: ChainModel?
-    ) throws -> AdvancedExportChainData {
+    ) throws -> ExportChainData {
         var options: [SecretSource] = []
 
         var accountId = try accountId(
@@ -159,7 +159,7 @@ private extension AdvancedExportInteractor {
     func substrateExportData(
         for metaAccount: MetaAccountModel,
         chain: ChainModel?
-    ) throws -> AdvancedExportChainData {
+    ) throws -> ExportChainData {
         var accountResponse = try accountResponse(
             for: chain,
             metaAccount: metaAccount
@@ -231,7 +231,7 @@ private extension AdvancedExportInteractor {
     }
 }
 
-private extension AdvancedExportInteractor {
+private extension ExportInteractor {
     enum ChainType: String {
         case substrate = "Polkadot"
         case ethereum = "Ethereum"

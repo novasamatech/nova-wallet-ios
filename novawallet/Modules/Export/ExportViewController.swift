@@ -1,18 +1,16 @@
 import UIKit
 import SoraFoundation
 
-final class AdvancedExportViewController: UIViewController, ViewHolder {
-    typealias RootViewType = AdvancedExportViewLayout
+final class ExportViewController: UIViewController, ViewHolder {
+    typealias RootViewType = ExportViewLayout
 
-    let presenter: AdvancedExportPresenterProtocol
+    let presenter: ExportPresenterProtocol
 
     init(
-        presenter: AdvancedExportPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        presenter: ExportPresenterProtocol
     ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
-        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -21,34 +19,23 @@ final class AdvancedExportViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AdvancedExportViewLayout()
+        view = ExportViewLayout()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         presenter.setup()
-        setupNavigationItem()
-    }
-
-    func setupLocalization() {
-        setupNavigationItem()
-    }
-
-    func setupNavigationItem() {
-        navigationItem.title = R.string.localizable.commonAdvanced(
-            preferredLanguages: selectedLocale.rLanguages
-        )
     }
 }
 
 // MARK: AdvancedExportViewProtocol
 
-extension AdvancedExportViewController: AdvancedExportViewProtocol {
-    func update(with viewModel: AdvancedExportViewLayout.Model) {
+extension ExportViewController: ExportViewProtocol {
+    func update(with viewModel: ExportViewLayout.Model) {
         rootView.bind(with: viewModel)
     }
-    
+
     func updateNavbar(with viewModel: DisplayWalletViewModel) {
         let iconDetailsView: IconDetailsView = .create(with: { view in
             view.detailsLabel.apply(style: .semiboldBodyPrimary)
@@ -65,6 +52,10 @@ extension AdvancedExportViewController: AdvancedExportViewProtocol {
         navigationItem.titleView = iconDetailsView
     }
 
+    func updateNavbar(with text: String) {
+        navigationItem.title = text
+    }
+
     func showSecret(
         _ secret: String,
         for chainName: String
@@ -76,12 +67,13 @@ extension AdvancedExportViewController: AdvancedExportViewProtocol {
     }
 }
 
-// MARK: Localizable
+// MARK: Constants
 
-extension AdvancedExportViewController: Localizable {
-    func applyLocalization() {
-        guard isViewLoaded else { return }
-
-        setupLocalization()
+private extension ExportViewController {
+    enum Constants {
+        static let walletIconSize: CGSize = .init(
+            width: 28,
+            height: 28
+        )
     }
 }

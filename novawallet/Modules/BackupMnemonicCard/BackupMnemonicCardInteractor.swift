@@ -27,14 +27,17 @@ final class BackupMnemonicCardInteractor {
 extension BackupMnemonicCardInteractor: BackupMnemonicCardInteractorInputProtocol {
     func fetchMnemonic() {
         let exportOperation: BaseOperation<IRMnemonicProtocol> = ClosureOperation { [weak self] in
-            guard
-                let self,
-                let chain
-            else {
+            guard let self else {
                 throw ExportMnemonicInteractorError.missingAccount
             }
 
-            let accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+            var accountId: AccountId? {
+                if let chain {
+                    metaAccount.fetchChainAccountId(for: chain.accountRequest())
+                } else {
+                    .none
+                }
+            }
 
             let entropyTag = KeystoreTagV2.entropyTagForMetaId(
                 metaAccount.metaId,
