@@ -123,6 +123,7 @@
 		0C2B18AE2BFE378B00206EDE /* CloudBackupSyncFacade+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18AD2BFE378B00206EDE /* CloudBackupSyncFacade+Create.swift */; };
 		0C2B18B02BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18AF2BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift */; };
 		0C2B18B22BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18B12BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift */; };
+		0C2B18B42BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18B32BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift */; };
 		0C2F86802A7119D400593C01 /* AuraSessionLengthOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F867F2A7119D400593C01 /* AuraSessionLengthOperationFactory.swift */; };
 		0C2F86822A7233DC00593C01 /* EraNominationPoolsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86812A7233DC00593C01 /* EraNominationPoolsService.swift */; };
 		0C2F86842A72343800593C01 /* EraNominationPoolsServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86832A72343800593C01 /* EraNominationPoolsServiceProtocol.swift */; };
@@ -4844,6 +4845,7 @@
 		0C2B18AD2BFE378B00206EDE /* CloudBackupSyncFacade+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupSyncFacade+Create.swift"; sourceTree = "<group>"; };
 		0C2B18AF2BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupSyncResultChanges+Critical.swift"; sourceTree = "<group>"; };
 		0C2B18B12BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupUpdateApplicationFactory+Create.swift"; sourceTree = "<group>"; };
+		0C2B18B32BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupConflictsResolver.swift; sourceTree = "<group>"; };
 		0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupWireframe.swift; sourceTree = "<group>"; };
 		0C2B583DB30C6C818B0F952D /* ParaStkRebondWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondWireframe.swift; sourceTree = "<group>"; };
 		0C2DF1CD2BB6825300DD58B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -10508,6 +10510,7 @@
 				0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */,
 				0CCE3AA92BF395DC00D55F03 /* CloudBackupUpdateApplicationFactory.swift */,
 				0C2B18B12BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift */,
+				0C2B18B32BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift */,
 			);
 			path = Operations;
 			sourceTree = "<group>";
@@ -26219,6 +26222,7 @@
 				0E71EA5AE04940824AEA01C7 /* GovernanceUnlockSetupViewLayout.swift in Sources */,
 				E28F3762EAC9A4E5D21342D4 /* GovernanceUnlockSetupViewFactory.swift in Sources */,
 				AE6C737BD94BCD88A06287E2 /* MarkdownDescriptionProtocols.swift in Sources */,
+				0C2B18B42BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift in Sources */,
 				0CD8463C2BE0EE210026B5CA /* CloudBackupDeletePresentable.swift in Sources */,
 				62B2298F132DB0CE0794DD7A /* MarkdownDescriptionWireframe.swift in Sources */,
 				A05C2B3458F12EFE1633D917 /* MarkdownDescriptionPresenter.swift in Sources */,

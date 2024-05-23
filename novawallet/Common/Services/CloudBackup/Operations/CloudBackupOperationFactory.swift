@@ -5,6 +5,7 @@ enum CloudBackupOperationFactoryError: Error {
     case readingFailed(Error)
     case writingFailed(Error)
     case deletionFailed(Error)
+    case conflictResolutionFailed(Error)
 }
 
 protocol CloudBackupOperationFactoryProtocol {
@@ -19,14 +20,28 @@ protocol CloudBackupOperationFactoryProtocol {
 final class CloudBackupOperationFactory {
     let fileCoordinator: NSFileCoordinator
     let fileManager: FileManager
+    let conflictsResolver: CloudBackupConflictsResolving
 
-    init(fileCoordinator: NSFileCoordinator, fileManager: FileManager) {
+    init(fileCoordinator: NSFileCoordinator, fileManager: FileManager, conflictsResolver: CloudBackupConflictsResolving) {
         self.fileCoordinator = fileCoordinator
         self.fileManager = fileManager
+        self.conflictsResolver = conflictsResolver
     }
 
-    func read(using coordinator: NSFileCoordinator, fileManager: FileManager, url: URL) -> BaseOperation<Data?> {
+    func read(
+        using coordinator: NSFileCoordinator,
+        fileManager: FileManager,
+        conflictsResolver: CloudBackupConflictsResolving,
+        url: URL
+    ) -> BaseOperation<Data?> {
         ClosureOperation {
+            if case let .failure(error) = conflictsResolver.resolveConflictsIfNeeded(
+                using: coordinator,
+                url: url
+            ) {
+                throw CloudBackupOperationFactoryError.conflictResolutionFailed(error)
+            }
+
             var coordinatorError: NSError?
             var readError: Error?
             var optData: Data?
@@ -62,10 +77,18 @@ final class CloudBackupOperationFactory {
 
     func write(
         using coordinator: NSFileCoordinator,
+        conflictsResolver: CloudBackupConflictsResolving,
         url: URL,
         dataClosure: @escaping () throws -> Data
     ) -> BaseOperation<Void> {
         ClosureOperation {
+            if case let .failure(error) = conflictsResolver.resolveConflictsIfNeeded(
+                using: coordinator,
+                url: url
+            ) {
+                throw CloudBackupOperationFactoryError.conflictResolutionFailed(error)
+            }
+
             var coordinatorError: NSError?
             var writeError: Error?
 
@@ -93,8 +116,20 @@ final class CloudBackupOperationFactory {
         }
     }
 
-    func delete(using coordinator: NSFileCoordinator, fileManager: FileManager, url: URL) -> BaseOperation<Void> {
+    func delete(
+        using coordinator: NSFileCoordinator,
+        fileManager: FileManager,
+        conflictsResolver: CloudBackupConflictsResolving,
+        url: URL
+    ) -> BaseOperation<Void> {
         ClosureOperation {
+            if case let .failure(error) = conflictsResolver.resolveConflictsIfNeeded(
+                using: coordinator,
+                url: url
+            ) {
+                throw CloudBackupOperationFactoryError.conflictResolutionFailed(error)
+            }
+
             var coordinatorError: NSError?
             var deleteError: Error?
 
@@ -123,17 +158,32 @@ final class CloudBackupOperationFactory {
 
 extension CloudBackupOperationFactory: CloudBackupOperationFactoryProtocol {
     func createReadingOperation(for url: URL) -> BaseOperation<Data?> {
-        read(using: fileCoordinator, fileManager: fileManager, url: url)
+        read(
+            using: fileCoordinator,
+            fileManager: fileManager,
+            conflictsResolver: conflictsResolver,
+            url: url
+        )
     }
 
     func createWritingOperation(
         for url: URL,
         dataClosure: @escaping () throws -> Data
     ) -> BaseOperation<Void> {
-        write(using: fileCoordinator, url: url, dataClosure: dataClosure)
+        write(
+            using: fileCoordinator,
+            conflictsResolver: conflictsResolver,
+            url: url,
+            dataClosure: dataClosure
+        )
     }
 
     func createDeletionOperation(for url: URL) -> BaseOperation<Void> {
-        delete(using: fileCoordinator, fileManager: fileManager, url: url)
+        delete(
+            using: fileCoordinator,
+            fileManager: fileManager,
+            conflictsResolver: conflictsResolver,
+            url: url
+        )
     }
 }
