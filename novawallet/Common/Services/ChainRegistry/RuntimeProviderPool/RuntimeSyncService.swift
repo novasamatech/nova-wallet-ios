@@ -39,6 +39,7 @@ final class RuntimeSyncService {
     let filesOperationFactory: RuntimeFilesOperationFactoryProtocol
     let dataOperationFactory: DataOperationFactoryProtocol
     let runtimeFetchFactory: RuntimeFetchOperationFactoryProtocol
+    let runtimeLocalMigrator: RuntimeLocalMigrating
     let eventCenter: EventCenterProtocol
     let retryStrategy: ReconnectionStrategyProtocol
     let operationQueue: OperationQueue
@@ -55,6 +56,7 @@ final class RuntimeSyncService {
     init(
         repository: AnyDataProviderRepository<RuntimeMetadataItem>,
         runtimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
+        runtimeLocalMigrator: RuntimeLocalMigrating,
         filesOperationFactory: RuntimeFilesOperationFactoryProtocol,
         dataOperationFactory: DataOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
@@ -66,6 +68,7 @@ final class RuntimeSyncService {
     ) {
         self.repository = repository
         self.runtimeFetchFactory = runtimeFetchFactory
+        self.runtimeLocalMigrator = runtimeLocalMigrator
         self.filesOperationFactory = filesOperationFactory
         self.dataOperationFactory = dataOperationFactory
         self.retryStrategy = retryStrategy
@@ -94,7 +97,8 @@ final class RuntimeSyncService {
                 for: chainId,
                 runtimeVersion: $0,
                 connection: syncInfo.connection,
-                runtimeFetchFactory: runtimeFetchFactory
+                runtimeFetchFactory: runtimeFetchFactory,
+                runtimeLocalMigrator: runtimeLocalMigrator
             )
         }
 
@@ -136,10 +140,7 @@ final class RuntimeSyncService {
             }
         }
 
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: processingOperation,
-            dependencies: dependencies
-        )
+        let wrapper = CompoundOperationWrapper(targetOperation: processingOperation, dependencies: dependencies)
 
         syncingChains[chainId] = wrapper
 
@@ -262,20 +263,22 @@ final class RuntimeSyncService {
         for chainId: ChainModel.Id,
         runtimeVersion: RuntimeVersion,
         connection: JSONRPCEngine,
-        runtimeFetchFactory: RuntimeFetchOperationFactoryProtocol
+        runtimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
+        runtimeLocalMigrator: RuntimeLocalMigrating
     ) -> CompoundOperationWrapper<Void> {
-        let localMetadataOperation = repository.fetchOperation(
-            by: chainId,
-            options: RepositoryFetchOptions()
-        )
+        let localMetadataOperation = repository.fetchOperation(by: chainId, options: RepositoryFetchOptions())
 
-        let remoteFetchWrapper: CompoundOperationWrapper<RawRuntimeMetadata> = OperationCombiningService.compoundNonOptionalWrapper(
+        let remoteFetchWrapper: CompoundOperationWrapper<RawRuntimeMetadata>
+        remoteFetchWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             let currentItem = try localMetadataOperation
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
-            if let item = currentItem, item.version == runtimeVersion.specVersion {
+            if
+                let item = currentItem,
+                item.version == runtimeVersion.specVersion,
+                !runtimeLocalMigrator.needsMigration(for: item) {
                 throw RuntimeSyncServiceError.skipMetadataUnchanged
             }
 
@@ -290,7 +293,7 @@ final class RuntimeSyncService {
                 chain: chainId,
                 version: runtimeVersion.specVersion,
                 txVersion: runtimeVersion.transactionVersion,
-                localMigratorVersion: 0,
+                localMigratorVersion: runtimeLocalMigrator.version,
                 opaque: rawMetadata.isOpaque,
                 metadata: rawMetadata.content
             )

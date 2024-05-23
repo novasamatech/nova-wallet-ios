@@ -297,7 +297,7 @@ final class RuntimeSnapshotFactory {
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata
-                
+
                 if !result.additionalNodes.notMatch.isEmpty {
                     logger.warning("No \(chain.name) type matching: \(result.additionalNodes.notMatch)")
                 } else {
