@@ -97,7 +97,7 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
 
         let backgroundImageView = UIImageView()
         backgroundImageView.image = R.image.cardBg()
-        backgroundImageView.contentMode = .scaleAspectFill
+        backgroundImageView.contentMode = .scaleToFill
 
         collectionView.backgroundColor = .clear
         collectionView.backgroundView = backgroundImageView
