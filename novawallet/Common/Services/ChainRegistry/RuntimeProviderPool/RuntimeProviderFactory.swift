@@ -36,7 +36,7 @@ extension RuntimeProviderFactory: RuntimeProviderFactoryProtocol {
             chainId: chain.chainId,
             filesOperationFactory: fileOperationFactory,
             repository: repository,
-            logger: logger
+            runtimeTypeRegistryFactory: RuntimeTypeRegistryFactory(logger: logger)
         )
 
         return RuntimeProvider(

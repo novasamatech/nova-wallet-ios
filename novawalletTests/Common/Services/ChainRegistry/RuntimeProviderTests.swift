@@ -386,7 +386,7 @@ class RuntimeProviderTests: XCTestCase {
             chainId: chainModel.chainId,
             filesOperationFactory: filesOperationFactory,
             repository: AnyDataProviderRepository(repository),
-            logger: Logger.shared
+            runtimeTypeRegistryFactory: RuntimeTypeRegistryFactory(logger: Logger.shared)
         )
 
         let operationQueue = OperationQueue()

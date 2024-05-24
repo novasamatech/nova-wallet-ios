@@ -43,7 +43,9 @@ final class RuntimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol {
         self.logger = logger
     }
 
-    private func createRuntimeContainer(from runtimeMetadataItem: RuntimeMetadataItem) throws -> RuntimeMetadataContainer {
+    private func createRuntimeContainer(
+        from runtimeMetadataItem: RuntimeMetadataItem
+    ) throws -> RuntimeMetadataContainer {
         if runtimeMetadataItem.opaque {
             return try RuntimeMetadataContainer.createFromOpaque(data: runtimeMetadataItem.metadata)
         } else {
