@@ -578,6 +578,7 @@
 		0CE632A12B9035B2002E4D20 /* Web3Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE632A02B9035B2002E4D20 /* Web3Alert.swift */; };
 		0CE632A32B904449002E4D20 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE632A22B904449002E4D20 /* PushNotification.swift */; };
 		0CE92A672B2ADBBA009A21E9 /* RuntimeProviderChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */; };
+		0CE9338C2C0096AA000F3EFE /* CloudBackupSyncMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9338B2C0096AA000F3EFE /* CloudBackupSyncMediator.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED32AF1689D0048FD84 /* AssetConversionAggregationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED22AF1689D0048FD84 /* AssetConversionAggregationFactory.swift */; };
@@ -5329,6 +5330,7 @@
 		0CE632A02B9035B2002E4D20 /* Web3Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3Alert.swift; sourceTree = "<group>"; };
 		0CE632A22B904449002E4D20 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
 		0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeProviderChain.swift; sourceTree = "<group>"; };
+		0CE9338B2C0096AA000F3EFE /* CloudBackupSyncMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncMediator.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ECF2AF148500048FD84 /* SubstrateDataModel20.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel20.xcdatamodel; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
@@ -10513,6 +10515,7 @@
 				0C6390942BF1FD4F0015D467 /* CloudBackupSyncFacade.swift */,
 				0C6390982BF239240015D467 /* CloudBackupSyncFactory.swift */,
 				0C2B18AD2BFE378B00206EDE /* CloudBackupSyncFacade+Create.swift */,
+				0CE9338B2C0096AA000F3EFE /* CloudBackupSyncMediator.swift */,
 			);
 			path = CloudBackup;
 			sourceTree = "<group>";
@@ -24316,6 +24319,7 @@
 				8489A6E227FEFC730040C066 /* StakingRebondOption.swift in Sources */,
 				84CFF1E626526FBC00DB7CF7 /* StakingBondMoreInteractor.swift in Sources */,
 				844D2A44281B28FB0049CF5E /* StackTitleMultiValueCell.swift in Sources */,
+				0CE9338C2C0096AA000F3EFE /* CloudBackupSyncMediator.swift in Sources */,
 				0C9951CA2AE2ABA400B65615 /* AssetListBannerCell.swift in Sources */,
 				84E172CF28BE468D00DC85B6 /* MessageSheetPresentable.swift in Sources */,
 				8487583727F06AF300495306 /* AddressScanDelegate.swift in Sources */,
