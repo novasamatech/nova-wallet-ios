@@ -621,7 +621,9 @@ class RuntimeSyncServiceTests: XCTestCase {
         
         try expect(
             runtimeMetadataItems: changesExpected ? newRuntimeMetadataItems : oldRuntimeMetadataItems,
-            in: AnyDataProviderRepository(metadataRepository)
+            in: AnyDataProviderRepository(metadataRepository),
+            specVersion: newSpecVersion,
+            localMigratorVersion: newLocalMigratorVersion
         )
         
         for chain in chains {
@@ -711,7 +713,9 @@ class RuntimeSyncServiceTests: XCTestCase {
     
     private func expect(
         runtimeMetadataItems: [ChainModel.Id: RawRuntimeMetadata],
-        in repository: AnyDataProviderRepository<RuntimeMetadataItem>
+        in repository: AnyDataProviderRepository<RuntimeMetadataItem>,
+        specVersion: UInt32,
+        localMigratorVersion: UInt32
     ) throws {
         let allMetadataOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
         OperationQueue().addOperations([allMetadataOperation], waitUntilFinished: true)
@@ -722,6 +726,8 @@ class RuntimeSyncServiceTests: XCTestCase {
         for actualMetadataItem in actualMetadataItems {
             XCTAssertEqual(actualMetadataItem.metadata, runtimeMetadataItems[actualMetadataItem.chain]?.content)
             XCTAssertEqual(actualMetadataItem.opaque, runtimeMetadataItems[actualMetadataItem.chain]?.isOpaque)
+            XCTAssertEqual(actualMetadataItem.version, specVersion)
+            XCTAssertEqual(actualMetadataItem.localMigratorVersion, localMigratorVersion)
         }
     }
 }
