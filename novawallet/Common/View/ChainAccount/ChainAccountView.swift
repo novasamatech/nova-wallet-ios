@@ -20,7 +20,7 @@ final class ChainAccountView: UIView {
         view.valueBottom.apply(style: .caption1Secondary)
         view.valueBottom.textAlignment = .left
         view.valueBottom.numberOfLines = 0
-        view.valueBottom.isHidden
+        view.valueBottom.isHidden = true
 
         view.spacing = 4
     }

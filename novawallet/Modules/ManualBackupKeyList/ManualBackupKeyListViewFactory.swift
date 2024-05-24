@@ -6,7 +6,10 @@ import SoraFoundation
 struct ManualBackupKeyListViewFactory {
     static func createView(with metaAccount: MetaAccountModel) -> ManualBackupKeyListViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let networkViewModelFactory = NetworkViewModelFactory()
+        let viewModelFactory = ManualBackupKeyListViewModelFactory(
+            localizationManager: LocalizationManager.shared,
+            networkViewModelFactory: NetworkViewModelFactory()
+        )
 
         let interactor = ManualBackupKeyListInteractor(
             chainRegistry: chainRegistry
@@ -17,9 +20,8 @@ struct ManualBackupKeyListViewFactory {
         let presenter = ManualBackupKeyListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
             metaAccount: metaAccount,
-            networkViewModelFactory: networkViewModelFactory,
-            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
