@@ -14,15 +14,15 @@ final class MockCloudBackupSyncMetadataManager {
 }
 
 extension MockCloudBackupSyncMetadataManager: CloudBackupSyncMetadataManaging {
-    func getLastSyncDate() -> UInt64? {
+    func getLastSyncTimestamp() -> UInt64? {
         lastSyncDate
     }
     
-    func saveLastSyncDate(_ newDate: UInt64?) {
+    func saveLastSyncTimestamp(_ newDate: UInt64?) {
         lastSyncDate = newDate
     }
     
-    func hasLastSyncDate() -> Bool {
+    func hasLastSyncTimestamp() -> Bool {
         lastSyncDate != nil
     }
 

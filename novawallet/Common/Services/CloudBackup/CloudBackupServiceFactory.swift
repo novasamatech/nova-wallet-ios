@@ -60,7 +60,8 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
     func createOperationFactory() -> CloudBackupOperationFactoryProtocol {
         CloudBackupOperationFactory(
             fileCoordinator: fileCoordinator,
-            fileManager: fileManager
+            fileManager: fileManager,
+            conflictsResolver: CloudBackupConflictsResolver()
         )
     }
 

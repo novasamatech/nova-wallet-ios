@@ -71,7 +71,7 @@ final class CloudBackupSyncTests: XCTestCase {
             configuringBackup: { params in
                 params.syncMetadataManager.isBackupEnabled = true
                 try? params.syncMetadataManager.savePassword(Self.defaultPassword)
-                params.syncMetadataManager.saveLastSyncDate(nil)
+                params.syncMetadataManager.saveLastSyncTimestamp(nil)
             }
         )
         
@@ -97,7 +97,7 @@ final class CloudBackupSyncTests: XCTestCase {
         )
         
         XCTAssertTrue(setupResult.syncMetadataManager.isBackupEnabled)
-        XCTAssertTrue(setupResult.syncMetadataManager.hasLastSyncDate())
+        XCTAssertTrue(setupResult.syncMetadataManager.hasLastSyncTimestamp())
         XCTAssertTrue(try setupResult.syncMetadataManager.hasPassword())
     }
     
@@ -113,7 +113,7 @@ final class CloudBackupSyncTests: XCTestCase {
                 }
             },
             changingAfterBackup: { params  in
-                params.syncMetadataManager.saveLastSyncDate(0)
+                params.syncMetadataManager.saveLastSyncTimestamp(0)
                 
                 let wallet = params.walletSettings.value!
                 params.walletSettings.remove(value: wallet)
@@ -161,7 +161,7 @@ final class CloudBackupSyncTests: XCTestCase {
                     
                     XCTAssertTrue(properInsert && properDelete)
                     
-                    XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncDate())
+                    XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
                     XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
                     XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
                 } catch {
@@ -183,8 +183,8 @@ final class CloudBackupSyncTests: XCTestCase {
                 }
             },
             changingAfterBackup: { params  in
-                let updateSyncTime = params.syncMetadataManager.getLastSyncDate()! + 1
-                params.syncMetadataManager.saveLastSyncDate(updateSyncTime)
+                let updateSyncTime = params.syncMetadataManager.getLastSyncTimestamp()! + 1
+                params.syncMetadataManager.saveLastSyncTimestamp(updateSyncTime)
                 
                 let wallet = params.walletSettings.value!
                 params.walletSettings.remove(value: wallet)
@@ -208,7 +208,7 @@ final class CloudBackupSyncTests: XCTestCase {
                     )
                     
                     XCTAssertEqual(backupWalletsAfterSync, Set(params.localWalletsAfterSync.map({ $0.info })))
-                    XCTAssertEqual(updateRemote.syncTime, params.syncMetadataManager.getLastSyncDate())
+                    XCTAssertEqual(updateRemote.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
                     XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
                 } catch {
                     XCTFail("Error: \(error)")
@@ -229,7 +229,7 @@ final class CloudBackupSyncTests: XCTestCase {
                 }
             },
             changingAfterBackup: { params in
-                params.syncMetadataManager.saveLastSyncDate(nil)
+                params.syncMetadataManager.saveLastSyncTimestamp(nil)
                 
                 let wallet = params.walletSettings.value!
                 params.walletSettings.remove(value: wallet)
@@ -255,7 +255,7 @@ final class CloudBackupSyncTests: XCTestCase {
                     )
                     
                     XCTAssertEqual(backupWalletsAfterSync, Set(params.localWalletsAfterSync.map({ $0.info })))
-                    XCTAssertEqual(updateUnion.syncTime, params.syncMetadataManager.getLastSyncDate())
+                    XCTAssertEqual(updateUnion.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
                     XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
                 } catch {
                     XCTFail("Error: \(error)")
@@ -274,7 +274,7 @@ final class CloudBackupSyncTests: XCTestCase {
             configuringBackup: { params in
                 params.syncMetadataManager.isBackupEnabled = true
                 try? params.syncMetadataManager.savePassword(Self.defaultPassword)
-                params.syncMetadataManager.saveLastSyncDate(nil)
+                params.syncMetadataManager.saveLastSyncTimestamp(nil)
             }
         )
         
@@ -400,7 +400,7 @@ final class CloudBackupSyncTests: XCTestCase {
         let syncService = CloudBackupSyncFactory(
             serviceFactory: serviceFactory,
             syncMetadataManaging: syncMetadataManager,
-            accountsRepositoryFactory: accountsRepositoryFactory,
+            walletsRepositoryFactory: accountsRepositoryFactory,
             notificationCenter: NotificationCenter.default,
             operationQueue: operationQueue,
             logger: Logger.shared

@@ -43,7 +43,7 @@ final class CloudBackupUpdateApplicationFactory {
     ) -> CompoundOperationWrapper<Void> {
         let saveTimeOperation = ClosureOperation {
             _ = try updateWrapper.targetOperation.extractNoCancellableResultData()
-            syncMetadataManager.saveLastSyncDate(syncTime)
+            syncMetadataManager.saveLastSyncTimestamp(syncTime)
         }
 
         saveTimeOperation.addDependency(updateWrapper.targetOperation)

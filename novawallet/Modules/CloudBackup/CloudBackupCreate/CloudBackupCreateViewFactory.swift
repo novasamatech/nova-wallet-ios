@@ -34,11 +34,17 @@ struct CloudBackupCreateViewFactory {
             operationQueue: operationQueue
         )
 
+        let keychain = Keychain()
+
         return .init(
             walletName: walletName,
             cloudBackupFacade: serviceFacade,
             walletSettings: SelectedWalletSettings.shared,
-            persistentKeystore: Keychain(),
+            persistentKeystore: keychain,
+            syncMetadataManager: CloudBackupSyncMetadataManager(
+                settings: SettingsManager.shared,
+                keystore: keychain
+            ),
             operationQueue: operationQueue
         )
     }

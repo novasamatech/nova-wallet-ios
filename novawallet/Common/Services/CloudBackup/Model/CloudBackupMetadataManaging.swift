@@ -2,15 +2,28 @@ import Foundation
 import SoraKeystore
 
 protocol CloudBackupSyncMetadataManaging: AnyObject {
-    func getLastSyncDate() -> UInt64?
-    func saveLastSyncDate(_ newDate: UInt64?)
-    func hasLastSyncDate() -> Bool
+    func getLastSyncTimestamp() -> UInt64?
+    func saveLastSyncTimestamp(_ newDate: UInt64?)
+    func hasLastSyncTimestamp() -> Bool
 
     func getPassword() throws -> String?
     func savePassword(_ newValue: String?) throws
     func hasPassword() throws -> Bool
 
     var isBackupEnabled: Bool { get set }
+}
+
+extension CloudBackupSyncMetadataManaging {
+    func getLastSyncDate() -> Date? {
+        getLastSyncTimestamp().map { Date(timeIntervalSince1970: TimeInterval($0)) }
+    }
+
+    func enableBackup(for password: String?) throws {
+        try savePassword(password)
+
+        saveLastSyncTimestamp(UInt64(Date().timeIntervalSince1970))
+        isBackupEnabled = true
+    }
 }
 
 enum CloudBackupSyncMetadataManagingError: Error {
@@ -38,15 +51,15 @@ extension CloudBackupSyncMetadataManager: CloudBackupSyncMetadataManaging {
         }
     }
 
-    func getLastSyncDate() -> UInt64? {
+    func getLastSyncTimestamp() -> UInt64? {
         settings.lastCloudBackupTimestampSeen
     }
 
-    func saveLastSyncDate(_ newDate: UInt64?) {
+    func saveLastSyncTimestamp(_ newDate: UInt64?) {
         settings.lastCloudBackupTimestampSeen = newDate
     }
 
-    func hasLastSyncDate() -> Bool {
+    func hasLastSyncTimestamp() -> Bool {
         settings.lastCloudBackupTimestampSeen != nil
     }
 
