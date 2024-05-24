@@ -9,7 +9,8 @@ struct RawRuntimeMetadata {
 
 protocol RuntimeFetchOperationFactoryProtocol {
     func createMetadataFetchWrapper(
-        for connection: JSONRPCEngine
+        for chainId: ChainModel.Id,
+        connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<RawRuntimeMetadata>
 }
 
@@ -75,7 +76,8 @@ final class RuntimeFetchOperationFactory {
 
 extension RuntimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol {
     func createMetadataFetchWrapper(
-        for connection: JSONRPCEngine
+        for _: ChainModel.Id,
+        connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<RawRuntimeMetadata> {
         let versionedMetadataWrapper = createVersionedMetadataWrapper(for: connection)
 

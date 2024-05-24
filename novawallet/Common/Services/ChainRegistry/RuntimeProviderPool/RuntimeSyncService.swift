@@ -282,7 +282,10 @@ final class RuntimeSyncService {
                 throw RuntimeSyncServiceError.skipMetadataUnchanged
             }
 
-            return runtimeFetchFactory.createMetadataFetchWrapper(for: connection)
+            return runtimeFetchFactory.createMetadataFetchWrapper(
+                for: chainId,
+                connection: connection
+            )
         }
 
         remoteFetchWrapper.addDependency(operations: [localMetadataOperation])

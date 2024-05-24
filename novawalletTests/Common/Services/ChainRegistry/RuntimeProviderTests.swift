@@ -415,6 +415,8 @@ class RuntimeProviderTests: XCTestCase {
                     chain: chainModel.chainId,
                     version: 1,
                     txVersion: 1,
+                    localMigratorVersion: 1,
+                    opaque: false,
                     metadata: metadata
                 )
 

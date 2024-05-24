@@ -33,7 +33,8 @@ final class RuntimeFetchOperationFactoryTests: XCTestCase {
         let operationQueue = OperationQueue()
         
         let wrapper = RuntimeFetchOperationFactory(operationQueue: operationQueue).createMetadataFetchWrapper(
-            for: connection
+            for: chainId,
+            connection: connection
         )
         
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
