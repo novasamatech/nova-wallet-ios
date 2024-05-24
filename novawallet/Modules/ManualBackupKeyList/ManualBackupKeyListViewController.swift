@@ -121,10 +121,10 @@ extension ManualBackupKeyListViewController: UITableViewDataSource, UITableViewD
 
         switch viewModel.accountsSections[indexPath.section] {
         case .defaultKeys:
-            presenter.didTapDefaultKey()
+            presenter.activateDefaultKey()
         case let .customKeys(model):
             let id = model.accounts[indexPath.row].chainId
-            presenter.didTapCustomKey(with: id)
+            presenter.activateCustomKey(with: id)
         }
     }
 }

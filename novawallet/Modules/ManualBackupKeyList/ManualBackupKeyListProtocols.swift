@@ -7,8 +7,8 @@ protocol ManualBackupKeyListViewProtocol: ControllerBackedProtocol {
 
 protocol ManualBackupKeyListPresenterProtocol: AnyObject {
     func setup()
-    func didTapDefaultKey()
-    func didTapCustomKey(with chainId: ChainModel.Id)
+    func activateDefaultKey()
+    func activateCustomKey(with chainId: ChainModel.Id)
 }
 
 protocol ManualBackupKeyListInteractorInputProtocol: AnyObject {
