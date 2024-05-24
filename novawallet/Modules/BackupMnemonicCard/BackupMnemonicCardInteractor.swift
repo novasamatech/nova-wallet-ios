@@ -28,7 +28,7 @@ extension BackupMnemonicCardInteractor: BackupMnemonicCardInteractorInputProtoco
     func fetchMnemonic() {
         let exportOperation: BaseOperation<IRMnemonicProtocol> = ClosureOperation { [weak self] in
             guard let self else {
-                throw ExportMnemonicInteractorError.missingAccount
+                throw BaseOperationError.parentOperationCancelled
             }
 
             var accountId: AccountId? {

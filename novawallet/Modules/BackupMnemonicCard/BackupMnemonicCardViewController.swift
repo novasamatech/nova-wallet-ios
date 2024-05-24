@@ -57,6 +57,11 @@ extension BackupMnemonicCardViewController: BackupMnemonicCardViewProtocol {
         switch viewModel.state {
         case let .mnemonicVisible(words: words):
             self.words = words
+//            self.words = ["Item", "Item", "Item", "Item", "Item",
+//                          "Item", "Item", "Item", "Item", "Item",
+//                          "Item", "Item", "Item", "Item", "Item",
+//                          "Item", "Item", "Item", "Item", "Item",
+//                          "Item", "Item", "Item", "Item"]
             rootView.showMnemonics()
         case .mnemonicNotVisible:
             rootView.showCover()
@@ -225,9 +230,9 @@ private extension UIConstants {
     static let walletIconSize = CGSize(width: 28, height: 28)
     static let itemsPerRow: Int = 3
     static let headerContentInsets = UIEdgeInsets(
-        top: 12.0,
+        top: 14.0,
         left: 12.0,
-        bottom: 12.0,
+        bottom: 14.0,
         right: 12.0
     )
     static let wordHeight: CGFloat = 32.0

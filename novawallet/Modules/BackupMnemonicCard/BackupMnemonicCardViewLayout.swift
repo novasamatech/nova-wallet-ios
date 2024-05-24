@@ -115,9 +115,6 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
     }
 
     func showMnemonics() {
-        collectionView.removeFromSuperview()
-        cardContainerView.removeFromSuperview()
-
         cardContainerView.addSubview(collectionView)
 
         collectionView.snp.makeConstraints { make in
@@ -133,7 +130,9 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
             to: collectionView,
             duration: 0.5,
             options: [.transitionFlipFromLeft, .curveEaseInOut]
-        )
+        ) { [weak self] _ in
+            self?.coverView.removeFromSuperview()
+        }
     }
 
     func showCover() {
@@ -204,7 +203,7 @@ private extension BackupMnemonicCardViewLayout {
         static let sectionContentInset = UIEdgeInsets(
             top: 0.0,
             left: 12.0,
-            bottom: 12.0,
+            bottom: 14.0,
             right: 12.0
         )
         static let cardCornerRadius: CGFloat = 12.0
