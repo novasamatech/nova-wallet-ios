@@ -9,9 +9,6 @@ protocol BackupMnemonicCardViewLayoutDelegate: AnyObject {
 final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
     typealias Cell = MnemonicWordCollectionCell
 
-    private var appearanceAnimator: ViewAnimatorProtocol?
-    private var disappearanceAnimator: ViewAnimatorProtocol?
-
     weak var delegate: BackupMnemonicCardViewLayoutDelegate?
 
     lazy var networkView = AssetListChainView()
@@ -28,6 +25,10 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
     let titleView: UILabel = .create { view in
         view.apply(style: .boldTitle3Primary)
         view.textAlignment = .left
+    }
+
+    let cardContainerView: UIView = .create { view in
+        view.isUserInteractionEnabled = true
     }
 
     let collectionView: UICollectionView = {
@@ -81,23 +82,11 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
         return imageView
     }()
 
-    convenience init(
-        appearanceAnimator: ViewAnimatorProtocol?,
-        disappearanceAnimator: ViewAnimatorProtocol?
-    ) {
-        self.init(frame: .zero)
-
-        self.appearanceAnimator = appearanceAnimator
-        self.disappearanceAnimator = disappearanceAnimator
-    }
-
     override func setupLayout() {
         super.setupLayout()
 
-        addArrangedSubview(
-            titleView,
-            spacingAfter: Constants.stackSpacing
-        )
+        addArrangedSubview(titleView, spacingAfter: 16)
+        addArrangedSubview(cardContainerView)
         stackView.alignment = .fill
     }
 
@@ -126,25 +115,39 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
     }
 
     func showMnemonics() {
-        disappearanceAnimator?.animate(view: coverView) { [weak self] _ in
-            guard let self else { return }
+        collectionView.removeFromSuperview()
+        cardContainerView.removeFromSuperview()
 
-            coverView.removeFromSuperview()
+        cardContainerView.addSubview(collectionView)
 
-            addArrangedSubview(collectionView)
-            collectionView.reloadData()
-            appearanceAnimator?.animate(view: collectionView, completionBlock: nil)
+        collectionView.snp.makeConstraints { make in
+            make.width.height.equalToSuperview()
         }
+
+        addArrangedSubview(cardContainerView)
+
+        collectionView.reloadData()
+
+        UIView.transition(
+            from: coverView,
+            to: collectionView,
+            duration: 0.5,
+            options: [.transitionFlipFromLeft, .curveEaseInOut]
+        )
     }
 
     func showCover() {
         collectionView.removeFromSuperview()
+        cardContainerView.removeFromSuperview()
+
+        cardContainerView.addSubview(coverView)
 
         coverView.snp.makeConstraints { make in
             make.height.equalTo(200)
+            make.width.height.equalToSuperview()
         }
 
-        addArrangedSubview(coverView)
+        addArrangedSubview(cardContainerView)
     }
 
     func showNetwork(with viewModel: NetworkViewModel) {

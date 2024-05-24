@@ -16,13 +16,9 @@ final class BackupMnemonicCardViewController: UIViewController, ViewHolder {
 
     init(
         presenter: BackupMnemonicCardPresenterProtocol,
-        appearanceAnimator: ViewAnimatorProtocol,
-        disappearanceAnimator: ViewAnimatorProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.appearanceAnimator = appearanceAnimator
-        self.disappearanceAnimator = disappearanceAnimator
 
         super.init(nibName: nil, bundle: nil)
 
@@ -35,10 +31,7 @@ final class BackupMnemonicCardViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = BackupMnemonicCardViewLayout(
-            appearanceAnimator: appearanceAnimator,
-            disappearanceAnimator: disappearanceAnimator
-        )
+        view = BackupMnemonicCardViewLayout()
     }
 
     override func viewDidLoad() {
