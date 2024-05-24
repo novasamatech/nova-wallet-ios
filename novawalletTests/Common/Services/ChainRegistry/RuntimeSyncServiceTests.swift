@@ -517,4 +517,211 @@ class RuntimeSyncServiceTests: XCTestCase {
             XCTAssertEqual(actualMetadataItem.opaque, runtimeMetadataItems[actualMetadataItem.chain]!.isOpaque)
         }
     }
+    
+    func testNoMetadataSyncRequired() throws {
+        try performMetadataSyncTest(
+            currentSpecVersion: 2,
+            newSpecVersion: 2,
+            currentLocalMigratorVersion: 3,
+            newLocalMigratorVersion: 3
+        )
+    }
+    
+    func testMetadataSyncChangeDueToSpecVersion() throws {
+        try performMetadataSyncTest(
+            currentSpecVersion: 2,
+            newSpecVersion: 4,
+            currentLocalMigratorVersion: 3,
+            newLocalMigratorVersion: 3
+        )
+    }
+    
+    func testMetadataSyncChangeDueToLocalMigratoVersion() throws {
+        try performMetadataSyncTest(
+            currentSpecVersion: 2,
+            newSpecVersion: 2,
+            currentLocalMigratorVersion: 3,
+            newLocalMigratorVersion: 4
+        )
+    }
+    
+    func testMetadataSyncChangeDueToBothSpecLocalMigratoVersion() throws {
+        try performMetadataSyncTest(
+            currentSpecVersion: 2,
+            newSpecVersion: 3,
+            currentLocalMigratorVersion: 3,
+            newLocalMigratorVersion: 4
+        )
+    }
+    
+    private func performMetadataSyncTest(
+        currentSpecVersion: UInt32,
+        newSpecVersion: UInt32,
+        currentLocalMigratorVersion: UInt32,
+        newLocalMigratorVersion: UInt32
+    ) throws {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let metadataRepository: CoreDataRepository<RuntimeMetadataItem, CDRuntimeMetadataItem> =
+            storageFacade.createRepository()
+        let filesOperationFactory = MockRuntimeFilesOperationFactoryProtocol()
+        let dataOperationFactory = MockDataOperationFactoryProtocol()
+        let eventCenter = MockEventCenterProtocol()
+        let operationQueue = OperationQueue()
+
+        // when
+
+        let chainCount = 10
+        let chains = ChainModelGenerator.generate(count: chainCount)
+
+        let connections = chains.reduce(into: [ChainModel.Id: MockConnection]()) { (storage, chain) in
+            storage[chain.chainId] = MockConnection()
+        }
+
+        let oldRuntimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { (storage, chain) in
+            storage[chain.chainId] = RawRuntimeMetadata(content: Data.random(of: 128)!, isOpaque: false)
+        }
+        
+        save(
+            runtimes: oldRuntimeMetadataItems,
+            in: AnyDataProviderRepository(metadataRepository),
+            specVersion: currentSpecVersion,
+            localMigratorVersion: currentLocalMigratorVersion
+        )
+        
+        let newRuntimeMetadataItems = chains.reduce(into: [ChainModel.Id: RawRuntimeMetadata]()) { (storage, chain) in
+            storage[chain.chainId] = RawRuntimeMetadata(content: Data.random(of: 128)!, isOpaque: false)
+        }
+        
+        let runtimeFetcherFactory = MockRuntimeFetchOperationFactory(rawMetadataDict: newRuntimeMetadataItems)
+        let syncService = RuntimeSyncService(
+            repository: AnyDataProviderRepository(metadataRepository),
+            runtimeFetchFactory: runtimeFetcherFactory,
+            runtimeLocalMigrator: RuntimeLocalMigrator(version: newLocalMigratorVersion),
+            filesOperationFactory: filesOperationFactory,
+            dataOperationFactory: dataOperationFactory,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue
+        )
+        
+        stubTypesLoading(dataOperationFactory: dataOperationFactory, filesOperationFactory: filesOperationFactory)
+        
+        // then
+        
+        waitSyncAndVerify(
+            for: chains,
+            connections: connections,
+            version: RuntimeVersion(specVersion: newSpecVersion, transactionVersion: 1),
+            eventCenter: eventCenter,
+            syncService: syncService
+        )
+        
+        let changesExpected = currentSpecVersion != newSpecVersion || currentLocalMigratorVersion != newLocalMigratorVersion
+        
+        try expect(
+            runtimeMetadataItems: changesExpected ? newRuntimeMetadataItems : oldRuntimeMetadataItems,
+            in: AnyDataProviderRepository(metadataRepository)
+        )
+        
+        for chain in chains {
+            XCTAssertEqual(runtimeFetcherFactory.getRequestsCount(for: chain.chainId), changesExpected ? 1 : 0)
+        }
+    }
+    
+    private func stubTypesLoading(
+        dataOperationFactory: MockDataOperationFactoryProtocol,
+        filesOperationFactory: MockRuntimeFilesOperationFactoryProtocol
+    ) {
+        stub(dataOperationFactory) { stub in
+            stub.fetchData(from: any()).then { _ in
+                let responseData = Data.random(of: 1024)!
+                return BaseOperation.createWithResult(responseData)
+            }
+        }
+
+        stub(filesOperationFactory) { stub in
+            stub.saveChainTypesOperation(for: any(), data: any()).then { (chainId, data) in
+                CompoundOperationWrapper.createWithResult(())
+            }
+        }
+    }
+    
+    private func waitSyncAndVerify(
+        for chains: [ChainModel],
+        connections: [ChainModel.Id: MockConnection],
+        version: RuntimeVersion,
+        eventCenter: MockEventCenterProtocol,
+        syncService: RuntimeSyncServiceProtocol
+    ) {
+        let completionExpectation = XCTestExpectation()
+        completionExpectation.expectedFulfillmentCount = 2 * chains.count // one for types and one for metadata
+        completionExpectation.assertForOverFulfill = true
+
+        var syncedMetadataChainIds: Set<ChainModel.Id> = Set()
+
+        stub(eventCenter) { stub in
+            stub.notify(with: any()).then { event in
+                if let syncEvent = event as? RuntimeMetadataSyncCompleted {
+                    syncedMetadataChainIds.insert(syncEvent.chainId)
+                }
+
+                completionExpectation.fulfill()
+            }
+        }
+
+        chains.forEach { chain in
+            syncService.register(chain: chain, with: connections[chain.chainId]!)
+            syncService.apply(
+                version: version,
+                for: chain.chainId
+            )
+
+            XCTAssertTrue(syncService.isChainSyncing(chain.chainId))
+        }
+
+        wait(for: [completionExpectation], timeout: 10)
+
+        let expectedChainIds = Set(chains.map { $0.chainId })
+
+        XCTAssertEqual(expectedChainIds, syncedMetadataChainIds)
+    }
+    
+    private func save(
+        runtimes: [ChainModel.Id: RawRuntimeMetadata],
+        in repository: AnyDataProviderRepository<RuntimeMetadataItem>,
+        specVersion: UInt32,
+        localMigratorVersion: UInt32
+    ) {
+        let runtimeMetadataItems: [RuntimeMetadataItem] = runtimes.map { (chainId, metadata) in
+            RuntimeMetadataItem(
+                chain: chainId,
+                version: specVersion,
+                txVersion: 1,
+                localMigratorVersion: localMigratorVersion,
+                opaque: metadata.isOpaque,
+                metadata: metadata.content
+            )
+        }
+        
+        let saveOperation = repository.saveOperation({ runtimeMetadataItems }, { [] })
+        
+        OperationQueue().addOperations([saveOperation], waitUntilFinished: true)
+    }
+    
+    private func expect(
+        runtimeMetadataItems: [ChainModel.Id: RawRuntimeMetadata],
+        in repository: AnyDataProviderRepository<RuntimeMetadataItem>
+    ) throws {
+        let allMetadataOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        OperationQueue().addOperations([allMetadataOperation], waitUntilFinished: true)
+
+        let actualMetadataItems = try allMetadataOperation.extractNoCancellableResultData()
+        XCTAssertEqual(actualMetadataItems.count, runtimeMetadataItems.count)
+
+        for actualMetadataItem in actualMetadataItems {
+            XCTAssertEqual(actualMetadataItem.metadata, runtimeMetadataItems[actualMetadataItem.chain]?.content)
+            XCTAssertEqual(actualMetadataItem.opaque, runtimeMetadataItems[actualMetadataItem.chain]?.isOpaque)
+        }
+    }
 }
