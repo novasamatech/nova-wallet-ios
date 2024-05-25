@@ -41,11 +41,17 @@ final class ExtrinsicSplitter {
 
     let chain: ChainModel
     let chainRegistry: ChainRegistryProtocol
+    let maxCallsPerExtrinsic: Int?
 
     private var internalCalls: [InternalCall] = []
 
-    init(chain: ChainModel, chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry) {
+    init(
+        chain: ChainModel,
+        maxCallsPerExtrinsic: Int?,
+        chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry
+    ) {
         self.chain = chain
+        self.maxCallsPerExtrinsic = maxCallsPerExtrinsic
         self.chainRegistry = chainRegistry
     }
 
@@ -125,7 +131,8 @@ final class ExtrinsicSplitter {
         dependingOn blockLimitOperation: BaseOperation<UInt64>,
         callTypeWeightOperation: BaseOperation<[CallCodingPath: UInt64]>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
-        internalCalls: [InternalCall]
+        internalCalls: [InternalCall],
+        maxCallsPerExtrinsic: Int?
     ) -> ClosureOperation<ExtrinsicSplittingResult> {
         ClosureOperation<ExtrinsicSplittingResult> {
             let callTypeWeight = try callTypeWeightOperation.extractNoCancellableResultData()
@@ -145,7 +152,13 @@ final class ExtrinsicSplitter {
                     throw ExtrinsicSplitterError.extrinsicTooLarge(blockLimit: blockLimit, callWeight: callWeight)
                 }
 
-                if blockLimit >= totalWeight + callWeight {
+                let maxCallsExceeded = if let maxCallsPerExtrinsic {
+                    targetCalls.count < maxCallsPerExtrinsic
+                } else {
+                    false
+                }
+
+                if blockLimit >= totalWeight + callWeight, !maxCallsExceeded {
                     targetCalls.append(internalCall)
                     totalWeight += callWeight
                 } else {
@@ -252,7 +265,8 @@ extension ExtrinsicSplitter: ExtrinsicSplitting {
             dependingOn: blockLimitWrapper.targetOperation,
             callTypeWeightOperation: callTypeWeightWrapper.targetOperation,
             codingFactoryOperation: codingFactoryOperation,
-            internalCalls: internalCalls
+            internalCalls: internalCalls,
+            maxCallsPerExtrinsic: maxCallsPerExtrinsic
         )
 
         blockLimitWrapper.addDependency(operations: [codingFactoryOperation])
