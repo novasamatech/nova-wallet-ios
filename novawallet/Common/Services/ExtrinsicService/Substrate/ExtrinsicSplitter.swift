@@ -153,7 +153,7 @@ final class ExtrinsicSplitter {
                 }
 
                 let maxCallsExceeded = if let maxCallsPerExtrinsic {
-                    targetCalls.count < maxCallsPerExtrinsic
+                    targetCalls.count >= maxCallsPerExtrinsic
                 } else {
                     false
                 }
