@@ -14,11 +14,10 @@ protocol CloudBackupSyncConfirming: AnyObject {
 }
 
 protocol CloudBackupSyncMediating {
-    var confirmationDelegate: CloudBackupSyncConfirming? { get set }
-
-    func setup(with syncFacade: CloudBackupSyncFacadeProtocol)
+    func setup(with confirmingDelegate: CloudBackupSyncConfirming)
     func approveCurrentChanges()
     func updateState()
+    func throttle()
 }
 
 /**
@@ -27,12 +26,12 @@ protocol CloudBackupSyncMediating {
  *  and setup sync facade via corresponding method.
  */
 final class CloudBackupSyncMediator {
+    private let syncFacade: CloudBackupSyncFacadeProtocol
+    private let cloudBackupApplyFactory: CloudBackupUpdateApplicationFactoryProtocol
     private let eventCenter: EventCenterProtocol
     private let selectedWalletSettings: SelectedWalletSettings
-    private let cloudBackupApplyFactory: CloudBackupUpdateApplicationFactoryProtocol
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
-    private var syncFacade: CloudBackupSyncFacadeProtocol?
 
     private var pendingChanges: CloudBackupSyncResult.Changes?
     private var applyingChanges: Bool = false
@@ -40,37 +39,40 @@ final class CloudBackupSyncMediator {
     weak var confirmationDelegate: CloudBackupSyncConfirming?
 
     init(
+        syncFacade: CloudBackupSyncFacadeProtocol,
+        cloudBackupApplyFactory: CloudBackupUpdateApplicationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         selectedWalletSettings: SelectedWalletSettings,
-        cloudBackupApplyFactory: CloudBackupUpdateApplicationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.syncFacade = syncFacade
+        self.cloudBackupApplyFactory = cloudBackupApplyFactory
         self.eventCenter = eventCenter
         self.selectedWalletSettings = selectedWalletSettings
-        self.cloudBackupApplyFactory = cloudBackupApplyFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
-    private func clearCurrentState() {
-        syncFacade?.unsubscribeState(self)
-        syncFacade = nil
-
-        eventCenter.remove(observer: self)
-    }
-
     private func setupCurrentState() {
-        guard let syncFacade else {
-            return
-        }
-
         eventCenter.add(observer: self, dispatchIn: .main)
+
+        syncFacade.setup()
 
         syncFacade.subscribeState(self, notifyingIn: .main) { [weak self] state in
             self?.logger.debug("Backup state: \(state)")
             self?.handleNew(state: state)
         }
+    }
+
+    private func clearCurrentState() {
+        syncFacade.unsubscribeState(self)
+        syncFacade.throttle()
+
+        eventCenter.remove(observer: self)
+
+        pendingChanges = nil
+        applyingChanges = false
     }
 
     private func handleNew(state: CloudBackupSyncState) {
@@ -108,7 +110,7 @@ final class CloudBackupSyncMediator {
             return
         }
 
-        if pendingChanges.isCritical {
+        if pendingChanges.isDestructive {
             confirmationDelegate?.cloudBackup(
                 mediator: self,
                 didRequestConfirmation: pendingChanges
@@ -132,8 +134,10 @@ final class CloudBackupSyncMediator {
         let wrapper = cloudBackupApplyFactory.createUpdateApplyOperation(for: changes)
 
         applyingChanges = true
-        
+
         let selectedWalletBeforeUpdate = selectedWalletSettings.value
+
+        logger.debug("Applying backup changes: \(changes)")
 
         execute(
             wrapper: wrapper,
@@ -146,7 +150,7 @@ final class CloudBackupSyncMediator {
 
             self.pendingChanges = nil
             self.applyingChanges = false
-            
+
             switch result {
             case .success:
                 logger.error("Cloud changes applied: \(changes)")
@@ -164,38 +168,38 @@ final class CloudBackupSyncMediator {
             }
         }
     }
-    
+
     private func emitEvents(
         for appliedChanges: CloudBackupSyncResult.Changes,
         selectedWalletBeforeUpdate: MetaAccountModel?
     ) {
         let selectedWallet = selectedWalletSettings.hasValue ? selectedWalletSettings.value : nil
         let walletSwitched = selectedWalletBeforeUpdate != selectedWallet
-        
+
         switch appliedChanges {
         case let .updateLocal(local):
             if local.changes.hasChainAccountChanges {
                 eventCenter.notify(with: ChainAccountChanged(method: .manually))
             }
-            
+
             if local.changes.hasWalletRemoves {
                 eventCenter.notify(with: AccountsRemovedManually())
             }
         case .updateRemote, .updateByUnion:
             break
         }
-        
+
         if walletSwitched {
             eventCenter.notify(with: SelectedAccountChanged())
+        } else if selectedWalletBeforeUpdate?.name != selectedWallet?.name {
+            eventCenter.notify(with: SelectedUsernameChanged())
         }
     }
 }
 
 extension CloudBackupSyncMediator: CloudBackupSyncMediating {
-    func setup(with syncFacade: CloudBackupSyncFacadeProtocol) {
-        clearCurrentState()
-
-        self.syncFacade = syncFacade
+    func setup(with confirmingDelegate: CloudBackupSyncConfirming) {
+        confirmationDelegate = confirmingDelegate
 
         setupCurrentState()
     }
@@ -207,26 +211,33 @@ extension CloudBackupSyncMediator: CloudBackupSyncMediating {
     func updateState() {
         if pendingChanges != nil {
             decideOnChanges()
-        } else if let state = syncFacade?.getState() {
+        } else {
+            let state = syncFacade.getState()
             handleNew(state: state)
         }
+    }
+
+    func throttle() {
+        confirmationDelegate = nil
+
+        clearCurrentState()
     }
 }
 
 extension CloudBackupSyncMediator: EventVisitorProtocol {
     func processChainAccountChanged(event _: ChainAccountChanged) {
-        syncFacade?.syncUp()
+        syncFacade.syncUp()
     }
 
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
-        syncFacade?.syncUp()
+        syncFacade.syncUp()
     }
 
     func processAccountsRemoved(event _: AccountsRemovedManually) {
-        syncFacade?.syncUp()
+        syncFacade.syncUp()
     }
 
     func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
-        syncFacade?.syncUp()
+        syncFacade.syncUp()
     }
 }

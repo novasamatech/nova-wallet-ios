@@ -153,7 +153,7 @@ final class WalletUpdateMediator {
         ClosureOperation<Bool> {
             let result = try processingOperation.extractNoCancellableResultData()
 
-            if result.selectedWallet?.identifier != settings.value?.identifier || settings.value == nil {
+            if settings.value == nil || result.selectedWallet?.info != settings.value {
                 settings.setup()
 
                 return true

@@ -1,7 +1,7 @@
 import Foundation
 
 extension CloudBackupSyncResult.Changes {
-    var isCritical: Bool {
+    var isDestructive: Bool {
         switch self {
         case .updateRemote, .updateByUnion:
             return false

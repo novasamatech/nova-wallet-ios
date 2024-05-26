@@ -13,7 +13,7 @@ extension CloudBackupDiff {
 
         return Set<MetaAccountModel>(newWallets)
     }
-    
+
     var hasChainAccountChanges: Bool {
         contains { change in
             if case .updatedChainAccounts = change {
@@ -23,7 +23,7 @@ extension CloudBackupDiff {
             }
         }
     }
-    
+
     var hasWalletRemoves: Bool {
         contains { change in
             if case .delete = change {

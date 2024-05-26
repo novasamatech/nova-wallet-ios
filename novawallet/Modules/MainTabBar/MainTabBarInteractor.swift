@@ -104,23 +104,7 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func processCloudBackup(changes: CloudBackupSyncResult.Changes) {
-        if changes.isCritical {
-            presenter?.didRequestReviewCloud(changes: changes)
-        } else {
-            let wrapper = backupApplicationFactory.createUpdateApplyOperation(for: changes)
-
-            execute(
-                wrapper: wrapper,
-                inOperationQueue: operationQueue,
-                runningCallbackIn: .main
-            ) { [weak self] result in
-                if case let .failure(error) = result {
-                    self?.logger.error("Unexpected cloud apply error: \(error)")
-                }
-            }
-        }
-    }
+    private func processCloudBackup(changes _: CloudBackupSyncResult.Changes) {}
 }
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
