@@ -1,15 +1,15 @@
 import Foundation
 
-struct AdvancedExportData {
+struct ExportData {
     enum ChainType {
-        case substrate(AdvancedExportChainData)
-        case ethereum(AdvancedExportChainData)
+        case substrate(ExportChainData)
+        case ethereum(ExportChainData)
     }
 
     let chains: [ChainType]
 }
 
-struct AdvancedExportChainData {
+struct ExportChainData {
     let name: String
     let availableOptions: [SecretSource]
     let derivationPath: String?

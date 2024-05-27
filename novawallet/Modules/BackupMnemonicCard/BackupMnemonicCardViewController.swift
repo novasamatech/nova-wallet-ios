@@ -16,13 +16,9 @@ final class BackupMnemonicCardViewController: UIViewController, ViewHolder {
 
     init(
         presenter: BackupMnemonicCardPresenterProtocol,
-        appearanceAnimator: ViewAnimatorProtocol,
-        disappearanceAnimator: ViewAnimatorProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.appearanceAnimator = appearanceAnimator
-        self.disappearanceAnimator = disappearanceAnimator
 
         super.init(nibName: nil, bundle: nil)
 
@@ -35,10 +31,7 @@ final class BackupMnemonicCardViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = BackupMnemonicCardViewLayout(
-            appearanceAnimator: appearanceAnimator,
-            disappearanceAnimator: disappearanceAnimator
-        )
+        view = BackupMnemonicCardViewLayout()
     }
 
     override func viewDidLoad() {
@@ -56,6 +49,10 @@ final class BackupMnemonicCardViewController: UIViewController, ViewHolder {
 extension BackupMnemonicCardViewController: BackupMnemonicCardViewProtocol {
     func update(with viewModel: ViewModel) {
         setupNavigationBarTitle(with: viewModel)
+
+        if let networkViewModel = viewModel.networkViewModel {
+            rootView.showNetwork(with: networkViewModel)
+        }
 
         switch viewModel.state {
         case let .mnemonicVisible(words: words):
@@ -228,9 +225,9 @@ private extension UIConstants {
     static let walletIconSize = CGSize(width: 28, height: 28)
     static let itemsPerRow: Int = 3
     static let headerContentInsets = UIEdgeInsets(
-        top: 12.0,
+        top: 14.0,
         left: 12.0,
-        bottom: 12.0,
+        bottom: 14.0,
         right: 12.0
     )
     static let wordHeight: CGFloat = 32.0

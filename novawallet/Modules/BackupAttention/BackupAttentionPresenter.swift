@@ -4,14 +4,17 @@ import SoraFoundation
 final class BackupAttentionPresenter {
     weak var view: BackupAttentionViewProtocol?
     let wireframe: BackupAttentionWireframeProtocol
+    let interactor: BackupAttentionInteractorInputProtocol
 
     private var checkBoxViewModels: [CheckBoxIconDetailsView.Model] = []
 
     init(
         wireframe: BackupAttentionWireframeProtocol,
+        interactor: BackupAttentionInteractorInputProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
+        self.interactor = interactor
         self.localizationManager = localizationManager
     }
 }
@@ -144,7 +147,11 @@ private extension BackupAttentionPresenter {
     }
 
     func continueTapped() {
-        wireframe.showMnemonic(from: view)
+        if interactor.checkIfMnemonicAvailable() {
+            wireframe.showMnemonic(from: view)
+        } else {
+            wireframe.showExportSecrets(from: view)
+        }
     }
 }
 
