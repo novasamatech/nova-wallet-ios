@@ -15,7 +15,6 @@ final class BackupMnemonicCardPresenter {
     private let walletViewModelFactory = WalletAccountViewModelFactory()
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
     private let logger: LoggerProtocol
-    private let localizationManager: LocalizationManagerProtocol
 
     init(
         interactor: BackupMnemonicCardInteractor,
@@ -31,8 +30,8 @@ final class BackupMnemonicCardPresenter {
         self.metaAccount = metaAccount
         self.chain = chain
         self.networkViewModelFactory = networkViewModelFactory
-        self.localizationManager = localizationManager
         self.logger = logger
+        self.localizationManager = localizationManager
     }
 }
 
@@ -68,11 +67,11 @@ extension BackupMnemonicCardPresenter: BackupMnemonicCardInteractorOutputProtoco
     func didReceive(error: Error) {
         logger.error("Did receive error: \(error)")
 
-        if !wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale) {
+        if !wireframe.present(error: error, from: view, locale: selectedLocale) {
             _ = wireframe.present(
                 error: CommonError.dataCorruption,
                 from: view,
-                locale: localizationManager.selectedLocale
+                locale: selectedLocale
             )
         }
     }
@@ -98,12 +97,34 @@ private extension BackupMnemonicCardPresenter {
                 }(),
                 state: {
                     if let mnemonic {
-                        .mnemonicVisible(words: mnemonic.allWords())
+                        .mnemonicVisible(
+                            model: .init(
+                                words: mnemonic.allWords(),
+                                title: createCardTitle()
+                            )
+                        )
                     } else {
                         .mnemonicNotVisible
                     }
                 }()
             )
+        )
+    }
+
+    func createCardTitle() -> NSAttributedString {
+        NSAttributedString.coloredItems(
+            [
+                R.string.localizable.mnemonicCardRevealedHeaderMessageHighlighted(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            ],
+            formattingClosure: { items in
+                R.string.localizable.mnemonicCardRevealedHeaderMessage(
+                    items[0],
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            },
+            color: R.color.colorTextPrimary()!
         )
     }
 }

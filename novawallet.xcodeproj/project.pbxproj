@@ -760,10 +760,13 @@
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
 		2D221CBE2BF753620053E36C /* ContentSizedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */; };
 		2D221CC02BF753C30053E36C /* MnemonicWordCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */; };
-		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
+		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
+		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
+		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
 		2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */; };
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
+		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
@@ -5524,10 +5527,13 @@
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
 		2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedCollectionView.swift; sourceTree = "<group>"; };
 		2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCollectionCell.swift; sourceTree = "<group>"; };
-		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
+		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
+		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
 		2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPresenter.swift; sourceTree = "<group>"; };
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
+		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
@@ -11235,10 +11241,21 @@
 		2D221CBC2BF753480053E36C /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2D5493322C04C0C000607BF7 /* MnemonicCard */,
 				2D221CBD2BF753620053E36C /* ContentSizedCollectionView.swift */,
 				2D221CBF2BF753C30053E36C /* MnemonicWordCollectionCell.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
+			isa = PBXGroup;
+			children = (
+				2D54932E2C03788200607BF7 /* MnemonicGridView.swift */,
+				2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */,
+				2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */,
+			);
+			path = MnemonicCard;
 			sourceTree = "<group>";
 		};
 		2D8684562BFF861500A663D2 /* Factory */ = {
@@ -23272,6 +23289,7 @@
 				0C962F862AA859F200C0B551 /* TransactionHistoryLocalFilter.swift in Sources */,
 				842348E92614F6EA002127AF /* SkeletonLoadable.swift in Sources */,
 				0CE629E02AA9B70200E250BD /* CalculatedReward.swift in Sources */,
+				2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */,
 				849A4EFA279ABC8800AB6709 /* AssetBalanceMapper.swift in Sources */,
 				8490147724A94A37008F705E /* RootPresenter.swift in Sources */,
 				8428765724ADDE0200D91AD8 /* SettingsTableViewCell.swift in Sources */,
@@ -24222,6 +24240,7 @@
 				84B5DE53283F7BE500193ED3 /* CollatorsSortType.swift in Sources */,
 				AEDD7C0F269C81F500A8405F /* BlockWeights.swift in Sources */,
 				84002A9A29904A2C00A80672 /* GovernanceRemoveVoteRequest.swift in Sources */,
+				2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */,
 				7756927D2A20B88200220756 /* TokenOperation.swift in Sources */,
 				AEE4E34D25E915ED00D6DF31 /* RewardCalculatorServiceProtocol.swift in Sources */,
 				8499FEE627C105DB00712589 /* RMRKV2SyncService.swift in Sources */,
@@ -24599,6 +24618,7 @@
 				84E83AA428632AF50000B418 /* XcmPalletTransfer.swift in Sources */,
 				8455F1982A1DD74D003F072D /* SubqueryFilter.swift in Sources */,
 				8499FE6827BD1EA600712589 /* DistributedStorageFactory.swift in Sources */,
+				2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */,
 				8428228A289B1E5C00163031 /* TableHeaderLayoutUpdatable.swift in Sources */,
 				84EE2FAF2891215200A98816 /* WalletManageTableViewCell.swift in Sources */,
 				0CA26D8B2BBBB4450086748F /* CloudBackupServiceFactory.swift in Sources */,

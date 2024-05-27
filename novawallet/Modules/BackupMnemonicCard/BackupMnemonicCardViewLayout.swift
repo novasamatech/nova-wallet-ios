@@ -7,8 +7,6 @@ protocol BackupMnemonicCardViewLayoutDelegate: AnyObject {
 }
 
 final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
-    typealias Cell = MnemonicWordCollectionCell
-
     weak var delegate: BackupMnemonicCardViewLayoutDelegate?
 
     lazy var networkView = AssetListChainView()
@@ -31,26 +29,7 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
         view.isUserInteractionEnabled = true
     }
 
-    let collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = Constants.itemsSpacing
-        layout.minimumLineSpacing = Constants.itemsSpacing
-        layout.sectionInset = Constants.sectionContentInset
-
-        let collectionView = ContentSizedCollectionView(
-            frame: .zero,
-            collectionViewLayout: layout
-        )
-        collectionView.allowsSelection = false
-        collectionView.registerCellClass(Cell.self)
-        collectionView.registerClass(
-            TitleCollectionHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
-        )
-
-        return collectionView
-    }()
+    let mnemonicCardView = MnemonicCardView()
 
     var coverMessageView: GenericPairValueView<UILabel, UILabel> = .create { view in
         view.makeVertical()
@@ -87,6 +66,7 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
 
         addArrangedSubview(titleView, spacingAfter: 16)
         addArrangedSubview(cardContainerView)
+
         stackView.alignment = .fill
     }
 
@@ -95,39 +75,25 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
 
         backgroundColor = R.color.colorSecondaryScreenBackground()
 
-        let backgroundImageView = UIImageView()
-        backgroundImageView.image = R.image.cardBg()
-        backgroundImageView.contentMode = .scaleToFill
-
-        collectionView.backgroundColor = .clear
-        collectionView.backgroundView = backgroundImageView
-
-        setupStyleForCard(collectionView.backgroundView)
-        setupStyleForCard(coverView)
+        coverView.layer.borderWidth = 1.0
+        coverView.layer.borderColor = R.color.colorContainerBorder()?.cgColor
+        coverView.layer.cornerRadius = Constants.cardCornerRadius
+        coverView.layer.masksToBounds = true
+        coverView.clipsToBounds = true
     }
 
-    func setupStyleForCard(_ view: UIView?) {
-        view?.layer.borderWidth = 1.0
-        view?.layer.borderColor = R.color.colorContainerBorder()?.cgColor
-        view?.layer.cornerRadius = Constants.cardCornerRadius
-        view?.layer.masksToBounds = true
-        view?.clipsToBounds = true
-    }
+    func showMnemonics(model: MnemonicCardView.Model) {
+        cardContainerView.addSubview(mnemonicCardView)
 
-    func showMnemonics() {
-        cardContainerView.addSubview(collectionView)
-
-        collectionView.snp.makeConstraints { make in
+        mnemonicCardView.snp.makeConstraints { make in
             make.width.height.equalToSuperview()
         }
-
+        mnemonicCardView.bind(to: model)
         addArrangedSubview(cardContainerView)
-
-        collectionView.reloadData()
 
         UIView.transition(
             from: coverView,
-            to: collectionView,
+            to: mnemonicCardView,
             duration: 0.5,
             options: [.transitionFlipFromLeft, .curveEaseInOut]
         ) { [weak self] _ in
@@ -136,17 +102,17 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
     }
 
     func showCover() {
-        collectionView.removeFromSuperview()
+        mnemonicCardView.removeFromSuperview()
         cardContainerView.removeFromSuperview()
 
         cardContainerView.addSubview(coverView)
 
         coverView.snp.makeConstraints { make in
-            make.height.equalTo(200)
+            make.height.equalTo(195)
             make.width.height.equalToSuperview()
         }
 
-        addArrangedSubview(cardContainerView)
+        addArrangedSubview(cardContainerView, spacingAfter: 16)
     }
 
     func showNetwork(with viewModel: NetworkViewModel) {
@@ -187,7 +153,7 @@ extension BackupMnemonicCardViewLayout {
     }
 
     enum State {
-        case mnemonicVisible(words: [String])
+        case mnemonicVisible(model: MnemonicCardView.Model)
         case mnemonicNotVisible
     }
 }

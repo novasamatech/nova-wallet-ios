@@ -67,7 +67,7 @@ private extension ManualBackupKeyListViewModelFactory {
         let customChainsViewModels = chains
             .compactMap { chain -> ManualBackupKeyListViewLayout.CustomAccount? in
 
-                return ManualBackupKeyListViewLayout.CustomAccount(
+                ManualBackupKeyListViewLayout.CustomAccount(
                     network: self.networkViewModelFactory.createViewModel(from: chain),
                     chainId: chain.chainId
                 )
