@@ -3,7 +3,8 @@ import SoraKeystore
 
 extension CloudBackupSyncFacade {
     static func createFacade() -> CloudBackupSyncFacadeProtocol {
-        let serviceFactory = ICloudBackupServiceFactory(operationQueue: OperationManagerFacade.sharedDefaultQueue)
+        let operationQueue = OperationManagerFacade.cloudBackupQueue
+        let serviceFactory = ICloudBackupServiceFactory(operationQueue: operationQueue)
         let syncMetadataManaging = CloudBackupSyncMetadataManager(
             settings: SettingsManager.shared,
             keystore: Keychain()
@@ -16,7 +17,7 @@ extension CloudBackupSyncFacade {
             syncMetadataManaging: syncMetadataManaging,
             walletsRepositoryFactory: walletsRepositoryFactory,
             notificationCenter: NotificationCenter.default,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
 

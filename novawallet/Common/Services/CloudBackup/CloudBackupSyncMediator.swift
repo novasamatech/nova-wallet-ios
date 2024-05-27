@@ -14,6 +14,8 @@ protocol CloudBackupSyncConfirming: AnyObject {
 }
 
 protocol CloudBackupSyncMediating {
+    var syncFacade: CloudBackupSyncFacadeProtocol { get }
+
     func setup(with confirmingDelegate: CloudBackupSyncConfirming)
     func approveCurrentChanges()
     func updateState()
@@ -26,7 +28,8 @@ protocol CloudBackupSyncMediating {
  *  and setup sync facade via corresponding method.
  */
 final class CloudBackupSyncMediator {
-    private let syncFacade: CloudBackupSyncFacadeProtocol
+    let syncFacade: CloudBackupSyncFacadeProtocol
+
     private let cloudBackupApplyFactory: CloudBackupUpdateApplicationFactoryProtocol
     private let eventCenter: EventCenterProtocol
     private let selectedWalletSettings: SelectedWalletSettings
@@ -126,7 +129,7 @@ final class CloudBackupSyncMediator {
             return
         }
 
-        guard applyingChanges else {
+        guard !applyingChanges else {
             logger.warning("Already applying changes")
             return
         }
@@ -153,7 +156,7 @@ final class CloudBackupSyncMediator {
 
             switch result {
             case .success:
-                logger.error("Cloud changes applied: \(changes)")
+                logger.debug("Cloud changes applied: \(changes)")
                 emitEvents(
                     for: changes,
                     selectedWalletBeforeUpdate: selectedWalletBeforeUpdate

@@ -13,7 +13,7 @@ final class MainTabBarInteractor {
     let securedLayer: SecurityLayerServiceProtocol
     let inAppUpdatesService: SyncServiceProtocol
     let pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol
-    let backupApplicationFactory: CloudBackupUpdateApplicationFactoryProtocol
+    let cloudBackupMediator: CloudBackupSyncMediating
     let settingsManager: SettingsManagerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -28,7 +28,7 @@ final class MainTabBarInteractor {
         keystoreImportService: KeystoreImportServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
-        backupApplicationFactory: CloudBackupUpdateApplicationFactoryProtocol,
+        cloudBackupMediator: CloudBackupSyncMediating,
         securedLayer: SecurityLayerServiceProtocol,
         inAppUpdatesService: SyncServiceProtocol,
         settingsManager: SettingsManagerProtocol,
@@ -39,7 +39,7 @@ final class MainTabBarInteractor {
         self.keystoreImportService = keystoreImportService
         self.screenOpenService = screenOpenService
         self.pushScreenOpenService = pushScreenOpenService
-        self.backupApplicationFactory = backupApplicationFactory
+        self.cloudBackupMediator = cloudBackupMediator
         self.serviceCoordinator = serviceCoordinator
         self.securedLayer = securedLayer
         self.inAppUpdatesService = inAppUpdatesService
@@ -82,29 +82,6 @@ final class MainTabBarInteractor {
             }
         }
     }
-
-    private func subscribeCloudBackupUpdates() {
-        serviceCoordinator.cloudBackupSyncFacade.unsubscribeState(self)
-
-        serviceCoordinator.cloudBackupSyncFacade.subscribeState(self, notifyingIn: .main) { [weak self] state in
-            self?.logger.debug("Backup state: \(state)")
-
-            switch state {
-            case .disabled, .unavailable:
-                break
-            case let .enabled(cloudBackupSyncResult, _):
-                self?.securedLayer.scheduleExecutionIfAuthorized {
-                    guard case let .changes(changes) = cloudBackupSyncResult else {
-                        return
-                    }
-
-                    self?.processCloudBackup(changes: changes)
-                }
-            }
-        }
-    }
-
-    private func processCloudBackup(changes _: CloudBackupSyncResult.Changes) {}
 }
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
@@ -127,7 +104,7 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
         showPushNotificationsSetupIfNeeded()
 
-        subscribeCloudBackupUpdates()
+        cloudBackupMediator.setup(with: self)
     }
 
     func setPushNotificationsSetupScreenSeen() {
@@ -179,6 +156,27 @@ extension MainTabBarInteractor: PushNotificationOpenDelegate {
     func didAskScreenOpen(_ screen: PushNotification.OpenScreen) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.presenter?.didRequestPushScreenOpen(screen)
+        }
+    }
+}
+
+extension MainTabBarInteractor: CloudBackupSyncConfirming {
+    func cloudBackup(
+        mediator _: CloudBackupSyncMediating,
+        didRequestConfirmation changes: CloudBackupSyncResult.Changes
+    ) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.presenter?.didRequestReviewCloud(changes: changes)
+        }
+    }
+
+    func cloudBackup(
+        mediator _: CloudBackupSyncMediating,
+        didFailToApply changes: CloudBackupSyncResult.Changes,
+        error: Error
+    ) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.presenter?.didFailApplyingCloud(changes: changes, error: error)
         }
     }
 }

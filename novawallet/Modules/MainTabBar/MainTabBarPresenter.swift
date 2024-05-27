@@ -44,6 +44,10 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         // TODO: Show bottom sheet with changes
     }
 
+    func didFailApplyingCloud(changes _: CloudBackupSyncResult.Changes, error _: Error) {
+        // TODO: Show bottom sheet about error
+    }
+
     func didRequestPushNotificationsSetupOpen() {
         wireframe.presentPushNotificationsSetup(on: view) { [weak self] in
             self?.interactor.setPushNotificationsSetupScreenSeen()

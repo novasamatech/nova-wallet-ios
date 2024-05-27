@@ -3,10 +3,14 @@ import UIKit
 final class CloudBackupSettingsInteractor {
     weak var presenter: CloudBackupSettingsInteractorOutputProtocol?
 
-    let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
+    let cloudBackupSyncMediator: CloudBackupSyncMediating
 
-    init(cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol) {
-        self.cloudBackupSyncFacade = cloudBackupSyncFacade
+    var cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
+        cloudBackupSyncMediator.syncFacade
+    }
+
+    init(cloudBackupSyncMediator: CloudBackupSyncMediating) {
+        self.cloudBackupSyncMediator = cloudBackupSyncMediator
     }
 
     private func subscribeBackupState() {
