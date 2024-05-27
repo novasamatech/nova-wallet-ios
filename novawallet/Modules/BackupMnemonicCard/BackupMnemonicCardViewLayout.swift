@@ -29,7 +29,9 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
         view.isUserInteractionEnabled = true
     }
 
-    let mnemonicCardView = MnemonicCardView()
+    let mnemonicCardView: MnemonicCardView = .create { view in
+        view.isUserInteractionEnabled = false
+    }
 
     var coverMessageView: GenericPairValueView<UILabel, UILabel> = .create { view in
         view.makeVertical()

@@ -12,16 +12,9 @@ class MnemonicCardView: MnemonicGridView {
         view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
     }
 
-    override var unitWidth: CGFloat {
-        (UIScreen.main.bounds.width
-            - UIConstants.horizontalInset * 2
-            - contentInset.left
-            - contentInset.right
-            - spacing * 2) / 3
-    }
-
     override func setupLayout() {
         super.setupLayout()
+
         spacing = Constants.itemsSpacing
         contentInset = Constants.contentInset
         stackView.addArrangedSubview(cardTitleView)

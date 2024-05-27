@@ -5,19 +5,16 @@ class MnemonicGridView: UIView {
     typealias WordButton = ControlView<RoundedView, UILabel>
     typealias Placeholder = UIView
 
-    let stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.isLayoutMarginsRelativeArrangement = true
-
-        return stackView
-    }()
-
     private var units: [UnitType] = []
     private var rows: [Int: UIStackView] = [:]
+
+    let stackView: UIStackView = .create { view in
+        view.axis = .vertical
+        view.alignment = .fill
+        view.distribution = .fill
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isLayoutMarginsRelativeArrangement = true
+    }
 
     open var unitWidth: CGFloat {
         (UIScreen.main.bounds.width
@@ -34,12 +31,7 @@ class MnemonicGridView: UIView {
         }
     }
 
-    open var contentInset: UIEdgeInsets = .init(
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0
-    ) {
+    open var contentInset: UIEdgeInsets = Constants.contentInset {
         didSet {
             stackView.layoutMargins = contentInset
         }
@@ -137,17 +129,16 @@ private extension MnemonicGridView {
         button.controlBackgroundView?.highlightedFillColor = .clear
         button.controlBackgroundView?.cornerRadius = Constants.itemCornerRadius
         button.changesContentOpacityWhenHighlighted = true
+        button.controlContentView.attributedText = NSAttributedString.coloredItems(
+            ["\(number)"],
+            formattingClosure: { String(format: "%@ \(text)", $0[0]) },
+            color: R.color.colorTextSecondary()!
+        )
 
         button.addTarget(
             self,
             action: #selector(actionItem),
             for: .touchUpInside
-        )
-
-        button.controlContentView.attributedText = NSAttributedString.coloredItems(
-            ["\(number)"],
-            formattingClosure: { String(format: "%@ \(text)", $0[0]) },
-            color: R.color.colorTextSecondary()!
         )
 
         button.snp.makeConstraints { make in
@@ -208,7 +199,6 @@ private extension MnemonicGridView {
 private extension MnemonicGridView {
     enum Constants {
         static let itemsSpacing: CGFloat = 12
-        static let cardCornerRadius: CGFloat = 12.0
         static let itemCornerRadius: CGFloat = 8
         static let buttonHeight: CGFloat = 33.0
         static let contentInset: UIEdgeInsets = .init(
