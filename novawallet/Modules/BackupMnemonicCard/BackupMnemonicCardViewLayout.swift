@@ -9,22 +9,34 @@ protocol BackupMnemonicCardViewLayoutDelegate: AnyObject {
 final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
     typealias Cell = MnemonicWordCollectionCell
 
-    private var appearanceAnimator: ViewAnimatorProtocol?
-    private var disappearanceAnimator: ViewAnimatorProtocol?
-
     weak var delegate: BackupMnemonicCardViewLayoutDelegate?
+
+    lazy var networkView = AssetListChainView()
+    lazy var networkContainerView: UIView = .create { [weak self] view in
+        guard let self else { return }
+
+        view.addSubview(networkView)
+
+        networkView.snp.makeConstraints { make in
+            make.leading.bottom.top.equalToSuperview()
+        }
+    }
 
     let titleView: UILabel = .create { view in
         view.apply(style: .boldTitle3Primary)
         view.textAlignment = .left
     }
 
+    let cardContainerView: UIView = .create { view in
+        view.isUserInteractionEnabled = true
+    }
+
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = UIConstants.itemsSpacing
-        layout.minimumLineSpacing = UIConstants.itemsSpacing
-        layout.sectionInset = UIConstants.sectionContentInset
+        layout.minimumInteritemSpacing = Constants.itemsSpacing
+        layout.minimumLineSpacing = Constants.itemsSpacing
+        layout.sectionInset = Constants.sectionContentInset
 
         let collectionView = ContentSizedCollectionView(
             frame: .zero,
@@ -70,20 +82,12 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
         return imageView
     }()
 
-    convenience init(
-        appearanceAnimator: ViewAnimatorProtocol?,
-        disappearanceAnimator: ViewAnimatorProtocol?
-    ) {
-        self.init(frame: .zero)
-
-        self.appearanceAnimator = appearanceAnimator
-        self.disappearanceAnimator = disappearanceAnimator
-    }
-
     override func setupLayout() {
         super.setupLayout()
 
         addArrangedSubview(titleView, spacingAfter: 16)
+        addArrangedSubview(cardContainerView)
+        stackView.alignment = .fill
     }
 
     override func setupStyle() {
@@ -93,7 +97,7 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
 
         let backgroundImageView = UIImageView()
         backgroundImageView.image = R.image.cardBg()
-        backgroundImageView.contentMode = .scaleAspectFill
+        backgroundImageView.contentMode = .scaleToFill
 
         collectionView.backgroundColor = .clear
         collectionView.backgroundView = backgroundImageView
@@ -105,31 +109,67 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
     func setupStyleForCard(_ view: UIView?) {
         view?.layer.borderWidth = 1.0
         view?.layer.borderColor = R.color.colorContainerBorder()?.cgColor
-        view?.layer.cornerRadius = UIConstants.cardCornerRadius
+        view?.layer.cornerRadius = Constants.cardCornerRadius
         view?.layer.masksToBounds = true
         view?.clipsToBounds = true
     }
 
     func showMnemonics() {
-        disappearanceAnimator?.animate(view: coverView) { [weak self] _ in
-            guard let self else { return }
+        cardContainerView.addSubview(collectionView)
 
-            coverView.removeFromSuperview()
+        collectionView.snp.makeConstraints { make in
+            make.width.height.equalToSuperview()
+        }
 
-            addArrangedSubview(collectionView)
-            collectionView.reloadData()
-            appearanceAnimator?.animate(view: collectionView, completionBlock: nil)
+        addArrangedSubview(cardContainerView)
+
+        collectionView.reloadData()
+
+        UIView.transition(
+            from: coverView,
+            to: collectionView,
+            duration: 0.5,
+            options: [.transitionFlipFromLeft, .curveEaseInOut]
+        ) { [weak self] _ in
+            self?.coverView.removeFromSuperview()
         }
     }
 
     func showCover() {
         collectionView.removeFromSuperview()
+        cardContainerView.removeFromSuperview()
+
+        cardContainerView.addSubview(coverView)
 
         coverView.snp.makeConstraints { make in
             make.height.equalTo(200)
+            make.width.height.equalToSuperview()
         }
 
-        addArrangedSubview(coverView)
+        addArrangedSubview(cardContainerView)
+    }
+
+    func showNetwork(with viewModel: NetworkViewModel) {
+        var subviews: [UIView] = []
+
+        stackView.arrangedSubviews.forEach { view in
+            subviews.append(view)
+            view.removeFromSuperview()
+        }
+
+        addArrangedSubview(
+            networkContainerView,
+            spacingAfter: Constants.stackSpacing
+        )
+
+        networkView.bind(viewModel: viewModel)
+
+        subviews.forEach { view in
+            self.addArrangedSubview(
+                view,
+                spacingAfter: Constants.stackSpacing
+            )
+        }
     }
 
     @objc func didTapCardCover() {
@@ -142,6 +182,7 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
 extension BackupMnemonicCardViewLayout {
     struct Model {
         var walletViewModel: DisplayWalletViewModel
+        var networkViewModel: NetworkViewModel?
         var state: State
     }
 
@@ -151,15 +192,18 @@ extension BackupMnemonicCardViewLayout {
     }
 }
 
-// MARK: UIConstants
+// MARK: Constants
 
-private extension UIConstants {
-    static let itemsSpacing: CGFloat = 4
-    static let sectionContentInset = UIEdgeInsets(
-        top: 0.0,
-        left: 12.0,
-        bottom: 12.0,
-        right: 12.0
-    )
-    static let cardCornerRadius: CGFloat = 12.0
+private extension BackupMnemonicCardViewLayout {
+    enum Constants {
+        static let itemsSpacing: CGFloat = 4
+        static let stackSpacing: CGFloat = 16
+        static let sectionContentInset = UIEdgeInsets(
+            top: 0.0,
+            left: 12.0,
+            bottom: 14.0,
+            right: 12.0
+        )
+        static let cardCornerRadius: CGFloat = 12.0
+    }
 }

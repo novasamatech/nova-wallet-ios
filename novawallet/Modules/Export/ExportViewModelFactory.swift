@@ -1,14 +1,37 @@
 import Foundation
 
-final class AdvancedExportViewModelFactory {
+final class ExportViewModelFactory {
+    private let networkViewModelFactory: NetworkViewModelFactoryProtocol
+
+    init(networkViewModelFactory: NetworkViewModelFactoryProtocol) {
+        self.networkViewModelFactory = networkViewModelFactory
+    }
+
     func createViewModel(
-        for exportData: AdvancedExportData,
+        for exportData: ExportData,
+        chain: ChainModel?,
         selectedLocale: Locale,
         onTapSubstrateSecret: @escaping () -> Void,
         onTapEthereumSecret: @escaping () -> Void,
         onTapExportJSON: @escaping () -> Void
-    ) -> AdvancedExportViewLayout.Model {
-        var sections: [AdvancedExportViewLayout.Section] = []
+    ) -> ExportViewLayout.Model {
+        var sections: [ExportViewLayout.Section] = []
+
+        if let chain {
+            sections.append(
+                .networkView(
+                    networkViewModelFactory.createViewModel(from: chain)
+                )
+            )
+
+            sections.append(
+                .headerTitle(
+                    text: R.string.localizable.advancedExportCustomKeyHeaderTitle(
+                        preferredLanguages: selectedLocale.rLanguages
+                    )
+                )
+            )
+        }
 
         sections.append(
             .headerMessage(
@@ -58,15 +81,15 @@ final class AdvancedExportViewModelFactory {
 
     // swiftlint:disable function_body_length
     func createViewModelForNetwork(
-        with model: AdvancedExportChainData,
+        with model: ExportChainData,
         selectedLocale: Locale,
         showSecret: Bool,
         secretType: SecretSource,
         showJSONExport: Bool,
         onTapSecret: @escaping () -> Void,
         onTapExportJSON: @escaping () -> Void
-    ) -> AdvancedExportViewLayout.NetworkModel {
-        var blocks: [AdvancedExportViewLayout.NetworkModel.Block] = []
+    ) -> ExportViewLayout.NetworkModel {
+        var blocks: [ExportViewLayout.NetworkModel.Block] = []
 
         let secretTitle = secretType == .seed
             ? R.string.localizable.secretTypeSeedTitle(

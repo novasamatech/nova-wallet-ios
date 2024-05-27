@@ -7,15 +7,18 @@ final class BackupMnemonicCardInteractor {
     weak var presenter: BackupMnemonicCardInteractorOutputProtocol?
 
     private let metaAccount: MetaAccountModel
+    private var chain: ChainModel?
     private let keystore: KeystoreProtocol
     private let operationQueue: OperationQueue
 
     init(
         metaAccount: MetaAccountModel,
+        chain: ChainModel?,
         keystore: KeystoreProtocol,
         operationQueue: OperationQueue
     ) {
         self.metaAccount = metaAccount
+        self.chain = chain
         self.keystore = keystore
         self.operationQueue = operationQueue
     }
@@ -24,13 +27,24 @@ final class BackupMnemonicCardInteractor {
 extension BackupMnemonicCardInteractor: BackupMnemonicCardInteractorInputProtocol {
     func fetchMnemonic() {
         let exportOperation: BaseOperation<IRMnemonicProtocol> = ClosureOperation { [weak self] in
-            guard let metaAccount = self?.metaAccount else {
-                throw ExportMnemonicInteractorError.missingAccount
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
             }
 
-            let entropyTag = KeystoreTagV2.entropyTagForMetaId(metaAccount.metaId)
+            var accountId: AccountId? {
+                if let chain {
+                    metaAccount.fetchChainAccountId(for: chain.accountRequest())
+                } else {
+                    .none
+                }
+            }
 
-            guard let entropy = try self?.keystore.loadIfKeyExists(entropyTag) else {
+            let entropyTag = KeystoreTagV2.entropyTagForMetaId(
+                metaAccount.metaId,
+                accountId: accountId
+            )
+
+            guard let entropy = try keystore.loadIfKeyExists(entropyTag) else {
                 throw ExportMnemonicInteractorError.missingEntropy
             }
 

@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 import SnapKit
 
-class AdvancedExportRowView: GenericPairValueView<
+class ExportRowView: GenericPairValueView<
     GenericPairValueView<
         UILabel,
         UILabel
@@ -67,7 +67,7 @@ class AdvancedExportRowView: GenericPairValueView<
     }
 }
 
-extension AdvancedExportRowView {
+extension ExportRowView {
     enum RowType: Hashable {
         case none
         case chainSecret(chainName: String)
@@ -76,7 +76,7 @@ extension AdvancedExportRowView {
 
 // MARK: Private
 
-private extension AdvancedExportRowView {
+private extension ExportRowView {
     func setupLayout() {
         spacing = Constants.titleBlockSpacing
         contentLabels.spacing = Constants.contentLabelsSpacing
@@ -105,7 +105,7 @@ private extension AdvancedExportRowView {
 
 // MARK: Constants
 
-private extension AdvancedExportRowView {
+private extension ExportRowView {
     enum Constants {
         static let titleBlockSpacing: CGFloat = 8
         static let contentLabelsSpacing: CGFloat = 4

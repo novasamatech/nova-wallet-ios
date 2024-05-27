@@ -1,24 +1,25 @@
 import Foundation
 import SoraFoundation
 
-final class AdvancedExportPresenter {
-    weak var view: AdvancedExportViewProtocol?
-    let wireframe: AdvancedExportWireframeProtocol
-    let interactor: AdvancedExportInteractorInputProtocol
+class BaseExportPresenter {
+    weak var view: ExportViewProtocol?
+    let wireframe: ExportWireframeProtocol
+    let interactor: ExportInteractorInputProtocol
 
-    private let localizationManager: LocalizationManagerProtocol
-    private let logger: LoggerProtocol
+    let localizationManager: LocalizationManagerProtocol
+    let logger: LoggerProtocol
 
-    private let metaAccount: MetaAccountModel
-    private var chain: ChainModel?
+    let metaAccount: MetaAccountModel
+    var chain: ChainModel?
 
-    private let viewModelFactory = AdvancedExportViewModelFactory()
+    let viewModelFactory: ExportViewModelFactory
 
-    init(
-        interactor: AdvancedExportInteractorInputProtocol,
-        wireframe: AdvancedExportWireframeProtocol,
+    required init(
+        interactor: ExportInteractorInputProtocol,
+        wireframe: ExportWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol,
+        viewModelFactory: ExportViewModelFactory,
         metaAccount: MetaAccountModel,
         chain: ChainModel?
     ) {
@@ -26,24 +27,46 @@ final class AdvancedExportPresenter {
         self.wireframe = wireframe
         self.localizationManager = localizationManager
         self.logger = logger
+        self.viewModelFactory = viewModelFactory
         self.metaAccount = metaAccount
         self.chain = chain
     }
-}
 
-extension AdvancedExportPresenter: AdvancedExportPresenterProtocol {
-    func setup() {
-        interactor.requestExportOptions(
+    func updateViewNavbar() {
+        fatalError("Method must be overriden by child class")
+    }
+
+    func didTapSubstrateSecretCover() {
+        interactor.requestSeedForSubstrate(
+            metaAccount: metaAccount,
+            chain: chain
+        )
+    }
+
+    func didTapEthereumSecretCover() {
+        interactor.requestKeyForEthereum(
             metaAccount: metaAccount,
             chain: chain
         )
     }
 }
 
-extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
-    func didReceive(exportData: AdvancedExportData) {
+extension BaseExportPresenter: ExportPresenterProtocol {
+    func setup() {
+        interactor.requestExportOptions(
+            metaAccount: metaAccount,
+            chain: chain
+        )
+
+        updateViewNavbar()
+    }
+}
+
+extension BaseExportPresenter: ExportInteractorOutputProtocol {
+    func didReceive(exportData: ExportData) {
         let viewModel = viewModelFactory.createViewModel(
             for: exportData,
+            chain: chain,
             selectedLocale: localizationManager.selectedLocale,
             onTapSubstrateSecret: { [weak self] in self?.didTapSubstrateSecretCover() },
             onTapEthereumSecret: { [weak self] in self?.didTapEthereumSecretCover() },
@@ -77,23 +100,5 @@ extension AdvancedExportPresenter: AdvancedExportInteractorOutputProtocol {
                 locale: localizationManager.selectedLocale
             )
         }
-    }
-}
-
-// MARK: Private
-
-private extension AdvancedExportPresenter {
-    func didTapSubstrateSecretCover() {
-        interactor.requestSeedForSubstrate(
-            metaAccount: metaAccount,
-            chain: chain
-        )
-    }
-
-    func didTapEthereumSecretCover() {
-        interactor.requestKeyForEthereum(
-            metaAccount: metaAccount,
-            chain: chain
-        )
     }
 }
