@@ -164,10 +164,8 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
 
         networkView.bind(viewModel: viewModel)
 
-        subviews.forEach { [weak self] view in
-            guard let self else { return }
-
-            addArrangedSubview(
+        subviews.forEach { view in
+            self.addArrangedSubview(
                 view,
                 spacingAfter: Constants.stackSpacing
             )

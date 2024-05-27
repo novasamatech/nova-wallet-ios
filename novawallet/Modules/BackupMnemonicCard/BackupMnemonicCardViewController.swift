@@ -57,11 +57,6 @@ extension BackupMnemonicCardViewController: BackupMnemonicCardViewProtocol {
         switch viewModel.state {
         case let .mnemonicVisible(words: words):
             self.words = words
-//            self.words = ["Item", "Item", "Item", "Item", "Item",
-//                          "Item", "Item", "Item", "Item", "Item",
-//                          "Item", "Item", "Item", "Item", "Item",
-//                          "Item", "Item", "Item", "Item", "Item",
-//                          "Item", "Item", "Item", "Item"]
             rootView.showMnemonics()
         case .mnemonicNotVisible:
             rootView.showCover()
