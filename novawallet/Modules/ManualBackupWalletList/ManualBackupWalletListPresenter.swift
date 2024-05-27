@@ -47,9 +47,16 @@ extension ManualBackupWalletListPresenter: ManualBackupWalletListPresenterProtoc
             return
         }
 
-        wireframe?.showBackupAttention(
-            from: baseView,
-            metaAccount: wallet.info
-        )
+        if wallet.info.chainAccounts.isEmpty {
+            wireframe?.showBackupAttention(
+                from: baseView,
+                metaAccount: wallet.info
+            )
+        } else {
+            wireframe?.showChainAccountsList(
+                from: baseView,
+                metaAccount: wallet.info
+            )
+        }
     }
 }

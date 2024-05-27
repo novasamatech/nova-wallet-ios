@@ -1,20 +1,20 @@
 import UIKit
 
-class AdvancedExportNetworkView {
+class ExportNetworkView {
     let title: StackTableHeaderCell = .create { view in
         view.titleLabel.apply(style: .title3Primary)
     }
 
-    let secretView: AdvancedExportRowView = .create { view in
+    let secretView: ExportRowView = .create { view in
         view.setContentSingleLabel()
         view.mainContentLabel.apply(style: .regularSubhedlinePrimary)
     }
 
-    let cryptoTypeView: AdvancedExportRowView = .create { view in
+    let cryptoTypeView: ExportRowView = .create { view in
         view.setContentStackedLabels()
     }
 
-    let derivationPathView: AdvancedExportRowView = .create { view in
+    let derivationPathView: ExportRowView = .create { view in
         view.setContentSingleLabel()
     }
 }
