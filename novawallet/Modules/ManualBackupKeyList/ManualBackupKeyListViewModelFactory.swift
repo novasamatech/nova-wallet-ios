@@ -65,11 +65,10 @@ private extension ManualBackupKeyListViewModelFactory {
 
     func createCustomChainsSection(for chains: [ChainModel]) -> ManualBackupKeyListViewLayout.Sections {
         let customChainsViewModels = chains
-            .compactMap { [weak self] chain -> ManualBackupKeyListViewLayout.CustomAccount? in
-                guard let self else { return .none }
+            .compactMap { chain -> ManualBackupKeyListViewLayout.CustomAccount? in
 
                 return ManualBackupKeyListViewLayout.CustomAccount(
-                    network: networkViewModelFactory.createViewModel(from: chain),
+                    network: self.networkViewModelFactory.createViewModel(from: chain),
                     chainId: chain.chainId
                 )
             }
