@@ -58,6 +58,7 @@ extension WalletView {
         enum TypeInfo: Hashable {
             case regular(BalanceInfo)
             case proxy(ProxyInfo)
+            case noInfo
         }
 
         struct WalletInfo: Hashable {
@@ -105,7 +106,7 @@ extension WalletView {
             switch type {
             case let .proxy(info):
                 return info
-            case .regular:
+            case .regular, .noInfo:
                 return nil
             }
         }

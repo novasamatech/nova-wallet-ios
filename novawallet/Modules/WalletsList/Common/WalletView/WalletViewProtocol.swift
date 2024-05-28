@@ -21,6 +21,8 @@ extension WalletViewProtocol {
             bind(regular: balanceViewModel)
         case let .proxy(proxyViewModel):
             bind(proxy: proxyViewModel)
+        case .noInfo:
+            break
         }
 
         self.viewModel = viewModel
