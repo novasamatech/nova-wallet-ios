@@ -91,7 +91,10 @@ enum StakingManageOption {
         }
     }
 
-    static func proxyAction(from proxyDefinition: UncertainStorage<ProxyDefinition?>, chain: ChainModel) -> StakingManageOption? {
+    static func proxyAction(
+        from proxyDefinition: UncertainStorage<ProxyDefinition?>,
+        chain: ChainModel
+    ) -> StakingManageOption? {
         guard proxyDefinition.isDefined, chain.hasProxy else {
             return nil
         }

@@ -27,13 +27,17 @@ final class WalletManageWireframe: WalletBaseManageWireframe, WalletManageWirefr
         )
     }
 
-    func showAddWallet(from view: WalletManageViewProtocol?) {
-        guard let onboarding = OnboardingMainViewFactory.createViewForAdding() else {
+    func showCreateWallet(from view: WalletManageViewProtocol?) {
+        guard let onboarding = UsernameSetupViewFactory.createViewForAdding() else {
             return
         }
 
         if let navigationController = view?.controller.navigationController {
             navigationController.pushViewController(onboarding.controller, animated: true)
         }
+    }
+
+    func showImportWallet(from _: WalletManageViewProtocol?) {
+        // TODO: Create for adding
     }
 }

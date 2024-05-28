@@ -1617,3 +1617,5 @@
 "cloud.backup.review.title" = "Применить обновление?";
 "cloud.backup.review.subtitle" = "Перед тем как применить изменения, %@ для изменённых и удалённых кошельков!";
 "cloud.backup.review.ensure.passphrase" = "убедитесь, что сохранили секретную фразу";
+"wallet.how.add" = "Как добавить кошелёк?";
+"wallet.import.existing" = "Импортировать существующий";

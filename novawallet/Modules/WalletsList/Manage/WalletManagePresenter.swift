@@ -2,6 +2,11 @@ import Foundation
 import SoraFoundation
 
 final class WalletManagePresenter: WalletsListPresenter {
+    enum AddWalletOptions: Int {
+        case addNew
+        case importExisting
+    }
+
     var view: WalletManageViewProtocol? {
         baseView as? WalletManageViewProtocol
     }
@@ -135,7 +140,54 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
     }
 
     func activateAddWallet() {
-        wireframe?.showAddWallet(from: view)
+        guard let view = view else {
+            return
+        }
+
+        let createAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.onboardingCreateWallet(preferredLanguages: locale.rLanguages)
+
+            return ActionManageViewModel(icon: R.image.iconCircleOutline(), title: title, details: nil)
+        }
+
+        let importAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.walletImportExisting(preferredLanguages: locale.rLanguages)
+
+            return ActionManageViewModel(icon: R.image.iconImportWallet(), title: title, details: nil)
+        }
+
+        let context = ModalPickerClosureContext { [weak self] index in
+            switch AddWalletOptions(rawValue: index) {
+            case .addNew:
+                self?.wireframe?.showCreateWallet(from: self?.view)
+            case .importExisting:
+                self?.wireframe?.showImportWallet(from: self?.view)
+            case .none:
+                break
+            }
+        }
+
+        wireframe?.presentActionsManage(
+            from: view,
+            actions: [createAction, importAction],
+            title: LocalizableResource(
+                closure: { locale in
+                    R.string.localizable.walletHowAdd(preferredLanguages: locale.rLanguages)
+                }
+            ),
+            delegate: self,
+            context: context
+        )
+    }
+}
+
+extension WalletManagePresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let context = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        context.process(selectedIndex: index)
     }
 }
 

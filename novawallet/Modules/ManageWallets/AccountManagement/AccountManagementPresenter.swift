@@ -148,7 +148,7 @@ final class AccountManagementPresenter {
         let createAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
             let title = R.string.localizable.accountCreateOptionTitle(preferredLanguages: locale.rLanguages)
 
-            return ActionManageViewModel(icon: R.image.iconPlusFilled(), title: title, details: nil)
+            return ActionManageViewModel(icon: R.image.iconCircleOutline(), title: title, details: nil)
         }
 
         let importAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in

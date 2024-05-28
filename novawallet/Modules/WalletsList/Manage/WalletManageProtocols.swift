@@ -21,8 +21,9 @@ protocol WalletManageInteractorOutputProtocol: WalletsListInteractorOutputProtoc
     func didRemoveAllWallets()
 }
 
-protocol WalletManageWireframeProtocol: WalletsListWireframeProtocol {
+protocol WalletManageWireframeProtocol: WalletsListWireframeProtocol, ActionsManagePresentable {
     func showWalletDetails(from view: WalletManageViewProtocol?, metaAccount: MetaAccountModel)
-    func showAddWallet(from view: WalletManageViewProtocol?)
+    func showCreateWallet(from view: WalletManageViewProtocol?)
+    func showImportWallet(from view: WalletManageViewProtocol?)
     func showOnboarding(from view: WalletManageViewProtocol?)
 }

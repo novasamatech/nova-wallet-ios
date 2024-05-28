@@ -1617,3 +1617,5 @@
 "cloud.backup.review.title" = "Apply Backup Updates?";
 "cloud.backup.review.subtitle" = "Before proceeding with changes, %@ for modified and removed wallets!";
 "cloud.backup.review.ensure.passphrase" = "ensure you've saved Passphrases";
+"wallet.how.add" = "How to add wallet?";
+"wallet.import.existing" = "Import existing";
