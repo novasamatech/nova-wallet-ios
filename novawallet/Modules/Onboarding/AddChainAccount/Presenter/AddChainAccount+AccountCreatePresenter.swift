@@ -45,7 +45,8 @@ extension AddChainAccount {
 
         override func processProceed() {
             let mnemonic = metadata?.mnemonic ?? interactor.createMetadata()?.mnemonic
-            guard let phrase = mnemonic.joined(separator: " "),
+
+            guard let phrase = mnemonic?.joined(separator: " "),
                   let request = getRequest(with: phrase) else { return }
 
             wireframe.confirm(
@@ -58,7 +59,7 @@ extension AddChainAccount {
 
         override func getAdvancedSettings() -> AdvancedWalletSettings? {
             let metadata = metadata ?? interactor.createMetadata()
-            
+
             guard let metadata = metadata else { return nil }
 
             if isEthereumBased {
