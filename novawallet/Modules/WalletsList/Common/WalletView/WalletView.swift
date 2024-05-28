@@ -130,6 +130,14 @@ extension WalletView {
         indicatorImageView.isHidden = true
     }
 
+    func bindNoInfo() {
+        subtitleLabel.text = nil
+        subtitleDetailsLabel.text = nil
+        networkImageView.isHidden = true
+        subtitleDetailsImage.isHidden = true
+        indicatorImageView.isHidden = true
+    }
+
     func bind(proxy viewModel: ViewModel.ProxyInfo) {
         viewModel.networkIcon?.loadImage(
             on: networkImageView,
