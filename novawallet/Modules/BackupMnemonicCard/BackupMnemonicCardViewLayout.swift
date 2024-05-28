@@ -25,49 +25,13 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
         view.textAlignment = .left
     }
 
-    let cardContainerView: UIView = .create { view in
-        view.isUserInteractionEnabled = true
-    }
-
-    let mnemonicCardView: MnemonicCardView = .create { view in
-        view.isUserInteractionEnabled = false
-    }
-
-    var coverMessageView: GenericPairValueView<UILabel, UILabel> = .create { view in
-        view.makeVertical()
-        view.spacing = 8
-        view.stackView.alignment = .center
-        view.fView.apply(style: .semiboldSubhedlinePrimary)
-        view.fView.textAlignment = .center
-        view.sView.apply(style: .semiboldFootnoteButtonInactive)
-        view.sView.textAlignment = .center
-        view.sView.numberOfLines = 0
-    }
-
-    lazy var coverView: UIView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleToFill
-        imageView.image = R.image.cardBlurred()
-        imageView.isUserInteractionEnabled = true
-
-        imageView.addSubview(coverMessageView)
-
-        coverMessageView.snp.makeConstraints { make in
-            make.centerX.centerY.equalTo(imageView)
-            make.leading.trailing.equalTo(imageView).inset(12)
-        }
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapCardCover))
-        imageView.addGestureRecognizer(tapGesture)
-
-        return imageView
-    }()
+    let mnemonicCardView = HiddenMnemonicCardView()
 
     override func setupLayout() {
         super.setupLayout()
 
         addArrangedSubview(titleView, spacingAfter: 16)
-        addArrangedSubview(cardContainerView)
+        addArrangedSubview(mnemonicCardView)
 
         stackView.alignment = .fill
     }
@@ -76,45 +40,14 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
         super.setupStyle()
 
         backgroundColor = R.color.colorSecondaryScreenBackground()
-
-        coverView.layer.borderWidth = 1.0
-        coverView.layer.borderColor = R.color.colorContainerBorder()?.cgColor
-        coverView.layer.cornerRadius = Constants.cardCornerRadius
-        coverView.layer.masksToBounds = true
-        coverView.clipsToBounds = true
     }
 
     func showMnemonics(model: MnemonicCardView.Model) {
-        cardContainerView.addSubview(mnemonicCardView)
-
-        mnemonicCardView.snp.makeConstraints { make in
-            make.width.height.equalToSuperview()
-        }
-        mnemonicCardView.bind(to: model)
-        addArrangedSubview(cardContainerView)
-
-        UIView.transition(
-            from: coverView,
-            to: mnemonicCardView,
-            duration: 0.5,
-            options: [.transitionFlipFromLeft, .curveEaseInOut]
-        ) { [weak self] _ in
-            self?.coverView.removeFromSuperview()
-        }
+        mnemonicCardView.showMnemonic(model: model)
     }
 
-    func showCover() {
-        mnemonicCardView.removeFromSuperview()
-        cardContainerView.removeFromSuperview()
-
-        cardContainerView.addSubview(coverView)
-
-        coverView.snp.makeConstraints { make in
-            make.height.equalTo(195)
-            make.width.height.equalToSuperview()
-        }
-
-        addArrangedSubview(cardContainerView, spacingAfter: 16)
+    func showCover(model: HiddenMnemonicCardView.CoverModel) {
+        mnemonicCardView.showCover(model: model)
     }
 
     func showNetwork(with viewModel: NetworkViewModel) {
@@ -139,10 +72,6 @@ final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
             )
         }
     }
-
-    @objc func didTapCardCover() {
-        delegate?.didTapCardCover()
-    }
 }
 
 // MARK: Model
@@ -151,12 +80,7 @@ extension BackupMnemonicCardViewLayout {
     struct Model {
         var walletViewModel: DisplayWalletViewModel
         var networkViewModel: NetworkViewModel?
-        var state: State
-    }
-
-    enum State {
-        case mnemonicVisible(model: MnemonicCardView.Model)
-        case mnemonicNotVisible
+        var mnemonicCardState: HiddenMnemonicCardView.State
     }
 }
 
@@ -172,6 +96,5 @@ private extension BackupMnemonicCardViewLayout {
             bottom: 14.0,
             right: 12.0
         )
-        static let cardCornerRadius: CGFloat = 12.0
     }
 }

@@ -51,18 +51,18 @@ extension BackupMnemonicCardViewController: BackupMnemonicCardViewProtocol {
             rootView.showNetwork(with: networkViewModel)
         }
 
-        switch viewModel.state {
+        switch viewModel.mnemonicCardState {
         case let .mnemonicVisible(model: model):
             rootView.showMnemonics(model: model)
-        case .mnemonicNotVisible:
-            rootView.showCover()
+        case let .mnemonicNotVisible(model: model):
+            rootView.showCover(model: model)
         }
     }
 }
 
-// MARK: BackupMnemonicCardViewLayoutDelegate
+// MARK: HiddenMnemonicCardViewDelegate
 
-extension BackupMnemonicCardViewController: BackupMnemonicCardViewLayoutDelegate {
+extension BackupMnemonicCardViewController: HiddenMnemonicCardViewDelegate {
     func didTapCardCover() {
         presenter.mnemonicCardTapped()
     }
@@ -72,7 +72,7 @@ extension BackupMnemonicCardViewController: BackupMnemonicCardViewLayoutDelegate
 
 private extension BackupMnemonicCardViewController {
     func setupView() {
-        rootView.delegate = self
+        rootView.mnemonicCardView.delegate = self
     }
 
     func setupNavigationBarTitle(with viewModel: ViewModel) {
@@ -92,12 +92,6 @@ private extension BackupMnemonicCardViewController {
     }
 
     func setupLocalization() {
-        rootView.coverMessageView.fView.text = R.string.localizable.mnemonicCardCoverMessageTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.coverMessageView.sView.text = R.string.localizable.mnemonicCardCoverMessageMessage(
-            preferredLanguages: selectedLocale.rLanguages
-        )
         rootView.titleView.text = R.string.localizable.commonPassphrase(
             preferredLanguages: selectedLocale.rLanguages
         )

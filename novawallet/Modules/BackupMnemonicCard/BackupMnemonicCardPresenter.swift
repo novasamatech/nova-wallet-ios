@@ -95,7 +95,7 @@ private extension BackupMnemonicCardPresenter {
                         .none
                     }
                 }(),
-                state: {
+                mnemonicCardState: {
                     if let mnemonic {
                         .mnemonicVisible(
                             model: .init(
@@ -104,7 +104,16 @@ private extension BackupMnemonicCardPresenter {
                             )
                         )
                     } else {
-                        .mnemonicNotVisible
+                        .mnemonicNotVisible(
+                            model: .init(
+                                title: R.string.localizable.mnemonicCardCoverMessageTitle(
+                                    preferredLanguages: selectedLocale.rLanguages
+                                ),
+                                message: R.string.localizable.mnemonicCardCoverMessageMessage(
+                                    preferredLanguages: selectedLocale.rLanguages
+                                )
+                            )
+                        )
                     }
                 }()
             )
