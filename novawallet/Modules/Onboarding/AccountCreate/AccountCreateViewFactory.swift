@@ -1,5 +1,6 @@
 import Foundation
 import IrohaCrypto
+import SoraUI
 import SoraFoundation
 import SoraKeystore
 
@@ -9,13 +10,25 @@ final class AccountCreateViewFactory {
         wireframe: AccountCreateWireframeProtocol
     ) -> AccountCreateViewProtocol? {
         let localizationManager = LocalizationManager.shared
+        let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
 
         let presenter = AccountCreatePresenter(
             walletName: name,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            checkboxListViewModelFactory: checkboxListViewModelFactory
         )
 
-        let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
+        let appearanceAnimator = FadeAnimator(
+            from: 0.0,
+            to: 1.0,
+            options: .curveLinear
+        )
+
+        let view = AccountCreateViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            appearanceAnimator: appearanceAnimator
+        )
 
         let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
 
@@ -34,15 +47,27 @@ final class AccountCreateViewFactory {
         wireframe: AccountCreateWireframeProtocol
     ) -> AccountCreateViewProtocol? {
         let localizationManager = LocalizationManager.shared
+        let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
 
         let presenter = AddChainAccount.AccountCreatePresenter(
             metaAccountModel: metaAccountModel,
             chainModelId: chainModelId,
             isEthereumBased: isEthereumBased,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            checkboxListViewModelFactory: checkboxListViewModelFactory
         )
 
-        let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
+        let appearanceAnimator = FadeAnimator(
+            from: 0.0,
+            to: 1.0,
+            options: .curveLinear
+        )
+
+        let view = AccountCreateViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            appearanceAnimator: appearanceAnimator
+        )
 
         let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
 

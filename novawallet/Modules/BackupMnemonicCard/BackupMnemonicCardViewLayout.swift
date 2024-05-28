@@ -2,13 +2,7 @@ import UIKit
 import SoraUI
 import SnapKit
 
-protocol BackupMnemonicCardViewLayoutDelegate: AnyObject {
-    func didTapCardCover()
-}
-
 final class BackupMnemonicCardViewLayout: ScrollableContainerLayoutView {
-    weak var delegate: BackupMnemonicCardViewLayoutDelegate?
-
     lazy var networkView = AssetListChainView()
     lazy var networkContainerView: UIView = .create { [weak self] view in
         guard let self else { return }

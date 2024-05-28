@@ -9,7 +9,6 @@ struct BackupAttentionViewFactory {
         chain: ChainModel?
     ) -> BackupAttentionViewProtocol? {
         let keystore = Keychain()
-
         let wireframe = BackupAttentionWireframe(
             metaAccount: metaAccount,
             chain: chain
@@ -21,9 +20,12 @@ struct BackupAttentionViewFactory {
             chain: chain
         )
 
+        let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: LocalizationManager.shared)
+
         let presenter = BackupAttentionPresenter(
             wireframe: wireframe,
             interactor: interactor,
+            checkboxListViewModelFactory: checkboxListViewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 

@@ -763,6 +763,8 @@
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
+		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
+		2D6AED5F2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */; };
 		2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */; };
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
@@ -5530,6 +5532,8 @@
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
+		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
+		2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPresenter.swift; sourceTree = "<group>"; };
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
@@ -11247,6 +11251,15 @@
 				2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */,
 			);
 			path = MnemonicCard;
+			sourceTree = "<group>";
+		};
+		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
+			isa = PBXGroup;
+			children = (
+				2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */,
+				2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */,
+			);
+			path = CheckboxListPresenter;
 			sourceTree = "<group>";
 		};
 		2D8684562BFF861500A663D2 /* Factory */ = {
@@ -21204,6 +21217,7 @@
 		D477B7DE4061DD489AA44B0F /* BackupAttention */ = {
 			isa = PBXGroup;
 			children = (
+				2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */,
 				2DC075E12BF249F000868563 /* View */,
 				D67A4A418E0DEB44B713C7B8 /* BackupAttentionProtocols.swift */,
 				95C9CEA5DD3DE9EDEB77BDCF /* BackupAttentionWireframe.swift */,
@@ -23147,6 +23161,7 @@
 				AEA2C1C02681E9EC0069492E /* ValidatorSearchViewLayout.swift in Sources */,
 				881BA30B29DC3DD400EB8C48 /* Data+baseEncoded.swift in Sources */,
 				0CAC01552A52E0CC0069413E /* AssetListModelHelpers.swift in Sources */,
+				2D6AED5F2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift in Sources */,
 				0C29B5382A4C68A500E35C6D /* AnimationUpdatibleView.swift in Sources */,
 				2D039DE62BFC8D4000A928E5 /* GenericBackgroundView.swift in Sources */,
 				84002AA32992508600A80672 /* GovernanceDelegateInteractorError.swift in Sources */,
@@ -25923,6 +25938,7 @@
 				77AAE2282AFC1167006872CC /* ChainModel+historyId.swift in Sources */,
 				D9ECCCCF1449EFAFD0FA886E /* ParaStkStakeSetupViewLayout.swift in Sources */,
 				84981EEC29D4385F00948306 /* TransactionHistoryHybridFetcher.swift in Sources */,
+				2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */,
 				A714CEAF7A86292E8D679056 /* ParaStkStakeSetupViewFactory.swift in Sources */,
 				84350AD62845836C0031EF24 /* IdentityPresentable.swift in Sources */,
 				8A19EC93E6A6972327116D80 /* ParaStkStakeConfirmProtocols.swift in Sources */,

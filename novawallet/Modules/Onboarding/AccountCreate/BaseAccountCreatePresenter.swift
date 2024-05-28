@@ -1,12 +1,16 @@
 import Foundation
 import SoraFoundation
 
-class BaseAccountCreatePresenter {
+class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
     weak var view: AccountCreateViewProtocol?
     var wireframe: AccountCreateWireframeProtocol!
     var interactor: AccountCreateInteractorInputProtocol!
+    var checkboxListViewModelFactory: CheckboxListViewModelFactory
 
-    private let localizationManager: LocalizationManagerProtocol
+    var checkboxView: CheckboxListViewProtocol? { view }
+    var checkboxViewModels: [CheckBoxIconDetailsView.Model] = []
+
+    let localizationManager: LocalizationManagerProtocol
 
     private(set) var metadata: MetaAccountCreationMetadata?
 
@@ -16,7 +20,11 @@ class BaseAccountCreatePresenter {
     internal let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
     private(set) var ethereumDerivationPath: String = DerivationPathConstants.defaultEthereum
 
-    init(localizationManager: LocalizationManagerProtocol) {
+    init(
+        localizationManager: LocalizationManagerProtocol,
+        checkboxListViewModelFactory: CheckboxListViewModelFactory
+    ) {
+        self.checkboxListViewModelFactory = checkboxListViewModelFactory
         self.localizationManager = localizationManager
     }
 
@@ -76,6 +84,49 @@ class BaseAccountCreatePresenter {
         )
     }
 
+    private func updateMnemonicView() {
+        let mnemonicCardViewModel: HiddenMnemonicCardView.State = {
+            if let metadata {
+                .mnemonicVisible(
+                    model: .init(
+                        words: metadata.mnemonic,
+                        title: createCardTitle()
+                    )
+                )
+            } else {
+                .mnemonicNotVisible(
+                    model: .init(
+                        title: R.string.localizable.mnemonicCardCoverMessageTitle(
+                            preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ),
+                        message: R.string.localizable.mnemonicCardCoverMessageMessage(
+                            preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        )
+                    )
+                )
+            }
+        }()
+
+        view?.update(with: mnemonicCardViewModel)
+    }
+
+    private func createCardTitle() -> NSAttributedString {
+        NSAttributedString.coloredItems(
+            [
+                R.string.localizable.mnemonicCardRevealedHeaderMessageHighlighted(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                )
+            ],
+            formattingClosure: { items in
+                R.string.localizable.mnemonicCardRevealedHeaderMessage(
+                    items[0],
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                )
+            },
+            color: R.color.colorTextPrimary()!
+        )
+    }
+
     // MARK: - Processing
 
     internal func getAdvancedSettings() -> AdvancedWalletSettings? {
@@ -91,7 +142,13 @@ class BaseAccountCreatePresenter {
 
 extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
     func setup() {
-        interactor.setup()
+        checkboxViewModels = checkboxListViewModelFactory.makeWarningsInitialViewModel(
+            showingIcons: false,
+            checkBoxTapped
+        )
+
+        updateCheckBoxListView()
+        updateMnemonicView()
     }
 
     func prepareToDisplayMnemonic() {
@@ -117,7 +174,11 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
         )
     }
 
-    func proceed() {
+    func provideMnemonic() {
+        interactor.provideMetadata()
+    }
+
+    func continueTapped() {
         processProceed()
     }
 }
@@ -128,7 +189,7 @@ extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
     func didReceive(metadata: MetaAccountCreationMetadata) {
         self.metadata = metadata
         selectedSubstrateCryptoType = metadata.defaultCryptoType
-        view?.set(mnemonic: metadata.mnemonic)
+        updateMnemonicView()
     }
 
     func didReceiveMnemonicGeneration(error: Error) {
