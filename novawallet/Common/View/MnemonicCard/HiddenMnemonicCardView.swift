@@ -124,6 +124,6 @@ private extension HiddenMnemonicCardView {
         static let cardCornerRadius: CGFloat = 12.0
         static let coverMessageLabelsSpacing: CGFloat = 8
         static let coverMessageLabelsEdgeInsets: CGFloat = 12
-        static let coverViewHeight: CGFloat = 195
+        static let coverViewHeight: CGFloat = 198
     }
 }
