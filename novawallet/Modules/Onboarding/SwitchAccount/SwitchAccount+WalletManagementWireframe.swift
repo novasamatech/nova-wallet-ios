@@ -15,7 +15,7 @@ extension SwitchAccount {
             )
         }
 
-        func showCreateWallet(from view: WalletManageViewProtocol?) {
+        func showCreateWalletWithManualBackup(from view: WalletManageViewProtocol?) {
             guard let onboarding = UsernameSetupViewFactory.createViewForSwitch() else {
                 return
             }
@@ -23,6 +23,10 @@ extension SwitchAccount {
             if let navigationController = view?.controller.navigationController {
                 navigationController.pushViewController(onboarding.controller, animated: true)
             }
+        }
+
+        func showCreateWalletWithCloudBackup(from _: WalletManageViewProtocol?) {
+            // TODO: add for switch
         }
 
         func showImportWallet(from _: WalletManageViewProtocol?) {

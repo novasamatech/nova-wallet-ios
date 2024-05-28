@@ -2,6 +2,7 @@ import SoraFoundation
 
 protocol UsernameSetupViewProtocol: ControllerBackedProtocol {
     func setInput(viewModel: InputViewModelProtocol)
+    func setBadge(viewModel: TitleIconViewModel)
 }
 
 protocol UsernameSetupPresenterProtocol: AnyObject {

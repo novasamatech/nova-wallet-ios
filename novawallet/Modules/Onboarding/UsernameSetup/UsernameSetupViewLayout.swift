@@ -22,11 +22,9 @@ final class UsernameSetupViewLayout: UIView {
         nameView.walletNameInputView
     }
 
-    let proceedButton: TriangularedButton = {
-        let button = TriangularedButton()
+    let proceedButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
-        return button
-    }()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)

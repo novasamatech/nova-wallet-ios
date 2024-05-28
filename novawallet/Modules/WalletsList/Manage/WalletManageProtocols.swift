@@ -23,7 +23,8 @@ protocol WalletManageInteractorOutputProtocol: WalletsListInteractorOutputProtoc
 
 protocol WalletManageWireframeProtocol: WalletsListWireframeProtocol, ActionsManagePresentable {
     func showWalletDetails(from view: WalletManageViewProtocol?, metaAccount: MetaAccountModel)
-    func showCreateWallet(from view: WalletManageViewProtocol?)
+    func showCreateWalletWithManualBackup(from view: WalletManageViewProtocol?)
+    func showCreateWalletWithCloudBackup(from view: WalletManageViewProtocol?)
     func showImportWallet(from view: WalletManageViewProtocol?)
     func showOnboarding(from view: WalletManageViewProtocol?)
 }

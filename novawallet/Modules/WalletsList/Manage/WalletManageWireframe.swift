@@ -27,8 +27,18 @@ final class WalletManageWireframe: WalletBaseManageWireframe, WalletManageWirefr
         )
     }
 
-    func showCreateWallet(from view: WalletManageViewProtocol?) {
+    func showCreateWalletWithManualBackup(from view: WalletManageViewProtocol?) {
         guard let onboarding = UsernameSetupViewFactory.createViewForAdding() else {
+            return
+        }
+
+        if let navigationController = view?.controller.navigationController {
+            navigationController.pushViewController(onboarding.controller, animated: true)
+        }
+    }
+
+    func showCreateWalletWithCloudBackup(from view: WalletManageViewProtocol?) {
+        guard let onboarding = CloudBackupAddWalletViewFactory.createView() else {
             return
         }
 

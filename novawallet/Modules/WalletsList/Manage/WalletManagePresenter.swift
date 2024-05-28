@@ -76,6 +76,12 @@ final class WalletManagePresenter: WalletsListPresenter {
             interactor?.remove(item: item)
         }
     }
+
+    private func showAddWallet() {
+        // TODO: differentiate between manual and cloud backup
+
+        wireframe?.showCreateWalletWithCloudBackup(from: view)
+    }
 }
 
 extension WalletManagePresenter: WalletManagePresenterProtocol {
@@ -159,7 +165,7 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
         let context = ModalPickerClosureContext { [weak self] index in
             switch AddWalletOptions(rawValue: index) {
             case .addNew:
-                self?.wireframe?.showCreateWallet(from: self?.view)
+                self?.showAddWallet()
             case .importExisting:
                 self?.wireframe?.showImportWallet(from: self?.view)
             case .none:

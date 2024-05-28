@@ -108,6 +108,10 @@ extension UserNameSetupViewController: UsernameSetupViewProtocol {
 
         updateActionButton()
     }
+
+    func setBadge(viewModel: TitleIconViewModel) {
+        rootView.nameView.setBadge(viewModel: viewModel)
+    }
 }
 
 // MARK: - Localizable
