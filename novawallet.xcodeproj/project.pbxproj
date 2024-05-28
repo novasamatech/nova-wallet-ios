@@ -11236,14 +11236,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		2D221CBC2BF753480053E36C /* View */ = {
-			isa = PBXGroup;
-			children = (
-				2D5493322C04C0C000607BF7 /* MnemonicCard */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
 			isa = PBXGroup;
 			children = (
@@ -11494,7 +11486,6 @@
 		4174E009EAC3176DD4DEB970 /* BackupMnemonicCard */ = {
 			isa = PBXGroup;
 			children = (
-				2D221CBC2BF753480053E36C /* View */,
 				D3CA17CF05C4F6C396AEA9D3 /* BackupMnemonicCardProtocols.swift */,
 				3AC95296F1B2515142FEA822 /* BackupMnemonicCardWireframe.swift */,
 				B1F474E77B611C5DFD8BC42E /* BackupMnemonicCardPresenter.swift */,
@@ -16386,6 +16377,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2D5493322C04C0C000607BF7 /* MnemonicCard */,
 				0CC0F7F52BB070C6002C49F6 /* LoadableAction */,
 				0C9951CD2AE2BAA700B65615 /* PromotionBannerView */,
 				0C79C8932A7BDED700B171E3 /* TitleHorizontalMultivalueView */,
