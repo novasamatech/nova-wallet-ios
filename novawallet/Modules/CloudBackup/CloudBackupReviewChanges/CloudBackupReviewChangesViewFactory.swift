@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraUI
 
 struct CloudBackupReviewChangesViewFactory {
     static func createView(
@@ -8,17 +9,30 @@ struct CloudBackupReviewChangesViewFactory {
     ) -> CloudBackupReviewChangesViewProtocol? {
         let wireframe = CloudBackupReviewChangesWireframe()
 
+        let viewModelFactory = CloudBackupReviewViewModelFactory()
         let presenter = CloudBackupReviewChangesPresenter(
             wireframe: wireframe,
             changes: changes,
             delegate: delegate,
-            viewModelFactory: CloudBackupReviewViewModelFactory(),
+            viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 
         let view = CloudBackupReviewChangesViewController(presenter: presenter)
 
         presenter.view = view
+
+        let uiStatistics = viewModelFactory.estimateElementsCount(for: changes)
+
+        let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
+        let estimatedHeight = CloudBackupReviewChangesViewController.estimateHeight(
+            for: uiStatistics.sections,
+            items: uiStatistics.items
+        )
+
+        let preferredContentSize = min(estimatedHeight, maxHeight)
+
+        view.preferredContentSize = .init(width: 0, height: preferredContentSize)
 
         return view
     }

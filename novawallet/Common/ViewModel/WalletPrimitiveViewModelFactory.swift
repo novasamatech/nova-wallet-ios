@@ -4,10 +4,20 @@ import SubstrateSdk
 protocol WalletPrimitiveViewModelProtocol {
     func createHeader(from walletType: MetaAccountModelType, locale: Locale) -> TitleIconViewModel?
     func createWalletInfo(from wallet: MetaAccountModel) -> WalletView.ViewModel.WalletInfo
+    func hasHeader(for walletType: MetaAccountModelType) -> Bool
 }
 
 final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
     private lazy var iconGenerator = NovaIconGenerator()
+
+    func hasHeader(for walletType: MetaAccountModelType) -> Bool {
+        switch walletType {
+        case .secrets:
+            return false
+        case .watchOnly, .polkadotVault, .paritySigner, .ledger, .polkadotVault, .proxied:
+            return true
+        }
+    }
 
     func createHeader(from walletType: MetaAccountModelType, locale: Locale) -> TitleIconViewModel? {
         switch walletType {

@@ -29,12 +29,15 @@ final class CloudBackupReviewChangesCell: CollectionViewContainerCell<
         case .new:
             statusView.imageView.image = nil
             statusView.detailsLabel.text = R.string.localizable.commonNew(preferredLanguages: locale.rLanguages)
+            statusView.detailsLabel.textColor = R.color.colorTextSecondary()
         case .modified:
             statusView.imageView.image = R.image.iconWarning()
             statusView.detailsLabel.text = R.string.localizable.commonModified(preferredLanguages: locale.rLanguages)
+            statusView.detailsLabel.textColor = R.color.colorTextWarning()
         case .removed:
             statusView.imageView.image = R.image.iconErrorFilled()
             statusView.detailsLabel.text = R.string.localizable.commonRemoved(preferredLanguages: locale.rLanguages)
+            statusView.detailsLabel.textColor = R.color.colorTextNegative()
         }
     }
 

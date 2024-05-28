@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {
@@ -89,6 +90,27 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             animated: true,
             completion: completion
         )
+    }
+
+    func presentCloudBackupReview(
+        from view: MainTabBarViewProtocol?,
+        changes: CloudBackupSyncResult.Changes,
+        delegate: CloudBackupReviewChangesDelegate
+    ) {
+        guard
+            let reviewChangesView = CloudBackupReviewChangesViewFactory.createView(
+                for: changes,
+                delegate: delegate
+            ) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+
+        reviewChangesView.controller.modalTransitioningFactory = factory
+        reviewChangesView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(reviewChangesView.controller, animated: true)
     }
 
     private func openGovernanceScreen(

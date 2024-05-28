@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class CloudBackupReviewChangesViewController: UIViewController, ViewHolder {
     typealias RootViewType = CloudBackupReviewChangesViewLayout
@@ -28,9 +29,25 @@ final class CloudBackupReviewChangesViewController: UIViewController, ViewHolder
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupCollectionView()
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.applyButton.addTarget(
+            self,
+            action: #selector(actionApply),
+            for: .touchUpInside
+        )
+
+        rootView.notNowButton.addTarget(
+            self,
+            action: #selector(actionNotNow),
+            for: .touchUpInside
+        )
     }
 
     private func setupCollectionView() {
@@ -108,6 +125,14 @@ final class CloudBackupReviewChangesViewController: UIViewController, ViewHolder
             color: R.color.colorTextPrimary()!
         )
     }
+
+    @objc func actionNotNow() {
+        presenter.activateNotNow()
+    }
+
+    @objc func actionApply() {
+        presenter.activateApply()
+    }
 }
 
 extension CloudBackupReviewChangesViewController: CloudBackupReviewChangesViewProtocol {
@@ -126,4 +151,18 @@ extension CloudBackupReviewChangesViewController: Localizable {
             setupLocalization()
         }
     }
+}
+
+extension CloudBackupReviewChangesViewController {
+    static func estimateHeight(for sections: Int, items: Int) -> CGFloat {
+        CloudBackupReviewChangesViewLayout.estimateHeight(for: sections, items: items)
+    }
+}
+
+extension CloudBackupReviewChangesViewController: ModalPresenterDelegate {
+    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool {
+        false
+    }
+
+    func presenterDidHide(_: ModalPresenterProtocol) {}
 }

@@ -1,10 +1,17 @@
 import Foundation
 
+struct CloudBackupReviewViewModelCounters {
+    let sections: Int
+    let items: Int
+}
+
 protocol CloudBackupReviewViewModelFactoryProtocol {
     func createViewModels(
         from changes: CloudBackupSyncResult.Changes,
         locale: Locale
     ) -> [CloudBackupReviewSectionViewModel]
+
+    func estimateElementsCount(for changes: CloudBackupSyncResult.Changes) -> CloudBackupReviewViewModelCounters
 }
 
 final class CloudBackupReviewViewModelFactory {
@@ -69,5 +76,31 @@ extension CloudBackupReviewViewModelFactory: CloudBackupReviewViewModelFactoryPr
 
             return CloudBackupReviewSectionViewModel(header: header, cells: items)
         }
+    }
+
+    func estimateElementsCount(
+        for changes: CloudBackupSyncResult.Changes
+    ) -> CloudBackupReviewViewModelCounters {
+        guard case let .updateLocal(updateLocal) = changes else {
+            return CloudBackupReviewViewModelCounters(sections: 0, items: 0)
+        }
+
+        let statistics = updateLocal.changes.reduce(into: [MetaAccountModelType: Int]()) { accum, change in
+            let wallet = getWallet(from: change)
+
+            accum[wallet.type] = (accum[wallet.type] ?? 0) + 1
+        }
+
+        let sectionsCount = statistics.keys.reduce(0) { accum, walletType in
+            if primitiveFactory.hasHeader(for: walletType) {
+                return accum + 1
+            } else {
+                return accum
+            }
+        }
+
+        let itemsCount = statistics.values.reduce(0) { $0 + $1 }
+
+        return CloudBackupReviewViewModelCounters(sections: sectionsCount, items: itemsCount)
     }
 }
