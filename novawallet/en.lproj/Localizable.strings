@@ -1621,3 +1621,4 @@
 "wallet.import.existing" = "Import existing";
 "cloud.backup.auto.sync.title" = "Wallet changes will be updated in the Cloud Backup";
 "cloud.backup.auto.sync.description" = "New wallets are automatically added to the Cloud Backup. You can disable Cloud Backup in Settings.";
+"common.account.has.changed" = "The account has been changed successfully";

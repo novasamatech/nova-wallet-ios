@@ -43,6 +43,7 @@ struct CloudBackupAddWalletViewFactory {
         let walletOperationFactory = MetaAccountOperationFactory(keystore: keystore)
 
         return CloudBackupAddWalletInteractor(
+            walletRequestFactory: WalletCreationRequestFactory(),
             walletOperationFactory: walletOperationFactory,
             walletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,

@@ -601,7 +601,10 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
     func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain _: ChainModel) {
         switch result {
         case .success:
-            logger?.debug("Change account added")
+            wireframe.presentSuccessNotification(
+                R.string.localizable.commonAccountHasChanged(preferredLanguages: selectedLocale.rLanguages),
+                from: view
+            )
         case let .failure(error):
             if !wireframe.present(error: error, from: view, locale: selectedLocale) {
                 logger?.error("Did receive export error \(error)")

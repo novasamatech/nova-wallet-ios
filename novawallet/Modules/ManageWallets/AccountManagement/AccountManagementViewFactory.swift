@@ -39,6 +39,7 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
 
         let interactor = AccountManagementInteractor(
             cloudBackupSyncFacade: CloudBackupSyncMediatorFacade.sharedMediator.syncFacade,
+            walletCreationRequestFactory: WalletCreationRequestFactory(),
             walletRepository: AnyDataProviderRepository(walletRepository),
             accountOperationFactory: MetaAccountOperationFactory(keystore: keystore),
             chainRepository: chainRepository,

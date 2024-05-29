@@ -5,19 +5,19 @@ import RobinHood
 final class AccountCreateInteractor {
     weak var presenter: AccountCreateInteractorOutputProtocol!
 
-    let mnemonicCreator: IRMnemonicCreatorProtocol
+    let walletRequestFactory: WalletCreationRequestFactoryProtocol
 
     init(
-        mnemonicCreator: IRMnemonicCreatorProtocol
+        walletRequestFactory: WalletCreationRequestFactoryProtocol
     ) {
-        self.mnemonicCreator = mnemonicCreator
+        self.walletRequestFactory = walletRequestFactory
     }
 }
 
 extension AccountCreateInteractor: AccountCreateInteractorInputProtocol {
     func setup() {
         do {
-            let mnemonic = try mnemonicCreator.randomMnemonic(.entropy128)
+            let mnemonic = try walletRequestFactory.generateMnemonic()
 
             let metadata = MetaAccountCreationMetadata(
                 mnemonic: mnemonic.allWords(),

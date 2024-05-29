@@ -5,6 +5,7 @@ import IrohaCrypto
 final class CloudBackupAddWalletInteractor {
     weak var presenter: CloudBackupAddWalletInteractorOutputProtocol?
 
+    let walletRequestFactory: WalletCreationRequestFactoryProtocol
     let walletOperationFactory: MetaAccountOperationFactoryProtocol
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
@@ -13,11 +14,13 @@ final class CloudBackupAddWalletInteractor {
     let cancellableStore = CancellableCallStore()
 
     init(
+        walletRequestFactory: WalletCreationRequestFactoryProtocol,
         walletOperationFactory: MetaAccountOperationFactoryProtocol,
         walletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue
     ) {
+        self.walletRequestFactory = walletRequestFactory
         self.walletOperationFactory = walletOperationFactory
         self.walletSettings = walletSettings
         self.eventCenter = eventCenter
@@ -32,17 +35,11 @@ extension CloudBackupAddWalletInteractor: CloudBackupAddWalletInteractorInputPro
         }
 
         do {
-            let mnemonic = try IRMnemonicCreator().randomMnemonic(.entropy128)
-            let request = MetaAccountCreationRequest(
-                username: name,
-                derivationPath: "",
-                ethereumDerivationPath: "",
-                cryptoType: .sr25519
-            )
+            let request = try walletRequestFactory.createNewWalletRequest(for: name)
 
             let walletOperation = walletOperationFactory.newSecretsMetaAccountOperation(
-                request: request,
-                mnemonic: mnemonic
+                request: request.walletRequest,
+                mnemonic: request.mnemonic
             )
 
             let saveOperation = ClosureOperation {

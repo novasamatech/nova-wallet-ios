@@ -592,6 +592,8 @@
 		0CE933DE2C073344000F3EFE /* SwitchAccount+ImportOptionsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933DD2C073344000F3EFE /* SwitchAccount+ImportOptionsWireframe.swift */; };
 		0CE933E02C076669000F3EFE /* CloudBackupRemindPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933DF2C076669000F3EFE /* CloudBackupRemindPresentable.swift */; };
 		0CE933E22C07671A000F3EFE /* CloudBackupRemindPresentationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933E12C07671A000F3EFE /* CloudBackupRemindPresentationResult.swift */; };
+		0CE933E42C07C225000F3EFE /* WalletCreationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933E32C07C225000F3EFE /* WalletCreationRequestFactory.swift */; };
+		0CE933E62C07DBE1000F3EFE /* WalletNameChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED32AF1689D0048FD84 /* AssetConversionAggregationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED22AF1689D0048FD84 /* AssetConversionAggregationFactory.swift */; };
@@ -5378,6 +5380,8 @@
 		0CE933DD2C073344000F3EFE /* SwitchAccount+ImportOptionsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwitchAccount+ImportOptionsWireframe.swift"; sourceTree = "<group>"; };
 		0CE933DF2C076669000F3EFE /* CloudBackupRemindPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupRemindPresentable.swift; sourceTree = "<group>"; };
 		0CE933E12C07671A000F3EFE /* CloudBackupRemindPresentationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupRemindPresentationResult.swift; sourceTree = "<group>"; };
+		0CE933E32C07C225000F3EFE /* WalletCreationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCreationRequestFactory.swift; sourceTree = "<group>"; };
+		0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameChanged.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ECF2AF148500048FD84 /* SubstrateDataModel20.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel20.xcdatamodel; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
@@ -14059,6 +14063,7 @@
 				84BEE058255F4D5700D05EB3 /* AccountImportPreferredInfo.swift */,
 				84BEE0EF2562897100D05EB3 /* AccountImportJsonFactory.swift */,
 				F4AE12A0268DD69B0097D1C7 /* MnemonicTextNormalizer.swift */,
+				0CE933E32C07C225000F3EFE /* WalletCreationRequestFactory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -19092,6 +19097,7 @@
 				0C2F868A2A725C3C00593C01 /* EraNominationPoolsChanged.swift */,
 				7746854E2B3BDD4F002E0A0F /* AccountsChanged.swift */,
 				0C7802962BA8015C00254EED /* AccountsRemovedManually.swift */,
+				0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */,
 			);
 			path = Events;
 			sourceTree = "<group>";
@@ -24927,6 +24933,7 @@
 				84E0EE04292D336C008B2953 /* GovernanceType.swift in Sources */,
 				849B036D2A15E90A009624D9 /* CoingeckoPriceHistorySource.swift in Sources */,
 				8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */,
+				0CE933E42C07C225000F3EFE /* WalletCreationRequestFactory.swift in Sources */,
 				F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */,
 				8466781327EC5446007935D3 /* MultilineBalanceView.swift in Sources */,
 				845B822926F0BB6700D25C72 /* CrowdloanChainSettings.swift in Sources */,
@@ -26768,6 +26775,7 @@
 				F92E73C24AB577F37B35649E /* WalletConnectSessionDetailsInteractor.swift in Sources */,
 				E06F3BD43E589BCE3904BBCB /* WalletConnectSessionDetailsViewController.swift in Sources */,
 				FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */,
+				0CE933E62C07DBE1000F3EFE /* WalletNameChanged.swift in Sources */,
 				54983C354F7EDCD8014C8371 /* WalletConnectSessionDetailsViewFactory.swift in Sources */,
 				B42652A7AB4244F19473C7C5 /* DAppWalletAuthProtocols.swift in Sources */,
 				75B99AA8D71430BACFAEF755 /* DAppWalletAuthWireframe.swift in Sources */,

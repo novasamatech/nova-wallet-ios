@@ -7,6 +7,7 @@ final class CloudBackupCreateInteractor {
     weak var presenter: CloudBackupCreateInteractorOutputProtocol?
 
     let walletName: String
+    let walletRequestFactory: WalletCreationRequestFactoryProtocol
     let cloudBackupFacade: CloudBackupServiceFacadeProtocol
     let syncMetadataManager: CloudBackupSyncMetadataManaging
     let walletSettings: SelectedWalletSettings
@@ -18,6 +19,7 @@ final class CloudBackupCreateInteractor {
     init(
         walletName: String,
         cloudBackupFacade: CloudBackupServiceFacadeProtocol,
+        walletRequestFactory: WalletCreationRequestFactoryProtocol,
         walletSettings: SelectedWalletSettings,
         persistentKeystore: KeystoreProtocol,
         syncMetadataManager: CloudBackupSyncMetadataManaging,
@@ -26,6 +28,7 @@ final class CloudBackupCreateInteractor {
         self.walletName = walletName
         self.cloudBackupFacade = cloudBackupFacade
         self.walletSettings = walletSettings
+        self.walletRequestFactory = walletRequestFactory
         self.persistentKeystore = persistentKeystore
         self.syncMetadataManager = syncMetadataManager
         self.operationQueue = operationQueue
@@ -112,17 +115,11 @@ extension CloudBackupCreateInteractor: CloudBackupCreateInteractorInputProtocol 
         do {
             let proxyKeystore = KeychainProxy()
 
-            let mnemonic = try IRMnemonicCreator().randomMnemonic(.entropy128)
-            let request = MetaAccountCreationRequest(
-                username: walletName,
-                derivationPath: "",
-                ethereumDerivationPath: "",
-                cryptoType: .sr25519
-            )
+            let request = try walletRequestFactory.createNewWalletRequest(for: walletName)
 
             let operation = MetaAccountOperationFactory(keystore: proxyKeystore).newSecretsMetaAccountOperation(
-                request: request,
-                mnemonic: mnemonic
+                request: request.walletRequest,
+                mnemonic: request.mnemonic
             )
 
             execute(

@@ -11,6 +11,7 @@ final class AccountManagementInteractor {
     weak var presenter: AccountManagementInteractorOutputProtocol?
 
     let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
+    let walletCreationRequestFactory: WalletCreationRequestFactoryProtocol
     let walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let accountOperationFactory: MetaAccountOperationFactoryProtocol
     let chainRepository: AnyDataProviderRepository<ChainModel>
@@ -29,6 +30,7 @@ final class AccountManagementInteractor {
 
     init(
         cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol,
+        walletCreationRequestFactory: WalletCreationRequestFactoryProtocol,
         walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         accountOperationFactory: MetaAccountOperationFactoryProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
@@ -40,6 +42,7 @@ final class AccountManagementInteractor {
         saveInterval: TimeInterval = 2.0
     ) {
         self.cloudBackupSyncFacade = cloudBackupSyncFacade
+        self.walletCreationRequestFactory = walletCreationRequestFactory
         self.walletRepository = walletRepository
         self.accountOperationFactory = accountOperationFactory
         self.chainRepository = chainRepository
@@ -150,6 +153,8 @@ final class AccountManagementInteractor {
                selectedWallet.identifier == walletId {
                 settings.setup()
                 eventCenter.notify(with: SelectedUsernameChanged())
+            } else {
+                eventCenter.notify(with: WalletNameChanged())
             }
 
             presenter?.didSaveWalletName(.success(newName))
@@ -157,6 +162,20 @@ final class AccountManagementInteractor {
         case let .failure(error):
             presenter?.didSaveWalletName(.failure(error))
         }
+    }
+
+    private func handleAccountCreation(for walletId: MetaAccountModel.Id, chain: ChainModel) {
+        if let selectedWallet = settings.value, selectedWallet.identifier == walletId {
+            settings.setup()
+
+            eventCenter.notify(with: SelectedAccountChanged())
+        }
+
+        eventCenter.notify(with: ChainAccountChanged(method: .manually))
+
+        fetchWalletAndChains(with: walletId)
+
+        presenter?.didReceiveAccountCreationResult(.success(()), chain: chain)
     }
 
     // MARK: - Actions
@@ -290,26 +309,9 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
         }
 
         do {
-            let mnemonic = try IRMnemonicCreator().randomMnemonic(.entropy128)
+            let request = try walletCreationRequestFactory.createAccountRequest(for: chain)
 
-            let request = if chain.isEthereumBased {
-                ChainAccountImportMnemonicRequest(
-                    mnemonic: mnemonic.toString(),
-                    derivationPath: "",
-                    cryptoType: .sr25519
-                )
-            } else {
-                ChainAccountImportMnemonicRequest(
-                    mnemonic: mnemonic.toString(),
-                    derivationPath: DerivationPathConstants.defaultEthereum,
-                    cryptoType: .ethereumEcdsa
-                )
-            }
-
-            let walletFetchOperation = walletRepository.fetchOperation(
-                by: walletId,
-                options: RepositoryFetchOptions()
-            )
+            let walletFetchOperation = walletRepository.fetchOperation(by: walletId, options: RepositoryFetchOptions())
 
             let accountReplaceWrapper: CompoundOperationWrapper<MetaAccountModel>
             accountReplaceWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -337,11 +339,7 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
 
                 let changedWallet = try accountReplaceWrapper.targetOperation.extractNoCancellableResultData()
 
-                let changedManagedWallet = ManagedMetaAccountModel(
-                    info: changedWallet,
-                    isSelected: originalManagedWallet.isSelected,
-                    order: originalManagedWallet.order
-                )
+                let changedManagedWallet = originalManagedWallet.replacingInfo(changedWallet)
 
                 return [changedManagedWallet]
             }, {
@@ -362,8 +360,7 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
             ) { [weak self] result in
                 switch result {
                 case .success:
-                    self?.fetchWalletAndChains(with: walletId)
-                    self?.presenter?.didReceiveAccountCreationResult(.success(()), chain: chain)
+                    self?.handleAccountCreation(for: walletId, chain: chain)
                 case let .failure(error):
                     self?.presenter?.didReceiveAccountCreationResult(.failure(error), chain: chain)
                 }

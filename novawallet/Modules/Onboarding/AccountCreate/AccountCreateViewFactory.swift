@@ -17,7 +17,7 @@ final class AccountCreateViewFactory {
 
         let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
 
-        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
+        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
 
         presenter.view = view
         presenter.interactor = interactor
@@ -44,7 +44,7 @@ final class AccountCreateViewFactory {
 
         let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
 
-        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
+        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
 
         presenter.view = view
         presenter.interactor = interactor
