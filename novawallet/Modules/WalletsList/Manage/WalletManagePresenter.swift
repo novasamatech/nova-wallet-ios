@@ -81,7 +81,9 @@ final class WalletManagePresenter: WalletsListPresenter {
 
     private func showAddWallet() {
         if let cloudBackupState, cloudBackupState.canAutoSync {
-            wireframe?.showCreateWalletWithCloudBackup(from: view)
+            wireframe?.showCloudBackupRemind(from: view) { [weak self] in
+                self?.wireframe?.showCreateWalletWithCloudBackup(from: self?.view)
+            }
         } else {
             wireframe?.showCreateWalletWithManualBackup(from: view)
         }

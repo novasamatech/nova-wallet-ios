@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 enum CloudBackupMessageSheetViewFactory {
     static func createBackupMessageSheet() -> MessageSheetViewProtocol? {
@@ -193,5 +194,58 @@ enum CloudBackupMessageSheetViewFactory {
         messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 332) }
 
         return messageSheetView
+    }
+
+    static func createBackupRemindSheet(
+        completionClosure: @escaping MessageSheetCallback
+    ) -> CloudBackupRemindPresentationResult? {
+        let settings = SettingsManager.shared
+
+        guard !settings.cloudBackupAutoSyncConfirm else {
+            return .confirmationNotNeeded
+        }
+
+        let wireframe = MessageSheetWireframe()
+
+        let interactor = CloudBackupRemindInteractor(settings: settings)
+
+        let presenter = CloudBackupRemindPresenter(interactor: interactor, wireframe: wireframe)
+
+        let title = LocalizableResource { locale in
+            R.string.localizable.cloudBackupAutoSyncTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { locale in
+            R.string.localizable.cloudBackupAutoSyncDescription(preferredLanguages: locale.rLanguages)
+        }
+
+        let text = LocalizableResource { locale in
+            R.string.localizable.proxySigningCheckmarkTitle(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetCheckmarkContentViewModel>(
+            title: title,
+            message: message,
+            graphics: R.image.imageNewBackupWallet(),
+            content: MessageSheetCheckmarkContentViewModel(checked: false, text: text),
+            mainAction: .continueAction(for: completionClosure),
+            secondaryAction: .cancelAction(for: {})
+        )
+
+        let view = CloudBackupRemindViewController(
+            presenter: presenter,
+            viewModel: viewModel,
+            localizationManager: LocalizationManager.shared
+        )
+
+        view.allowsSwipeDown = false
+
+        presenter.view = view
+
+        MessageSheetViewFacade.setupBottomSheet(from: view, preferredHeight: 360)
+
+        return .present(view: view)
     }
 }

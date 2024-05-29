@@ -25,7 +25,7 @@ extension AddAccount {
                             .init(
                                 backgroundImage: R.image.bgMnemonicImport()!.resizableCenterImage(),
                                 mainImage: R.image.iconMnemonicImportBottom()!,
-                                mainImagePosition: .right,
+                                mainImagePosition: .bottom,
                                 title: R.string.localizable.commonPassphrase(
                                     preferredLanguages: selectedLocale.rLanguages
                                 ),

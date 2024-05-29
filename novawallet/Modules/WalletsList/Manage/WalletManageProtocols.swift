@@ -22,7 +22,8 @@ protocol WalletManageInteractorOutputProtocol: WalletsListInteractorOutputProtoc
     func didReceiveCloudBackup(state: CloudBackupSyncState)
 }
 
-protocol WalletManageWireframeProtocol: WalletsListWireframeProtocol, ActionsManagePresentable {
+protocol WalletManageWireframeProtocol: WalletsListWireframeProtocol, ActionsManagePresentable,
+    CloudBackupRemindPresentable {
     func showWalletDetails(from view: WalletManageViewProtocol?, metaAccount: MetaAccountModel)
     func showCreateWalletWithManualBackup(from view: WalletManageViewProtocol?)
     func showCreateWalletWithCloudBackup(from view: WalletManageViewProtocol?)
