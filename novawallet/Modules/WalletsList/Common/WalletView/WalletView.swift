@@ -58,6 +58,7 @@ extension WalletView {
         enum TypeInfo: Hashable {
             case regular(BalanceInfo)
             case proxy(ProxyInfo)
+            case noInfo
         }
 
         struct WalletInfo: Hashable {
@@ -105,7 +106,7 @@ extension WalletView {
             switch type {
             case let .proxy(info):
                 return info
-            case .regular:
+            case .regular, .noInfo:
                 return nil
             }
         }
@@ -123,6 +124,14 @@ extension WalletView {
 
     func bind(regular viewModel: ViewModel.BalanceInfo) {
         subtitleLabel.text = viewModel
+        subtitleDetailsLabel.text = nil
+        networkImageView.isHidden = true
+        subtitleDetailsImage.isHidden = true
+        indicatorImageView.isHidden = true
+    }
+
+    func bindNoInfo() {
+        subtitleLabel.text = nil
         subtitleDetailsLabel.text = nil
         networkImageView.isHidden = true
         subtitleDetailsImage.isHidden = true

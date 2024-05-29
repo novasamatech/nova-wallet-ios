@@ -29,7 +29,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             keystoreImportService: keystoreImportService,
             screenOpenService: screenOpenService,
             pushScreenOpenService: pushScreenOpenService,
-            backupApplicationFactory: CloudBackupUpdateApplicationFactory.createDefault(),
+            cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,
             securedLayer: securedLayer,
             inAppUpdatesService: inAppUpdatesService,
             settingsManager: SettingsManager.shared,

@@ -10,6 +10,7 @@ protocol WalletViewProtocol: UIView {
     func cancelProxyIconsLoading(info: ViewModel.ProxyInfo?)
     func bind(regular viewModel: ViewModel.BalanceInfo)
     func bind(proxy viewModel: ViewModel.ProxyInfo)
+    func bindNoInfo()
 }
 
 extension WalletViewProtocol {
@@ -21,6 +22,8 @@ extension WalletViewProtocol {
             bind(regular: balanceViewModel)
         case let .proxy(proxyViewModel):
             bind(proxy: proxyViewModel)
+        case .noInfo:
+            bindNoInfo()
         }
 
         self.viewModel = viewModel

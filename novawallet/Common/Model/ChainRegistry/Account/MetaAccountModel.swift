@@ -19,6 +19,20 @@ enum MetaAccountModelType: UInt8 {
     }
 }
 
+extension MetaAccountModelType {
+    static func getDisplayPriorities() -> [MetaAccountModelType] {
+        [
+            .secrets,
+            .watchOnly,
+            .polkadotVault,
+            .paritySigner,
+            .ledger,
+            .proxied,
+            .watchOnly
+        ]
+    }
+}
+
 struct MetaAccountModel: Equatable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = String

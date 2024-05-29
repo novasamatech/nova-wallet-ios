@@ -3,7 +3,8 @@ import SoraKeystore
 
 extension CloudBackupUpdateApplicationFactory {
     static func createDefault() -> CloudBackupUpdateApplicationFactory {
-        let serviceFactory = ICloudBackupServiceFactory(operationQueue: OperationManagerFacade.sharedDefaultQueue)
+        let operationQueue = OperationManagerFacade.cloudBackupQueue
+        let serviceFactory = ICloudBackupServiceFactory(operationQueue: operationQueue)
         let syncMetadataManaging = CloudBackupSyncMetadataManager(
             settings: SettingsManager.shared,
             keystore: Keychain()
@@ -19,7 +20,7 @@ extension CloudBackupUpdateApplicationFactory {
         let walletsUpdater = WalletUpdateMediator(
             selectedWalletSettings: SelectedWalletSettings.shared,
             repository: walletsRepository,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: operationQueue
         )
 
         return CloudBackupUpdateApplicationFactory(
@@ -28,7 +29,7 @@ extension CloudBackupUpdateApplicationFactory {
             walletsUpdater: walletsUpdater,
             keystore: Keychain(),
             syncMetadataManager: syncMetadataManaging,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: operationQueue
         )
     }
 }

@@ -115,7 +115,7 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
     }
 
     func showBackup(from view: ControllerBackedProtocol?) {
-        guard let backupView = CloudBackupSettingsViewFactory.createView(with: serviceCoordinator) else {
+        guard let backupView = CloudBackupSettingsViewFactory.createView() else {
             return
         }
 

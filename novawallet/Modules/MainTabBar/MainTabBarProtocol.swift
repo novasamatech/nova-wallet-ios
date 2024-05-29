@@ -12,6 +12,7 @@ protocol MainTabBarPresenterProtocol: AnyObject {
 protocol MainTabBarInteractorInputProtocol: AnyObject {
     func setup()
     func setPushNotificationsSetupScreenSeen()
+    func approveCloudBackupChanges()
 }
 
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
@@ -19,6 +20,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestScreenOpen(_ screen: UrlHandlingScreen)
     func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen)
     func didRequestReviewCloud(changes: CloudBackupSyncResult.Changes)
+    func didFailApplyingCloud(changes: CloudBackupSyncResult.Changes, error: Error)
     func didRequestPushNotificationsSetupOpen()
 }
 
@@ -36,6 +38,12 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible 
     func presentPushNotificationsSetup(
         on view: MainTabBarViewProtocol?,
         completion: @escaping () -> Void
+    )
+
+    func presentCloudBackupReview(
+        from view: MainTabBarViewProtocol?,
+        changes: CloudBackupSyncResult.Changes,
+        delegate: CloudBackupReviewChangesDelegate
     )
 }
 
