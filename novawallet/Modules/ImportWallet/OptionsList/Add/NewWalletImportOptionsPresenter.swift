@@ -106,38 +106,7 @@ final class NewWalletImportOptionsPresenter: WalletImportOptionsPresenter {
     }
 }
 
-extension OnboardingImportOptionsPresenter: OnboardingImportOptionsInteractorOutputProtocol {
-    func didReceive(backupExists: Bool) {
-        logger.debug("Backup exists: \(backupExists)")
-
-        view?.didStopLoading()
-
-        if backupExists {
-            wireframe.showCloudImport(from: view)
-        } else if let view {
-            wireframe.presentBackupNotFound(from: view, locale: selectedLocale)
-        }
-    }
-
-    func didReceive(error: OnboardingImportOptionsInteractorError) {
-        logger.error("Error: \(error)")
-
-        guard let view else {
-            return
-        }
-
-        view.didStopLoading()
-
-        switch error {
-        case .cloudNotAvailable:
-            wireframe.presentCloudBackupUnavailable(from: view, locale: selectedLocale)
-        case .serviceInternal:
-            wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
-        }
-    }
-}
-
-extension OnboardingImportOptionsPresenter: Localizable {
+extension NewWalletImportOptionsPresenter: Localizable {
     func applyLocalization() {
         if let view, view.isSetup {
             provideViewModel()

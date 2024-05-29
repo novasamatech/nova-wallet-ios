@@ -3,9 +3,22 @@ import SoraKeystore
 import SoraFoundation
 
 struct CloudBackupAddWalletViewFactory {
-    static func createView() -> UsernameSetupViewProtocol? {
-        let interactor = createInteractor()
+    static func createViewForAdding() -> UsernameSetupViewProtocol? {
         let wireframe = CloudBackupAddWalletWireframe()
+
+        return createView(with: wireframe)
+    }
+
+    static func createViewForSwitch() -> UsernameSetupViewProtocol? {
+        let wireframe = SwitchAccount.CloudBackupAddWalletWireframe()
+
+        return createView(with: wireframe)
+    }
+
+    private static func createView(
+        with wireframe: CloudBackupAddWalletWireframeProtocol
+    ) -> UsernameSetupViewProtocol? {
+        let interactor = createInteractor()
 
         let presenter = CloudBackupAddWalletPresenter(
             interactor: interactor,
