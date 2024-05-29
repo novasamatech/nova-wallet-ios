@@ -1,6 +1,7 @@
 import UIKit
 import RobinHood
 import SoraKeystore
+import IrohaCrypto
 
 enum AccountManagementError: Error {
     case missingAccount
@@ -9,10 +10,12 @@ enum AccountManagementError: Error {
 final class AccountManagementInteractor {
     weak var presenter: AccountManagementInteractorOutputProtocol?
 
+    let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
     let walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let accountOperationFactory: MetaAccountOperationFactoryProtocol
     let chainRepository: AnyDataProviderRepository<ChainModel>
     let settings: SelectedWalletSettings
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let chainsFilter: AccountManagementFilterProtocol
     let keystore: KeystoreProtocol
@@ -22,19 +25,25 @@ final class AccountManagementInteractor {
     private var pendingName: String?
     private var pendingWalletId: String?
 
+    private var accountReplaceCancellableStore = CancellableCallStore()
+
     init(
+        cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol,
         walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+        accountOperationFactory: MetaAccountOperationFactoryProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         settings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         keystore: KeystoreProtocol,
         chainsFilter: AccountManagementFilterProtocol,
         saveInterval: TimeInterval = 2.0
     ) {
+        self.cloudBackupSyncFacade = cloudBackupSyncFacade
         self.walletRepository = walletRepository
+        self.accountOperationFactory = accountOperationFactory
         self.chainRepository = chainRepository
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.settings = settings
         self.eventCenter = eventCenter
         self.keystore = keystore
@@ -52,19 +61,18 @@ final class AccountManagementInteractor {
     private func fetchChains(for wallet: MetaAccountModel) {
         let operation = chainRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let chains = try operation.extractNoCancellableResultData()
-
-                    self?.filterChainsAndNotify(for: chains, wallet: wallet)
-                } catch {
-                    self?.presenter?.didReceiveChains(.failure(error))
-                }
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(chains):
+                self?.filterChainsAndNotify(for: chains, wallet: wallet)
+            case let .failure(error):
+                self?.presenter?.didReceiveChains(.failure(error))
             }
         }
-
-        operationManager.enqueue(operations: [operation], in: .transient)
     }
 
     private func fetchWalletAndChains(with walletId: String) {
@@ -73,27 +81,28 @@ final class AccountManagementInteractor {
             options: RepositoryFetchOptions()
         )
 
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let optWallet = try operation.extractNoCancellableResultData()?.info
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(optManagedWallet):
+                let optWallet = optManagedWallet?.info
 
-                    if let wallet = optWallet {
-                        self?.fetchChains(for: wallet)
-                        self?.fetchProxyWalletIfNeeded(for: wallet)
-                    } else {
-                        self?.presenter?.didReceiveChains(.success([:]))
-                    }
-
-                    self?.presenter?.didReceiveWallet(.success(optWallet))
-                } catch {
-                    self?.presenter?.didReceiveWallet(.failure(error))
-                    self?.presenter?.didReceiveChains(.failure(error))
+                if let wallet = optWallet {
+                    self?.fetchChains(for: wallet)
+                    self?.fetchProxyWalletIfNeeded(for: wallet)
+                } else {
+                    self?.presenter?.didReceiveChains(.success([:]))
                 }
+
+                self?.presenter?.didReceiveWallet(.success(optWallet))
+            case let .failure(error):
+                self?.presenter?.didReceiveWallet(.failure(error))
+                self?.presenter?.didReceiveChains(.failure(error))
             }
         }
-
-        operationManager.enqueue(operations: [operation], in: .transient)
     }
 
     private func fetchProxyWalletIfNeeded(for wallet: MetaAccountModel) {
@@ -105,27 +114,27 @@ final class AccountManagementInteractor {
 
         let operation = walletRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let wallets = try operation.extractNoCancellableResultData()
-                    let proxyWallet = wallets.first(where: { $0.info.has(
-                        accountId: proxy.accountId,
-                        chainId: chainAccount.chainId
-                    ) })?.info
-                    self?.presenter?.didReceiveProxyWallet(.success(proxyWallet))
-                } catch {
-                    self?.presenter?.didReceiveProxyWallet(.failure(error))
-                }
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(wallets):
+                let proxyWallet = wallets.first(where: { $0.info.has(
+                    accountId: proxy.accountId,
+                    chainId: chainAccount.chainId
+                ) })?.info
+                self?.presenter?.didReceiveProxyWallet(.success(proxyWallet))
+            case let .failure(error):
+                self?.presenter?.didReceiveProxyWallet(.failure(error))
             }
         }
-
-        operationManager.enqueue(operations: [operation], in: .transient)
     }
 
     // MARK: - Result handling functions
 
-    private func handleSaveOperationResult(
+    private func handleNameSaveOperationResult(
         result: Result<Void, Error>?,
         newName: String,
         walletId: String
@@ -176,27 +185,37 @@ final class AccountManagementInteractor {
 
         saveOperation.addDependency(fetchOperation)
 
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                self?.handleSaveOperationResult(
-                    result: saveOperation.result,
-                    newName: newName,
-                    walletId: walletId
-                )
-            }
-        }
+        let wrapper = CompoundOperationWrapper(targetOperation: saveOperation, dependencies: [fetchOperation])
 
-        operationManager.enqueue(operations: [fetchOperation, saveOperation], in: .transient)
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] _ in
+            self?.handleNameSaveOperationResult(
+                result: saveOperation.result,
+                newName: newName,
+                walletId: walletId
+            )
+        }
     }
 
     private func performChangeFinalizationIfNeeded() {
-        guard let name = pendingName,
-              let walletId = pendingWalletId else { return }
+        guard let name = pendingName, let walletId = pendingWalletId else { return }
 
         pendingName = nil
         pendingWalletId = nil
 
         performWalletNameSave(newName: name, for: walletId)
+    }
+
+    private func subscribeCloudBackupState() {
+        cloudBackupSyncFacade.subscribeState(
+            self,
+            notifyingIn: .main
+        ) { [weak self] state in
+            self?.presenter?.didReceiveCloudBackup(state: state)
+        }
     }
 }
 
@@ -204,6 +223,7 @@ final class AccountManagementInteractor {
 
 extension AccountManagementInteractor: AccountManagementInteractorInputProtocol {
     func setup(walletId: String) {
+        subscribeCloudBackupState()
         fetchWalletAndChains(with: walletId)
     }
 
@@ -261,6 +281,95 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
                 metaAccount: metaAccount,
                 chain: chain
             )
+        }
+    }
+
+    func createAccount(for walletId: MetaAccountModel.Id, chain: ChainModel) {
+        guard !accountReplaceCancellableStore.hasCall else {
+            return
+        }
+
+        do {
+            let mnemonic = try IRMnemonicCreator().randomMnemonic(.entropy128)
+
+            let request = if chain.isEthereumBased {
+                ChainAccountImportMnemonicRequest(
+                    mnemonic: mnemonic.toString(),
+                    derivationPath: "",
+                    cryptoType: .sr25519
+                )
+            } else {
+                ChainAccountImportMnemonicRequest(
+                    mnemonic: mnemonic.toString(),
+                    derivationPath: DerivationPathConstants.defaultEthereum,
+                    cryptoType: .ethereumEcdsa
+                )
+            }
+
+            let walletFetchOperation = walletRepository.fetchOperation(
+                by: walletId,
+                options: RepositoryFetchOptions()
+            )
+
+            let accountReplaceWrapper: CompoundOperationWrapper<MetaAccountModel>
+            accountReplaceWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+                operationManager: OperationManager(operationQueue: operationQueue)
+            ) {
+                guard let wallet = try walletFetchOperation.extractNoCancellableResultData()?.info else {
+                    throw AccountManagementError.missingAccount
+                }
+
+                let accountCreationOperation = self.accountOperationFactory.replaceChainAccountOperation(
+                    for: wallet,
+                    request: request,
+                    chainId: chain.chainId
+                )
+
+                return CompoundOperationWrapper(targetOperation: accountCreationOperation)
+            }
+
+            accountReplaceWrapper.addDependency(operations: [walletFetchOperation])
+
+            let saveOperation = walletRepository.saveOperation({
+                guard let originalManagedWallet = try walletFetchOperation.extractNoCancellableResultData() else {
+                    return []
+                }
+
+                let changedWallet = try accountReplaceWrapper.targetOperation.extractNoCancellableResultData()
+
+                let changedManagedWallet = ManagedMetaAccountModel(
+                    info: changedWallet,
+                    isSelected: originalManagedWallet.isSelected,
+                    order: originalManagedWallet.order
+                )
+
+                return [changedManagedWallet]
+            }, {
+                []
+            })
+
+            saveOperation.addDependency(accountReplaceWrapper.targetOperation)
+
+            let wrapper = accountReplaceWrapper
+                .insertingHead(operations: [walletFetchOperation])
+                .insertingTail(operation: saveOperation)
+
+            executeCancellable(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                backingCallIn: accountReplaceCancellableStore,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.fetchWalletAndChains(with: walletId)
+                    self?.presenter?.didReceiveAccountCreationResult(.success(()), chain: chain)
+                case let .failure(error):
+                    self?.presenter?.didReceiveAccountCreationResult(.failure(error), chain: chain)
+                }
+            }
+        } catch {
+            presenter?.didReceiveAccountCreationResult(.failure(error), chain: chain)
         }
     }
 }

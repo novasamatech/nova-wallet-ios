@@ -26,6 +26,7 @@ protocol AccountManagementInteractorInputProtocol: AnyObject {
     func save(name: String, walletId: String)
     func flushPendingName()
     func requestExportOptions(metaAccount: MetaAccountModel, chain: ChainModel)
+    func createAccount(for walletId: MetaAccountModel.Id, chain: ChainModel)
 }
 
 protocol AccountManagementInteractorOutputProtocol: AnyObject {
@@ -38,10 +39,12 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
         chain: ChainModel
     )
     func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)
+    func didReceiveCloudBackup(state: CloudBackupSyncState)
+    func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain: ChainModel)
 }
 
 protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting,
-    ChainAddressDetailsPresentable, ActionsManagePresentable {
+    ChainAddressDetailsPresentable, ActionsManagePresentable, CloudBackupRemindPresentable {
     func showCreateAccount(
         from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,

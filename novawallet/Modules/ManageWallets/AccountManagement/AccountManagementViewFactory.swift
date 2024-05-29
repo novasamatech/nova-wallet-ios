@@ -35,13 +35,17 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
             localizationManager: LocalizationManager.shared
         )
 
+        let keystore = Keychain()
+
         let interactor = AccountManagementInteractor(
+            cloudBackupSyncFacade: CloudBackupSyncMediatorFacade.sharedMediator.syncFacade,
             walletRepository: AnyDataProviderRepository(walletRepository),
+            accountOperationFactory: MetaAccountOperationFactory(keystore: keystore),
             chainRepository: chainRepository,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             settings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
-            keystore: Keychain(),
+            keystore: keystore,
             chainsFilter: AccountManagementFilter()
         )
 
