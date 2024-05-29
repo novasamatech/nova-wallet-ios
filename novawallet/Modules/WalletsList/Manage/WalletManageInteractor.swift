@@ -3,6 +3,7 @@ import RobinHood
 
 final class WalletManageInteractor: WalletsListInteractor {
     let walletUpdateMediator: WalletUpdateMediating
+    let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -18,6 +19,7 @@ final class WalletManageInteractor: WalletsListInteractor {
     }
 
     init(
+        cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol,
         balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         walletUpdateMediator: WalletUpdateMediating,
@@ -25,6 +27,7 @@ final class WalletManageInteractor: WalletsListInteractor {
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.cloudBackupSyncFacade = cloudBackupSyncFacade
         self.walletUpdateMediator = walletUpdateMediator
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
@@ -50,6 +53,21 @@ final class WalletManageInteractor: WalletsListInteractor {
         case let .failure(error):
             logger.error("Did receive wallet update error: \(error)")
         }
+    }
+
+    private func subscribeCloudBackupState() {
+        cloudBackupSyncFacade.subscribeState(
+            self,
+            notifyingIn: .main
+        ) { [weak self] state in
+            self?.presenter?.didReceiveCloudBackup(state: state)
+        }
+    }
+
+    override func setup() {
+        super.setup()
+
+        subscribeCloudBackupState()
     }
 }
 

@@ -35,8 +35,14 @@ extension SwitchAccount {
             }
         }
 
-        func showImportWallet(from _: WalletManageViewProtocol?) {
-            // TODO: add for switch
+        func showImportWallet(from view: WalletManageViewProtocol?) {
+            guard let importView = WalletImportOptionsViewFactory.createViewForSwitch() else {
+                return
+            }
+
+            if let navigationController = view?.controller.navigationController {
+                navigationController.pushViewController(importView.controller, animated: true)
+            }
         }
     }
 }

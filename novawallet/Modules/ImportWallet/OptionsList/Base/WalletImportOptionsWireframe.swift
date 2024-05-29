@@ -2,16 +2,20 @@ import Foundation
 import SoraFoundation
 
 class WalletImportOptionsWireframe: ActionsManagePresentable {
-    func showWalletRestore(from view: WalletImportOptionsViewProtocol?, secretSource: SecretSource) {
-        guard let restorationController = AccountImportViewFactory.createViewForOnboarding(
-            for: secretSource
-        )?.controller else {
-            return
-        }
+    func showSeedImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .seed)
+    }
 
-        if let navigationController = view?.controller.navigationController {
-            navigationController.pushViewController(restorationController, animated: true)
-        }
+    func showRestoreJsonImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .keystore)
+    }
+
+    func showPassphraseImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .mnemonic)
+    }
+
+    func showHardwareImport(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
+        showHardwareWalletSelection(from: view, locale: locale)
     }
 
     func showHardwareWalletSelection(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
@@ -63,29 +67,16 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
         )
     }
 
-    func showParitySignerWalletCreation(from view: ControllerBackedProtocol?, type: ParitySignerType) {
-        guard
-            let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createOnboardingView(
-                with: type
-            ) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(
-            paritySignerWelcomeView.controller,
-            animated: true
-        )
+    func showParitySignerWalletCreation(from _: ControllerBackedProtocol?, type _: ParitySignerType) {
+        fatalError("Must be overriden in subclass")
     }
 
-    func showLedgerWalletCreation(from view: ControllerBackedProtocol?) {
-        guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(for: .onboarding) else {
-            return
-        }
+    func showLedgerWalletCreation(from _: ControllerBackedProtocol?) {
+        fatalError("Must be overriden in subclass")
+    }
 
-        view?.controller.navigationController?.pushViewController(
-            ledgerInstructions.controller,
-            animated: true
-        )
+    func showWalletRestore(from _: WalletImportOptionsViewProtocol?, secretSource _: SecretSource) {
+        fatalError("Must be overriden in subclass")
     }
 }
 

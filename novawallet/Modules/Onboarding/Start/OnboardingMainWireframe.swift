@@ -12,7 +12,7 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
     }
 
     func showAccountRestore(from view: OnboardingMainViewProtocol?) {
-        guard let importView = OnboardingImportOptionsViewFactory.createView() else {
+        guard let importView = WalletImportOptionsViewFactory.createViewForOnboarding() else {
             return
         }
 

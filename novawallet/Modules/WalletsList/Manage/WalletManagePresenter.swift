@@ -19,6 +19,8 @@ final class WalletManagePresenter: WalletsListPresenter {
         baseWireframe as? WalletManageWireframeProtocol
     }
 
+    private var cloudBackupState: CloudBackupSyncState?
+
     init(
         interactor: WalletManageInteractorInputProtocol,
         wireframe: WalletManageWireframeProtocol,
@@ -78,9 +80,11 @@ final class WalletManagePresenter: WalletsListPresenter {
     }
 
     private func showAddWallet() {
-        // TODO: differentiate between manual and cloud backup
-
-        wireframe?.showCreateWalletWithCloudBackup(from: view)
+        if let cloudBackupState, cloudBackupState.canAutoSync {
+            wireframe?.showCreateWalletWithCloudBackup(from: view)
+        } else {
+            wireframe?.showCreateWalletWithManualBackup(from: view)
+        }
     }
 }
 
@@ -200,5 +204,9 @@ extension WalletManagePresenter: ModalPickerViewControllerDelegate {
 extension WalletManagePresenter: WalletManageInteractorOutputProtocol {
     func didRemoveAllWallets() {
         wireframe?.showOnboarding(from: view)
+    }
+
+    func didReceiveCloudBackup(state: CloudBackupSyncState) {
+        cloudBackupState = state
     }
 }

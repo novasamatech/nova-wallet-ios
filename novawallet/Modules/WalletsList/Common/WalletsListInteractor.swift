@@ -38,15 +38,15 @@ class WalletsListInteractor {
     func applyWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         basePresenter?.didReceiveWalletsChanges(changes)
     }
-}
 
-extension WalletsListInteractor: WalletsListInteractorInputProtocol {
     func setup() {
         subscribeChains()
         subscribeWallets()
         setupBalancesStore()
     }
 }
+
+extension WalletsListInteractor: WalletsListInteractorInputProtocol {}
 
 extension WalletsListInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {

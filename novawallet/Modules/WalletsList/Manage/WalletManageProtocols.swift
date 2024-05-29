@@ -19,6 +19,7 @@ protocol WalletManageInteractorInputProtocol: WalletsListInteractorInputProtocol
 
 protocol WalletManageInteractorOutputProtocol: WalletsListInteractorOutputProtocol {
     func didRemoveAllWallets()
+    func didReceiveCloudBackup(state: CloudBackupSyncState)
 }
 
 protocol WalletManageWireframeProtocol: WalletsListWireframeProtocol, ActionsManagePresentable {
