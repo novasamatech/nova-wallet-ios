@@ -880,7 +880,7 @@ PODS:
   - SoraUI/Skrull (1.13.0)
   - Sourcery (1.4.1)
   - Starscream (4.0.10)
-  - SubstrateSdk (1.17.0):
+  - SubstrateSdk (1.18.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -953,7 +953,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.10`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.17.0`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `3ae7a3fd0ad1ed066d9d3df4261cc059dfe8f2bb`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1038,8 +1038,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
+    :commit: 3ae7a3fd0ad1ed066d9d3df4261cc059dfe8f2bb
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.17.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1075,8 +1075,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
+    :commit: 3ae7a3fd0ad1ed066d9d3df4261cc059dfe8f2bb
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.17.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1137,7 +1137,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 867607a51eafadc6402b5c6f6acc0d8efdb98746
-  SubstrateSdk: a67e5c58fc9a7b31f24e1dc43e7dd44568018c83
+  SubstrateSdk: 5060e92fdc1e4cadeb65c617d0dcfad388f0508d
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1152,6 +1152,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: c8e060f3aa2050b8fd7f71a46a8af5a150e1b6ed
+PODFILE CHECKSUM: 77b4233067318cfdb7487690a72ff7bcc60ba32f
 
 COCOAPODS: 1.15.2
