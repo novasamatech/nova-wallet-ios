@@ -3,27 +3,29 @@ import SubstrateSdk
 import RobinHood
 import IrohaCrypto
 
+struct IdentityChainParams {
+    let connection: JSONRPCEngine
+    let runtimeService: RuntimeCodingServiceProtocol
+}
+
 protocol IdentityOperationFactoryProtocol {
     func createIdentityWrapper(
         for accountIdClosure: @escaping () throws -> [AccountId],
-        engine: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
-        chainFormat: ChainFormat
+        identityChainParams: IdentityChainParams,
+        originChainFormat: ChainFormat
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]>
 }
 
 extension IdentityOperationFactoryProtocol {
     func createIdentityWrapperByAccountId(
         for accountIdClosure: @escaping () throws -> [AccountId],
-        engine: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
-        chainFormat: ChainFormat
+        identityChainParams: IdentityChainParams,
+        originChainFormat: ChainFormat
     ) -> CompoundOperationWrapper<[AccountId: AccountIdentity]> {
         let wrapper = createIdentityWrapper(
             for: accountIdClosure,
-            engine: engine,
-            runtimeService: runtimeService,
-            chainFormat: chainFormat
+            identityChainParams: identityChainParams,
+            originChainFormat: originChainFormat
         )
 
         let mapOperation = ClosureOperation<[AccountId: AccountIdentity]> {
@@ -189,16 +191,15 @@ final class IdentityOperationFactory {
 extension IdentityOperationFactory: IdentityOperationFactoryProtocol {
     func createIdentityWrapper(
         for accountIdClosure: @escaping () throws -> [AccountId],
-        engine: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
-        chainFormat: ChainFormat
+        identityChainParams: IdentityChainParams,
+        originChainFormat: ChainFormat
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]> {
-        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let coderFactoryOperation = identityChainParams.runtimeService.fetchCoderFactoryOperation()
 
         let superIdentityWrapper = createSuperIdentityOperation(
             dependingOn: coderFactoryOperation,
             accountIds: accountIdClosure,
-            engine: engine
+            engine: identityChainParams.connection
         )
 
         superIdentityWrapper.allOperations.forEach {
@@ -208,8 +209,8 @@ extension IdentityOperationFactory: IdentityOperationFactoryProtocol {
         let identityWrapper = createIdentityWrapper(
             dependingOn: superIdentityWrapper.targetOperation,
             runtimeOperation: coderFactoryOperation,
-            engine: engine,
-            chainFormat: chainFormat
+            engine: identityChainParams.connection,
+            chainFormat: originChainFormat
         )
 
         identityWrapper.allOperations.forEach {

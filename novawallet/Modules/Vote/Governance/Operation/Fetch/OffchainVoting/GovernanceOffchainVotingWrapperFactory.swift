@@ -4,10 +4,7 @@ import SubstrateSdk
 
 protocol GovernanceOffchainVotingWrapperFactoryProtocol {
     func createWrapper(
-        for params: AccountAddress,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for params: AccountAddress
     ) -> CompoundOperationWrapper<GovernanceOffchainVotesLocal>
 }
 
@@ -17,21 +14,22 @@ final class GovernanceOffchainVotingWrapperFactory: GovOffchainModelWrapperFacto
     let operationFactory: GovernanceOffchainVotingFactoryProtocol
 
     init(
+        chain: ChainModel,
         operationFactory: GovernanceOffchainVotingFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol
+        identityProxyFactory: IdentityProxyFactoryProtocol
     ) {
         self.operationFactory = operationFactory
 
         super.init(
-            identityParams: .init(operationFactory: identityOperationFactory) { voting in
+            chain: chain,
+            identityParams: .init(proxyFactory: identityProxyFactory) { voting in
                 Array(voting.getAllDelegates())
             }
         )
     }
 
     override func createModelWrapper(
-        for params: AccountAddress,
-        chain _: ChainModel
+        for params: AccountAddress
     ) -> CompoundOperationWrapper<GovernanceOffchainVoting> {
         operationFactory.createAllVotesFetchOperation(for: params)
     }

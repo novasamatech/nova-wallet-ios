@@ -10,9 +10,7 @@ struct StakingProxyManagementViewFactory {
         guard
             let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
                 for: chainAsset.chain.accountRequest()
-            ),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            ) else {
             return nil
         }
 
@@ -20,14 +18,18 @@ struct StakingProxyManagementViewFactory {
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManagerFacade.sharedManager
         )
+
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         let interactor = StakingProxyManagementInteractor(
             selectedAccount: selectedAccount,
             sharedState: state,
-            identityOperationFactory: identityOperationFactory,
-            connection: connection,
-            runtimeProvider: runtimeRegistry,
+            identityProxyFactory: identityProxyFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
