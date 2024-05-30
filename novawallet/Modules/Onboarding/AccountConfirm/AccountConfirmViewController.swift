@@ -120,15 +120,15 @@ extension AccountConfirmViewController: MnemonicGridViewDelegate {
         _ mnemonicView: MnemonicGridView,
         _ unit: MnemonicGridView.UnitType
     ) {
-        let viewToInsert: MnemonicGridView
+        let destinationView: MnemonicGridView
 
         if let _ = mnemonicView as? MnemonicCardView {
-            viewToInsert = rootView.mnemonicGridView
+            destinationView = rootView.mnemonicGridView
         } else {
-            viewToInsert = rootView.mnemonicCardView
+            destinationView = rootView.mnemonicCardView
         }
 
-        viewToInsert.requestWordInsert(wordUnit: unit) { coordinator in
+        destinationView.requestWordInsert(wordUnit: unit) { coordinator in
             guard let coordinator else { return }
 
             mnemonicView.setupProposition(for: coordinator)
