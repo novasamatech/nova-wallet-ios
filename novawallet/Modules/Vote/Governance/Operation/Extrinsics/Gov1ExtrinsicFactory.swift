@@ -25,8 +25,8 @@ final class Gov1ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
     func unlock(
         with actions: Set<GovernanceUnlockSchedule.Action>,
         accountId: AccountId,
-        builder: ExtrinsicBuilderProtocol
-    ) throws -> ExtrinsicBuilderProtocol {
+        splitter: ExtrinsicSplitting
+    ) throws -> ExtrinsicSplitting {
         let removeVoteCalls: [RuntimeCall<Democracy.RemoveVoteCall>] = actions.compactMap { action in
             switch action {
             case let .unvote(_, index):
@@ -45,9 +45,8 @@ final class Gov1ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
             }
         }
 
-        let newBuilder = try appendCalls(removeVoteCalls, builder: builder)
-
-        return try appendCalls(unlockCalls, builder: newBuilder)
+        let newSplitter = removeVoteCalls.reduce(splitter) { $0.adding(call: $1) }
+        return unlockCalls.reduce(newSplitter) { $0.adding(call: $1) }
     }
 
     func delegationUpdate(

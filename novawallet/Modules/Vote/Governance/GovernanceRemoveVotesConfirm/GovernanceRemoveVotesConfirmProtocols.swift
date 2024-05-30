@@ -15,7 +15,7 @@ protocol GovernanceRemoveVotesConfirmPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol GovernanceRemoveVotesConfirmInteractorInputProtocol: AnyObject {
+protocol GovernanceRemoveVotesConfirmInteractorInputProtocol: MultiExtrinsicSubmitRetryInputProtocol {
     func setup()
     func estimateFee(for requests: [GovernanceRemoveVoteRequest])
     func submit(requests: [GovernanceRemoveVoteRequest])
@@ -26,16 +26,19 @@ protocol GovernanceRemoveVotesConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveVotingResult(_ result: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>)
     func didReceiveBalance(_ assetBalance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
-    func didReceiveRemoveVotesHash(_ hash: String)
+    func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult)
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveError(_ error: GovernanceRemoveVotesInteractorError)
 }
 
 protocol GovernanceRemoveVotesConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable, ExtrinsicSigningErrorHandling {
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable, ExtrinsicSigningErrorHandling, MultiExtrinsicRetryable {
     func showTracks(
         from view: GovernanceRemoveVotesConfirmViewProtocol?,
         tracks: [GovernanceTrackInfoLocal]
     )
+
+    func complete(on view: GovernanceRemoveVotesConfirmViewProtocol?, locale: Locale)
+    func skip(on view: GovernanceRemoveVotesConfirmViewProtocol?)
 }
