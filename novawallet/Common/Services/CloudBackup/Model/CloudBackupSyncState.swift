@@ -9,12 +9,8 @@ enum CloudBackupSyncState: Equatable {
         switch self {
         case .disabled, .unavailable:
             return false
-        case let .enabled(cloudBackupSyncResult, _):
-            if case .noUpdates = cloudBackupSyncResult {
-                return true
-            } else {
-                return false
-            }
+        case .enabled:
+            return true
         }
     }
 }
