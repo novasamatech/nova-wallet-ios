@@ -1,6 +1,6 @@
 import UIKit
 
-class MnemonicCardView: MnemonicGridView {
+final class MnemonicCardView: MnemonicGridView {
     let cardTitleView: UILabel = .create { view in
         view.apply(style: .semiboldSubhedlineSecondary)
         view.textAlignment = .left
@@ -41,6 +41,36 @@ class MnemonicCardView: MnemonicGridView {
         backgroundView.layer.borderColor = R.color.colorContainerBorder()?.cgColor
     }
 
+    override func createWordButton(
+        with text: String,
+        number: Int
+    ) -> WordButton {
+        let button = super.createWordButton(with: text, number: number)
+
+        button.controlContentView.textAlignment = .left
+        button.controlContentView.attributedText = createButtonText(with: number, text)
+
+        return button
+    }
+
+    override func processInsertedButton(
+        _ wordButton: WordButton,
+        wordText: String
+    ) {
+        UIView.animate(withDuration: 0.2) {
+            wordButton.controlContentView.alpha = 0
+        } completion: { _ in
+            let wordNumber = wordButton.tag + 1
+
+            wordButton.controlContentView.textAlignment = .left
+            wordButton.controlContentView.attributedText = createButtonText(with: wordNumber, wordText)
+
+            UIView.animate(withDuration: 0.2) {
+                wordButton.controlContentView.alpha = 1
+            }
+        }
+    }
+
     func bind(to model: Model) {
         cardTitleView.attributedText = model.title
         bind(with: model.units)
@@ -51,6 +81,20 @@ extension MnemonicCardView {
     struct Model {
         let units: [MnemonicGridView.UnitType]
         let title: NSAttributedString
+    }
+}
+
+private extension MnemonicCardView {
+    
+    func createButtonText(
+        with wordNumber: Int,
+        _ text: String
+    ) -> NSAttributedString {
+        NSAttributedString.coloredItems(
+            ["\(wordNumber)"],
+            formattingClosure: { String(format: "%@ \(text)", $0[0]) },
+            color: R.color.colorTextSecondary()!
+        )
     }
 }
 

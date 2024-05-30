@@ -28,7 +28,7 @@ class MnemonicGridView: UIView {
         view.isLayoutMarginsRelativeArrangement = true
     }
 
-    open var unitWidth: CGFloat {
+    var unitWidth: CGFloat {
         (UIScreen.main.bounds.width
             - UIConstants.horizontalInset * 2
             - contentInset.left
@@ -36,14 +36,14 @@ class MnemonicGridView: UIView {
             - spacing * 2) / 3
     }
 
-    open var spacing: CGFloat = Constants.itemsSpacing {
+    var spacing: CGFloat = Constants.itemsSpacing {
         didSet {
             rows.values.forEach { $0.spacing = spacing }
             stackView.spacing = spacing
         }
     }
 
-    open var contentInset: UIEdgeInsets = Constants.contentInset {
+    var contentInset: UIEdgeInsets = Constants.contentInset {
         didSet {
             stackView.layoutMargins = contentInset
         }
@@ -61,7 +61,7 @@ class MnemonicGridView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    open func setupLayout() {
+    func setupLayout() {
         addSubview(stackView)
         stackView.spacing = spacing
         stackView.layoutMargins = contentInset
@@ -72,9 +72,34 @@ class MnemonicGridView: UIView {
         }
     }
 
-    open func setupStyle() {
+    func setupStyle() {
         backgroundColor = .clear
         stackView.backgroundColor = .clear
+    }
+
+    func createWordButton(
+        with text: String,
+        number _: Int
+    ) -> WordButton {
+        let button = WordButton(preferredHeight: Constants.buttonHeight)
+        button.contentInsets = Constants.itemContentInsets
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.controlBackgroundView?.shadowOpacity = 0.0
+        button.controlBackgroundView?.fillColor = R.color.colorChipsBackground()!
+        button.controlBackgroundView?.highlightedFillColor = .clear
+        button.controlBackgroundView?.cornerRadius = Constants.itemCornerRadius
+        button.changesContentOpacityWhenHighlighted = true
+        button.controlContentView.textAlignment = .center
+        button.controlContentView.text = text
+
+        addAction(for: button)
+
+        button.snp.makeConstraints { make in
+            make.width.equalTo(unitWidth)
+            make.height.equalTo(Constants.buttonHeight)
+        }
+
+        return button
     }
 
     func bind(with units: [UnitType]) {
@@ -131,16 +156,32 @@ class MnemonicGridView: UIView {
             viewHolder: availableViewHolder,
             parentView: row
         ) { [weak self] insertedButton in
-            insertedButton.tag = availableViewHolder.tag
-
-            self?.units[availableViewHolderIndex] = wordUnit
-            self?.addAction(for: insertedButton)
-            self?.transitionCoordinators[availableViewHolderIndex] = nil
+            self?.processInsertionCompletion(
+                insertedButton: insertedButton,
+                viewHolder: availableViewHolder,
+                wordUnit: wordUnit
+            )
         }
 
         transitionCoordinators[availableViewHolderIndex] = coordinator
 
         insertionClosure(coordinator)
+    }
+
+    func processInsertedButton(
+        _ wordButton: WordButton,
+        wordText: String
+    ) {
+        UIView.animate(withDuration: 0.2) {
+            wordButton.controlContentView.alpha = 0
+        } completion: { _ in
+            wordButton.controlContentView.textAlignment = .center
+            wordButton.controlContentView.text = wordText
+
+            UIView.animate(withDuration: 0.2) {
+                wordButton.controlContentView.alpha = 1
+            }
+        }
     }
 
     func setupProposition(for coordinator: GridUnitTransitionCoordinatorSourceProtocol) {
@@ -159,35 +200,7 @@ class MnemonicGridView: UIView {
 // MARK: Private
 
 private extension MnemonicGridView {
-    func createWordButton(
-        with text: String,
-        number: Int
-    ) -> WordButton {
-        let button = WordButton(preferredHeight: Constants.buttonHeight)
-        button.contentInsets = Constants.itemContentInsets
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.controlBackgroundView?.shadowOpacity = 0.0
-        button.controlBackgroundView?.fillColor = R.color.colorChipsBackground()!
-        button.controlBackgroundView?.highlightedFillColor = .clear
-        button.controlBackgroundView?.cornerRadius = Constants.itemCornerRadius
-        button.changesContentOpacityWhenHighlighted = true
-        button.controlContentView.attributedText = NSAttributedString.coloredItems(
-            ["\(number)"],
-            formattingClosure: { String(format: "%@ \(text)", $0[0]) },
-            color: R.color.colorTextSecondary()!
-        )
-
-        addAction(for: button)
-
-        button.snp.makeConstraints { make in
-            make.width.equalTo(unitWidth)
-            make.height.equalTo(Constants.buttonHeight)
-        }
-
-        return button
-    }
-
-    open func addAction(for button: UIControl) {
+    func addAction(for button: UIControl) {
         button.addTarget(
             self,
             action: #selector(wordButtonAction(sender:)),
@@ -246,6 +259,31 @@ private extension MnemonicGridView {
         viewHolder.tag = index
 
         row.addArrangedSubview(viewHolder)
+    }
+
+    func processInsertionCompletion(
+        insertedButton: UIControl,
+        viewHolder: UIView,
+        wordUnit: UnitType
+    ) {
+        let index = viewHolder.tag
+        insertedButton.tag = index
+
+        units[index] = wordUnit
+        addAction(for: insertedButton)
+        transitionCoordinators[index] = nil
+
+        guard
+            let wordButton = insertedButton as? WordButton,
+            case let .wordView(text) = wordUnit
+        else {
+            return
+        }
+
+        processInsertedButton(
+            wordButton,
+            wordText: text
+        )
     }
 }
 
