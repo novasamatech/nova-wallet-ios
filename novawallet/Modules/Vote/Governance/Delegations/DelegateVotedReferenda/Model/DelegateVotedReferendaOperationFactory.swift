@@ -5,7 +5,6 @@ import SubstrateSdk
 protocol DelegateVotedReferendaOperationFactoryProtocol {
     func createVotedReferendaWrapper(
         for params: DelegateVotedReferendaParams,
-        chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<DelegateVotedReferendaModel>
@@ -24,6 +23,7 @@ final class DelegateVotedReferendaOperationFactory: GovOffchainModelWrapperFacto
     let operationQueue: OperationQueue
 
     init(
+        chain: ChainModel,
         referendumOperationFactory: ReferendumsOperationFactoryProtocol,
         offchainOperationFactory: GovernanceOffchainVotingFactoryProtocol,
         operationQueue: OperationQueue
@@ -32,21 +32,21 @@ final class DelegateVotedReferendaOperationFactory: GovOffchainModelWrapperFacto
         self.referendumOperationFactory = referendumOperationFactory
         self.operationQueue = operationQueue
 
-        super.init()
+        super.init(chain: chain)
     }
 
     override func createModelWrapper(
-        for params: DelegateVotedReferendaParams,
-        chain: ChainModel
+        for params: DelegateVotedReferendaParams
     ) -> CompoundOperationWrapper<DelegateVotedReferendaVotes> {
         let votesWrapper = offchainOperationFactory.createDirectVotesFetchOperation(
             for: params.address,
             from: params.blockNumber
         )
 
+        let currentChain = chain
         let mapOperation = ClosureOperation<DelegateVotedReferendaVotes> {
             let votes = try votesWrapper.targetOperation.extractNoCancellableResultData()
-            let delegate = try params.address.toAccountId(using: chain.chainFormat)
+            let delegate = try params.address.toAccountId(using: currentChain.chainFormat)
 
             return .init(delegateId: delegate, votes: votes)
         }
@@ -60,16 +60,10 @@ final class DelegateVotedReferendaOperationFactory: GovOffchainModelWrapperFacto
 extension DelegateVotedReferendaOperationFactory: DelegateVotedReferendaOperationFactoryProtocol {
     func createVotedReferendaWrapper(
         for params: DelegateVotedReferendaParams,
-        chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<DelegateVotedReferendaModel> {
-        let votesWrapper = createWrapper(
-            for: params,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
-        )
+        let votesWrapper = createWrapper(for: params)
 
         let referendumsOperation = OperationCombiningService<[ReferendumIdLocal: ReferendumLocal]>(
             operationManager: OperationManager(operationQueue: operationQueue)

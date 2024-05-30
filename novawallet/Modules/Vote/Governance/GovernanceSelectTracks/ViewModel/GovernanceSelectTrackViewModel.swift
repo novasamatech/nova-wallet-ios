@@ -2,7 +2,7 @@ import Foundation
 
 struct GovernanceSelectTrackViewModel {
     struct Track {
-        let type: ReferendumTrackType
+        let trackId: TrackIdLocal
         let viewModel: SelectableViewModel<ReferendumInfoView.Track>
     }
 

@@ -115,7 +115,7 @@ final class GovernanceAddDelegationTracksPresenter: GovernanceSelectTracksPresen
             return
         }
 
-        selectedTracks = Set()
+        selectedTrackIds = Set()
     }
 
     override func updateView() {

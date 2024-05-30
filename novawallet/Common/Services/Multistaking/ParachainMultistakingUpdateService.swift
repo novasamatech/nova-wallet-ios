@@ -120,9 +120,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
         let collatorIds = delegator.collators()
 
         let wrapper = operationFactory.createMetadataWrapper(
-            for: { collatorIds },
-            connection: connection,
-            runtimeService: runtimeService
+            for: { collatorIds }
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
