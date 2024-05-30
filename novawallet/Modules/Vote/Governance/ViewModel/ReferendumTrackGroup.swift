@@ -5,14 +5,29 @@ enum ReferendumTrackGroup {
     case governance
     case fellowship
 
-    var trackTypes: [ReferendumTrackType] {
+    var trackTypes: [String] {
         switch self {
         case .treasury:
-            return [.bigSpender, .bigTipper, .mediumSpender, .smallSpender, .smallTipper, .treasurer]
+            return [
+                ReferendumTrackType.bigSpender,
+                ReferendumTrackType.bigTipper,
+                ReferendumTrackType.mediumSpender,
+                ReferendumTrackType.smallSpender,
+                ReferendumTrackType.smallTipper,
+                ReferendumTrackType.treasurer
+            ]
         case .fellowship:
-            return [.fellowshipAdmin, .whiteListedCaller]
+            return [
+                ReferendumTrackType.fellowshipAdmin,
+                ReferendumTrackType.whiteListedCaller
+            ]
         case .governance:
-            return [.referendumKiller, .referendumCanceller, .leaseAdmin, .generalAdmin]
+            return [
+                ReferendumTrackType.referendumKiller,
+                ReferendumTrackType.referendumCanceller,
+                ReferendumTrackType.leaseAdmin,
+                ReferendumTrackType.generalAdmin
+            ]
         }
     }
 

@@ -11,8 +11,8 @@ protocol GovernanceExtrinsicFactoryProtocol {
     func unlock(
         with actions: Set<GovernanceUnlockSchedule.Action>,
         accountId: AccountId,
-        builder: ExtrinsicBuilderProtocol
-    ) throws -> ExtrinsicBuilderProtocol
+        splitter: ExtrinsicSplitting
+    ) throws -> ExtrinsicSplitting
 
     func delegationUpdate(
         with actions: [GovernanceDelegatorAction],

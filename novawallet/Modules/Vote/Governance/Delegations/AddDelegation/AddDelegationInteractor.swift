@@ -60,8 +60,6 @@ final class AddDelegationInteractor {
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: blockTimeFactory
             ),
-            chain: chain,
-            connection: connection,
             runtimeService: runtimeService,
             operationManager: OperationManager(operationQueue: operationQueue)
         )

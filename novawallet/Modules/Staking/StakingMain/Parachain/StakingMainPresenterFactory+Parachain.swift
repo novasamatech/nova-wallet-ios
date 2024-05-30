@@ -47,7 +47,12 @@ extension StakingMainPresenterFactory {
     }
 
     func createParachainInteractor(state: ParachainStakingSharedStateProtocol) -> StakingParachainInteractor? {
-        guard let currencyManager = CurrencyManager.shared else {
+        let chainAsset = state.stakingOption.chainAsset
+
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let connection = state.chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
 
@@ -58,8 +63,6 @@ extension StakingMainPresenterFactory {
         let logger = Logger.shared
 
         let networkInfoFactory = ParaStkNetworkInfoOperationFactory()
-
-        let chainAsset = state.stakingOption.chainAsset
 
         let blockTimeFactory = BlockTimeOperationFactory(chain: chainAsset.chain)
 
@@ -73,9 +76,19 @@ extension StakingMainPresenterFactory {
             blockTimeOperationFactory: blockTimeFactory
         )
 
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: state.chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let collatorsOperationFactory = ParaStkCollatorsOperationFactory(
             requestFactory: storageRequestFactory,
-            identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            identityProxyFactory: identityProxyFactory,
+            chainFormat: chainAsset.chain.chainFormat
         )
 
         let applicationHandler = ApplicationHandler()
