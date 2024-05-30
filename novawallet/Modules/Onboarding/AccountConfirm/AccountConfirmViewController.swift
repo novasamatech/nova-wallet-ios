@@ -122,7 +122,7 @@ extension AccountConfirmViewController: MnemonicGridViewDelegate {
     ) {
         let destinationView: MnemonicGridView
 
-        if let _ = mnemonicView as? MnemonicCardView {
+        if mnemonicView is MnemonicCardView {
             destinationView = rootView.mnemonicGridView
         } else {
             destinationView = rootView.mnemonicCardView
