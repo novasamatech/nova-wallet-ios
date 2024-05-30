@@ -5,16 +5,24 @@ enum CloudBackupOperationFactoryError: Error {
     case readingFailed(Error)
     case writingFailed(Error)
     case deletionFailed(Error)
+    case moveFailed(Error)
     case conflictResolutionFailed(Error)
 }
 
 protocol CloudBackupOperationFactoryProtocol {
     func createReadingOperation(for url: URL) -> BaseOperation<Data?>
+
     func createWritingOperation(
         for url: URL,
         dataClosure: @escaping () throws -> Data
     ) -> BaseOperation<Void>
+
     func createDeletionOperation(for url: URL) -> BaseOperation<Void>
+
+    func createMoveOperation(
+        from sourceUrl: URL,
+        destinationUrl: URL
+    ) -> BaseOperation<Void>
 }
 
 final class CloudBackupOperationFactory {
@@ -22,7 +30,11 @@ final class CloudBackupOperationFactory {
     let fileManager: FileManager
     let conflictsResolver: CloudBackupConflictsResolving
 
-    init(fileCoordinator: NSFileCoordinator, fileManager: FileManager, conflictsResolver: CloudBackupConflictsResolving) {
+    init(
+        fileCoordinator: NSFileCoordinator,
+        fileManager: FileManager,
+        conflictsResolver: CloudBackupConflictsResolving
+    ) {
         self.fileCoordinator = fileCoordinator
         self.fileManager = fileManager
         self.conflictsResolver = conflictsResolver
@@ -154,6 +166,56 @@ final class CloudBackupOperationFactory {
             }
         }
     }
+
+    func moveFile(
+        using coordinator: NSFileCoordinator,
+        fileManager: FileManager,
+        conflictsResolver: CloudBackupConflictsResolving,
+        sourceURL: URL,
+        destinationURL: URL
+    ) -> BaseOperation<Void> {
+        ClosureOperation {
+            if case let .failure(error) = conflictsResolver.resolveConflictsIfNeeded(
+                using: coordinator,
+                url: sourceURL
+            ) {
+                throw CloudBackupOperationFactoryError.conflictResolutionFailed(error)
+            }
+
+            guard sourceURL != destinationURL else {
+                return
+            }
+
+            var coordinatorError: NSError?
+            var moveError: Error?
+
+            coordinator.coordinate(
+                writingItemAt: sourceURL,
+                options: .forMoving,
+                writingItemAt: destinationURL,
+                options: .forReplacing,
+                error: &coordinatorError
+            ) { newSourceURL, newDestinationURL in
+                do {
+                    if fileManager.fileExists(atPath: newDestinationURL.path) {
+                        try fileManager.removeItem(at: newDestinationURL)
+                    }
+
+                    try fileManager.moveItem(at: newSourceURL, to: newDestinationURL)
+                } catch {
+                    moveError = error
+                }
+            }
+
+            if let error = moveError {
+                throw CloudBackupOperationFactoryError.deletionFailed(error)
+            }
+
+            if let error = coordinatorError {
+                throw CloudBackupOperationFactoryError.deletionFailed(error)
+            }
+        }
+    }
 }
 
 extension CloudBackupOperationFactory: CloudBackupOperationFactoryProtocol {
@@ -184,6 +246,19 @@ extension CloudBackupOperationFactory: CloudBackupOperationFactoryProtocol {
             fileManager: fileManager,
             conflictsResolver: conflictsResolver,
             url: url
+        )
+    }
+
+    func createMoveOperation(
+        from sourceUrl: URL,
+        destinationUrl: URL
+    ) -> BaseOperation<Void> {
+        moveFile(
+            using: fileCoordinator,
+            fileManager: fileManager,
+            conflictsResolver: conflictsResolver,
+            sourceURL: sourceUrl,
+            destinationURL: destinationUrl
         )
     }
 }

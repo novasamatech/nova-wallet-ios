@@ -79,7 +79,9 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
     ) {
         let fileManager = serviceFactory.createFileManager()
 
-        guard let fileUrl = fileManager.getFileUrl() else {
+        guard
+            let fileUrl = fileManager.getFileUrl(),
+            let tempUrl = fileManager.getTempUrl() else {
             dispatchInQueueWhenPossible(queue) {
                 completionClosure(.failure(.cloudNotAvailable))
             }
@@ -107,6 +109,7 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
 
         let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
             for: fileUrl,
+            tempUrl: tempUrl,
             timeoutInterval: CloudBackup.backupSaveTimeout,
             dataClosure: {
                 try dataOperation.extractNoCancellableResultData()

@@ -15118,6 +15118,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func createAccount(for walletId: MetaAccountModel.Id, chain: ChainModel)  {
+        
+    return cuckoo_manager.call("createAccount(for: MetaAccountModel.Id, chain: ChainModel)",
+            parameters: (walletId, chain),
+            escapingParameters: (walletId, chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createAccount(for: walletId, chain: chain))
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountManagementInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -15145,6 +15160,11 @@ import SoraFoundation
 	    func requestExportOptions<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(metaAccount: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountModel, ChainModel)> where M1.MatchedType == MetaAccountModel, M2.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel, ChainModel)>] = [wrap(matchable: metaAccount) { $0.0 }, wrap(matchable: chain) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorInputProtocol.self, method: "requestExportOptions(metaAccount: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func createAccount<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for walletId: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountModel.Id, ChainModel)> where M1.MatchedType == MetaAccountModel.Id, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel.Id, ChainModel)>] = [wrap(matchable: walletId) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorInputProtocol.self, method: "createAccount(for: MetaAccountModel.Id, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -15187,6 +15207,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("requestExportOptions(metaAccount: MetaAccountModel, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func createAccount<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for walletId: M1, chain: M2) -> Cuckoo.__DoNotUse<(MetaAccountModel.Id, ChainModel), Void> where M1.MatchedType == MetaAccountModel.Id, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel.Id, ChainModel)>] = [wrap(matchable: walletId) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return cuckoo_manager.verify("createAccount(for: MetaAccountModel.Id, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -15217,6 +15243,12 @@ import SoraFoundation
     
     
      func requestExportOptions(metaAccount: MetaAccountModel, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func createAccount(for walletId: MetaAccountModel.Id, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15322,6 +15354,36 @@ import SoraFoundation
         
     }
     
+    
+    
+     func didReceiveCloudBackup(state: CloudBackupSyncState)  {
+        
+    return cuckoo_manager.call("didReceiveCloudBackup(state: CloudBackupSyncState)",
+            parameters: (state),
+            escapingParameters: (state),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveCloudBackup(state: state))
+        
+    }
+    
+    
+    
+     func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain: ChainModel)  {
+        
+    return cuckoo_manager.call("didReceiveAccountCreationResult(_: Result<Void, Error>, chain: ChainModel)",
+            parameters: (result, chain),
+            escapingParameters: (result, chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveAccountCreationResult(result, chain: chain))
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountManagementInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -15354,6 +15416,16 @@ import SoraFoundation
 	    func didReceiveProxyWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaAccountModel?, Error>)> where M1.MatchedType == Result<MetaAccountModel?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaAccountModel?, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveCloudBackup<M1: Cuckoo.Matchable>(state: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CloudBackupSyncState)> where M1.MatchedType == CloudBackupSyncState {
+	        let matchers: [Cuckoo.ParameterMatcher<(CloudBackupSyncState)>] = [wrap(matchable: state) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceiveCloudBackup(state: CloudBackupSyncState)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveAccountCreationResult<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ result: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Void, Error>, ChainModel)> where M1.MatchedType == Result<Void, Error>, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Void, Error>, ChainModel)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceiveAccountCreationResult(_: Result<Void, Error>, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -15402,6 +15474,18 @@ import SoraFoundation
 	        return cuckoo_manager.verify("didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveCloudBackup<M1: Cuckoo.Matchable>(state: M1) -> Cuckoo.__DoNotUse<(CloudBackupSyncState), Void> where M1.MatchedType == CloudBackupSyncState {
+	        let matchers: [Cuckoo.ParameterMatcher<(CloudBackupSyncState)>] = [wrap(matchable: state) { $0 }]
+	        return cuckoo_manager.verify("didReceiveCloudBackup(state: CloudBackupSyncState)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveAccountCreationResult<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ result: M1, chain: M2) -> Cuckoo.__DoNotUse<(Result<Void, Error>, ChainModel), Void> where M1.MatchedType == Result<Void, Error>, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Void, Error>, ChainModel)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveAccountCreationResult(_: Result<Void, Error>, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -15438,6 +15522,18 @@ import SoraFoundation
     
     
      func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveCloudBackup(state: CloudBackupSyncState)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
