@@ -3,10 +3,11 @@ import SoraFoundation
 import SoraKeystore
 
 struct CloudBackupSettingsViewFactory {
-    static func createView(
-        with serviceCoordinator: ServiceCoordinatorProtocol
-    ) -> CloudBackupSettingsViewProtocol? {
-        let interactor = createInteractor(with: serviceCoordinator)
+    static func createView() -> CloudBackupSettingsViewProtocol? {
+        let interactor = CloudBackupSettingsInteractor(
+            cloudBackupSyncMediator: CloudBackupSyncMediatorFacade.sharedMediator
+        )
+
         let wireframe = CloudBackupSettingsWireframe()
 
         let presenter = CloudBackupSettingsPresenter(
@@ -26,11 +27,5 @@ struct CloudBackupSettingsViewFactory {
         interactor.presenter = presenter
 
         return view
-    }
-
-    private static func createInteractor(
-        with serviceCoordinator: ServiceCoordinatorProtocol
-    ) -> CloudBackupSettingsInteractor {
-        CloudBackupSettingsInteractor(cloudBackupSyncFacade: serviceCoordinator.cloudBackupSyncFacade)
     }
 }

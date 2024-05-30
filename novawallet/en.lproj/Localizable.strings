@@ -1611,3 +1611,9 @@
 "chain.accounts.list.default.subtitle" = "+%d others";
 "chain.accounts.list.default.header" = "Accounts with default key";
 "chain.accounts.list.custom.header" = "Accounts with custom key";
+"common.new" = "New";
+"common.modified" = "Modified";
+"common.removed" = "Removed";
+"cloud.backup.review.title" = "Apply Backup Updates?";
+"cloud.backup.review.subtitle" = "Before proceeding with changes, %@ for modified and removed wallets!";
+"cloud.backup.review.ensure.passphrase" = "ensure you've saved Passphrases";

@@ -31,7 +31,13 @@ class SingleTitleWalletView: GenericTitleValueView<WalletIconView, UILabel>, Wal
         titleView.clear()
     }
 
-    func bind(regular _: ViewModel.BalanceInfo) {}
+    func bind(regular _: ViewModel.BalanceInfo) {
+        networkImageView.isHidden = true
+    }
+
+    func bindNoInfo() {
+        networkImageView.isHidden = true
+    }
 
     func bind(proxy viewModel: ViewModel.ProxyInfo) {
         viewModel.networkIcon?.loadImage(

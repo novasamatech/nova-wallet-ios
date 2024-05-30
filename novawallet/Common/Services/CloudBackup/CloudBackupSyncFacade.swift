@@ -20,6 +20,8 @@ protocol CloudBackupSyncFacadeProtocol: ApplicationServiceProtocol {
 
     func unsubscribeState(_ observer: AnyObject)
 
+    func getState() -> CloudBackupSyncState
+
     func syncUp()
 }
 
@@ -241,5 +243,15 @@ extension CloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
 
     func syncUp() {
         syncService?.syncUp()
+    }
+
+    func getState() -> CloudBackupSyncState {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return stateObservable.state
     }
 }

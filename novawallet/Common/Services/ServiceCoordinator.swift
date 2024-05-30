@@ -8,7 +8,6 @@ protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }
     var walletNotificationService: WalletNotificationServiceProtocol { get }
     var proxySyncService: ProxySyncServiceProtocol { get }
-    var cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol { get }
 
     func updateOnWalletSelectionChange()
 
@@ -29,7 +28,6 @@ final class ServiceCoordinator {
     let walletNotificationService: WalletNotificationServiceProtocol
     let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
-    let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -43,8 +41,7 @@ final class ServiceCoordinator {
         dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
         syncModeUpdateService: ChainSyncModeUpdateServiceProtocol,
-        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
-        cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
+        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
@@ -58,7 +55,6 @@ final class ServiceCoordinator {
         self.walletNotificationService = walletNotificationService
         self.syncModeUpdateService = syncModeUpdateService
         self.pushNotificationsFacade = pushNotificationsFacade
-        self.cloudBackupSyncFacade = cloudBackupSyncFacade
     }
 }
 
@@ -80,12 +76,10 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         }
 
         pushNotificationsFacade.syncWallets()
-        cloudBackupSyncFacade.syncUp()
     }
 
     func updateOnWalletRemove() {
         pushNotificationsFacade.syncWallets()
-        cloudBackupSyncFacade.syncUp()
     }
 
     func setup() {
@@ -100,7 +94,6 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         syncModeUpdateService.setup()
         walletNotificationService.setup()
         pushNotificationsFacade.setup()
-        cloudBackupSyncFacade.setup()
     }
 
     func throttle() {
@@ -115,7 +108,6 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         syncModeUpdateService.throttle()
         walletNotificationService.throttle()
         pushNotificationsFacade.throttle()
-        cloudBackupSyncFacade.throttle()
     }
 }
 
@@ -257,8 +249,7 @@ extension ServiceCoordinator {
             dappMediator: DAppInteractionFactory.createMediator(for: urlHandlingFacade),
             walletNotificationService: walletNotificationService,
             syncModeUpdateService: syncModeUpdateService,
-            pushNotificationsFacade: PushNotificationsServiceFacade.shared,
-            cloudBackupSyncFacade: CloudBackupSyncFacade.createFacade()
+            pushNotificationsFacade: PushNotificationsServiceFacade.shared
         )
     }
 }
