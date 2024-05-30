@@ -43,13 +43,13 @@ class MnemonicCardView: MnemonicGridView {
 
     func bind(to model: Model) {
         cardTitleView.attributedText = model.title
-        bind(with: model.words)
+        bind(with: model.units)
     }
 }
 
 extension MnemonicCardView {
     struct Model {
-        let words: [String]
+        let units: [MnemonicGridView.UnitType]
         let title: NSAttributedString
     }
 }

@@ -99,7 +99,9 @@ private extension BackupMnemonicCardPresenter {
                     if let mnemonic {
                         .mnemonicVisible(
                             model: .init(
-                                words: mnemonic.allWords(),
+                                units: mnemonic
+                                    .allWords()
+                                    .map { MnemonicGridView.UnitType.wordView(text: $0) },
                                 title: createCardTitle()
                             )
                         )

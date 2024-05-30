@@ -43,7 +43,14 @@ extension AccountConfirmPresenter: AccountConfirmInteractorOutputProtocol {
             )
         }
 
-        view?.didReceive(words: words, afterConfirmationFail: afterConfirmationFail)
+        view?.update(
+            with: .init(
+                units: words.map { _ in .viewHolder },
+                title: createCardTitle()
+            ),
+            gridUnits: words.map { .wordView(text: $0) },
+            afterConfirmationFail: afterConfirmationFail
+        )
     }
 
     func didCompleteConfirmation() {
@@ -61,6 +68,23 @@ extension AccountConfirmPresenter: AccountConfirmInteractorOutputProtocol {
             error: CommonError.undefined,
             from: view,
             locale: locale
+        )
+    }
+
+    private func createCardTitle() -> NSAttributedString {
+        NSAttributedString.coloredItems(
+            [
+                R.string.localizable.mnemonicCardRevealedHeaderMessageHighlighted(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            ],
+            formattingClosure: { items in
+                R.string.localizable.mnemonicCardRevealedHeaderMessage(
+                    items[0],
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            },
+            color: R.color.colorTextPrimary()!
         )
     }
 }

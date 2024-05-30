@@ -89,7 +89,9 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
             if let metadata {
                 .mnemonicVisible(
                     model: .init(
-                        words: metadata.mnemonic,
+                        units: metadata
+                            .mnemonic
+                            .map { MnemonicGridView.UnitType.wordView(text: $0) },
                         title: createCardTitle()
                     )
                 )

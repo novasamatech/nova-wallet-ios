@@ -769,6 +769,7 @@
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
 		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
+		2D8EFB282C0728BC00866F90 /* AccountConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB272C0728BC00866F90 /* AccountConfirmViewLayout.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
@@ -5538,6 +5539,7 @@
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
 		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D8EFB272C0728BC00866F90 /* AccountConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountConfirmViewLayout.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
@@ -10846,6 +10848,7 @@
 				7306D50F278F6CC90DC88F27 /* AccountConfirmPresenter.swift */,
 				3E992CCDC1D581F7E9D3F1CA /* AccountConfirmInteractor.swift */,
 				A3104ABC4BECF08B0BA836AA /* AccountConfirmViewController.swift */,
+				2D8EFB272C0728BC00866F90 /* AccountConfirmViewLayout.swift */,
 				FFF3E2C8682E9BCCB0A6872D /* AccountConfirmViewController.xib */,
 				A14CA4551FCC2EBD078E2242 /* AccountConfirmViewFactory.swift */,
 				84EBC54024F650F100459D15 /* BaseAccountConfirmInteractor.swift */,
@@ -23901,6 +23904,7 @@
 				84A58FD428A05820003F6ABF /* HardwareSigningError.swift in Sources */,
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
 				842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */,
+				2D8EFB282C0728BC00866F90 /* AccountConfirmViewLayout.swift in Sources */,
 				842B18042864F9A90014CC57 /* CrossChainTransferInteractor.swift in Sources */,
 				848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */,
 				2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */,

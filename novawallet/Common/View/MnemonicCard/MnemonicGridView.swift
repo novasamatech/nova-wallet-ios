@@ -1,12 +1,24 @@
 import UIKit
 import SoraUI
 
+protocol MnemonicGridViewDelegate: AnyObject {
+    func didTap(
+        _ mnemonicView: MnemonicGridView,
+        _ unit: MnemonicGridView.UnitType
+    )
+}
+
 class MnemonicGridView: UIView {
     typealias WordButton = ControlView<RoundedView, UILabel>
     typealias Placeholder = UIView
 
-    private var units: [UnitType] = []
+    weak var delegate: MnemonicGridViewDelegate?
+
+    var units: [UnitType] = []
     private var rows: [Int: UIStackView] = [:]
+    private var transitionCoordinators: [Int: GridUnitTransitionCoordinatorSourceProtocol] = [:]
+
+    private var currentProposedButton: WordButton?
 
     let stackView: UIStackView = .create { view in
         view.axis = .vertical
@@ -65,8 +77,11 @@ class MnemonicGridView: UIView {
         stackView.backgroundColor = .clear
     }
 
-    func bind(with words: [String]) {
-        units = words.map { .wordView(text: $0) }
+    func bind(with units: [UnitType]) {
+        self.units = units
+
+        rows.values.forEach { $0.removeFromSuperview() }
+        rows = [:]
 
         (0 ..< (units.count / 3)).forEach { [weak self] index in
             guard let self else { return }
@@ -94,10 +109,13 @@ class MnemonicGridView: UIView {
             }
     }
 
-    func requestWordInsert(_ insertionClosure: (_ coodrinator: GridUnitTransitionCoordinatorSourceProtocol?) -> Void) {
+    func requestWordInsert(
+        wordUnit: UnitType,
+        _ insertionClosure: (_ coordinator: GridUnitTransitionCoordinatorSourceProtocol?) -> Void
+    ) {
         guard
             let availableViewHolderIndex = units.firstIndex(where: { $0 == .viewHolder }),
-            let row = rows[(availableViewHolderIndex + 1 / 3) - 1],
+            let row = rows[availableViewHolderIndex / 3],
             let availableViewHolder = row
             .arrangedSubviews
             .first(where: { $0.tag == availableViewHolderIndex })
@@ -108,9 +126,33 @@ class MnemonicGridView: UIView {
         }
 
         let coordinator = GridUnitTransitionCoordinator()
-        coordinator.setupInsertion(viewHolder: availableViewHolder, parentView: row)
+
+        coordinator.setupInsertion(
+            viewHolder: availableViewHolder,
+            parentView: row
+        ) { [weak self] insertedButton in
+            insertedButton.tag = availableViewHolder.tag
+
+            self?.units[availableViewHolderIndex] = wordUnit
+            self?.addAction(for: insertedButton)
+            self?.transitionCoordinators[availableViewHolderIndex] = nil
+        }
+
+        transitionCoordinators[availableViewHolderIndex] = coordinator
 
         insertionClosure(coordinator)
+    }
+
+    func setupProposition(for coordinator: GridUnitTransitionCoordinatorSourceProtocol) {
+        guard let currentProposedButton else { return }
+
+        coordinator.setupProposition(
+            view: currentProposedButton,
+            onFinish: { [weak self] in
+                let index = currentProposedButton.tag
+                self?.units[index] = .viewHolder
+            }
+        )
     }
 }
 
@@ -135,11 +177,7 @@ private extension MnemonicGridView {
             color: R.color.colorTextSecondary()!
         )
 
-        button.addTarget(
-            self,
-            action: #selector(actionItem),
-            for: .touchUpInside
-        )
+        addAction(for: button)
 
         button.snp.makeConstraints { make in
             make.width.equalTo(unitWidth)
@@ -147,6 +185,23 @@ private extension MnemonicGridView {
         }
 
         return button
+    }
+
+    open func addAction(for button: UIControl) {
+        button.addTarget(
+            self,
+            action: #selector(wordButtonAction(sender:)),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func wordButtonAction(sender: UIControl) {
+        guard let button = sender as? WordButton else { return }
+
+        let index = button.tag
+
+        currentProposedButton = button
+        delegate?.didTap(self, units[index])
     }
 
     func createViewHolder() -> UIView {
@@ -188,17 +243,17 @@ private extension MnemonicGridView {
             viewHolder.addSubview(wordButton)
         }
 
+        viewHolder.tag = index
+
         row.addArrangedSubview(viewHolder)
     }
-
-    @objc func actionItem() {}
 }
 
 // MARK: Constants
 
 private extension MnemonicGridView {
     enum Constants {
-        static let itemsSpacing: CGFloat = 12
+        static let itemsSpacing: CGFloat = 16
         static let itemCornerRadius: CGFloat = 8
         static let buttonHeight: CGFloat = 33.0
         static let contentInset: UIEdgeInsets = .init(
@@ -220,9 +275,5 @@ extension MnemonicGridView {
     enum UnitType: Hashable, Equatable {
         case viewHolder
         case wordView(text: String)
-    }
-
-    struct Unit {
-        var type: UnitType
     }
 }

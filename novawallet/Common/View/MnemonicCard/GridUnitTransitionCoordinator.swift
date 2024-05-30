@@ -1,51 +1,90 @@
 import UIKit
+import SoraUI
+import SnapKit
 
 protocol GridUnitTransitionCoordinatorSourceProtocol {
-    func applyTransition(for view: UIView)
-    func finishTransition()
+    func setupProposition(
+        view: UIControl,
+        onFinish: @escaping () -> Void
+    )
+
+    func startTransition(with animator: BlockViewAnimatorProtocol?)
 }
 
 protocol GridUnitTransitionCoordinatorProtocol: GridUnitTransitionCoordinatorSourceProtocol {
-    func setupInsertion(viewHolder: UIView, parentView: UIView)
+    func setupInsertion(
+        viewHolder: UIView,
+        parentView: UIView,
+        onFinish: @escaping (UIControl) -> Void
+    )
 }
 
 final class GridUnitTransitionCoordinator {
     private var destinationViewHolder: UIView?
     private var destinationParentView: UIView?
 
-    private var currentView: UIView?
+    private var destinationOnFinish: ((UIControl) -> Void)?
+    private var sourceOnFinish: (() -> Void)?
+
+    private var viewToInsert: UIControl?
 }
 
 extension GridUnitTransitionCoordinator: GridUnitTransitionCoordinatorProtocol {
-    func setupInsertion(viewHolder: UIView, parentView: UIView) {
+    func setupProposition(
+        view: UIControl,
+        onFinish: @escaping () -> Void
+    ) {
+        viewToInsert = view
+        sourceOnFinish = onFinish
+    }
+
+    func setupInsertion(
+        viewHolder: UIView,
+        parentView: UIView,
+        onFinish: @escaping (UIControl) -> Void
+    ) {
         destinationViewHolder = viewHolder
         destinationParentView = parentView
+
+        destinationOnFinish = onFinish
     }
 
-    func applyTransition(for view: UIView) {
+    func startTransition(with animator: BlockViewAnimatorProtocol?) {
         guard
+            let viewToInsert,
+            let sourceViewHolder = viewToInsert.superview,
             let destinationViewHolder,
-            let destinationParentView,
-            let window = UIApplication.shared.windows.first
-        else { return }
+            let destinationParentView
+        else {
+            return
+        }
 
-        currentView = view
+        viewToInsert.removeFromSuperview()
+        destinationViewHolder.addSubview(viewToInsert)
 
-        let destinationPoint = destinationParentView.convert(
-            destinationViewHolder.center,
-            to: window
+        var sourceConstraints: Constraint?
+        var destinationConstraint: Constraint?
+
+        viewToInsert.snp.makeConstraints { make in
+            destinationConstraint = make.edges.equalTo(destinationViewHolder).constraint
+            destinationConstraint?.deactivate()
+
+            sourceConstraints = make.edges.equalTo(sourceViewHolder).constraint
+        }
+
+        destinationParentView.layoutIfNeeded()
+
+        viewToInsert.removeTarget(nil, action: nil, for: .allEvents)
+
+        sourceOnFinish?()
+        destinationOnFinish?(viewToInsert)
+
+        sourceConstraints?.deactivate()
+        destinationConstraint?.activate()
+
+        animator?.animate(
+            block: { destinationParentView.layoutIfNeeded() },
+            completionBlock: nil
         )
-
-        view.removeFromSuperview()
-        window.addSubview(view)
-
-        view.center = destinationPoint
-    }
-
-    func finishTransition() {
-        guard let currentView else { return }
-
-        currentView.removeFromSuperview()
-        destinationViewHolder?.addSubview(currentView)
     }
 }
