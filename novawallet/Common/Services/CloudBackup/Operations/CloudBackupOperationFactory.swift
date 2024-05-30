@@ -208,11 +208,11 @@ final class CloudBackupOperationFactory {
             }
 
             if let error = moveError {
-                throw CloudBackupOperationFactoryError.deletionFailed(error)
+                throw CloudBackupOperationFactoryError.moveFailed(error)
             }
 
             if let error = coordinatorError {
-                throw CloudBackupOperationFactoryError.deletionFailed(error)
+                throw CloudBackupOperationFactoryError.moveFailed(error)
             }
         }
     }
