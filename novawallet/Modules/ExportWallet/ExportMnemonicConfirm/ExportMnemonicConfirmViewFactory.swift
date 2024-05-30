@@ -6,7 +6,16 @@ final class ExportMnemonicConfirmViewFactory: ExportMnemonicConfirmViewFactoryPr
     static func createViewForMnemonic(_ mnemonic: IRMnemonicProtocol) -> AccountConfirmViewProtocol? {
         let localizationManager = LocalizationManager.shared
 
-        let presenter = AccountConfirmPresenter()
+        let interactor = ExportMnemonicConfirmInteractor(mnemonic: mnemonic)
+        let wireframe = ExportMnemonicConfirmWireframe(localizationManager: localizationManager)
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
+
+        let presenter = AccountConfirmPresenter(
+            wireframe: wireframe,
+            interactor: interactor,
+            mnemonicViewModelFactory: mnemonicViewModelFactory,
+            localizationManager: localizationManager
+        )
 
         let view = AccountConfirmViewController(
             presenter: presenter,
@@ -16,15 +25,8 @@ final class ExportMnemonicConfirmViewFactory: ExportMnemonicConfirmViewFactoryPr
 //            R.string.localizable.commonConfirm(preferredLanguages: locale.rLanguages)
 //        }
 
-        let interactor = ExportMnemonicConfirmInteractor(mnemonic: mnemonic)
-        let wireframe = ExportMnemonicConfirmWireframe(localizationManager: localizationManager)
-
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        presenter.localizationManager = localizationManager
 
         return view
     }

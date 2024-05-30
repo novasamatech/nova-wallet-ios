@@ -63,7 +63,7 @@ final class MnemonicCardView: MnemonicGridView {
             let wordNumber = wordButton.tag + 1
 
             wordButton.controlContentView.textAlignment = .left
-            wordButton.controlContentView.attributedText = createButtonText(with: wordNumber, wordText)
+            wordButton.controlContentView.attributedText = self.createButtonText(with: wordNumber, wordText)
 
             UIView.animate(withDuration: 0.2) {
                 wordButton.controlContentView.alpha = 1
@@ -84,8 +84,9 @@ extension MnemonicCardView {
     }
 }
 
+// MARK: Private
+
 private extension MnemonicCardView {
-    
     func createButtonText(
         with wordNumber: Int,
         _ text: String
@@ -97,6 +98,8 @@ private extension MnemonicCardView {
         )
     }
 }
+
+// MARK: Constants
 
 private extension MnemonicCardView {
     enum Constants {

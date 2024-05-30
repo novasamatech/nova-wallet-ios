@@ -20,6 +20,7 @@ struct BackupMnemonicCardViewFactory {
         let wireframe = BackupMnemonicCardWireframe()
 
         let networkViewModelFactory = NetworkViewModelFactory()
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: LocalizationManager.shared)
 
         let presenter = BackupMnemonicCardPresenter(
             interactor: interactor,
@@ -27,6 +28,7 @@ struct BackupMnemonicCardViewFactory {
             metaAccount: metaAccount,
             chain: chain,
             networkViewModelFactory: networkViewModelFactory,
+            mnemonicViewModelFactory: mnemonicViewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 

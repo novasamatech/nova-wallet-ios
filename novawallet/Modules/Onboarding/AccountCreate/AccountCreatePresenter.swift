@@ -5,13 +5,15 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
     init(
         walletName: String,
         localizationManager: LocalizationManagerProtocol,
-        checkboxListViewModelFactory: CheckboxListViewModelFactory
+        checkboxListViewModelFactory: CheckboxListViewModelFactory,
+        mnemonicViewModelFactory: MnemonicViewModelFactory
     ) {
         self.walletName = walletName
 
         super.init(
             localizationManager: localizationManager,
-            checkboxListViewModelFactory: checkboxListViewModelFactory
+            checkboxListViewModelFactory: checkboxListViewModelFactory,
+            mnemonicViewModelFactory: mnemonicViewModelFactory
         )
     }
 

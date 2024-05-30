@@ -10,7 +10,8 @@ extension AddChainAccount {
             chainModelId: ChainModel.Id,
             isEthereumBased: Bool,
             localizationManager: LocalizationManagerProtocol,
-            checkboxListViewModelFactory: CheckboxListViewModelFactory
+            checkboxListViewModelFactory: CheckboxListViewModelFactory,
+            mnemonicViewModelFactory: MnemonicViewModelFactory
         ) {
             self.metaAccountModel = metaAccountModel
             self.chainModelId = chainModelId
@@ -18,7 +19,8 @@ extension AddChainAccount {
 
             super.init(
                 localizationManager: localizationManager,
-                checkboxListViewModelFactory: checkboxListViewModelFactory
+                checkboxListViewModelFactory: checkboxListViewModelFactory,
+                mnemonicViewModelFactory: mnemonicViewModelFactory
             )
         }
 

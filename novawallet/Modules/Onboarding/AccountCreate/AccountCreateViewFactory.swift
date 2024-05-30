@@ -11,11 +11,13 @@ final class AccountCreateViewFactory {
     ) -> AccountCreateViewProtocol? {
         let localizationManager = LocalizationManager.shared
         let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
         let presenter = AccountCreatePresenter(
             walletName: name,
             localizationManager: localizationManager,
-            checkboxListViewModelFactory: checkboxListViewModelFactory
+            checkboxListViewModelFactory: checkboxListViewModelFactory,
+            mnemonicViewModelFactory: mnemonicViewModelFactory
         )
 
         let appearanceAnimator = FadeAnimator(
@@ -48,13 +50,15 @@ final class AccountCreateViewFactory {
     ) -> AccountCreateViewProtocol? {
         let localizationManager = LocalizationManager.shared
         let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
         let presenter = AddChainAccount.AccountCreatePresenter(
             metaAccountModel: metaAccountModel,
             chainModelId: chainModelId,
             isEthereumBased: isEthereumBased,
             localizationManager: localizationManager,
-            checkboxListViewModelFactory: checkboxListViewModelFactory
+            checkboxListViewModelFactory: checkboxListViewModelFactory,
+            mnemonicViewModelFactory: mnemonicViewModelFactory
         )
 
         let appearanceAnimator = FadeAnimator(

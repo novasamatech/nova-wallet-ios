@@ -17,6 +17,21 @@ class AccountConfirmViewLayout: ScrollableContainerLayoutView {
     let mnemonicCardView = MnemonicCardView()
     let mnemonicGridView = MnemonicGridView()
 
+    let continueButton: TriangularedButton = .create { button in
+        button.applyDefaultStyle()
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupHandlers()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func setupLayout() {
         super.setupLayout()
 
@@ -29,6 +44,13 @@ class AccountConfirmViewLayout: ScrollableContainerLayoutView {
             spacingAfter: Constants.stackVerticalSpacing
         )
         addArrangedSubview(mnemonicGridView)
+
+        addSubview(continueButton)
+        continueButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
     }
 
     override func setupStyle() {
@@ -36,11 +58,35 @@ class AccountConfirmViewLayout: ScrollableContainerLayoutView {
 
         containerView.scrollView.showsVerticalScrollIndicator = false
     }
+
+    func setButtonDisabled(with title: String) {
+        continueButton.applyDisabledStyle()
+        continueButton.imageWithTitleView?.title = title
+        continueButton.isUserInteractionEnabled = false
+    }
+
+    func setButtonEnabled(with title: String) {
+        continueButton.applyDefaultStyle()
+        continueButton.imageWithTitleView?.title = title
+        continueButton.isUserInteractionEnabled = true
+    }
 }
 
 // MARK: Private
 
-private extension AccountConfirmViewLayout {}
+private extension AccountConfirmViewLayout {
+    func setupHandlers() {
+        continueButton.addTarget(
+            self,
+            action: #selector(actionContinue),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionContinue() {
+        delegate?.didTapContinue()
+    }
+}
 
 private extension AccountConfirmViewLayout {
     enum Constants {

@@ -14,6 +14,7 @@ final class BackupMnemonicCardPresenter {
 
     private let walletViewModelFactory = WalletAccountViewModelFactory()
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    private let mnemonicViewModelFactory: MnemonicViewModelFactory
     private let logger: LoggerProtocol
 
     init(
@@ -22,6 +23,7 @@ final class BackupMnemonicCardPresenter {
         metaAccount: MetaAccountModel,
         chain: ChainModel?,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        mnemonicViewModelFactory: MnemonicViewModelFactory,
         localizationManager: LocalizationManager,
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -30,6 +32,7 @@ final class BackupMnemonicCardPresenter {
         self.metaAccount = metaAccount
         self.chain = chain
         self.networkViewModelFactory = networkViewModelFactory
+        self.mnemonicViewModelFactory = mnemonicViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -98,23 +101,13 @@ private extension BackupMnemonicCardPresenter {
                 mnemonicCardState: {
                     if let mnemonic {
                         .mnemonicVisible(
-                            model: .init(
-                                units: mnemonic
-                                    .allWords()
-                                    .map { MnemonicGridView.UnitType.wordView(text: $0) },
-                                title: createCardTitle()
+                            model: mnemonicViewModelFactory.createMnemonicCardViewModel(
+                                for: mnemonic.allWords()
                             )
                         )
                     } else {
                         .mnemonicNotVisible(
-                            model: .init(
-                                title: R.string.localizable.mnemonicCardCoverMessageTitle(
-                                    preferredLanguages: selectedLocale.rLanguages
-                                ),
-                                message: R.string.localizable.mnemonicCardCoverMessageMessage(
-                                    preferredLanguages: selectedLocale.rLanguages
-                                )
-                            )
+                            model: mnemonicViewModelFactory.createMnemonicCardHiddenModel()
                         )
                     }
                 }()

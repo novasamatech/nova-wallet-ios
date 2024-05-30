@@ -6,6 +6,7 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
     var wireframe: AccountCreateWireframeProtocol!
     var interactor: AccountCreateInteractorInputProtocol!
     var checkboxListViewModelFactory: CheckboxListViewModelFactory
+    let mnemonicViewModelFactory: MnemonicViewModelFactory
 
     var checkboxView: CheckboxListViewProtocol? { view }
     var checkboxViewModels: [CheckBoxIconDetailsView.Model] = []
@@ -22,9 +23,11 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
 
     init(
         localizationManager: LocalizationManagerProtocol,
-        checkboxListViewModelFactory: CheckboxListViewModelFactory
+        checkboxListViewModelFactory: CheckboxListViewModelFactory,
+        mnemonicViewModelFactory: MnemonicViewModelFactory
     ) {
         self.checkboxListViewModelFactory = checkboxListViewModelFactory
+        self.mnemonicViewModelFactory = mnemonicViewModelFactory
         self.localizationManager = localizationManager
     }
 
@@ -88,23 +91,13 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
         let mnemonicCardViewModel: HiddenMnemonicCardView.State = {
             if let metadata {
                 .mnemonicVisible(
-                    model: .init(
-                        units: metadata
-                            .mnemonic
-                            .map { MnemonicGridView.UnitType.wordView(text: $0) },
-                        title: createCardTitle()
+                    model: mnemonicViewModelFactory.createMnemonicCardViewModel(
+                        for: metadata.mnemonic
                     )
                 )
             } else {
                 .mnemonicNotVisible(
-                    model: .init(
-                        title: R.string.localizable.mnemonicCardCoverMessageTitle(
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        ),
-                        message: R.string.localizable.mnemonicCardCoverMessageMessage(
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        )
-                    )
+                    model: mnemonicViewModelFactory.createMnemonicCardHiddenModel()
                 )
             }
         }()

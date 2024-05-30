@@ -74,8 +74,14 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         wireframe: AccountConfirmWireframeProtocol
     ) -> AccountConfirmViewProtocol? {
         let localizationManager = LocalizationManager.shared
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
-        let presenter = AccountConfirmPresenter()
+        let presenter = AccountConfirmPresenter(
+            wireframe: wireframe,
+            interactor: interactor,
+            mnemonicViewModelFactory: mnemonicViewModelFactory,
+            localizationManager: localizationManager
+        )
 
         let view = AccountConfirmViewController(
             presenter: presenter,
@@ -89,11 +95,7 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
 //        #endif
 
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        presenter.localizationManager = localizationManager
 
         return view
     }
@@ -103,7 +105,14 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         wireframe: AccountConfirmWireframeProtocol
     ) -> AccountConfirmViewProtocol? {
         let localizationManager = LocalizationManager.shared
-        let presenter = AccountConfirmPresenter()
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
+
+        let presenter = AccountConfirmPresenter(
+            wireframe: wireframe,
+            interactor: interactor,
+            mnemonicViewModelFactory: mnemonicViewModelFactory,
+            localizationManager: localizationManager
+        )
 
         let view = AccountConfirmViewController(
             presenter: presenter,
@@ -117,11 +126,7 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
 //        #endif
 
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        presenter.localizationManager = localizationManager
 
         return view
     }
