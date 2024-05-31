@@ -19,6 +19,11 @@ struct ChainModel: Equatable, Hashable {
         let event: String?
     }
 
+    enum Source: String, Codable {
+        case remote
+        case user
+    }
+
     enum TypesUsage {
         case onlyCommon
         case both
@@ -50,6 +55,7 @@ struct ChainModel: Equatable, Hashable {
     let order: Int64
     let additional: JSON?
     let syncMode: ChainSyncMode
+    let source: Source
 
     init(
         chainId: Id,
@@ -66,7 +72,8 @@ struct ChainModel: Equatable, Hashable {
         explorers: [Explorer]?,
         order: Int64,
         additional: JSON?,
-        syncMode: ChainSyncMode
+        syncMode: ChainSyncMode,
+        source: Source
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -83,6 +90,7 @@ struct ChainModel: Equatable, Hashable {
         self.order = order
         self.additional = additional
         self.syncMode = syncMode
+        self.source = source
     }
 
     func asset(for assetId: AssetModel.Id) -> AssetModel? {
@@ -266,6 +274,10 @@ struct ChainModel: Equatable, Hashable {
     var identityChain: ChainModel.Id? {
         additional?.identityChain?.stringValue
     }
+
+    var isAddedByUser: Bool {
+        source == .user
+    }
 }
 
 extension ChainModel: Identifiable {
@@ -302,7 +314,8 @@ extension ChainModel {
             explorers: explorers,
             order: order,
             additional: additional,
-            syncMode: syncMode
+            syncMode: syncMode,
+            source: source
         )
     }
 
@@ -325,7 +338,8 @@ extension ChainModel {
             explorers: explorers,
             order: order,
             additional: additional,
-            syncMode: syncMode
+            syncMode: syncMode,
+            source: source
         )
     }
 
@@ -348,7 +362,8 @@ extension ChainModel {
             explorers: explorers,
             order: order,
             additional: additional,
-            syncMode: syncMode
+            syncMode: syncMode,
+            source: source
         )
     }
 
@@ -368,7 +383,8 @@ extension ChainModel {
             explorers: explorers,
             order: order,
             additional: additional,
-            syncMode: newMode
+            syncMode: newMode,
+            source: source
         )
     }
 }

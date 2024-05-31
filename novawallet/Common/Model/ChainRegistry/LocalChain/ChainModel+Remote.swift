@@ -28,5 +28,6 @@ extension ChainModel {
         additional = remoteModel.additional
 
         self.order = order
+        source = .remote
     }
 }
