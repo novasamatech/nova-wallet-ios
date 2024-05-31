@@ -93,7 +93,7 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
         }
     }
 
-    func update(with checkboxListViewModel: BackupAttentionViewLayout.Model) {
+    func update(using checkboxListViewModel: BackupAttentionViewLayout.Model) {
         rootView.bind(checkboxListViewModel)
     }
 

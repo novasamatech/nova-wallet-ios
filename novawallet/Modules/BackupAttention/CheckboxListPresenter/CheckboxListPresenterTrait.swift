@@ -1,6 +1,10 @@
 import Foundation
 import SoraFoundation
 
+protocol CheckboxListViewProtocol: AnyObject {
+    func update(using checkboxListViewModel: BackupAttentionViewLayout.Model)
+}
+
 protocol CheckboxListPresenterTrait: AnyObject {
     var checkboxView: CheckboxListViewProtocol? { get }
     var localizationManager: LocalizationManagerProtocol { get }
@@ -17,7 +21,7 @@ extension CheckboxListPresenterTrait {
 
     func updateCheckBoxListView() {
         let newViewModel = makeViewModel()
-        checkboxView?.update(with: newViewModel)
+        checkboxView?.update(using: newViewModel)
     }
 
     func changeCheckBoxState(for checkBoxId: UUID) {
@@ -51,8 +55,4 @@ extension CheckboxListPresenterTrait {
                 : .inactive(title: inactiveButtonTitle)
         )
     }
-}
-
-protocol CheckboxListViewProtocol: AnyObject {
-    func update(with checkboxListViewModel: BackupAttentionViewLayout.Model)
 }

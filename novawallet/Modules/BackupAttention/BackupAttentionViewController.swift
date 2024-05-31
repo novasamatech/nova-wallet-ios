@@ -42,7 +42,7 @@ final class BackupAttentionViewController: UIViewController, ViewHolder {
 }
 
 extension BackupAttentionViewController: BackupAttentionViewProtocol {
-    func update(with viewModel: BackupAttentionViewLayout.Model) {
+    func update(using viewModel: BackupAttentionViewLayout.Model) {
         rootView.bind(viewModel: viewModel)
     }
 }
