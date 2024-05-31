@@ -118,7 +118,7 @@ class MnemonicGridView: UIView {
 
         units
             .enumerated()
-            .forEach { [weak self] indexedUnit in
+            .forEach { indexedUnit in
                 let rowIndex = indexedUnit.offset / 3
 
                 guard
