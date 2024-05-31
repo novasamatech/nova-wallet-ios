@@ -212,6 +212,9 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
 
             wireframe.showManageNotifications(from: view)
+        case .networks:
+            // TODO: Routing to networks
+            logger?.info("NETWORKS TAPPED")
         }
     }
 
