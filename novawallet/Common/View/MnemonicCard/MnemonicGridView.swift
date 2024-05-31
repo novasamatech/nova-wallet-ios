@@ -110,10 +110,10 @@ class MnemonicGridView: UIView {
         rows = [:]
 
         (0 ..< (units.count / 3)).forEach { index in
-            let row = self.createRowView()
-            self.rows[index] = row
+            let row = createRowView()
+            rows[index] = row
 
-            self.stackView.addArrangedSubview(row)
+            stackView.addArrangedSubview(row)
         }
 
         units
@@ -121,10 +121,9 @@ class MnemonicGridView: UIView {
             .forEach { indexedUnit in
                 let rowIndex = indexedUnit.offset / 3
 
-                guard
-                    let self,
-                    let row = rows[rowIndex]
-                else { return }
+                guard let row = rows[rowIndex] else {
+                    return
+                }
 
                 addView(
                     for: indexedUnit.element,
