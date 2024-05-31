@@ -75,6 +75,11 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
     ) -> AccountConfirmViewProtocol? {
         let localizationManager = LocalizationManager.shared
         let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
+        var showsSkipButton = false
+
+        #if F_DEV
+            showsSkipButton = true
+        #endif
 
         let presenter = AccountConfirmPresenter(
             wireframe: wireframe,
@@ -85,14 +90,9 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
 
         let view = AccountConfirmViewController(
             presenter: presenter,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            showsSkipButton: showsSkipButton
         )
-
-//        #if F_DEV
-//            view.skipButtonTitle = LocalizableResource { locale in
-//                R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
-//            }
-//        #endif
 
         presenter.view = view
         interactor.presenter = presenter
@@ -106,6 +106,11 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
     ) -> AccountConfirmViewProtocol? {
         let localizationManager = LocalizationManager.shared
         let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
+        var showsSkipButton = false
+
+        #if F_DEV
+            showsSkipButton = true
+        #endif
 
         let presenter = AccountConfirmPresenter(
             wireframe: wireframe,
@@ -116,14 +121,9 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
 
         let view = AccountConfirmViewController(
             presenter: presenter,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            showsSkipButton: showsSkipButton
         )
-
-//        #if F_DEV
-//            view.skipButtonTitle = LocalizableResource { locale in
-//                R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
-//            }
-//        #endif
 
         presenter.view = view
         interactor.presenter = presenter

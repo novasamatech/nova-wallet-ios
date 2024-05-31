@@ -23,15 +23,18 @@ final class AccountConfirmViewController: UIViewController, ViewHolder {
         options: [.curveEaseInOut]
     )
 
+    private let showsSkipButton: Bool
     private var wordsUnits: [MnemonicGridView.UnitType] = []
 
     // MARK: - Lifecycle
 
     init(
         presenter: AccountConfirmPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        showsSkipButton: Bool
     ) {
         self.presenter = presenter
+        self.showsSkipButton = showsSkipButton
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -49,7 +52,7 @@ final class AccountConfirmViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AccountConfirmViewLayout()
+        view = AccountConfirmViewLayout(showsSkipButton: showsSkipButton)
     }
 
     // MARK: - Setup functions
@@ -79,6 +82,8 @@ final class AccountConfirmViewController: UIViewController, ViewHolder {
             .confirmMnemonicTitle(preferredLanguages: selectedLocale.rLanguages)
         rootView.continueButton.imageWithTitleView?.title = R.string.localizable
             .confirmMnemonicSelectWord(preferredLanguages: selectedLocale.rLanguages)
+        rootView.skipButton.imageWithTitleView?.title = R.string.localizable
+            .commonSkip(preferredLanguages: selectedLocale.rLanguages)
     }
 }
 
@@ -154,6 +159,10 @@ extension AccountConfirmViewController: AccountConfirmViewLayoutDelegate {
             }
 
         presenter.confirm(words: words)
+    }
+
+    func didTapSkip() {
+        presenter.skip()
     }
 }
 

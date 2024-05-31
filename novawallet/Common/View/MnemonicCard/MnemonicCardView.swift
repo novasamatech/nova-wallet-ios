@@ -43,9 +43,10 @@ final class MnemonicCardView: MnemonicGridView {
 
     override func createWordButton(
         with text: String,
-        number: Int
+        for index: Int
     ) -> WordButton {
-        let button = super.createWordButton(with: text, number: number)
+        let button = super.createWordButton(with: text, for: index)
+        let number = index + 1
 
         button.controlContentView.textAlignment = .left
         button.controlContentView.attributedText = createButtonText(with: number, text)
@@ -93,7 +94,7 @@ private extension MnemonicCardView {
     ) -> NSAttributedString {
         NSAttributedString.coloredItems(
             ["\(wordNumber)"],
-            formattingClosure: { String(format: "%@ \(text)", $0[0]) },
+            formattingClosure: { "\($0[0]) \(text)" },
             color: R.color.colorTextSecondary()!
         )
     }

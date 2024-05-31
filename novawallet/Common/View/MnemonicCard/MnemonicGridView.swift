@@ -79,7 +79,7 @@ class MnemonicGridView: UIView {
 
     func createWordButton(
         with text: String,
-        number _: Int
+        for index: Int
     ) -> WordButton {
         let button = WordButton(preferredHeight: Constants.buttonHeight)
         button.contentInsets = Constants.itemContentInsets
@@ -91,6 +91,7 @@ class MnemonicGridView: UIView {
         button.changesContentOpacityWhenHighlighted = true
         button.controlContentView.textAlignment = .center
         button.controlContentView.text = text
+        button.tag = index
 
         addAction(for: button)
 
@@ -108,12 +109,11 @@ class MnemonicGridView: UIView {
         rows.values.forEach { $0.removeFromSuperview() }
         rows = [:]
 
-        (0 ..< (units.count / 3)).forEach { [weak self] index in
-            guard let self else { return }
-            let row = createRowView()
-            rows[index] = row
+        (0 ..< (units.count / 3)).forEach { index in
+            let row = self.createRowView()
+            self.rows[index] = row
 
-            stackView.addArrangedSubview(row)
+            self.stackView.addArrangedSubview(row)
         }
 
         units
@@ -217,9 +217,9 @@ private extension MnemonicGridView {
         delegate?.didTap(self, units[index])
     }
 
-    func createViewHolder() -> UIView {
+    func createViewHolder(for index: Int) -> UIView {
         let view = UIView()
-        let width = unitWidth
+        view.tag = index
 
         view.snp.makeConstraints { make in
             make.width.equalTo(unitWidth)
@@ -243,20 +243,16 @@ private extension MnemonicGridView {
         with index: Int,
         to row: UIStackView
     ) {
-        let viewHolder = createViewHolder()
+        let viewHolder = createViewHolder(for: index)
 
         if case let .wordView(text) = unit {
             let wordButton = createWordButton(
                 with: text,
-                number: index + 1
+                for: index
             )
-
-            wordButton.tag = index
 
             viewHolder.addSubview(wordButton)
         }
-
-        viewHolder.tag = index
 
         row.addArrangedSubview(viewHolder)
     }

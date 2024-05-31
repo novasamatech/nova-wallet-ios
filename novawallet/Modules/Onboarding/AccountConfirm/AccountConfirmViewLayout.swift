@@ -3,10 +3,13 @@ import SoraUI
 
 protocol AccountConfirmViewLayoutDelegate: AnyObject {
     func didTapContinue()
+    func didTapSkip()
 }
 
 class AccountConfirmViewLayout: ScrollableContainerLayoutView {
     weak var delegate: AccountConfirmViewLayoutDelegate?
+
+    private var showsSkipButton: Bool = false
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .boldTitle3Primary)
@@ -17,19 +20,19 @@ class AccountConfirmViewLayout: ScrollableContainerLayoutView {
     let mnemonicCardView = MnemonicCardView()
     let mnemonicGridView = MnemonicGridView()
 
+    let skipButton: TriangularedButton = .create { button in
+        button.applyDisabledStyle()
+    }
+
     let continueButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(showsSkipButton: Bool) {
+        self.showsSkipButton = showsSkipButton
+        super.init(frame: .zero)
 
         setupHandlers()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override func setupLayout() {
@@ -50,6 +53,16 @@ class AccountConfirmViewLayout: ScrollableContainerLayoutView {
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        if showsSkipButton {
+            addSubview(skipButton)
+
+            skipButton.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+                make.bottom.equalTo(self.continueButton.snp.top).offset(-12)
+                make.height.equalTo(UIConstants.actionHeight)
+            }
         }
     }
 
@@ -81,10 +94,20 @@ private extension AccountConfirmViewLayout {
             action: #selector(actionContinue),
             for: .touchUpInside
         )
+
+        skipButton.addTarget(
+            self,
+            action: #selector(actionSkip),
+            for: .touchUpInside
+        )
     }
 
     @objc func actionContinue() {
         delegate?.didTapContinue()
+    }
+
+    @objc func actionSkip() {
+        delegate?.didTapSkip()
     }
 }
 
