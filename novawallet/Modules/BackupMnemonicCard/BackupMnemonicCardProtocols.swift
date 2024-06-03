@@ -10,14 +10,9 @@ protocol BackupMnemonicCardPresenterProtocol: AnyObject {
     func advancedTapped()
 }
 
-protocol BackupMnemonicCardInteractorInputProtocol: AnyObject {
-    func fetchMnemonic()
-}
+protocol BackupMnemonicCardInteractorInputProtocol: MnemonicFetchingInput {}
 
-protocol BackupMnemonicCardInteractorOutputProtocol: AnyObject {
-    func didReceive(mnemonic: IRMnemonicProtocol)
-    func didReceive(error: Error)
-}
+protocol BackupMnemonicCardInteractorOutputProtocol: MnemonicFetchingOutput {}
 
 protocol BackupMnemonicCardWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showAdvancedExport(

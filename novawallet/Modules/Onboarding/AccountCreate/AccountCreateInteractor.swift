@@ -15,7 +15,7 @@ final class AccountCreateInteractor {
 }
 
 extension AccountCreateInteractor: AccountCreateInteractorInputProtocol {
-    func setup() {
+    func provideMetadata() {
         do {
             let mnemonic = try mnemonicCreator.randomMnemonic(.entropy128)
 
@@ -29,5 +29,17 @@ extension AccountCreateInteractor: AccountCreateInteractorInputProtocol {
         } catch {
             presenter.didReceiveMnemonicGeneration(error: error)
         }
+    }
+
+    func createMetadata() -> MetaAccountCreationMetadata? {
+        guard let mnemonic = try? mnemonicCreator.randomMnemonic(.entropy128) else { return .none }
+
+        let metadata = MetaAccountCreationMetadata(
+            mnemonic: mnemonic.allWords(),
+            availableCryptoTypes: [.sr25519, .ed25519, .substrateEcdsa],
+            defaultCryptoType: .sr25519
+        )
+
+        return metadata
     }
 }

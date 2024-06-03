@@ -9,13 +9,19 @@ extension AddChainAccount {
             metaAccountModel: MetaAccountModel,
             chainModelId: ChainModel.Id,
             isEthereumBased: Bool,
-            localizationManager: LocalizationManagerProtocol
+            localizationManager: LocalizationManagerProtocol,
+            checkboxListViewModelFactory: CheckboxListViewModelFactory,
+            mnemonicViewModelFactory: MnemonicViewModelFactory
         ) {
             self.metaAccountModel = metaAccountModel
             self.chainModelId = chainModelId
             self.isEthereumBased = isEthereumBased
 
-            super.init(localizationManager: localizationManager)
+            super.init(
+                localizationManager: localizationManager,
+                checkboxListViewModelFactory: checkboxListViewModelFactory,
+                mnemonicViewModelFactory: mnemonicViewModelFactory
+            )
         }
 
         private func getRequest(with mnemonic: String) -> ChainAccountImportMnemonicRequest? {
@@ -40,8 +46,10 @@ extension AddChainAccount {
         // MARK: - Overrides
 
         override func processProceed() {
-            guard let mnemonic = metadata?.mnemonic.joined(separator: " "),
-                  let request = getRequest(with: mnemonic) else { return }
+            let mnemonic = metadata?.mnemonic ?? interactor.createMetadata()?.mnemonic
+
+            guard let phrase = mnemonic?.joined(separator: " "),
+                  let request = getRequest(with: phrase) else { return }
 
             wireframe.confirm(
                 from: view,
@@ -52,6 +60,8 @@ extension AddChainAccount {
         }
 
         override func getAdvancedSettings() -> AdvancedWalletSettings? {
+            let metadata = metadata ?? interactor.createMetadata()
+
             guard let metadata = metadata else { return nil }
 
             if isEthereumBased {

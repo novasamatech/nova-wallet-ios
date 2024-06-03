@@ -33,7 +33,13 @@ final class CheckBoxIconDetailsView: RowView<GenericPairValueView<UIImageView, I
 
     func bind(viewModel: Model) {
         self.viewModel = viewModel
-        attentionImageView.image = viewModel.image
+
+        if let icon = viewModel.image {
+            attentionImageView.image = icon
+        } else {
+            attentionImageView.isHidden = true
+        }
+
         checked = viewModel.checked
 
         switch viewModel.text {
