@@ -48,7 +48,6 @@ struct GovernanceYourDelegationsViewFactory {
 
         guard
             let selectedAccountId = SelectedWalletSettings.shared.value?.fetch(for: chain.accountRequest())?.accountId,
-            let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let subscriptionFactory = state.subscriptionFactory,
             let referendumsOperationFactory = state.referendumsOperationFactory,
@@ -68,7 +67,6 @@ struct GovernanceYourDelegationsViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: BlockTimeOperationFactory(chain: chain),
-            connection: connection,
             runtimeService: runtimeService,
             govJsonProviderFactory: JsonDataProviderFactory.shared,
             operationQueue: state.operationQueue

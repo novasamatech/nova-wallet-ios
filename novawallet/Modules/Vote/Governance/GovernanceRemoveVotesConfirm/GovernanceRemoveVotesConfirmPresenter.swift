@@ -206,10 +206,34 @@ extension GovernanceRemoveVotesConfirmPresenter: GovernanceRemoveVotesConfirmInt
         updateFeeView()
     }
 
-    func didReceiveRemoveVotesHash(_: String) {
+    func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult) {
         view?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: view, completionAction: .popBack, locale: selectedLocale)
+        let handlers = MultiExtrinsicResultActions(
+            onSuccess: { [weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+
+                strongSelf.wireframe.complete(on: strongSelf.view, locale: strongSelf.selectedLocale)
+            }, onErrorRetry: { [weak self] closure, indexes in
+                self?.view?.didStartLoading()
+
+                self?.interactor.retryMultiExtrinsic(
+                    for: closure,
+                    indexes: indexes
+                )
+            }, onErrorSkip: { [weak self] in
+                self?.wireframe.skip(on: self?.view)
+            }
+        )
+
+        wireframe.presentMultiExtrinsicStatusFromResult(
+            on: view,
+            result: result,
+            locale: selectedLocale,
+            handlers: handlers
+        )
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {

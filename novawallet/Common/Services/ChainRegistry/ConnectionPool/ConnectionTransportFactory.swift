@@ -3,14 +3,10 @@ import SubstrateSdk
 import Starscream
 
 final class ConnectionTransportFactory {
-    let chainId: ChainModel.Id
+    let tlsSupportProvider: ConnectionTLSSupportProviding
 
-    init(chainId: ChainModel.Id) {
-        self.chainId = chainId
-    }
-
-    private var supportsTLS12: Bool {
-        KnowChainId.mythos != chainId
+    init(tlsSupportProvider: ConnectionTLSSupportProviding) {
+        self.tlsSupportProvider = tlsSupportProvider
     }
 
     private func createFoundationTranport() -> Transport {
@@ -30,7 +26,7 @@ extension ConnectionTransportFactory: WebSocketConnectionFactoryProtocol {
     ) -> WebSocketConnectionProtocol {
         let request = URLRequest(url: url, timeoutInterval: connectionTimeout)
 
-        let transport = supportsTLS12 ? createFoundationTranport() : createTCPTransport()
+        let transport = tlsSupportProvider.supportTls12(for: url) ? createFoundationTranport() : createTCPTransport()
 
         let engine = WSEngine(
             transport: transport,

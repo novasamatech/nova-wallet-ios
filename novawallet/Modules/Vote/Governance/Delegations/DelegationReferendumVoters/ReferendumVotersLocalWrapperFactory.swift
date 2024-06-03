@@ -11,10 +11,7 @@ struct ReferendumVotersFactoryParams {
 
 protocol ReferendumVotersLocalWrapperFactoryProtocol {
     func createWrapper(
-        for params: ReferendumVotersFactoryParams,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for params: ReferendumVotersFactoryParams
     ) -> CompoundOperationWrapper<ReferendumVoterLocals>
 }
 
@@ -26,15 +23,17 @@ final class ReferendumVotersLocalWrapperFactory: GovOffchainModelWrapperFactory<
     let operationFactory: GovernanceOffchainVotingFactoryProtocol
 
     init(
+        chain: ChainModel,
         operationFactory: GovernanceOffchainVotingFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol
     ) {
         self.operationFactory = operationFactory
 
         super.init(
+            chain: chain,
             identityParams: .init(
-                operationFactory: identityOperationFactory,
+                proxyFactory: identityProxyFactory,
                 closure: Self.mapAccounts
             ),
             metadataParams: .init(
@@ -53,8 +52,7 @@ final class ReferendumVotersLocalWrapperFactory: GovOffchainModelWrapperFactory<
     }
 
     override func createModelWrapper(
-        for params: ReferendumVotersFactoryParams,
-        chain _: ChainModel
+        for params: ReferendumVotersFactoryParams
     ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
         operationFactory.createReferendumVotesFetchOperation(
             referendumId: params.referendumId,

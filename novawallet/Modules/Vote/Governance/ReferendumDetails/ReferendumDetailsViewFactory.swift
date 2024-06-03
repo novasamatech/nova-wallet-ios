@@ -144,6 +144,12 @@ struct ReferendumDetailsViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let dAppsUrl = ApplicationConfig.shared.governanceDAppsListURL
         let dAppsProvider: AnySingleValueProvider<GovernanceDAppList> =
             JsonDataProviderFactory.shared.getJson(for: dAppsUrl)
@@ -157,7 +163,7 @@ struct ReferendumDetailsViewFactory {
             runtimeProvider: runtimeProvider,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeFactory,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,

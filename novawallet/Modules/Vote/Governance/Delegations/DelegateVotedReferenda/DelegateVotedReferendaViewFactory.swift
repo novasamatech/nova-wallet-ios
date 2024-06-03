@@ -109,6 +109,7 @@ struct DelegateVotedReferendaViewFactory {
         let offchainOperationFactory = SubqueryVotingOperationFactory(url: apiUrl)
 
         let fetchFactory = DelegateVotedReferendaOperationFactory(
+            chain: option.chain,
             referendumOperationFactory: referendumOperationFactory,
             offchainOperationFactory: offchainOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
