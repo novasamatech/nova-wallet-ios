@@ -1,8 +1,8 @@
 import IrohaCrypto
 import SoraFoundation
 
-protocol AccountCreateViewProtocol: ControllerBackedProtocol {
-    func set(mnemonic: [String])
+protocol AccountCreateViewProtocol: ControllerBackedProtocol, CheckboxListViewProtocol {
+    func update(with mnemonicCardViewModel: HiddenMnemonicCardView.State)
     func displayMnemonic()
 }
 
@@ -10,11 +10,12 @@ protocol AccountCreatePresenterProtocol: AnyObject {
     func setup()
     func activateAdvanced()
     func prepareToDisplayMnemonic()
-    func proceed()
+    func provideMnemonic()
 }
 
 protocol AccountCreateInteractorInputProtocol: AnyObject {
-    func setup()
+    func provideMetadata()
+    func createMetadata() -> MetaAccountCreationMetadata?
 }
 
 protocol AccountCreateInteractorOutputProtocol: AnyObject {

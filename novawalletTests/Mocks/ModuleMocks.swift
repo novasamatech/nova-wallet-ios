@@ -5056,6 +5056,309 @@ import Cuckoo
 import Cuckoo
 @testable import novawallet
 
+import Foundation
+import SoraFoundation
+
+
+ class MockCheckboxListViewProtocol: CheckboxListViewProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = CheckboxListViewProtocol
+    
+     typealias Stubbing = __StubbingProxy_CheckboxListViewProtocol
+     typealias Verification = __VerificationProxy_CheckboxListViewProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: CheckboxListViewProtocol?
+
+     func enableDefaultImplementation(_ stub: CheckboxListViewProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func update(using checkboxListViewModel: BackupAttentionViewLayout.Model)  {
+        
+    return cuckoo_manager.call("update(using: BackupAttentionViewLayout.Model)",
+            parameters: (checkboxListViewModel),
+            escapingParameters: (checkboxListViewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.update(using: checkboxListViewModel))
+        
+    }
+    
+
+	 struct __StubbingProxy_CheckboxListViewProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func update<M1: Cuckoo.Matchable>(using checkboxListViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(BackupAttentionViewLayout.Model)> where M1.MatchedType == BackupAttentionViewLayout.Model {
+	        let matchers: [Cuckoo.ParameterMatcher<(BackupAttentionViewLayout.Model)>] = [wrap(matchable: checkboxListViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCheckboxListViewProtocol.self, method: "update(using: BackupAttentionViewLayout.Model)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_CheckboxListViewProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func update<M1: Cuckoo.Matchable>(using checkboxListViewModel: M1) -> Cuckoo.__DoNotUse<(BackupAttentionViewLayout.Model), Void> where M1.MatchedType == BackupAttentionViewLayout.Model {
+	        let matchers: [Cuckoo.ParameterMatcher<(BackupAttentionViewLayout.Model)>] = [wrap(matchable: checkboxListViewModel) { $0 }]
+	        return cuckoo_manager.verify("update(using: BackupAttentionViewLayout.Model)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class CheckboxListViewProtocolStub: CheckboxListViewProtocol {
+    
+
+    
+
+    
+    
+    
+     func update(using checkboxListViewModel: BackupAttentionViewLayout.Model)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockCheckboxListPresenterTrait: CheckboxListPresenterTrait, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = CheckboxListPresenterTrait
+    
+     typealias Stubbing = __StubbingProxy_CheckboxListPresenterTrait
+     typealias Verification = __VerificationProxy_CheckboxListPresenterTrait
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: CheckboxListPresenterTrait?
+
+     func enableDefaultImplementation(_ stub: CheckboxListPresenterTrait) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+    
+    
+     var checkboxView: CheckboxListViewProtocol? {
+        get {
+            return cuckoo_manager.getter("checkboxView",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.checkboxView)
+        }
+        
+    }
+    
+    
+    
+     var localizationManager: LocalizationManagerProtocol {
+        get {
+            return cuckoo_manager.getter("localizationManager",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.localizationManager)
+        }
+        
+    }
+    
+    
+    
+     var checkboxViewModels: [CheckBoxIconDetailsView.Model] {
+        get {
+            return cuckoo_manager.getter("checkboxViewModels",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.checkboxViewModels)
+        }
+        
+        set {
+            cuckoo_manager.setter("checkboxViewModels",
+                value: newValue,
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.checkboxViewModels = newValue)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func continueTapped()  {
+        
+    return cuckoo_manager.call("continueTapped()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.continueTapped())
+        
+    }
+    
+
+	 struct __StubbingProxy_CheckboxListPresenterTrait: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    var checkboxView: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockCheckboxListPresenterTrait, CheckboxListViewProtocol?> {
+	        return .init(manager: cuckoo_manager, name: "checkboxView")
+	    }
+	    
+	    
+	    var localizationManager: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockCheckboxListPresenterTrait, LocalizationManagerProtocol> {
+	        return .init(manager: cuckoo_manager, name: "localizationManager")
+	    }
+	    
+	    
+	    var checkboxViewModels: Cuckoo.ProtocolToBeStubbedProperty<MockCheckboxListPresenterTrait, [CheckBoxIconDetailsView.Model]> {
+	        return .init(manager: cuckoo_manager, name: "checkboxViewModels")
+	    }
+	    
+	    
+	    func continueTapped() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCheckboxListPresenterTrait.self, method: "continueTapped()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_CheckboxListPresenterTrait: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	    
+	    var checkboxView: Cuckoo.VerifyReadOnlyProperty<CheckboxListViewProtocol?> {
+	        return .init(manager: cuckoo_manager, name: "checkboxView", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var localizationManager: Cuckoo.VerifyReadOnlyProperty<LocalizationManagerProtocol> {
+	        return .init(manager: cuckoo_manager, name: "localizationManager", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var checkboxViewModels: Cuckoo.VerifyProperty<[CheckBoxIconDetailsView.Model]> {
+	        return .init(manager: cuckoo_manager, name: "checkboxViewModels", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	
+	    
+	    @discardableResult
+	    func continueTapped() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("continueTapped()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class CheckboxListPresenterTraitStub: CheckboxListPresenterTrait {
+        
+    
+    
+     var checkboxView: CheckboxListViewProtocol? {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (CheckboxListViewProtocol?).self)
+        }
+        
+    }
+        
+    
+    
+     var localizationManager: LocalizationManagerProtocol {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (LocalizationManagerProtocol).self)
+        }
+        
+    }
+        
+    
+    
+     var checkboxViewModels: [CheckBoxIconDetailsView.Model] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([CheckBoxIconDetailsView.Model]).self)
+        }
+        
+        set { }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func continueTapped()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
 
  class MockDAppAuthConfirmViewProtocol: DAppAuthConfirmViewProtocol, Cuckoo.ProtocolMock {
     
@@ -15946,16 +16249,16 @@ import Cuckoo
     
     
     
-     func didReceive(words: [String], afterConfirmationFail: Bool)  {
+     func update(with mnemonicCardViewModel: MnemonicCardView.Model, gridUnits: [MnemonicGridView.UnitType], afterConfirmationFail: Bool)  {
         
-    return cuckoo_manager.call("didReceive(words: [String], afterConfirmationFail: Bool)",
-            parameters: (words, afterConfirmationFail),
-            escapingParameters: (words, afterConfirmationFail),
+    return cuckoo_manager.call("update(with: MnemonicCardView.Model, gridUnits: [MnemonicGridView.UnitType], afterConfirmationFail: Bool)",
+            parameters: (mnemonicCardViewModel, gridUnits, afterConfirmationFail),
+            escapingParameters: (mnemonicCardViewModel, gridUnits, afterConfirmationFail),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(words: words, afterConfirmationFail: afterConfirmationFail))
+            defaultCall: __defaultImplStub!.update(with: mnemonicCardViewModel, gridUnits: gridUnits, afterConfirmationFail: afterConfirmationFail))
         
     }
     
@@ -15978,9 +16281,9 @@ import Cuckoo
 	    }
 	    
 	    
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(words: M1, afterConfirmationFail: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([String], Bool)> where M1.MatchedType == [String], M2.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<([String], Bool)>] = [wrap(matchable: words) { $0.0 }, wrap(matchable: afterConfirmationFail) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountConfirmViewProtocol.self, method: "didReceive(words: [String], afterConfirmationFail: Bool)", parameterMatchers: matchers))
+	    func update<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(with mnemonicCardViewModel: M1, gridUnits: M2, afterConfirmationFail: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(MnemonicCardView.Model, [MnemonicGridView.UnitType], Bool)> where M1.MatchedType == MnemonicCardView.Model, M2.MatchedType == [MnemonicGridView.UnitType], M3.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(MnemonicCardView.Model, [MnemonicGridView.UnitType], Bool)>] = [wrap(matchable: mnemonicCardViewModel) { $0.0 }, wrap(matchable: gridUnits) { $0.1 }, wrap(matchable: afterConfirmationFail) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountConfirmViewProtocol.self, method: "update(with: MnemonicCardView.Model, gridUnits: [MnemonicGridView.UnitType], afterConfirmationFail: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16010,9 +16313,9 @@ import Cuckoo
 	
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(words: M1, afterConfirmationFail: M2) -> Cuckoo.__DoNotUse<([String], Bool), Void> where M1.MatchedType == [String], M2.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<([String], Bool)>] = [wrap(matchable: words) { $0.0 }, wrap(matchable: afterConfirmationFail) { $0.1 }]
-	        return cuckoo_manager.verify("didReceive(words: [String], afterConfirmationFail: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func update<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(with mnemonicCardViewModel: M1, gridUnits: M2, afterConfirmationFail: M3) -> Cuckoo.__DoNotUse<(MnemonicCardView.Model, [MnemonicGridView.UnitType], Bool), Void> where M1.MatchedType == MnemonicCardView.Model, M2.MatchedType == [MnemonicGridView.UnitType], M3.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(MnemonicCardView.Model, [MnemonicGridView.UnitType], Bool)>] = [wrap(matchable: mnemonicCardViewModel) { $0.0 }, wrap(matchable: gridUnits) { $0.1 }, wrap(matchable: afterConfirmationFail) { $0.2 }]
+	        return cuckoo_manager.verify("update(with: MnemonicCardView.Model, gridUnits: [MnemonicGridView.UnitType], afterConfirmationFail: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -16044,7 +16347,7 @@ import Cuckoo
     
     
     
-     func didReceive(words: [String], afterConfirmationFail: Bool)   {
+     func update(with mnemonicCardViewModel: MnemonicCardView.Model, gridUnits: [MnemonicGridView.UnitType], afterConfirmationFail: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16771,16 +17074,16 @@ import SoraFoundation
     
     
     
-     func set(mnemonic: [String])  {
+     func update(with mnemonicCardViewModel: HiddenMnemonicCardView.State)  {
         
-    return cuckoo_manager.call("set(mnemonic: [String])",
-            parameters: (mnemonic),
-            escapingParameters: (mnemonic),
+    return cuckoo_manager.call("update(with: HiddenMnemonicCardView.State)",
+            parameters: (mnemonicCardViewModel),
+            escapingParameters: (mnemonicCardViewModel),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.set(mnemonic: mnemonic))
+            defaultCall: __defaultImplStub!.update(with: mnemonicCardViewModel))
         
     }
     
@@ -16796,6 +17099,21 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.displayMnemonic())
+        
+    }
+    
+    
+    
+     func update(using checkboxListViewModel: BackupAttentionViewLayout.Model)  {
+        
+    return cuckoo_manager.call("update(using: BackupAttentionViewLayout.Model)",
+            parameters: (checkboxListViewModel),
+            escapingParameters: (checkboxListViewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.update(using: checkboxListViewModel))
         
     }
     
@@ -16818,14 +17136,19 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func set<M1: Cuckoo.Matchable>(mnemonic: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([String])> where M1.MatchedType == [String] {
-	        let matchers: [Cuckoo.ParameterMatcher<([String])>] = [wrap(matchable: mnemonic) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "set(mnemonic: [String])", parameterMatchers: matchers))
+	    func update<M1: Cuckoo.Matchable>(with mnemonicCardViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(HiddenMnemonicCardView.State)> where M1.MatchedType == HiddenMnemonicCardView.State {
+	        let matchers: [Cuckoo.ParameterMatcher<(HiddenMnemonicCardView.State)>] = [wrap(matchable: mnemonicCardViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "update(with: HiddenMnemonicCardView.State)", parameterMatchers: matchers))
 	    }
 	    
 	    func displayMnemonic() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "displayMnemonic()", parameterMatchers: matchers))
+	    }
+	    
+	    func update<M1: Cuckoo.Matchable>(using checkboxListViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(BackupAttentionViewLayout.Model)> where M1.MatchedType == BackupAttentionViewLayout.Model {
+	        let matchers: [Cuckoo.ParameterMatcher<(BackupAttentionViewLayout.Model)>] = [wrap(matchable: checkboxListViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "update(using: BackupAttentionViewLayout.Model)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16855,15 +17178,21 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func set<M1: Cuckoo.Matchable>(mnemonic: M1) -> Cuckoo.__DoNotUse<([String]), Void> where M1.MatchedType == [String] {
-	        let matchers: [Cuckoo.ParameterMatcher<([String])>] = [wrap(matchable: mnemonic) { $0 }]
-	        return cuckoo_manager.verify("set(mnemonic: [String])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func update<M1: Cuckoo.Matchable>(with mnemonicCardViewModel: M1) -> Cuckoo.__DoNotUse<(HiddenMnemonicCardView.State), Void> where M1.MatchedType == HiddenMnemonicCardView.State {
+	        let matchers: [Cuckoo.ParameterMatcher<(HiddenMnemonicCardView.State)>] = [wrap(matchable: mnemonicCardViewModel) { $0 }]
+	        return cuckoo_manager.verify("update(with: HiddenMnemonicCardView.State)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
 	    func displayMnemonic() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("displayMnemonic()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func update<M1: Cuckoo.Matchable>(using checkboxListViewModel: M1) -> Cuckoo.__DoNotUse<(BackupAttentionViewLayout.Model), Void> where M1.MatchedType == BackupAttentionViewLayout.Model {
+	        let matchers: [Cuckoo.ParameterMatcher<(BackupAttentionViewLayout.Model)>] = [wrap(matchable: checkboxListViewModel) { $0 }]
+	        return cuckoo_manager.verify("update(using: BackupAttentionViewLayout.Model)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -16895,13 +17224,19 @@ import SoraFoundation
     
     
     
-     func set(mnemonic: [String])   {
+     func update(with mnemonicCardViewModel: HiddenMnemonicCardView.State)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
      func displayMnemonic()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func update(using checkboxListViewModel: BackupAttentionViewLayout.Model)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16979,16 +17314,16 @@ import SoraFoundation
     
     
     
-     func proceed()  {
+     func provideMnemonic()  {
         
-    return cuckoo_manager.call("proceed()",
+    return cuckoo_manager.call("provideMnemonic()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.proceed())
+            defaultCall: __defaultImplStub!.provideMnemonic())
         
     }
     
@@ -17016,9 +17351,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "prepareToDisplayMnemonic()", parameterMatchers: matchers))
 	    }
 	    
-	    func proceed() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	    func provideMnemonic() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "proceed()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "provideMnemonic()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -17056,9 +17391,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func proceed() -> Cuckoo.__DoNotUse<(), Void> {
+	    func provideMnemonic() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("proceed()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("provideMnemonic()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -17090,7 +17425,7 @@ import SoraFoundation
     
     
     
-     func proceed()   {
+     func provideMnemonic()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -17123,16 +17458,31 @@ import SoraFoundation
     
     
     
-     func setup()  {
+     func provideMetadata()  {
         
-    return cuckoo_manager.call("setup()",
+    return cuckoo_manager.call("provideMetadata()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.setup())
+            defaultCall: __defaultImplStub!.provideMetadata())
+        
+    }
+    
+    
+    
+     func createMetadata() -> MetaAccountCreationMetadata? {
+        
+    return cuckoo_manager.call("createMetadata() -> MetaAccountCreationMetadata?",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createMetadata())
         
     }
     
@@ -17145,9 +17495,14 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	    func provideMetadata() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateInteractorInputProtocol.self, method: "provideMetadata()", parameterMatchers: matchers))
+	    }
+	    
+	    func createMetadata() -> Cuckoo.ProtocolStubFunction<(), MetaAccountCreationMetadata?> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateInteractorInputProtocol.self, method: "createMetadata() -> MetaAccountCreationMetadata?", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -17167,9 +17522,15 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	    func provideMetadata() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("provideMetadata()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func createMetadata() -> Cuckoo.__DoNotUse<(), MetaAccountCreationMetadata?> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createMetadata() -> MetaAccountCreationMetadata?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -17183,8 +17544,14 @@ import SoraFoundation
     
     
     
-     func setup()   {
+     func provideMetadata()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func createMetadata() -> MetaAccountCreationMetadata?  {
+        return DefaultValueRegistry.defaultValue(for: (MetaAccountCreationMetadata?).self)
     }
     
 }

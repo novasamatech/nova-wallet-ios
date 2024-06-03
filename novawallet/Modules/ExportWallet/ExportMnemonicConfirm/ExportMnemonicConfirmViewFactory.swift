@@ -4,26 +4,32 @@ import SoraFoundation
 
 final class ExportMnemonicConfirmViewFactory: ExportMnemonicConfirmViewFactoryProtocol {
     static func createViewForMnemonic(_ mnemonic: IRMnemonicProtocol) -> AccountConfirmViewProtocol? {
-        let view = AccountConfirmViewController(nib: R.nib.accountConfirmViewController)
-        view.nextButtonTitle = LocalizableResource { locale in
-            R.string.localizable.commonConfirm(preferredLanguages: locale.rLanguages)
-        }
-
         let localizationManager = LocalizationManager.shared
+        var showsSkipButton = false
 
-        let presenter = AccountConfirmPresenter()
+        #if F_DEV
+            showsSkipButton = true
+        #endif
 
         let interactor = ExportMnemonicConfirmInteractor(mnemonic: mnemonic)
         let wireframe = ExportMnemonicConfirmWireframe(localizationManager: localizationManager)
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
-        view.presenter = presenter
+        let presenter = AccountConfirmPresenter(
+            wireframe: wireframe,
+            interactor: interactor,
+            mnemonicViewModelFactory: mnemonicViewModelFactory,
+            localizationManager: localizationManager
+        )
+
+        let view = AccountConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            showsSkipButton: showsSkipButton
+        )
+
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        view.localizationManager = localizationManager
-        presenter.localizationManager = localizationManager
 
         return view
     }

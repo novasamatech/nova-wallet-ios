@@ -13,24 +13,35 @@ class AccountCreateTests: XCTestCase {
         let wireframe = MockAccountCreateWireframeProtocol()
 
         let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
+        
+        let localizationManager = LocalizationManager.shared
+        let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
         let name = "myname"
         let presenter = AccountCreatePresenter(
             walletName: name,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager,
+            checkboxListViewModelFactory: checkboxListViewModelFactory,
+            mnemonicViewModelFactory: mnemonicViewModelFactory
         )
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor
         interactor.presenter = presenter
 
-        let setupExpectation = XCTestExpectation()
+        let setupCheckboxesExpectation = XCTestExpectation()
+        let setupMnemonicExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).isSetup.get.thenReturn(false, true)
 
-            when(stub).set(mnemonic: any()).then { _ in
-                setupExpectation.fulfill()
+            when(stub).update(with: any()).then { _ in
+                setupMnemonicExpectation.fulfill()
+            }
+            
+            when(stub).update(using: any()).then { _ in
+                setupCheckboxesExpectation.fulfill()
             }
 
             when(stub).displayMnemonic().thenDoNothing()
@@ -51,9 +62,15 @@ class AccountCreateTests: XCTestCase {
 
         presenter.setup()
 
-        wait(for: [setupExpectation], timeout: Constants.defaultExpectationDuration)
+        wait(
+            for: [
+                setupMnemonicExpectation,
+                setupCheckboxesExpectation
+            ],
+            timeout: Constants.defaultExpectationDuration
+        )
 
-        presenter.proceed()
+        presenter.continueTapped()
 
         // then
 

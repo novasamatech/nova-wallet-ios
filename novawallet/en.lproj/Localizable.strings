@@ -573,7 +573,7 @@
 "crowdloan.empty.message_v2_2_0" = "Crowdloans will be displayed here";
 "common.existential.warning.message_v2_2_0" = "Your account will be removed from blockchain after this operation cause it makes total balance lower than minimal";
 "wallet.send.existential.warning_v2_2_0" = "Your account will be removed from blockchain after transfer cause it makes total balance lower than minimal";
-"account.backup.mnemonic.title" = "Write down the phrase and store it in a safe place";
+"account.backup.mnemonic.title" = "Write down your Passphrase";
 "common.understand" = "I understand";
 "account.backup.mnemonic.caption" = "Please make sure to write down your phrase correctly and legibly.";
 "account.backup.mnemonic.field.title" = "Mnemonic Passphrase";

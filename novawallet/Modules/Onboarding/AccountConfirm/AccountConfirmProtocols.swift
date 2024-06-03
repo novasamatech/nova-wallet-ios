@@ -1,5 +1,9 @@
 protocol AccountConfirmViewProtocol: ControllerBackedProtocol {
-    func didReceive(words: [String], afterConfirmationFail: Bool)
+    func update(
+        with mnemonicCardViewModel: MnemonicCardView.Model,
+        gridUnits: [MnemonicGridView.UnitType],
+        afterConfirmationFail: Bool
+    )
 }
 
 protocol AccountConfirmPresenterProtocol: AnyObject {

@@ -4,13 +4,23 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
 
     init(
         walletName: String,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        checkboxListViewModelFactory: CheckboxListViewModelFactory,
+        mnemonicViewModelFactory: MnemonicViewModelFactory
     ) {
         self.walletName = walletName
-        super.init(localizationManager: localizationManager)
+
+        super.init(
+            localizationManager: localizationManager,
+            checkboxListViewModelFactory: checkboxListViewModelFactory,
+            mnemonicViewModelFactory: mnemonicViewModelFactory
+        )
     }
 
     override func processProceed() {
+        let metadata = metadata ?? interactor.createMetadata()
+        let selectedSubstrateCryptoType = selectedSubstrateCryptoType ?? metadata?.defaultCryptoType
+
         guard let metadata = metadata,
               let substrateCryptoType = selectedSubstrateCryptoType
         else { return }
@@ -26,6 +36,8 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
     }
 
     override func getAdvancedSettings() -> AdvancedWalletSettings? {
+        let metadata = metadata ?? interactor.createMetadata()
+
         guard let metadata = metadata else {
             return nil
         }

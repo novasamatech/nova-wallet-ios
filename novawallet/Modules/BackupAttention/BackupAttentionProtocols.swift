@@ -1,6 +1,4 @@
-protocol BackupAttentionViewProtocol: ControllerBackedProtocol {
-    func didReceive(_ viewModel: BackupAttentionViewLayout.Model)
-}
+protocol BackupAttentionViewProtocol: ControllerBackedProtocol, CheckboxListViewProtocol {}
 
 protocol BackupAttentionPresenterProtocol: AnyObject {
     func setup()

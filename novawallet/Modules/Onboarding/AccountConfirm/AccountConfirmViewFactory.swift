@@ -73,25 +73,29 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         for interactor: BaseAccountConfirmInteractor,
         wireframe: AccountConfirmWireframeProtocol
     ) -> AccountConfirmViewProtocol? {
-        let view = AccountConfirmViewController(nib: R.nib.accountConfirmViewController)
+        let localizationManager = LocalizationManager.shared
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
+        var showsSkipButton = false
 
         #if F_DEV
-            view.skipButtonTitle = LocalizableResource { locale in
-                R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
-            }
+            showsSkipButton = true
         #endif
 
-        let presenter = AccountConfirmPresenter()
+        let presenter = AccountConfirmPresenter(
+            wireframe: wireframe,
+            interactor: interactor,
+            mnemonicViewModelFactory: mnemonicViewModelFactory,
+            localizationManager: localizationManager
+        )
 
-        view.presenter = presenter
+        let view = AccountConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            showsSkipButton: showsSkipButton
+        )
+
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        let localizationManager = LocalizationManager.shared
-        view.localizationManager = localizationManager
-        presenter.localizationManager = localizationManager
 
         return view
     }
@@ -100,25 +104,29 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         for interactor: BaseChainAccountConfirmInteractor,
         wireframe: AccountConfirmWireframeProtocol
     ) -> AccountConfirmViewProtocol? {
-        let view = AccountConfirmViewController(nib: R.nib.accountConfirmViewController)
+        let localizationManager = LocalizationManager.shared
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
+        var showsSkipButton = false
 
         #if F_DEV
-            view.skipButtonTitle = LocalizableResource { locale in
-                R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
-            }
+            showsSkipButton = true
         #endif
 
-        let presenter = AccountConfirmPresenter()
+        let presenter = AccountConfirmPresenter(
+            wireframe: wireframe,
+            interactor: interactor,
+            mnemonicViewModelFactory: mnemonicViewModelFactory,
+            localizationManager: localizationManager
+        )
 
-        view.presenter = presenter
+        let view = AccountConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            showsSkipButton: showsSkipButton
+        )
+
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        let localizationManager = LocalizationManager.shared
-        view.localizationManager = localizationManager
-        presenter.localizationManager = localizationManager
 
         return view
     }

@@ -14,8 +14,8 @@ final class BackupMnemonicCardPresenter {
 
     private let walletViewModelFactory = WalletAccountViewModelFactory()
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    private let mnemonicViewModelFactory: MnemonicViewModelFactory
     private let logger: LoggerProtocol
-    private let localizationManager: LocalizationManagerProtocol
 
     init(
         interactor: BackupMnemonicCardInteractor,
@@ -23,6 +23,7 @@ final class BackupMnemonicCardPresenter {
         metaAccount: MetaAccountModel,
         chain: ChainModel?,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        mnemonicViewModelFactory: MnemonicViewModelFactory,
         localizationManager: LocalizationManager,
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -31,8 +32,9 @@ final class BackupMnemonicCardPresenter {
         self.metaAccount = metaAccount
         self.chain = chain
         self.networkViewModelFactory = networkViewModelFactory
-        self.localizationManager = localizationManager
+        self.mnemonicViewModelFactory = mnemonicViewModelFactory
         self.logger = logger
+        self.localizationManager = localizationManager
     }
 }
 
@@ -68,11 +70,11 @@ extension BackupMnemonicCardPresenter: BackupMnemonicCardInteractorOutputProtoco
     func didReceive(error: Error) {
         logger.error("Did receive error: \(error)")
 
-        if !wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale) {
+        if !wireframe.present(error: error, from: view, locale: selectedLocale) {
             _ = wireframe.present(
                 error: CommonError.dataCorruption,
                 from: view,
-                locale: localizationManager.selectedLocale
+                locale: selectedLocale
             )
         }
     }
@@ -96,14 +98,37 @@ private extension BackupMnemonicCardPresenter {
                         .none
                     }
                 }(),
-                state: {
+                mnemonicCardState: {
                     if let mnemonic {
-                        .mnemonicVisible(words: mnemonic.allWords())
+                        .mnemonicVisible(
+                            model: mnemonicViewModelFactory.createMnemonicCardViewModel(
+                                for: mnemonic.allWords()
+                            )
+                        )
                     } else {
-                        .mnemonicNotVisible
+                        .mnemonicNotVisible(
+                            model: mnemonicViewModelFactory.createMnemonicCardHiddenModel()
+                        )
                     }
                 }()
             )
+        )
+    }
+
+    func createCardTitle() -> NSAttributedString {
+        NSAttributedString.coloredItems(
+            [
+                R.string.localizable.mnemonicCardRevealedHeaderMessageHighlighted(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            ],
+            formattingClosure: { items in
+                R.string.localizable.mnemonicCardRevealedHeaderMessage(
+                    items[0],
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            },
+            color: R.color.colorTextPrimary()!
         )
     }
 }

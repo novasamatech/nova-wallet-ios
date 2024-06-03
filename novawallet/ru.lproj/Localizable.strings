@@ -573,7 +573,7 @@
 "crowdloan.empty.message_v2_2_0" = "Краудлоуны появятся здесь";
 "common.existential.warning.message_v2_2_0" = "Ваша учетная запись будет удалена из сети после операции, так как ваш баланс опустится ниже минимального";
 "wallet.send.existential.warning_v2_2_0" = "Ваша учетная запись будет удалена из сети после перевода, так как опустит общий баланс ниже минимального";
-"account.backup.mnemonic.title" = "Запишите фразу и храните её в надежном месте";
+"account.backup.mnemonic.title" = "Запишите вашу секретную фразу";
 "common.understand" = "Понятно";
 "account.backup.mnemonic.caption" = "Пожалуйста, убедитесь, что ваша фраза записана корректно и разборчиво.";
 "account.backup.mnemonic.field.title" = "Мнемоническая фраза";

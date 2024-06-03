@@ -3,8 +3,23 @@ import SoraFoundation
 
 final class AccountConfirmPresenter {
     weak var view: AccountConfirmViewProtocol?
-    var wireframe: AccountConfirmWireframeProtocol!
-    var interactor: AccountConfirmInteractorInputProtocol!
+    let wireframe: AccountConfirmWireframeProtocol
+    let interactor: AccountConfirmInteractorInputProtocol
+
+    private let localizationManager: LocalizationManagerProtocol
+    private let mnemonicViewModelFactory: MnemonicViewModelFactory
+
+    init(
+        wireframe: AccountConfirmWireframeProtocol,
+        interactor: AccountConfirmInteractorInputProtocol,
+        mnemonicViewModelFactory: MnemonicViewModelFactory,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.wireframe = wireframe
+        self.interactor = interactor
+        self.mnemonicViewModelFactory = mnemonicViewModelFactory
+        self.localizationManager = localizationManager
+    }
 }
 
 extension AccountConfirmPresenter: AccountConfirmPresenterProtocol {
@@ -28,12 +43,12 @@ extension AccountConfirmPresenter: AccountConfirmPresenterProtocol {
 extension AccountConfirmPresenter: AccountConfirmInteractorOutputProtocol {
     func didReceive(words: [String], afterConfirmationFail: Bool) {
         if afterConfirmationFail {
-            let locale = localizationManager?.selectedLocale
+            let locale = localizationManager.selectedLocale
             let title = R.string.localizable
-                .confirmMnemonicMismatchErrorTitle(preferredLanguages: locale?.rLanguages)
+                .confirmMnemonicMismatchErrorTitle(preferredLanguages: locale.rLanguages)
             let message = R.string.localizable
-                .confirmMnemonicMismatchErrorMessage(preferredLanguages: locale?.rLanguages)
-            let close = R.string.localizable.commonOk(preferredLanguages: locale?.rLanguages)
+                .confirmMnemonicMismatchErrorMessage(preferredLanguages: locale.rLanguages)
+            let close = R.string.localizable.commonOk(preferredLanguages: locale.rLanguages)
 
             wireframe.present(
                 message: message,
@@ -43,7 +58,11 @@ extension AccountConfirmPresenter: AccountConfirmInteractorOutputProtocol {
             )
         }
 
-        view?.didReceive(words: words, afterConfirmationFail: afterConfirmationFail)
+        view?.update(
+            with: mnemonicViewModelFactory.createEmptyMnemonicCardViewModel(for: words),
+            gridUnits: mnemonicViewModelFactory.createMnemonicGridViewModel(for: words),
+            afterConfirmationFail: afterConfirmationFail
+        )
     }
 
     func didCompleteConfirmation() {
@@ -51,7 +70,7 @@ extension AccountConfirmPresenter: AccountConfirmInteractorOutputProtocol {
     }
 
     func didReceive(error: Error) {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         guard !wireframe.present(error: error, from: view, locale: locale) else {
             return
@@ -63,8 +82,4 @@ extension AccountConfirmPresenter: AccountConfirmInteractorOutputProtocol {
             locale: locale
         )
     }
-}
-
-extension AccountConfirmPresenter: Localizable {
-    func applyLocalization() {}
 }

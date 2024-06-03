@@ -12,22 +12,29 @@ final class AccountCreateInteractor {
     ) {
         self.walletRequestFactory = walletRequestFactory
     }
+
+    private func generateMnemonicMetadata() throws -> MetaAccountCreationMetadata {
+        let mnemonic = try walletRequestFactory.generateMnemonic()
+
+        return MetaAccountCreationMetadata(
+            mnemonic: mnemonic.allWords(),
+            availableCryptoTypes: [.sr25519, .ed25519, .substrateEcdsa],
+            defaultCryptoType: .sr25519
+        )
+    }
 }
 
 extension AccountCreateInteractor: AccountCreateInteractorInputProtocol {
-    func setup() {
+    func provideMetadata() {
         do {
-            let mnemonic = try walletRequestFactory.generateMnemonic()
-
-            let metadata = MetaAccountCreationMetadata(
-                mnemonic: mnemonic.allWords(),
-                availableCryptoTypes: [.sr25519, .ed25519, .substrateEcdsa],
-                defaultCryptoType: .sr25519
-            )
-
+            let metadata = try generateMnemonicMetadata()
             presenter.didReceive(metadata: metadata)
         } catch {
             presenter.didReceiveMnemonicGeneration(error: error)
         }
+    }
+
+    func createMetadata() -> MetaAccountCreationMetadata? {
+        try? generateMnemonicMetadata()
     }
 }

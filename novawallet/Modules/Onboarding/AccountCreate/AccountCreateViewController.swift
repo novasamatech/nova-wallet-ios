@@ -1,19 +1,23 @@
 import Foundation
 import UIKit
+import SoraUI
 import SoraFoundation
 
 final class AccountCreateViewController: UIViewController, ViewHolder {
     typealias RootViewType = AccountCreateViewLayout
 
     let presenter: AccountCreatePresenterProtocol
+    let appearanceAnimator: ViewAnimatorProtocol
 
     // MARK: - Lifecycle
 
     init(
         presenter: AccountCreatePresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        appearanceAnimator: ViewAnimatorProtocol
     ) {
         self.presenter = presenter
+        self.appearanceAnimator = appearanceAnimator
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -26,19 +30,33 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupNavigationItem()
-        configureActions()
-        configureState()
-        setupLocalization()
-
         presenter.setup()
+        setup()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        presenter.prepareToDisplayMnemonic()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        rootView.hideMnemonicCard()
     }
 
     override func loadView() {
-        view = AccountCreateViewLayout()
+        view = AccountCreateViewLayout(appearanceAnimator: appearanceAnimator)
     }
 
     // MARK: - Setup functions
+
+    private func setup() {
+        rootView.mnemonicCardView.delegate = self
+        setupNavigationItem()
+        setupLocalization()
+    }
 
     private func setupNavigationItem() {
         let advancedBarButtonItem = UIBarButtonItem(
@@ -51,32 +69,9 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
         navigationItem.rightBarButtonItem = advancedBarButtonItem
     }
 
-    private func configureActions() {
-        rootView.proceedButton.addTarget(self, action: #selector(actionNext), for: .touchUpInside)
-    }
-
-    private func configureState() {
-        rootView.proceedButton.isEnabled = false
-        rootView.proceedButton.applyDisabledStyle()
-    }
-
     private func setupLocalization() {
         rootView.titleLabel.text = R.string.localizable
             .accountBackupMnemonicTitle(preferredLanguages: selectedLocale.rLanguages)
-
-        rootView.subtitleLabel.text = R.string.localizable
-            .accountCreateDetails_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
-
-        rootView.mnemonicFieldTitleLabel.text = R.string.localizable
-            .accountBackupMnemonicFieldTitle(preferredLanguages: selectedLocale.rLanguages)
-
-        rootView.captionLabel.text = R.string.localizable
-            .accountBackupMnemonicCaption(preferredLanguages: selectedLocale.rLanguages)
-
-        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-            .commonContinue(preferredLanguages: selectedLocale.rLanguages)
-
-        rootView.proceedButton.invalidateLayout()
     }
 
     // MARK: - Actions
@@ -84,29 +79,34 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     @objc private func openAdvanced() {
         presenter.activateAdvanced()
     }
-
-    @objc private func actionNext() {
-        presenter.proceed()
-    }
 }
 
 // MARK: - AccountCreateViewProtocol
 
 extension AccountCreateViewController: AccountCreateViewProtocol {
-    func set(mnemonic: [String]) {
-        rootView.mnemonicFieldContentLabel.textColor = .clear
-        rootView.mnemonicFieldContentLabel.text = mnemonic.joined(separator: " ")
+    func update(with mnemonicCardViewModel: HiddenMnemonicCardView.State) {
+        switch mnemonicCardViewModel {
+        case let .mnemonicVisible(model):
+            rootView.mnemonicCardView.showMnemonic(model: model)
+        case let .mnemonicNotVisible(model):
+            rootView.mnemonicCardView.showCover(model: model)
+        }
+    }
 
-        presenter.prepareToDisplayMnemonic()
+    func update(using checkboxListViewModel: BackupAttentionViewLayout.Model) {
+        rootView.bind(checkboxListViewModel)
     }
 
     func displayMnemonic() {
-        UIView.transition(with: rootView.mnemonicFieldContentLabel, duration: 0.25, options: .transitionCrossDissolve) {
-            self.rootView.mnemonicFieldContentLabel.textColor = R.color.colorTextPrimary()!
-        }
+        rootView.displayMnemonicCard()
+    }
+}
 
-        rootView.proceedButton.isEnabled = true
-        rootView.proceedButton.applyEnabledStyle()
+// MARK: HiddenMnemonicCardViewDelegate
+
+extension AccountCreateViewController: HiddenMnemonicCardViewDelegate {
+    func didTapCardCover() {
+        presenter.provideMnemonic()
     }
 }
 
