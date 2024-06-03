@@ -24,6 +24,11 @@ protocol CloudBackupSettingsInteractorOutputProtocol: AnyObject {
 
 protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentable, CloudBackupErrorPresentable {
     func showManualBackup(from view: CloudBackupSettingsViewProtocol?)
+    func showCloudBackupReview(
+        from view: CloudBackupSettingsViewProtocol?,
+        changes: CloudBackupSyncResult.Changes,
+        delegate: CloudBackupReviewChangesDelegate
+    )
 }
 
 enum CloudBackupSettingsInteractorError: Error {

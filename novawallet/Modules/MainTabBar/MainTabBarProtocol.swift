@@ -40,11 +40,12 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible 
         completion: @escaping () -> Void
     )
 
-    func presentCloudBackupReview(
+    func presentCloudBackupUnsyncedChanges(
         from view: MainTabBarViewProtocol?,
-        changes: CloudBackupSyncResult.Changes,
-        delegate: CloudBackupReviewChangesDelegate
+        onReviewUpdates: @escaping () -> Void
     )
+    
+    func presentReviewUpdates(from view: MainTabBarViewProtocol?)
 }
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {
