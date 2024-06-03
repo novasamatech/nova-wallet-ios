@@ -142,7 +142,7 @@ final class ChainAccountView: UIView {
         networkLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
-            make.trailing.equalTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
+            make.trailing.lessThanOrEqualTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
         }
     }
 }
