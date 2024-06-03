@@ -9,14 +9,6 @@ final class OnboardingImportOptionsWireframe: WalletImportOptionsWireframe, Onbo
         view?.controller.navigationController?.pushViewController(cloudImportView.controller, animated: true)
     }
 
-    func showPassphraseImport(from view: WalletImportOptionsViewProtocol?) {
-        showWalletRestore(from: view, secretSource: .mnemonic)
-    }
-
-    func showHardwareImport(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
-        showHardwareWalletSelection(from: view, locale: locale)
-    }
-
     func showWatchOnlyImport(from view: WalletImportOptionsViewProtocol?) {
         guard let watchOnlyView = CreateWatchOnlyViewFactory.createViewForOnboarding() else {
             return
@@ -25,11 +17,40 @@ final class OnboardingImportOptionsWireframe: WalletImportOptionsWireframe, Onbo
         view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
     }
 
-    func showSeedImport(from view: WalletImportOptionsViewProtocol?) {
-        showWalletRestore(from: view, secretSource: .seed)
+    override func showParitySignerWalletCreation(from view: ControllerBackedProtocol?, type: ParitySignerType) {
+        guard
+            let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createOnboardingView(
+                with: type
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            paritySignerWelcomeView.controller,
+            animated: true
+        )
     }
 
-    func showRestoreJsonImport(from view: WalletImportOptionsViewProtocol?) {
-        showWalletRestore(from: view, secretSource: .keystore)
+    override func showLedgerWalletCreation(from view: ControllerBackedProtocol?) {
+        guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(for: .onboarding) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            ledgerInstructions.controller,
+            animated: true
+        )
+    }
+
+    override func showWalletRestore(from view: WalletImportOptionsViewProtocol?, secretSource: SecretSource) {
+        guard let restorationController = AccountImportViewFactory.createViewForOnboarding(
+            for: secretSource
+        )?.controller else {
+            return
+        }
+
+        if let navigationController = view?.controller.navigationController {
+            navigationController.pushViewController(restorationController, animated: true)
+        }
     }
 }

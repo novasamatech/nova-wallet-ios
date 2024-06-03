@@ -232,7 +232,7 @@ extension CloudBackupSyncMediator: EventVisitorProtocol {
         syncFacade.syncUp()
     }
 
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processAccountsChanged(event _: AccountsChanged) {
         syncFacade.syncUp()
     }
 
@@ -241,6 +241,10 @@ extension CloudBackupSyncMediator: EventVisitorProtocol {
     }
 
     func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
+        syncFacade.syncUp()
+    }
+
+    func processWalletNameChanged(event _: WalletNameChanged) {
         syncFacade.syncUp()
     }
 }

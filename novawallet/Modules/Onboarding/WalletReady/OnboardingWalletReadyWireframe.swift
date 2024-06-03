@@ -9,8 +9,14 @@ final class OnboardingWalletReadyWireframe: OnboardingWalletReadyWireframeProtoc
         view?.controller.navigationController?.pushViewController(cloudBackupView.controller, animated: true)
     }
 
-    func showManualBackup(from _: OnboardingWalletReadyViewProtocol?, walletName _: String) {
-        // TODO: Implement in separate task
+    func showManualBackup(from view: OnboardingWalletReadyViewProtocol?, walletName: String) {
+        guard let manualBackupView = AccountCreateViewFactory.createViewForOnboarding(
+            walletName: walletName
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(manualBackupView.controller, animated: true)
     }
 
     func showRecoverBackup(from view: OnboardingWalletReadyViewProtocol?) {

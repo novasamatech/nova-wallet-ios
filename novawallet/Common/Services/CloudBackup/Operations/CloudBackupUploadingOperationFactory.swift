@@ -2,8 +2,13 @@ import Foundation
 import RobinHood
 
 protocol CloudBackupUploadFactoryProtocol {
+    /**
+     *  Uploads a data to the temp url first and in case of success moves file to the fileUrl.
+     *  This allows us to prevent cases when the file is changed but a user is not authorized to perform uploading.
+     */
     func createUploadWrapper(
         for fileUrl: URL,
+        tempUrl: URL?,
         timeoutInterval: TimeInterval,
         dataClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void>
@@ -31,15 +36,17 @@ final class ICloudBackupUploadFactory {
 extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
     func createUploadWrapper(
         for fileUrl: URL,
+        tempUrl: URL?,
         timeoutInterval: TimeInterval,
         dataClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void> {
-        let writeOperation = operationFactory.createWritingOperation(for: fileUrl) {
+        let writingUrl = tempUrl ?? fileUrl
+        let writeOperation = operationFactory.createWritingOperation(for: writingUrl) {
             try dataClosure()
         }
 
         let uploadMonitoring = ICloudBackupUploadMonitor(
-            filename: fileUrl.lastPathComponent,
+            filename: writingUrl.lastPathComponent,
             operationQueue: monitoringOperationQueue,
             workingQueue: DispatchQueue.global(),
             notificationCenter: notificationCenter,
@@ -69,6 +76,30 @@ extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
 
         uploadOperation.addDependency(writeOperation)
 
-        return CompoundOperationWrapper(targetOperation: uploadOperation, dependencies: [writeOperation])
+        if let tempUrl {
+            let moveOperation = operationFactory.createMoveOperation(
+                from: tempUrl,
+                destinationUrl: fileUrl
+            )
+
+            moveOperation.configurationBlock = {
+                do {
+                    // make sure the upload is successful before moving
+                    try uploadOperation.extractNoCancellableResultData()
+                } catch {
+                    moveOperation.result = .failure(error)
+                }
+            }
+
+            moveOperation.addDependency(uploadOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: moveOperation,
+                dependencies: [writeOperation, uploadOperation]
+            )
+
+        } else {
+            return CompoundOperationWrapper(targetOperation: uploadOperation, dependencies: [writeOperation])
+        }
     }
 }

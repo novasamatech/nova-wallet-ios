@@ -39,6 +39,7 @@ struct CloudBackupCreateViewFactory {
         return .init(
             walletName: walletName,
             cloudBackupFacade: serviceFacade,
+            walletRequestFactory: WalletCreationRequestFactory(),
             walletSettings: SelectedWalletSettings.shared,
             persistentKeystore: keychain,
             syncMetadataManager: CloudBackupSyncMetadataManager(

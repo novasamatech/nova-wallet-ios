@@ -27,11 +27,6 @@ final class AccountCreateViewLayout: ScrollableContainerLayoutView {
 
     let agreeButton: TriangularedButton = .create { view in
         view.applyDefaultStyle()
-        view.addTarget(
-            self,
-            action: #selector(continueAction),
-            for: .touchUpInside
-        )
     }
 
     private let appearanceAnimator: ViewAnimatorProtocol
@@ -44,6 +39,8 @@ final class AccountCreateViewLayout: ScrollableContainerLayoutView {
         self.appearanceAnimator = appearanceAnimator
 
         super.init(frame: .zero)
+
+        setupHandlers()
     }
 
     override func safeAreaInsetsDidChange() {
@@ -88,7 +85,7 @@ final class AccountCreateViewLayout: ScrollableContainerLayoutView {
         self.checkboxListViewModel = checkboxListViewModel
 
         switch checkboxListViewModel.button {
-        case let .active(title, action):
+        case let .active(title, _):
             agreeButton.imageWithTitleView?.title = title
             agreeButton.applyEnabledStyle()
             agreeButton.isEnabled = true
@@ -120,6 +117,14 @@ final class AccountCreateViewLayout: ScrollableContainerLayoutView {
 // MARK: Private
 
 private extension AccountCreateViewLayout {
+    func setupHandlers() {
+        agreeButton.addTarget(
+            self,
+            action: #selector(continueAction),
+            for: .touchUpInside
+        )
+    }
+
     func updateFooterHeight() {
         footerHeightConstraint?.layoutConstraints.first?.constant = Constants.bottomBlurViewHeight(for: self)
     }

@@ -32,7 +32,7 @@ final class AccountCreateViewFactory {
             appearanceAnimator: appearanceAnimator
         )
 
-        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
+        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
 
         presenter.view = view
         presenter.interactor = interactor
@@ -73,7 +73,7 @@ final class AccountCreateViewFactory {
             appearanceAnimator: appearanceAnimator
         )
 
-        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
+        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
 
         presenter.view = view
         presenter.interactor = interactor

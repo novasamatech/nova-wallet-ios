@@ -29,6 +29,8 @@ final class WalletNameView: UIView {
         view.roundedBackgroundView?.apply(style: .inputStrokeOnCardEditing)
     }
 
+    private var badgeView: BorderedIconLabelView?
+
     var locale = Locale.current {
         didSet {
             setupLocalization()
@@ -45,6 +47,36 @@ final class WalletNameView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setBadge(viewModel: TitleIconViewModel) {
+        let badgeView = setupBadgeView()
+        badgeView.bind(viewModel: viewModel)
+    }
+
+    private func setupBadgeView() -> BorderedIconLabelView {
+        if let badgeView {
+            return badgeView
+        }
+
+        let view: BorderedIconLabelView = .create { view in
+            view.backgroundView.apply(style: .chipsOnCard)
+            view.backgroundView.cornerRadius = 6
+            view.iconDetailsView.detailsLabel.apply(style: .semiboldCaps1ChipText)
+            view.iconDetailsView.detailsLabel.numberOfLines = 1
+            view.iconDetailsView.spacing = 6
+            view.contentInsets = UIEdgeInsets(top: 4, left: 6, bottom: 4, right: 8)
+        }
+
+        addSubview(view)
+
+        view.snp.makeConstraints { make in
+            make.trailing.top.equalToSuperview().inset(12)
+        }
+
+        badgeView = view
+
+        return view
     }
 
     private func setupLocalization() {

@@ -62,6 +62,7 @@ final class ICloudBackupStorageManager {
 
         let uploadWrapper = uploadOperationFactory.createUploadWrapper(
             for: fileUrl,
+            tempUrl: nil,
             timeoutInterval: timeoutInterval,
             dataClosure: { try dataOperation.extractNoCancellableResultData() }
         )

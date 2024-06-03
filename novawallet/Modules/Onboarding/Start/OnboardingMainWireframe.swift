@@ -12,7 +12,7 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
     }
 
     func showAccountRestore(from view: OnboardingMainViewProtocol?) {
-        guard let importView = OnboardingImportOptionsViewFactory.createView() else {
+        guard let importView = WalletImportOptionsViewFactory.createViewForOnboarding() else {
             return
         }
 
@@ -22,7 +22,6 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
     }
 
     func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource) {
-        // TODO: Navigate to the new source import screen
         if
             let navigationController = view?.controller.navigationController,
             navigationController.viewControllers.count == 1,

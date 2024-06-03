@@ -9,13 +9,9 @@ protocol OnboardingImportOptionsInteractorOutputProtocol: AnyObject {
     func didReceive(error: OnboardingImportOptionsInteractorError)
 }
 
-protocol OnboardingImportOptionsWireframeProtocol: AlertPresentable, ErrorPresentable, CloudBackupErrorPresentable {
+protocol OnboardingImportOptionsWireframeProtocol: WalletImportOptionsWireframeProtocol, AlertPresentable, ErrorPresentable,
+    CloudBackupErrorPresentable {
     func showCloudImport(from view: WalletImportOptionsViewProtocol?)
-    func showPassphraseImport(from view: WalletImportOptionsViewProtocol?)
-    func showHardwareImport(from view: WalletImportOptionsViewProtocol?, locale: Locale)
-    func showWatchOnlyImport(from view: WalletImportOptionsViewProtocol?)
-    func showSeedImport(from view: WalletImportOptionsViewProtocol?)
-    func showRestoreJsonImport(from view: WalletImportOptionsViewProtocol?)
 }
 
 enum OnboardingImportOptionsInteractorError: Error {

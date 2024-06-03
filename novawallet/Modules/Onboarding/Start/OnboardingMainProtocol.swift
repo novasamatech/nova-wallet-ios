@@ -27,6 +27,4 @@ protocol OnboardingMainInteractorOutputProtocol: AnyObject {
 
 protocol OnboardingMainViewFactoryProtocol {
     static func createViewForOnboarding() -> OnboardingMainViewProtocol?
-    static func createViewForAdding() -> OnboardingMainViewProtocol?
-    static func createViewForAccountSwitch() -> OnboardingMainViewProtocol?
 }

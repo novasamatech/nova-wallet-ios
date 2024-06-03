@@ -217,7 +217,11 @@ final class CloudBackupUpdateApplicationFactory {
         from wallets: Set<MetaAccountModel>,
         syncTime: UInt64
     ) -> CompoundOperationWrapper<Void> {
-        guard let remoteUrl = serviceFactory.createFileManager().getFileUrl() else {
+        let fileManager = serviceFactory.createFileManager()
+
+        guard
+            let remoteUrl = fileManager.getFileUrl(),
+            let tempUrl = fileManager.getTempUrl() else {
             return CompoundOperationWrapper.createWithError(
                 CloudBackupUpdateApplicationFactoryError.cloudUnavailable
             )
@@ -239,6 +243,7 @@ final class CloudBackupUpdateApplicationFactory {
 
         let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
             for: remoteUrl,
+            tempUrl: tempUrl,
             timeoutInterval: CloudBackup.backupSaveTimeout
         ) {
             try encodingOperation.extractNoCancellableResultData()

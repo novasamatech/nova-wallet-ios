@@ -5,26 +5,29 @@ import RobinHood
 final class AccountCreateInteractor {
     weak var presenter: AccountCreateInteractorOutputProtocol!
 
-    let mnemonicCreator: IRMnemonicCreatorProtocol
+    let walletRequestFactory: WalletCreationRequestFactoryProtocol
 
     init(
-        mnemonicCreator: IRMnemonicCreatorProtocol
+        walletRequestFactory: WalletCreationRequestFactoryProtocol
     ) {
-        self.mnemonicCreator = mnemonicCreator
+        self.walletRequestFactory = walletRequestFactory
+    }
+
+    private func generateMnemonicMetadata() throws -> MetaAccountCreationMetadata {
+        let mnemonic = try walletRequestFactory.generateMnemonic()
+
+        return MetaAccountCreationMetadata(
+            mnemonic: mnemonic.allWords(),
+            availableCryptoTypes: [.sr25519, .ed25519, .substrateEcdsa],
+            defaultCryptoType: .sr25519
+        )
     }
 }
 
 extension AccountCreateInteractor: AccountCreateInteractorInputProtocol {
     func provideMetadata() {
         do {
-            let mnemonic = try mnemonicCreator.randomMnemonic(.entropy128)
-
-            let metadata = MetaAccountCreationMetadata(
-                mnemonic: mnemonic.allWords(),
-                availableCryptoTypes: [.sr25519, .ed25519, .substrateEcdsa],
-                defaultCryptoType: .sr25519
-            )
-
+            let metadata = try generateMnemonicMetadata()
             presenter.didReceive(metadata: metadata)
         } catch {
             presenter.didReceiveMnemonicGeneration(error: error)
@@ -32,14 +35,6 @@ extension AccountCreateInteractor: AccountCreateInteractorInputProtocol {
     }
 
     func createMetadata() -> MetaAccountCreationMetadata? {
-        guard let mnemonic = try? mnemonicCreator.randomMnemonic(.entropy128) else { return .none }
-
-        let metadata = MetaAccountCreationMetadata(
-            mnemonic: mnemonic.allWords(),
-            availableCryptoTypes: [.sr25519, .ed25519, .substrateEcdsa],
-            defaultCryptoType: .sr25519
-        )
-
-        return metadata
+        try? generateMnemonicMetadata()
     }
 }

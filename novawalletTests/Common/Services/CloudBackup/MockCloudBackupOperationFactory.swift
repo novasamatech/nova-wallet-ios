@@ -32,4 +32,8 @@ extension MockCloudBackupOperationFactory: CloudBackupOperationFactoryProtocol {
             self.data = nil
         }
     }
+    
+    func createMoveOperation(from sourceUrl: URL, destinationUrl: URL) -> BaseOperation<Void> {
+        BaseOperation.createWithResult(())
+    }
 }

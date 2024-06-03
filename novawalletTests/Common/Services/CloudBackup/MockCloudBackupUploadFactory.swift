@@ -13,6 +13,7 @@ final class MockCloudBackupUploadFactory {
 extension MockCloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
     func createUploadWrapper(
         for fileUrl: URL,
+        tempUrl: URL?,
         timeoutInterval: TimeInterval,
         dataClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void> {

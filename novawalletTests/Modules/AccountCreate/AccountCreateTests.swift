@@ -12,8 +12,7 @@ class AccountCreateTests: XCTestCase {
         let view = MockAccountCreateViewProtocol()
         let wireframe = MockAccountCreateWireframeProtocol()
 
-        let mnemonicCreator = IRMnemonicCreator()
-        let interactor = AccountCreateInteractor(mnemonicCreator: mnemonicCreator)
+        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
         
         let localizationManager = LocalizationManager.shared
         let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)

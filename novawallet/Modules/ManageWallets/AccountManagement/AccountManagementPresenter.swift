@@ -22,6 +22,8 @@ final class AccountManagementPresenter {
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var viewModel: ChainAccountListViewModel = []
 
+    private var cloudBackupSyncState: CloudBackupSyncState?
+
     init(
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
         walletId: String,
@@ -148,7 +150,7 @@ final class AccountManagementPresenter {
         let createAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
             let title = R.string.localizable.accountCreateOptionTitle(preferredLanguages: locale.rLanguages)
 
-            return ActionManageViewModel(icon: R.image.iconPlusFilled(), title: title, details: nil)
+            return ActionManageViewModel(icon: R.image.iconCircleOutline(), title: title, details: nil)
         }
 
         let importAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
@@ -311,12 +313,18 @@ final class AccountManagementPresenter {
               let wallet = wallet
         else { return }
 
-        wireframe.showCreateAccount(
-            from: view,
-            wallet: wallet,
-            chainId: chainModel.chainId,
-            isEthereumBased: chainModel.isEthereumBased
-        )
+        if let cloudBackupSyncState, cloudBackupSyncState.canAutoSync {
+            wireframe.showCloudBackupRemind(from: view) { [weak self] in
+                self?.interactor.createAccount(for: wallet.metaId, chain: chainModel)
+            }
+        } else {
+            wireframe.showCreateAccount(
+                from: view,
+                wallet: wallet,
+                chainId: chainModel.chainId,
+                isEthereumBased: chainModel.isEthereumBased
+            )
+        }
     }
 
     private func activateImportAccount(for chainModel: ChainModel) {
@@ -577,6 +585,24 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
                 for: metaAccount,
                 chain: chain,
                 options: options,
+                from: view
+            )
+        case let .failure(error):
+            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+                logger?.error("Did receive export error \(error)")
+            }
+        }
+    }
+
+    func didReceiveCloudBackup(state: CloudBackupSyncState) {
+        cloudBackupSyncState = state
+    }
+
+    func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain _: ChainModel) {
+        switch result {
+        case .success:
+            wireframe.presentSuccessNotification(
+                R.string.localizable.commonAccountHasChanged(preferredLanguages: selectedLocale.rLanguages),
                 from: view
             )
         case let .failure(error):
