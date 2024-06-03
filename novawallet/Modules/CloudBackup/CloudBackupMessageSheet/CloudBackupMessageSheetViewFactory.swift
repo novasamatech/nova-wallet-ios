@@ -248,4 +248,80 @@ enum CloudBackupMessageSheetViewFactory {
 
         return .present(view: view)
     }
+
+    static func createUnsyncedChangesSheet(
+        completionClosure: @escaping MessageSheetCallback,
+        cancelClosure: MessageSheetCallback?
+    ) -> MessageSheetViewProtocol? {
+        let messageSheetView = MessageSheetViewFactory.createNoContentView(
+            viewModel: .init(
+                title: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupUnsyncedChangesTitle(preferredLanguages: locale.rLanguages)
+                },
+                message: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupUnsyncedChangesMessage(preferredLanguages: locale.rLanguages)
+                },
+                graphics: R.image.imageUnsyncedCloudBackup(),
+                content: nil,
+                mainAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonReviewUpdates(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: completionClosure,
+                    actionType: .normal
+                ),
+                secondaryAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: {
+                        cancelClosure?()
+                    }
+                )
+            ),
+            allowsSwipeDown: false
+        )
+
+        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 296) }
+
+        return messageSheetView
+    }
+
+    static func createWalletRemoveSheet(
+        removeClosure: @escaping MessageSheetCallback,
+        cancelClosure: MessageSheetCallback?
+    ) -> MessageSheetViewProtocol? {
+        let messageSheetView = MessageSheetViewFactory.createNoContentView(
+            viewModel: .init(
+                title: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupRemoveWalletTitle(preferredLanguages: locale.rLanguages)
+                },
+                message: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupRemoveWalletMessage(preferredLanguages: locale.rLanguages)
+                },
+                graphics: R.image.imageRemoveWalletCloudBackup(),
+                content: nil,
+                mainAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonRemove(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: removeClosure,
+                    actionType: .destructive
+                ),
+                secondaryAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: {
+                        cancelClosure?()
+                    }
+                )
+            ),
+            allowsSwipeDown: false
+        )
+
+        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 320) }
+
+        return messageSheetView
+    }
 }

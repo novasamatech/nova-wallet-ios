@@ -1622,3 +1622,8 @@
 "cloud.backup.auto.sync.title" = "Wallet changes will be updated in the Cloud Backup";
 "cloud.backup.auto.sync.description" = "New wallets are automatically added to the Cloud Backup. You can disable Cloud Backup in Settings.";
 "common.account.has.changed" = "The account has been changed successfully";
+"cloud.backup.unsynced.changes.title" = "Cloud Backup changes found";
+"cloud.backup.unsynced.changes.message" = "At the moment your backup is not synchronized. Please review these updates.";
+"common.review.updates" = "Review Updates";
+"cloud.backup.remove.wallet.title" = "Wallet will be removed in the Cloud Backup";
+"cloud.backup.remove.wallet.message" = "Ensure you have saved Passphrase for the wallet before proceeding.";
