@@ -142,7 +142,7 @@ private extension NetworksListViewController {
                     forIndexPath: indexPath
                 )
 
-                chainCell.bind(with: viewModel.networkModel.network)
+                chainCell.bind(with: viewModel)
                 cell = chainCell
             }
 

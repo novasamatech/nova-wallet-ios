@@ -16,14 +16,14 @@ final class NetworksListTableViewCell: PlainBaseTableViewCell<ChainAccountView> 
         )
     }
 
-    func bind(with viewModel: NetworkViewModel) {
-        viewModel.icon?.loadImage(
+    func bind(with viewModel: NetworksListViewLayout.NetworkWithConnectionModel) {
+        viewModel.networkModel.network.icon?.loadImage(
             on: networkIconView,
             targetSize: Constants.iconSize,
             animated: true
         )
 
-        networkLabel.text = viewModel.name
+        networkLabel.text = viewModel.networkModel.network.name
     }
 }
 

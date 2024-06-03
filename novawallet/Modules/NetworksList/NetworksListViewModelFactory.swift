@@ -51,6 +51,7 @@ class NetworksListViewModelFactory {
             return .network(
                 .init(
                     connectionState: connectionState,
+                    enabled: chainModel.enabled,
                     networkModel: networkViewModelFactory.createDiffableViewModel(from: chainModel)
                 )
             )

@@ -51,6 +51,7 @@ extension NetworksListViewLayout {
     struct NetworkWithConnectionModel: Hashable {
         var id: Int { networkModel.identifier }
         let connectionState: String?
+        let enabled: Bool
         let networkModel: DiffableNetworkViewModel
     }
 
