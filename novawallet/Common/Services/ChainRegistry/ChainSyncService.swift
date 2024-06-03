@@ -94,7 +94,12 @@ final class ChainSyncService {
             }
 
             let newOrUpdated: [ChainModel] = remoteItems.enumerated().compactMap { index, remoteItem in
-                chainConverter.update(
+
+                guard localMapping[remoteItem.chainId]?.source == .remote else {
+                    return nil
+                }
+
+                return chainConverter.update(
                     localModel: localMapping[remoteItem.chainId],
                     remoteModel: remoteItem,
                     additionalAssets: remoteEvmTokens[remoteItem.chainId] ?? [],
@@ -102,8 +107,12 @@ final class ChainSyncService {
                 )
             }
 
-            let removed = localChains.compactMap { localItem in
-                remoteMapping[localItem.chainId] == nil ? localItem : nil
+            let removed: [ChainModel] = localChains.compactMap { localItem in
+                guard localItem.source == .remote else {
+                    return nil
+                }
+
+                return remoteMapping[localItem.chainId] == nil ? localItem : nil
             }
 
             return SyncChanges(newOrUpdatedItems: newOrUpdated, removedItems: removed)

@@ -39,7 +39,8 @@ final class ChainModelConverter: ChainModelConversionProtocol {
             remoteModel: remoteModel,
             assets: newAssets,
             syncMode: syncMode,
-            order: order
+            order: order,
+            enabled: localModel?.enabled ?? true
         )
 
         return newChainModel != localModel ? newChainModel : nil
