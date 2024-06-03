@@ -1622,3 +1622,13 @@
 "cloud.backup.auto.sync.title" = "Изменения кошелька будут сохранены в Cloud Backup";
 "cloud.backup.auto.sync.description" = "Новы кошельки автоматически добавляются в Cloud Backup. Вы можете отключить Cloud Backup в Настройках.";
 "common.account.has.changed" = "Аккаунт был успешно изменён";
+"cloud.backup.unsynced.changes.title" = "Найдены изменения в бэкапе";
+"cloud.backup.unsynced.changes.message" = "В данный момент ваш бэкап не синхронизирован. Пожалуйста, проверьте изменения.";
+"common.review.updates" = "Проверить Изменения";
+"cloud.backup.remove.wallet.title" = "Кошелёк будет удалён из бэкапа";
+"cloud.backup.remove.wallet.message" = "Убедитесь, что вы сохранили секретную фразу для кошелька перед тем как продолжить.";
+"cloud.backup.sync.failed.title" = "Не удалось применить изменения для бэкапа";
+"cloud.backup.sync.failed.message" = "В данный момент ваш бэкап не сихронизирован. Пожалуйста, устраните проблему.";
+"common.review.issue" = "Устранить Проблему";
+"cloud.backup.alert.remove.wallets.title" = "Вы уверены, что хотите применить эти изменения?";
+"cloud.backup.alert.remove.wallets.message" = "Если вы не сохранили секретные фразы для всех кошельков, которые удаляются, то доступ к этим кошелькам и их токенам будет утерян навсегда.";

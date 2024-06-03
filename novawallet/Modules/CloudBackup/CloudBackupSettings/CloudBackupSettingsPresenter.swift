@@ -72,6 +72,8 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     func activateSyncIssue() {
         // TODO: Implement in separate task
     }
+
+    func checkSync() {}
 }
 
 extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProtocol {
@@ -94,6 +96,26 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
             }
 
             wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
+        }
+    }
+
+    func didReceiveConfirmation(changes: CloudBackupSyncResult.Changes) {
+        wireframe.showCloudBackupReview(
+            from: view,
+            changes: changes,
+            delegate: self
+        )
+    }
+}
+
+extension CloudBackupSettingsPresenter: CloudBackupReviewChangesDelegate {
+    func cloudBackupReviewerDidApprove(changes: CloudBackupSyncResult.Changes) {
+        if case let .updateLocal(updateLocal) = changes, updateLocal.changes.hasWalletRemoves {
+            wireframe.showWalletsRemoveConfirmation(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.approveBackupChanges()
+            }
+        } else {
+            interactor.approveBackupChanges()
         }
     }
 }

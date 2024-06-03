@@ -40,25 +40,21 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         )
     }
 
-    func didRequestReviewCloud(changes: CloudBackupSyncResult.Changes) {
+    func didRequestReviewCloud(changes _: CloudBackupSyncResult.Changes) {
         wireframe.presentCloudBackupUnsyncedChanges(from: view) { [weak self] in
             self?.wireframe.presentReviewUpdates(from: self?.view)
         }
     }
 
     func didFailApplyingCloud(changes _: CloudBackupSyncResult.Changes, error _: Error) {
-        // TODO: Show bottom sheet about error
+        wireframe.presentCloudBackupUpdateFailed(from: view) { [weak self] in
+            self?.wireframe.presentReviewUpdates(from: self?.view)
+        }
     }
 
     func didRequestPushNotificationsSetupOpen() {
         wireframe.presentPushNotificationsSetup(on: view) { [weak self] in
             self?.interactor.setPushNotificationsSetupScreenSeen()
         }
-    }
-}
-
-extension MainTabBarPresenter: CloudBackupReviewChangesDelegate {
-    func cloudBackupReviewerDidApprove(changes _: CloudBackupSyncResult.Changes) {
-        interactor.approveCloudBackupChanges()
     }
 }

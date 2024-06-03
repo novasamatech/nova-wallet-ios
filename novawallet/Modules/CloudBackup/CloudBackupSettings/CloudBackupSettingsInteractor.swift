@@ -56,4 +56,18 @@ extension CloudBackupSettingsInteractor: CloudBackupSettingsInteractorInputProto
             self?.presenter?.didReceive(error: .disableBackup(error))
         }
     }
+
+    func checkBackupChangesConfirmationNeeded() {
+        let state = cloudBackupSyncMediator.syncFacade.getState()
+
+        guard let changes = state.changes else {
+            return
+        }
+
+        presenter?.didReceiveConfirmation(changes: changes)
+    }
+
+    func approveBackupChanges() {
+        cloudBackupSyncMediator.approveCurrentChanges()
+    }
 }

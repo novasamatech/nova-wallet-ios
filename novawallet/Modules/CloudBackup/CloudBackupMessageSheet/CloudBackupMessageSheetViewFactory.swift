@@ -287,6 +287,44 @@ enum CloudBackupMessageSheetViewFactory {
         return messageSheetView
     }
 
+    static func createCloudBackupUpdateFailedSheet(
+        completionClosure: @escaping MessageSheetCallback,
+        cancelClosure: MessageSheetCallback?
+    ) -> MessageSheetViewProtocol? {
+        let messageSheetView = MessageSheetViewFactory.createNoContentView(
+            viewModel: .init(
+                title: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupSyncFailedTitle(preferredLanguages: locale.rLanguages)
+                },
+                message: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupSyncFailedMessage(preferredLanguages: locale.rLanguages)
+                },
+                graphics: R.image.imageUnsyncedCloudBackup(),
+                content: nil,
+                mainAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonReviewIssue(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: completionClosure,
+                    actionType: .normal
+                ),
+                secondaryAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: {
+                        cancelClosure?()
+                    }
+                )
+            ),
+            allowsSwipeDown: false
+        )
+
+        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 296) }
+
+        return messageSheetView
+    }
+
     static func createWalletRemoveSheet(
         removeClosure: @escaping MessageSheetCallback,
         cancelClosure: MessageSheetCallback?

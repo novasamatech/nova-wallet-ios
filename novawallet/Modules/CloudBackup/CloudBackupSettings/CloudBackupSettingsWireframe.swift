@@ -12,7 +12,7 @@ final class CloudBackupSettingsWireframe: CloudBackupSettingsWireframeProtocol {
             animated: true
         )
     }
-    
+
     func showCloudBackupReview(
         from view: CloudBackupSettingsViewProtocol?,
         changes: CloudBackupSyncResult.Changes,
@@ -32,5 +32,25 @@ final class CloudBackupSettingsWireframe: CloudBackupSettingsWireframeProtocol {
         reviewChangesView.controller.modalPresentationStyle = .custom
 
         view?.controller.present(reviewChangesView.controller, animated: true)
+    }
+
+    func showWalletsRemoveConfirmation(
+        on view: CloudBackupSettingsViewProtocol?,
+        locale: Locale,
+        onConfirm: @escaping () -> Void
+    ) {
+        let confirmationAction = AlertPresentableAction(
+            title: R.string.localizable.commonApply(preferredLanguages: locale.rLanguages),
+            handler: onConfirm
+        )
+
+        let viewModel = AlertPresentableViewModel(
+            title: R.string.localizable.cloudBackupAlertRemoveWalletsTitle(preferredLanguages: locale.rLanguages),
+            message: R.string.localizable.cloudBackupAlertRemoveWalletsMessage(preferredLanguages: locale.rLanguages),
+            actions: [confirmationAction],
+            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
     }
 }

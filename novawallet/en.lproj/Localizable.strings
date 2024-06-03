@@ -1627,3 +1627,8 @@
 "common.review.updates" = "Review Updates";
 "cloud.backup.remove.wallet.title" = "Wallet will be removed in the Cloud Backup";
 "cloud.backup.remove.wallet.message" = "Ensure you have saved Passphrase for the wallet before proceeding.";
+"cloud.backup.sync.failed.title" = "Wallet changes failed to update in the Cloud Backup";
+"cloud.backup.sync.failed.message" = "At the moment your backup is not synchronized. Please review the issue.";
+"common.review.issue" = "Review the Issue";
+"cloud.backup.alert.remove.wallets.title" = "Are you sure that you want to apply these changes?";
+"cloud.backup.alert.remove.wallets.message" = "If you have not manually written down your Passphrase for wallets that will be removed, then those wallets and all of their assets will be permanently and irretrievably lost forever.";

@@ -110,10 +110,6 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     func setPushNotificationsSetupScreenSeen() {
         settingsManager.notificationsSetupSeen = true
     }
-
-    func approveCloudBackupChanges() {
-        cloudBackupMediator.approveCurrentChanges()
-    }
 }
 
 extension MainTabBarInteractor: EventVisitorProtocol {
