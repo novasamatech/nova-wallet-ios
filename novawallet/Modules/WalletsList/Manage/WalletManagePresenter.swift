@@ -144,9 +144,16 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
     }
 
     func removeItem(at index: Int, section: Int) {
-        askAndPerformRemoveItem(at: index, section: section) { [weak self] result in
-            if result {
+        if let cloudBackupState, cloudBackupState.canAutoSync {
+            wireframe?.showRemoveCloudBackupWalletWarning(from: view) { [weak self] in
+                self?.performRemoveItem(at: index, section: section)
                 self?.view?.didRemoveItem(at: index, section: section)
+            }
+        } else {
+            askAndPerformRemoveItem(at: index, section: section) { [weak self] result in
+                if result {
+                    self?.view?.didRemoveItem(at: index, section: section)
+                }
             }
         }
     }
