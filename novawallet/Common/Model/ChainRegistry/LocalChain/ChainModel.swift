@@ -56,6 +56,7 @@ struct ChainModel: Equatable, Hashable {
     let additional: JSON?
     let syncMode: ChainSyncMode
     let source: Source
+    let enabled: Bool
 
     init(
         chainId: Id,
@@ -73,7 +74,8 @@ struct ChainModel: Equatable, Hashable {
         order: Int64,
         additional: JSON?,
         syncMode: ChainSyncMode,
-        source: Source
+        source: Source,
+        enabled: Bool
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -91,6 +93,7 @@ struct ChainModel: Equatable, Hashable {
         self.additional = additional
         self.syncMode = syncMode
         self.source = source
+        self.enabled = enabled
     }
 
     func asset(for assetId: AssetModel.Id) -> AssetModel? {
@@ -315,7 +318,8 @@ extension ChainModel {
             order: order,
             additional: additional,
             syncMode: syncMode,
-            source: source
+            source: source,
+            enabled: enabled
         )
     }
 
@@ -339,7 +343,8 @@ extension ChainModel {
             order: order,
             additional: additional,
             syncMode: syncMode,
-            source: source
+            source: source,
+            enabled: enabled
         )
     }
 
@@ -363,7 +368,8 @@ extension ChainModel {
             order: order,
             additional: additional,
             syncMode: syncMode,
-            source: source
+            source: source,
+            enabled: enabled
         )
     }
 
@@ -384,7 +390,8 @@ extension ChainModel {
             order: order,
             additional: additional,
             syncMode: newMode,
-            source: source
+            source: source,
+            enabled: enabled
         )
     }
 }

@@ -390,7 +390,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             order: entity.order,
             additional: additional,
             syncMode: syncMode,
-            source: source
+            source: source,
+            enabled: entity.enabled
         )
     }
 
@@ -420,6 +421,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue
         entity.source = model.source.rawValue
+        entity.enabled = model.enabled
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
         }

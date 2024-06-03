@@ -1,7 +1,13 @@
 import Foundation
 
 extension ChainModel {
-    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, syncMode: ChainSyncMode, order: Int64) {
+    init(
+        remoteModel: RemoteChainModel,
+        assets: Set<AssetModel>,
+        syncMode: ChainSyncMode,
+        order: Int64,
+        enabled: Bool
+    ) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
         name = remoteModel.name
@@ -28,6 +34,7 @@ extension ChainModel {
         additional = remoteModel.additional
 
         self.order = order
+        self.enabled = enabled
         source = .remote
     }
 }
