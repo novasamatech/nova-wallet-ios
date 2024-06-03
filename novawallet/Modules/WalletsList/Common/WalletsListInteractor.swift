@@ -1,7 +1,7 @@
 import UIKit
 import RobinHood
 
-class WalletsListInteractor {
+class WalletsListInteractor: WalletsListInteractorInputProtocol {
     weak var basePresenter: WalletsListInteractorOutputProtocol?
 
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
@@ -45,8 +45,6 @@ class WalletsListInteractor {
         setupBalancesStore()
     }
 }
-
-extension WalletsListInteractor: WalletsListInteractorInputProtocol {}
 
 extension WalletsListInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {

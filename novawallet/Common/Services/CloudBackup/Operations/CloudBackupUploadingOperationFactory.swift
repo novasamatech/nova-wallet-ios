@@ -84,7 +84,7 @@ extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
 
             moveOperation.configurationBlock = {
                 do {
-                    // make sure upload is successfull before moving
+                    // make sure the upload is successful before moving
                     try uploadOperation.extractNoCancellableResultData()
                 } catch {
                     moveOperation.result = .failure(error)
