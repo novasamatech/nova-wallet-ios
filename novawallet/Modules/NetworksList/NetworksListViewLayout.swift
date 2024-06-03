@@ -2,7 +2,7 @@ import UIKit
 
 final class NetworksListViewLayout: UIView {
     let networkTypeSwitch: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
+        view.backgroundView.fillColor = R.color.colorSegmentedBackgroundOnBlack()!
         view.selectionColor = R.color.colorSegmentedTabActive()!
         view.titleFont = .regularFootnote
         view.selectedTitleColor = R.color.colorTextPrimary()!
