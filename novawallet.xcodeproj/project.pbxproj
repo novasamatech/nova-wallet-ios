@@ -678,6 +678,7 @@
 		2D5A61C92C0E5C68006D58E3 /* NetworksListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */; };
 		2D5A61CB2C0F1FB7006D58E3 /* GenericBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CA2C0F1FB7006D58E3 /* GenericBackgroundView.swift */; };
 		2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */; };
+		2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -5292,6 +5293,7 @@
 		2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksListTableViewCell.swift; sourceTree = "<group>"; };
 		2D5A61CA2C0F1FB7006D58E3 /* GenericBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericBackgroundView.swift; sourceTree = "<group>"; };
 		2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksEmptyPlaceholderView.swift; sourceTree = "<group>"; };
+		2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrateNetworksBanner.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
 		2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmInteractor.swift; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
@@ -10672,6 +10674,16 @@
 				8443FE23255586230092893D /* ExportMnemonicConfirmProtocols.swift */,
 			);
 			path = ExportMnemonicConfirm;
+			sourceTree = "<group>";
+		};
+		2D5A61CE2C0FAC3D006D58E3 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */,
+				2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */,
+				2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		2F9F44CABD4DE8B400DC60FA /* Confirm */ = {
@@ -19503,6 +19515,7 @@
 		9D391770C6744F5F08EEC7F4 /* NetworksList */ = {
 			isa = PBXGroup;
 			children = (
+				2D5A61CE2C0FAC3D006D58E3 /* View */,
 				71B7A8DF67B1A4953EF7E74F /* NetworksListProtocols.swift */,
 				932EBC486896C9ECB60977C4 /* NetworksListWireframe.swift */,
 				051CE89F0ABBE5EF58FC3566 /* NetworksListPresenter.swift */,
@@ -19510,8 +19523,6 @@
 				2D5A61C62C0DF106006D58E3 /* NetworksListViewModelFactory.swift */,
 				84C2C52E727AAEF19EFC7761 /* NetworksListViewController.swift */,
 				31CD72DF2B9A73451090EA4B /* NetworksListViewLayout.swift */,
-				2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */,
-				2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */,
 				6C890ABA28180F1F93B7865C /* NetworksListViewFactory.swift */,
 			);
 			path = NetworksList;
@@ -24748,6 +24759,7 @@
 				847A6C0B28817E4000477F77 /* AssetListBaseInteractor.swift in Sources */,
 				0C846B8B2BE52FBD000EBFC2 /* VaraRewardParamsService.swift in Sources */,
 				8CDA490B390BFA261906F8FC /* CrowdloanContributionSetupViewLayout.swift in Sources */,
+				2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */,
 				840B3D632899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift in Sources */,
 				84FD91B029B08F7A007851D3 /* BaseTableSearchViewController.swift in Sources */,
 				1BEADE77C6236CB3BF719A47 /* CrowdloanContributionSetupViewFactory.swift in Sources */,

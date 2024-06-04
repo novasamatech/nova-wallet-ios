@@ -8,6 +8,7 @@ final class NetworksListViewController: UIViewController, ViewHolder {
     typealias Snapshot = NSDiffableDataSourceSnapshot<RootViewType.Section, RootViewType.Row>
     typealias ChainCell = NetworksListTableViewCell
     typealias PlaceholderCell = NetworksEmptyTableViewCell
+    typealias BannerCell = IntegrateNetworkBannerTableViewCell
 
     let presenter: NetworksListPresenterProtocol
 
@@ -130,6 +131,7 @@ private extension NetworksListViewController {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ChainCell.self)
         rootView.tableView.registerClassForCell(PlaceholderCell.self)
+        rootView.tableView.registerClassForCell(BannerCell.self)
 
         setupActions()
         setupNetworkSwitchTitles()
@@ -176,14 +178,20 @@ private extension NetworksListViewController {
 
     func makeDataSource() -> DataSource {
         DataSource(tableView: rootView.tableView) { [weak self] tableView, indexPath, viewModel in
-            guard let self else { return nil }
+            guard let self else { return UITableViewCell() }
 
             let cell: UITableViewCell
 
             switch viewModel {
-            case let .banner(banerViewModel):
-                // TODO: Implement
-                cell = UITableViewCell()
+            case let .banner:
+                let bannerCell = tableView.dequeueReusableCellWithType(
+                    BannerCell.self,
+                    forIndexPath: indexPath
+                )
+
+                bannerCell.contentDisplayView.set(locale: selectedLocale)
+
+                cell = bannerCell
             case let .placeholder(placeholderViewModel):
                 let placeholderCell = tableView.dequeueReusableCellWithType(
                     PlaceholderCell.self,

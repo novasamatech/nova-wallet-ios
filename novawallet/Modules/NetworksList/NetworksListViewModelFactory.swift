@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 class NetworksListViewModelFactory {
     typealias NetworkViewModel = NetworksListViewLayout.NetworkWithConnectionModel
@@ -9,13 +10,16 @@ class NetworksListViewModelFactory {
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
+    let settingsManager: SettingsManagerProtocol
 
     init(
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        settingsManager: SettingsManagerProtocol
     ) {
         self.networkViewModelFactory = networkViewModelFactory
         self.localizationManager = localizationManager
+        self.settingsManager = settingsManager
     }
 
     func createDefaultViewModel(
@@ -41,17 +45,23 @@ class NetworksListViewModelFactory {
         indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
     ) -> NetorkListViewModel {
-        .init(
-            sections: [
-                .networks(
-                    createRows(
-                        from: chains,
-                        indexes: indexes,
-                        with: connectionStates
-                    )
+        var sections: [SectionModel] = []
+
+        if settingsManager.integrateNetworksBannerSeen == false {
+            sections.append(.banner([.banner]))
+        }
+
+        sections.append(
+            .networks(
+                createRows(
+                    from: chains,
+                    indexes: indexes,
+                    with: connectionStates
                 )
-            ]
+            )
         )
+
+        return .init(sections: sections)
     }
 
     private func createRows(

@@ -83,12 +83,6 @@ extension NetworksListViewLayout {
         let buttonTitle: String
     }
 
-    struct Banner: Hashable {
-        let title: String
-        let message: String
-        let buttonTitle: String
-    }
-
     enum Section: Hashable {
         case networks([Row])
         case banner([Row])
@@ -96,7 +90,7 @@ extension NetworksListViewLayout {
 
     enum Row: Hashable {
         case network(NetworkWithConnectionModel)
-        case banner(Banner)
+        case banner
         case placeholder(Placeholder)
     }
 

@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct NetworksListViewFactory {
     static func createView() -> NetworksListViewProtocol? {
@@ -8,7 +9,8 @@ struct NetworksListViewFactory {
 
         let viewModelFactory = NetworksListViewModelFactory(
             networkViewModelFactory: NetworkViewModelFactory(),
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            settingsManager: SettingsManager.shared
         )
 
         let presenter = NetworksListPresenter(
