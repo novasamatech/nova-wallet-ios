@@ -15,28 +15,43 @@ class NetworksListViewModelFactory {
 
     func createDefaultViewModel(
         for chains: [ChainModel],
+        indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
     ) -> NetworksListViewLayout.Model {
         .init(
             sections: [
-                .networks(createRows(from: chains, with: connectionStates))
+                .networks(
+                    createRows(
+                        from: chains,
+                        indexes: indexes,
+                        with: connectionStates
+                    )
+                )
             ]
         )
     }
 
     func createAddedViewModel(
         for chains: [ChainModel],
+        indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
     ) -> NetworksListViewLayout.Model {
         .init(
             sections: [
-                .networks(createRows(from: chains, with: connectionStates))
+                .networks(
+                    createRows(
+                        from: chains,
+                        indexes: indexes,
+                        with: connectionStates
+                    )
+                )
             ]
         )
     }
 
     private func createRows(
         from chains: [ChainModel],
+        indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
     ) -> [NetworksListViewLayout.Row] {
         chains.map { chainModel in
@@ -50,6 +65,7 @@ class NetworksListViewModelFactory {
 
             return .network(
                 .init(
+                    index: indexes[chainModel.identifier]!,
                     connectionState: connectionState,
                     enabled: chainModel.enabled,
                     networkModel: networkViewModelFactory.createDiffableViewModel(from: chainModel)

@@ -9,6 +9,7 @@ final class NetworksListPresenter {
 
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var connectionStates: [ChainModel.Id: ConnectionState] = [:]
+    private var chainIndexes: [ChainModel.Id: Int] = [:]
 
     private var selectedNetworksType: NetworksType? = .default
     private var sortedChains: SortedChains?
@@ -33,6 +34,7 @@ extension NetworksListPresenter: NetworksListPresenterProtocol {
 
     func select(segment: NetworksType?) {
         selectedNetworksType = segment
+        indexChains()
         provideViewModels()
     }
 
@@ -48,6 +50,8 @@ extension NetworksListPresenter: NetworksListInteractorOutputProtocol {
         chains = changes.mergeToDict(chains)
         sortedChains = sorted(chains: chains)
 
+        indexChains()
+
         provideViewModels()
     }
 
@@ -56,6 +60,7 @@ extension NetworksListPresenter: NetworksListInteractorOutputProtocol {
         for chainId: ChainModel.Id
     ) {
         connectionStates[chainId] = connectionState
+        provideNetworkViewModel(for: chainId)
     }
 }
 
@@ -72,16 +77,32 @@ private extension NetworksListPresenter {
         case .default:
             viewModelFactory.createDefaultViewModel(
                 for: sortedChains.defaultChains,
+                indexes: chainIndexes,
                 with: connectionStates
             )
         case .added:
-            viewModelFactory.createDefaultViewModel(
+            viewModelFactory.createAddedViewModel(
                 for: sortedChains.addedChains,
+                indexes: chainIndexes,
                 with: connectionStates
             )
         }
 
         view?.update(with: viewModel)
+    }
+
+    func provideNetworkViewModel(for chainId: ChainModel.Id) {
+        guard let chain = chains[chainId] else {
+            return
+        }
+
+        let viewModel = viewModelFactory.createDefaultViewModel(
+            for: [chain],
+            indexes: chainIndexes,
+            with: connectionStates
+        )
+
+        view?.updateNetworks(with: viewModel)
     }
 
     func sorted(chains: [ChainModel.Id: ChainModel]) -> SortedChains {
@@ -103,6 +124,24 @@ private extension NetworksListPresenter {
             defaultChains: defaultChains,
             addedChains: addedChains
         )
+    }
+
+    func indexChains() {
+        guard let sortedChains else {
+            return
+        }
+
+        chainIndexes = [:]
+
+        let chainsToIndex = if selectedNetworksType == .default {
+            sortedChains.defaultChains
+        } else {
+            sortedChains.addedChains
+        }
+
+        chainsToIndex.enumerated().forEach { index, chain in
+            chainIndexes[chain.chainId] = index
+        }
     }
 }
 

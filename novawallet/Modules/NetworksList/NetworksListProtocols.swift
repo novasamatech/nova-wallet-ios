@@ -2,6 +2,7 @@ import RobinHood
 
 protocol NetworksListViewProtocol: ControllerBackedProtocol {
     func update(with viewModel: NetworksListViewLayout.Model)
+    func updateNetworks(with viewModel: NetworksListViewLayout.Model)
 }
 
 protocol NetworksListPresenterProtocol: AnyObject {

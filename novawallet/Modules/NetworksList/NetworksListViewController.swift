@@ -78,6 +78,30 @@ extension NetworksListViewController: NetworksListViewProtocol {
 
         dataSource.apply(snapshot, animatingDifferences: false)
     }
+
+    func updateNetworks(with viewModel: NetworksListViewLayout.Model) {
+        viewModel.sections
+            .enumerated()
+            .forEach { sectionIndex, section in
+                guard case let .networks(rows) = section else {
+                    return
+                }
+
+                rows.forEach { row in
+                    guard case let .network(networkModel) = row else {
+                        return
+                    }
+
+                    let indexPath = IndexPath(
+                        row: networkModel.index,
+                        section: sectionIndex
+                    )
+
+                    let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworksListTableViewCell
+                    cell?.bind(with: networkModel)
+                }
+            }
+    }
 }
 
 // MARK: Private
