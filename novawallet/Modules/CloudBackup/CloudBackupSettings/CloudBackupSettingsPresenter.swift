@@ -71,8 +71,7 @@ final class CloudBackupSettingsPresenter {
 
             switch actions[index] {
             case .changePassword:
-                // TODO: Open change password flow
-                break
+                wireframe.showChangePassword(from: view)
             case .delete:
                 wireframe.showCloudBackupDelete(
                     from: view,
@@ -140,16 +139,16 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     }
 
     func activateSyncIssue() {
+        // TODO: Handle updates application separately
         guard
             case let .enabled(optSyncResult, _) = cloudBackupState,
             case let .issue(issue) = optSyncResult else {
             return
         }
-        
+
         switch issue {
         case .missingOrInvalidPassword:
-            // TODO: Open enter password flow
-            break
+            wireframe.showEnterPassword(from: view)
         case .remoteDecodingFailed:
             wireframe.showCloudBackupDelete(
                 from: view,
@@ -162,7 +161,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
             guard let view = view else {
                 return
             }
-            
+
             wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
         }
     }

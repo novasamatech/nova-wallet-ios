@@ -47,6 +47,10 @@ protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentabl
         changes: CloudBackupSyncResult.Changes,
         delegate: CloudBackupReviewChangesDelegate
     )
+
+    func showEnterPassword(from view: CloudBackupSettingsViewProtocol?)
+
+    func showChangePassword(from view: CloudBackupSettingsViewProtocol?)
 }
 
 enum CloudBackupSettingsInteractorError: Error {

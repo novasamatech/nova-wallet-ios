@@ -53,4 +53,20 @@ final class CloudBackupSettingsWireframe: CloudBackupSettingsWireframeProtocol {
 
         present(viewModel: viewModel, style: .alert, from: view)
     }
+
+    func showEnterPassword(from view: CloudBackupSettingsViewProtocol?) {
+        guard let enterPasswordView = ImportCloudPasswordViewFactory.createSetPasswordView() else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(enterPasswordView.controller, animated: true)
+    }
+
+    func showChangePassword(from view: CloudBackupSettingsViewProtocol?) {
+        guard let changePasswordView = ImportCloudPasswordViewFactory.createChangePasswordView() else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(changePasswordView.controller, animated: true)
+    }
 }

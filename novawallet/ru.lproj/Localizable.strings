@@ -1637,3 +1637,7 @@
 "cloud.backup.will.delete.title" = "Бэкап будет удалён из iCloud";
 "cloud.backup.will.delete.message" = "%@ и всегда сохраняйте их оффлайн все безопасного восстановления. Вы можете это сделать в настройках бэкапа.";
 "cloud.backup.will.delete.highlighted" = "Пожалуйста, запишите секретные фразы от всех ваших кошельков перед тем как продолжить";
+"cloud.backup.enter.password.set.message" = "Пароль от вашего бэкапа был ранее изменён. Для продолжения использования бэкапа, пожалуйста введите новый пароль.";
+"common.password.entered.correctly" = "Пароль введён верно";
+"cloud.backup.update.password.title" = "Изменить пароль бэкапа";
+"cloud.backup.password.changed" = "Пароль бэкапа успешно изменён";

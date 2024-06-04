@@ -445,6 +445,17 @@
 		0CB261F52A9E188300287305 /* NominationPoolsBondExtraCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261F42A9E188300287305 /* NominationPoolsBondExtraCall.swift */; };
 		0CB261F72A9E2D8400287305 /* StackSwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261F62A9E2D8400287305 /* StackSwitchCell.swift */; };
 		0CB261F92A9F1F2200287305 /* NPoolsRedeemError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB261F82A9F1F2200287305 /* NPoolsRedeemError.swift */; };
+		0CB3135F2C0F051700353724 /* EnterCloudPasswordFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB3135E2C0F051700353724 /* EnterCloudPasswordFlow.swift */; };
+		0CB313622C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313612C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift */; };
+		0CB313652C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313642C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift */; };
+		0CB313682C0F0DB100353724 /* CloudBackupEnterPasswordCheckInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313672C0F0DB100353724 /* CloudBackupEnterPasswordCheckInteractor.swift */; };
+		0CB3136A2C0F0EC400353724 /* CloudBackupServiceFacade+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313692C0F0EC400353724 /* CloudBackupServiceFacade+Create.swift */; };
+		0CB3136C2C0F34CB00353724 /* CloudBackupEnterPasswordSetWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB3136B2C0F34CB00353724 /* CloudBackupEnterPasswordSetWireframe.swift */; };
+		0CB3136E2C0F3D3800353724 /* CloudBackupEnterPasswordCheckWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB3136D2C0F3D3800353724 /* CloudBackupEnterPasswordCheckWireframe.swift */; };
+		0CB313722C0F459900353724 /* CloudBackupUpdatePasswordInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313712C0F459900353724 /* CloudBackupUpdatePasswordInteractor.swift */; };
+		0CB313742C0F45E300353724 /* CloudBackupUpdatePasswordWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313732C0F45E300353724 /* CloudBackupUpdatePasswordWireframe.swift */; };
+		0CB313772C0F46DB00353724 /* BaseCloudBackupUpdatePasswordWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313762C0F46DB00353724 /* BaseCloudBackupUpdatePasswordWireframe.swift */; };
+		0CB313792C0F499B00353724 /* CloudBackupSetupPasswordFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB313782C0F499B00353724 /* CloudBackupSetupPasswordFlow.swift */; };
 		0CB64E5A2AFE9947008F268F /* GetTokenOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB64E592AFE9947008F268F /* GetTokenOperation.swift */; };
 		0CB64E5C2B009DA9008F268F /* GetTokenOptionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB64E5B2B009DA9008F268F /* GetTokenOptionsModel.swift */; };
 		0CB64E5E2B00AA8F008F268F /* GetTokenOptionsResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB64E5D2B00AA8F008F268F /* GetTokenOptionsResult.swift */; };
@@ -5238,6 +5249,17 @@
 		0CB261F42A9E188300287305 /* NominationPoolsBondExtraCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsBondExtraCall.swift; sourceTree = "<group>"; };
 		0CB261F62A9E2D8400287305 /* StackSwitchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackSwitchCell.swift; sourceTree = "<group>"; };
 		0CB261F82A9F1F2200287305 /* NPoolsRedeemError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsRedeemError.swift; sourceTree = "<group>"; };
+		0CB3135E2C0F051700353724 /* EnterCloudPasswordFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterCloudPasswordFlow.swift; sourceTree = "<group>"; };
+		0CB313612C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseBackupEnterPasswordInteractor.swift; sourceTree = "<group>"; };
+		0CB313642C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnterPasswordSetInteractor.swift; sourceTree = "<group>"; };
+		0CB313672C0F0DB100353724 /* CloudBackupEnterPasswordCheckInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnterPasswordCheckInteractor.swift; sourceTree = "<group>"; };
+		0CB313692C0F0EC400353724 /* CloudBackupServiceFacade+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupServiceFacade+Create.swift"; sourceTree = "<group>"; };
+		0CB3136B2C0F34CB00353724 /* CloudBackupEnterPasswordSetWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnterPasswordSetWireframe.swift; sourceTree = "<group>"; };
+		0CB3136D2C0F3D3800353724 /* CloudBackupEnterPasswordCheckWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnterPasswordCheckWireframe.swift; sourceTree = "<group>"; };
+		0CB313712C0F459900353724 /* CloudBackupUpdatePasswordInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdatePasswordInteractor.swift; sourceTree = "<group>"; };
+		0CB313732C0F45E300353724 /* CloudBackupUpdatePasswordWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdatePasswordWireframe.swift; sourceTree = "<group>"; };
+		0CB313762C0F46DB00353724 /* BaseCloudBackupUpdatePasswordWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCloudBackupUpdatePasswordWireframe.swift; sourceTree = "<group>"; };
+		0CB313782C0F499B00353724 /* CloudBackupSetupPasswordFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSetupPasswordFlow.swift; sourceTree = "<group>"; };
 		0CB64E592AFE9947008F268F /* GetTokenOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOperation.swift; sourceTree = "<group>"; };
 		0CB64E5B2B009DA9008F268F /* GetTokenOptionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsModel.swift; sourceTree = "<group>"; };
 		0CB64E5D2B00AA8F008F268F /* GetTokenOptionsResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsResult.swift; sourceTree = "<group>"; };
@@ -10108,6 +10130,7 @@
 				0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */,
 				0C4394D82BD7626500578761 /* CloudBackupPasswordValidator.swift */,
 				0C4394DA2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift */,
+				0CB313782C0F499B00353724 /* CloudBackupSetupPasswordFlow.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -10568,6 +10591,85 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		0CB3135C2C0F03F900353724 /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				0D37CF4AFB06AF3AC2F78057 /* ImportCloudPasswordPresenter.swift */,
+				09922603EDA60FAC41A6FC61 /* ImportCloudPasswordProtocols.swift */,
+				CE7A6C0160599D75B208923D /* ImportCloudPasswordWireframe.swift */,
+				25F7D2DFFF4ADF3C2F409C2B /* ImportCloudPasswordInteractor.swift */,
+				57F0C615209D923E08357766 /* ImportCloudPasswordViewController.swift */,
+				CD77124961528FC7DABFB1B7 /* ImportCloudPasswordViewLayout.swift */,
+				D4EA837CDC74E8301C0207E5 /* ImportCloudPasswordViewFactory.swift */,
+			);
+			path = Import;
+			sourceTree = "<group>";
+		};
+		0CB3135D2C0F04BC00353724 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0CB3135E2C0F051700353724 /* EnterCloudPasswordFlow.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		0CB313602C0F099B00353724 /* EnterPassword */ = {
+			isa = PBXGroup;
+			children = (
+				0CB313642C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift */,
+				0CB3136B2C0F34CB00353724 /* CloudBackupEnterPasswordSetWireframe.swift */,
+			);
+			path = EnterPassword;
+			sourceTree = "<group>";
+		};
+		0CB313632C0F0CC900353724 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				0CB313612C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		0CB313662C0F0D8500353724 /* ChangePassword */ = {
+			isa = PBXGroup;
+			children = (
+				0CB313672C0F0DB100353724 /* CloudBackupEnterPasswordCheckInteractor.swift */,
+				0CB3136D2C0F3D3800353724 /* CloudBackupEnterPasswordCheckWireframe.swift */,
+			);
+			path = ChangePassword;
+			sourceTree = "<group>";
+		};
+		0CB3136F2C0F452300353724 /* NewBackup */ = {
+			isa = PBXGroup;
+			children = (
+				15886E1D406F61B333A44A2E /* CloudBackupCreateProtocols.swift */,
+				5E1571F44EF81EF0A450E767 /* CloudBackupCreateWireframe.swift */,
+				7D0323C9CAE2D3068B1B599B /* CloudBackupCreatePresenter.swift */,
+				CF104A5157BC9A9CA4588965 /* CloudBackupCreateInteractor.swift */,
+				710F0BA5EC0F5D434217E5AA /* CloudBackupCreateViewController.swift */,
+				22CA3357C25A248302093251 /* CloudBackupCreateViewLayout.swift */,
+				AD26E02E5EA85D22062142CD /* CloudBackupCreateViewFactory.swift */,
+			);
+			path = NewBackup;
+			sourceTree = "<group>";
+		};
+		0CB313702C0F453B00353724 /* UpdatePassword */ = {
+			isa = PBXGroup;
+			children = (
+				0CB313712C0F459900353724 /* CloudBackupUpdatePasswordInteractor.swift */,
+				0CB313732C0F45E300353724 /* CloudBackupUpdatePasswordWireframe.swift */,
+			);
+			path = UpdatePassword;
+			sourceTree = "<group>";
+		};
+		0CB313752C0F46B300353724 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				0CB313762C0F46DB00353724 /* BaseCloudBackupUpdatePasswordWireframe.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
 		0CB64E582AFE9939008F268F /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -10625,6 +10727,7 @@
 				0C2B18AD2BFE378B00206EDE /* CloudBackupSyncFacade+Create.swift */,
 				0CE9338B2C0096AA000F3EFE /* CloudBackupSyncMediator.swift */,
 				0CE933912C043F00000F3EFE /* CloudBackupSyncMediatorFactory.swift */,
+				0CB313692C0F0EC400353724 /* CloudBackupServiceFacade+Create.swift */,
 			);
 			path = CloudBackup;
 			sourceTree = "<group>";
@@ -11658,14 +11761,10 @@
 		47A0D9585B152172BA52336C /* CloudBackupCreate */ = {
 			isa = PBXGroup;
 			children = (
+				0CB313752C0F46B300353724 /* Base */,
+				0CB313702C0F453B00353724 /* UpdatePassword */,
+				0CB3136F2C0F452300353724 /* NewBackup */,
 				0C4394D52BD7617200578761 /* Model */,
-				15886E1D406F61B333A44A2E /* CloudBackupCreateProtocols.swift */,
-				5E1571F44EF81EF0A450E767 /* CloudBackupCreateWireframe.swift */,
-				7D0323C9CAE2D3068B1B599B /* CloudBackupCreatePresenter.swift */,
-				CF104A5157BC9A9CA4588965 /* CloudBackupCreateInteractor.swift */,
-				710F0BA5EC0F5D434217E5AA /* CloudBackupCreateViewController.swift */,
-				22CA3357C25A248302093251 /* CloudBackupCreateViewLayout.swift */,
-				AD26E02E5EA85D22062142CD /* CloudBackupCreateViewFactory.swift */,
 			);
 			path = CloudBackupCreate;
 			sourceTree = "<group>";
@@ -11782,13 +11881,11 @@
 		5591BA5E3FFFAADC405544E9 /* CloudBackupImport */ = {
 			isa = PBXGroup;
 			children = (
-				09922603EDA60FAC41A6FC61 /* ImportCloudPasswordProtocols.swift */,
-				CE7A6C0160599D75B208923D /* ImportCloudPasswordWireframe.swift */,
-				0D37CF4AFB06AF3AC2F78057 /* ImportCloudPasswordPresenter.swift */,
-				25F7D2DFFF4ADF3C2F409C2B /* ImportCloudPasswordInteractor.swift */,
-				57F0C615209D923E08357766 /* ImportCloudPasswordViewController.swift */,
-				CD77124961528FC7DABFB1B7 /* ImportCloudPasswordViewLayout.swift */,
-				D4EA837CDC74E8301C0207E5 /* ImportCloudPasswordViewFactory.swift */,
+				0CB313662C0F0D8500353724 /* ChangePassword */,
+				0CB313632C0F0CC900353724 /* Base */,
+				0CB313602C0F099B00353724 /* EnterPassword */,
+				0CB3135D2C0F04BC00353724 /* Model */,
+				0CB3135C2C0F03F900353724 /* Import */,
 			);
 			path = CloudBackupImport;
 			sourceTree = "<group>";
@@ -23113,6 +23210,7 @@
 				F452D8CA273E58D5008F7295 /* SettingsTableFooterView.swift in Sources */,
 				8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */,
 				84038FEE26FFBA6200C73F3F /* PriceLocalSubscriptionHandler.swift in Sources */,
+				0CB313722C0F459900353724 /* CloudBackupUpdatePasswordInteractor.swift in Sources */,
 				84C7DA5425EE2DF000F8C318 /* StakingErrorPresentable.swift in Sources */,
 				8490141724A92F6D008F705E /* OnboardingMainWireframe.swift in Sources */,
 				84953F72293630080033F47D /* AssetHistoryServiceType.swift in Sources */,
@@ -23182,6 +23280,7 @@
 				8490145324A93FD1008F705E /* NovaLoadingViewFactory.swift in Sources */,
 				8472976C260B1CAD009B86D0 /* InitiatedBondingConfirmInteractor.swift in Sources */,
 				0C6390912BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift in Sources */,
+				0CB3136E2C0F3D3800353724 /* CloudBackupEnterPasswordCheckWireframe.swift in Sources */,
 				887C450029AC7ED600950F98 /* DelegationReferendumVotersModel.swift in Sources */,
 				84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */,
 				84D8F17124D856D300AF43E9 /* SNAddressType+ViewModel.swift in Sources */,
@@ -23868,6 +23967,7 @@
 				84BFFA0E2890014600069846 /* WalletsListViewModelFactory.swift in Sources */,
 				8448F7A42882E21E0080CEA9 /* SearchMatch.swift in Sources */,
 				84F4B2352A30D73900113DDD /* StakingDashboardSection.swift in Sources */,
+				0CB313772C0F46DB00353724 /* BaseCloudBackupUpdatePasswordWireframe.swift in Sources */,
 				845C40792702571200BFA50B /* StakingRemoteSubscriptionService.swift in Sources */,
 				0C6390992BF239240015D467 /* CloudBackupSyncFactory.swift in Sources */,
 				8468B86A24F63CBA00B76BC6 /* AddAccount+AccountImportInteractor.swift in Sources */,
@@ -24048,6 +24148,7 @@
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
 				842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */,
 				2D8EFB282C0728BC00866F90 /* AccountConfirmViewLayout.swift in Sources */,
+				0CB313622C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift in Sources */,
 				842B18042864F9A90014CC57 /* CrossChainTransferInteractor.swift in Sources */,
 				848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */,
 				2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */,
@@ -24111,6 +24212,7 @@
 				8430AACC2602249B005B1066 /* InitialStakingState.swift in Sources */,
 				0C56B4FB2A4B0C320030F9C9 /* AssetListBaseBuilder.swift in Sources */,
 				84EE2FA52891205500A98816 /* WalletManageViewController.swift in Sources */,
+				0CB313742C0F45E300353724 /* CloudBackupUpdatePasswordWireframe.swift in Sources */,
 				84786DA825F9F58E0089DFF7 /* EraValidatorService+Fetch.swift in Sources */,
 				887404BA2983DDA800EE270A /* SessionStorage.swift in Sources */,
 				84ACEBFF261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift in Sources */,
@@ -24434,6 +24536,7 @@
 				841E5534282CD9A900C8438F /* StakingType.swift in Sources */,
 				847C966325536455002D288F /* ExportRestoreJsonViewFactory.swift in Sources */,
 				F436BB9E2726FBF7004B1794 /* Coordinator.swift in Sources */,
+				0CB313682C0F0DB100353724 /* CloudBackupEnterPasswordCheckInteractor.swift in Sources */,
 				848F5FE1298911B80058CD74 /* SubqueryDelegationsOperationFactory.swift in Sources */,
 				84BB3CF8267D276D00676FFE /* CrowdloanTableViewCell.swift in Sources */,
 				0C962F8A2AA8614500C0B551 /* TransactionHistoryLocalFilterFactory.swift in Sources */,
@@ -24893,6 +24996,7 @@
 				F4D0546B2729949100210294 /* MoonbeamMakeSignatureResponse.swift in Sources */,
 				D9046DBA27451ED700C29F2E /* ParallelContributionSource.swift in Sources */,
 				0CE629DE2AA9B6BF00E250BD /* RewardDestinationViewModelFactory.swift in Sources */,
+				0CB313652C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift in Sources */,
 				77C976222AF39F180049272C /* TokenOperationTableViewCell.swift in Sources */,
 				77C9BCBE2ACD286100022EA2 /* SwapsSetupViewModelFactory.swift in Sources */,
 				844DB624262D9C710025A8F0 /* ErasRewardDistribution.swift in Sources */,
@@ -24984,6 +25088,7 @@
 				84C1706D2996424800CBE531 /* GovernanceYourDelegationCell.swift in Sources */,
 				84E0EE04292D336C008B2953 /* GovernanceType.swift in Sources */,
 				849B036D2A15E90A009624D9 /* CoingeckoPriceHistorySource.swift in Sources */,
+				0CB3136A2C0F0EC400353724 /* CloudBackupServiceFacade+Create.swift in Sources */,
 				8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */,
 				0CE933E42C07C225000F3EFE /* WalletCreationRequestFactory.swift in Sources */,
 				F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */,
@@ -25110,6 +25215,7 @@
 				AE528E4D26852C380058935A /* ValidatorSearchViewModel.swift in Sources */,
 				842BDB30278C57EB00AB4B5A /* DAppBrowserSigningState.swift in Sources */,
 				843910C9253F591D00E3C217 /* ScaleDecoderOperation.swift in Sources */,
+				0CB313792C0F499B00353724 /* CloudBackupSetupPasswordFlow.swift in Sources */,
 				84FBDBDD28C87DA800CC1037 /* ParaStkYieldBoostTasksSource.swift in Sources */,
 				F4C086C726D1159E00716AEC /* SubqueryEraStakersInfoSource.swift in Sources */,
 				84884B5F27A1336500FAC549 /* OrmlAssetExtras.swift in Sources */,
@@ -26001,6 +26107,7 @@
 				6FDC1CD23BEAF8D4FAF9982D /* NftDetailsViewController.swift in Sources */,
 				84117076285B0F1F006F4DFB /* XcmAsset.swift in Sources */,
 				842EBB2B289091B400B952D8 /* WalletSelectionTableViewCell.swift in Sources */,
+				0CB3135F2C0F051700353724 /* EnterCloudPasswordFlow.swift in Sources */,
 				3DD5BEEA01B8C52530A5FF00 /* NftDetailsViewLayout.swift in Sources */,
 				A2F7908210A0398EDBBA89BD /* NftDetailsViewFactory.swift in Sources */,
 				2D039DEA2BFCAB9000A928E5 /* ExportViewModelFactory.swift in Sources */,
@@ -26258,6 +26365,7 @@
 				6003DF3EBB77510EFB70B4E4 /* MessageSheetProtocols.swift in Sources */,
 				0C13D31D2A82279D0054BB6F /* StartStakingDirectConfirmPresenter.swift in Sources */,
 				2450083471CD071346371995 /* MessageSheetWireframe.swift in Sources */,
+				0CB3136C2C0F34CB00353724 /* CloudBackupEnterPasswordSetWireframe.swift in Sources */,
 				411E74233593A329298C6405 /* MessageSheetPresenter.swift in Sources */,
 				843461EC290D0D9400379936 /* GovernanceUnlockSchedule.swift in Sources */,
 				3FC436AED4098456EDEAF484 /* MessageSheetViewController.swift in Sources */,

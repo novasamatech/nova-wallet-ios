@@ -257,4 +257,147 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
             }
         }
     }
+
+    func checkBackupPassword(
+        _ password: String,
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Bool, CloudBackupServiceFacadeError>) -> Void
+    ) {
+        let fileManager = serviceFactory.createFileManager()
+
+        guard let fileUrl = fileManager.getFileUrl() else {
+            dispatchInQueueWhenPossible(queue) {
+                completionClosure(.failure(.cloudNotAvailable))
+            }
+            return
+        }
+
+        let cryptoManager = serviceFactory.createCryptoManager()
+
+        let decodingManager = serviceFactory.createCodingManager()
+
+        let readingOperation = serviceFactory.createOperationFactory().createReadingOperation(for: fileUrl)
+
+        let decodingOperation = ClosureOperation<CloudBackup.EncryptedFileModel> {
+            guard let data = try readingOperation.extractNoCancellableResultData() else {
+                throw CloudBackupServiceFacadeError.noBackup
+            }
+
+            do {
+                return try decodingManager.decode(data: data)
+            } catch {
+                throw CloudBackupServiceFacadeError.backupDecoding(error)
+            }
+        }
+
+        decodingOperation.addDependency(readingOperation)
+
+        let passwordCheckOperation = ClosureOperation<Bool> {
+            let encryptedModel = try decodingOperation.extractNoCancellableResultData()
+
+            guard let data = try? Data(hexString: encryptedModel.privateData) else {
+                throw CloudBackupServiceFacadeError.backupDecoding(CommonError.dataCorruption)
+            }
+
+            let optDecoded = try? cryptoManager.decrypt(data: data, password: password)
+
+            return optDecoded != nil
+        }
+
+        passwordCheckOperation.addDependency(decodingOperation)
+
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: passwordCheckOperation,
+            dependencies: [readingOperation, decodingOperation]
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: queue
+        ) { result in
+            switch result {
+            case let .success(isValidPassword):
+                completionClosure(.success(isValidPassword))
+            case let .failure(error):
+                if let facadeError = error as? CloudBackupServiceFacadeError {
+                    completionClosure(.failure(facadeError))
+                } else {
+                    completionClosure(.failure(.facadeInternal(error)))
+                }
+            }
+        }
+    }
+
+    func changeBackupPassword(
+        from oldPassword: String,
+        newPassword: String,
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Void, CloudBackupServiceFacadeError>) -> Void
+    ) {
+        let fileManager = serviceFactory.createFileManager()
+
+        guard
+            let fileUrl = fileManager.getFileUrl(),
+            let tempUrl = fileManager.getTempUrl() else {
+            dispatchInQueueWhenPossible(queue) { completionClosure(.failure(.cloudNotAvailable)) }
+            return
+        }
+
+        let cryptoManager = serviceFactory.createCryptoManager()
+
+        let codingManager = serviceFactory.createCodingManager()
+
+        let readingOperation = serviceFactory.createOperationFactory().createReadingOperation(for: fileUrl)
+
+        let encryptingOperation = ClosureOperation<Data> {
+            guard let data = try readingOperation.extractNoCancellableResultData() else {
+                throw CloudBackupServiceFacadeError.noBackup
+            }
+
+            let encryptedModel = try codingManager.decode(data: data)
+            let privateData = try Data(hexString: encryptedModel.privateData)
+            let privateDecoded = try cryptoManager.decrypt(data: privateData, password: oldPassword)
+            let privateEncoded = try cryptoManager.encrypt(data: privateDecoded, password: newPassword)
+
+            let model = CloudBackup.EncryptedFileModel(
+                publicData: encryptedModel.publicData,
+                privateData: privateEncoded.toHex()
+            )
+
+            return try codingManager.encode(backup: model)
+        }
+
+        encryptingOperation.addDependency(readingOperation)
+
+        let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
+            for: fileUrl,
+            tempUrl: tempUrl,
+            timeoutInterval: CloudBackup.backupSaveTimeout,
+            dataClosure: {
+                try encryptingOperation.extractNoCancellableResultData()
+            }
+        )
+
+        uploadWrapper.addDependency(operations: [encryptingOperation])
+
+        let totalWrapper = uploadWrapper.insertingHead(operations: [readingOperation, encryptingOperation])
+
+        execute(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            switch result {
+            case .success:
+                completionClosure(.success(()))
+            case let .failure(error):
+                if let facadeError = error as? CloudBackupServiceFacadeError {
+                    completionClosure(.failure(facadeError))
+                } else {
+                    completionClosure(.failure(.facadeInternal(error)))
+                }
+            }
+        }
+    }
 }

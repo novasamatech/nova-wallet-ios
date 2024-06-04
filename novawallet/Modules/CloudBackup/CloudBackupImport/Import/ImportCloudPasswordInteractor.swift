@@ -40,7 +40,7 @@ final class ImportCloudPasswordInteractor {
         // we already saved the wallet better to ask a user to resolve the password in settings
         try? syncMetadataManager.enableBackup(for: password)
 
-        presenter?.didImportBackup()
+        presenter?.didImportBackup(with: password)
     }
 
     private func setupSelectedWallet(for password: String) {
