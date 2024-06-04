@@ -134,7 +134,9 @@ private extension NetworksListViewController {
         )
 
         let rightBarButtonItem = UIBarButtonItem(
-            title: "Add",
+            title: R.string.localizable.networksListAddNetworkButtonTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            ),
             style: .plain,
             target: self,
             action: #selector(actionAddNetwork)

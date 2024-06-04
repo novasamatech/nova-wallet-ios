@@ -85,10 +85,16 @@ class NetworksListViewModelFactory {
                 )
             }
 
+            let networkType: String? = chainModel.isTestnet
+                ? R.string.localizable.commonTestnet(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).uppercased()
+                : nil
+
             return .network(
                 .init(
                     index: indexes[chainModel.identifier]!,
-                    networkType: chainModel.isTestnet ? "TESTNET" : nil,
+                    networkType: networkType,
                     connectionState: connectionState,
                     networkState: networkState,
                     networkModel: networkViewModelFactory.createDiffableViewModel(from: chainModel)

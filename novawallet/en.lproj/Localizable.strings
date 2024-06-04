@@ -1521,3 +1521,5 @@
 "ledger.instructions.step4" = "%@ to add to wallet";
 "ledger.instructions.step4.highlighted" = "Select account";
 "common.disabled" = "Disabled";
+"common.testnet" = "Testnet";
+"networks.list.add.network.button.title" = "Add network";
