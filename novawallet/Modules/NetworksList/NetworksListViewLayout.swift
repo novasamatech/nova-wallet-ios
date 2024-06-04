@@ -49,11 +49,33 @@ final class NetworksListViewLayout: UIView {
 
 extension NetworksListViewLayout {
     struct NetworkWithConnectionModel: Hashable {
+        enum OverallState {
+            case enabled
+            case disabled(String)
+        }
+
+        enum ConnectionState {
+            case connecting(String)
+            case connected
+        }
+
         var id: Int { networkModel.identifier }
         let index: Int
-        let connectionState: String?
-        let enabled: Bool
+        let networkType: String?
+        let connectionState: ConnectionState
+        let networkState: OverallState
         let networkModel: DiffableNetworkViewModel
+
+        static func == (
+            lhs: NetworksListViewLayout.NetworkWithConnectionModel,
+            rhs: NetworksListViewLayout.NetworkWithConnectionModel
+        ) -> Bool {
+            lhs.id == rhs.id
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
     }
 
     struct Placeholder: Hashable {

@@ -2,6 +2,10 @@ import Foundation
 import SoraFoundation
 
 class NetworksListViewModelFactory {
+    typealias NetworkViewModel = NetworksListViewLayout.NetworkWithConnectionModel
+    typealias NetorkListViewModel = NetworksListViewLayout.Model
+    typealias RowModel = NetworksListViewLayout.Row
+
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
@@ -17,7 +21,7 @@ class NetworksListViewModelFactory {
         for chains: [ChainModel],
         indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
-    ) -> NetworksListViewLayout.Model {
+    ) -> NetorkListViewModel {
         .init(
             sections: [
                 .networks(
@@ -35,7 +39,7 @@ class NetworksListViewModelFactory {
         for chains: [ChainModel],
         indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
-    ) -> NetworksListViewLayout.Model {
+    ) -> NetorkListViewModel {
         .init(
             sections: [
                 .networks(
@@ -53,21 +57,39 @@ class NetworksListViewModelFactory {
         from chains: [ChainModel],
         indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
-    ) -> [NetworksListViewLayout.Row] {
+    ) -> [RowModel] {
         chains.map { chainModel in
-            let connectionState: String? = if connectionStates[chainModel.chainId] == .connecting {
-                R.string.localizable.networkStatusConnecting(
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+
+            let connectionState: NetworkViewModel.ConnectionState
+
+            if connectionStates[chainModel.chainId] == .connecting {
+                connectionState = .connecting(
+                    R.string.localizable.networkStatusConnecting(
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    )
                 )
             } else {
-                nil
+                connectionState = .connected
+            }
+
+            let networkState: NetworkViewModel.OverallState
+
+            if chainModel.enabled {
+                networkState = .enabled
+            } else {
+                networkState = .disabled(
+                    R.string.localizable.commonDisabled(
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    )
+                )
             }
 
             return .network(
                 .init(
                     index: indexes[chainModel.identifier]!,
+                    networkType: chainModel.isTestnet ? "TESTNET" : nil,
                     connectionState: connectionState,
-                    enabled: chainModel.enabled,
+                    networkState: networkState,
                     networkModel: networkViewModelFactory.createDiffableViewModel(from: chainModel)
                 )
             )

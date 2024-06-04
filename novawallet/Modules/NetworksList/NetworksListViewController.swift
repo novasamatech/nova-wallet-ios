@@ -98,7 +98,7 @@ extension NetworksListViewController: NetworksListViewProtocol {
                     )
 
                     let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworksListTableViewCell
-                    cell?.bind(with: networkModel)
+                    cell?.contentDisplayView.bind(with: networkModel)
                 }
             }
     }
@@ -166,7 +166,7 @@ private extension NetworksListViewController {
                     forIndexPath: indexPath
                 )
 
-                chainCell.bind(with: viewModel)
+                chainCell.contentDisplayView.bind(with: viewModel)
                 cell = chainCell
             }
 

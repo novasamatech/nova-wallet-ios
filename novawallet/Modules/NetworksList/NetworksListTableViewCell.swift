@@ -1,34 +1,140 @@
 import UIKit
 
-final class NetworksListTableViewCell: PlainBaseTableViewCell<ChainAccountView> {
-    var networkIconView: UIImageView { contentDisplayView.networkIconView }
-    var networkLabel: UILabel { contentDisplayView.networkLabel }
-    var actionIconView: UIImageView { contentDisplayView.actionIconView }
-
+final class NetworksListTableViewCell: PlainBaseTableViewCell<NetworksListNetworkView> {
     override func setupStyle() {
         super.setupStyle()
 
         backgroundColor = .clear
-
-        actionIconView.contentMode = .scaleAspectFit
-        actionIconView.image = R.image.iconSmallArrow()?.tinted(
-            with: R.color.colorTextSecondary()!
-        )
-    }
-
-    func bind(with viewModel: NetworksListViewLayout.NetworkWithConnectionModel) {
-        viewModel.networkModel.network.icon?.loadImage(
-            on: networkIconView,
-            targetSize: Constants.iconSize,
-            animated: true
-        )
-
-        networkLabel.text = viewModel.networkModel.network.name
     }
 }
 
-extension NetworksListTableViewCell {
-    enum Constants {
-        static let iconSize: CGSize = .init(width: 36, height: 36)
+final class NetworksListNetworkView: UIView {
+    private enum Constants {
+        static let networkIconSize: CGFloat = 36.0
+        static let addressIconSize: CGFloat = 16.0
+        static let horizontalInsets: CGFloat = 12.0
+        static let networkTypeCornerRadius: CGFloat = 6.0
+        static let networkTypeContentInsets: UIEdgeInsets = .init(
+            top: 1.5,
+            left: 6,
+            bottom: 1.5,
+            right: 6
+        )
+    }
+
+    let networkIconView: UIImageView = {
+        let view = UIImageView()
+        return view
+    }()
+
+    let networkLabelsPairView: GenericPairValueView<
+        GenericPairValueView<
+            UILabel,
+            GenericBackgroundView<UILabel>
+        >,
+        UILabel
+    > = .create { view in
+        view.fView.makeHorizontal()
+        view.fView.fView.apply(style: .regularSubhedlinePrimary)
+        view.fView.fView.textAlignment = .left
+
+        view.fView.sView.wrappedView.apply(style: .semiboldCaps2Secondary)
+        view.fView.sView.fillColor = R.color.colorChipsBackground()!
+        view.fView.sView.contentInsets = Constants.networkTypeContentInsets
+        view.fView.sView.cornerRadius = Constants.networkTypeCornerRadius
+
+        view.fView.sView.isHidden = true
+
+        view.fView.spacing = 8
+
+        view.sView.apply(style: .footnotePrimary)
+        view.sView.textAlignment = .left
+        view.sView.numberOfLines = 0
+        view.sView.isHidden = true
+
+        view.spacing = 4
+    }
+
+    var networkLabel: UILabel { networkLabelsPairView.fView.fView }
+    var networkTypeView: GenericBackgroundView<UILabel> { networkLabelsPairView.fView.sView }
+    var secondaryLabel: UILabel { networkLabelsPairView.sView }
+
+    let actionIconView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
+
+        view.image = R.image.iconSmallArrow()?.tinted(
+            with: R.color.colorTextTertiary()!
+        )
+    }
+
+    private var viewModel: NetworksListViewLayout.NetworkWithConnectionModel?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupLayout()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(with viewModel: NetworksListViewLayout.NetworkWithConnectionModel) {
+        self.viewModel?.networkModel.network.icon?.cancel(on: networkIconView)
+        self.viewModel = viewModel
+
+        networkLabel.text = viewModel.networkModel.network.name
+
+        if let networkType = viewModel.networkType {
+            networkTypeView.wrappedView.text = networkType
+            networkTypeView.isHidden = false
+        } else {
+            networkTypeView.isHidden = true
+        }
+
+        switch viewModel.networkState {
+        case .enabled:
+            secondaryLabel.isHidden = true
+            networkLabel.apply(style: .regularSubhedlinePrimary)
+            networkIconView.stopShimmeringOpacity()
+        case let .disabled(text):
+            secondaryLabel.isHidden = false
+            networkLabel.apply(style: .regularSubhedlineInactive)
+            secondaryLabel.apply(style: .regularSubhedlineInactive)
+            secondaryLabel.text = text
+            networkIconView.startShimmeringOpacity()
+        }
+
+        viewModel.networkModel.network.icon?.loadImage(
+            on: networkIconView,
+            targetSize: CGSize(
+                width: Constants.networkIconSize,
+                height: Constants.networkIconSize
+            ),
+            animated: true
+        )
+
+        setNeedsLayout()
+    }
+
+    private func setupLayout() {
+        addSubview(networkIconView)
+        networkIconView.snp.makeConstraints { make in
+            make.leading.centerY.equalToSuperview()
+            make.size.equalTo(Constants.networkIconSize)
+        }
+
+        addSubview(actionIconView)
+        actionIconView.snp.makeConstraints { make in
+            make.trailing.centerY.equalToSuperview()
+        }
+
+        addSubview(networkLabelsPairView)
+        networkLabelsPairView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
+            make.trailing.lessThanOrEqualTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
+        }
     }
 }
