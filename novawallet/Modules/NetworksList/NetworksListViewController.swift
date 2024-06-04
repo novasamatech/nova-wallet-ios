@@ -7,6 +7,7 @@ final class NetworksListViewController: UIViewController, ViewHolder {
     typealias DataSource = UITableViewDiffableDataSource<RootViewType.Section, RootViewType.Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<RootViewType.Section, RootViewType.Row>
     typealias ChainCell = NetworksListTableViewCell
+    typealias PlaceholderCell = NetworksEmptyTableViewCell
 
     let presenter: NetworksListPresenterProtocol
 
@@ -52,7 +53,7 @@ extension NetworksListViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let section = viewModel?.sections[indexPath.section] else { return .zero }
 
-        if case .networks = section {
+        if case let .networks(rows) = section, case .network = rows[indexPath.row] {
             return 56
         } else {
             return UITableView.automaticDimension
@@ -114,12 +115,21 @@ extension NetworksListViewController: NetworksListViewProtocol {
     }
 }
 
+// MARK: NetworksEmptyPlaceholderViewDelegate
+
+extension NetworksListViewController: NetworksEmptyPlaceholderViewDelegate {
+    func didTapAddNetwork() {
+        actionAddNetwork()
+    }
+}
+
 // MARK: Private
 
 private extension NetworksListViewController {
     func setup() {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ChainCell.self)
+        rootView.tableView.registerClassForCell(PlaceholderCell.self)
 
         setupActions()
         setupNetworkSwitchTitles()
@@ -174,6 +184,15 @@ private extension NetworksListViewController {
             case let .banner(banerViewModel):
                 // TODO: Implement
                 cell = UITableViewCell()
+            case let .placeholder(placeholderViewModel):
+                let placeholderCell = tableView.dequeueReusableCellWithType(
+                    PlaceholderCell.self,
+                    forIndexPath: indexPath
+                )
+
+                placeholderCell.contentDisplayView.bind(with: placeholderViewModel)
+                placeholderCell.contentDisplayView.delegate = self
+                cell = placeholderCell
             case .network:
                 let networkModel = networkViewModels[indexPath.row]
 
@@ -198,7 +217,9 @@ private extension NetworksListViewController {
         )
     }
 
-    @objc private func actionAddNetwork() {}
+    @objc private func actionAddNetwork() {
+        presenter.addNetwork()
+    }
 
     func setupLocalization() {
         setupNetworkSwitchTitles()

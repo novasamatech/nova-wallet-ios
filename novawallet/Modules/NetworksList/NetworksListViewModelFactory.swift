@@ -4,6 +4,7 @@ import SoraFoundation
 class NetworksListViewModelFactory {
     typealias NetworkViewModel = NetworksListViewLayout.NetworkWithConnectionModel
     typealias NetorkListViewModel = NetworksListViewLayout.Model
+    typealias SectionModel = NetworksListViewLayout.Section
     typealias RowModel = NetworksListViewLayout.Row
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
@@ -58,7 +59,18 @@ class NetworksListViewModelFactory {
         indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
     ) -> [RowModel] {
-        chains.map { chainModel in
+        guard !chains.isEmpty else {
+            return [
+                .placeholder(
+                    .init(
+                        message: "Added custom networks will appear here",
+                        buttonTitle: "Add network"
+                    )
+                )
+            ]
+        }
+
+        return chains.map { chainModel in
 
             let connectionState: NetworkViewModel.ConnectionState
 

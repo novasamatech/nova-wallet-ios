@@ -41,6 +41,10 @@ extension NetworksListPresenter: NetworksListPresenterProtocol {
     func setup() {
         interactor.provideChains()
     }
+
+    func addNetwork() {
+        // TODO: Implement routing
+    }
 }
 
 // MARK: NetworksListInteractorOutputProtocol
@@ -92,7 +96,10 @@ private extension NetworksListPresenter {
     }
 
     func provideNetworkViewModel(for chainId: ChainModel.Id) {
-        guard let chain = chains[chainId] else {
+        guard
+            let chain = chains[chainId],
+            chainIndexes[chainId] != nil
+        else {
             return
         }
 
