@@ -59,6 +59,10 @@ final class NetworksListNetworkView: UIView {
     var networkTypeView: GenericBackgroundView<UILabel> { networkLabelsPairView.fView.sView }
     var secondaryLabel: UILabel { networkLabelsPairView.sView }
 
+    let connectionStateLabel: ShimmerLabel = .create { view in
+        view.applyShimmer(style: .caption2Secondary)
+    }
+
     let actionIconView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
 
@@ -115,6 +119,19 @@ final class NetworksListNetworkView: UIView {
             animated: true
         )
 
+        switch viewModel.connectionState {
+        case let .connecting(text):
+            actionIconView.isHidden = true
+            connectionStateLabel.isHidden = false
+            connectionStateLabel.text = text
+            connectionStateLabel.startShimmering()
+        case .connected:
+            actionIconView.isHidden = false
+            connectionStateLabel.stopShimmering()
+            connectionStateLabel.isHidden = true
+            connectionStateLabel.text = nil
+        }
+
         setNeedsLayout()
     }
 
@@ -130,11 +147,17 @@ final class NetworksListNetworkView: UIView {
             make.trailing.centerY.equalToSuperview()
         }
 
+        addSubview(connectionStateLabel)
+        connectionStateLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
+        }
+
         addSubview(networkLabelsPairView)
         networkLabelsPairView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
-            make.trailing.lessThanOrEqualTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
+            make.trailing.lessThanOrEqualTo(connectionStateLabel.snp.leading).offset(-Constants.horizontalInsets)
         }
     }
 }

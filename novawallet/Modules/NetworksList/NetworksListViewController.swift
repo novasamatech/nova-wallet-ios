@@ -11,6 +11,7 @@ final class NetworksListViewController: UIViewController, ViewHolder {
     let presenter: NetworksListPresenterProtocol
 
     private var viewModel: ViewModel?
+    private var networkViewModels: [RootViewType.NetworkWithConnectionModel] = []
 
     private lazy var dataSource = makeDataSource()
 
@@ -71,8 +72,16 @@ extension NetworksListViewController: NetworksListViewProtocol {
             snapshot.appendSections([section])
 
             switch section {
-            case let .networks(row), let .banner(row):
-                snapshot.appendItems(row)
+            case let .networks(rows), let .banner(rows):
+                snapshot.appendItems(rows)
+
+                networkViewModels = rows.compactMap { row in
+                    guard case let .network(networkModel) = row else {
+                        return nil
+                    }
+
+                    return networkModel
+                }
             }
         }
 
@@ -99,6 +108,7 @@ extension NetworksListViewController: NetworksListViewProtocol {
 
                     let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworksListTableViewCell
                     cell?.contentDisplayView.bind(with: networkModel)
+                    networkViewModels[indexPath.row] = networkModel
                 }
             }
     }
@@ -153,20 +163,24 @@ private extension NetworksListViewController {
     }
 
     func makeDataSource() -> DataSource {
-        DataSource(tableView: rootView.tableView) { tableView, indexPath, viewModel in
+        DataSource(tableView: rootView.tableView) { [weak self] tableView, indexPath, viewModel in
+            guard let self else { return nil }
 
             let cell: UITableViewCell
 
             switch viewModel {
             case let .banner(banerViewModel):
+                // TODO: Implement
                 cell = UITableViewCell()
-            case let .network(viewModel):
+            case .network:
+                let networkModel = networkViewModels[indexPath.row]
+
                 let chainCell = tableView.dequeueReusableCellWithType(
                     ChainCell.self,
                     forIndexPath: indexPath
                 )
 
-                chainCell.contentDisplayView.bind(with: viewModel)
+                chainCell.contentDisplayView.bind(with: networkModel)
                 cell = chainCell
             }
 

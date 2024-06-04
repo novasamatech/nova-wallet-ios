@@ -62,14 +62,15 @@ class NetworksListViewModelFactory {
 
             let connectionState: NetworkViewModel.ConnectionState
 
-            if connectionStates[chainModel.chainId] == .connecting {
+            if let chainConnectionState = connectionStates[chainModel.chainId],
+               chainConnectionState == .connected {
+                connectionState = .connected
+            } else {
                 connectionState = .connecting(
                     R.string.localizable.networkStatusConnecting(
                         preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    )
+                    ).uppercased()
                 )
-            } else {
-                connectionState = .connected
             }
 
             let networkState: NetworkViewModel.OverallState
