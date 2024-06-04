@@ -9,6 +9,7 @@ protocol NetworksListPresenterProtocol: AnyObject {
     func setup()
     func select(segment: NetworksListPresenter.NetworksType?)
     func selectChain(at index: Int)
+    func addNetwork()
 }
 
 protocol NetworksListInteractorInputProtocol: AnyObject {
