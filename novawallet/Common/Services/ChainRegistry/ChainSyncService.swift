@@ -94,12 +94,7 @@ final class ChainSyncService {
             }
 
             let newOrUpdated: [ChainModel] = remoteItems.enumerated().compactMap { index, remoteItem in
-
-                guard localMapping[remoteItem.chainId]?.source == .remote else {
-                    return nil
-                }
-
-                return chainConverter.update(
+                chainConverter.update(
                     localModel: localMapping[remoteItem.chainId],
                     remoteModel: remoteItem,
                     additionalAssets: remoteEvmTokens[remoteItem.chainId] ?? [],
