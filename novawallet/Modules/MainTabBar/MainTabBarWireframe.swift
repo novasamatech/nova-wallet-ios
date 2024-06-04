@@ -108,10 +108,18 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         view?.controller.present(bottomSheet.controller, animated: true)
     }
 
-    func presentCloudBackupUpdateFailed(
+    func presentCloudBackupUpdateFailedIfNeeded(
         from view: MainTabBarViewProtocol?,
         onReviewIssues: @escaping () -> Void
     ) {
+        let settingsNavigationController = getSettingsNavigationController(from: view)
+        let backupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
+
+        if backupSettings != nil {
+            // no need to show issues if backup settings already open
+            return
+        }
+
         guard
             canPresentReviewCloudBackup(from: view),
             let bottomSheet = CloudBackupMessageSheetViewFactory.createCloudBackupUpdateFailedSheet(

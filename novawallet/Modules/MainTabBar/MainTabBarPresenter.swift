@@ -47,7 +47,7 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
     }
 
     func didFailApplyingCloud(changes _: CloudBackupSyncResult.Changes, error _: Error) {
-        wireframe.presentCloudBackupUpdateFailed(from: view) { [weak self] in
+        wireframe.presentCloudBackupUpdateFailedIfNeeded(from: view) { [weak self] in
             self?.wireframe.presentReviewUpdates(from: self?.view)
         }
     }

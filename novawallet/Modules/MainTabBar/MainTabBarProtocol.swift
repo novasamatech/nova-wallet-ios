@@ -44,7 +44,7 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible 
         onReviewUpdates: @escaping () -> Void
     )
 
-    func presentCloudBackupUpdateFailed(
+    func presentCloudBackupUpdateFailedIfNeeded(
         from view: MainTabBarViewProtocol?,
         onReviewIssues: @escaping () -> Void
     )

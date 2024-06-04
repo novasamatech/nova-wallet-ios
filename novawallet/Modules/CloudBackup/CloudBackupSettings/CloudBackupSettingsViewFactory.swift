@@ -4,9 +4,7 @@ import SoraKeystore
 
 struct CloudBackupSettingsViewFactory {
     static func createView() -> CloudBackupSettingsViewProtocol? {
-        let interactor = CloudBackupSettingsInteractor(
-            cloudBackupSyncMediator: CloudBackupSyncMediatorFacade.sharedMediator
-        )
+        let interactor = createInteractor()
 
         let wireframe = CloudBackupSettingsWireframe()
 
@@ -27,5 +25,22 @@ struct CloudBackupSettingsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor() -> CloudBackupSettingsInteractor {
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let serviceFactory = ICloudBackupServiceFactory(operationQueue: operationQueue)
+
+        let serviceFacade = CloudBackupServiceFacade(
+            serviceFactory: serviceFactory,
+            operationQueue: operationQueue
+        )
+
+        let interactor = CloudBackupSettingsInteractor(
+            cloudBackupSyncMediator: CloudBackupSyncMediatorFacade.sharedMediator,
+            cloudBackupServiceFacade: serviceFacade
+        )
+
+        return interactor
     }
 }

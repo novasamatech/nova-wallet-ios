@@ -4,13 +4,18 @@ final class CloudBackupSettingsInteractor {
     weak var presenter: CloudBackupSettingsInteractorOutputProtocol?
 
     let cloudBackupSyncMediator: CloudBackupSyncMediating
+    let cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol
 
     var cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
         cloudBackupSyncMediator.syncFacade
     }
 
-    init(cloudBackupSyncMediator: CloudBackupSyncMediating) {
+    init(
+        cloudBackupSyncMediator: CloudBackupSyncMediating,
+        cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol
+    ) {
         self.cloudBackupSyncMediator = cloudBackupSyncMediator
+        self.cloudBackupServiceFacade = cloudBackupServiceFacade
     }
 
     private func subscribeBackupState() {
@@ -54,6 +59,24 @@ extension CloudBackupSettingsInteractor: CloudBackupSettingsInteractorInputProto
             }
 
             self?.presenter?.didReceive(error: .disableBackup(error))
+        }
+    }
+
+    func deleteBackup() {
+        cloudBackupSyncFacade.disableBackup(runCompletionIn: .main) { [weak self] result in
+            switch result {
+            case .success:
+                self?.cloudBackupServiceFacade.deleteBackup(runCompletionIn: .main) { result in
+                    switch result {
+                    case .success:
+                        self?.presenter?.didDeleteBackup()
+                    case let .failure(error):
+                        self?.presenter?.didReceive(error: .deleteBackup(error))
+                    }
+                }
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .deleteBackup(error))
+            }
         }
     }
 

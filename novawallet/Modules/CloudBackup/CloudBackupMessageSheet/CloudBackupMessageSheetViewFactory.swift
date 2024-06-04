@@ -362,4 +362,55 @@ enum CloudBackupMessageSheetViewFactory {
 
         return messageSheetView
     }
+
+    static func createDeleteBackupSheet(
+        deleteClosure: @escaping MessageSheetCallback,
+        cancelClosure: MessageSheetCallback?
+    ) -> MessageSheetViewProtocol? {
+        let messageSheetView = MessageSheetViewFactory.createNoContentView(
+            viewModel: .init(
+                title: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupWillDeleteTitle(preferredLanguages: locale.rLanguages)
+                },
+                message: LocalizableResource { locale in
+                    NSAttributedString.coloredItems(
+                        [
+                            R.string.localizable.cloudBackupWillDeleteHighlighted(
+                                preferredLanguages: locale.rLanguages
+                            )
+                        ],
+                        formattingClosure: { items in
+                            R.string.localizable.cloudBackupWillDeleteMessage(
+                                items[0],
+                                preferredLanguages: locale.rLanguages
+                            )
+                        },
+                        color: R.color.colorTextPrimary()!
+                    )
+                },
+                graphics: R.image.imageBrokenCloudBackup(),
+                content: nil,
+                mainAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonDeleteBackup(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: deleteClosure,
+                    actionType: .destructive
+                ),
+                secondaryAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: {
+                        cancelClosure?()
+                    }
+                )
+            ),
+            allowsSwipeDown: false
+        )
+
+        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 342) }
+
+        return messageSheetView
+    }
 }
