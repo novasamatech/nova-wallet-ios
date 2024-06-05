@@ -96,13 +96,12 @@ struct ImportCloudPasswordViewFactory {
     private static func createChangePasswordInteractor() -> BaseBackupEnterPasswordInteractor {
         let serviceFacade = CloudBackupServiceFacade.createFacade()
 
-        let password = try? Keychain().fetchKey(for: KeystoreTagV2.cloudBackupPassword.rawValue)
-
-        Logger.shared.info("Password: \(password.flatMap { String(data: $0, encoding: .utf8) })")
-
         return CloudBackupEnterPasswordCheckInteractor(
-            cloudBackupSyncFacade: CloudBackupSyncMediatorFacade.sharedMediator.syncFacade,
-            cloudBackupServiceFacade: serviceFacade
+            cloudBackupServiceFacade: serviceFacade,
+            syncMetadataManager: CloudBackupSyncMetadataManager(
+                settings: SettingsManager.shared,
+                keystore: Keychain()
+            )
         )
     }
 
@@ -110,7 +109,6 @@ struct ImportCloudPasswordViewFactory {
         let serviceFacade = CloudBackupServiceFacade.createFacade()
 
         return CloudBackupEnterPasswordSetInteractor(
-            cloudBackupSyncFacade: CloudBackupSyncMediatorFacade.sharedMediator.syncFacade,
             cloudBackupServiceFacade: serviceFacade,
             syncMetadataManager: CloudBackupSyncMetadataManager(
                 settings: SettingsManager.shared,

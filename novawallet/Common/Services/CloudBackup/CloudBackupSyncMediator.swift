@@ -6,19 +6,17 @@ protocol CloudBackupSyncConfirming: AnyObject {
         didRequestConfirmation changes: CloudBackupSyncResult.Changes
     )
 
-    func cloudBackup(
+    func cloudBackupDidFailToApplyChanges(
         mediator: CloudBackupSyncMediating,
-        didFailToApply changes: CloudBackupSyncResult.Changes,
         error: Error
     )
 }
 
 protocol CloudBackupSyncMediating {
-    var syncFacade: CloudBackupSyncFacadeProtocol { get }
+    var syncService: CloudBackupSyncServiceProtocol { get }
 
     func setup(with confirmingDelegate: CloudBackupSyncConfirming)
     func approveCurrentChanges()
-    func updateState()
     func throttle()
 }
 
@@ -28,29 +26,23 @@ protocol CloudBackupSyncMediating {
  *  and setup sync facade via corresponding method.
  */
 final class CloudBackupSyncMediator {
-    let syncFacade: CloudBackupSyncFacadeProtocol
+    let syncService: CloudBackupSyncServiceProtocol
 
-    private let cloudBackupApplyFactory: CloudBackupUpdateApplicationFactoryProtocol
     private let eventCenter: EventCenterProtocol
     private let selectedWalletSettings: SelectedWalletSettings
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
 
-    private var pendingChanges: CloudBackupSyncResult.Changes?
-    private var applyingChanges: Bool = false
-
     weak var confirmationDelegate: CloudBackupSyncConfirming?
 
     init(
-        syncFacade: CloudBackupSyncFacadeProtocol,
-        cloudBackupApplyFactory: CloudBackupUpdateApplicationFactoryProtocol,
+        syncService: CloudBackupSyncServiceProtocol,
         eventCenter: EventCenterProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.syncFacade = syncFacade
-        self.cloudBackupApplyFactory = cloudBackupApplyFactory
+        self.syncService = syncService
         self.eventCenter = eventCenter
         self.selectedWalletSettings = selectedWalletSettings
         self.operationQueue = operationQueue
@@ -60,22 +52,16 @@ final class CloudBackupSyncMediator {
     private func setupCurrentState() {
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        syncFacade.setup()
-
-        syncFacade.subscribeState(self, notifyingIn: .main) { [weak self] state in
+        syncService.subscribeState(self, notifyingIn: .main) { [weak self] state in
             self?.logger.debug("Backup state: \(state)")
             self?.handleNew(state: state)
         }
     }
 
     private func clearCurrentState() {
-        syncFacade.unsubscribeState(self)
-        syncFacade.throttle()
+        syncService.unsubscribeState(self)
 
         eventCenter.remove(observer: self)
-
-        pendingChanges = nil
-        applyingChanges = false
     }
 
     private func handleNew(state: CloudBackupSyncState) {
@@ -93,81 +79,36 @@ final class CloudBackupSyncMediator {
     }
 
     private func handleNew(changes: CloudBackupSyncResult.Changes) {
-        guard changes != pendingChanges else {
-            return
-        }
-
-        if let pendingChanges {
-            // better not allow to apply several changes concurrently but try on the next trigger
-            logger.warning("Recieved new changes while processing previous one: \(changes) \(pendingChanges)")
-            return
-        }
-
-        pendingChanges = changes
-
-        decideOnChanges()
-    }
-
-    private func decideOnChanges() {
-        guard let pendingChanges else {
-            return
-        }
-
-        if pendingChanges.isDestructive {
+        if changes.isDestructive {
             confirmationDelegate?.cloudBackup(
                 mediator: self,
-                didRequestConfirmation: pendingChanges
+                didRequestConfirmation: changes
             )
         } else {
-            applyCurrentChanges()
+            applyChanges()
         }
     }
 
-    private func applyCurrentChanges() {
-        guard let changes = pendingChanges else {
-            logger.warning("No current changes to apply")
-            return
-        }
-
-        guard !applyingChanges else {
-            logger.warning("Already applying changes")
-            return
-        }
-
-        let wrapper = cloudBackupApplyFactory.createUpdateApplyOperation(for: changes)
-
-        applyingChanges = true
-
+    private func applyChanges() {
         let selectedWalletBeforeUpdate = selectedWalletSettings.value
 
-        logger.debug("Applying backup changes: \(changes)")
-
-        execute(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
+        syncService.applyChanges(notifyingIn: .main) { [weak self] result in
             guard let self else {
                 return
             }
 
-            self.pendingChanges = nil
-            self.applyingChanges = false
-
             switch result {
-            case .success:
-                logger.debug("Cloud changes applied: \(changes)")
+            case let .success(maybeAppliedChanges):
+                guard let appliedChanges = maybeAppliedChanges else {
+                    return
+                }
+
                 emitEvents(
-                    for: changes,
+                    for: appliedChanges,
                     selectedWalletBeforeUpdate: selectedWalletBeforeUpdate
                 )
             case let .failure(error):
-                logger.error("Unexpected cloud apply error: \(error)")
-                confirmationDelegate?.cloudBackup(
-                    mediator: self,
-                    didFailToApply: changes,
-                    error: error
-                )
+                confirmationDelegate?.cloudBackupDidFailToApplyChanges(mediator: self, error: error)
             }
         }
     }
@@ -208,16 +149,7 @@ extension CloudBackupSyncMediator: CloudBackupSyncMediating {
     }
 
     func approveCurrentChanges() {
-        applyCurrentChanges()
-    }
-
-    func updateState() {
-        if pendingChanges != nil {
-            decideOnChanges()
-        } else {
-            let state = syncFacade.getState()
-            handleNew(state: state)
-        }
+        applyChanges()
     }
 
     func throttle() {
@@ -229,22 +161,22 @@ extension CloudBackupSyncMediator: CloudBackupSyncMediating {
 
 extension CloudBackupSyncMediator: EventVisitorProtocol {
     func processChainAccountChanged(event _: ChainAccountChanged) {
-        syncFacade.syncUp()
+        syncService.syncUp()
     }
 
     func processAccountsChanged(event _: AccountsChanged) {
-        syncFacade.syncUp()
+        syncService.syncUp()
     }
 
     func processAccountsRemoved(event _: AccountsRemovedManually) {
-        syncFacade.syncUp()
+        syncService.syncUp()
     }
 
     func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
-        syncFacade.syncUp()
+        syncService.syncUp()
     }
 
     func processWalletNameChanged(event _: WalletNameChanged) {
-        syncFacade.syncUp()
+        syncService.syncUp()
     }
 }

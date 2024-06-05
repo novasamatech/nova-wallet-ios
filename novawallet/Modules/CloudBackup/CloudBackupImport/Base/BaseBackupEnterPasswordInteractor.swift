@@ -5,15 +5,15 @@ import SoraKeystore
 class BaseBackupEnterPasswordInteractor {
     weak var presenter: ImportCloudPasswordInteractorOutputProtocol?
 
-    let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
     let cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol
+    let syncMetadataManager: CloudBackupSyncMetadataManaging
 
     init(
-        cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol,
-        cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol
+        cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol,
+        syncMetadataManager: CloudBackupSyncMetadataManaging
     ) {
-        self.cloudBackupSyncFacade = cloudBackupSyncFacade
         self.cloudBackupServiceFacade = cloudBackupServiceFacade
+        self.syncMetadataManager = syncMetadataManager
     }
 
     private func handleImport(error: CloudBackupServiceFacadeError) {
@@ -52,17 +52,11 @@ extension BaseBackupEnterPasswordInteractor: ImportCloudPasswordInteractorInputP
     }
 
     func deleteBackup() {
-        cloudBackupSyncFacade.disableBackup(runCompletionIn: .main) { [weak self] result in
+        cloudBackupServiceFacade.deleteBackup(runCompletionIn: .main) { [weak self] result in
             switch result {
             case .success:
-                self?.cloudBackupServiceFacade.deleteBackup(runCompletionIn: .main) { result in
-                    switch result {
-                    case .success:
-                        self?.presenter?.didDeleteBackup()
-                    case let .failure(error):
-                        self?.presenter?.didReceive(error: .deleteFailed(error))
-                    }
-                }
+                self?.syncMetadataManager.isBackupEnabled = false
+                self?.presenter?.didDeleteBackup()
             case let .failure(error):
                 self?.presenter?.didReceive(error: .deleteFailed(error))
             }

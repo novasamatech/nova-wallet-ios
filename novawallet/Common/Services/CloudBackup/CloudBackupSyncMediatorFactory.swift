@@ -6,12 +6,10 @@ enum CloudBackupSyncMediatorFacade {
 
 enum CloudBackupSyncMediatorFactory {
     static func createDefaultMediator() -> CloudBackupSyncMediating {
-        let syncFacade = CloudBackupSyncFacade.createFacade()
-        let backupApplyFactory = CloudBackupUpdateApplicationFactory.createDefault()
+        let syncService = CloudBackupSyncService.createService()
 
         return CloudBackupSyncMediator(
-            syncFacade: syncFacade,
-            cloudBackupApplyFactory: backupApplyFactory,
+            syncService: syncService,
             eventCenter: EventCenter.shared,
             selectedWalletSettings: SelectedWalletSettings.shared,
             operationQueue: OperationManagerFacade.cloudBackupQueue,

@@ -60,7 +60,7 @@ final class WalletManageViewFactory {
         )
 
         return WalletManageInteractor(
-            cloudBackupSyncFacade: CloudBackupSyncMediatorFacade.sharedMediator.syncFacade,
+            cloudBackupSyncService: CloudBackupSyncMediatorFacade.sharedMediator.syncService,
             balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             walletUpdateMediator: walletUpdateMediator,

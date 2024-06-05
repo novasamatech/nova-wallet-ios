@@ -20,8 +20,7 @@ protocol CloudBackupSettingsInteractorInputProtocol: AnyObject {
     func enableBackup()
     func disableBackup()
     func deleteBackup()
-    func retryStateFetch()
-    func checkBackupChangesConfirmationNeeded()
+    func syncUp()
     func approveBackupChanges()
 }
 

@@ -167,7 +167,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     }
 
     func checkSync() {
-        interactor.checkBackupChangesConfirmationNeeded()
+        interactor.syncUp()
     }
 }
 
@@ -184,7 +184,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
 
         switch error {
         case .enableBackup, .disableBackup, .deleteBackup:
-            interactor.retryStateFetch()
+            interactor.syncUp()
 
             guard let view else {
                 return

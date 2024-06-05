@@ -38,7 +38,11 @@ struct CloudBackupSettingsViewFactory {
 
         let interactor = CloudBackupSettingsInteractor(
             cloudBackupSyncMediator: CloudBackupSyncMediatorFacade.sharedMediator,
-            cloudBackupServiceFacade: serviceFacade
+            cloudBackupServiceFacade: serviceFacade,
+            syncMetadataManager: CloudBackupSyncMetadataManager(
+                settings: SettingsManager.shared,
+                keystore: Keychain()
+            )
         )
 
         return interactor

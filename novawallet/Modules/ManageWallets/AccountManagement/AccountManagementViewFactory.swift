@@ -38,7 +38,7 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
         let keystore = Keychain()
 
         let interactor = AccountManagementInteractor(
-            cloudBackupSyncFacade: CloudBackupSyncMediatorFacade.sharedMediator.syncFacade,
+            cloudBackupSyncService: CloudBackupSyncMediatorFacade.sharedMediator.syncService,
             walletCreationRequestFactory: WalletCreationRequestFactory(),
             walletRepository: AnyDataProviderRepository(walletRepository),
             accountOperationFactory: MetaAccountOperationFactory(keystore: keystore),
