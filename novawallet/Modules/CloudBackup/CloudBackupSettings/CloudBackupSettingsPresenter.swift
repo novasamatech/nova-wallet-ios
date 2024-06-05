@@ -181,6 +181,11 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     }
 
     func activateSyncIssue() {
+        if case .unavailable = cloudBackupState, let view = view {
+            wireframe.presentCloudBackupUnavailable(from: view, locale: selectedLocale)
+            return
+        }
+
         guard case let .enabled(optSyncResult, _) = cloudBackupState else {
             return
         }
