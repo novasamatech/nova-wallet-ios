@@ -13,6 +13,8 @@ final class CloudBackupSettingsPresenter {
     let viewModelFactory: CloudBackupSettingsViewModelFactoryProtocol
     let logger: LoggerProtocol
 
+    private var isActive: Bool = false
+
     private var cloudBackupState: CloudBackupSyncState?
 
     init(
@@ -93,6 +95,46 @@ final class CloudBackupSettingsPresenter {
             context: onAction
         )
     }
+
+    private func checkDestructiveChanges() {
+        guard
+            case let .enabled(optSyncResult, _) = cloudBackupState,
+            case let .changes(changes) = optSyncResult else {
+            logger.debug("No destructive changes found")
+            return
+        }
+
+        if changes.isDestructive {
+            logger.debug("Found destructive changed")
+
+            wireframe.showCloudBackupReview(
+                from: view,
+                changes: changes,
+                delegate: self
+            )
+        }
+    }
+
+    private func handleSync(issue: CloudBackupSyncResult.Issue) {
+        switch issue {
+        case .missingOrInvalidPassword:
+            wireframe.showEnterPassword(from: view)
+        case .remoteDecodingFailed:
+            wireframe.showCloudBackupDelete(
+                from: view,
+                reason: .brokenOrEmpty,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.deleteBackup()
+            }
+        case .remoteReadingFailed, .internalFailure:
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
+        }
+    }
 }
 
 extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
@@ -139,35 +181,30 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     }
 
     func activateSyncIssue() {
-        // TODO: Handle updates application separately
-        guard
-            case let .enabled(optSyncResult, _) = cloudBackupState,
-            case let .issue(issue) = optSyncResult else {
+        guard case let .enabled(optSyncResult, _) = cloudBackupState else {
             return
         }
 
-        switch issue {
-        case .missingOrInvalidPassword:
-            wireframe.showEnterPassword(from: view)
-        case .remoteDecodingFailed:
-            wireframe.showCloudBackupDelete(
-                from: view,
-                reason: .brokenOrEmpty,
-                locale: selectedLocale
-            ) { [weak self] in
-                self?.interactor.deleteBackup()
-            }
-        case .remoteReadingFailed, .internalFailure:
-            guard let view = view else {
-                return
-            }
-
-            wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
+        switch optSyncResult {
+        case .changes:
+            checkDestructiveChanges()
+        case let .issue(issue):
+            handleSync(issue: issue)
+        case .noUpdates, .none:
+            break
         }
     }
 
-    func checkSync() {
-        interactor.syncUp()
+    func becomeActive() {
+        isActive = true
+
+        interactor.becomeActive()
+    }
+
+    func becomeInactive() {
+        isActive = false
+
+        interactor.becomeInactive()
     }
 }
 
@@ -177,6 +214,10 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
 
         cloudBackupState = state
         provideViewModel()
+
+        if isActive {
+            checkDestructiveChanges()
+        }
     }
 
     func didReceive(error: CloudBackupSettingsInteractorError) {
@@ -192,14 +233,6 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
 
             wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
         }
-    }
-
-    func didReceiveConfirmation(changes: CloudBackupSyncResult.Changes) {
-        wireframe.showCloudBackupReview(
-            from: view,
-            changes: changes,
-            delegate: self
-        )
     }
 
     func didDeleteBackup() {

@@ -97,7 +97,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         onReviewUpdates: @escaping () -> Void
     ) {
         guard
-            canPresentReviewCloudBackup(from: view),
+            let tabBarController = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: tabBarController),
             let bottomSheet = CloudBackupMessageSheetViewFactory.createUnsyncedChangesSheet(
                 completionClosure: onReviewUpdates,
                 cancelClosure: nil
@@ -112,16 +113,9 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         from view: MainTabBarViewProtocol?,
         onReviewIssues: @escaping () -> Void
     ) {
-        let settingsNavigationController = getSettingsNavigationController(from: view)
-        let backupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
-
-        if backupSettings != nil {
-            // no need to show issues if backup settings already open
-            return
-        }
-
         guard
-            canPresentReviewCloudBackup(from: view),
+            let tabBarController = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: tabBarController),
             let bottomSheet = CloudBackupMessageSheetViewFactory.createCloudBackupUpdateFailedSheet(
                 completionClosure: onReviewIssues,
                 cancelClosure: nil
@@ -141,30 +135,14 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
 
         let settingsNavigationController = getSettingsNavigationController(from: view)
 
-        if let backupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol {
-            backupSettings.presenter.checkSync()
-        } else {
-            guard
-                let cloudBackupSettings = CloudBackupSettingsViewFactory.createView() else {
+        let optBackupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
+
+        if optBackupSettings == nil {
+            guard let cloudBackupSettings = CloudBackupSettingsViewFactory.createView() else {
                 return
             }
 
             settingsNavigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
-        }
-    }
-
-    private func canPresentReviewCloudBackup(from view: MainTabBarViewProtocol?) -> Bool {
-        let settingsNavigationController = getSettingsNavigationController(from: view)
-        let cloudBackupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
-
-        if cloudBackupSettings != nil, view?.controller.topModalViewController != nil {
-            return true
-        }
-
-        if let view = view {
-            return canPresentScreenWithoutBreakingFlow(on: view.controller)
-        } else {
-            return false
         }
     }
 

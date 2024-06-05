@@ -170,12 +170,9 @@ extension MainTabBarInteractor: CloudBackupSyncConfirming {
         }
     }
 
-    func cloudBackupDidFailToApplyChanges(
-        mediator _: CloudBackupSyncMediating,
-        error: Error
-    ) {
+    func cloudBackup(mediator _: CloudBackupSyncMediating, didFound issue: CloudBackupSyncResult.Issue) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.presenter?.didFailApplyingCloudChanges(error: error)
+            self?.presenter?.didFoundCloudBackup(issue: issue)
         }
     }
 }

@@ -67,6 +67,8 @@ final class CloudBackupSyncService {
             return
         }
 
+        logger.debug("Did complete sync: \(syncResult)")
+
         stateObservable.state = .enabled(
             syncResult,
             lastSyncDate: syncMetadataManager.getLastSyncDate()
@@ -74,21 +76,26 @@ final class CloudBackupSyncService {
     }
 
     private func performSync() {
-        cancellableStore.cancel()
-
         guard syncMetadataManager.isBackupEnabled else {
-            stateObservable = .init(state: .disabled(lastSyncDate: syncMetadataManager.getLastSyncDate()))
+            cancellableStore.cancel()
+            stateObservable.state = .disabled(lastSyncDate: syncMetadataManager.getLastSyncDate())
             return
         }
 
         guard let remoteUrl = fileManager.getFileUrl() else {
-            stateObservable = .init(state: .unavailable(lastSyncDate: syncMetadataManager.getLastSyncDate()))
+            cancellableStore.cancel()
+            stateObservable.state = .unavailable(lastSyncDate: syncMetadataManager.getLastSyncDate())
+            return
+        }
+
+        guard !cancellableStore.hasCall else {
+            logger.warning("Skipping as already syncing")
             return
         }
 
         let wrapper = updateCalculationFactory.createUpdateCalculation(for: remoteUrl)
 
-        stateObservable = .init(state: .enabled(nil, lastSyncDate: syncMetadataManager.getLastSyncDate()))
+        stateObservable.state = .enabled(nil, lastSyncDate: syncMetadataManager.getLastSyncDate())
 
         logger.debug("Will start sync")
 
@@ -101,7 +108,6 @@ final class CloudBackupSyncService {
         ) { [weak self] result in
             switch result {
             case let .success(syncResult):
-                self?.logger.debug("Did complete sync")
                 self?.handle(syncResult: syncResult)
             case let .failure(error):
                 self?.logger.error("Unexpected error: \(error)")
@@ -130,7 +136,7 @@ final class CloudBackupSyncService {
 
         let wrapper = applyUpdateFactory.createUpdateApplyOperation(for: changes)
 
-        stateObservable = .init(state: .enabled(nil, lastSyncDate: syncMetadataManager.getLastSyncDate()))
+        stateObservable.state = .enabled(nil, lastSyncDate: syncMetadataManager.getLastSyncDate())
 
         logger.debug("Will start applying changes")
 

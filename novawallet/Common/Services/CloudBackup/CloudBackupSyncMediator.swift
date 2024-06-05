@@ -6,9 +6,9 @@ protocol CloudBackupSyncConfirming: AnyObject {
         didRequestConfirmation changes: CloudBackupSyncResult.Changes
     )
 
-    func cloudBackupDidFailToApplyChanges(
+    func cloudBackup(
         mediator: CloudBackupSyncMediating,
-        error: Error
+        didFound issue: CloudBackupSyncResult.Issue
     )
 }
 
@@ -17,7 +17,9 @@ protocol CloudBackupSyncMediating {
 
     func setup(with confirmingDelegate: CloudBackupSyncConfirming)
     func approveCurrentChanges()
-    func throttle()
+
+    func enableDelegateNotifications()
+    func disableDelegateNotifications()
 }
 
 /**
@@ -32,6 +34,8 @@ final class CloudBackupSyncMediator {
     private let selectedWalletSettings: SelectedWalletSettings
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
+
+    private var isDelegateNotificationsEnabled: Bool = true
 
     weak var confirmationDelegate: CloudBackupSyncConfirming?
 
@@ -64,26 +68,52 @@ final class CloudBackupSyncMediator {
         eventCenter.remove(observer: self)
     }
 
+    func notifyDelegateConfirmationIfNeeded(for changes: CloudBackupSyncResult.Changes) {
+        guard isDelegateNotificationsEnabled else {
+            return
+        }
+
+        confirmationDelegate?.cloudBackup(
+            mediator: self,
+            didRequestConfirmation: changes
+        )
+    }
+
+    func notifyDelegateAboutIssueIfNeeded(_ issue: CloudBackupSyncResult.Issue) {
+        guard isDelegateNotificationsEnabled else {
+            return
+        }
+
+        confirmationDelegate?.cloudBackup(mediator: self, didFound: issue)
+    }
+
     private func handleNew(state: CloudBackupSyncState) {
         switch state {
         case .disabled, .unavailable:
             logger.debug("No need to process disabled or unavailable")
         case let .enabled(cloudBackupSyncResult, _):
-            guard case let .changes(changes) = cloudBackupSyncResult else {
-                logger.debug("No changes to process")
+            guard let cloudBackupSyncResult = cloudBackupSyncResult else {
                 return
             }
 
+            handleSync(result: cloudBackupSyncResult)
+        }
+    }
+
+    private func handleSync(result: CloudBackupSyncResult) {
+        switch result {
+        case .noUpdates:
+            logger.debug("No sync updates")
+        case let .changes(changes):
             handleNew(changes: changes)
+        case let .issue(issue):
+            notifyDelegateAboutIssueIfNeeded(issue)
         }
     }
 
     private func handleNew(changes: CloudBackupSyncResult.Changes) {
         if changes.isDestructive {
-            confirmationDelegate?.cloudBackup(
-                mediator: self,
-                didRequestConfirmation: changes
-            )
+            notifyDelegateConfirmationIfNeeded(for: changes)
         } else {
             applyChanges()
         }
@@ -108,7 +138,7 @@ final class CloudBackupSyncMediator {
                     selectedWalletBeforeUpdate: selectedWalletBeforeUpdate
                 )
             case let .failure(error):
-                confirmationDelegate?.cloudBackupDidFailToApplyChanges(mediator: self, error: error)
+                self.logger.error("Unexpected changes apply error \(error)")
             }
         }
     }
@@ -157,15 +187,27 @@ extension CloudBackupSyncMediator: CloudBackupSyncMediating {
 
         clearCurrentState()
     }
+
+    func enableDelegateNotifications() {
+        isDelegateNotificationsEnabled = true
+    }
+
+    func disableDelegateNotifications() {
+        isDelegateNotificationsEnabled = false
+    }
 }
 
 extension CloudBackupSyncMediator: EventVisitorProtocol {
-    func processChainAccountChanged(event _: ChainAccountChanged) {
-        syncService.syncUp()
+    func processChainAccountChanged(event: ChainAccountChanged) {
+        if event.method == .manually {
+            syncService.syncUp()
+        }
     }
 
-    func processAccountsChanged(event _: AccountsChanged) {
-        syncService.syncUp()
+    func processAccountsChanged(event: AccountsChanged) {
+        if event.method == .manually {
+            syncService.syncUp()
+        }
     }
 
     func processAccountsRemoved(event _: AccountsRemovedManually) {

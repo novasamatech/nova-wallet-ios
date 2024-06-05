@@ -36,7 +36,13 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        presenter.checkSync()
+        presenter.becomeActive()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        presenter.becomeInactive()
     }
 
     private func setupHandlers() {

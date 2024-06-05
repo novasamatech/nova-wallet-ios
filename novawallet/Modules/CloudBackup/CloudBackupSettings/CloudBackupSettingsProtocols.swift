@@ -12,7 +12,9 @@ protocol CloudBackupSettingsPresenterProtocol: AnyObject {
     func activateManualBackup()
     func activateSyncAction()
     func activateSyncIssue()
-    func checkSync()
+
+    func becomeActive()
+    func becomeInactive()
 }
 
 protocol CloudBackupSettingsInteractorInputProtocol: AnyObject {
@@ -21,13 +23,14 @@ protocol CloudBackupSettingsInteractorInputProtocol: AnyObject {
     func disableBackup()
     func deleteBackup()
     func syncUp()
+    func becomeActive()
+    func becomeInactive()
     func approveBackupChanges()
 }
 
 protocol CloudBackupSettingsInteractorOutputProtocol: AnyObject {
     func didReceive(state: CloudBackupSyncState)
     func didReceive(error: CloudBackupSettingsInteractorError)
-    func didReceiveConfirmation(changes: CloudBackupSyncResult.Changes)
     func didDeleteBackup()
 }
 
