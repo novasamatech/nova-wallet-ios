@@ -4,7 +4,11 @@ import SoraKeystore
 
 struct NetworksListViewFactory {
     static func createView() -> NetworksListViewProtocol? {
-        let interactor = NetworksListInteractor(chainRegistry: ChainRegistryFacade.sharedRegistry)
+        let interactor = NetworksListInteractor(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            settingsManager: SettingsManager.shared
+        )
+
         let wireframe = NetworksListWireframe()
 
         let viewModelFactory = NetworksListViewModelFactory(

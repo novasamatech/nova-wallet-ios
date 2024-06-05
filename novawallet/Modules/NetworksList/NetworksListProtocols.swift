@@ -1,7 +1,7 @@
 import RobinHood
 
 protocol NetworksListViewProtocol: ControllerBackedProtocol {
-    func update(with viewModel: NetworksListViewLayout.Model)
+    func update(with viewModel: NetworksListViewLayout.Model, animated: Bool)
     func updateNetworks(with viewModel: NetworksListViewLayout.Model)
 }
 
@@ -10,10 +10,12 @@ protocol NetworksListPresenterProtocol: AnyObject {
     func select(segment: NetworksListPresenter.NetworksType?)
     func selectChain(at index: Int)
     func addNetwork()
+    func closeBanner()
 }
 
 protocol NetworksListInteractorInputProtocol: AnyObject {
     func provideChains()
+    func setIntegrationBannerSeen()
 }
 
 protocol NetworksListInteractorOutputProtocol: AnyObject {

@@ -65,7 +65,10 @@ extension NetworksListViewController: UITableViewDelegate {
 // MARK: NetworksListViewProtocol
 
 extension NetworksListViewController: NetworksListViewProtocol {
-    func update(with viewModel: NetworksListViewLayout.Model) {
+    func update(
+        with viewModel: NetworksListViewLayout.Model,
+        animated: Bool
+    ) {
         self.viewModel = viewModel
 
         var snapshot = Snapshot()
@@ -87,7 +90,7 @@ extension NetworksListViewController: NetworksListViewProtocol {
             }
         }
 
-        dataSource.apply(snapshot, animatingDifferences: false)
+        dataSource.apply(snapshot, animatingDifferences: animated)
     }
 
     func updateNetworks(with viewModel: NetworksListViewLayout.Model) {
@@ -124,6 +127,14 @@ extension NetworksListViewController: NetworksEmptyPlaceholderViewDelegate {
     }
 }
 
+// MARK: IntegrateNetworksBannerDekegate
+
+extension NetworksListViewController: IntegrateNetworksBannerDekegate {
+    func didTapClose() {
+        presenter.closeBanner()
+    }
+}
+
 // MARK: Private
 
 private extension NetworksListViewController {
@@ -132,6 +143,8 @@ private extension NetworksListViewController {
         rootView.tableView.registerClassForCell(ChainCell.self)
         rootView.tableView.registerClassForCell(PlaceholderCell.self)
         rootView.tableView.registerClassForCell(BannerCell.self)
+
+        dataSource.defaultRowAnimation = .fade
 
         setupActions()
         setupNetworkSwitchTitles()
@@ -190,6 +203,7 @@ private extension NetworksListViewController {
                 )
 
                 bannerCell.contentDisplayView.set(locale: selectedLocale)
+                bannerCell.contentDisplayView.delegate = self
 
                 cell = bannerCell
             case let .placeholder(placeholderViewModel):

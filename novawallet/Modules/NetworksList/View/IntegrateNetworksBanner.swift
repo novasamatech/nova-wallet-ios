@@ -10,6 +10,10 @@ class IntegrateNetworkBannerTableViewCell: PlainBaseTableViewCell<IntegrateNetwo
     }
 }
 
+protocol IntegrateNetworksBannerDekegate: AnyObject {
+    func didTapClose()
+}
+
 final class IntegrateNetworksBanner: UIView {
     let gradientBannerView: GradientBannerView = .create {
         $0.infoView.imageView.image = R.image.imageBannerCircles()
@@ -24,13 +28,21 @@ final class IntegrateNetworksBanner: UIView {
         $0.roundedBackgroundView?.strokeColor = .clear
         $0.roundedBackgroundView?.highlightedStrokeColor = .clear
         $0.roundedBackgroundView?.cornerRadius = 12
-        $0.imageWithTitleView?.iconImage = R.image.iconBannerClose()
+        $0.imageWithTitleView?.iconImage = R.image.iconCloseWithBg()
         $0.changesContentOpacityWhenHighlighted = true
     }
+
+    weak var delegate: IntegrateNetworksBannerDekegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
+
+        closeButton.addTarget(
+            self,
+            action: #selector(actionClose),
+            for: .touchUpInside
+        )
     }
 
     @available(*, unavailable)
@@ -69,5 +81,9 @@ final class IntegrateNetworksBanner: UIView {
         gradientBannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.integrateNetworkBannerButtonLink(
             preferredLanguages: locale.rLanguages
         )
+    }
+
+    @objc private func actionClose() {
+        delegate?.didTapClose()
     }
 }

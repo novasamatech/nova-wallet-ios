@@ -35,7 +35,7 @@ extension NetworksListPresenter: NetworksListPresenterProtocol {
     func select(segment: NetworksType?) {
         selectedNetworksType = segment
         indexChains()
-        provideViewModels()
+        provideViewModels(animated: false)
     }
 
     func setup() {
@@ -44,6 +44,11 @@ extension NetworksListPresenter: NetworksListPresenterProtocol {
 
     func addNetwork() {
         // TODO: Implement routing
+    }
+
+    func closeBanner() {
+        interactor.setIntegrationBannerSeen()
+        provideViewModels()
     }
 }
 
@@ -71,7 +76,7 @@ extension NetworksListPresenter: NetworksListInteractorOutputProtocol {
 // MARK: Private
 
 private extension NetworksListPresenter {
-    func provideViewModels() {
+    func provideViewModels(animated: Bool = true) {
         guard
             let selectedNetworksType,
             let sortedChains
@@ -92,7 +97,7 @@ private extension NetworksListPresenter {
             )
         }
 
-        view?.update(with: viewModel)
+        view?.update(with: viewModel, animated: animated)
     }
 
     func provideNetworkViewModel(for chainId: ChainModel.Id) {

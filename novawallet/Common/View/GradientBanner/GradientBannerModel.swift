@@ -21,7 +21,7 @@ extension GradientBannerModel {
             alpha: 1.0
         )
 
-        let locations: [Float] = [0, 1.0]
+        let locations: [Float] = [0.4, 1.0]
 
         let left = GradientModel(
             startPoint: CGPoint(x: 1.0, y: 0.0),
