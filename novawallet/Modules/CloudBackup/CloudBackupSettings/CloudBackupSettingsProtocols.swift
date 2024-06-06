@@ -1,4 +1,8 @@
+import Foundation
+
 protocol CloudBackupSettingsViewProtocol: ControllerBackedProtocol {
+    var presenter: CloudBackupSettingsPresenterProtocol { get }
+
     func didReceive(viewModel: CloudBackupSettingsViewModel)
 }
 
@@ -8,25 +12,51 @@ protocol CloudBackupSettingsPresenterProtocol: AnyObject {
     func activateManualBackup()
     func activateSyncAction()
     func activateSyncIssue()
+
+    func becomeActive()
+    func becomeInactive()
 }
 
 protocol CloudBackupSettingsInteractorInputProtocol: AnyObject {
     func setup()
     func enableBackup()
     func disableBackup()
-    func retryStateFetch()
+    func deleteBackup()
+    func syncUp()
+    func becomeActive()
+    func becomeInactive()
+    func approveBackupChanges()
 }
 
 protocol CloudBackupSettingsInteractorOutputProtocol: AnyObject {
     func didReceive(state: CloudBackupSyncState)
     func didReceive(error: CloudBackupSettingsInteractorError)
+    func didDeleteBackup()
 }
 
-protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentable, CloudBackupErrorPresentable {
+protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentable, CloudBackupErrorPresentable,
+    ActionsManagePresentable, CloudBackupDeletePresentable, ModalAlertPresenting {
     func showManualBackup(from view: CloudBackupSettingsViewProtocol?)
+
+    func showWalletsRemoveConfirmation(
+        on view: CloudBackupSettingsViewProtocol?,
+        locale: Locale,
+        onConfirm: @escaping () -> Void
+    )
+
+    func showCloudBackupReview(
+        from view: CloudBackupSettingsViewProtocol?,
+        changes: CloudBackupSyncResult.Changes,
+        delegate: CloudBackupReviewChangesDelegate
+    )
+
+    func showEnterPassword(from view: CloudBackupSettingsViewProtocol?)
+
+    func showChangePassword(from view: CloudBackupSettingsViewProtocol?)
 }
 
 enum CloudBackupSettingsInteractorError: Error {
     case enableBackup(Error)
     case disableBackup(Error)
+    case deleteBackup(Error)
 }

@@ -1,76 +1,178 @@
 import Foundation
-import SoraKeystore
-import SubstrateSdk
-import RobinHood
 
-protocol CloudBackupSyncServiceProtocol: SyncServiceProtocol {
-    func subscribeSyncResult(
-        _ object: AnyObject,
+protocol CloudBackupSyncServiceProtocol {
+    func subscribeState(
+        _ observer: AnyObject,
         notifyingIn queue: DispatchQueue,
-        closure: @escaping (CloudBackupSyncResult) -> Void
+        closure: @escaping (CloudBackupSyncState) -> Void
     )
 
-    func unsubscribeSyncResult(_ object: AnyObject)
+    func unsubscribeState(_ observer: AnyObject)
+
+    func getState() -> CloudBackupSyncState
+
+    func syncUp()
+
+    func applyChanges(
+        notifyingIn queue: DispatchQueue,
+        closure: @escaping (Result<CloudBackupSyncResult.Changes?, Error>) -> Void
+    )
 }
 
-final class CloudBackupSyncService: BaseSyncService, AnyCancellableCleaning {
+final class CloudBackupSyncService {
+    let applyUpdateFactory: CloudBackupUpdateApplicationFactoryProtocol
     let updateCalculationFactory: CloudBackupUpdateCalculationFactoryProtocol
-    let remoteFileUrl: URL
-
-    let workingQueue: DispatchQueue
+    let syncMetadataManager: CloudBackupSyncMetadataManaging
+    let fileManager: CloudBackupFileManaging
+    let workQueue: DispatchQueue
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
-    private var syncObservable: Observable<CloudBackupSyncResult> = .init(state: .noUpdates)
-
-    private var cancellableStore = CancellableCallStore()
+    private let mutex = NSLock()
+    private let cancellableStore = CancellableCallStore()
+    private var stateObservable: Observable<CloudBackupSyncState>
 
     init(
-        remoteFileUrl: URL,
         updateCalculationFactory: CloudBackupUpdateCalculationFactoryProtocol,
+        applyUpdateFactory: CloudBackupUpdateApplicationFactoryProtocol,
+        syncMetadataManager: CloudBackupSyncMetadataManaging,
+        fileManager: CloudBackupFileManaging,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue = DispatchQueue.global(),
-        retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
+        workQueue: DispatchQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
-        self.remoteFileUrl = remoteFileUrl
         self.updateCalculationFactory = updateCalculationFactory
+        self.applyUpdateFactory = applyUpdateFactory
+        self.syncMetadataManager = syncMetadataManager
+        self.fileManager = fileManager
+        self.workQueue = workQueue
         self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
+        self.logger = logger
 
-        super.init(retryStrategy: retryStrategy, logger: logger)
+        let lastSyncDate = syncMetadataManager.getLastSyncDate()
+
+        if syncMetadataManager.isBackupEnabled {
+            if fileManager.getFileUrl() != nil {
+                stateObservable = .init(state: .enabled(nil, lastSyncDate: lastSyncDate))
+            } else {
+                stateObservable = .init(state: .unavailable(lastSyncDate: lastSyncDate))
+            }
+        } else {
+            stateObservable = .init(state: .disabled(lastSyncDate: lastSyncDate))
+        }
     }
 
-    override func performSyncUp() {
-        let updateCalculationWrapper = updateCalculationFactory.createUpdateCalculation(for: remoteFileUrl)
+    private func handle(syncResult: CloudBackupSyncResult) {
+        guard syncMetadataManager.isBackupEnabled else {
+            return
+        }
+
+        logger.debug("Did complete sync: \(syncResult)")
+
+        stateObservable.state = .enabled(
+            syncResult,
+            lastSyncDate: syncMetadataManager.getLastSyncDate()
+        )
+    }
+
+    private func performSync() {
+        guard syncMetadataManager.isBackupEnabled else {
+            cancellableStore.cancel()
+            stateObservable.state = .disabled(lastSyncDate: syncMetadataManager.getLastSyncDate())
+            return
+        }
+
+        guard let remoteUrl = fileManager.getFileUrl() else {
+            cancellableStore.cancel()
+            stateObservable.state = .unavailable(lastSyncDate: syncMetadataManager.getLastSyncDate())
+            return
+        }
+
+        guard !cancellableStore.hasCall else {
+            logger.warning("Skipping as already syncing")
+            return
+        }
+
+        let wrapper = updateCalculationFactory.createUpdateCalculation(for: remoteUrl)
+
+        stateObservable.state = .enabled(nil, lastSyncDate: syncMetadataManager.getLastSyncDate())
+
+        logger.debug("Will start sync")
 
         executeCancellable(
-            wrapper: updateCalculationWrapper,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             backingCallIn: cancellableStore,
-            runningCallbackIn: workingQueue,
+            runningCallbackIn: workQueue,
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case let .success(update):
-                self?.logger.debug("Backup sync update: \(update)")
-                self?.syncObservable.state = update
-                self?.completeImmediate(nil)
+            case let .success(syncResult):
+                self?.handle(syncResult: syncResult)
             case let .failure(error):
-                self?.completeImmediate(error)
+                self?.logger.error("Unexpected error: \(error)")
+                self?.handle(syncResult: .issue(.internalFailure))
             }
         }
     }
 
-    override func stopSyncUp() {
+    private func performChangesApply(
+        notifyingIn queue: DispatchQueue,
+        closure: @escaping (Result<CloudBackupSyncResult.Changes?, Error>) -> Void
+    ) {
+        guard
+            case let .enabled(result, _) = stateObservable.state,
+            case let .changes(changes) = result else {
+            logger.warning("No changes to apply")
+
+            dispatchInQueueWhenPossible(queue) {
+                closure(.success(nil))
+            }
+
+            return
+        }
+
         cancellableStore.cancel()
+
+        let wrapper = applyUpdateFactory.createUpdateApplyOperation(for: changes)
+
+        stateObservable.state = .enabled(nil, lastSyncDate: syncMetadataManager.getLastSyncDate())
+
+        logger.debug("Will start applying changes")
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: cancellableStore,
+            runningCallbackIn: workQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                dispatchInQueueWhenPossible(queue) {
+                    closure(.success(changes))
+                }
+
+                self?.logger.debug("Did complete applying changes")
+
+                self?.performSync()
+            case let .failure(error):
+                dispatchInQueueWhenPossible(queue) {
+                    closure(.failure(error))
+                }
+
+                self?.logger.error("Update application error: \(error)")
+                self?.handle(syncResult: .issue(.internalFailure))
+            }
+        }
     }
 }
 
 extension CloudBackupSyncService: CloudBackupSyncServiceProtocol {
-    func subscribeSyncResult(
-        _ object: AnyObject,
+    func subscribeState(
+        _ observer: AnyObject,
         notifyingIn queue: DispatchQueue,
-        closure: @escaping (CloudBackupSyncResult) -> Void
+        closure: @escaping (CloudBackupSyncState) -> Void
     ) {
         mutex.lock()
 
@@ -78,8 +180,8 @@ extension CloudBackupSyncService: CloudBackupSyncServiceProtocol {
             mutex.unlock()
         }
 
-        syncObservable.addObserver(
-            with: object,
+        stateObservable.addObserver(
+            with: observer,
             sendStateOnSubscription: true,
             queue: queue
         ) { _, newState in
@@ -87,13 +189,46 @@ extension CloudBackupSyncService: CloudBackupSyncServiceProtocol {
         }
     }
 
-    func unsubscribeSyncResult(_ object: AnyObject) {
+    func unsubscribeState(_ observer: AnyObject) {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        syncObservable.removeObserver(by: object)
+        stateObservable.removeObserver(by: observer)
+    }
+
+    func getState() -> CloudBackupSyncState {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return stateObservable.state
+    }
+
+    func syncUp() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        performSync()
+    }
+
+    func applyChanges(
+        notifyingIn queue: DispatchQueue,
+        closure: @escaping (Result<CloudBackupSyncResult.Changes?, Error>) -> Void
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        performChangesApply(notifyingIn: queue, closure: closure)
     }
 }

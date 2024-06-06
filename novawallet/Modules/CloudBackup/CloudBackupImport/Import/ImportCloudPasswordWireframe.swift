@@ -3,7 +3,11 @@ import Foundation
 final class ImportCloudPasswordWireframe: ImportCloudPasswordWireframeProtocol, ModalAlertPresenting {
     lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
 
-    func proceedAfterImport(from _: ImportCloudPasswordViewProtocol?) {
+    func proceedAfterImport(
+        from _: ImportCloudPasswordViewProtocol?,
+        password _: String,
+        locale _: Locale
+    ) {
         guard let pincodeViewController = PinViewFactory.createPinSetupView()?.controller else {
             return
         }

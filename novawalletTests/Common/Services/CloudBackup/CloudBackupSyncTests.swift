@@ -46,7 +46,6 @@ final class CloudBackupSyncTests: XCTestCase {
     
     struct SyncSetupResult {
         let syncService: CloudBackupSyncServiceProtocol
-        let applicationFactory: CloudBackupUpdateApplicationFactoryProtocol
         let syncMetadataManager: CloudBackupSyncMetadataManaging
         let serviceFactory: CloudBackupServiceFactoryProtocol
         let selectedWalletSettings: SelectedWalletSettings
@@ -85,16 +84,9 @@ final class CloudBackupSyncTests: XCTestCase {
             }
         }
         
-        guard let changes = syncChanges else {
-            XCTFail("No changes found")
-            return
-        }
+        XCTAssertNotNil(syncChanges)
         
-        applyChangesAndConfirm(
-            changes,
-            applicationFactory: setupResult.applicationFactory,
-            syncService: setupResult.syncService
-        )
+        applyChangesAndConfirm(for: setupResult.syncService)
         
         XCTAssertTrue(setupResult.syncMetadataManager.isBackupEnabled)
         XCTAssertTrue(setupResult.syncMetadataManager.hasLastSyncTimestamp())
@@ -287,16 +279,9 @@ final class CloudBackupSyncTests: XCTestCase {
             }
         }
         
-        guard let changes = initChanges else {
-            XCTFail("No init changes found")
-            return
-        }
+        XCTAssertNotNil(initChanges)
         
-        applyChangesAndConfirm(
-            changes,
-            applicationFactory: setupResult.applicationFactory,
-            syncService: setupResult.syncService
-        )
+        applyChangesAndConfirm(for: setupResult.syncService)
         
         changingAfterBackup(
             .init(
@@ -326,11 +311,7 @@ final class CloudBackupSyncTests: XCTestCase {
             return
         }
         
-        applyChangesAndConfirm(
-            nextChanges,
-            applicationFactory: setupResult.applicationFactory,
-            syncService: setupResult.syncService
-        )
+        applyChangesAndConfirm(for: setupResult.syncService)
         
         let walletsAfterSync = try WalletsFetchHelper.fetchWallets(using: setupResult.accountRepository)
         let backupAfterSync = try CloudBackupFetchHelper.fetchBackup(
@@ -353,14 +334,9 @@ final class CloudBackupSyncTests: XCTestCase {
     }
     
     private func applyChangesAndConfirm(
-        _ changes: CloudBackupSyncResult.Changes,
-        applicationFactory: CloudBackupUpdateApplicationFactoryProtocol,
-        syncService: CloudBackupSyncServiceProtocol
+        for syncService: CloudBackupSyncServiceProtocol
     ) {
-        let wrapper = applicationFactory.createUpdateApplyOperation(for: changes)
-        
-        let operationQueue = OperationQueue()
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        syncService.applyChanges(notifyingIn: .global(), closure: {_ in })
         
         _ = syncAndWait(service: syncService) { result in
             switch result {
@@ -397,15 +373,6 @@ final class CloudBackupSyncTests: XCTestCase {
         
         let syncMetadataManager = MockCloudBackupSyncMetadataManager()
         
-        let syncService = CloudBackupSyncFactory(
-            serviceFactory: serviceFactory,
-            syncMetadataManaging: syncMetadataManager,
-            walletsRepositoryFactory: accountsRepositoryFactory,
-            notificationCenter: NotificationCenter.default,
-            operationQueue: operationQueue,
-            logger: Logger.shared
-        ).createSyncService(for: fileManager.getFileUrl()!)
-        
         let walletsRepository = accountsRepositoryFactory.createManagedMetaAccountRepository(
             for: nil,
             sortDescriptors: []
@@ -426,6 +393,28 @@ final class CloudBackupSyncTests: XCTestCase {
             operationQueue: operationQueue
         )
         
+        let updateCalcFactory = CloudBackupUpdateCalculationFactory(
+            syncMetadataManager: syncMetadataManager,
+            walletsRepository: accountsRepositoryFactory.createManagedMetaAccountRepository(
+                for: NSPredicate.cloudSyncableWallets,
+                sortDescriptors: []
+            ),
+            backupOperationFactory: serviceFactory.createOperationFactory(),
+            decodingManager: serviceFactory.createCodingManager(),
+            cryptoManager: serviceFactory.createCryptoManager(),
+            diffManager: serviceFactory.createDiffCalculator()
+        )
+        
+        let syncService = CloudBackupSyncService(
+            updateCalculationFactory: updateCalcFactory,
+            applyUpdateFactory: applyFactory,
+            syncMetadataManager: syncMetadataManager,
+            fileManager: fileManager,
+            operationQueue: operationQueue,
+            workQueue: .global(),
+            logger: Logger.shared
+        )
+        
         configuringLocal(
             .init(walletSettings: walletSettingsManager, keystore: keystore)
         )
@@ -436,7 +425,6 @@ final class CloudBackupSyncTests: XCTestCase {
         
         return SyncSetupResult(
             syncService: syncService,
-            applicationFactory: applyFactory,
             syncMetadataManager: syncMetadataManager,
             serviceFactory: serviceFactory,
             selectedWalletSettings: walletSettingsManager,
@@ -453,25 +441,24 @@ final class CloudBackupSyncTests: XCTestCase {
         let expectation = XCTestExpectation()
         var resultValue: T?
         
-        service.subscribeSyncResult(
+        service.subscribeState(
             self,
             notifyingIn: .main
         ) { result in
-            if let value = closure(result) {
+            if 
+                case .enabled(let optSyncResult, _) = result,
+                let syncResult = optSyncResult,
+                let value = closure(syncResult) {
                 resultValue = value
                 expectation.fulfill()
             }
         }
         
-        if !service.getIsActive() {
-            service.setup()
-        } else {
-            service.syncUp()
-        }
+        service.syncUp()
         
         wait(for: [expectation], timeout: timeout)
         
-        service.unsubscribeSyncResult(self)
+        service.unsubscribeState(self)
         
         return resultValue
     }

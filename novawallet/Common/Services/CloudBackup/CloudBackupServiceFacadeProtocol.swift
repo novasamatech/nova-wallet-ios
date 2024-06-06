@@ -40,4 +40,17 @@ protocol CloudBackupServiceFacadeProtocol {
         runCompletionIn queue: DispatchQueue,
         completionClosure: @escaping (Result<Bool, CloudBackupServiceFacadeError>) -> Void
     )
+
+    func checkBackupPassword(
+        _ password: String,
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Bool, CloudBackupServiceFacadeError>) -> Void
+    )
+
+    func changeBackupPassword(
+        from oldPassword: String,
+        newPassword: String,
+        runCompletionIn queue: DispatchQueue,
+        completionClosure: @escaping (Result<Void, CloudBackupServiceFacadeError>) -> Void
+    )
 }

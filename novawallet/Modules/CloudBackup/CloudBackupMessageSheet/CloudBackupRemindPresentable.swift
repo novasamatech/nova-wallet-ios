@@ -5,6 +5,11 @@ protocol CloudBackupRemindPresentable {
         from view: ControllerBackedProtocol?,
         completion: @escaping MessageSheetCallback
     )
+
+    func showRemoveCloudBackupWalletWarning(
+        from view: ControllerBackedProtocol?,
+        completion: @escaping MessageSheetCallback
+    )
 }
 
 extension CloudBackupRemindPresentable {
@@ -24,5 +29,19 @@ extension CloudBackupRemindPresentable {
         case .confirmationNotNeeded:
             completion()
         }
+    }
+
+    func showRemoveCloudBackupWalletWarning(
+        from view: ControllerBackedProtocol?,
+        completion: @escaping MessageSheetCallback
+    ) {
+        guard let messageSheet = CloudBackupMessageSheetViewFactory.createWalletRemoveSheet(
+            removeClosure: completion,
+            cancelClosure: nil
+        ) else {
+            return
+        }
+
+        view?.controller.present(messageSheet.controller, animated: true)
     }
 }

@@ -6,8 +6,16 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
 
     let presenter: ImportCloudPasswordPresenterProtocol
 
-    init(presenter: ImportCloudPasswordPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    let flow: EnterBackupPasswordFlow
+
+    init(
+        presenter: ImportCloudPasswordPresenterProtocol,
+        flow: EnterBackupPasswordFlow,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.flow = flow
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -47,9 +55,16 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.subtitleLabel.text = R.string.localizable.cloudBackupImportSubtitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        switch flow {
+        case .importBackup, .changePassword:
+            rootView.subtitleLabel.text = R.string.localizable.cloudBackupImportSubtitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .enterPassword:
+            rootView.subtitleLabel.text = R.string.localizable.cloudBackupEnterPasswordSetMessage(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
 
         let passwordPlaceholder = NSAttributedString(
             string: R.string.localizable.commonBackupPassword(preferredLanguages: selectedLocale.rLanguages),
@@ -98,6 +113,8 @@ final class ImportCloudPasswordViewController: UIViewController, ViewHolder {
 }
 
 extension ImportCloudPasswordViewController: ImportCloudPasswordViewProtocol {
+    func didReceive(flow _: EnterBackupPasswordFlow) {}
+
     func didReceive(passwordViewModel: InputViewModelProtocol) {
         rootView.passwordView.bind(inputViewModel: passwordViewModel)
     }

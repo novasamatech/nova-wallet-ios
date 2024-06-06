@@ -5,12 +5,16 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
     typealias RootViewType = CloudBackupCreateViewLayout
 
     let presenter: CloudBackupCreatePresenterProtocol
+    let flow: CloudBackupSetupPasswordFlow
 
     init(
         presenter: CloudBackupCreatePresenterProtocol,
+        flow: CloudBackupSetupPasswordFlow,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.flow = flow
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -63,9 +67,16 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.titleView.valueTop.text = R.string.localizable.cloudBackupCreateTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        switch flow {
+        case .newBackup:
+            rootView.titleView.valueTop.text = R.string.localizable.cloudBackupCreateTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .changePassword:
+            rootView.titleView.valueTop.text = R.string.localizable.cloudBackupUpdatePasswordTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
 
         rootView.titleView.valueBottom.text = R.string.localizable.cloudBackupCreateDetails(
             preferredLanguages: selectedLocale.rLanguages

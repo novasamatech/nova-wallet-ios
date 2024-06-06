@@ -13,4 +13,17 @@ enum CloudBackupSyncState: Equatable {
             return true
         }
     }
+
+    var changes: CloudBackupSyncResult.Changes? {
+        guard case let .enabled(cloudBackupSyncResult, _) = self else {
+            return nil
+        }
+
+        switch cloudBackupSyncResult {
+        case let .changes(changes):
+            return changes
+        case .issue, .noUpdates, .none:
+            return nil
+        }
+    }
 }

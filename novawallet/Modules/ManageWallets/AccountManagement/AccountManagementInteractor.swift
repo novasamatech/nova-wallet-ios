@@ -10,7 +10,7 @@ enum AccountManagementError: Error {
 final class AccountManagementInteractor {
     weak var presenter: AccountManagementInteractorOutputProtocol?
 
-    let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
+    let cloudBackupSyncService: CloudBackupSyncServiceProtocol
     let walletCreationRequestFactory: WalletCreationRequestFactoryProtocol
     let walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let accountOperationFactory: MetaAccountOperationFactoryProtocol
@@ -29,7 +29,7 @@ final class AccountManagementInteractor {
     private var accountReplaceCancellableStore = CancellableCallStore()
 
     init(
-        cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol,
+        cloudBackupSyncService: CloudBackupSyncServiceProtocol,
         walletCreationRequestFactory: WalletCreationRequestFactoryProtocol,
         walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         accountOperationFactory: MetaAccountOperationFactoryProtocol,
@@ -41,7 +41,7 @@ final class AccountManagementInteractor {
         chainsFilter: AccountManagementFilterProtocol,
         saveInterval: TimeInterval = 2.0
     ) {
-        self.cloudBackupSyncFacade = cloudBackupSyncFacade
+        self.cloudBackupSyncService = cloudBackupSyncService
         self.walletCreationRequestFactory = walletCreationRequestFactory
         self.walletRepository = walletRepository
         self.accountOperationFactory = accountOperationFactory
@@ -229,7 +229,7 @@ final class AccountManagementInteractor {
     }
 
     private func subscribeCloudBackupState() {
-        cloudBackupSyncFacade.subscribeState(
+        cloudBackupSyncService.subscribeState(
             self,
             notifyingIn: .main
         ) { [weak self] state in

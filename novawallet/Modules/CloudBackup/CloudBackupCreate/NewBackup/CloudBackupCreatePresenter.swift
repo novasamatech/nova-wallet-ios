@@ -91,7 +91,7 @@ extension CloudBackupCreatePresenter: CloudBackupCreateInteractorOutputProtocol 
     func didCreateWallet() {
         view?.didStopLoading()
 
-        wireframe.proceed(from: view)
+        wireframe.proceed(from: view, locale: selectedLocale)
     }
 
     func didReceive(error: CloudBackupCreateInteractorError) {

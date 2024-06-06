@@ -3,6 +3,7 @@ import Foundation
 enum CloudBackupDeleteReason {
     case forgotPassword
     case brokenOrEmpty
+    case regular
 }
 
 protocol CloudBackupDeletePresentable: AlertPresentable {
@@ -50,6 +51,11 @@ extension CloudBackupDeletePresentable {
             )
         case .brokenOrEmpty:
             CloudBackupMessageSheetViewFactory.createEmptyOrBrokenBackup(
+                deleteClosure: confirmationClosure,
+                cancelClosure: nil
+            )
+        case .regular:
+            CloudBackupMessageSheetViewFactory.createDeleteBackupSheet(
                 deleteClosure: confirmationClosure,
                 cancelClosure: nil
             )

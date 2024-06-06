@@ -3,7 +3,7 @@ import RobinHood
 
 final class WalletManageInteractor: WalletsListInteractor {
     let walletUpdateMediator: WalletUpdateMediating
-    let cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol
+    let cloudBackupSyncService: CloudBackupSyncServiceProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -19,7 +19,7 @@ final class WalletManageInteractor: WalletsListInteractor {
     }
 
     init(
-        cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol,
+        cloudBackupSyncService: CloudBackupSyncServiceProtocol,
         balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         walletUpdateMediator: WalletUpdateMediating,
@@ -27,7 +27,7 @@ final class WalletManageInteractor: WalletsListInteractor {
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.cloudBackupSyncFacade = cloudBackupSyncFacade
+        self.cloudBackupSyncService = cloudBackupSyncService
         self.walletUpdateMediator = walletUpdateMediator
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
@@ -56,7 +56,7 @@ final class WalletManageInteractor: WalletsListInteractor {
     }
 
     private func subscribeCloudBackupState() {
-        cloudBackupSyncFacade.subscribeState(
+        cloudBackupSyncService.subscribeState(
             self,
             notifyingIn: .main
         ) { [weak self] state in

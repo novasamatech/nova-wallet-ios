@@ -26,6 +26,6 @@ protocol CloudBackupCreateInteractorOutputProtocol: AnyObject {
 
 protocol CloudBackupCreateWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
     CloudBackupErrorPresentable {
-    func proceed(from view: CloudBackupCreateViewProtocol?)
+    func proceed(from view: CloudBackupCreateViewProtocol?, locale: Locale)
     func showPasswordHint(from view: CloudBackupCreateViewProtocol?)
 }

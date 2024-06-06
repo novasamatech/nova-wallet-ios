@@ -33,6 +33,18 @@ final class CloudBackupSettingsViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        presenter.becomeActive()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        presenter.becomeInactive()
+    }
+
     private func setupHandlers() {
         rootView.cloudBackupActionControl.switchControl.addTarget(
             self,

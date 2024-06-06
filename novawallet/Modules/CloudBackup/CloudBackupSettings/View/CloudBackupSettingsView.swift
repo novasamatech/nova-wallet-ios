@@ -22,6 +22,7 @@ final class CloudBackupSettingsView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        setupHandlers()
         setupLayout()
     }
 

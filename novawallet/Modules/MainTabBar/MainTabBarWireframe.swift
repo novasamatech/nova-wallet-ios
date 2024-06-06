@@ -92,25 +92,68 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         )
     }
 
-    func presentCloudBackupReview(
+    func presentCloudBackupUnsyncedChanges(
         from view: MainTabBarViewProtocol?,
-        changes: CloudBackupSyncResult.Changes,
-        delegate: CloudBackupReviewChangesDelegate
+        onReviewUpdates: @escaping () -> Void
     ) {
         guard
-            let reviewChangesView = CloudBackupReviewChangesViewFactory.createView(
-                for: changes,
-                delegate: delegate
+            let tabBarController = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: tabBarController),
+            let bottomSheet = CloudBackupMessageSheetViewFactory.createUnsyncedChangesSheet(
+                completionClosure: onReviewUpdates,
+                cancelClosure: nil
             ) else {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+        view?.controller.present(bottomSheet.controller, animated: true)
+    }
 
-        reviewChangesView.controller.modalTransitioningFactory = factory
-        reviewChangesView.controller.modalPresentationStyle = .custom
+    func presentCloudBackupUpdateFailedIfNeeded(
+        from view: MainTabBarViewProtocol?,
+        onReviewIssues: @escaping () -> Void
+    ) {
+        guard
+            let tabBarController = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: tabBarController),
+            let bottomSheet = CloudBackupMessageSheetViewFactory.createCloudBackupUpdateFailedSheet(
+                completionClosure: onReviewIssues,
+                cancelClosure: nil
+            ) else {
+            return
+        }
 
-        view?.controller.present(reviewChangesView.controller, animated: true)
+        view?.controller.present(bottomSheet.controller, animated: true)
+    }
+
+    func presentReviewUpdates(from view: MainTabBarViewProtocol?) {
+        guard let tabBarController = view?.controller as? UITabBarController else {
+            return
+        }
+
+        tabBarController.selectedIndex = MainTabBarIndex.settings
+
+        let settingsNavigationController = getSettingsNavigationController(from: view)
+
+        let optBackupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
+
+        if optBackupSettings == nil {
+            guard let cloudBackupSettings = CloudBackupSettingsViewFactory.createView() else {
+                return
+            }
+
+            settingsNavigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
+        }
+    }
+
+    private func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {
+        guard let tabBarController = view?.controller as? UITabBarController else {
+            return nil
+        }
+
+        let settingsViewController = tabBarController.viewControllers?[MainTabBarIndex.settings]
+
+        return settingsViewController as? UINavigationController
     }
 
     private func openGovernanceScreen(

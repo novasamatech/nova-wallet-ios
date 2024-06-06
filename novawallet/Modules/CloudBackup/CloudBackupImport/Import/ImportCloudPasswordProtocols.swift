@@ -16,14 +16,19 @@ protocol ImportCloudPasswordInteractorInputProtocol: AnyObject {
 }
 
 protocol ImportCloudPasswordInteractorOutputProtocol: AnyObject {
-    func didImportBackup()
+    func didImportBackup(with password: String)
     func didDeleteBackup()
     func didReceive(error: ImportCloudPasswordError)
 }
 
 protocol ImportCloudPasswordWireframeProtocol: ErrorPresentable, CloudBackupDeletePresentable,
     CloudBackupErrorPresentable {
-    func proceedAfterImport(from view: ImportCloudPasswordViewProtocol?)
+    func proceedAfterImport(
+        from view: ImportCloudPasswordViewProtocol?,
+        password: String,
+        locale: Locale
+    )
+
     func proceedAfterDelete(from view: ImportCloudPasswordViewProtocol?, locale: Locale)
 }
 

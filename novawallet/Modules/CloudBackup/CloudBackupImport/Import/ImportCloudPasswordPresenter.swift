@@ -65,10 +65,14 @@ extension ImportCloudPasswordPresenter: ImportCloudPasswordPresenterProtocol {
 }
 
 extension ImportCloudPasswordPresenter: ImportCloudPasswordInteractorOutputProtocol {
-    func didImportBackup() {
+    func didImportBackup(with password: String) {
         view?.didStopLoading()
 
-        wireframe.proceedAfterImport(from: view)
+        wireframe.proceedAfterImport(
+            from: view,
+            password: password,
+            locale: localizationManager.selectedLocale
+        )
     }
 
     func didDeleteBackup() {

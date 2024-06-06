@@ -110,10 +110,6 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     func setPushNotificationsSetupScreenSeen() {
         settingsManager.notificationsSetupSeen = true
     }
-
-    func approveCloudBackupChanges() {
-        cloudBackupMediator.approveCurrentChanges()
-    }
 }
 
 extension MainTabBarInteractor: EventVisitorProtocol {
@@ -174,13 +170,9 @@ extension MainTabBarInteractor: CloudBackupSyncConfirming {
         }
     }
 
-    func cloudBackup(
-        mediator _: CloudBackupSyncMediating,
-        didFailToApply changes: CloudBackupSyncResult.Changes,
-        error: Error
-    ) {
+    func cloudBackup(mediator _: CloudBackupSyncMediating, didFound issue: CloudBackupSyncResult.Issue) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.presenter?.didFailApplyingCloud(changes: changes, error: error)
+            self?.presenter?.didFoundCloudBackup(issue: issue)
         }
     }
 }

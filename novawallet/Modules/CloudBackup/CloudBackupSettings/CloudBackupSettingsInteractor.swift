@@ -4,19 +4,27 @@ final class CloudBackupSettingsInteractor {
     weak var presenter: CloudBackupSettingsInteractorOutputProtocol?
 
     let cloudBackupSyncMediator: CloudBackupSyncMediating
+    let cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol
+    let syncMetadataManager: CloudBackupSyncMetadataManaging
 
-    var cloudBackupSyncFacade: CloudBackupSyncFacadeProtocol {
-        cloudBackupSyncMediator.syncFacade
+    var cloudBackupSyncService: CloudBackupSyncServiceProtocol {
+        cloudBackupSyncMediator.syncService
     }
 
-    init(cloudBackupSyncMediator: CloudBackupSyncMediating) {
+    init(
+        cloudBackupSyncMediator: CloudBackupSyncMediating,
+        cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol,
+        syncMetadataManager: CloudBackupSyncMetadataManaging
+    ) {
         self.cloudBackupSyncMediator = cloudBackupSyncMediator
+        self.cloudBackupServiceFacade = cloudBackupServiceFacade
+        self.syncMetadataManager = syncMetadataManager
     }
 
     private func subscribeBackupState() {
-        cloudBackupSyncFacade.unsubscribeState(self)
+        cloudBackupSyncService.unsubscribeState(self)
 
-        cloudBackupSyncFacade.subscribeState(
+        cloudBackupSyncService.subscribeState(
             self,
             notifyingIn: .main
         ) { [weak self] state in
@@ -30,30 +38,44 @@ extension CloudBackupSettingsInteractor: CloudBackupSettingsInteractorInputProto
         subscribeBackupState()
     }
 
-    func retryStateFetch() {
-        subscribeBackupState()
+    func syncUp() {
+        cloudBackupSyncService.syncUp()
+    }
+
+    func becomeActive() {
+        cloudBackupSyncMediator.disableDelegateNotifications()
+
+        cloudBackupSyncService.syncUp()
+    }
+
+    func becomeInactive() {
+        cloudBackupSyncMediator.enableDelegateNotifications()
     }
 
     func enableBackup() {
-        cloudBackupSyncFacade.enableBackup(
-            for: nil,
-            runCompletionIn: .main
-        ) { [weak self] result in
-            guard case let .failure(error) = result else {
-                return
-            }
-
-            self?.presenter?.didReceive(error: .enableBackup(error))
-        }
+        syncMetadataManager.isBackupEnabled = true
+        cloudBackupSyncService.syncUp()
     }
 
     func disableBackup() {
-        cloudBackupSyncFacade.disableBackup(runCompletionIn: .main) { [weak self] result in
-            guard case let .failure(error) = result else {
-                return
-            }
+        syncMetadataManager.isBackupEnabled = false
+        cloudBackupSyncService.syncUp()
+    }
 
-            self?.presenter?.didReceive(error: .disableBackup(error))
+    func deleteBackup() {
+        cloudBackupServiceFacade.deleteBackup(runCompletionIn: .main) { [weak self] result in
+            switch result {
+            case .success:
+                self?.syncMetadataManager.isBackupEnabled = false
+                self?.cloudBackupSyncService.syncUp()
+                self?.presenter?.didDeleteBackup()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .deleteBackup(error))
+            }
         }
+    }
+
+    func approveBackupChanges() {
+        cloudBackupSyncMediator.approveCurrentChanges()
     }
 }
