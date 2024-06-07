@@ -104,6 +104,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
         return GovernanceRemoveVotesConfirmInteractor(
             selectedAccount: selectedAccount.chainAccount,
             chain: chain,
+            chainRegistry: state.chainRegistry,
             subscriptionFactory: subscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
