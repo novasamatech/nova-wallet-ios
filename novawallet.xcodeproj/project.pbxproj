@@ -676,7 +676,6 @@
 		2CF2F93AF862CF54FC46B560 /* PurchaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D44421CCD7AD220A05CD0E /* PurchaseInteractor.swift */; };
 		2D5A61C72C0DF106006D58E3 /* NetworksListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61C62C0DF106006D58E3 /* NetworksListViewModelFactory.swift */; };
 		2D5A61C92C0E5C68006D58E3 /* NetworksListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */; };
-		2D5A61CB2C0F1FB7006D58E3 /* GenericBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CA2C0F1FB7006D58E3 /* GenericBackgroundView.swift */; };
 		2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */; };
 		2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
@@ -5291,7 +5290,6 @@
 		2D5A61C52C09D34E006D58E3 /* SubstrateDataModel28.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel28.xcdatamodel; sourceTree = "<group>"; };
 		2D5A61C62C0DF106006D58E3 /* NetworksListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksListTableViewCell.swift; sourceTree = "<group>"; };
-		2D5A61CA2C0F1FB7006D58E3 /* GenericBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericBackgroundView.swift; sourceTree = "<group>"; };
 		2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksEmptyPlaceholderView.swift; sourceTree = "<group>"; };
 		2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrateNetworksBanner.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
@@ -15731,7 +15729,6 @@
 				F462B35B260C86880005AB01 /* ViewHolder.swift */,
 				84F5105A263AB9F2005D15AE /* NetworkFeeView.swift */,
 				84F5105F263AE530005D15AE /* TitleValueView.swift */,
-				2D5A61CA2C0F1FB7006D58E3 /* GenericBackgroundView.swift */,
 				84100F3526A6069200A5054E /* IconTitleValueView.swift */,
 				84FA8359265CE5BE00FDF727 /* TitleMultiValueView.swift */,
 				8401AE8C2641EF7B000B03E3 /* NetworkFeeConfirmView.swift */,
@@ -25683,7 +25680,6 @@
 				642B0B0294604907D8070EC1 /* DAppSettingsPresenter.swift in Sources */,
 				2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */,
 				722C694F93836FAFEA0DBD93 /* DAppSettingsViewLayout.swift in Sources */,
-				2D5A61CB2C0F1FB7006D58E3 /* GenericBackgroundView.swift in Sources */,
 				FED2AE2928BD8A4301138CAC /* DAppSettingsViewFactory.swift in Sources */,
 				F040165DFF9C8D7C5CC47581 /* AddDelegationProtocols.swift in Sources */,
 				FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */,

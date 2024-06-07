@@ -30,7 +30,7 @@ final class NetworksListNetworkView: UIView {
     let networkLabelsPairView: GenericPairValueView<
         GenericPairValueView<
             UILabel,
-            GenericBackgroundView<UILabel>
+            GenericBorderedView<UILabel>
         >,
         UILabel
     > = .create { view in
@@ -38,10 +38,10 @@ final class NetworksListNetworkView: UIView {
         view.fView.fView.apply(style: .regularSubhedlinePrimary)
         view.fView.fView.textAlignment = .left
 
-        view.fView.sView.wrappedView.apply(style: .semiboldCaps2Secondary)
-        view.fView.sView.fillColor = R.color.colorChipsBackground()!
+        view.fView.sView.contentView.apply(style: .semiboldCaps2Secondary)
+        view.fView.sView.backgroundView.fillColor = R.color.colorChipsBackground()!
         view.fView.sView.contentInsets = Constants.networkTypeContentInsets
-        view.fView.sView.cornerRadius = Constants.networkTypeCornerRadius
+        view.fView.sView.backgroundView.cornerRadius = Constants.networkTypeCornerRadius
 
         view.fView.sView.isHidden = true
 
@@ -56,7 +56,7 @@ final class NetworksListNetworkView: UIView {
     }
 
     var networkLabel: UILabel { networkLabelsPairView.fView.fView }
-    var networkTypeView: GenericBackgroundView<UILabel> { networkLabelsPairView.fView.sView }
+    var networkTypeView: GenericBorderedView<UILabel> { networkLabelsPairView.fView.sView }
     var secondaryLabel: UILabel { networkLabelsPairView.sView }
 
     let connectionStateLabel: ShimmerLabel = .create { view in
@@ -91,7 +91,7 @@ final class NetworksListNetworkView: UIView {
         networkLabel.text = viewModel.networkModel.network.name
 
         if let networkType = viewModel.networkType {
-            networkTypeView.wrappedView.text = networkType
+            networkTypeView.contentView.text = networkType
             networkTypeView.isHidden = false
         } else {
             networkTypeView.isHidden = true
