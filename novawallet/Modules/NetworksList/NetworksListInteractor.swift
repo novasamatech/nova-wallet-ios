@@ -9,8 +9,6 @@ final class NetworksListInteractor {
     let chainRegistry: ChainRegistryProtocol
     let settingsManager: SettingsManagerProtocol
 
-    private var chains: [ChainModel.Id: ChainModel] = [:]
-
     init(
         chainRegistry: ChainRegistryProtocol,
         settingsManager: SettingsManagerProtocol
@@ -26,9 +24,21 @@ final class NetworksListInteractor {
         ) { [weak self] changes in
             guard let self else { return }
             presenter?.didReceiveChains(changes: changes)
-
-            chains = changes.mergeToDict(chains)
-            chains.keys.forEach { self.chainRegistry.subscribeChainState(self, chainId: $0) }
+            
+            changes.forEach { change in
+                switch change {
+                case let .insert(newItem):
+                    self.chainRegistry.subscribeChainState(
+                        self, 
+                        chainId: newItem.chainId
+                    )
+                case let .delete(deletedIdentifier):
+                    self.chainRegistry.unsubscribeChainState(
+                        self,
+                        chainId: deletedIdentifier
+                    )
+                }
+            }
         }
     }
 }
