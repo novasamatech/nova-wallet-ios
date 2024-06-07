@@ -96,7 +96,7 @@ final class ChainSyncService {
             let newOrUpdated: [ChainModel] = remoteItems.enumerated().compactMap { index, remoteItem in
                 let localItem = localMapping[remoteItem.chainId]
 
-                guard localItem?.source == .remote else {
+                if let localItem, localItem.source == .user {
                     return nil
                 }
 
