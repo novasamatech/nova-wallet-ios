@@ -85,7 +85,9 @@ enum ChainModelGenerator {
                 explorers: explorers,
                 order: Int64(index),
                 additional: nil,
-                syncMode: .full
+                syncMode: .full,
+                source: .remote,
+                enabled: true
             )
         }
     }
@@ -260,7 +262,9 @@ enum ChainModelGenerator {
             explorers: explorers,
             order: 0,
             additional: nil,
-            syncMode: .full
+            syncMode: .full,
+            source: .remote,
+            enabled: true
         )
     }
 

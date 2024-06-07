@@ -366,6 +366,14 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             throw ChainModelMapperError.unexpectedSyncMode(entity.syncMode)
         }
 
+        let source: ChainModel.Source = {
+            if let entitySource = entity.source {
+                ChainModel.Source(rawValue: entitySource) ?? .remote
+            } else {
+                .remote
+            }
+        }()
+
         return ChainModel(
             chainId: entity.chainId!,
             parentId: entity.parentId,
@@ -381,7 +389,9 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             explorers: explorers,
             order: entity.order,
             additional: additional,
-            syncMode: syncMode
+            syncMode: syncMode,
+            source: source,
+            enabled: entity.enabled
         )
     }
 
@@ -410,6 +420,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasPushNotifications = model.hasPushNotifications
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue
+        entity.source = model.source.rawValue
+        entity.enabled = model.enabled
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
         }

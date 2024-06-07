@@ -1520,3 +1520,6 @@
 "ledger.instructions.step3.highlighted" = "доступ к Bluetooth";
 "ledger.instructions.step4" = "%@ для добавления в кошелёк";
 "ledger.instructions.step4.highlighted" = "Выберите аккаунт";
+"common.disabled" = "Отключено";
+"common.testnet" = "Testnet";
+"networks.list.add.network.button.title" = "Добавить сеть";

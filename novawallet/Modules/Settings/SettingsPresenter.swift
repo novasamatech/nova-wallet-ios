@@ -212,6 +212,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
 
             wireframe.showManageNotifications(from: view)
+        case .networks:
+            wireframe.showNetworks(from: view)
         }
     }
 

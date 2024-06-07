@@ -115,6 +115,17 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         )
     }
 
+    func showNetworks(from view: ControllerBackedProtocol?) {
+        guard let networksView = NetworksListViewFactory.createView() else {
+            return
+        }
+        networksView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(
+            networksView.controller,
+            animated: true
+        )
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {

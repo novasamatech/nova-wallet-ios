@@ -122,7 +122,7 @@
 "common.copied" = "Copied to clipboard";
 "connections.add.connection" = "Add connection";
 "connection.management.default.title" = "Default";
-"connection.management.custom.title" = "Custom";
+"connection.management.custom.title" = "Added";
 "wallet.delete.confirmation.title" = "Forget wallet?";
 "account.delete.confirmation.description" = "Make sure you have exported your wallet before proceeding.";
 "wallet.delete.confirmation.description" = "Make sure you have exported your wallet before proceeding.";
@@ -1520,3 +1520,6 @@
 "ledger.instructions.step3.highlighted" = "access Bluetooth";
 "ledger.instructions.step4" = "%@ to add to wallet";
 "ledger.instructions.step4.highlighted" = "Select account";
+"common.disabled" = "Disabled";
+"common.testnet" = "Testnet";
+"networks.list.add.network.button.title" = "Add network";
