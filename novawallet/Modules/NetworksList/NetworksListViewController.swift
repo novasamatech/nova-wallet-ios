@@ -15,8 +15,6 @@ final class NetworksListViewController: UIViewController, ViewHolder {
     private var viewModel: ViewModel?
     private var networkViewModels: [RootViewType.NetworkWithConnectionModel] = []
 
-    private lazy var dataSource = makeDataSource()
-
     init(
         presenter: NetworksListPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -43,21 +41,32 @@ final class NetworksListViewController: UIViewController, ViewHolder {
     }
 }
 
-// MARK: UITableViewDelegate
+// MARK: UITableViewDataSource
 
-extension NetworksListViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        presenter.selectChain(at: indexPath.row)
+extension NetworksListViewController: UITableViewDataSource {
+    func numberOfSections(in _: UITableView) -> Int {
+        viewModel?.sections.count ?? 0
     }
 
-    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let section = viewModel?.sections[indexPath.section] else { return .zero }
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch viewModel?.sections[section] {
+        case let .banner(rows), let .networks(rows):
+            return rows.count
+        case .none:
+            return 0
+        }
+    }
 
-        if case let .networks(rows) = section, case .network = rows[indexPath.row] {
-            return 56
-        } else {
-            return UITableView.automaticDimension
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let viewModel else { return UITableViewCell() }
+
+        return switch viewModel.sections[indexPath.section] {
+        case let .banner(rows), let .networks(rows):
+            cellFor(
+                row: rows[indexPath.row],
+                in: tableView,
+                at: indexPath
+            )
         }
     }
 }
@@ -65,32 +74,12 @@ extension NetworksListViewController: UITableViewDelegate {
 // MARK: NetworksListViewProtocol
 
 extension NetworksListViewController: NetworksListViewProtocol {
-    func update(
-        with viewModel: NetworksListViewLayout.Model,
-        animated: Bool
-    ) {
+    func update(with viewModel: NetworksListViewLayout.Model) {
         self.viewModel = viewModel
 
-        var snapshot = Snapshot()
+        networkViewModels = extractNetworkViewModels(from: viewModel)
 
-        viewModel.sections.forEach { section in
-            snapshot.appendSections([section])
-
-            switch section {
-            case let .networks(rows), let .banner(rows):
-                snapshot.appendItems(rows)
-
-                networkViewModels = rows.compactMap { row in
-                    guard case let .network(networkModel) = row else {
-                        return nil
-                    }
-
-                    return networkModel
-                }
-            }
-        }
-
-        dataSource.apply(snapshot, animatingDifferences: animated)
+        rootView.tableView.reloadData()
     }
 
     func updateNetworks(with viewModel: NetworksListViewLayout.Model) {
@@ -119,6 +108,25 @@ extension NetworksListViewController: NetworksListViewProtocol {
     }
 }
 
+// MARK: UITableViewDelegate
+
+extension NetworksListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        presenter.selectChain(at: indexPath.row)
+    }
+
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let section = viewModel?.sections[indexPath.section] else { return .zero }
+
+        if case let .networks(rows) = section, case .network = rows[indexPath.row] {
+            return 56
+        } else {
+            return UITableView.automaticDimension
+        }
+    }
+}
+
 // MARK: NetworksEmptyPlaceholderViewDelegate
 
 extension NetworksListViewController: NetworksEmptyPlaceholderViewDelegate {
@@ -139,12 +147,11 @@ extension NetworksListViewController: IntegrateNetworksBannerDekegate {
 
 private extension NetworksListViewController {
     func setup() {
+        rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ChainCell.self)
         rootView.tableView.registerClassForCell(PlaceholderCell.self)
         rootView.tableView.registerClassForCell(BannerCell.self)
-
-        dataSource.defaultRowAnimation = .fade
 
         setupActions()
         setupNetworkSwitchTitles()
@@ -189,50 +196,6 @@ private extension NetworksListViewController {
         )
     }
 
-    func makeDataSource() -> DataSource {
-        DataSource(tableView: rootView.tableView) { [weak self] tableView, indexPath, viewModel in
-            guard let self else { return UITableViewCell() }
-
-            let cell: UITableViewCell
-
-            switch viewModel {
-            case let .banner:
-                let bannerCell = tableView.dequeueReusableCellWithType(
-                    BannerCell.self,
-                    forIndexPath: indexPath
-                )
-
-                bannerCell.contentDisplayView.set(locale: selectedLocale)
-                bannerCell.contentDisplayView.delegate = self
-
-                cell = bannerCell
-            case let .placeholder(placeholderViewModel):
-                let placeholderCell = tableView.dequeueReusableCellWithType(
-                    PlaceholderCell.self,
-                    forIndexPath: indexPath
-                )
-
-                placeholderCell.contentDisplayView.bind(with: placeholderViewModel)
-                placeholderCell.contentDisplayView.delegate = self
-                cell = placeholderCell
-            case .network:
-                let networkModel = networkViewModels[indexPath.row]
-
-                let chainCell = tableView.dequeueReusableCellWithType(
-                    ChainCell.self,
-                    forIndexPath: indexPath
-                )
-
-                chainCell.contentDisplayView.bind(with: networkModel)
-                cell = chainCell
-            }
-
-            cell.selectionStyle = .none
-
-            return cell
-        }
-    }
-
     @objc private func actionSegmentChanged() {
         presenter.select(
             segment: .init(rawValue: rootView.networkTypeSwitch.selectedSegmentIndex)
@@ -246,6 +209,66 @@ private extension NetworksListViewController {
     func setupLocalization() {
         setupNetworkSwitchTitles()
         setupNavigationBarTitle()
+    }
+
+    func cellFor(
+        row viewModel: NetworksListViewLayout.Row,
+        in tableView: UITableView,
+        at indexPath: IndexPath
+    ) -> UITableViewCell {
+        let cell: UITableViewCell
+
+        switch viewModel {
+        case let .banner:
+            let bannerCell = tableView.dequeueReusableCellWithType(
+                BannerCell.self,
+                forIndexPath: indexPath
+            )
+
+            bannerCell.contentDisplayView.set(locale: selectedLocale)
+            bannerCell.contentDisplayView.delegate = self
+
+            cell = bannerCell
+        case let .placeholder(placeholderViewModel):
+            let placeholderCell = tableView.dequeueReusableCellWithType(
+                PlaceholderCell.self,
+                forIndexPath: indexPath
+            )
+
+            placeholderCell.contentDisplayView.bind(with: placeholderViewModel)
+            placeholderCell.contentDisplayView.delegate = self
+            cell = placeholderCell
+        case .network:
+            let networkModel = networkViewModels[indexPath.row]
+
+            let chainCell = tableView.dequeueReusableCellWithType(
+                ChainCell.self,
+                forIndexPath: indexPath
+            )
+
+            chainCell.contentDisplayView.bind(with: networkModel)
+            cell = chainCell
+        }
+
+        cell.selectionStyle = .none
+
+        return cell
+    }
+
+    func extractNetworkViewModels(from viewModel: ViewModel) -> [RootViewType.NetworkWithConnectionModel] {
+        viewModel.sections
+            .compactMap { section -> [RootViewType.NetworkWithConnectionModel]? in
+                guard case let .networks(rows) = section else { return nil }
+
+                return rows.compactMap { row in
+                    guard case let .network(networkModel) = row else {
+                        return nil
+                    }
+
+                    return networkModel
+                }
+            }
+            .flatMap { $0 }
     }
 }
 

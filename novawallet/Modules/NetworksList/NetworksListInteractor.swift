@@ -23,13 +23,12 @@ final class NetworksListInteractor {
             runningInQueue: .main
         ) { [weak self] changes in
             guard let self else { return }
-            presenter?.didReceiveChains(changes: changes)
-            
+
             changes.forEach { change in
                 switch change {
                 case let .insert(newItem):
                     self.chainRegistry.subscribeChainState(
-                        self, 
+                        self,
                         chainId: newItem.chainId
                     )
                 case let .delete(deletedIdentifier):
@@ -37,8 +36,13 @@ final class NetworksListInteractor {
                         self,
                         chainId: deletedIdentifier
                     )
+
+                default:
+                    break
                 }
             }
+
+            presenter?.didReceiveChains(changes: changes)
         }
     }
 }

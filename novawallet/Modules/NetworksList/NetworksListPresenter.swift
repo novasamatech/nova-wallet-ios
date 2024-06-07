@@ -76,7 +76,7 @@ extension NetworksListPresenter: NetworksListInteractorOutputProtocol {
 // MARK: Private
 
 private extension NetworksListPresenter {
-    func provideViewModels(animated: Bool = true) {
+    func provideViewModels(animated _: Bool = true) {
         guard
             let selectedNetworksType,
             let sortedChains
@@ -97,7 +97,7 @@ private extension NetworksListPresenter {
             )
         }
 
-        view?.update(with: viewModel, animated: animated)
+        view?.update(with: viewModel)
     }
 
     func provideNetworkViewModel(for chainId: ChainModel.Id) {
