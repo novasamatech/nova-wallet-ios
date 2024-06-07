@@ -31,6 +31,7 @@ enum CloudBackupSyncResult: Equatable {
 
     enum Issue: Equatable {
         case missingOrInvalidPassword
+        case newBackupCreationNeeded
         case remoteReadingFailed
         case remoteDecodingFailed
         case internalFailure
@@ -48,6 +49,7 @@ protocol CloudBackupUpdateCalculationFactoryProtocol {
 enum CloudBackupUpdateCalculationError: Error {
     case missingOrInvalidPassword
     case invalidPublicData
+    case newBackupNeeded
 }
 
 final class CloudBackupUpdateCalculationFactory {
@@ -126,6 +128,8 @@ final class CloudBackupUpdateCalculationFactory {
                     let state = CloudBackupSyncResult.UpdateRemote(localWallets: Set(wallets), syncTime: syncTime)
                     return .changes(.updateRemote(state))
                 }
+            } catch CloudBackupUpdateCalculationError.newBackupNeeded {
+                return .issue(.newBackupCreationNeeded)
             } catch CloudBackupUpdateCalculationError.missingOrInvalidPassword {
                 return .issue(.missingOrInvalidPassword)
             } catch CloudBackupUpdateCalculationError.invalidPublicData {
@@ -145,7 +149,14 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
         let remoteFileOperation = backupOperationFactory.createReadingOperation(for: fileUrl)
 
         let decodingOperation = ClosureOperation<CloudBackup.EncryptedFileModel?> {
-            guard let data = try remoteFileOperation.extractNoCancellableResultData() else {
+            let optPassword = try self.syncMetadataManager.getPassword()
+            let optData = try remoteFileOperation.extractNoCancellableResultData()
+
+            if optPassword == nil, optData == nil {
+                throw CloudBackupUpdateCalculationError.newBackupNeeded
+            }
+
+            guard let data = try optData else {
                 return nil
             }
 
@@ -153,7 +164,7 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
                 throw CloudBackupUpdateCalculationError.invalidPublicData
             }
 
-            guard let password = try self.syncMetadataManager.getPassword() else {
+            guard let password = optPassword else {
                 throw CloudBackupUpdateCalculationError.missingOrInvalidPassword
             }
 

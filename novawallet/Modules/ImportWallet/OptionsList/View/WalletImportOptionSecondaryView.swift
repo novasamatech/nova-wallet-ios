@@ -24,7 +24,6 @@ final class WalletImportOptionSecondaryView: RowView<IconDetailsView> {
     }
 
     private func setupStyle() {
-        preferredHeight = 52
         contentInsets = UIEdgeInsets(top: 14, left: 12, bottom: 14, right: 12)
 
         roundedBackgroundView.applyFilledBackgroundStyle()
@@ -39,6 +38,19 @@ final class WalletImportOptionSecondaryView: RowView<IconDetailsView> {
         rowContentView.iconWidth = 24
 
         titleLabel.apply(style: .semiboldSubhedlinePrimary)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        let contentFrame = rowContentView.frame
+
+        let height = max(bounds.height - contentInsets.top - contentInsets.bottom, 0)
+
+        rowContentView.frame = CGRect(
+            origin: contentFrame.origin,
+            size: CGSize(width: contentFrame.size.width, height: height)
+        )
     }
 
     func bind(viewModel: WalletImportOptionViewModel.RowItem.Secondary) {

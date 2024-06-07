@@ -51,6 +51,30 @@ struct CloudBackupCreateViewFactory {
         return view
     }
 
+    static func createViewForEnableBackup() -> CloudBackupCreateViewProtocol? {
+        let interactor = createEnableBackupInteractor()
+        let wireframe = CloudBackupEnablePasswordWireframe()
+
+        let presenter = CloudBackupCreatePresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            hintsViewModelFactory: CloudBackPasswordViewModelFactory(),
+            passwordValidator: CloudBackupPasswordValidator(),
+            localizationManager: LocalizationManager.shared
+        )
+
+        let view = CloudBackupCreateViewController(
+            presenter: presenter,
+            flow: .newBackup,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
     private static func createNewBackupInteractor(for walletName: String) -> CloudBackupCreateInteractor {
         let serviceFacade = CloudBackupServiceFacade.createFacade()
 
@@ -79,6 +103,23 @@ struct CloudBackupCreateViewFactory {
                 settings: SettingsManager.shared,
                 keystore: Keychain()
             )
+        )
+    }
+
+    private static func createEnableBackupInteractor() -> CloudBackupEnablePasswordInteractor {
+        let keystore = Keychain()
+
+        let syncMetadataManager = CloudBackupSyncMetadataManager(
+            settings: SettingsManager.shared,
+            keystore: keystore
+        )
+
+        return CloudBackupEnablePasswordInteractor(
+            repositoryFactory: AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared),
+            cloudBackupFacade: CloudBackupServiceFacade.createFacade(),
+            syncMetadataManager: syncMetadataManager,
+            keystore: keystore,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

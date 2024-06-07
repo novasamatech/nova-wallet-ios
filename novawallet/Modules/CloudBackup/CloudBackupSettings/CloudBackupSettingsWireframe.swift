@@ -69,4 +69,15 @@ final class CloudBackupSettingsWireframe: CloudBackupSettingsWireframeProtocol {
 
         view?.controller.navigationController?.pushViewController(changePasswordView.controller, animated: true)
     }
+
+    func showBackupCreation(from view: CloudBackupSettingsViewProtocol?) {
+        guard let enableBackupView = CloudBackupCreateViewFactory.createViewForEnableBackup() else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            enableBackupView.controller,
+            animated: true
+        )
+    }
 }

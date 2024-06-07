@@ -115,6 +115,17 @@ final class CloudBackupSettingsPresenter {
         }
     }
 
+    private func checkEnableBackupNeeded() {
+        guard
+            case let .enabled(optSyncResult, _) = cloudBackupState,
+            case let .issue(issue) = optSyncResult,
+            case .newBackupCreationNeeded = issue else {
+            return
+        }
+
+        wireframe.showBackupCreation(from: view)
+    }
+
     private func handleSync(issue: CloudBackupSyncResult.Issue) {
         switch issue {
         case .missingOrInvalidPassword:
@@ -127,6 +138,8 @@ final class CloudBackupSettingsPresenter {
             ) { [weak self] in
                 self?.interactor.deleteBackup()
             }
+        case .newBackupCreationNeeded:
+            wireframe.showBackupCreation(from: view)
         case .remoteReadingFailed, .internalFailure:
             guard let view = view else {
                 return
@@ -221,6 +234,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
         provideViewModel()
 
         if isActive {
+            checkEnableBackupNeeded()
             checkDestructiveChanges()
         }
     }
@@ -229,7 +243,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
         logger.error("Error: \(error)")
 
         switch error {
-        case .enableBackup, .disableBackup, .deleteBackup:
+        case .deleteBackup:
             interactor.syncUp()
 
             guard let view else {

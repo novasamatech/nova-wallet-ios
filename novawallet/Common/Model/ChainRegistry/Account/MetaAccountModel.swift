@@ -23,7 +23,6 @@ extension MetaAccountModelType {
     static func getDisplayPriorities() -> [MetaAccountModelType] {
         [
             .secrets,
-            .watchOnly,
             .polkadotVault,
             .paritySigner,
             .ledger,
