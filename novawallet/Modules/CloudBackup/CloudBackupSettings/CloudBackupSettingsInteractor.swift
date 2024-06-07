@@ -66,9 +66,13 @@ extension CloudBackupSettingsInteractor: CloudBackupSettingsInteractorInputProto
         cloudBackupServiceFacade.deleteBackup(runCompletionIn: .main) { [weak self] result in
             switch result {
             case .success:
-                self?.syncMetadataManager.isBackupEnabled = false
-                self?.cloudBackupSyncService.syncUp()
-                self?.presenter?.didDeleteBackup()
+                do {
+                    try self?.syncMetadataManager.deleteBackup()
+                    self?.cloudBackupSyncService.syncUp()
+                    self?.presenter?.didDeleteBackup()
+                } catch {
+                    self?.presenter?.didReceive(error: .deleteBackup(error))
+                }
             case let .failure(error):
                 self?.presenter?.didReceive(error: .deleteBackup(error))
             }

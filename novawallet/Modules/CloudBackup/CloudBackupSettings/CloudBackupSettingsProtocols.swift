@@ -53,10 +53,10 @@ protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentabl
     func showEnterPassword(from view: CloudBackupSettingsViewProtocol?)
 
     func showChangePassword(from view: CloudBackupSettingsViewProtocol?)
+
+    func showBackupCreation(from view: CloudBackupSettingsViewProtocol?)
 }
 
 enum CloudBackupSettingsInteractorError: Error {
-    case enableBackup(Error)
-    case disableBackup(Error)
     case deleteBackup(Error)
 }

@@ -1641,3 +1641,4 @@
 "common.password.entered.correctly" = "Пароль введён верно";
 "cloud.backup.update.password.title" = "Изменить пароль бэкапа";
 "cloud.backup.password.changed" = "Пароль бэкапа успешно изменён";
+"cloud.backup.created.successfully" = "Бэкап успешно создан";

@@ -1641,3 +1641,4 @@
 "common.password.entered.correctly" = "Password entered correctly";
 "cloud.backup.update.password.title" = "Update backup password";
 "cloud.backup.password.changed" = "Backup password has been changed successfully";
+"cloud.backup.created.successfully" = "Backup has been created successfully";

@@ -10,7 +10,7 @@ enum CloudBackupSettingsIssue {
 extension CloudBackupSettingsIssue {
     init(backupIssue: CloudBackupSyncResult.Issue) {
         switch backupIssue {
-        case .missingOrInvalidPassword:
+        case .missingOrInvalidPassword, .newBackupCreationNeeded:
             self = .enterPassword
         case .remoteReadingFailed, .remoteDecodingFailed, .internalFailure:
             self = .icloudError
