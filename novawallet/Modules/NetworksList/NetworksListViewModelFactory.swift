@@ -73,8 +73,12 @@ class NetworksListViewModelFactory {
             return [
                 .placeholder(
                     .init(
-                        message: "Added custom networks will appear here",
-                        buttonTitle: "Add network"
+                        message: R.string.localizable.networksListPlaceholderMesssage(
+                            preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ),
+                        buttonTitle: R.string.localizable.networksListAddNetworkButtonTitle(
+                            preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        )
                     )
                 )
             ]

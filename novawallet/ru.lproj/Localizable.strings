@@ -1523,3 +1523,4 @@
 "common.disabled" = "Отключено";
 "common.testnet" = "Testnet";
 "networks.list.add.network.button.title" = "Добавить сеть";
+"networks.list.placeholder.messsage" = "Добавленные сети будут видны здесь";
