@@ -6,13 +6,13 @@ protocol ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicExtension]
+        extensions: [ExtrinsicSignedExtending]
     ) -> ExtrinsicServiceProtocol
 
     func createOperationFactory(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicExtension]
+        extensions: [ExtrinsicSignedExtending]
     ) -> ExtrinsicOperationFactoryProtocol
 }
 
@@ -91,7 +91,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicExtension]
+        extensions: [ExtrinsicSignedExtending]
     ) -> ExtrinsicServiceProtocol {
         let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
             chainAccount: account,
@@ -112,7 +112,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createOperationFactory(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicExtension]
+        extensions: [ExtrinsicSignedExtending]
     ) -> ExtrinsicOperationFactoryProtocol {
         let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
             chainAccount: account,

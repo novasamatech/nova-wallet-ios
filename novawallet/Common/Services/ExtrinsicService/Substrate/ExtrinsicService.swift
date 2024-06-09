@@ -103,7 +103,7 @@ final class ExtrinsicService {
         chain: ChainModel,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
-        extensions: [ExtrinsicExtension],
+        extensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol
     ) {
