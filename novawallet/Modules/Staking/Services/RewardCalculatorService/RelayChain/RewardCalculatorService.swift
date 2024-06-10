@@ -32,7 +32,7 @@ final class RewardCalculatorService {
 
     private var totalIssuanceDataProvider: AnyDataProvider<DecodedBigUInt>?
     private var paramsService: RewardCalculatorParamsServiceProtocol?
-    private var pendingRequests: [PendingRequest] = []
+    private var pendingRequests: [UUID: PendingRequest] = [:]
 
     let chainId: ChainModel.Id
     let eraValidatorsService: EraValidatorServiceProtocol
@@ -72,6 +72,7 @@ final class RewardCalculatorService {
     // MARK: - Private
 
     private func fetchInfoFactory(
+        assigning requestId: UUID,
         runCompletionIn queue: DispatchQueue?,
         executing closure: @escaping (RewardCalculatorEngineProtocol) -> Void
     ) {
@@ -84,8 +85,12 @@ final class RewardCalculatorService {
                 rewardCalculatorFactory: rewardCalculatorFactory
             )
         } else {
-            pendingRequests.append(request)
+            pendingRequests[requestId] = request
         }
+    }
+
+    private func cancel(for requestId: UUID) {
+        pendingRequests[requestId] = nil
     }
 
     private func deliver(
@@ -147,9 +152,9 @@ final class RewardCalculatorService {
         }
 
         let requests = pendingRequests
-        pendingRequests = []
+        pendingRequests = [:]
 
-        requests.forEach {
+        requests.values.forEach {
             deliver(
                 snapshot: snapshot,
                 to: $0,
@@ -222,25 +227,21 @@ extension RewardCalculatorService: RewardCalculatorServiceProtocol {
     }
 
     func fetchCalculatorOperation() -> BaseOperation<RewardCalculatorEngineProtocol> {
-        ClosureOperation {
-            var fetchedInfo: RewardCalculatorEngineProtocol?
+        let requestId = UUID()
 
-            let semaphore = DispatchSemaphore(value: 0)
-
-            self.syncQueue.async {
-                self.fetchInfoFactory(runCompletionIn: nil) { [weak semaphore] info in
-                    fetchedInfo = info
-                    semaphore?.signal()
+        return AsyncClosureOperation(
+            operationClosure: { closure in
+                self.syncQueue.async {
+                    self.fetchInfoFactory(assigning: requestId, runCompletionIn: nil) { info in
+                        closure(.success(info))
+                    }
+                }
+            },
+            cancelationClosure: {
+                self.syncQueue.async {
+                    self.cancel(for: requestId)
                 }
             }
-
-            semaphore.wait()
-
-            guard let info = fetchedInfo else {
-                throw RewardCalculatorServiceError.unexpectedInfo
-            }
-
-            return info
-        }
+        )
     }
 }

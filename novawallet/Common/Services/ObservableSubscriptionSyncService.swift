@@ -142,35 +142,30 @@ class ObservableSubscriptionSyncService<T: ObservableSubscriptionStateProtocol>:
 
 extension ObservableSubscriptionSyncServiceProtocol where Self: ObservableSyncService {
     func createFetchOperation() -> BaseOperation<TState> {
-        ClosureOperation {
-            if let state = self.getState() {
-                return state
-            }
+        let subscriber = NSObject()
 
-            var fetchedState: TState?
+        return AsyncClosureOperation(
+            operationClosure: { closure in
+                if let state = self.getState() {
+                    closure(.success(state))
 
-            let semaphore = DispatchSemaphore(value: 0)
-
-            let subscriber = NSObject()
-            self.subscribeSyncState(
-                subscriber,
-                queue: self.workQueue
-            ) { _, newIsSyncing in
-                if !newIsSyncing, let state = self.getState() {
-                    fetchedState = state
-                    self.unsubscribeSyncState(subscriber)
-
-                    semaphore.signal()
+                    return
                 }
+
+                self.subscribeSyncState(
+                    subscriber,
+                    queue: self.workQueue
+                ) { _, newIsSyncing in
+                    if !newIsSyncing, let state = self.getState() {
+                        self.unsubscribeSyncState(subscriber)
+
+                        closure(.success(state))
+                    }
+                }
+            },
+            cancelationClosure: {
+                self.unsubscribeSyncState(subscriber)
             }
-
-            semaphore.wait()
-
-            guard let state = fetchedState else {
-                throw ObservableSubscriptionSyncServiceError.unexpectedState
-            }
-
-            return state
-        }
+        )
     }
 }
