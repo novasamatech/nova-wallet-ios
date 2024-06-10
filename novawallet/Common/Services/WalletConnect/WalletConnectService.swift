@@ -363,8 +363,6 @@ private final class DefaultWebSocket: WebSocketConnecting {
                 self?.onText?(text)
             case .binary:
                 self?.logger.warning("Binary received but not supported")
-            case .peerClosed:
-                self?.markDisconnectedAndNotify(error: nil)
             case .ping, .pong:
                 break
             }

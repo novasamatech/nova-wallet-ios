@@ -140,7 +140,6 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
 
         let votingWrapper = fetchFactory.createVotedReferendaWrapper(
             for: .init(address: address, blockNumber: blockNumber),
-            chain: governanceOption.chain,
             connection: connection,
             runtimeService: runtimeService
         )

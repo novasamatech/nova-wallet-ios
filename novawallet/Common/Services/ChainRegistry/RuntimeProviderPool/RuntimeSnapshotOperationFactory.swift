@@ -8,30 +8,27 @@ protocol RuntimeSnapshotFactoryProtocol {
     ) -> CompoundOperationWrapper<RuntimeSnapshot?>
 }
 
-enum RuntimeSnapshotFactoryError: Error {
-    case unsupportedRuntimeVersion
-}
-
 final class RuntimeSnapshotFactory {
     let chainId: ChainModel.Id
     let filesOperationFactory: RuntimeFilesOperationFactoryProtocol
     let repository: AnyDataProviderRepository<RuntimeMetadataItem>
-    let logger: LoggerProtocol
+    let runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
 
     init(
         chainId: ChainModel.Id,
         filesOperationFactory: RuntimeFilesOperationFactoryProtocol,
         repository: AnyDataProviderRepository<RuntimeMetadataItem>,
-        logger: LoggerProtocol
+        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
     ) {
         self.chainId = chainId
         self.filesOperationFactory = filesOperationFactory
         self.repository = repository
-        self.logger = logger
+        self.runtimeTypeRegistryFactory = runtimeTypeRegistryFactory
     }
 
     private func createWrapperForCommonAndChainTypes(
-        for chain: RuntimeProviderChain
+        for chain: RuntimeProviderChain,
+        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let baseTypesFetchOperation = filesOperationFactory.fetchCommonTypesOperation()
         let chainTypesFetchOperation = filesOperationFactory.fetchChainTypesOperation(for: chain.chainId)
@@ -50,45 +47,24 @@ final class RuntimeSnapshotFactory {
                 return nil
             }
 
-            let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
-            let runtimeMetadataContainer = try RuntimeMetadataContainer(scaleDecoder: decoder)
-
             guard let commonTypes = maybeCommonTypes, let chainTypes = maybeChainTypes else {
                 return nil
             }
 
-            let runtimeMetadata: RuntimeMetadataProtocol
-            let catalog: TypeRegistryCatalogProtocol
-
-            let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)
-
-            switch runtimeMetadataContainer.runtimeMetadata {
-            case let .v13(metadata):
-                catalog = try TypeRegistryCatalog.createFromTypeDefinition(
-                    commonTypes,
-                    versioningData: chainTypes,
-                    runtimeMetadata: metadata,
-                    customExtensions: signedExtensionFactory.createCoders(for: metadata)
-                )
-                runtimeMetadata = metadata
-            case let .v14(metadata):
-                catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                    versioningData: chainTypes,
-                    runtimeMetadata: metadata,
-                    customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                    customTypeMapper: CustomSiMappers.all,
-                    customNameMapper: ScaleInfoCamelCaseMapper()
-                )
-                runtimeMetadata = metadata
-            }
+            let info = try runtimeTypeRegistryFactory.createForCommonAndChainTypes(
+                chain: chain,
+                runtimeMetadataItem: runtimeMetadataItem,
+                commonTypes: commonTypes,
+                chainTypes: chainTypes
+            )
 
             return RuntimeSnapshot(
                 localCommonHash: commonTypes.sha256().toHex(),
                 localChainHash: chainTypes.sha256().toHex(),
-                typeRegistryCatalog: catalog,
+                typeRegistryCatalog: info.typeRegistryCatalog,
                 specVersion: runtimeMetadataItem.version,
                 txVersion: runtimeMetadataItem.txVersion,
-                metadata: runtimeMetadata
+                metadata: info.runtimeMetadata
             )
         }
 
@@ -100,7 +76,10 @@ final class RuntimeSnapshotFactory {
         return CompoundOperationWrapper(targetOperation: snapshotOperation, dependencies: dependencies)
     }
 
-    private func createWrapperForCommonTypes(for chain: RuntimeProviderChain) -> CompoundOperationWrapper<RuntimeSnapshot?> {
+    private func createWrapperForCommonTypes(
+        for chain: RuntimeProviderChain,
+        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
+    ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let commonTypesFetchOperation = filesOperationFactory.fetchCommonTypesOperation()
 
         let runtimeMetadataOperation = repository.fetchOperation(
@@ -116,44 +95,23 @@ final class RuntimeSnapshotFactory {
                 return nil
             }
 
-            let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
-            let runtimeMetadataContainer = try RuntimeMetadataContainer(scaleDecoder: decoder)
-
             guard let commonTypes = maybeCommonTypes else {
                 return nil
             }
 
-            let runtimeMetadata: RuntimeMetadataProtocol
-            let catalog: TypeRegistryCatalogProtocol
-
-            let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)
-
-            switch runtimeMetadataContainer.runtimeMetadata {
-            case let .v13(metadata):
-                catalog = try TypeRegistryCatalog.createFromTypeDefinition(
-                    commonTypes,
-                    runtimeMetadata: metadata,
-                    customExtensions: signedExtensionFactory.createCoders(for: metadata)
-                )
-                runtimeMetadata = metadata
-            case let .v14(metadata):
-                catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                    versioningData: commonTypes,
-                    runtimeMetadata: metadata,
-                    customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                    customTypeMapper: CustomSiMappers.all,
-                    customNameMapper: ScaleInfoCamelCaseMapper()
-                )
-                runtimeMetadata = metadata
-            }
+            let info = try runtimeTypeRegistryFactory.createForCommonTypes(
+                chain: chain,
+                runtimeMetadataItem: runtimeMetadataItem,
+                commonTypes: commonTypes
+            )
 
             return RuntimeSnapshot(
                 localCommonHash: commonTypes.sha256().toHex(),
                 localChainHash: nil,
-                typeRegistryCatalog: catalog,
+                typeRegistryCatalog: info.typeRegistryCatalog,
                 specVersion: runtimeMetadataItem.version,
                 txVersion: runtimeMetadataItem.txVersion,
-                metadata: runtimeMetadata
+                metadata: info.runtimeMetadata
             )
         }
 
@@ -165,7 +123,8 @@ final class RuntimeSnapshotFactory {
     }
 
     private func createWrapperForChainTypes(
-        for chain: RuntimeProviderChain
+        for chain: RuntimeProviderChain,
+        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let chainTypesFetchOperation = filesOperationFactory.fetchChainTypesOperation(for: chain.chainId)
 
@@ -182,44 +141,23 @@ final class RuntimeSnapshotFactory {
                 return nil
             }
 
-            let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
-            let runtimeMetadataContainer = try RuntimeMetadataContainer(scaleDecoder: decoder)
-
             guard let ownTypes = maybeOwnTypes else {
                 return nil
             }
 
-            let runtimeMetadata: RuntimeMetadataProtocol
-            let catalog: TypeRegistryCatalogProtocol
-
-            let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)
-
-            switch runtimeMetadataContainer.runtimeMetadata {
-            case let .v13(metadata):
-                catalog = try TypeRegistryCatalog.createFromTypeDefinition(
-                    ownTypes,
-                    runtimeMetadata: metadata,
-                    customExtensions: signedExtensionFactory.createCoders(for: metadata)
-                )
-                runtimeMetadata = metadata
-            case let .v14(metadata):
-                catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                    versioningData: ownTypes,
-                    runtimeMetadata: metadata,
-                    customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                    customTypeMapper: CustomSiMappers.all,
-                    customNameMapper: ScaleInfoCamelCaseMapper()
-                )
-                runtimeMetadata = metadata
-            }
+            let info = try runtimeTypeRegistryFactory.createForChainTypes(
+                chain: chain,
+                runtimeMetadataItem: runtimeMetadataItem,
+                chainTypes: ownTypes
+            )
 
             return RuntimeSnapshot(
                 localCommonHash: nil,
                 localChainHash: ownTypes.sha256().toHex(),
-                typeRegistryCatalog: catalog,
+                typeRegistryCatalog: info.typeRegistryCatalog,
                 specVersion: runtimeMetadataItem.version,
                 txVersion: runtimeMetadataItem.txVersion,
-                metadata: runtimeMetadata
+                metadata: info.runtimeMetadata
             )
         }
 
@@ -232,7 +170,7 @@ final class RuntimeSnapshotFactory {
 
     func createWrapperForMetadataAndDefaultTyping(
         for chain: RuntimeProviderChain,
-        logger: LoggerProtocol
+        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let runtimeMetadataOperation = repository.fetchOperation(
             by: chainId,
@@ -245,46 +183,18 @@ final class RuntimeSnapshotFactory {
                 return nil
             }
 
-            let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
-            let runtimeMetadataContainer = try RuntimeMetadataContainer(scaleDecoder: decoder)
-
-            let runtimeMetadata: RuntimeMetadataProtocol
-            let catalog: TypeRegistryCatalogProtocol
-
-            switch runtimeMetadataContainer.runtimeMetadata {
-            case let .v14(metadata):
-                let augmentationFactory = RuntimeAugmentationFactory()
-
-                let result = !chain.isEthereumBased ? augmentationFactory.createSubstrateAugmentation(for: metadata) :
-                    augmentationFactory.createEthereumBasedAugmentation(for: metadata)
-
-                let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)
-
-                catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                    runtimeMetadata: metadata,
-                    additionalNodes: result.additionalNodes.nodes,
-                    customExtensions: signedExtensionFactory.createCoders(for: metadata),
-                    customTypeMapper: CustomSiMappers.all,
-                    customNameMapper: ScaleInfoCamelCaseMapper()
-                )
-                runtimeMetadata = metadata
-
-                if !result.additionalNodes.notMatch.isEmpty {
-                    logger.warning("No \(chain.name) type matching: \(result.additionalNodes.notMatch)")
-                } else {
-                    logger.debug("Types matching succeed for \(chain.name)")
-                }
-            case .v13:
-                throw RuntimeSnapshotFactoryError.unsupportedRuntimeVersion
-            }
+            let info = try runtimeTypeRegistryFactory.createForMetadataAndDefaultTyping(
+                chain: chain,
+                runtimeMetadataItem: runtimeMetadataItem
+            )
 
             return RuntimeSnapshot(
                 localCommonHash: nil,
                 localChainHash: nil,
-                typeRegistryCatalog: catalog,
+                typeRegistryCatalog: info.typeRegistryCatalog,
                 specVersion: runtimeMetadataItem.version,
                 txVersion: runtimeMetadataItem.txVersion,
-                metadata: runtimeMetadata
+                metadata: info.runtimeMetadata
             )
         }
 
@@ -302,13 +212,25 @@ extension RuntimeSnapshotFactory: RuntimeSnapshotFactoryProtocol {
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         switch chain.typesUsage {
         case .onlyCommon:
-            return createWrapperForCommonTypes(for: chain)
+            return createWrapperForCommonTypes(
+                for: chain,
+                runtimeTypeRegistryFactory: runtimeTypeRegistryFactory
+            )
         case .onlyOwn:
-            return createWrapperForChainTypes(for: chain)
+            return createWrapperForChainTypes(
+                for: chain,
+                runtimeTypeRegistryFactory: runtimeTypeRegistryFactory
+            )
         case .both:
-            return createWrapperForCommonAndChainTypes(for: chain)
+            return createWrapperForCommonAndChainTypes(
+                for: chain,
+                runtimeTypeRegistryFactory: runtimeTypeRegistryFactory
+            )
         case .none:
-            return createWrapperForMetadataAndDefaultTyping(for: chain, logger: logger)
+            return createWrapperForMetadataAndDefaultTyping(
+                for: chain,
+                runtimeTypeRegistryFactory: runtimeTypeRegistryFactory
+            )
         }
     }
 }

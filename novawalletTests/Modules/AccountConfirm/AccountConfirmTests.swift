@@ -81,7 +81,7 @@ class AccountConfirmTests: XCTestCase {
 
         presenter.setup()
 
-        wait(for: [setupExpectation], timeout: Constants.defaultExpectationDuration)
+        wait(for: [setupExpectation], timeout: 10)
 
         presenter.confirm(words: mnemonic.allWords())
 

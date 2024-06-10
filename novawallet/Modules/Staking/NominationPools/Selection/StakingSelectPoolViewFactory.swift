@@ -26,7 +26,8 @@ enum StakingSelectPoolViewFactory {
 
         let recommendationFactory = StakingRecommendationMediatorFactory(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            operationQueue: queue
+            operationQueue: queue,
+            logger: Logger.shared
         )
         guard let recommendationMediator = recommendationFactory.createPoolStakingMediator(for: state) else {
             return nil

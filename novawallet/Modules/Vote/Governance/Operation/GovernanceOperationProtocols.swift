@@ -79,18 +79,12 @@ protocol GovernanceDelegateStatsFactoryProtocol {
 
 protocol GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListWrapper(
-        for activityStartBlock: BlockNumber,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for activityStartBlock: BlockNumber
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
 
     func fetchDelegateListByIdsWrapper(
         from delegateIds: Set<AccountId>,
-        activityStartBlock: BlockNumber,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        activityStartBlock: BlockNumber
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
 }
 

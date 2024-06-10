@@ -6,38 +6,39 @@ import BigInt
 protocol ParaStkCollatorsOperationFactoryProtocol {
     func electedCollatorsInfoOperation(
         for collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        chainFormat: ChainFormat
+        rewardService: ParaStakingRewardCalculatorServiceProtocol
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]>
 
     func selectedCollatorsInfoOperation(
         for accountIds: [AccountId],
         collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        chainFormat: ChainFormat
+        rewardService: ParaStakingRewardCalculatorServiceProtocol
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]>
 
     func createMetadataWrapper(
-        for accountIdClosure: @escaping () throws -> [AccountId],
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for accountIdClosure: @escaping () throws -> [AccountId]
     ) -> CompoundOperationWrapper<[ParachainStaking.CandidateMetadata?]>
 }
 
 final class ParaStkCollatorsOperationFactory {
     let requestFactory: StorageRequestFactoryProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let connection: JSONRPCEngine
+    let runtimeProvider: RuntimeProviderProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let chainFormat: ChainFormat
 
     init(
         requestFactory: StorageRequestFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
+        chainFormat: ChainFormat
     ) {
         self.requestFactory = requestFactory
-        self.identityOperationFactory = identityOperationFactory
+        self.connection = connection
+        self.runtimeProvider = runtimeProvider
+        self.identityProxyFactory = identityProxyFactory
+        self.chainFormat = chainFormat
     }
 
     // swiftlint:disable:next function_parameter_count
@@ -157,10 +158,7 @@ final class ParaStkCollatorsOperationFactory {
 extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol {
     func electedCollatorsInfoOperation(
         for collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        chainFormat: ChainFormat
+        rewardService: ParaStakingRewardCalculatorServiceProtocol
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let selectedCollatorsOperation = collatorService.fetchInfoOperation()
@@ -176,11 +174,8 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
 
         metadataWrapper.addDependency(operations: [codingFactoryOperation, selectedCollatorsOperation])
 
-        let identityWrapper = identityOperationFactory.createIdentityWrapper(
-            for: { try selectedCollatorsOperation.extractNoCancellableResultData().collators.map(\.accountId) },
-            engine: connection,
-            runtimeService: runtimeProvider,
-            chainFormat: chainFormat
+        let identityWrapper = identityProxyFactory.createIdentityWrapper(
+            for: { try selectedCollatorsOperation.extractNoCancellableResultData().collators.map(\.accountId) }
         )
 
         identityWrapper.addDependency(operations: [selectedCollatorsOperation])
@@ -221,14 +216,10 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 
-    // swiftlint:disable:next function_parameter_count
     func selectedCollatorsInfoOperation(
         for accountIds: [AccountId],
         collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        chainFormat: ChainFormat
+        rewardService: ParaStakingRewardCalculatorServiceProtocol
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let selectedCollatorsOperation = collatorService.fetchInfoOperation()
@@ -242,11 +233,8 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
 
         metadataWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let identityWrapper = identityOperationFactory.createIdentityWrapper(
-            for: { accountIds },
-            engine: connection,
-            runtimeService: runtimeProvider,
-            chainFormat: chainFormat
+        let identityWrapper = identityProxyFactory.createIdentityWrapper(
+            for: { accountIds }
         )
 
         let minTechStakeOperation: BaseOperation<BigUInt> = PrimitiveConstantOperation.operation(
@@ -288,11 +276,9 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
     }
 
     func createMetadataWrapper(
-        for accountIdClosure: @escaping () throws -> [AccountId],
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for accountIdClosure: @escaping () throws -> [AccountId]
     ) -> CompoundOperationWrapper<[ParachainStaking.CandidateMetadata?]> {
-        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let candidatesMetadataWrapper = createMetadataWrapper(
             for: accountIdClosure,

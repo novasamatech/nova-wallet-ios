@@ -103,23 +103,23 @@ extension ExtrinsicOperationFactoryProtocol {
 
 final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     let chain: ChainModel
-    let customExtensions: [ExtrinsicExtension]
+    let customExtensions: [ExtrinsicSignedExtending]
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
     let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
 
     init(
         chain: ChainModel,
         runtimeRegistry: RuntimeCodingServiceProtocol,
-        customExtensions: [ExtrinsicExtension],
+        customExtensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
-        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory(),
+        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil,
         operationManager: OperationManagerProtocol
     ) {
         self.chain = chain
         self.senderResolvingFactory = senderResolvingFactory
         self.customExtensions = customExtensions
-        self.eraOperationFactory = eraOperationFactory
+        self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
 
         super.init(
             runtimeRegistry: runtimeRegistry,
@@ -176,7 +176,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
         chain: ChainModel,
-        customExtensions: [ExtrinsicExtension],
+        customExtensions: [ExtrinsicSignedExtending],
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<[ExtrinsicBuilderProtocol]> {
         let genesisBlockOperation = createBlockHashOperation(connection: engine, for: { 0 })
@@ -211,7 +211,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                 }
 
                 for customExtension in customExtensions {
-                    builder = builder.adding(extrinsicExtension: customExtension)
+                    builder = builder.adding(extrinsicSignedExtension: customExtension)
                 }
 
                 return try customClosure(builder, index)

@@ -8,7 +8,7 @@ final class ReferendumVotersInteractor {
     let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
     let chain: ChainModel
     let referendumIndex: ReferendumIdLocal
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
@@ -17,7 +17,7 @@ final class ReferendumVotersInteractor {
         referendumIndex: ReferendumIdLocal,
         chain: ChainModel,
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         operationQueue: OperationQueue
@@ -25,7 +25,7 @@ final class ReferendumVotersInteractor {
         self.referendumIndex = referendumIndex
         self.chain = chain
         self.referendumsOperationFactory = referendumsOperationFactory
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
@@ -38,14 +38,11 @@ final class ReferendumVotersInteractor {
             runtimeProvider: runtimeProvider
         )
 
-        let identityWrapper = identityOperationFactory.createIdentityWrapper(
+        let identityWrapper = identityProxyFactory.createIdentityWrapper(
             for: {
                 let voters = try voterWrapper.targetOperation.extractNoCancellableResultData()
                 return voters.map(\.accountId)
-            },
-            engine: connection,
-            runtimeService: runtimeProvider,
-            chainFormat: chain.chainFormat
+            }
         )
 
         identityWrapper.addDependency(wrapper: voterWrapper)

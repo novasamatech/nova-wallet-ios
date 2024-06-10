@@ -54,7 +54,7 @@ final class DAppExtrinsicBuilderOperationFactory {
             .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
 
             for signedExtension in signedExtensionFactory.createExtensions() {
-                builder = builder.adding(extrinsicExtension: signedExtension)
+                builder = builder.adding(extrinsicSignedExtension: signedExtension)
             }
 
             builder = try result.extrinsic.method.accept(builder: builder)

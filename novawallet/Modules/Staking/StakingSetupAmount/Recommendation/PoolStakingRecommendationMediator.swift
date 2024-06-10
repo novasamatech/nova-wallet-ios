@@ -20,13 +20,16 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         restrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         operationFactory: NominationPoolRecommendationFactoryProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.chainAsset = chainAsset
         self.restrictionsBuilder = restrictionsBuilder
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
         self.operationFactory = operationFactory
         self.operationQueue = operationQueue
+
+        super.init(logger: logger)
     }
 
     private func updateReadyState() {
@@ -52,6 +55,8 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
             return
         }
 
+        logger.debug("Will start pool recommending")
+
         if let recommendation = recommendation {
             didReceive(recommendation: recommendation, for: amount)
             return
@@ -73,8 +78,10 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
 
                 do {
                     let pool = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.logger.debug("Recommended pool: \(pool)")
                     self?.handle(pool: pool, amount: amount)
                 } catch {
+                    self?.logger.error("Error: \(error)")
                     self?.delegate?.didReceiveRecommendation(error: error)
                 }
             }
@@ -128,11 +135,14 @@ extension PoolStakingRecommendationMediator: RelaychainStakingRestrictionsBuilde
     ) {
         self.restrictions = restrictions
 
+        logger.debug("Restrictions: \(restrictions)")
+
         updateReadyState()
         updateRecommendationIfReady()
     }
 
     func restrictionsBuilder(_: RelaychainStakingRestrictionsBuilding, didReceive error: Error) {
+        logger.debug("Restrictions error: \(error)")
         delegate?.didReceiveRecommendation(error: error)
     }
 }

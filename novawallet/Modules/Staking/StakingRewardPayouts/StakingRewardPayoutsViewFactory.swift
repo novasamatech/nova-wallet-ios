@@ -72,6 +72,11 @@ final class StakingRewardPayoutsViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         let exposureFacade = StakingValidatorExposureFacade(
             operationQueue: operationQueue,
@@ -94,7 +99,7 @@ final class StakingRewardPayoutsViewFactory {
             storageRequestFactory: storageRequestFactory,
             engine: connection,
             operationManager: operationManager,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             payoutInfoFactory: payoutInfoFactory,
             logger: Logger.shared
         )

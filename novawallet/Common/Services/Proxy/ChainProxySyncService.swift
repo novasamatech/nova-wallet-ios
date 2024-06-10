@@ -13,7 +13,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
     let proxyOperationFactory: ProxyOperationFactoryProtocol
     let chainModel: ChainModel
     let requestFactory: StorageRequestFactoryProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let eventCenter: EventCenterProtocol
     let chainWalletFilter: ProxySyncChainWalletFilter?
 
@@ -47,7 +47,13 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
         )
-        identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+        identityProxyFactory = IdentityProxyFactory(
+            originChain: chainModel,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
     }
 
     override func performSyncUp() {
@@ -102,9 +108,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         let changesOperation = changesOperation(
             proxyListWrapper: proxyListWrapper,
             metaAccountsWrapper: walletsWrapper,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             chainModel: chainModel
         )
 
@@ -167,9 +171,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
     private func changesOperation(
         proxyListWrapper: CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]>,
         metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeCodingServiceProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         chainModel: ChainModel
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let proxyListOperation = ClosureOperation<[ProxiedAccountId: [ProxyAccount]]> {
@@ -198,14 +200,11 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         proxyListOperation.addDependency(proxyListWrapper.targetOperation)
         proxyListOperation.addDependency(metaAccountsWrapper.targetOperation)
 
-        let identityWrapper = identityOperationFactory.createIdentityWrapperByAccountId(
+        let identityWrapper = identityProxyFactory.createIdentityWrapperByAccountId(
             for: {
                 let proxieds = try proxyListOperation.extractNoCancellableResultData()
                 return Array(proxieds.keys)
-            },
-            engine: connection,
-            runtimeService: runtimeProvider,
-            chainFormat: chainModel.chainFormat
+            }
         )
 
         identityWrapper.addDependency(operations: [proxyListOperation])

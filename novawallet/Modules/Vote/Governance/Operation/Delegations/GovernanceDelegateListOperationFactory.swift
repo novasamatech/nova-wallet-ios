@@ -5,32 +5,29 @@ import SubstrateSdk
 final class GovernanceDelegateListOperationFactory {
     let statsOperationFactory: GovernanceDelegateStatsFactoryProtocol
     let metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let chain: ChainModel
 
     init(
+        chain: ChainModel,
         statsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
         metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol
+        identityProxyFactory: IdentityProxyFactoryProtocol
     ) {
+        self.chain = chain
         self.statsOperationFactory = statsOperationFactory
         self.metadataOperationFactory = metadataOperationFactory
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
     }
 
     private func createIdentityWrapper(
-        dependingOn statsOperation: BaseOperation<[GovernanceDelegateStats]>,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        dependingOn statsOperation: BaseOperation<[GovernanceDelegateStats]>
     ) -> CompoundOperationWrapper<[AccountId: AccountIdentity]> {
-        identityOperationFactory.createIdentityWrapperByAccountId(
+        identityProxyFactory.createIdentityWrapperByAccountId(
             for: {
                 let stats = try statsOperation.extractNoCancellableResultData()
                 return try stats.map { try $0.address.toAccountId() }
-            },
-            engine: connection,
-            runtimeService: runtimeService,
-            chainFormat: chain.chainFormat
+            }
         )
     }
 
@@ -61,18 +58,12 @@ final class GovernanceDelegateListOperationFactory {
     }
 
     private func createDelegateListWrapper(
-        from statsWrapper: CompoundOperationWrapper<[GovernanceDelegateStats]>,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        from statsWrapper: CompoundOperationWrapper<[GovernanceDelegateStats]>
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]> {
         let metadataOperation = metadataOperationFactory.fetchMetadataOperation(for: chain)
 
         let identityWrapper = createIdentityWrapper(
-            dependingOn: statsWrapper.targetOperation,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
+            dependingOn: statsWrapper.targetOperation
         )
 
         identityWrapper.addDependency(wrapper: statsWrapper)
@@ -95,27 +86,16 @@ final class GovernanceDelegateListOperationFactory {
 
 extension GovernanceDelegateListOperationFactory: GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListWrapper(
-        for activityStartBlock: BlockNumber,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for activityStartBlock: BlockNumber
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]> {
         let statsWrapper = statsOperationFactory.fetchStatsWrapper(for: activityStartBlock)
 
-        return createDelegateListWrapper(
-            from: statsWrapper,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
-        )
+        return createDelegateListWrapper(from: statsWrapper)
     }
 
     func fetchDelegateListByIdsWrapper(
         from delegateIds: Set<AccountId>,
-        activityStartBlock: BlockNumber,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        activityStartBlock: BlockNumber
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]> {
         let addresses = delegateIds.compactMap { accountId in
             try? accountId.toAddress(using: chain.chainFormat)
@@ -126,11 +106,6 @@ extension GovernanceDelegateListOperationFactory: GovernanceDelegateListFactoryP
             activityStartBlock: activityStartBlock
         )
 
-        return createDelegateListWrapper(
-            from: statsWrapper,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
-        )
+        return createDelegateListWrapper(from: statsWrapper)
     }
 }

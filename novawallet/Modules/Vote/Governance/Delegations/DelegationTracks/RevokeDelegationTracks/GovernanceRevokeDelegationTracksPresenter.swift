@@ -36,6 +36,6 @@ final class GovRevokeDelegationTracksPresenter: GovernanceSelectTracksPresenter 
             return
         }
 
-        selectedTracks = Set()
+        selectedTrackIds = Set()
     }
 }

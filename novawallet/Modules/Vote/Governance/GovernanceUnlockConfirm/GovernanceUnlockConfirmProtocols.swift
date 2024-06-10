@@ -16,7 +16,8 @@ protocol GovernanceUnlockConfirmPresenterProtocol: AnyObject {
     func presentSenderDetails()
 }
 
-protocol GovernanceUnlockConfirmInteractorInputProtocol: GovernanceUnlockInteractorInputProtocol {
+protocol GovernanceUnlockConfirmInteractorInputProtocol: GovernanceUnlockInteractorInputProtocol,
+    MultiExtrinsicSubmitRetryInputProtocol {
     func estimateFee(for actions: Set<GovernanceUnlockSchedule.Action>)
     func unlock(using actions: Set<GovernanceUnlockSchedule.Action>)
 }
@@ -24,11 +25,14 @@ protocol GovernanceUnlockConfirmInteractorInputProtocol: GovernanceUnlockInterac
 protocol GovernanceUnlockConfirmInteractorOutputProtocol: GovernanceUnlockInteractorOutputProtocol {
     func didReceiveBalance(_ assetBalance: AssetBalance?)
     func didReceiveLocks(_ locks: AssetLocks)
-    func didReceiveUnlockHash(_ hash: String)
+    func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult)
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveError(_ error: GovernanceUnlockConfirmInteractorError)
 }
 
 protocol GovernanceUnlockConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
     FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable, ExtrinsicSigningErrorHandling {}
+    GovernanceErrorPresentable, ExtrinsicSigningErrorHandling, ExtrinsicSubmissionPresenting, MultiExtrinsicRetryable {
+    func complete(on view: GovernanceUnlockConfirmViewProtocol?, locale: Locale)
+    func skip(on view: GovernanceUnlockConfirmViewProtocol?)
+}

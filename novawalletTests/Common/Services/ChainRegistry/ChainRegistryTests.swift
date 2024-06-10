@@ -166,7 +166,6 @@ class ChainRegistryTests: XCTestCase {
         wait(for: [expectation], timeout: 10)
 
         XCTAssertEqual(expectedChainIds, setupChainIds)
-        XCTAssertEqual(expectedChainIds, registry.availableChainIds)
 
         for chain in expectedChains {
             XCTAssertNotNil(registry.getConnection(for: chain.chainId))

@@ -10,8 +10,6 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning, AnyCancella
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let collatorService: ParachainStakingCollatorServiceProtocol
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
-    let connection: JSONRPCEngine
-    let runtimeProvider: RuntimeProviderProtocol
     let collatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol
     let operationQueue: OperationQueue
 
@@ -25,8 +23,6 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning, AnyCancella
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         collatorService: ParachainStakingCollatorServiceProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
         collatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
@@ -36,8 +32,6 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning, AnyCancella
         self.collatorService = collatorService
         self.rewardService = rewardService
         self.collatorsOperationFactory = collatorsOperationFactory
-        self.connection = connection
-        self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
     }
 
@@ -69,10 +63,7 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning, AnyCancella
         let wrapper = collatorsOperationFactory.selectedCollatorsInfoOperation(
             for: collatorIds,
             collatorService: collatorService,
-            rewardService: rewardService,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            chainFormat: chainAsset.chain.chainFormat
+            rewardService: rewardService
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in

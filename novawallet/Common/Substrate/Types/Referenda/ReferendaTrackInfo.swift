@@ -4,7 +4,7 @@ import BigInt
 
 extension Referenda {
     struct TrackInfo: Decodable {
-        let name: String
+        let name: TrackName
         @StringCodable var maxDeciding: UInt32
         @StringCodable var decisionDeposit: BigUInt
         @StringCodable var preparePeriod: Moment

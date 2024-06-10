@@ -46,6 +46,7 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
 
     override func performSyncUp() {
         updateActiveValidatorSubscription()
+        clearSubscriptions()
 
         lastPoolIdProvider = subscribeLastPoolId(
             for: chainAsset.chain.chainId,

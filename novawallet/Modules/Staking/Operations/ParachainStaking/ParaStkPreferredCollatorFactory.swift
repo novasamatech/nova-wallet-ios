@@ -10,7 +10,7 @@ final class ParaStkPreferredCollatorFactory {
     let chain: ChainModel
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let collatorService: ParachainStakingCollatorServiceProtocol
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
     let preferredCollatorProvider: PreferredValidatorsProviding
@@ -22,7 +22,7 @@ final class ParaStkPreferredCollatorFactory {
         runtimeService: RuntimeCodingServiceProtocol,
         collatorService: ParachainStakingCollatorServiceProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         preferredCollatorProvider: PreferredValidatorsProviding,
         operationQueue: OperationQueue
     ) {
@@ -31,7 +31,7 @@ final class ParaStkPreferredCollatorFactory {
         self.runtimeService = runtimeService
         self.rewardService = rewardService
         self.collatorService = collatorService
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.preferredCollatorProvider = preferredCollatorProvider
         self.operationQueue = operationQueue
     }
@@ -48,12 +48,7 @@ final class ParaStkPreferredCollatorFactory {
                 return CompoundOperationWrapper.createWithResult(nil)
             }
 
-            let identityWrapper = self.identityOperationFactory.createIdentityWrapper(
-                for: { [accountId] },
-                engine: self.connection,
-                runtimeService: self.runtimeService,
-                chainFormat: self.chain.chainFormat
-            )
+            let identityWrapper = self.identityProxyFactory.createIdentityWrapper(for: { [accountId] })
 
             let mappingOperation = ClosureOperation<DisplayAddress?> {
                 let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()

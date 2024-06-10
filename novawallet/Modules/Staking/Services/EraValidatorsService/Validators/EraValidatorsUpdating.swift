@@ -63,26 +63,27 @@ final class EraValidatorsUpdater {
         exposures: [StorageListSyncResult<EraStakersPagedRemoteKey, Staking.ValidatorExposurePage>.Item],
         completion closure: @escaping ([EraValidatorResultItem]) -> Void
     ) {
-        let indexedExposures = exposures.reduce(into: [AccountId: Staking.ValidatorExposure]()) { accum, item in
+        let indexedIndividualExposures: [AccountId: [Staking.IndividualExposure]] = exposures.reduce(
+            into: [:]
+        ) { accum, item in
             let validator = item.key.validator
 
-            guard let validatorOverview = overview[validator] else {
-                return
-            }
-
-            if let exposure = accum[validator] {
-                accum[validator] = .init(
-                    total: exposure.total,
-                    own: exposure.own,
-                    others: exposure.others + item.value.others
-                )
+            if let individualExposures = accum[validator] {
+                accum[validator] = individualExposures + item.value.others
             } else {
-                accum[validator] = .init(
-                    total: validatorOverview.total,
-                    own: validatorOverview.own,
-                    others: item.value.others
-                )
+                accum[validator] = item.value.others
             }
+        }
+
+        let indexedExposures = overview.reduce(into: [AccountId: Staking.ValidatorExposure]()) { accum, keyValue in
+            let validator = keyValue.key
+
+            let others = indexedIndividualExposures[validator] ?? []
+            accum[validator] = Staking.ValidatorExposure(
+                total: keyValue.value.total,
+                own: keyValue.value.own,
+                others: others
+            )
         }
 
         let result = indexedExposures.map { EraValidatorResultItem(validator: $0.key, exposure: $0.value) }

@@ -42,9 +42,9 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
     }
 
     private func performCancellation() {
-        wireframe?.complete(on: view)
-
-        completion(.failure(HardwareSigningError.signingCancelled))
+        wireframe?.complete(on: view) {
+            self.completion(.failure(HardwareSigningError.signingCancelled))
+        }
     }
 
     override func handleAppConnection(error: Error, deviceId: UUID) {
@@ -128,8 +128,9 @@ extension LedgerTxConfirmPresenter: LedgerTxConfirmInteractorOutputProtocol {
             }
 
             wireframe?.closeMessageSheet(on: view)
-            wireframe?.complete(on: view)
-            completion(.success(signature))
+            wireframe?.complete(on: view) {
+                self.completion(.success(signature))
+            }
         case let .failure(error):
             stopConnecting()
 

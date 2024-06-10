@@ -14,7 +14,6 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
-    let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
@@ -38,7 +37,6 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         operationQueue: OperationQueue
@@ -52,7 +50,6 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
-        self.connection = connection
         self.runtimeService = runtimeService
         self.govJsonProviderFactory = govJsonProviderFactory
         self.operationQueue = operationQueue
@@ -106,10 +103,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         if !delegateIds.isEmpty {
             let wrapper = offchainOperationFactory.fetchDelegateListByIdsWrapper(
                 from: delegateIds,
-                activityStartBlock: activityBlockNumber,
-                chain: chain,
-                connection: connection,
-                runtimeService: runtimeService
+                activityStartBlock: activityBlockNumber
             )
 
             wrapper.targetOperation.completionBlock = { [weak self] in

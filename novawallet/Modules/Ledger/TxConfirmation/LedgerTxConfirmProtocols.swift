@@ -15,7 +15,7 @@ protocol LedgerTxConfirmInteractorOutputProtocol: LedgerPerformOperationOutputPr
 }
 
 protocol LedgerTxConfirmWireframeProtocol: LedgerPerformOperationWireframeProtocol {
-    func complete(on view: ControllerBackedProtocol?)
+    func complete(on view: ControllerBackedProtocol?, completionClosure: @escaping () -> Void)
 
     func transitToTransactionReview(
         on view: ControllerBackedProtocol?,

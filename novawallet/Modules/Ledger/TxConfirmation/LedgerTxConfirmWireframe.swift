@@ -3,8 +3,8 @@ import SoraUI
 import SoraFoundation
 
 final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
-    func complete(on view: ControllerBackedProtocol?) {
-        view?.controller.dismiss(animated: true)
+    func complete(on view: ControllerBackedProtocol?, completionClosure: @escaping () -> Void) {
+        view?.controller.dismiss(animated: true, completion: completionClosure)
     }
 
     func transitToTransactionReview(

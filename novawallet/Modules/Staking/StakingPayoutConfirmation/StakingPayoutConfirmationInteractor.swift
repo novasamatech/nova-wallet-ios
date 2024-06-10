@@ -63,7 +63,11 @@ final class StakingPayoutConfirmationInteractor {
             throw CommonError.dataCorruption
         }
 
-        var splitter: ExtrinsicSplitting = ExtrinsicSplitter(chain: chainAsset.chain, chainRegistry: chainRegistry)
+        var splitter: ExtrinsicSplitting = ExtrinsicSplitter(
+            chain: chainAsset.chain,
+            maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic,
+            chainRegistry: chainRegistry
+        )
 
         splitter = try payouts.reduce(splitter) { accum, payout in
             try Staking.PayoutCall.appendingCall(

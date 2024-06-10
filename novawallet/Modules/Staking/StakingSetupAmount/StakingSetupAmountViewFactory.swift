@@ -91,7 +91,8 @@ struct StakingSetupAmountViewFactory {
 
         let recommendationFactory = StakingRecommendationMediatorFactory(
             chainRegistry: chainRegistry,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         let feeProxy = ExtrinsicFeeProxy()

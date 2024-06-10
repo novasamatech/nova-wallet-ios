@@ -13,11 +13,14 @@ class DirectStakingRecommendationMediator: BaseStakingRecommendationMediator {
     init(
         recommendationFactory: DirectStakingRecommendationFactoryProtocol,
         restrictionsBuilder: RelaychainStakingRestrictionsBuilding,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.recommendationFactory = recommendationFactory
         self.restrictionsBuilder = restrictionsBuilder
         self.operationQueue = operationQueue
+
+        super.init(logger: logger)
     }
 
     private func handle(validators: PreparedValidators, amount: BigUInt) {

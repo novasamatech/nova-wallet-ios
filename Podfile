@@ -4,7 +4,7 @@ platform :ios, '15.0'
 abstract_target 'novawalletAll' do
   use_frameworks!
 
-  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'ea47d90460f508f0c58549d709fc307b9be773af'
+  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'a285e0aa93e300e46f95a7667a82e3b3334736fe'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
@@ -19,7 +19,7 @@ abstract_target 'novawalletAll' do
   pod 'Kingfisher', :inhibit_warnings => true
   pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :tag => '3.0.0'
   pod 'SwiftRLP', :git => 'https://github.com/ERussel/SwiftRLP.git'
-  pod 'Starscream', :git => 'https://github.com/daltoniam/Starscream.git', :tag => '4.0.8'
+  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.10'
   pod 'CDMarkdownKit', :git => 'https://github.com/nova-wallet/CDMarkdownKit.git', :tag => '2.5.2'
   pod 'web3swift', :git => 'https://github.com/web3swift-team/web3swift.git', :tag => '3.0.6'
   pod 'WalletConnectSwiftV2', :git => 'https://github.com/WalletConnect/WalletConnectSwiftV2.git', :tag => '1.5.14'
@@ -36,14 +36,14 @@ abstract_target 'novawalletAll' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'ea47d90460f508f0c58549d709fc307b9be773af'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'a285e0aa93e300e46f95a7667a82e3b3334736fe'
     pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :commit => '67d207c5984b1c9cfb3389a973b6654dcd539a0d'
     pod 'Sourcery', '~> 1.4'
-    pod 'Starscream', :git => 'https://github.com/daltoniam/Starscream.git', :tag => '4.0.8'
+    pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.10'
     pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.1'
     
   end
@@ -61,7 +61,7 @@ abstract_target 'novawalletAll' do
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :commit => '67d207c5984b1c9cfb3389a973b6654dcd539a0d'
     pod 'Sourcery', '~> 1.4'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'ea47d90460f508f0c58549d709fc307b9be773af'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'a285e0aa93e300e46f95a7667a82e3b3334736fe'
   end
 
 

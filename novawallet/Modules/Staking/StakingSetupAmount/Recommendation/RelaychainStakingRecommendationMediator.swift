@@ -22,7 +22,13 @@ class BaseStakingRecommendationMediator: AnyCancellableCleaning {
     var amount: BigUInt?
     var pendingOperation: CancellableCall?
 
+    let logger: LoggerProtocol
+
     var isReady: Bool = false
+
+    init(logger: LoggerProtocol) {
+        self.logger = logger
+    }
 
     deinit {
         cancelAllOperations()

@@ -6,12 +6,16 @@ struct RuntimeMetadataItem: Codable & Equatable {
         case chain
         case version
         case txVersion
+        case localMigratorVersion
+        case opaque
         case metadata
     }
 
     let chain: String
     let version: UInt32
     let txVersion: UInt32
+    let localMigratorVersion: UInt32
+    let opaque: Bool
     let metadata: Data
 }
 

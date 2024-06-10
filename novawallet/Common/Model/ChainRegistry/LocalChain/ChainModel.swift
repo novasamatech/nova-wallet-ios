@@ -262,6 +262,10 @@ struct ChainModel: Equatable, Hashable {
     var feeViaRuntimeCall: Bool {
         additional?.feeViaRuntimeCall?.boolValue ?? false
     }
+
+    var identityChain: ChainModel.Id? {
+        additional?.identityChain?.stringValue
+    }
 }
 
 extension ChainModel: Identifiable {

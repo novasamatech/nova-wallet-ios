@@ -110,6 +110,7 @@ struct GovernanceUnlockConfirmViewFactory {
 
         return .init(
             chain: chain,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             selectedAccount: selectedAccount,
             subscriptionFactory: subscriptionFactory,
             lockStateFactory: lockStateFactory,
