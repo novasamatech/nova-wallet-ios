@@ -110,6 +110,7 @@ final class ChainRegistry {
                     availableChains[chain.chainId] = chain
 
                     try updateSyncMode(for: chain)
+                    try updateConnectionState(for: chain)
                 case let .delete(chainId):
                     availableChains[chainId] = nil
 
@@ -126,6 +127,10 @@ final class ChainRegistry {
     }
 
     private func updateSyncMode(for chain: ChainModel) throws {
+        guard chain.enabled else {
+            return
+        }
+
         switch chain.syncMode {
         case .full, .light:
             let connection = try connectionPool.setupConnection(for: chain)
@@ -140,6 +145,23 @@ final class ChainRegistry {
 
         logger?.debug("Sync mode \(chain.syncMode) applied to \(chain.name)")
     }
+
+    private func updateConnectionState(for chain: ChainModel) throws {
+        if chain.enabled {
+            let connection = try connectionPool.setupConnection(for: chain)
+
+            setupRuntimeHandlingIfNeeded(for: chain, connection: connection)
+            setupRuntimeVersionSubscriptionIfNeeded(for: chain, connection: connection)
+        } else {
+            connectionPool.deactivateConnection(for: chain.chainId)
+            clearRuntimeSubscriptionIfExists(for: chain.chainId)
+            clearRuntimeHandlingIfNeeded(for: chain.chainId)
+        }
+
+        logger?.debug("\(chain.name) connection ENABLED set to \(chain.enabled)")
+    }
+
+    private func updateConnectionMode(for _: ChainModel) throws {}
 
     private func setupRuntimeHandlingIfNeeded(for chain: ChainModel, connection: ChainConnection) {
         switch chain.syncMode {

@@ -40,6 +40,11 @@ struct ChainModel: Equatable, Hashable {
         }
     }
 
+    enum ConnectionMode: Int16 {
+        case manual = 0
+        case autoBalanced = 1
+    }
+
     let chainId: Id
     let parentId: Id?
     let name: String
@@ -57,6 +62,7 @@ struct ChainModel: Equatable, Hashable {
     let syncMode: ChainSyncMode
     let source: Source
     let enabled: Bool
+    let connectionMode: ConnectionMode
 
     init(
         chainId: Id,
@@ -75,7 +81,8 @@ struct ChainModel: Equatable, Hashable {
         additional: JSON?,
         syncMode: ChainSyncMode,
         source: Source,
-        enabled: Bool
+        enabled: Bool,
+        connectionMode: ConnectionMode
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -94,6 +101,7 @@ struct ChainModel: Equatable, Hashable {
         self.syncMode = syncMode
         self.source = source
         self.enabled = enabled
+        self.connectionMode = connectionMode
     }
 
     func asset(for assetId: AssetModel.Id) -> AssetModel? {
@@ -319,7 +327,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: enabled
+            enabled: enabled,
+            connectionMode: connectionMode
         )
     }
 
@@ -344,7 +353,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: enabled
+            enabled: enabled,
+            connectionMode: connectionMode
         )
     }
 
@@ -374,7 +384,8 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source ?? self.source,
-            enabled: enabled ?? self.enabled
+            enabled: enabled ?? self.enabled,
+            connectionMode: connectionMode
         )
     }
 
@@ -396,7 +407,31 @@ extension ChainModel {
             additional: additional,
             syncMode: newMode,
             source: source,
-            enabled: enabled
+            enabled: enabled,
+            connectionMode: connectionMode
+        )
+    }
+
+    func updatingConnectionMode(for newMode: ConnectionMode) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            enabled: enabled,
+            connectionMode: newMode
         )
     }
 }

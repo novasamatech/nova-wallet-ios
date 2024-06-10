@@ -36,5 +36,6 @@ extension ChainModel {
         self.order = order
         self.enabled = enabled
         source = .remote
+        connectionMode = .autoBalanced
     }
 }

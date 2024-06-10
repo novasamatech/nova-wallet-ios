@@ -26,4 +26,9 @@ protocol NetworksListInteractorOutputProtocol: AnyObject {
     )
 }
 
-protocol NetworksListWireframeProtocol: AnyObject {}
+protocol NetworksListWireframeProtocol: AnyObject {
+    func showNetworkDetails(
+        from view: NetworksListViewProtocol?,
+        with chain: ChainModel
+    )
+}

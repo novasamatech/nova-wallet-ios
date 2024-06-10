@@ -80,12 +80,14 @@ final class ChainModelMapper {
 
     private func createChainNode(from entity: CDChainNodeItem) throws -> ChainNodeModel {
         let features = try createNodeFeatures(from: entity.features)
+        let source = ChainNodeModel.Source(rawValue: entity.source!) ?? .remote
 
         return ChainNodeModel(
             url: entity.url!,
             name: entity.name!,
             order: entity.order,
-            features: features
+            features: features,
+            source: source
         )
     }
 
@@ -168,6 +170,7 @@ final class ChainModelMapper {
             nodeEntity.name = node.name
             nodeEntity.order = node.order
             nodeEntity.features = try serializeNodeFeature(from: node.features)
+            nodeEntity.source = node.source.rawValue
 
             return nodeEntity
         }
@@ -366,13 +369,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             throw ChainModelMapperError.unexpectedSyncMode(entity.syncMode)
         }
 
-        let source: ChainModel.Source = {
-            if let entitySource = entity.source {
-                ChainModel.Source(rawValue: entitySource) ?? .remote
-            } else {
-                .remote
-            }
-        }()
+        let source = ChainModel.Source(rawValue: entity.source!) ?? .remote
+        let connectionMode = ChainModel.ConnectionMode(rawValue: entity.connectionMode) ?? .autoBalanced
 
         return ChainModel(
             chainId: entity.chainId!,
@@ -391,7 +389,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: entity.enabled
+            enabled: entity.enabled,
+            connectionMode: connectionMode
         )
     }
 
@@ -422,6 +421,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue
         entity.source = model.source.rawValue
         entity.enabled = model.enabled
+        entity.connectionMode = model.connectionMode.rawValue
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
         }

@@ -47,6 +47,8 @@ final class NetworksListInteractor {
     }
 }
 
+// MARK: NetworksListInteractorInputProtocol
+
 extension NetworksListInteractor: NetworksListInteractorInputProtocol {
     func provideChains() {
         subscribeChains()
@@ -56,6 +58,8 @@ extension NetworksListInteractor: NetworksListInteractorInputProtocol {
         settingsManager.integrateNetworksBannerSeen = true
     }
 }
+
+// MARK: ConnectionStateSubscription
 
 extension NetworksListInteractor: ConnectionStateSubscription {
     func didReceive(

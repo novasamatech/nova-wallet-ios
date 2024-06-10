@@ -9,12 +9,10 @@ final class NetworksListViewLayout: UIView {
         view.titleColor = R.color.colorTextSecondary()!
     }
 
-    let tableView: UITableView = {
-        let view = UITableView()
+    let tableView: UITableView = .create { view in
         view.backgroundColor = .clear
         view.separatorStyle = .none
-        return view
-    }()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
