@@ -5113,7 +5113,6 @@
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
-		0CE1A0532BEB6743008206ED /* TCPWebSocketConnectionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPWebSocketConnectionFactory.swift; sourceTree = "<group>"; };
 		0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingDuration+Localizable.swift"; sourceTree = "<group>"; };
 		0CE550B52A49741400F0A7AC /* StakingUnbondSetupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondSetupTests.swift; sourceTree = "<group>"; };
 		0CE629D42AA9B5E200E250BD /* BalanceViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceViewModel.swift; sourceTree = "<group>"; };
@@ -9402,14 +9401,6 @@
 				0C0CB3892AC56A1600EAC516 /* AssetConversionPallet+Path.swift */,
 			);
 			path = AssetConversionPallet;
-			sourceTree = "<group>";
-		};
-		0C0D16C12C1751180057BCCC /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				0CE1A0532BEB6743008206ED /* TCPWebSocketConnectionFactory.swift */,
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		0C0E0A9E2B3F011E00865F10 /* BalancesPallet */ = {
@@ -15025,7 +15016,6 @@
 				77CAF4302B8E96A400E4297C /* NovaPushNotificationServiceExtension */,
 				2698CD398B0412EB85D620AB /* Pods */,
 				6F5BD6E623DF3F7DFEDC3EFA /* Frameworks */,
-				0C0D16C12C1751180057BCCC /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
