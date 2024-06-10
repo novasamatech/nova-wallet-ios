@@ -135,6 +135,8 @@ final class RuntimeSyncService {
                         runtimeVersion: newVersion
                     )
 
+                    self?.logger?.error("Error: \(error)")
+
                     self?.processSyncResult(result)
                 }
             }
