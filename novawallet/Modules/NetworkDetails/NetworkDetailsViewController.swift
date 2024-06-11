@@ -126,7 +126,12 @@ extension NetworkDetailsViewController: UITableViewDelegate {
         let section = viewModel.sections[indexPath.section]
         let row = section.rows[indexPath.row]
 
-        // TODO: Implement
+        switch row {
+        case .node:
+            presenter.selectNode(at: indexPath.row)
+        default:
+            break
+        }
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

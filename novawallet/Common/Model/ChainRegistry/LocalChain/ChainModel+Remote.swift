@@ -6,7 +6,9 @@ extension ChainModel {
         assets: Set<AssetModel>,
         syncMode: ChainSyncMode,
         order: Int64,
-        enabled: Bool
+        enabled: Bool,
+        selectedNode: ChainNodeModel?,
+        connectionMode: ConnectionMode
     ) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
@@ -36,6 +38,7 @@ extension ChainModel {
         self.order = order
         self.enabled = enabled
         source = .remote
-        connectionMode = .autoBalanced
+        self.connectionMode = connectionMode
+        self.selectedNode = selectedNode
     }
 }

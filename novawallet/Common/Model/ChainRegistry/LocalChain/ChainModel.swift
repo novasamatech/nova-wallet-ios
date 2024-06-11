@@ -63,6 +63,7 @@ struct ChainModel: Equatable, Hashable {
     let source: Source
     let enabled: Bool
     let connectionMode: ConnectionMode
+    let selectedNode: ChainNodeModel?
 
     init(
         chainId: Id,
@@ -82,7 +83,8 @@ struct ChainModel: Equatable, Hashable {
         syncMode: ChainSyncMode,
         source: Source,
         enabled: Bool,
-        connectionMode: ConnectionMode
+        connectionMode: ConnectionMode,
+        selectedNode: ChainNodeModel?
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -102,6 +104,7 @@ struct ChainModel: Equatable, Hashable {
         self.source = source
         self.enabled = enabled
         self.connectionMode = connectionMode
+        self.selectedNode = selectedNode
     }
 
     func asset(for assetId: AssetModel.Id) -> AssetModel? {
@@ -328,7 +331,8 @@ extension ChainModel {
             syncMode: syncMode,
             source: source,
             enabled: enabled,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            selectedNode: selectedNode
         )
     }
 
@@ -354,7 +358,8 @@ extension ChainModel {
             syncMode: syncMode,
             source: source,
             enabled: enabled,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            selectedNode: selectedNode
         )
     }
 
@@ -385,7 +390,8 @@ extension ChainModel {
             syncMode: syncMode,
             source: source ?? self.source,
             enabled: enabled ?? self.enabled,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            selectedNode: selectedNode
         )
     }
 
@@ -408,7 +414,8 @@ extension ChainModel {
             syncMode: newMode,
             source: source,
             enabled: enabled,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            selectedNode: selectedNode
         )
     }
 
@@ -431,7 +438,32 @@ extension ChainModel {
             syncMode: syncMode,
             source: source,
             enabled: enabled,
-            connectionMode: newMode
+            connectionMode: newMode,
+            selectedNode: selectedNode
+        )
+    }
+
+    func updatingSelectedNode(with node: ChainNodeModel?) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            enabled: enabled,
+            connectionMode: connectionMode,
+            selectedNode: node
         )
     }
 }

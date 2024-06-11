@@ -11,6 +11,7 @@ class NetworkDetailsNodeTableViewCell: PlainBaseTableViewCell<NetworkDetailsNode
         super.setupStyle()
 
         backgroundColor = .clear
+        selectionStyle = .none
     }
 
     override func setupLayout() {
@@ -21,6 +22,14 @@ class NetworkDetailsNodeTableViewCell: PlainBaseTableViewCell<NetworkDetailsNode
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.top.equalToSuperview().inset(separatorView.strokeWidth)
         }
+    }
+
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+
+        contentDisplayView.roundedContainerView.backgroundView.fillColor = highlighted
+            ? R.color.colorCellBackgroundPressed()!
+            : R.color.colorBlockBackground()!
     }
 
     func apply(position: TableViewCellPosition) {

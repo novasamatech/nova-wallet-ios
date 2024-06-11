@@ -70,8 +70,16 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
         operationQueue.addOperation(saveOperation)
     }
 
-    func selectNode(with url: String) {
-        print(url)
+    func selectNode(_ node: ChainNodeModel) {
+        let saveOperation = repository.saveOperation({ [weak self] in
+            guard let self else { return [] }
+
+            return [chain.updatingSelectedNode(with: node)]
+        }, {
+            []
+        })
+
+        operationQueue.addOperation(saveOperation)
     }
 }
 
@@ -85,18 +93,20 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
         from _: WebSocketEngine.State,
         to newState: WebSocketEngine.State
     ) {
-        guard
-            let connection = connection as? ChainConnection,
-            let nodeUrl = connection.urls.first
-        else {
-            return
-        }
+        DispatchQueue.main.async {
+            guard
+                let connection = connection as? ChainConnection,
+                let nodeUrl = connection.urls.first
+            else {
+                return
+            }
 
-        switch newState {
-        case .notConnected, .connecting, .waitingReconnection:
-            presenter?.didReceive(.connecting, for: nodeUrl.absoluteString)
-        case .connected:
-            presenter?.didReceive(.connected, for: nodeUrl.absoluteString)
+            switch newState {
+            case .notConnected, .connecting, .waitingReconnection:
+                self.presenter?.didReceive(.connecting, for: nodeUrl.absoluteString)
+            case .connected:
+                self.presenter?.didReceive(.connected, for: nodeUrl.absoluteString)
+            }
         }
     }
 }
@@ -111,13 +121,6 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
         guard chainId == chain.chainId else { return }
 
         print(state)
-    }
-}
-
-extension NetworkDetailsInteractor {
-    enum ConnectionState {
-        case connecting
-        case connected
     }
 }
 
@@ -162,5 +165,12 @@ private extension NetworkDetailsInteractor {
 
             nodesConnections[node.url] = connection
         }
+    }
+}
+
+extension NetworkDetailsInteractor {
+    enum ConnectionState {
+        case connecting
+        case connected
     }
 }

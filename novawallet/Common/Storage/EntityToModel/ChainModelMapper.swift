@@ -154,7 +154,9 @@ final class ChainModelMapper {
         from model: ChainModel,
         context: NSManagedObjectContext
     ) throws {
-        let nodeEntities: [CDChainNodeItem] = try model.nodes.map { node in
+        let nodeMapping: (ChainNodeModel?) throws -> CDChainNodeItem? = { node in
+            guard let node else { return nil }
+
             let nodeEntity: CDChainNodeItem
 
             let maybeExistingEntity = entity.nodes?
@@ -169,11 +171,13 @@ final class ChainModelMapper {
             nodeEntity.url = node.url
             nodeEntity.name = node.name
             nodeEntity.order = node.order
-            nodeEntity.features = try serializeNodeFeature(from: node.features)
+            nodeEntity.features = try self.serializeNodeFeature(from: node.features)
             nodeEntity.source = node.source.rawValue
 
             return nodeEntity
         }
+
+        let nodeEntities: [CDChainNodeItem] = model.nodes.compactMap { try? nodeMapping($0) }
 
         let existingNodeIds = Set(model.nodes.map(\.url))
 
@@ -186,6 +190,7 @@ final class ChainModelMapper {
         }
 
         entity.nodes = Set(nodeEntities) as NSSet
+        entity.selectedNode = try nodeMapping(model.selectedNode)
     }
 
     private func createExplorers(from chain: CDChain) -> [ChainModel.Explorer]? {
@@ -346,6 +351,12 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             return try createChainNode(from: node)
         } ?? []
 
+        let selectedNode: ChainNodeModel? = if let entitySelectedNode = entity.selectedNode as? CDChainNodeItem {
+            try? createChainNode(from: entitySelectedNode)
+        } else {
+            nil
+        }
+
         let nodeSwitchStrategy = ChainModel.NodeSwitchStrategy(rawStrategy: entity.nodeSwitchStrategy)
 
         let types: ChainModel.TypesSettings?
@@ -390,7 +401,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             syncMode: syncMode,
             source: source,
             enabled: entity.enabled,
-            connectionMode: connectionMode
+            connectionMode: connectionMode,
+            selectedNode: selectedNode
         )
     }
 

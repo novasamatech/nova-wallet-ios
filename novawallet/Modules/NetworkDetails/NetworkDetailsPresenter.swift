@@ -50,8 +50,8 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     }
 
     func selectNode(at index: Int) {
-        let url = sortedNodes[index].url
-        interactor.selectNode(with: url)
+        let node = sortedNodes[index]
+        interactor.selectNode(node)
     }
 }
 
@@ -104,6 +104,7 @@ private extension NetworkDetailsPresenter {
 
         let viewModel = viewModelFactory.createNodesSection(
             with: [node],
+            chain: chain,
             nodesIndexes: nodesIndexes,
             connectionStates: connectionStates
         )

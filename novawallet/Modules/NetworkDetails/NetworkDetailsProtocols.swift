@@ -15,7 +15,7 @@ protocol NetworkDetailsInteractorInputProtocol: AnyObject {
     func setup()
     func toggleNetwork()
     func toggleConnectionMode()
-    func selectNode(with url: String)
+    func selectNode(_ node: ChainNodeModel)
 }
 
 protocol NetworkDetailsInteractorOutputProtocol: AnyObject {

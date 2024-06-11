@@ -23,6 +23,7 @@ class NetworkDetailsViewModelFactory {
                 createAddNodeSection(),
                 createNodesSection(
                     with: nodes,
+                    chain: network,
                     nodesIndexes: nodesIndexes,
                     connectionStates: connectionStates
                 )
@@ -32,6 +33,7 @@ class NetworkDetailsViewModelFactory {
 
     func createNodesSection(
         with nodes: [ChainNodeModel],
+        chain: ChainModel,
         nodesIndexes: [String: Int],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Section {
@@ -41,6 +43,7 @@ class NetworkDetailsViewModelFactory {
                 .node(
                     createNodeViewModel(
                         for: $0,
+                        chain: chain,
                         indexes: nodesIndexes,
                         connectionStates: connectionStates
                     )
@@ -86,6 +89,7 @@ private extension NetworkDetailsViewModelFactory {
 
     func createNodeViewModel(
         for node: ChainNodeModel,
+        chain: ChainModel,
         indexes: [String: Int],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Node {
@@ -114,7 +118,7 @@ private extension NetworkDetailsViewModelFactory {
             name: node.name,
             url: node.url,
             connectionState: connectionState,
-            selected: false
+            selected: chain.selectedNode?.url == node.url
         )
     }
 }
