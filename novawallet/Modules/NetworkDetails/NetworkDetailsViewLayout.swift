@@ -43,8 +43,10 @@ extension NetworkDetailsViewLayout {
         }
 
         let index: Int
+        let name: String
         let url: String
         let connectionState: ConnectionState
+        let selected: Bool
     }
 
     enum Row {

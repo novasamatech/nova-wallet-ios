@@ -1,5 +1,6 @@
 protocol NetworkDetailsViewProtocol: ControllerBackedProtocol {
     func update(with viewModel: NetworkDetailsViewLayout.Model)
+    func updateNodes(with viewModel: NetworkDetailsViewLayout.Model)
 }
 
 protocol NetworkDetailsPresenterProtocol: AnyObject {
@@ -19,7 +20,7 @@ protocol NetworkDetailsInteractorInputProtocol: AnyObject {
 
 protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(updatedChain: ChainModel)
-    func didReceive(measuredNode: NetworkDetailsInteractor.MeasuredNode)
+    func didReceive(measuredNode: MeasuredNode)
 }
 
 protocol NetworkDetailsWireframeProtocol: AnyObject {}

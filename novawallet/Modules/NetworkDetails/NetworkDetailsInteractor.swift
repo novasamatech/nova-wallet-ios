@@ -111,7 +111,5 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
 // MARK: Private
 
 private extension NetworkDetailsInteractor {
-    func measureConnection(for node: ChainNodeModel) {
-        let measureOperation: BaseOperation
-    }
+    func measureConnection(for _: ChainNodeModel) {}
 }

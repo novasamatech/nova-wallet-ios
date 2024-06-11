@@ -3,6 +3,7 @@ import SoraFoundation
 class NetworkDetailsViewModelFactory {
     typealias Details = NetworkDetailsViewLayout.Model
     typealias Section = NetworkDetailsViewLayout.Section
+    typealias Node = NetworkDetailsViewLayout.NodeModel
 
     private let localizationManager: LocalizationManagerProtocol
 
@@ -10,11 +11,16 @@ class NetworkDetailsViewModelFactory {
         self.localizationManager = localizationManager
     }
 
-    func createViewModel(for network: ChainModel) -> Details {
+    func createViewModel(
+        for network: ChainModel,
+        nodes: [MeasuredNode],
+        nodesIndexes: [String: Int]
+    ) -> Details {
         Details(
             sections: [
                 createSwitchesSection(for: network),
-                createAddNodeSection()
+                createAddNodeSection(),
+                createNodesSection(with: nodes, nodesIndexes: nodesIndexes)
             ]
         )
     }
@@ -41,12 +47,55 @@ class NetworkDetailsViewModelFactory {
 
     func createAddNodeSection() -> Section {
         Section(
-            title: "Custom nodes",
+            title: "Custom nodes".uppercased(),
             rows: [
                 .addCustomNode(
                     .init(title: "Add custom node", icon: nil)
                 )
             ]
+        )
+    }
+
+    func createNodesSection(
+        with nodes: [MeasuredNode],
+        nodesIndexes: [String: Int]
+    ) -> Section {
+        Section(
+            title: "Default Nodes".uppercased(),
+            rows: nodes.map {
+                .node(createNodeViewModel(for: $0, index: nodesIndexes[$0.node.url]!))
+            }
+        )
+    }
+
+    func createNodeViewModel(
+        for measuredNode: MeasuredNode,
+        index: Int
+    ) -> Node {
+        let connectionState: Node.ConnectionState = switch measuredNode.connectionState {
+        case .connecting:
+            .connecting(
+                R.string.localizable.networkStatusConnecting(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).uppercased()
+            )
+        case let .connected(ping):
+            switch ping {
+            case 0 ..< 100:
+                .connected(.low("\(ping)"))
+            case 100 ..< 500:
+                .connected(.medium("\(ping)"))
+            default:
+                .connected(.high("\(ping)"))
+            }
+        }
+
+        return Node(
+            index: index,
+            name: measuredNode.node.name,
+            url: measuredNode.node.url,
+            connectionState: connectionState,
+            selected: false
         )
     }
 }

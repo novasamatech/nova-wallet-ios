@@ -91,7 +91,8 @@ struct NetworkDetailsViewFactory {
             chainRegistry: chainRegistry,
             chainSyncService: chainSyncService,
             repository: repository,
-            operationQueue: OperationManagerFacade.assetsRepositoryQueue
+            operationQueue: OperationManagerFacade.assetsRepositoryQueue,
+            nodeMeasureQueue: OperationManagerFacade.sharedDefaultQueue
         )
         let wireframe = NetworkDetailsWireframe()
 

@@ -33,6 +33,8 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
 // MARK: NetworkDetailsViewProtocol
 
 extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
+    func updateNodes(with _: NetworkDetailsViewLayout.Model) {}
+
     func update(with viewModel: NetworkDetailsViewLayout.Model) {
         self.viewModel = viewModel
         rootView.tableView.reloadData()
@@ -75,7 +77,10 @@ extension NetworkDetailsViewController: UITableViewDataSource {
 
             cell = titleCell
         case let .node(viewModel):
-            return UITableViewCell()
+            let nodeCell = tableView.dequeueReusableCellWithType(NetworkDetailsNodeTableViewCell.self)!
+            nodeCell.bind(viewModel: viewModel)
+
+            cell = nodeCell
         }
 
         cell.apply(
@@ -151,6 +156,7 @@ private extension NetworkDetailsViewController {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(SwitchSettingsTableViewCell.self)
         rootView.tableView.registerClassForCell(SettingsTableViewCell.self)
+        rootView.tableView.registerClassForCell(NetworkDetailsNodeTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
 }

@@ -23,50 +23,28 @@ final class NodeConnectionMeasureOperation: BaseOperation<MeasuredNode> {
     override public func main() {
         super.main()
 
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-        
-        let connection = connectionFactory.createConnection(
-            for: node,
-            chain: chain,
-            delegate: nil
-        )
-        
-        
-
-        do {
-            let mutex = DispatchSemaphore(value: 0)
-
-            var receivedResult: Result<Data, Error>?
-
-            try connection.send(message: message, deviceId: deviceId) { result in
-                receivedResult = result
-
-                mutex.signal()
-            }
-
-            _ = mutex.wait(timeout: .distantFuture)
-
-            result = receivedResult
-        } catch {
-            result = .failure(error)
-        }
+//        if isCancelled {
+//            return
+//        }
+//
+//        if result != nil {
+//            return
+//        }
+//
+//        let connection = connectionFactory.createConnection(
+//            for: node,
+//            chain: chain,
+//            delegate: nil
+//        )
     }
 }
 
-extension NodeConnectionMeasureOperation {
-    struct MeasuredNode {
-        enum ConnectionState {
-            case connecting
-            case connected(ping: TimeInterval)
-        }
-        
-        let connectionState: ConnectionState
-        let node: ChainNodeModel
+struct MeasuredNode {
+    enum ConnectionState {
+        case connecting
+        case connected(ping: TimeInterval)
     }
+
+    let connectionState: ConnectionState
+    let node: ChainNodeModel
 }
