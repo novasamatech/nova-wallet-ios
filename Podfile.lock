@@ -817,7 +817,7 @@ PODS:
     - nanopb/encode (= 2.30909.1)
   - nanopb/decode (2.30909.1)
   - nanopb/encode (2.30909.1)
-  - Operation-iOS (2.0.0)
+  - Operation-iOS (2.0.1)
   - PromisesObjC (2.3.1)
   - R.swift (5.4.0):
     - R.swift.Library (~> 5.3.0)
@@ -888,7 +888,7 @@ PODS:
     - IrohaCrypto/sr25519 (~> 0.9.0)
     - IrohaCrypto/ss58 (~> 0.9.0)
     - keccak.c (~> 0.1.0)
-    - Operation-iOS (~> 2.0.0)
+    - Operation-iOS (~> 2.0.1)
     - ReachabilitySwift (~> 5.0)
     - Starscream
     - TweetNacl (~> 1.0.0)
@@ -944,7 +944,7 @@ DEPENDENCIES:
   - FireMock
   - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.1`)
   - Kingfisher
-  - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, commit `67d207c5984b1c9cfb3389a973b6654dcd539a0d`)
+  - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
   - R.swift
   - ReachabilitySwift
   - SnapKit (~> 5.0.0)
@@ -953,7 +953,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.10`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `06363e862520a196dc3345a6266e9392cfa2cb9a`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.0.0`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1026,8 +1026,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
   Operation-iOS:
-    :commit: 67d207c5984b1c9cfb3389a973b6654dcd539a0d
     :git: https://github.com/novasamatech/Operation-iOS
+    :tag: 2.0.1
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -1038,8 +1038,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
-    :commit: 06363e862520a196dc3345a6266e9392cfa2cb9a
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 3.0.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1063,8 +1063,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
   Operation-iOS:
-    :commit: 67d207c5984b1c9cfb3389a973b6654dcd539a0d
     :git: https://github.com/novasamatech/Operation-iOS
+    :tag: 2.0.1
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -1075,8 +1075,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
-    :commit: 06363e862520a196dc3345a6266e9392cfa2cb9a
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 3.0.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1123,7 +1123,7 @@ SPEC CHECKSUMS:
   Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
-  Operation-iOS: baaefb77e48da5eacf9f6643b6e75d76f65198e4
+  Operation-iOS: 5f1c2cb82bf10f46b92faefc92d5821550b14eb5
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
@@ -1137,7 +1137,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 867607a51eafadc6402b5c6f6acc0d8efdb98746
-  SubstrateSdk: e8f25fb1ab746f93ee045a559dde1b3f7684f54a
+  SubstrateSdk: 04c2fadf64483ebba8ec78999267305270017541
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1152,6 +1152,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 613613907231198021bbf4503cb47f2f1459145d
+PODFILE CHECKSUM: cfaaa2e46421095703931ad96387e1660d1734f0
 
 COCOAPODS: 1.15.2
