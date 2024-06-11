@@ -18,6 +18,7 @@ enum SettingsKey: String {
     case polkadotStakingPromoSeen
     case notificationsEnabled
     case notificationsSetupSeen
+    case integrateNetworksBannerSeen
 }
 
 extension SettingsManagerProtocol {
@@ -193,6 +194,16 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.notificationsSetupSeen.rawValue)
+        }
+    }
+
+    var integrateNetworksBannerSeen: Bool {
+        get {
+            bool(for: SettingsKey.integrateNetworksBannerSeen.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.integrateNetworksBannerSeen.rawValue)
         }
     }
 }

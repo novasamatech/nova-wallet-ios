@@ -1,14 +1,20 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct NetworksListViewFactory {
     static func createView() -> NetworksListViewProtocol? {
-        let interactor = NetworksListInteractor(chainRegistry: ChainRegistryFacade.sharedRegistry)
+        let interactor = NetworksListInteractor(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            settingsManager: SettingsManager.shared
+        )
+
         let wireframe = NetworksListWireframe()
 
         let viewModelFactory = NetworksListViewModelFactory(
             networkViewModelFactory: NetworkViewModelFactory(),
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            settingsManager: SettingsManager.shared
         )
 
         let presenter = NetworksListPresenter(

@@ -94,8 +94,14 @@ final class ChainSyncService {
             }
 
             let newOrUpdated: [ChainModel] = remoteItems.enumerated().compactMap { index, remoteItem in
-                chainConverter.update(
-                    localModel: localMapping[remoteItem.chainId],
+                let localItem = localMapping[remoteItem.chainId]
+
+                if let localItem, localItem.source == .user {
+                    return nil
+                }
+
+                return chainConverter.update(
+                    localModel: localItem,
                     remoteModel: remoteItem,
                     additionalAssets: remoteEvmTokens[remoteItem.chainId] ?? [],
                     order: Int64(index)

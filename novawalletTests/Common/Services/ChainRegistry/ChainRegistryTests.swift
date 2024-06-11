@@ -39,7 +39,12 @@ class ChainRegistryTests: XCTestCase {
         
         let converter = ChainModelConverter()
         let expectedChains = remoteChains.enumerated().compactMap { (index, remoteModel) in
-            converter.update(localModel: nil, remoteModel: remoteModel, additionalAssets: [], order: Int64(index))
+            converter.update(
+                localModel: nil,
+                remoteModel: remoteModel,
+                additionalAssets: [],
+                order: Int64(index)
+            )
         }
         
         let expectedChainIds = Set(expectedChains.map { $0.chainId })

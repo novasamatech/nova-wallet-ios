@@ -348,7 +348,12 @@ extension ChainModel {
         )
     }
 
-    func byChanging(assets: Set<AssetModel>? = nil, name: String? = nil) -> ChainModel {
+    func byChanging(
+        assets: Set<AssetModel>? = nil,
+        name: String? = nil,
+        enabled: Bool? = nil,
+        source: Source? = nil
+    ) -> ChainModel {
         let newAssets = assets ?? self.assets
         let newName = name ?? self.name
 
@@ -368,8 +373,8 @@ extension ChainModel {
             order: order,
             additional: additional,
             syncMode: syncMode,
-            source: source,
-            enabled: enabled
+            source: source ?? self.source,
+            enabled: enabled ?? self.enabled
         )
     }
 

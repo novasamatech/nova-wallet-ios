@@ -81,42 +81,6 @@ extension NetworksListViewLayout {
     struct Placeholder: Hashable {
         let message: String
         let buttonTitle: String
-        let onTapButton: () -> Void
-
-        static func == (
-            lhs: Placeholder,
-            rhs: Placeholder
-        ) -> Bool {
-            lhs.message == rhs.message &&
-                lhs.buttonTitle == rhs.buttonTitle
-        }
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(message)
-            hasher.combine(buttonTitle)
-        }
-    }
-
-    struct Banner: Hashable {
-        let title: String
-        let message: String
-        let buttonTitle: String
-        let onTapClose: () -> Void
-
-        static func == (
-            lhs: Banner,
-            rhs: Banner
-        ) -> Bool {
-            lhs.title == rhs.title &&
-                lhs.message == rhs.message &&
-                lhs.buttonTitle == rhs.buttonTitle
-        }
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(title)
-            hasher.combine(message)
-            hasher.combine(buttonTitle)
-        }
     }
 
     enum Section: Hashable {
@@ -126,7 +90,8 @@ extension NetworksListViewLayout {
 
     enum Row: Hashable {
         case network(NetworkWithConnectionModel)
-        case banner(Banner)
+        case banner
+        case placeholder(Placeholder)
     }
 
     struct Model {

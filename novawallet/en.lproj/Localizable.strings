@@ -1523,3 +1523,7 @@
 "common.disabled" = "Disabled";
 "common.testnet" = "Testnet";
 "networks.list.add.network.button.title" = "Add network";
+"integrate.network.banner.title" = "Building for Polkadot?";
+"integrate.network.banner.message" = "Integrate all the features of the network you are building into Nova Wallet, making it accessible to everyone.";
+"integrate.network.banner.button.link" = "Integrate your network";
+"networks.list.placeholder.messsage" = "Added custom networks will appear here";

@@ -1,20 +1,25 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 class NetworksListViewModelFactory {
     typealias NetworkViewModel = NetworksListViewLayout.NetworkWithConnectionModel
     typealias NetorkListViewModel = NetworksListViewLayout.Model
+    typealias SectionModel = NetworksListViewLayout.Section
     typealias RowModel = NetworksListViewLayout.Row
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
+    let settingsManager: SettingsManagerProtocol
 
     init(
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        settingsManager: SettingsManagerProtocol
     ) {
         self.networkViewModelFactory = networkViewModelFactory
         self.localizationManager = localizationManager
+        self.settingsManager = settingsManager
     }
 
     func createDefaultViewModel(
@@ -40,17 +45,23 @@ class NetworksListViewModelFactory {
         indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
     ) -> NetorkListViewModel {
-        .init(
-            sections: [
-                .networks(
-                    createRows(
-                        from: chains,
-                        indexes: indexes,
-                        with: connectionStates
-                    )
+        var sections: [SectionModel] = []
+
+        if settingsManager.integrateNetworksBannerSeen == false {
+            sections.append(.banner([.banner]))
+        }
+
+        sections.append(
+            .networks(
+                createRows(
+                    from: chains,
+                    indexes: indexes,
+                    with: connectionStates
                 )
-            ]
+            )
         )
+
+        return .init(sections: sections)
     }
 
     private func createRows(
@@ -58,7 +69,22 @@ class NetworksListViewModelFactory {
         indexes: [ChainModel.Id: Int],
         with connectionStates: [ChainModel.Id: NetworksListPresenter.ConnectionState]
     ) -> [RowModel] {
-        chains.map { chainModel in
+        guard !chains.isEmpty else {
+            return [
+                .placeholder(
+                    .init(
+                        message: R.string.localizable.networksListPlaceholderMesssage(
+                            preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ),
+                        buttonTitle: R.string.localizable.networksListAddNetworkButtonTitle(
+                            preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        )
+                    )
+                )
+            ]
+        }
+
+        return chains.map { chainModel in
 
             let connectionState: NetworkViewModel.ConnectionState
 

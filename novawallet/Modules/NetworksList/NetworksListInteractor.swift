@@ -1,16 +1,20 @@
 import UIKit
 import RobinHood
 import SubstrateSdk
+import SoraKeystore
 
 final class NetworksListInteractor {
     weak var presenter: NetworksListInteractorOutputProtocol?
 
     let chainRegistry: ChainRegistryProtocol
+    let settingsManager: SettingsManagerProtocol
 
-    private var chains: [ChainModel.Id: ChainModel] = [:]
-
-    init(chainRegistry: ChainRegistryProtocol) {
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        settingsManager: SettingsManagerProtocol
+    ) {
         self.chainRegistry = chainRegistry
+        self.settingsManager = settingsManager
     }
 
     private func subscribeChains() {
@@ -19,10 +23,26 @@ final class NetworksListInteractor {
             runningInQueue: .main
         ) { [weak self] changes in
             guard let self else { return }
-            presenter?.didReceiveChains(changes: changes)
 
-            chains = changes.mergeToDict(chains)
-            chains.keys.forEach { self.chainRegistry.subscribeChainState(self, chainId: $0) }
+            changes.forEach { change in
+                switch change {
+                case let .insert(newItem):
+                    self.chainRegistry.subscribeChainState(
+                        self,
+                        chainId: newItem.chainId
+                    )
+                case let .delete(deletedIdentifier):
+                    self.chainRegistry.unsubscribeChainState(
+                        self,
+                        chainId: deletedIdentifier
+                    )
+
+                default:
+                    break
+                }
+            }
+
+            presenter?.didReceiveChains(changes: changes)
         }
     }
 }
@@ -30,6 +50,10 @@ final class NetworksListInteractor {
 extension NetworksListInteractor: NetworksListInteractorInputProtocol {
     func provideChains() {
         subscribeChains()
+    }
+
+    func setIntegrationBannerSeen() {
+        settingsManager.integrateNetworksBannerSeen = true
     }
 }
 
