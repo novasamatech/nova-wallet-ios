@@ -1527,3 +1527,8 @@
 "integrate.network.banner.message" = "Integrate all the features of the network you are building into Nova Wallet, making it accessible to everyone.";
 "integrate.network.banner.button.link" = "Integrate your network";
 "networks.list.placeholder.messsage" = "Added custom networks will appear here";
+"network.details.default.nodes.section.title" = "Default Nodes";
+"network.details.custom.nodes.section.title" = "Custom nodes";
+"network.details.enable.connection" = "Enable connection";
+"network.details.auto.balance" = "Auto-balance nodes";
+"network.details.add.custom.node" = "Add custom node";

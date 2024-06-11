@@ -1523,4 +1523,12 @@
 "common.disabled" = "Отключено";
 "common.testnet" = "Testnet";
 "networks.list.add.network.button.title" = "Добавить сеть";
+"integrate.network.banner.title" = "Разрабатываете для Polkadot?";
+"integrate.network.banner.message" = "Интегрируйте все возможности создаваемой вами сети в Nova Wallet, сделав ее доступной для всех.";
+"integrate.network.banner.button.link" = "Интегрируйте свою сеть";
 "networks.list.placeholder.messsage" = "Добавленные сети будут видны здесь";
+"network.details.default.nodes.section.title" = "Ноды по умолчанию";
+"network.details.custom.nodes.section.title" = "Пользовательские ноды";
+"network.details.enable.connection" = "Включить соединение";
+"network.details.auto.balance" = "Авто-балансирвоать ноды";
+"network.details.add.custom.node" = "Добавить пользовательскую ноду";
