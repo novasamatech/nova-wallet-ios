@@ -7,6 +7,7 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
     let presenter: NetworkDetailsPresenterProtocol
 
     private var viewModel: ViewModel?
+    private var nodesViewModels: [RootViewType.NodeModel] = []
 
     init(presenter: NetworkDetailsPresenterProtocol) {
         self.presenter = presenter
@@ -33,10 +34,30 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
 // MARK: NetworkDetailsViewProtocol
 
 extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
-    func updateNodes(with _: NetworkDetailsViewLayout.Model) {}
+    func updateNodes(with viewModel: NetworkDetailsViewLayout.Section) {
+        viewModel
+            .rows
+            .forEach { row in
+                guard case let .node(nodeModel) = row else {
+                    return
+                }
+
+                let indexPath = IndexPath(
+                    row: nodeModel.index,
+                    section: 2
+                )
+
+                let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworkDetailsNodeTableViewCell
+                cell?.bind(viewModel: nodeModel)
+                nodesViewModels[indexPath.row] = nodeModel
+            }
+    }
 
     func update(with viewModel: NetworkDetailsViewLayout.Model) {
         self.viewModel = viewModel
+
+        nodesViewModels = extractNodesViewModels(from: viewModel)
+
         rootView.tableView.reloadData()
     }
 }
@@ -158,5 +179,15 @@ private extension NetworkDetailsViewController {
         rootView.tableView.registerClassForCell(SettingsTableViewCell.self)
         rootView.tableView.registerClassForCell(NetworkDetailsNodeTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
+    }
+
+    func extractNodesViewModels(from viewModel: ViewModel) -> [RootViewType.NodeModel] {
+        viewModel.sections
+            .flatMap(\.rows)
+            .compactMap { row -> RootViewType.NodeModel? in
+                guard case let .node(nodeModel) = row else { return nil }
+
+                return nodeModel
+            }
     }
 }

@@ -13,18 +13,46 @@ class NetworkDetailsViewModelFactory {
 
     func createViewModel(
         for network: ChainModel,
-        nodes: [MeasuredNode],
-        nodesIndexes: [String: Int]
+        nodes: [ChainNodeModel],
+        nodesIndexes: [String: Int],
+        connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Details {
         Details(
             sections: [
                 createSwitchesSection(for: network),
                 createAddNodeSection(),
-                createNodesSection(with: nodes, nodesIndexes: nodesIndexes)
+                createNodesSection(
+                    with: nodes,
+                    nodesIndexes: nodesIndexes,
+                    connectionStates: connectionStates
+                )
             ]
         )
     }
 
+    func createNodesSection(
+        with nodes: [ChainNodeModel],
+        nodesIndexes: [String: Int],
+        connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
+    ) -> Section {
+        Section(
+            title: "Default Nodes".uppercased(),
+            rows: nodes.map {
+                .node(
+                    createNodeViewModel(
+                        for: $0,
+                        indexes: nodesIndexes,
+                        connectionStates: connectionStates
+                    )
+                )
+            }
+        )
+    }
+}
+
+// MARK: Private
+
+private extension NetworkDetailsViewModelFactory {
     func createSwitchesSection(for network: ChainModel) -> Section {
         Section(
             title: nil,
@@ -56,44 +84,35 @@ class NetworkDetailsViewModelFactory {
         )
     }
 
-    func createNodesSection(
-        with nodes: [MeasuredNode],
-        nodesIndexes: [String: Int]
-    ) -> Section {
-        Section(
-            title: "Default Nodes".uppercased(),
-            rows: nodes.map {
-                .node(createNodeViewModel(for: $0, index: nodesIndexes[$0.node.url]!))
-            }
-        )
-    }
-
     func createNodeViewModel(
-        for measuredNode: MeasuredNode,
-        index: Int
+        for node: ChainNodeModel,
+        indexes: [String: Int],
+        connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Node {
-        let connectionState: Node.ConnectionState = switch measuredNode.connectionState {
-        case .connecting:
-            .connecting(
+        let connectionState: Node.ConnectionState
+
+        if let nodeConnectionState = connectionStates[node.url],
+           case let .pinged(ping) = nodeConnectionState {
+            connectionState = switch ping {
+            case 0 ..< 100:
+                .pinged(.low("\(ping)"))
+            case 100 ..< 500:
+                .pinged(.medium("\(ping)"))
+            default:
+                .pinged(.high("\(ping)"))
+            }
+        } else {
+            connectionState = .connecting(
                 R.string.localizable.networkStatusConnecting(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
                 ).uppercased()
             )
-        case let .connected(ping):
-            switch ping {
-            case 0 ..< 100:
-                .connected(.low("\(ping)"))
-            case 100 ..< 500:
-                .connected(.medium("\(ping)"))
-            default:
-                .connected(.high("\(ping)"))
-            }
         }
 
         return Node(
-            index: index,
-            name: measuredNode.node.name,
-            url: measuredNode.node.url,
+            index: indexes[node.url]!,
+            name: node.name,
+            url: node.url,
             connectionState: connectionState,
             selected: false
         )

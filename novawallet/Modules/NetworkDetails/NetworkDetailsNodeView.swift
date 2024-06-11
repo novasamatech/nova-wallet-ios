@@ -88,7 +88,7 @@ final class NetworkDetailsNodeView: UIView {
         case let .connecting(string):
             networkStatusView.title = string
             networkStatusView.iconImage = R.image.iconConnectionStatusConnecting()
-        case let .connected(ping):
+        case let .pinged(ping):
             switch ping {
             case let .low(text):
                 networkStatusView.title = text
@@ -100,6 +100,8 @@ final class NetworkDetailsNodeView: UIView {
                 networkStatusView.title = text
                 networkStatusView.iconImage = R.image.iconConnectionStatusPerfect()
             }
+        default:
+            break
         }
     }
 }

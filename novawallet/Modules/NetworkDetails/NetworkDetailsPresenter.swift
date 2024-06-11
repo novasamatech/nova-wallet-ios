@@ -6,8 +6,9 @@ final class NetworkDetailsPresenter {
     let interactor: NetworkDetailsInteractorInputProtocol
 
     private var chain: ChainModel
-    private var sortedNodes: [MeasuredNode] = []
-    private var nodes: [String: MeasuredNode] = [:]
+    private var sortedNodes: [ChainNodeModel] = []
+    private var connectionStates: [String: ConnectionState] = [:]
+    private var nodes: [String: ChainNodeModel] = [:]
     private var nodesIndexes: [String: Int] = [:]
 
     private let viewModelFactory: NetworkDetailsViewModelFactory
@@ -23,9 +24,7 @@ final class NetworkDetailsPresenter {
         self.chain = chain
         self.viewModelFactory = viewModelFactory
 
-        sortedNodes = chain.nodes
-            .sorted { $0.order < $1.order }
-            .map { .init(connectionState: .connecting, node: $0) }
+        sortedNodes = chain.nodes.sorted { $0.order < $1.order }
     }
 }
 
@@ -51,7 +50,7 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     }
 
     func selectNode(at index: Int) {
-        let url = sortedNodes[index].node.url
+        let url = sortedNodes[index].url
         interactor.selectNode(with: url)
     }
 }
@@ -61,18 +60,24 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
 extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
     func didReceive(updatedChain: ChainModel) {
         chain = updatedChain
-        sortedNodes = chain.nodes
-            .sorted { $0.order < $1.order }
-            .map { .init(connectionState: .connecting, node: $0) }
+        sortedNodes = chain.nodes.sorted { $0.order < $1.order }
 
         indexNodes()
         provideViewModel()
     }
 
-    func didReceive(measuredNode: MeasuredNode) {
-        nodes[measuredNode.node.url] = measuredNode
+    func didReceive(
+        _ connectionState: ConnectionState,
+        for nodeURL: String
+    ) {
+        connectionStates[nodeURL] = connectionState
 
-        provideNodeViewModel(for: measuredNode.node.url)
+        switch connectionState {
+        case .connecting, .pinged:
+            provideNodeViewModel(for: nodeURL)
+        case .connected:
+            print(connectionState)
+        }
     }
 }
 
@@ -83,7 +88,8 @@ private extension NetworkDetailsPresenter {
         let viewModel = viewModelFactory.createViewModel(
             for: chain,
             nodes: sortedNodes,
-            nodesIndexes: nodesIndexes
+            nodesIndexes: nodesIndexes,
+            connectionStates: connectionStates
         )
         view?.update(with: viewModel)
     }
@@ -96,10 +102,10 @@ private extension NetworkDetailsPresenter {
             return
         }
 
-        let viewModel = viewModelFactory.createViewModel(
-            for: chain,
-            nodes: [node],
-            nodesIndexes: nodesIndexes
+        let viewModel = viewModelFactory.createNodesSection(
+            with: [node],
+            nodesIndexes: nodesIndexes,
+            connectionStates: connectionStates
         )
 
         view?.updateNodes(with: viewModel)
@@ -108,8 +114,16 @@ private extension NetworkDetailsPresenter {
     func indexNodes() {
         nodesIndexes = [:]
 
-        sortedNodes.enumerated().forEach { index, measuredNode in
-            nodesIndexes[measuredNode.node.url] = index
+        sortedNodes.enumerated().forEach { index, node in
+            nodesIndexes[node.url] = index
         }
+    }
+}
+
+extension NetworkDetailsPresenter {
+    enum ConnectionState {
+        case connecting
+        case connected
+        case pinged(TimeInterval)
     }
 }

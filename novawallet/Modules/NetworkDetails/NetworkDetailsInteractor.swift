@@ -9,16 +9,16 @@ final class NetworkDetailsInteractor {
     private var chain: ChainModel
     private let connectionFactory: ConnectionFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
-    private let chainSyncService: ChainSyncServiceProtocol
     private let repository: AnyDataProviderRepository<ChainModel>
     private let operationQueue: OperationQueue
     private let nodeMeasureQueue: OperationQueue
+
+    private var nodesConnections: [String: ChainConnection] = [:]
 
     init(
         chain: ChainModel,
         connectionFactory: ConnectionFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        chainSyncService: ChainSyncServiceProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue,
         nodeMeasureQueue: OperationQueue
@@ -26,7 +26,6 @@ final class NetworkDetailsInteractor {
         self.chain = chain
         self.connectionFactory = connectionFactory
         self.chainRegistry = chainRegistry
-        self.chainSyncService = chainSyncService
         self.repository = repository
         self.operationQueue = operationQueue
         self.nodeMeasureQueue = nodeMeasureQueue
@@ -37,27 +36,8 @@ final class NetworkDetailsInteractor {
 
 extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     func setup() {
-        chainRegistry.chainsSubscribe(
-            self,
-            runningInQueue: .main
-        ) { [weak self] changes in
-            let changedChain = changes
-                .filter { change in
-                    change.item?.chainId == self?.chain.chainId
-                }
-                .first?
-                .item
-
-            guard
-                let changedChain,
-                self?.chain != changedChain
-            else {
-                return
-            }
-
-            self?.chain = changedChain
-            self?.presenter?.didReceive(updatedChain: changedChain)
-        }
+        connectToChainNodes()
+        subscribeChainChanges()
     }
 
     func toggleNetwork() {
@@ -95,6 +75,32 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     }
 }
 
+// MARK: WebSocketEngineDelegate
+
+extension NetworkDetailsInteractor: WebSocketEngineDelegate {
+    func webSocketDidSwitchURL(_: AnyObject, newUrl _: URL) {}
+
+    func webSocketDidChangeState(
+        _ connection: AnyObject,
+        from _: WebSocketEngine.State,
+        to newState: WebSocketEngine.State
+    ) {
+        guard
+            let connection = connection as? ChainConnection,
+            let nodeUrl = connection.urls.first
+        else {
+            return
+        }
+
+        switch newState {
+        case .notConnected, .connecting, .waitingReconnection:
+            presenter?.didReceive(.connecting, for: nodeUrl.absoluteString)
+        case .connected:
+            presenter?.didReceive(.connected, for: nodeUrl.absoluteString)
+        }
+    }
+}
+
 // MARK: ConnectionStateSubscription
 
 extension NetworkDetailsInteractor: ConnectionStateSubscription {
@@ -108,8 +114,53 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
     }
 }
 
+extension NetworkDetailsInteractor {
+    enum ConnectionState {
+        case connecting
+        case connected
+    }
+}
+
 // MARK: Private
 
 private extension NetworkDetailsInteractor {
     func measureConnection(for _: ChainNodeModel) {}
+
+    func subscribeChainChanges() {
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .main
+        ) { [weak self] changes in
+            let changedChain = changes
+                .filter { change in
+                    change.item?.chainId == self?.chain.chainId
+                }
+                .first?
+                .item
+
+            guard
+                let changedChain,
+                self?.chain != changedChain
+            else {
+                return
+            }
+
+            self?.chain = changedChain
+            self?.presenter?.didReceive(updatedChain: changedChain)
+        }
+    }
+
+    func connectToChainNodes() {
+        chain.nodes.forEach { node in
+            guard let connection = try? connectionFactory.createConnection(
+                for: node,
+                chain: chain,
+                delegate: self
+            ) else {
+                return
+            }
+
+            nodesConnections[node.url] = connection
+        }
+    }
 }

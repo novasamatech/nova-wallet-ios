@@ -1,10 +1,13 @@
 import UIKit
 
 final class NetworkDetailsViewLayout: UIView {
-    let tableView: UITableView = .create { view in
+    let tableView: UITableView = {
+        let view = UITableView(frame: .zero, style: .grouped)
         view.backgroundColor = R.color.colorSecondaryScreenBackground()
         view.separatorStyle = .none
-    }
+
+        return view
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,7 +42,7 @@ extension NetworkDetailsViewLayout {
 
         enum ConnectionState {
             case connecting(String)
-            case connected(Ping)
+            case pinged(Ping)
         }
 
         let index: Int

@@ -41,36 +41,6 @@ final class NetworksListViewController: UIViewController, ViewHolder {
     }
 }
 
-// MARK: UITableViewDataSource
-
-extension NetworksListViewController: UITableViewDataSource {
-    func numberOfSections(in _: UITableView) -> Int {
-        viewModel?.sections.count ?? 0
-    }
-
-    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch viewModel?.sections[section] {
-        case let .banner(rows), let .networks(rows):
-            return rows.count
-        case .none:
-            return 0
-        }
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let viewModel else { return UITableViewCell() }
-
-        return switch viewModel.sections[indexPath.section] {
-        case let .banner(rows), let .networks(rows):
-            cellFor(
-                row: rows[indexPath.row],
-                in: tableView,
-                at: indexPath
-            )
-        }
-    }
-}
-
 // MARK: NetworksListViewProtocol
 
 extension NetworksListViewController: NetworksListViewProtocol {
@@ -105,6 +75,36 @@ extension NetworksListViewController: NetworksListViewProtocol {
                     networkViewModels[indexPath.row] = networkModel
                 }
             }
+    }
+}
+
+// MARK: UITableViewDataSource
+
+extension NetworksListViewController: UITableViewDataSource {
+    func numberOfSections(in _: UITableView) -> Int {
+        viewModel?.sections.count ?? 0
+    }
+
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch viewModel?.sections[section] {
+        case let .banner(rows), let .networks(rows):
+            return rows.count
+        case .none:
+            return 0
+        }
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let viewModel else { return UITableViewCell() }
+
+        return switch viewModel.sections[indexPath.section] {
+        case let .banner(rows), let .networks(rows):
+            cellFor(
+                row: rows[indexPath.row],
+                in: tableView,
+                at: indexPath
+            )
+        }
     }
 }
 
