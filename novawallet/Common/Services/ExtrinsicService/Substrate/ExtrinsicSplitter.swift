@@ -162,7 +162,7 @@ final class ExtrinsicSplitter {
                     targetCalls.append(internalCall)
                     totalWeight += callWeight
                 } else {
-                    totalWeight = 0
+                    totalWeight = callWeight
 
                     extrinsics.append(targetCalls)
                     targetCalls = [internalCall]
