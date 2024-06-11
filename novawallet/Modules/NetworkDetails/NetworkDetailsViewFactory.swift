@@ -38,40 +38,4 @@ struct NetworkDetailsViewFactory {
 
         return view
     }
-
-    // swiftlint:enable function_body_length
-
-    private static func createFilesOperationFactory() -> RuntimeFilesOperationFactoryProtocol {
-        let topDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first ??
-            FileManager.default.temporaryDirectory
-        let runtimeDirectory = topDirectory.appendingPathComponent("runtime").path
-        return RuntimeFilesOperationFactory(
-            repository: FileRepository(),
-            directoryPath: runtimeDirectory
-        )
-    }
-
-    private static func createChainProvider(
-        from repositoryFacade: StorageFacadeProtocol,
-        chainRepository: CoreDataRepository<ChainModel, CDChain>
-    ) -> StreamableProvider<ChainModel> {
-        let chainObserver = CoreDataContextObservable(
-            service: repositoryFacade.databaseService,
-            mapper: chainRepository.dataMapper,
-            predicate: { _ in true }
-        )
-
-        chainObserver.start { error in
-            if let error = error {
-                Logger.shared.error("Chain database observer unexpectedly failed: \(error)")
-            }
-        }
-
-        return StreamableProvider(
-            source: AnyStreamableSource(EmptyStreamableSource<ChainModel>()),
-            repository: AnyDataProviderRepository(chainRepository),
-            observable: AnyDataProviderRepositoryObservable(chainObserver),
-            operationManager: OperationManagerFacade.sharedManager
-        )
-    }
 }
