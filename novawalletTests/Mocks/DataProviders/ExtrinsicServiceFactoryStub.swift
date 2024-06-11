@@ -17,7 +17,7 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicExtension]
+        extensions: [ExtrinsicSignedExtending]
     ) -> ExtrinsicServiceProtocol {
         extrinsicService
     }
@@ -25,7 +25,7 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     func createOperationFactory(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicExtension]
+        extensions: [ExtrinsicSignedExtending]
     ) -> ExtrinsicOperationFactoryProtocol {
         extrinsicOperationFactory
     }

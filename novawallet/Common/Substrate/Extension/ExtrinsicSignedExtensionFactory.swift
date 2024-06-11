@@ -7,42 +7,42 @@ import SubstrateSdk
  *      - provide coders to encode/decode signed extension's parameters part of signed extra
  */
 protocol ExtrinsicSignedExtensionFactoryProtocol {
-    func createExtensions() -> [ExtrinsicExtension]
+    func createExtensions() -> [ExtrinsicSignedExtending]
 
-    func createExtensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [ExtrinsicExtension]
+    func createExtensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [ExtrinsicSignedExtending]
 
-    func createCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicExtensionCoder]
+    func createCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding]
 }
 
 final class ExtrinsicSignedExtensionFactory {}
 
 extension ExtrinsicSignedExtensionFactory: ExtrinsicSignedExtensionFactoryProtocol {
-    func createExtensions() -> [ExtrinsicExtension] {
+    func createExtensions() -> [ExtrinsicSignedExtending] {
         [
-            ChargeAssetTxPayment()
+            ExtrinsicSignedExtension.ChargeAssetTxPayment()
         ]
     }
 
-    func createExtensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [ExtrinsicExtension] {
+    func createExtensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [ExtrinsicSignedExtending] {
         [
             AssetConversionTxPayment(assetId: assetId)
         ]
     }
 
-    func createCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicExtensionCoder] {
+    func createCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
         DefaultSignedExtensionCoders.createDefaultCoders(for: metadata)
     }
 }
 
 enum DefaultSignedExtensionCoders {
-    static func createDefaultCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicExtensionCoder] {
-        let extensionName = ChargeAssetTxPayment.name
+    static func createDefaultCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
+        let extensionId = Extrinsic.SignedExtensionId.assetTxPayment
 
-        let extraType = metadata.getSignedExtensionType(for: extensionName)
+        let extraType = metadata.getSignedExtensionType(for: extensionId)
 
         return [
-            DefaultExtrinsicExtensionCoder(
-                name: ChargeAssetTxPayment.name,
+            DefaultExtrinsicSignedExtensionCoder(
+                signedExtensionId: extensionId,
                 extraType: extraType ?? "pallet_asset_tx_payment.ChargeAssetTxPayment"
             )
         ]
