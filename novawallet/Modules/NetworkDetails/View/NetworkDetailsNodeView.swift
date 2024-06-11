@@ -124,26 +124,21 @@ private extension NetworkDetailsNodeView {
 
         roundedContainerView.contentView.makeHorizontal()
         roundedContainerView.contentView.stackView.alignment = .center
-        roundedContainerView.contentInsets = .init(
-            top: 9.5,
-            left: UIConstants.horizontalInset,
-            bottom: 9.5,
-            right: UIConstants.horizontalInset
-        )
+        roundedContainerView.contentInsets = Constants.contentInsets
 
-        roundedContainerView.contentView.spacing = 16.5
+        roundedContainerView.contentView.spacing = Constants.roundedContainerSpacing
 
         selectionImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(20)
+            make.width.height.equalTo(Constants.selectionImageHeight)
         }
 
         roundedContainerView.contentView.sView.stackView.alignment = .leading
-        roundedContainerView.contentView.sView.spacing = 6
+        roundedContainerView.contentView.sView.spacing = Constants.stackSpacing
 
-        roundedContainerView.contentView.sView.valueBottom.spacing = 6
+        roundedContainerView.contentView.sView.valueBottom.spacing = Constants.stackSpacing
         roundedContainerView.contentView.sView.valueBottom.stackView.alignment = .leading
 
-        networkStatusView.spacingBetweenLabelAndIcon = 6
+        networkStatusView.spacingBetweenLabelAndIcon = Constants.stackSpacing
         networkStatusView.titleFont = .semiBoldCaps2
 
         setNeedsLayout()
@@ -154,6 +149,21 @@ private extension NetworkDetailsNodeView {
         urlLabel.apply(style: .caption1Secondary)
 
         roundedContainerView.backgroundView.fillColor = R.color.colorBlockBackground()!
-        roundedContainerView.backgroundView.cornerRadius = 10
+        roundedContainerView.backgroundView.cornerRadius = Constants.cornerRadius
+    }
+}
+
+private extension NetworkDetailsNodeView {
+    enum Constants {
+        static let stackSpacing: CGFloat = 6.0
+        static let roundedContainerSpacing: CGFloat = 16.5
+        static let cornerRadius: CGFloat = 10.0
+        static let selectionImageHeight: CGFloat = 20.0
+        static let contentInsets = UIEdgeInsets(
+            top: 9.5,
+            left: UIConstants.horizontalInset,
+            bottom: 9.5,
+            right: UIConstants.horizontalInset
+        )
     }
 }

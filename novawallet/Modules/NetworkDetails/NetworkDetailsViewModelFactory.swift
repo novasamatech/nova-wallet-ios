@@ -7,8 +7,14 @@ class NetworkDetailsViewModelFactory {
 
     private let localizationManager: LocalizationManagerProtocol
 
-    init(localizationManager: LocalizationManagerProtocol) {
+    private let networkViewModelFactory: NetworkViewModelFactoryProtocol
+
+    init(
+        localizationManager: LocalizationManagerProtocol,
+        networkViewModelFactory: NetworkViewModelFactoryProtocol
+    ) {
         self.localizationManager = localizationManager
+        self.networkViewModelFactory = networkViewModelFactory
     }
 
     func createViewModel(
@@ -18,6 +24,7 @@ class NetworkDetailsViewModelFactory {
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Details {
         Details(
+            networkViewModel: networkViewModelFactory.createViewModel(from: network),
             sections: [
                 createSwitchesSection(for: network),
                 createAddNodeSection(),
@@ -38,7 +45,9 @@ class NetworkDetailsViewModelFactory {
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Section {
         Section(
-            title: "Default Nodes".uppercased(),
+            title: R.string.localizable.networkDetailsDefaultNodesSectionTitle(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).uppercased(),
             rows: nodes.map {
                 .node(
                     createNodeViewModel(
@@ -62,13 +71,23 @@ private extension NetworkDetailsViewModelFactory {
             rows: [
                 .switcher(
                     .init(
-                        underlyingViewModel: .init(title: "Enable connection", icon: nil),
+                        underlyingViewModel: .init(
+                            title: R.string.localizable.networkDetailsEnableConnection(
+                                preferredLanguages: localizationManager.selectedLocale.rLanguages
+                            ),
+                            icon: nil
+                        ),
                         selectable: network.enabled
                     )
                 ),
                 .switcher(
                     .init(
-                        underlyingViewModel: .init(title: "Auto-balance nodes", icon: nil),
+                        underlyingViewModel: .init(
+                            title: R.string.localizable.networkDetailsAutoBalance(
+                                preferredLanguages: localizationManager.selectedLocale.rLanguages
+                            ),
+                            icon: nil
+                        ),
                         selectable: network.connectionMode == .autoBalanced
                     )
                 )
@@ -78,10 +97,17 @@ private extension NetworkDetailsViewModelFactory {
 
     func createAddNodeSection() -> Section {
         Section(
-            title: "Custom nodes".uppercased(),
+            title: R.string.localizable.networkDetailsCustomNodesSectionTitle(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).uppercased(),
             rows: [
                 .addCustomNode(
-                    .init(title: "Add custom node", icon: nil)
+                    .init(
+                        title: R.string.localizable.networkDetailsAddCustomNode(
+                            preferredLanguages: localizationManager.selectedLocale.rLanguages
+                        ),
+                        icon: nil
+                    )
                 )
             ]
         )

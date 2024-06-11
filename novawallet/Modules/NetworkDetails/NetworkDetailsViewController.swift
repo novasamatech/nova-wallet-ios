@@ -58,6 +58,7 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
 
         nodesViewModels = extractNodesViewModels(from: viewModel)
 
+        rootView.headerView.bind(viewModel: viewModel.networkViewModel)
         rootView.tableView.reloadData()
     }
 }
@@ -143,7 +144,7 @@ extension NetworkDetailsViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        section == 0 ? 0.0 : 37.0
+        section == 0 ? .zero : Constants.headerHeight
     }
 }
 
@@ -194,5 +195,15 @@ private extension NetworkDetailsViewController {
 
                 return nodeModel
             }
+    }
+}
+
+private extension NetworkDetailsViewController {
+    enum Constants {
+        static let headerHeight: CGFloat = 37.0
+        static let networkIconSize = CGSize(
+            width: 32,
+            height: 32
+        )
     }
 }

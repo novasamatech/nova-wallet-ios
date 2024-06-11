@@ -1,6 +1,11 @@
-import UIKit
+import SoraUI
 
 final class NetworkDetailsViewLayout: UIView {
+    let headerView: StackNetworkCell = .create { view in
+        view.iconSize = .init(width: 32, height: 32)
+        view.nameLabel.apply(style: .boldTitle2Primary)
+    }
+
     let tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .grouped)
         view.backgroundColor = R.color.colorSecondaryScreenBackground()
@@ -25,8 +30,16 @@ final class NetworkDetailsViewLayout: UIView {
     private func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.bottom.equalToSuperview()
         }
+
+        headerView.snp.makeConstraints { make in
+            make.height.equalTo(72)
+        }
+
+        tableView.tableHeaderView = headerView
+        tableView.layoutIfNeeded()
     }
 }
 
@@ -64,6 +77,7 @@ extension NetworkDetailsViewLayout {
     }
 
     struct Model {
+        let networkViewModel: NetworkViewModel
         let sections: [Section]
     }
 }

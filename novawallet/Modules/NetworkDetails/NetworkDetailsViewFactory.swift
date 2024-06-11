@@ -22,7 +22,10 @@ struct NetworkDetailsViewFactory {
         )
         let wireframe = NetworkDetailsWireframe()
 
-        let viewModelFactory = NetworkDetailsViewModelFactory(localizationManager: LocalizationManager.shared)
+        let viewModelFactory = NetworkDetailsViewModelFactory(
+            localizationManager: LocalizationManager.shared,
+            networkViewModelFactory: NetworkViewModelFactory()
+        )
 
         let presenter = NetworkDetailsPresenter(
             interactor: interactor,
