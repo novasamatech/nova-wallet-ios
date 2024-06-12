@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraKeystore
 import BigInt
 
@@ -19,11 +19,11 @@ protocol EthereumOperationFactoryProtocol {
 
     func createTransactionReceiptOperation(for transactionHash: String) -> BaseOperation<EthereumTransactionReceipt?>
 
-    func createBlockOperation(for blockNumber: BigUInt) -> RobinHood.BaseOperation<EthereumBlockObject>
+    func createBlockOperation(for blockNumber: BigUInt) -> Operation_iOS.BaseOperation<EthereumBlockObject>
 
     func createReducedBlockOperation(
         for blockOption: EthereumBlock
-    ) -> RobinHood.BaseOperation<EthereumReducedBlockObject>
+    ) -> Operation_iOS.BaseOperation<EthereumReducedBlockObject>
 
     func createMaxPriorityPerGasOperation() -> BaseOperation<HexCodable<BigUInt>>
 }

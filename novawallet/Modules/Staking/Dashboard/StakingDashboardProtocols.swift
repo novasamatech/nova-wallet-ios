@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol StakingDashboardViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletSwitchViewModel)

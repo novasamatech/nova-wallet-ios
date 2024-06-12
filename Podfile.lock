@@ -817,13 +817,13 @@ PODS:
     - nanopb/encode (= 2.30909.1)
   - nanopb/decode (2.30909.1)
   - nanopb/encode (2.30909.1)
+  - Operation-iOS (2.0.1)
   - PromisesObjC (2.3.1)
   - R.swift (5.4.0):
     - R.swift.Library (~> 5.3.0)
   - R.swift.Library (5.3.0)
   - ReachabilitySwift (5.0.0)
   - RecaptchaInterop (100.0.0)
-  - RobinHood (2.6.1)
   - scrypt.c (0.1.1)
   - secp256k1.c (0.1.2)
   - SnapKit (5.0.1)
@@ -880,7 +880,7 @@ PODS:
   - SoraUI/Skrull (1.13.0)
   - Sourcery (1.4.1)
   - Starscream (4.0.10)
-  - SubstrateSdk (1.18.0):
+  - SubstrateSdk (3.0.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -888,8 +888,8 @@ PODS:
     - IrohaCrypto/sr25519 (~> 0.9.0)
     - IrohaCrypto/ss58 (~> 0.9.0)
     - keccak.c (~> 0.1.0)
+    - Operation-iOS (~> 2.0.1)
     - ReachabilitySwift (~> 5.0)
-    - RobinHood (~> 2.6.0)
     - Starscream
     - TweetNacl (~> 1.0.0)
     - xxHash-Swift (~> 1.0.0)
@@ -944,16 +944,16 @@ DEPENDENCIES:
   - FireMock
   - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.1`)
   - Kingfisher
+  - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
   - R.swift
   - ReachabilitySwift
-  - RobinHood (from `https://github.com/ERussel/robinhood-ios.git`, tag `2.6.1`)
   - SnapKit (~> 5.0.0)
   - SoraFoundation (from `https://github.com/ERussel/Foundation-iOS.git`, tag `1.1.0`)
   - SoraKeystore (~> 1.0.0)
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.10`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `15972937a303d575b4095ae4c8e9d7db1524df23`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.0.0`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1025,9 +1025,9 @@ EXTERNAL SOURCES:
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
-  RobinHood:
-    :git: https://github.com/ERussel/robinhood-ios.git
-    :tag: 2.6.1
+  Operation-iOS:
+    :git: https://github.com/novasamatech/Operation-iOS
+    :tag: 2.0.1
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -1038,8 +1038,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
-    :commit: 15972937a303d575b4095ae4c8e9d7db1524df23
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 3.0.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1062,9 +1062,9 @@ CHECKOUT OPTIONS:
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
-  RobinHood:
-    :git: https://github.com/ERussel/robinhood-ios.git
-    :tag: 2.6.1
+  Operation-iOS:
+    :git: https://github.com/novasamatech/Operation-iOS
+    :tag: 2.0.1
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -1075,8 +1075,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
-    :commit: 15972937a303d575b4095ae4c8e9d7db1524df23
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 3.0.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1123,12 +1123,12 @@ SPEC CHECKSUMS:
   Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
+  Operation-iOS: 5f1c2cb82bf10f46b92faefc92d5821550b14eb5
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RobinHood: bd66f17e8aeb64d2a739d4fe07e4725fc87919d5
   scrypt.c: b42ae06183251329d2b2c620c226fb541a4a3592
   secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
@@ -1137,7 +1137,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 867607a51eafadc6402b5c6f6acc0d8efdb98746
-  SubstrateSdk: 5060e92fdc1e4cadeb65c617d0dcfad388f0508d
+  SubstrateSdk: 04c2fadf64483ebba8ec78999267305270017541
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1152,6 +1152,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 5b9c755834bf7c7f2be2e2f2f82e78ce1d744739
+PODFILE CHECKSUM: cfaaa2e46421095703931ad96387e1660d1734f0
 
 COCOAPODS: 1.15.2

@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol QRCreationOperationFactoryProtocol {
     func createOperation(payload: Data, qrSize: CGSize) -> BaseOperation<UIImage>

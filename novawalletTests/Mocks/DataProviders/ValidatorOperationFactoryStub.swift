@@ -1,5 +1,5 @@
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 
 class ValidatorOperationFactoryStub: ValidatorOperationFactoryProtocol {
     private let electedValidatorList: [ElectedValidatorInfo]

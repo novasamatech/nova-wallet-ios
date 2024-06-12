@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 class ConvictionVotesFetchTests: XCTestCase {
     func testConvictionVotesFetch() throws {

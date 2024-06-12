@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class HydraStableswapPoolService: ObservableSubscriptionSyncService<HydraStableswap.PoolRemoteState> {
     let poolAsset: HydraDx.AssetId

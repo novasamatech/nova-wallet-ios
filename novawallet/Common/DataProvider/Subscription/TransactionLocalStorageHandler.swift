@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol TransactionLocalSubscriptionHandler: AnyObject {
     func handleTransactions(result: Result<[DataProviderChange<TransactionHistoryItem>], Error>)

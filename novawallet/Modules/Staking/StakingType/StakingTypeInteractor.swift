@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 import BigInt
 
 final class StakingTypeInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {

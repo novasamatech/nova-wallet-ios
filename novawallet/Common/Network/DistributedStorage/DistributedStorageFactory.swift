@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol DistributedStorageOperationFactoryProtocol {
     func createOperation<T: Decodable>(for storage: DistributedStorage) -> BaseOperation<T>

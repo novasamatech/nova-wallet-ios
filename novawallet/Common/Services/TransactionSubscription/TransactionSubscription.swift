@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 import BigInt
 
 struct TransactionSubscriptionResult {

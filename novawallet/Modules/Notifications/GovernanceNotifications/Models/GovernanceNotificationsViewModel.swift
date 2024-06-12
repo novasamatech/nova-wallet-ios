@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 struct GovernanceNotificationsViewModel: Identifiable {
     struct SelectedTracks {

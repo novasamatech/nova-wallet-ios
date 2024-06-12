@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class Pdc20DetailsInteractor: NftDetailsInteractor {
     private func provideMedia() {

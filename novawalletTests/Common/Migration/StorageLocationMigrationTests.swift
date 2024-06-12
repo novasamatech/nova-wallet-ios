@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 import CoreData
 
 final class StorageLocationMigrationTests: XCTestCase {

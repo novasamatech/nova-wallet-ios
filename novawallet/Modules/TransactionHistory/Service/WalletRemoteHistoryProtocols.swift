@@ -1,6 +1,6 @@
 import Foundation
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 
 enum WalletRemoteHistorySourceLabel: Int, CaseIterable {
     case transfers
