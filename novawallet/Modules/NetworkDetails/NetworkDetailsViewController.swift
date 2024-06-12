@@ -89,7 +89,8 @@ extension NetworkDetailsViewController: UITableViewDataSource {
             switchCell.delegate = self
             switchCell.bind(
                 titleViewModel: viewModel.underlyingViewModel,
-                isOn: viewModel.selectable
+                isOn: viewModel.selectable,
+                isEnabled: viewModel.enabled
             )
 
             cell = switchCell

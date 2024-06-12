@@ -183,6 +183,8 @@ private extension NetworkDetailsInteractor {
     }
 
     func connectToNodes(of chain: ChainModel) {
+        nodesConnections = [:]
+
         chain.nodes.forEach { node in
             guard let connection = try? connectionFactory.createConnection(
                 for: node,

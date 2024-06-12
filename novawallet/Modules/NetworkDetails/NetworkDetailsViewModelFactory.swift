@@ -77,7 +77,8 @@ private extension NetworkDetailsViewModelFactory {
                             ),
                             icon: nil
                         ),
-                        selectable: network.enabled
+                        selectable: network.enabled,
+                        enabled: network.chainId != KnowChainId.polkadot
                     )
                 ),
                 .switcher(
@@ -88,7 +89,8 @@ private extension NetworkDetailsViewModelFactory {
                             ),
                             icon: nil
                         ),
-                        selectable: network.connectionMode == .autoBalanced
+                        selectable: network.connectionMode == .autoBalanced && network.enabled,
+                        enabled: network.enabled
                     )
                 )
             ]
