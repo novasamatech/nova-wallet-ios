@@ -98,7 +98,9 @@ extension NetworkDetailsViewController: UITableViewDataSource {
             titleCell.bind(titleViewModel: title)
 
             cell = titleCell
-        case let .node(viewModel):
+        case .node:
+            let viewModel = nodesViewModels[indexPath.row]
+
             let nodeCell = tableView.dequeueReusableCellWithType(NetworkDetailsNodeTableViewCell.self)!
             nodeCell.bind(viewModel: viewModel)
 

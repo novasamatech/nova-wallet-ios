@@ -60,16 +60,35 @@ final class NetworkDetailsNodeView: UIView {
             UIImageView,
             GenericMultiValueView<
                 GenericMultiValueView<
-                    ImageWithTitleView
+                    GenericPairValueView<UIImageView, ShimmerLabel>
                 >
             >
         >
     >()
 
-    var selectionImageView: UIImageView { roundedContainerView.contentView.fView }
-    var nameLabel: UILabel { roundedContainerView.contentView.sView.valueTop }
-    var urlLabel: UILabel { roundedContainerView.contentView.sView.valueBottom.valueTop }
-    var networkStatusView: ImageWithTitleView { roundedContainerView.contentView.sView.valueBottom.valueBottom }
+    var selectionImageView: UIImageView {
+        roundedContainerView.contentView.fView
+    }
+
+    var nameLabel: UILabel {
+        roundedContainerView.contentView.sView.valueTop
+    }
+
+    var urlLabel: UILabel {
+        roundedContainerView.contentView.sView.valueBottom.valueTop
+    }
+
+    var networkStatusIcon: UIImageView {
+        roundedContainerView.contentView.sView.valueBottom.valueBottom.fView
+    }
+
+    var networkStatusLabel: ShimmerLabel {
+        roundedContainerView.contentView.sView.valueBottom.valueBottom.sView
+    }
+
+    var networkStatusView: GenericPairValueView<UIImageView, ShimmerLabel> {
+        roundedContainerView.contentView.sView.valueBottom.valueBottom
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -95,19 +114,27 @@ final class NetworkDetailsNodeView: UIView {
 
         switch viewModel.connectionState {
         case let .connecting(string):
-            networkStatusView.title = string
-            networkStatusView.iconImage = R.image.iconConnectionStatusConnecting()
+            networkStatusLabel.text = string
+            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
+
+            networkStatusLabel.applyShimmer(style: .semiboldCaps2Secondary)
+            networkStatusLabel.startShimmering()
         case let .pinged(ping):
+            networkStatusLabel.stopShimmering()
+
             switch ping {
             case let .low(text):
-                networkStatusView.title = text
-                networkStatusView.iconImage = R.image.iconConnectionStatusBad()
+                networkStatusLabel.text = text
+                networkStatusLabel.textColor = R.color.colorTextPositive()
+                networkStatusIcon.image = R.image.iconConnectionStatusPerfect()
             case let .medium(text):
-                networkStatusView.title = text
-                networkStatusView.iconImage = R.image.iconConnectionStatusGood()
+                networkStatusLabel.text = text
+                networkStatusLabel.textColor = R.color.colorTextWarning()
+                networkStatusIcon.image = R.image.iconConnectionStatusGood()
             case let .high(text):
-                networkStatusView.title = text
-                networkStatusView.iconImage = R.image.iconConnectionStatusPerfect()
+                networkStatusLabel.text = text
+                networkStatusLabel.textColor = R.color.colorTextNegative()
+                networkStatusIcon.image = R.image.iconConnectionStatusBad()
             }
         default:
             break
@@ -138,18 +165,24 @@ private extension NetworkDetailsNodeView {
         roundedContainerView.contentView.sView.valueBottom.spacing = Constants.stackSpacing
         roundedContainerView.contentView.sView.valueBottom.stackView.alignment = .leading
 
-        networkStatusView.spacingBetweenLabelAndIcon = Constants.stackSpacing
-        networkStatusView.titleFont = .semiBoldCaps2
+        networkStatusView.makeHorizontal()
+        networkStatusView.spacing = Constants.stackSpacing
+
+        networkStatusIcon.snp.makeConstraints { make in
+            make.width.height.equalTo(12)
+        }
 
         setNeedsLayout()
     }
 
     func setupStyle() {
-        nameLabel.apply(style: .footnoteSecondary)
+        nameLabel.apply(style: .footnotePrimary)
         urlLabel.apply(style: .caption1Secondary)
 
         roundedContainerView.backgroundView.fillColor = R.color.colorBlockBackground()!
         roundedContainerView.backgroundView.cornerRadius = Constants.cornerRadius
+
+        networkStatusLabel.apply(style: .semiboldCaps2Primary)
     }
 }
 

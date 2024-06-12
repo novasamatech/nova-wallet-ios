@@ -33,6 +33,7 @@ final class NetworkDetailsPresenter {
 extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     func setup() {
         interactor.setup()
+
         indexNodes()
         provideViewModel()
     }
@@ -114,9 +115,11 @@ private extension NetworkDetailsPresenter {
 
     func indexNodes() {
         nodesIndexes = [:]
+        nodes = [:]
 
         sortedNodes.enumerated().forEach { index, node in
             nodesIndexes[node.url] = index
+            nodes[node.url] = node
         }
     }
 }
@@ -125,6 +128,6 @@ extension NetworkDetailsPresenter {
     enum ConnectionState {
         case connecting
         case connected
-        case pinged(TimeInterval)
+        case pinged(Int)
     }
 }

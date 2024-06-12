@@ -10,8 +10,8 @@ final class NetworkDetailsInteractor {
     private let connectionFactory: ConnectionFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let repository: AnyDataProviderRepository<ChainModel>
+    private let storageRequestFactory: StorageRequestFactoryProtocol
     private let operationQueue: OperationQueue
-    private let nodeMeasureQueue: OperationQueue
 
     private var nodesConnections: [String: ChainConnection] = [:]
 
@@ -20,15 +20,15 @@ final class NetworkDetailsInteractor {
         connectionFactory: ConnectionFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
-        operationQueue: OperationQueue,
-        nodeMeasureQueue: OperationQueue
+        storageRequestFactory: StorageRequestFactoryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.connectionFactory = connectionFactory
         self.chainRegistry = chainRegistry
         self.repository = repository
+        self.storageRequestFactory = storageRequestFactory
         self.operationQueue = operationQueue
-        self.nodeMeasureQueue = nodeMeasureQueue
     }
 }
 
@@ -105,7 +105,7 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
             case .notConnected, .connecting, .waitingReconnection:
                 self.presenter?.didReceive(.connecting, for: nodeUrl.absoluteString)
             case .connected:
-                self.presenter?.didReceive(.connected, for: nodeUrl.absoluteString)
+                self.measureNodePing(for: nodeUrl)
             }
         }
     }
@@ -127,8 +127,6 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
 // MARK: Private
 
 private extension NetworkDetailsInteractor {
-    func measureConnection(for _: ChainNodeModel) {}
-
     func subscribeChainChanges() {
         chainRegistry.chainsSubscribe(
             self,
@@ -165,6 +163,64 @@ private extension NetworkDetailsInteractor {
 
             nodesConnections[node.url] = connection
         }
+    }
+
+    func measureNodePing(for nodeUrl: URL) {
+        guard
+            let connection = nodesConnections[nodeUrl.absoluteString],
+            let key = try? StorageKeyFactory().accountInfoKeyForId(
+                AccountId.zeroAccountId(of: chain.accountIdSize)
+            )
+        else {
+            return
+        }
+
+        let queryOperation = storageRequestFactory.queryOperation(
+            for: { [key] },
+            at: nil,
+            engine: connection
+        )
+
+        let measureOperation = createPingMeasureOperation(with: queryOperation)
+
+        execute(
+            wrapper: measureOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+
+            switch result {
+            case let .success(ping):
+                self?.presenter?.didReceive(
+                    .pinged(ping),
+                    for: nodeUrl.absoluteString
+                )
+            case let .failure(error):
+                print(error)
+            }
+        }
+    }
+
+    func createPingMeasureOperation(with queryOperation: BaseOperation<[[StorageUpdate]]>) -> CompoundOperationWrapper<Int> {
+        var startTime: CFAbsoluteTime?
+
+        let operation = AsyncClosureOperation { resultClosure in
+            let endTime = CFAbsoluteTimeGetCurrent()
+            let ping = Int((endTime - (startTime ?? 0)) * 1000)
+
+            resultClosure(.success(ping))
+        }
+
+        queryOperation.configurationBlock = {
+            startTime = CFAbsoluteTimeGetCurrent()
+        }
+
+        operation.addDependency(queryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: operation,
+            dependencies: [queryOperation]
+        )
     }
 }
 

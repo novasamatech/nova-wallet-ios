@@ -125,11 +125,11 @@ private extension NetworkDetailsViewModelFactory {
            case let .pinged(ping) = nodeConnectionState {
             connectionState = switch ping {
             case 0 ..< 100:
-                .pinged(.low("\(ping)"))
+                .pinged(.low("\(ping) MS"))
             case 100 ..< 500:
-                .pinged(.medium("\(ping)"))
+                .pinged(.medium("\(ping) MS"))
             default:
-                .pinged(.high("\(ping)"))
+                .pinged(.high("\(ping) MS"))
             }
         } else {
             connectionState = .connecting(

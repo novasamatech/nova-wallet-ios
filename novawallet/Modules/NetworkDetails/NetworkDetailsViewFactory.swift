@@ -1,5 +1,6 @@
 import SoraFoundation
 import Operation_iOS
+import SubstrateSdk
 
 struct NetworkDetailsViewFactory {
     static func createView(with chain: ChainModel) -> NetworkDetailsViewProtocol? {
@@ -12,13 +13,27 @@ struct NetworkDetailsViewFactory {
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
 
+        let operationManager = OperationManager(
+            operationQueue: OperationManagerFacade.assetsSyncQueue
+        )
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
+        let operationQueue: OperationQueue = {
+            let operationQueue = OperationQueue()
+            operationQueue.qualityOfService = .userInitiated
+            return operationQueue
+        }()
+
         let interactor = NetworkDetailsInteractor(
             chain: chain,
             connectionFactory: connectionFactory,
             chainRegistry: chainRegistry,
             repository: repository,
-            operationQueue: OperationManagerFacade.assetsRepositoryQueue,
-            nodeMeasureQueue: OperationManagerFacade.sharedDefaultQueue
+            storageRequestFactory: storageRequestFactory,
+            operationQueue: operationQueue
         )
         let wireframe = NetworkDetailsWireframe()
 
