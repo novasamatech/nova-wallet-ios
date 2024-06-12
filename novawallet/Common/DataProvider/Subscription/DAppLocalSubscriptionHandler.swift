@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol DAppLocalSubscriptionHandler: AnyObject {
     func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>)

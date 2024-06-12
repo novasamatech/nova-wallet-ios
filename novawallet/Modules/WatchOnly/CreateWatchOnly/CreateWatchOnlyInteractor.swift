@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 final class CreateWatchOnlyInteractor {
     weak var presenter: CreateWatchOnlyInteractorOutputProtocol?

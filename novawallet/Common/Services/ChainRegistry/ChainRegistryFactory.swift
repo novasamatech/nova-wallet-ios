@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 /**
@@ -49,6 +49,8 @@ final class ChainRegistryFactory {
 
         let runtimeSyncService = RuntimeSyncService(
             repository: AnyDataProviderRepository(runtimeMetadataRepository),
+            runtimeFetchFactory: RuntimeFetchOperationFactory(operationQueue: OperationManagerFacade.runtimeSyncQueue),
+            runtimeLocalMigrator: RuntimeLocalMigrator.createLatest(),
             filesOperationFactory: filesOperationFactory,
             dataOperationFactory: dataFetchOperationFactory,
             eventCenter: EventCenter.shared,

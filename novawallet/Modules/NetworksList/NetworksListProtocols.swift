@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol NetworksListViewProtocol: ControllerBackedProtocol {
     func update(with viewModel: NetworksListViewLayout.Model)

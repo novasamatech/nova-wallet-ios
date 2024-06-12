@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol PreferredValidatorsProviding {
     func createPreferredValidatorsWrapper(for chain: ChainModel) -> CompoundOperationWrapper<[AccountId]>

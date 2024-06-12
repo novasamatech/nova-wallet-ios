@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 extension CompoundOperationWrapper {
     func addDependency(operations: [Operation]) {

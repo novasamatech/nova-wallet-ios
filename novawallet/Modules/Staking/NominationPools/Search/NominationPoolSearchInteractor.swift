@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class NominationPoolSearchInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning {
     weak var presenter: NominationPoolSearchInteractorOutputProtocol?

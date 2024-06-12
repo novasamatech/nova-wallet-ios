@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import SoraKeystore
 import IrohaCrypto
 

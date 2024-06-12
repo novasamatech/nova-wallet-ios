@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 struct DAppBrowserViewFactory {
     static func createView(for userQuery: DAppSearchResult) -> DAppBrowserViewProtocol? {

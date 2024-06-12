@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 struct ProxiedSettings: Equatable, Identifiable {
     let identifier: String

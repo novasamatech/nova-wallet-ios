@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 struct ManagedMetaAccountModel: Equatable, Hashable {
     static let noOrder: UInt32 = 0

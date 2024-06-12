@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol WalletNotificationServiceProtocol: ApplicationServiceProtocol {
     var hasUpdatesObservable: Observable<Bool> { get }

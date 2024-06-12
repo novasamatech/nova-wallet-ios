@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 @testable import novawallet
 
 final class DataProviderStub<T: Identifiable>: DataProviderProtocol {

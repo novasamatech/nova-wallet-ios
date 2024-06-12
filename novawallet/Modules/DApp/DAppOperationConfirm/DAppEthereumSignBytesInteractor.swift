@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest

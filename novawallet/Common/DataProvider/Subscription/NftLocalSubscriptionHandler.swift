@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol NftLocalSubscriptionHandler: AnyObject {
     func handleNfts(result: Result<[DataProviderChange<NftModel>], Error>, wallet: MetaAccountModel)

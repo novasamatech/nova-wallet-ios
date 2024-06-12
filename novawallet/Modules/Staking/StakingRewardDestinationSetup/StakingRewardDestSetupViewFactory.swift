@@ -1,6 +1,6 @@
 import SoraFoundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 struct StakingRewardDestSetupViewFactory {
     static func createView(for state: RelaychainStakingSharedStateProtocol) -> StakingRewardDestSetupViewProtocol? {

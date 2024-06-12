@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-import RobinHood
+import Operation_iOS
 
 final class DAppFavoriteMapper: CoreDataMapperProtocol {
     typealias DataProviderModel = DAppFavorite
