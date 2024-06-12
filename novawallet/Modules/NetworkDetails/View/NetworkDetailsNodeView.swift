@@ -50,6 +50,12 @@ class NetworkDetailsNodeTableViewCell: PlainBaseTableViewCell<NetworkDetailsNode
     }
 
     func bind(viewModel: NetworkDetailsViewLayout.NodeModel) {
+        if viewModel.dimmed || viewModel.connectionState == .disconnected {
+            isUserInteractionEnabled = false
+        } else {
+            isUserInteractionEnabled = true
+        }
+
         contentDisplayView.bind(viewModel: viewModel)
     }
 }
@@ -112,6 +118,14 @@ final class NetworkDetailsNodeView: UIView {
         nameLabel.text = viewModel.name
         urlLabel.text = viewModel.url
 
+        if viewModel.dimmed || viewModel.connectionState == .disconnected {
+            nameLabel.apply(style: .footnoteSecondary)
+            selectionImageView.startShimmeringOpacity()
+        } else {
+            nameLabel.apply(style: .footnotePrimary)
+            selectionImageView.stopShimmeringOpacity()
+        }
+
         switch viewModel.connectionState {
         case let .connecting(string):
             networkStatusLabel.text = string
@@ -136,6 +150,9 @@ final class NetworkDetailsNodeView: UIView {
                 networkStatusLabel.textColor = R.color.colorTextNegative()
                 networkStatusIcon.image = R.image.iconConnectionStatusBad()
             }
+        case .disconnected:
+            networkStatusLabel.text = nil
+            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
         default:
             break
         }

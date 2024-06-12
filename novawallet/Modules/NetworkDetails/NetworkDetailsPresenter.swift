@@ -71,10 +71,12 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         _ connectionState: ConnectionState,
         for nodeURL: String
     ) {
+        guard connectionState != connectionStates[nodeURL] else { return }
+
         connectionStates[nodeURL] = connectionState
 
         switch connectionState {
-        case .connecting, .pinged:
+        case .connecting, .disconnected, .pinged:
             provideNodeViewModel(for: nodeURL)
         case .connected:
             print(connectionState)
@@ -125,9 +127,25 @@ private extension NetworkDetailsPresenter {
 }
 
 extension NetworkDetailsPresenter {
-    enum ConnectionState {
+    enum ConnectionState: Equatable {
         case connecting
         case connected
+        case disconnected
         case pinged(Int)
+
+        static func == (lhs: ConnectionState, rhs: ConnectionState) -> Bool {
+            switch (lhs, rhs) {
+            case (.connecting, .connecting):
+                true
+            case (.connected, .connected):
+                true
+            case (.disconnected, .disconnected):
+                true
+            case let (.pinged(lhsPing), .pinged(rhsPing)):
+                lhsPing == rhsPing
+            default:
+                false
+            }
+        }
     }
 }

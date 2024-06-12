@@ -53,9 +53,26 @@ extension NetworkDetailsViewLayout {
             case high(String)
         }
 
-        enum ConnectionState {
+        enum ConnectionState: Equatable {
             case connecting(String)
             case pinged(Ping)
+            case disconnected
+            case unknown
+
+            static func == (lhs: ConnectionState, rhs: ConnectionState) -> Bool {
+                switch (lhs, rhs) {
+                case (.connecting, .connecting):
+                    true
+                case (.disconnected, .disconnected):
+                    true
+                case (.pinged, .pinged):
+                    true
+                case (.unknown, .unknown):
+                    true
+                default:
+                    false
+                }
+            }
         }
 
         let index: Int
@@ -63,6 +80,7 @@ extension NetworkDetailsViewLayout {
         let url: String
         let connectionState: ConnectionState
         let selected: Bool
+        let dimmed: Bool
     }
 
     enum Row {

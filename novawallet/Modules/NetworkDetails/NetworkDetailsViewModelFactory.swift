@@ -121,15 +121,27 @@ private extension NetworkDetailsViewModelFactory {
     ) -> Node {
         let connectionState: Node.ConnectionState
 
-        if let nodeConnectionState = connectionStates[node.url],
-           case let .pinged(ping) = nodeConnectionState {
-            connectionState = switch ping {
-            case 0 ..< 100:
-                .pinged(.low("\(ping) MS"))
-            case 100 ..< 500:
-                .pinged(.medium("\(ping) MS"))
+        if let nodeConnectionState = connectionStates[node.url] {
+            connectionState = switch nodeConnectionState {
+            case .connecting:
+                .connecting(
+                    R.string.localizable.networkStatusConnecting(
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ).uppercased()
+                )
+            case .disconnected:
+                .disconnected
+            case let .pinged(ping):
+                switch ping {
+                case 0 ..< 100:
+                    .pinged(.low("\(ping) MS"))
+                case 100 ..< 500:
+                    .pinged(.medium("\(ping) MS"))
+                default:
+                    .pinged(.high("\(ping) MS"))
+                }
             default:
-                .pinged(.high("\(ping) MS"))
+                .unknown
             }
         } else {
             connectionState = .connecting(
@@ -144,7 +156,8 @@ private extension NetworkDetailsViewModelFactory {
             name: node.name,
             url: node.url,
             connectionState: connectionState,
-            selected: chain.selectedNode?.url == node.url
+            selected: chain.selectedNode?.url == node.url,
+            dimmed: chain.connectionMode == .autoBalanced
         )
     }
 }

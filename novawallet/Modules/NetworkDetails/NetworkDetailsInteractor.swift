@@ -36,7 +36,7 @@ final class NetworkDetailsInteractor {
 
 extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     func setup() {
-        connectToChainNodes()
+        connectToNodes(of: chain)
         subscribeChainChanges()
     }
 
@@ -44,7 +44,14 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
         let saveOperation = repository.saveOperation({ [weak self] in
             guard let self else { return [] }
 
-            return [chain.byChanging(enabled: !chain.enabled)]
+            var updatedChain = chain.byChanging(enabled: !chain.enabled)
+
+            if chain.enabled {
+                updatedChain = updatedChain.updatingSelectedNode(with: nil)
+                updatedChain = updatedChain.updatingConnectionMode(for: .manual)
+            }
+
+            return [updatedChain]
         }, {
             []
         })
@@ -90,9 +97,10 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
 
     func webSocketDidChangeState(
         _ connection: AnyObject,
-        from _: WebSocketEngine.State,
+        from oldState: WebSocketEngine.State,
         to newState: WebSocketEngine.State
     ) {
+        guard oldState != newState else { return }
         DispatchQueue.main.async {
             guard
                 let connection = connection as? ChainConnection,
@@ -102,8 +110,10 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
             }
 
             switch newState {
-            case .notConnected, .connecting, .waitingReconnection:
+            case .connecting, .waitingReconnection:
                 self.presenter?.didReceive(.connecting, for: nodeUrl.absoluteString)
+            case .notConnected:
+                self.presenter?.didReceive(.disconnected, for: nodeUrl.absoluteString)
             case .connected:
                 self.measureNodePing(for: nodeUrl)
             }
@@ -140,18 +150,39 @@ private extension NetworkDetailsInteractor {
                 .item
 
             guard
+                let self,
                 let changedChain,
-                self?.chain != changedChain
+                chain != changedChain
             else {
                 return
             }
 
-            self?.chain = changedChain
-            self?.presenter?.didReceive(updatedChain: changedChain)
+            toggleNodesAfterChainUpdate(
+                beforeChange: chain,
+                updatedChain: changedChain
+            )
+
+            chain = changedChain
+            presenter?.didReceive(updatedChain: changedChain)
         }
     }
 
-    func connectToChainNodes() {
+    func toggleNodesAfterChainUpdate(
+        beforeChange chain: ChainModel,
+        updatedChain: ChainModel
+    ) {
+        guard chain.enabled != updatedChain.enabled else {
+            return
+        }
+
+        if updatedChain.enabled {
+            connectToNodes(of: updatedChain)
+        } else {
+            disconnectNodes()
+        }
+    }
+
+    func connectToNodes(of chain: ChainModel) {
         chain.nodes.forEach { node in
             guard let connection = try? connectionFactory.createConnection(
                 for: node,
@@ -163,6 +194,14 @@ private extension NetworkDetailsInteractor {
 
             nodesConnections[node.url] = connection
         }
+    }
+
+    func disconnectNodes() {
+        nodesConnections.values.forEach { connection in
+            connection.disconnect(true)
+        }
+
+        nodesConnections = [:]
     }
 
     func measureNodePing(for nodeUrl: URL) {
@@ -181,10 +220,13 @@ private extension NetworkDetailsInteractor {
             engine: connection
         )
 
-        let measureOperation = createPingMeasureOperation(with: queryOperation)
+        let measureOperation = createPingMeasureOperation(
+            with: queryOperation,
+            queue: operationQueue
+        )
 
         execute(
-            wrapper: measureOperation,
+            operation: measureOperation,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -201,26 +243,23 @@ private extension NetworkDetailsInteractor {
         }
     }
 
-    func createPingMeasureOperation(with queryOperation: BaseOperation<[[StorageUpdate]]>) -> CompoundOperationWrapper<Int> {
-        var startTime: CFAbsoluteTime?
+    func createPingMeasureOperation(
+        with queryOperation: BaseOperation<[[StorageUpdate]]>,
+        queue: OperationQueue
+    ) -> AsyncClosureOperation<Int> {
+        AsyncClosureOperation { resultClosure in
+            let startTime = CFAbsoluteTimeGetCurrent()
+            execute(
+                operation: queryOperation,
+                inOperationQueue: queue,
+                runningCallbackIn: nil
+            ) { _ in
+                let endTime = CFAbsoluteTimeGetCurrent()
+                let ping = Int((endTime - startTime) * 1000)
 
-        let operation = AsyncClosureOperation { resultClosure in
-            let endTime = CFAbsoluteTimeGetCurrent()
-            let ping = Int((endTime - (startTime ?? 0)) * 1000)
-
-            resultClosure(.success(ping))
+                resultClosure(.success(ping))
+            }
         }
-
-        queryOperation.configurationBlock = {
-            startTime = CFAbsoluteTimeGetCurrent()
-        }
-
-        operation.addDependency(queryOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: operation,
-            dependencies: [queryOperation]
-        )
     }
 }
 
