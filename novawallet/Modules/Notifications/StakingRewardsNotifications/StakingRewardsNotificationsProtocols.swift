@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 protocol StakingRewardsNotificationsViewProtocol: ControllerBackedProtocol {
     func didReceive(isClearActionAvailabe: Bool)

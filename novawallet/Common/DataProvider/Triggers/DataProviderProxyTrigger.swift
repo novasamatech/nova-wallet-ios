@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class DataProviderProxyTrigger: DataProviderTriggerProtocol {
     weak var delegate: DataProviderTriggerDelegate?

@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import Cuckoo
-import RobinHood
+import Operation_iOS
 
 class SelectValidatorsStartTests: XCTestCase {
     func testSetupValidators() throws {

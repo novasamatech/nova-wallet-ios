@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol SubstrateDataProviderFactoryProtocol {
     func createStashItemProvider(for address: String, chainId: ChainModel.Id) -> StreamableProvider<StashItem>

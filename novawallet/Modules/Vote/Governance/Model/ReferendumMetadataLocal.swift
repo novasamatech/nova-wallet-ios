@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 struct ReferendumMetadataPreview: Equatable {
     let chainId: String

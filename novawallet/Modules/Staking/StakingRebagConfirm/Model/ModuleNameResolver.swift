@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol ModuleNameResolverProtocol {
     func resolveModuleName(possibleNames: [String]) -> CompoundOperationWrapper<String?>

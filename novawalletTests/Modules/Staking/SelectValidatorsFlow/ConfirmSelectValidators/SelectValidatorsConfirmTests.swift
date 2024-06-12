@@ -2,7 +2,7 @@ import XCTest
 @testable import novawallet
 import SoraKeystore
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 import BigInt
 import Cuckoo
 import SoraFoundation

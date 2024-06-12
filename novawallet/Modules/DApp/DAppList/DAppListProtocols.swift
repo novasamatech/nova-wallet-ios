@@ -1,5 +1,5 @@
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didReceiveWalletSwitch(viewModel: WalletSwitchViewModel)

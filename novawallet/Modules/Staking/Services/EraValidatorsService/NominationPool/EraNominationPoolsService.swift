@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning {
     private struct PendingRequest {
@@ -9,7 +9,7 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
     }
 
     private var snapshot: NominationPools.ActivePools?
-    private var pendingRequests: [PendingRequest] = []
+    private var pendingRequests: [UUID: PendingRequest] = [:]
 
     let chainAsset: ChainAsset
     let runtimeCodingService: RuntimeCodingServiceProtocol
@@ -139,9 +139,9 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
 
         if !pendingRequests.isEmpty {
             let requests = pendingRequests
-            pendingRequests = []
+            pendingRequests = [:]
 
-            requests.forEach { deliver(snapshot: newActivePools, to: $0) }
+            requests.values.forEach { deliver(snapshot: newActivePools, to: $0) }
 
             logger.debug("Fulfilled pendings")
         }
@@ -158,6 +158,7 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
     }
 
     private func fetchInfoFactory(
+        assigning requestId: UUID,
         runCompletionIn queue: DispatchQueue?,
         executing closure: @escaping (NominationPools.ActivePools) -> Void
     ) {
@@ -166,35 +167,37 @@ final class EraNominationPoolsService: BaseSyncService, AnyProviderAutoCleaning 
         if let snapshot = snapshot {
             deliver(snapshot: snapshot, to: request)
         } else {
-            pendingRequests.append(request)
+            pendingRequests[requestId] = request
         }
+    }
+
+    private func cancel(for requestId: UUID) {
+        pendingRequests[requestId] = nil
     }
 }
 
 extension EraNominationPoolsService: EraNominationPoolsServiceProtocol {
     func fetchInfoOperation() -> BaseOperation<NominationPools.ActivePools> {
-        ClosureOperation {
-            var fetchedInfo: NominationPools.ActivePools?
+        let requestId = UUID()
 
-            let semaphore = DispatchSemaphore(value: 0)
+        return AsyncClosureOperation(
+            operationClosure: { closure in
+                self.mutex.lock()
 
-            self.mutex.lock()
+                self.fetchInfoFactory(assigning: requestId, runCompletionIn: nil) { info in
+                    closure(.success(info))
+                }
 
-            self.fetchInfoFactory(runCompletionIn: nil) { [weak semaphore] info in
-                fetchedInfo = info
-                semaphore?.signal()
+                self.mutex.unlock()
+            },
+            cancelationClosure: {
+                self.mutex.lock()
+
+                self.cancel(for: requestId)
+
+                self.mutex.unlock()
             }
-
-            self.mutex.unlock()
-
-            semaphore.wait()
-
-            guard let info = fetchedInfo else {
-                throw CommonError.dataCorruption
-            }
-
-            return info
-        }
+        )
     }
 }
 

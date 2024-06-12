@@ -2,7 +2,7 @@ import Foundation
 @testable import novawallet
 import IrohaCrypto
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class AccountCreationHelper {

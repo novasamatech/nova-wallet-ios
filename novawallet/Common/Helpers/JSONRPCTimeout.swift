@@ -8,4 +8,6 @@ enum JSONRPCTimeout {
 
     // there is a single node so wait as much as we can
     static let singleNode: Int = 60
+
+    static let hour: Int = 60 * 60
 }

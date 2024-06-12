@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class WalletSelectionInteractor: WalletsListInteractor {
     var presenter: WalletSelectionInteractorOutputProtocol? {

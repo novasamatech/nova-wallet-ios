@@ -1,5 +1,5 @@
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 struct NetworkDetailsViewFactory {
     static func createView(with chain: ChainModel) -> NetworkDetailsViewProtocol? {

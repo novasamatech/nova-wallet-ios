@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol DAppAuthSettingsViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: DisplayWalletViewModel)

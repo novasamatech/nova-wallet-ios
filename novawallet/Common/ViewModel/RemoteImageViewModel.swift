@@ -1,7 +1,7 @@
 import UIKit
 import Kingfisher
 import SVGKit
-import RobinHood
+import Operation_iOS
 
 final class RemoteImageViewModel: NSObject {
     let url: URL

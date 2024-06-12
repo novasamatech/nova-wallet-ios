@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class WalletServiceFacade {
     static let sharedRemoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol = {

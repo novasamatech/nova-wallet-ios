@@ -2,7 +2,7 @@ import Foundation
 import SoraKeystore
 import SoraFoundation
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 
 final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
     static func createViewForOnboarding(

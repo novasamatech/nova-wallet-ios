@@ -1,6 +1,6 @@
 import UIKit
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 
 final class AccountCreateInteractor {
     weak var presenter: AccountCreateInteractorOutputProtocol!

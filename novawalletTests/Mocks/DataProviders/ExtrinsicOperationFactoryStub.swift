@@ -1,5 +1,5 @@
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
