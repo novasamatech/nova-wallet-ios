@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol EquillibriumLocksUpdaterProtocol {
     func handle(value: Data?, blockHash: Data?)

@@ -145,7 +145,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockCurrencyRepositoryProtocol: CurrencyRepositoryProtocol, Cuckoo.ProtocolMock {
@@ -1582,7 +1582,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockProxySyncServiceProtocol: ProxySyncServiceProtocol, Cuckoo.ProtocolMock {
@@ -1873,7 +1873,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraKeystore
 
 
@@ -5853,7 +5853,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 
@@ -7955,7 +7955,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import RobinHood
+import Operation_iOS
 
 
  class MockAssetSelectionViewProtocol: AssetSelectionViewProtocol, Cuckoo.ProtocolMock {
@@ -9945,7 +9945,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockDAppBrowserViewProtocol: DAppBrowserViewProtocol, Cuckoo.ProtocolMock {
@@ -11537,7 +11537,7 @@ import RobinHood
 import Cuckoo
 @testable import novawallet
 
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 
@@ -14081,7 +14081,7 @@ import SubstrateSdk
 import Cuckoo
 @testable import novawallet
 
-import RobinHood
+import Operation_iOS
 
 
  class MockDAppSearchViewProtocol: DAppSearchViewProtocol, Cuckoo.ProtocolMock {
@@ -24187,7 +24187,7 @@ import Cuckoo
 
 import BigInt
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockNetworkStakingInfoOperationFactoryProtocol: NetworkStakingInfoOperationFactoryProtocol, Cuckoo.ProtocolMock {
@@ -24286,7 +24286,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import RobinHood
+import Operation_iOS
 
 
  class MockValidatorOperationFactoryProtocol: ValidatorOperationFactoryProtocol, Cuckoo.ProtocolMock {

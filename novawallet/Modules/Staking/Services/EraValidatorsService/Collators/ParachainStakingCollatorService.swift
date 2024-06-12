@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class ParachainStakingCollatorService {
@@ -23,7 +23,7 @@ final class ParachainStakingCollatorService {
     private var snapshot: SelectedRoundCollators?
     private var roundProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     private var collatorCommissionProvider: AnyDataProvider<DecodedBigUInt>?
-    private var pendingRequests: [PendingRequest] = []
+    private var pendingRequests: [UUID: PendingRequest] = [:]
 
     var syncService: StorageListSyncService<
         String,
@@ -67,9 +67,9 @@ final class ParachainStakingCollatorService {
 
         if !pendingRequests.isEmpty {
             let requests = pendingRequests
-            pendingRequests = []
+            pendingRequests = [:]
 
-            requests.forEach { deliver(snapshot: snapshot, to: $0) }
+            requests.values.forEach { deliver(snapshot: snapshot, to: $0) }
 
             logger.debug("Fulfilled pendings")
         }
@@ -81,6 +81,7 @@ final class ParachainStakingCollatorService {
     }
 
     private func fetchInfoFactory(
+        assigning requestId: UUID,
         runCompletionIn queue: DispatchQueue?,
         executing closure: @escaping (SelectedRoundCollators) -> Void
     ) {
@@ -89,8 +90,12 @@ final class ParachainStakingCollatorService {
         if let snapshot = snapshot {
             deliver(snapshot: snapshot, to: request)
         } else {
-            pendingRequests.append(request)
+            pendingRequests[requestId] = request
         }
+    }
+
+    private func cancel(for requestId: UUID) {
+        pendingRequests[requestId] = nil
     }
 
     private func deliver(snapshot: SelectedRoundCollators, to request: PendingRequest) {
@@ -226,25 +231,21 @@ extension ParachainStakingCollatorService: ParachainStakingCollatorServiceProtoc
     }
 
     func fetchInfoOperation() -> BaseOperation<SelectedRoundCollators> {
-        ClosureOperation {
-            var fetchedInfo: SelectedRoundCollators?
+        let requestId = UUID()
 
-            let semaphore = DispatchSemaphore(value: 0)
-
-            self.syncQueue.async {
-                self.fetchInfoFactory(runCompletionIn: nil) { [weak semaphore] info in
-                    fetchedInfo = info
-                    semaphore?.signal()
+        return AsyncClosureOperation(
+            operationClosure: { closure in
+                self.syncQueue.async {
+                    self.fetchInfoFactory(assigning: requestId, runCompletionIn: nil) { info in
+                        closure(.success(info))
+                    }
+                }
+            },
+            cancelationClosure: {
+                self.syncQueue.async {
+                    self.cancel(for: requestId)
                 }
             }
-
-            semaphore.wait()
-
-            guard let info = fetchedInfo else {
-                throw EraValidatorServiceError.unexpectedInfo
-            }
-
-            return info
-        }
+        )
     }
 }

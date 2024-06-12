@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol ProxyListLocalSubscriptionHandler {
     func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>)

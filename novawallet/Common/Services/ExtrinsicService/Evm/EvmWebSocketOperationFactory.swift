@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import BigInt
 
@@ -14,7 +14,7 @@ final class EvmWebSocketOperationFactory {
 }
 
 extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
-    func createBlockOperation(for blockNumber: BigUInt) -> RobinHood.BaseOperation<EthereumBlockObject> {
+    func createBlockOperation(for blockNumber: BigUInt) -> Operation_iOS.BaseOperation<EthereumBlockObject> {
         let blockNumberString = blockNumber.toHexString()
 
         let params = JSON.arrayValue(
@@ -34,7 +34,7 @@ extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
 
     func createTransactionReceiptOperation(
         for transactionHash: String
-    ) -> RobinHood.BaseOperation<EthereumTransactionReceipt?> {
+    ) -> Operation_iOS.BaseOperation<EthereumTransactionReceipt?> {
         let parameters = [transactionHash]
 
         return JSONRPCListOperation(
@@ -100,7 +100,7 @@ extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
 
     func createReducedBlockOperation(
         for blockOption: EthereumBlock
-    ) -> RobinHood.BaseOperation<EthereumReducedBlockObject> {
+    ) -> Operation_iOS.BaseOperation<EthereumReducedBlockObject> {
         let params = JSON.arrayValue(
             [
                 JSON.stringValue(blockOption.rawValue), // block number

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class RMRKV2DetailsInteractor: NftDetailsInteractor {
     let operationFactory: RMRKV2NftOperationFactoryProtocol

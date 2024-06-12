@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol CrowdloanOffchainSubscriber where Self: AnyObject {
     var crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol { get }

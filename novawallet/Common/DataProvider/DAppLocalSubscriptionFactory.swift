@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol DAppLocalSubscriptionFactoryProtocol {
     func getFavoritesProvider(_ identifier: String?) -> StreamableProvider<DAppFavorite>

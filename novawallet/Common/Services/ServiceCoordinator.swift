@@ -2,7 +2,7 @@ import Foundation
 import SoraKeystore
 import SoraFoundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }

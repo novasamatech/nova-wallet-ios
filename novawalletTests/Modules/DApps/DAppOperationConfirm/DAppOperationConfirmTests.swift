@@ -98,7 +98,9 @@ class DAppOperationConfirmTests: XCTestCase {
 
                     let fee = RuntimeDispatchInfo(fee: "1", weight: 32)
 
-                    completion?(.success(fee))
+                    DispatchQueue.global().async {
+                        completion?(.success(fee))
+                    }
 
                     return 0
                 }

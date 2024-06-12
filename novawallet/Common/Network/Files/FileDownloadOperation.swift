@@ -1,9 +1,10 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class FileDownloadOperation: BaseOperation<URLResponse> {
     public lazy var networkSession = URLSession.shared
 
+    private let mutex = NSLock()
     private var networkTask: URLSessionDownloadTask?
 
     let remoteUrl: URL
@@ -18,89 +19,78 @@ final class FileDownloadOperation: BaseOperation<URLResponse> {
         super.init()
     }
 
-    override public func main() {
-        super.main()
-
-        if isCancelled {
+    private func moveDownloadedFile(from tempUrl: URL?) throws {
+        guard let tempUrl else {
             return
         }
 
-        if result != nil {
-            return
-        }
-
-        let semaphore = DispatchSemaphore(value: 0)
-
-        var receivedResponse: URLResponse?
-        var receivedError: Error?
-
-        if isCancelled {
-            return
-        }
-
-        let currentLocalUrl = localUrl
         let directoryUrl = localUrl.deletingLastPathComponent()
-        let currentFileManager = fileManager
 
-        let dataTask = networkSession.downloadTask(with: remoteUrl) { tempUrl, response, networkError in
-            do {
-                if let tempUrl = tempUrl {
-                    var isDirectory: ObjCBool = false
-                    let parentExists = currentFileManager.fileExists(
-                        atPath: directoryUrl.path,
-                        isDirectory: &isDirectory
-                    )
+        var isDirectory: ObjCBool = false
+        let parentExists = fileManager.fileExists(
+            atPath: directoryUrl.path,
+            isDirectory: &isDirectory
+        )
 
-                    if !parentExists || !isDirectory.boolValue {
-                        if parentExists {
-                            try currentFileManager.removeItem(at: directoryUrl)
-                        }
-
-                        try currentFileManager.createDirectory(
-                            at: directoryUrl,
-                            withIntermediateDirectories: true,
-                            attributes: nil
-                        )
-                    }
-
-                    if currentFileManager.fileExists(atPath: currentLocalUrl.path), tempUrl != currentLocalUrl {
-                        try currentFileManager.removeItem(at: currentLocalUrl)
-                    }
-
-                    if tempUrl != currentLocalUrl {
-                        try currentFileManager.copyItem(at: tempUrl, to: currentLocalUrl)
-                    }
-                }
-
-                receivedResponse = response
-                receivedError = networkError
-            } catch {
-                receivedError = error
+        if !parentExists || !isDirectory.boolValue {
+            if parentExists {
+                try fileManager.removeItem(at: directoryUrl)
             }
 
-            semaphore.signal()
+            try fileManager.createDirectory(
+                at: directoryUrl,
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+        }
+
+        if fileManager.fileExists(atPath: localUrl.path), tempUrl != localUrl {
+            try fileManager.removeItem(at: localUrl)
+        }
+
+        if tempUrl != localUrl {
+            try fileManager.copyItem(at: tempUrl, to: localUrl)
+        }
+    }
+
+    override func performAsync(_ callback: @escaping (Result<URLResponse, Error>) -> Void) throws {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let dataTask = networkSession.downloadTask(with: remoteUrl) { tempUrl, response, error in
+            do {
+                try self.moveDownloadedFile(from: tempUrl)
+
+                if let response {
+                    callback(.success(response))
+                } else if let error {
+                    guard !NetworkOperationHelper.isCancellation(error: error) else {
+                        return
+                    }
+
+                    callback(.failure(error))
+                } else {
+                    callback(.failure(NetworkBaseError.unexpectedResponseObject))
+                }
+
+            } catch {
+                callback(.failure(error))
+            }
         }
 
         networkTask = dataTask
         dataTask.resume()
-
-        _ = semaphore.wait(timeout: .distantFuture)
-
-        if let error = receivedError, NetworkOperationHelper.isCancellation(error: error) {
-            return
-        }
-
-        if let response = receivedResponse {
-            result = .success(response)
-        } else if let receivedError = receivedError {
-            result = .failure(receivedError)
-        } else {
-            result = .failure(NetworkBaseError.unexpectedResponseObject)
-        }
     }
 
     override public func cancel() {
+        mutex.lock()
+
         networkTask?.cancel()
+
+        mutex.unlock()
 
         super.cancel()
     }

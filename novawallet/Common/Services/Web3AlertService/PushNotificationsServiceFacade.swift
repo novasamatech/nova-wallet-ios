@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraKeystore
 
 enum PushNotificationsServiceFacadeError: Error {
@@ -135,36 +135,33 @@ final class PushNotificationsServiceFacade {
         from settings: PushNotification.AllSettings,
         syncService: Web3AlertsSyncServiceProtocol
     ) -> BaseOperation<Void> {
-        AsyncClosureOperation(
-            cancelationClosure: {},
-            operationClosure: { completionClosure in
-                if settings.notificationsEnabled {
-                    syncService.save(
-                        settings: settings.accountBased,
-                        runningIn: nil,
-                        completionHandler: { optError in
-                            if let error = optError {
-                                completionClosure(.failure(error))
-                            } else {
-                                completionClosure(.success(()))
-                            }
+        AsyncClosureOperation { completionClosure in
+            if settings.notificationsEnabled {
+                syncService.save(
+                    settings: settings.accountBased,
+                    runningIn: nil,
+                    completionHandler: { optError in
+                        if let error = optError {
+                            completionClosure(.failure(error))
+                        } else {
+                            completionClosure(.success(()))
                         }
-                    )
-                } else {
-                    syncService.disableRemote(
-                        settings: settings.accountBased,
-                        runningIn: nil,
-                        completionHandler: { optError in
-                            if let error = optError {
-                                completionClosure(.failure(error))
-                            } else {
-                                completionClosure(.success(()))
-                            }
+                    }
+                )
+            } else {
+                syncService.disableRemote(
+                    settings: settings.accountBased,
+                    runningIn: nil,
+                    completionHandler: { optError in
+                        if let error = optError {
+                            completionClosure(.failure(error))
+                        } else {
+                            completionClosure(.success(()))
                         }
-                    )
-                }
+                    }
+                )
             }
-        )
+        }
     }
 
     private func createTopicsUpdate(
@@ -172,35 +169,32 @@ final class PushNotificationsServiceFacade {
         notificationsWereEnabledBefore: Bool,
         topicService: PushNotificationsTopicServiceProtocol
     ) -> BaseOperation<Void> {
-        AsyncClosureOperation(
-            cancelationClosure: {},
-            operationClosure: { completionClosure in
-                if !notificationsWereEnabledBefore {
-                    topicService.save(
-                        settings: settings.topics,
-                        callbackQueue: nil
-                    ) { optError in
-                        if let error = optError {
-                            completionClosure(.failure(error))
-                        } else {
-                            completionClosure(.success(()))
-                        }
+        AsyncClosureOperation { completionClosure in
+            if !notificationsWereEnabledBefore {
+                topicService.save(
+                    settings: settings.topics,
+                    callbackQueue: nil
+                ) { optError in
+                    if let error = optError {
+                        completionClosure(.failure(error))
+                    } else {
+                        completionClosure(.success(()))
                     }
-                } else {
-                    // in case notifications were not enabled we need to wait the token
-                    topicService.saveDiff(
-                        settings: settings.topics,
-                        callbackQueue: nil
-                    ) { optError in
-                        if let error = optError {
-                            completionClosure(.failure(error))
-                        } else {
-                            completionClosure(.success(()))
-                        }
+                }
+            } else {
+                // in case notifications were not enabled we need to wait the token
+                topicService.saveDiff(
+                    settings: settings.topics,
+                    callbackQueue: nil
+                ) { optError in
+                    if let error = optError {
+                        completionClosure(.failure(error))
+                    } else {
+                        completionClosure(.success(()))
                     }
                 }
             }
-        )
+        }
     }
 
     private func updateWeb3PushToken(using token: String) {

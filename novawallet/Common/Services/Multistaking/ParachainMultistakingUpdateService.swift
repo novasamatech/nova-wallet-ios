@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancellableCleaning {
     let accountId: AccountId

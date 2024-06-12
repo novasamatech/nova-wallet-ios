@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 struct ExtrinsicSplittingResult {
     let closure: ExtrinsicBuilderIndexedClosure
@@ -23,7 +23,7 @@ enum ExtrinsicSplitterError: Error {
 }
 
 final class ExtrinsicSplitter {
-    static let maxExtrinsicSizePercent: CGFloat = 0.6
+    static let maxExtrinsicSizePercent: CGFloat = 0.5
     static let blockSizeMultiplier: CGFloat = 0.64
 
     typealias CallConverter = (RuntimeJsonContext?) throws -> JSON
@@ -162,7 +162,7 @@ final class ExtrinsicSplitter {
                     targetCalls.append(internalCall)
                     totalWeight += callWeight
                 } else {
-                    totalWeight = 0
+                    totalWeight = callWeight
 
                     extrinsics.append(targetCalls)
                     targetCalls = [internalCall]

@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 typealias NominationPoolSearchOperationClosure = (String) -> BaseOperation<[NominationPools.PoolStats]>
 

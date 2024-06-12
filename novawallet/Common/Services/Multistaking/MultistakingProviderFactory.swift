@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol MultistakingProviderFactoryProtocol {
     func createResolvedAccountsProvider() -> StreamableProvider<Multistaking.ResolvedAccount>

@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 final class StakingRemoveProxyInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingRemoveProxyInteractorOutputProtocol?

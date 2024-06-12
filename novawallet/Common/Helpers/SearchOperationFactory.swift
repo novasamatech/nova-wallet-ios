@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 enum SearchOperationFactory {
     private static func pointsForWord(title: String, word: String) -> UInt {

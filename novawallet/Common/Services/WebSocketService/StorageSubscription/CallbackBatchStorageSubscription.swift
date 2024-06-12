@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class CallbackBatchStorageSubscription<T: BatchStorageSubscriptionResult> {
     let requests: [BatchStorageSubscriptionRequest]

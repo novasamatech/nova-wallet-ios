@@ -15,6 +15,8 @@ extension RuntimeMetadataContainer {
             return metadata
         case .v14(let metadata):
             return metadata
+        case let .v15(metadata):
+            return metadata
         }
     }
 }
@@ -94,17 +96,26 @@ final class RuntimeHelper {
                 versioningData: networkData,
                 runtimeMetadata: metadata
             )
-        case .v14(let metadata):
-            return try TypeRegistryCatalog.createFromSiDefinition(
-                versioningData: networkData,
-                runtimeMetadata: metadata,
-                customExtensions: DefaultSignedExtensionCoders.createDefaultCoders(for: runtimeMetadataContainer.metadata),
-                customTypeMapper: SiDataTypeMapper(),
-                customNameMapper: ScaleInfoCamelCaseMapper()
-            )
+        case let .v14(metadata):
+            return try createPostV14TypeRegistryCatalog(from: networkData, metadata: metadata)
+        case let .v15(metadata):
+            return try createPostV14TypeRegistryCatalog(from: networkData, metadata: metadata)
         }
 
 
+    }
+    
+    private static func createPostV14TypeRegistryCatalog(
+        from networkData: Data,
+        metadata: PostV14RuntimeMetadataProtocol
+    ) throws -> TypeRegistryCatalog {
+        try TypeRegistryCatalog.createFromSiDefinition(
+            versioningData: networkData,
+            runtimeMetadata: metadata,
+            customExtensions: DefaultSignedExtensionCoders.createDefaultCoders(for: metadata),
+            customTypeMapper: SiDataTypeMapper(),
+            customNameMapper: ScaleInfoCamelCaseMapper()
+        )
     }
 
     static let dummyRuntimeMetadata: RuntimeMetadata = {

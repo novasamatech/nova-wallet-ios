@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol ParaStkYieldBoostSupportProtocol {
     func checkSupport(for chainAsset: ChainAsset) -> Bool

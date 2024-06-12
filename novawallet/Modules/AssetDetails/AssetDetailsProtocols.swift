@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol, Containable {
     func didReceive(assetModel: AssetDetailsModel)

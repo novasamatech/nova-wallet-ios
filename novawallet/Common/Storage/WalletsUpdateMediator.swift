@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 typealias NewSelectedWalletClosure = (Result<ManagedMetaAccountModel?, Error>) -> Void
 

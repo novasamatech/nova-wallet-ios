@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol MultipartQrOperationFactoryProtocol {
     func createFromPayloadClosure(_ payloadClosure: @escaping () throws -> Data) -> CompoundOperationWrapper<[Data]>

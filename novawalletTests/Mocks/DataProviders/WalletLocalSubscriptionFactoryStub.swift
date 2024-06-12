@@ -1,6 +1,6 @@
 import Foundation
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 import BigInt
 
 final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryProtocol {

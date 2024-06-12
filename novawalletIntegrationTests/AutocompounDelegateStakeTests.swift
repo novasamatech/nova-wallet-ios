@@ -2,7 +2,7 @@ import XCTest
 @testable import novawallet
 import BigInt
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 class AutocompounDelegateStakeTests: XCTestCase {
     var extrinsicService: ExtrinsicServiceProtocol?
