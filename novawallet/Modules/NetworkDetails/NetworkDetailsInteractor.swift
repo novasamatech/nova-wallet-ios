@@ -216,16 +216,21 @@ private extension NetworkDetailsInteractor {
             return
         }
 
-        let queryOperation = storageRequestFactory.queryOperation(
-            for: { [key] },
-            at: nil,
-            engine: connection
-        )
-
-        let measureOperation = createPingMeasureOperation(
-            with: queryOperation,
-            queue: operationQueue
-        )
+        let measureOperation: BaseOperation<Int> = if chain.isEthereumBased {
+            createPingMeasureOperation(
+                with: createEVMQueryOperation(with: connection),
+                queue: operationQueue
+            )
+        } else {
+            createPingMeasureOperation(
+                with: storageRequestFactory.queryOperation(
+                    for: { [key] },
+                    at: nil,
+                    engine: connection
+                ),
+                queue: operationQueue
+            )
+        }
 
         execute(
             operation: measureOperation,
@@ -245,10 +250,26 @@ private extension NetworkDetailsInteractor {
         }
     }
 
-    func createPingMeasureOperation(
-        with queryOperation: BaseOperation<[[StorageUpdate]]>,
+    func createEVMQueryOperation(with connection: ChainConnection) -> BaseOperation<Result<String, Error>> {
+        AsyncClosureOperation { resultClosure in
+            let params = EvmBalanceMessage.Params(
+                holder: String(),
+                block: .latest
+            )
+            _ = try connection.callMethod(
+                EvmBalanceMessage.method,
+                params: params,
+                options: .init(resendOnReconnect: false)
+            ) { (result: Result<String, Error>) in
+                resultClosure(.success(result))
+            }
+        }
+    }
+
+    func createPingMeasureOperation<T>(
+        with queryOperation: BaseOperation<T>,
         queue: OperationQueue
-    ) -> AsyncClosureOperation<Int> {
+    ) -> BaseOperation<Int> {
         AsyncClosureOperation { resultClosure in
             let startTime = CFAbsoluteTimeGetCurrent()
             execute(
