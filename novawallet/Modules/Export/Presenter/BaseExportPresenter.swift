@@ -36,6 +36,14 @@ class BaseExportPresenter {
         fatalError("Method must be overriden by child class")
     }
 
+    func didTapSubstrateRestoreJson() {
+        wireframe.showExportRestoreJSON(
+            from: view,
+            wallet: metaAccount,
+            chain: chain
+        )
+    }
+
     func didTapSubstrateSecretCover() {
         interactor.requestSeedForSubstrate(
             metaAccount: metaAccount,
@@ -70,7 +78,7 @@ extension BaseExportPresenter: ExportInteractorOutputProtocol {
             selectedLocale: localizationManager.selectedLocale,
             onTapSubstrateSecret: { [weak self] in self?.didTapSubstrateSecretCover() },
             onTapEthereumSecret: { [weak self] in self?.didTapEthereumSecretCover() },
-            onTapExportJSON: { [weak self] in self?.wireframe.showExportRestoreJSON(from: self?.view) }
+            onTapExportJSON: { [weak self] in self?.didTapSubstrateRestoreJson() }
         )
 
         view?.update(with: viewModel)

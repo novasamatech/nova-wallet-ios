@@ -101,7 +101,7 @@ private extension ExportInteractor {
         chain: ChainModel?,
         chainType: ChainType
     ) -> Data? {
-        var accountId = try? accountId(
+        let accountId = try? accountId(
             for: chain,
             metaAccount: metaAccount
         )
@@ -128,7 +128,7 @@ private extension ExportInteractor {
     ) throws -> ExportChainData {
         var options: [SecretSource] = []
 
-        var accountId = try accountId(
+        let accountId = try accountId(
             for: chain,
             metaAccount: metaAccount
         )

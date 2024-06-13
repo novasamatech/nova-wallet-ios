@@ -13,12 +13,12 @@ final class AccountExportPasswordInteractor {
 
     let exportJsonWrapper: KeystoreExportWrapperProtocol
     let metaAccount: MetaAccountModel
-    let chain: ChainModel
+    let chain: ChainModel?
     let operationManager: OperationManagerProtocol
 
     init(
         metaAccount: MetaAccountModel,
-        chain: ChainModel,
+        chain: ChainModel?,
         exportJsonWrapper: KeystoreExportWrapperProtocol,
         operationManager: OperationManagerProtocol
     ) {
@@ -32,30 +32,37 @@ final class AccountExportPasswordInteractor {
 extension AccountExportPasswordInteractor: AccountExportPasswordInteractorInputProtocol {
     func exportAccount(password: String) {
         let exportOperation: BaseOperation<RestoreJson> = ClosureOperation { [weak self] in
-            guard
-                let metaAccount = self?.metaAccount,
-                let chain = self?.chain,
-                let cryptoType = metaAccount.fetch(for: chain.accountRequest())?.cryptoType else {
-                throw AccountExportPasswordInteractorError.missingAccount
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
             }
 
-            guard let data = try self?.exportJsonWrapper.export(
+            let cryptoType: MultiassetCryptoType
+
+            if let chain {
+                guard let accountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
+                    throw AccountExportPasswordInteractorError.missingAccount
+                }
+
+                cryptoType = accountResponse.cryptoType
+            } else {
+                guard let substrateCryptoType = metaAccount.substrateMultiAssetCryptoType else {
+                    throw CommonError.dataCorruption
+                }
+
+                cryptoType = substrateCryptoType
+            }
+
+            let data = try exportJsonWrapper.export(
                 metaAccount: metaAccount,
                 chain: chain,
                 password: password
-            ) else {
-                throw BaseOperationError.parentOperationCancelled
-            }
+            )
 
             guard let result = String(data: data, encoding: .utf8) else {
                 throw AccountExportPasswordInteractorError.invalidResult
             }
 
-            return RestoreJson(
-                data: result,
-                chain: chain,
-                cryptoType: cryptoType
-            )
+            return RestoreJson(data: result, chain: chain, cryptoType: cryptoType)
         }
 
         exportOperation.completionBlock = { [weak self] in

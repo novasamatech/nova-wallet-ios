@@ -32,7 +32,7 @@ extension ExportRestoreJsonPresenter: ExportGenericPresenterProtocol {
     func activateAdvancedSettings() {
         let advancedSettings: AdvancedWalletSettings
 
-        if model.chain.isEthereumBased {
+        if let chain = model.chain, chain.isEthereumBased {
             advancedSettings = AdvancedWalletSettings.ethereum(derivationPath: nil)
         } else {
             let networkSettings = AdvancedNetworkTypeSettings(
