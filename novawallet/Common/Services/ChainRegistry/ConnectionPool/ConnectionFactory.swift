@@ -162,7 +162,11 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     private func extractNodeUrls(from chain: ChainModel, schema: String) -> [ConnectionTLSSupport] {
-        let filteredNodes = chain.nodes.filter { $0.url.hasPrefix(schema) }
+        let filteredNodes = if case let .manual(selectedNode) = chain.connectionMode {
+            Set([selectedNode])
+        } else {
+            chain.nodes.filter { $0.url.hasPrefix(schema) }
+        }
 
         let nodes: [ChainNodeModel]
 
