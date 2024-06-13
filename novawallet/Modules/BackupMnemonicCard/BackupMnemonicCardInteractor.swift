@@ -1,7 +1,7 @@
 import IrohaCrypto
 import SoraFoundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 final class BackupMnemonicCardInteractor: BackupMnemonicCardInteractorInputProtocol {
     weak var presenter: BackupMnemonicCardInteractorOutputProtocol?

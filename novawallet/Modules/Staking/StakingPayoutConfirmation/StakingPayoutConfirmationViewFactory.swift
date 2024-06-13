@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import SoraKeystore
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class StakingPayoutConfirmationViewFactory {
     static func createView(

@@ -2,8 +2,8 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-class AssetConversionTxPayment: Codable, ExtrinsicExtension {
-    public static let name: String = "ChargeAssetTxPayment"
+class AssetConversionTxPayment: Codable, OnlyExtrinsicSignedExtending {
+    public var signedExtensionId: String { "ChargeAssetTxPayment" }
 
     @StringCodable public var tip: BigUInt
     let assetId: AssetConversionPallet.AssetId?

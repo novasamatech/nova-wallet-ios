@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import RobinHood
+import Operation_iOS
 
 final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
     weak var presenter: GovernanceRemoveVotesConfirmInteractorOutputProtocol?

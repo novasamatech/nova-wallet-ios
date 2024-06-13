@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 extension CompoundOperationWrapper {
     static func createWithError(_ error: Error) -> CompoundOperationWrapper<ResultType> {

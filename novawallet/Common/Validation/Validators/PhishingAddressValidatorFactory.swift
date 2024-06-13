@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol PhishingAddressValidatorFactoryProtocol {
     func notPhishing(address: AccountAddress?, locale: Locale) -> DataValidating

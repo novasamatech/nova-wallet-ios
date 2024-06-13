@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import BigInt
-import RobinHood
+import Operation_iOS
 
 final class VaraRewardParamsService: BaseSyncService {
     struct InflationConfig: Decodable {

@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 class CrowdloadSettingsTests: XCTestCase {
     func testSetupWhenChainExists() throws {

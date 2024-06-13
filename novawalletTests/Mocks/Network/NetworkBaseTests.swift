@@ -1,5 +1,5 @@
 import XCTest
-import RobinHood
+import Operation_iOS
 @testable import novawallet
 
 class NetworkBaseTests: XCTestCase {

@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import BigInt
-import RobinHood
+import Operation_iOS
 
 final class AssetHubSwapTests: XCTestCase {
     func testWestmintAllDirections() throws {

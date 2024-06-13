@@ -1,6 +1,6 @@
 import Foundation
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 
 final class MockCloudBackupUploadFactory {
     let operationFactory: CloudBackupOperationFactoryProtocol

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol RewardCalculatorServiceProtocol: ApplicationServiceProtocol {
     func fetchCalculatorOperation() -> BaseOperation<RewardCalculatorEngineProtocol>

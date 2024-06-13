@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 class WalletsListInteractor: WalletsListInteractorInputProtocol {
     weak var basePresenter: WalletsListInteractorOutputProtocol?

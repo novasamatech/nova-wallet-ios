@@ -1,7 +1,7 @@
 import UIKit
 import SoraKeystore
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 
 extension AddChainAccount {
     final class AccountConfirmInteractor: BaseChainAccountConfirmInteractor {

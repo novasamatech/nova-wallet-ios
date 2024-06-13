@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 struct PriceData: Codable, Equatable, Identifiable {
     let identifier: String

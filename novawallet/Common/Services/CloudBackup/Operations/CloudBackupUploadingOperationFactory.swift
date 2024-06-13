@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol CloudBackupUploadFactoryProtocol {
     /**
@@ -55,9 +55,6 @@ extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
         )
 
         let uploadOperation = AsyncClosureOperation<Void>(
-            cancelationClosure: {
-                uploadMonitoring.stop()
-            },
             operationClosure: { completionClosure in
                 _ = try writeOperation.extractNoCancellableResultData()
 
@@ -71,6 +68,9 @@ extension ICloudBackupUploadFactory: CloudBackupUploadFactoryProtocol {
                         completionClosure(.failure(error))
                     }
                 }
+            },
+            cancelationClosure: {
+                uploadMonitoring.stop()
             }
         )
 
