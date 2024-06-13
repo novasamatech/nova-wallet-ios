@@ -1642,3 +1642,5 @@
 "cloud.backup.update.password.title" = "Изменить пароль бэкапа";
 "cloud.backup.password.changed" = "Пароль бэкапа успешно изменён";
 "cloud.backup.created.successfully" = "Бэкап успешно создан";
+"no.manual.backup.alert.title" = "Нет кошельков для бэкапа";
+"no.manual.backup.alert.message" = "У Вас нет ни одного кошелька с секретной фразой.";

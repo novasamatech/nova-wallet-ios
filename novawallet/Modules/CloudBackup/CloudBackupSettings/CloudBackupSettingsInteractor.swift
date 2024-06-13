@@ -1,4 +1,5 @@
 import UIKit
+import Operation_iOS
 
 final class CloudBackupSettingsInteractor {
     weak var presenter: CloudBackupSettingsInteractorOutputProtocol?
@@ -6,6 +7,10 @@ final class CloudBackupSettingsInteractor {
     let cloudBackupSyncMediator: CloudBackupSyncMediating
     let cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol
     let syncMetadataManager: CloudBackupSyncMetadataManaging
+    let secretsWalletRepository: AnyDataProviderRepository<MetaAccountModel>
+    let operationQueue: OperationQueue
+
+    private let secretsWalletsCountCancellable = CancellableCallStore()
 
     var cloudBackupSyncService: CloudBackupSyncServiceProtocol {
         cloudBackupSyncMediator.syncService
@@ -14,11 +19,19 @@ final class CloudBackupSettingsInteractor {
     init(
         cloudBackupSyncMediator: CloudBackupSyncMediating,
         cloudBackupServiceFacade: CloudBackupServiceFacadeProtocol,
-        syncMetadataManager: CloudBackupSyncMetadataManaging
+        syncMetadataManager: CloudBackupSyncMetadataManaging,
+        secretsWalletRepository: AnyDataProviderRepository<MetaAccountModel>,
+        operationQueue: OperationQueue
     ) {
         self.cloudBackupSyncMediator = cloudBackupSyncMediator
         self.cloudBackupServiceFacade = cloudBackupServiceFacade
         self.syncMetadataManager = syncMetadataManager
+        self.secretsWalletRepository = secretsWalletRepository
+        self.operationQueue = operationQueue
+    }
+
+    deinit {
+        secretsWalletsCountCancellable.cancel()
     }
 
     private func subscribeBackupState() {
@@ -81,5 +94,27 @@ extension CloudBackupSettingsInteractor: CloudBackupSettingsInteractorInputProto
 
     func approveBackupChanges() {
         cloudBackupSyncMediator.approveCurrentChanges()
+    }
+
+    func fetchNumberOfWalletsWithSecrets() {
+        guard !secretsWalletsCountCancellable.hasCall else {
+            return
+        }
+
+        let fetchCountOperation = secretsWalletRepository.fetchCountOperation()
+
+        execute(
+            operation: fetchCountOperation,
+            inOperationQueue: operationQueue,
+            backingCallIn: secretsWalletsCountCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(numberOfItems):
+                self?.presenter?.didReceive(numberOfWalletsWithSecrets: numberOfItems)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .secretsCounter(error))
+            }
+        }
     }
 }

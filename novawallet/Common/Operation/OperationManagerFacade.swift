@@ -44,7 +44,6 @@ final class OperationManagerFacade {
 
     static let cloudBackupQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 30
         return operationQueue
     }()
 

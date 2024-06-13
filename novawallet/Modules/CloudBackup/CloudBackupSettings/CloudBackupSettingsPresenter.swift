@@ -177,7 +177,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
     }
 
     func activateManualBackup() {
-        wireframe.showManualBackup(from: view)
+        interactor.fetchNumberOfWalletsWithSecrets()
     }
 
     func activateSyncAction() {
@@ -251,6 +251,12 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
             }
 
             wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
+        case .secretsCounter:
+            _ = wireframe.present(
+                error: CommonError.databaseSubscription,
+                from: view,
+                locale: selectedLocale
+            )
         }
     }
 
@@ -261,6 +267,19 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
             ),
             from: view
         )
+    }
+
+    func didReceive(numberOfWalletsWithSecrets: Int) {
+        if numberOfWalletsWithSecrets > 0 {
+            wireframe.showManualBackup(from: view)
+        } else {
+            wireframe.present(
+                message: R.string.localizable.noManualBackupAlertMessage(preferredLanguages: selectedLocale.rLanguages),
+                title: R.string.localizable.noManualBackupAlertTitle(preferredLanguages: selectedLocale.rLanguages),
+                closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages),
+                from: view
+            )
+        }
     }
 }
 

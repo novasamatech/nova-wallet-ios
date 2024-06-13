@@ -26,11 +26,13 @@ protocol CloudBackupSettingsInteractorInputProtocol: AnyObject {
     func becomeActive()
     func becomeInactive()
     func approveBackupChanges()
+    func fetchNumberOfWalletsWithSecrets()
 }
 
 protocol CloudBackupSettingsInteractorOutputProtocol: AnyObject {
     func didReceive(state: CloudBackupSyncState)
     func didReceive(error: CloudBackupSettingsInteractorError)
+    func didReceive(numberOfWalletsWithSecrets: Int)
     func didDeleteBackup()
 }
 
@@ -59,4 +61,5 @@ protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentabl
 
 enum CloudBackupSettingsInteractorError: Error {
     case deleteBackup(Error)
+    case secretsCounter(Error)
 }
