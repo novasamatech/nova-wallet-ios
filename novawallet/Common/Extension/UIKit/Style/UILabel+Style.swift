@@ -131,6 +131,11 @@ extension UILabel.Style {
         font: .semiBoldCaps2
     )
 
+    static let semiboldCaps2Inactive = UILabel.Style(
+        textColor: R.color.colorButtonTextInactive(),
+        font: .semiBoldCaps2
+    )
+
     static let regularSubhedlinePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .regularSubheadline

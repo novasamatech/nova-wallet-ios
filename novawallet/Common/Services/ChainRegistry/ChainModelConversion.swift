@@ -40,8 +40,6 @@ final class ChainModelConverter: ChainModelConversionProtocol {
             assets: newAssets,
             syncMode: syncMode,
             order: order,
-            enabled: localModel?.enabled ?? true,
-            selectedNode: localModel?.selectedNode,
             connectionMode: localModel?.connectionMode ?? .autoBalanced
         )
 

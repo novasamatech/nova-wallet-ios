@@ -101,7 +101,7 @@ class NetworksListViewModelFactory {
 
             let networkState: NetworkViewModel.OverallState
 
-            if chainModel.enabled {
+            if chainModel.syncMode == .full {
                 networkState = .enabled
             } else {
                 networkState = .disabled(

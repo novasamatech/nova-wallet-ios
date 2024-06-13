@@ -16,6 +16,7 @@ struct NetworkDetailsViewFactory {
         let operationManager = OperationManager(
             operationQueue: OperationManagerFacade.assetsSyncQueue
         )
+
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: operationManager
@@ -27,14 +28,20 @@ struct NetworkDetailsViewFactory {
             return operationQueue
         }()
 
+        let nodePingOperationFactory = NodePingOperationFactory(
+            storageRequestFactory: storageRequestFactory,
+            operationQueue: operationQueue
+        )
+
         let interactor = NetworkDetailsInteractor(
             chain: chain,
             connectionFactory: connectionFactory,
             chainRegistry: chainRegistry,
             repository: repository,
-            storageRequestFactory: storageRequestFactory,
+            nodePingOperationFactory: nodePingOperationFactory,
             operationQueue: operationQueue
         )
+
         let wireframe = NetworkDetailsWireframe()
 
         let viewModelFactory = NetworkDetailsViewModelFactory(

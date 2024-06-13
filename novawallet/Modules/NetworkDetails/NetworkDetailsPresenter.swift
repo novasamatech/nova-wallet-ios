@@ -10,6 +10,7 @@ final class NetworkDetailsPresenter {
     private var connectionStates: [String: ConnectionState] = [:]
     private var nodes: [String: ChainNodeModel] = [:]
     private var nodesIndexes: [String: Int] = [:]
+    private var selectedNode: ChainNodeModel?
 
     private let viewModelFactory: NetworkDetailsViewModelFactory
 
@@ -23,8 +24,6 @@ final class NetworkDetailsPresenter {
         self.wireframe = wireframe
         self.chain = chain
         self.viewModelFactory = viewModelFactory
-
-        sortedNodes = chain.nodes.sorted { $0.order < $1.order }
     }
 }
 
@@ -33,17 +32,14 @@ final class NetworkDetailsPresenter {
 extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     func setup() {
         interactor.setup()
-
-        indexNodes()
-        provideViewModel()
     }
 
-    func toggleEnabled() {
-        interactor.toggleNetwork()
+    func setNetwork(enabled: Bool) {
+        interactor.setSetNetworkConnection(enabled: enabled)
     }
 
-    func toggleConnectionMode() {
-        interactor.toggleConnectionMode()
+    func setAutoBalance(enabled: Bool) {
+        interactor.setAutoBalance(enabled: enabled)
     }
 
     func addNode() {
@@ -59,9 +55,16 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
 // MARK: NetworkDetailsInteractorOutputProtocol
 
 extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
-    func didReceive(updatedChain: ChainModel) {
-        chain = updatedChain
+    func didReceive(_ chain: ChainModel) {
+        self.chain = chain
+
         sortedNodes = chain.nodes.sorted { $0.order < $1.order }
+
+        if sortedNodes.count == 1 {
+            selectedNode = sortedNodes[0]
+        } else if case let .manual(selectedNode) = chain.connectionMode {
+            self.selectedNode = selectedNode
+        }
 
         indexNodes()
         provideViewModel()
@@ -76,11 +79,17 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         connectionStates[nodeURL] = connectionState
 
         switch connectionState {
-        case .connecting, .disconnected, .pinged:
+        case .connecting, .disconnected, .pinged, .unknown:
             provideNodeViewModel(for: nodeURL)
-        case .connected:
-            print(connectionState)
+        default:
+            break
         }
+    }
+
+    func didReceive(_ selectedNode: ChainNodeModel) {
+        self.selectedNode = selectedNode
+
+        provideNodeViewModel(for: selectedNode.url)
     }
 }
 
@@ -91,6 +100,7 @@ private extension NetworkDetailsPresenter {
         let viewModel = viewModelFactory.createViewModel(
             for: chain,
             nodes: sortedNodes,
+            selectedNode: selectedNode,
             nodesIndexes: nodesIndexes,
             connectionStates: connectionStates
         )
@@ -107,6 +117,7 @@ private extension NetworkDetailsPresenter {
 
         let viewModel = viewModelFactory.createNodesSection(
             with: [node],
+            selectedNode: selectedNode,
             chain: chain,
             nodesIndexes: nodesIndexes,
             connectionStates: connectionStates
@@ -132,20 +143,6 @@ extension NetworkDetailsPresenter {
         case connected
         case disconnected
         case pinged(Int)
-
-        static func == (lhs: ConnectionState, rhs: ConnectionState) -> Bool {
-            switch (lhs, rhs) {
-            case (.connecting, .connecting):
-                true
-            case (.connected, .connected):
-                true
-            case (.disconnected, .disconnected):
-                true
-            case let (.pinged(lhsPing), .pinged(rhsPing)):
-                lhsPing == rhsPing
-            default:
-                false
-            }
-        }
+        case unknown
     }
 }

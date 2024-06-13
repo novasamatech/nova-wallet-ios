@@ -86,7 +86,7 @@ protocol StorageRequestFactoryProtocol {
         options: StorageQueryListOptions
     ) -> CompoundOperationWrapper<[K: T]> where K: JSONListConvertible, T: Decodable
 
-    func queryOperation(
+    func queryRawItems(
         for keys: @escaping () throws -> [Data],
         at blockHash: Data?,
         engine: JSONRPCEngine
@@ -194,7 +194,7 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         }.longrunOperation()
     }
 
-    func queryOperation(
+    func queryRawItems(
         for keys: @escaping () throws -> [Data],
         at blockHash: Data?,
         engine: JSONRPCEngine

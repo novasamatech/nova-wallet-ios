@@ -26,10 +26,7 @@ class NetworkDetailsNodeTableViewCell: PlainBaseTableViewCell<NetworkDetailsNode
 
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
-
-        contentDisplayView.roundedContainerView.backgroundView.fillColor = highlighted
-            ? R.color.colorCellBackgroundPressed()!
-            : R.color.colorBlockBackground()!
+        contentDisplayView.roundedContainerView.backgroundView.isHighlighted = highlighted
     }
 
     func apply(position: TableViewCellPosition) {
@@ -153,8 +150,11 @@ final class NetworkDetailsNodeView: UIView {
         case .disconnected:
             networkStatusLabel.text = nil
             networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
-        default:
-            break
+        case let .unknown(string):
+            networkStatusLabel.stopShimmering()
+            networkStatusLabel.apply(style: .semiboldCaps2Secondary)
+            networkStatusLabel.text = string
+            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
         }
     }
 }
@@ -188,8 +188,6 @@ private extension NetworkDetailsNodeView {
         networkStatusIcon.snp.makeConstraints { make in
             make.width.height.equalTo(12)
         }
-
-        setNeedsLayout()
     }
 
     func setupStyle() {
@@ -197,6 +195,7 @@ private extension NetworkDetailsNodeView {
         urlLabel.apply(style: .caption1Secondary)
 
         roundedContainerView.backgroundView.fillColor = R.color.colorBlockBackground()!
+        roundedContainerView.backgroundView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         roundedContainerView.backgroundView.cornerRadius = Constants.cornerRadius
 
         networkStatusLabel.apply(style: .semiboldCaps2Primary)

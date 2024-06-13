@@ -5,25 +5,26 @@ protocol NetworkDetailsViewProtocol: ControllerBackedProtocol {
 
 protocol NetworkDetailsPresenterProtocol: AnyObject {
     func setup()
-    func toggleEnabled()
-    func toggleConnectionMode()
+    func setNetwork(enabled: Bool)
+    func setAutoBalance(enabled: Bool)
     func addNode()
     func selectNode(at index: Int)
 }
 
 protocol NetworkDetailsInteractorInputProtocol: AnyObject {
     func setup()
-    func toggleNetwork()
-    func toggleConnectionMode()
+    func setSetNetworkConnection(enabled: Bool)
+    func setAutoBalance(enabled: Bool)
     func selectNode(_ node: ChainNodeModel)
 }
 
 protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
-    func didReceive(updatedChain: ChainModel)
+    func didReceive(_ chain: ChainModel)
     func didReceive(
         _ connectionState: NetworkDetailsPresenter.ConnectionState,
         for nodeURL: String
     )
+    func didReceive(_ selectedNode: ChainNodeModel)
 }
 
 protocol NetworkDetailsWireframeProtocol: AnyObject {}

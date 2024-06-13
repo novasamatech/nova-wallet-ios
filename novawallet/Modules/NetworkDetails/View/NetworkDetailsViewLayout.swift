@@ -47,7 +47,7 @@ final class NetworkDetailsViewLayout: UIView {
 
 extension NetworkDetailsViewLayout {
     struct NodeModel {
-        enum Ping {
+        enum Ping: Equatable {
             case low(String)
             case medium(String)
             case high(String)
@@ -57,22 +57,7 @@ extension NetworkDetailsViewLayout {
             case connecting(String)
             case pinged(Ping)
             case disconnected
-            case unknown
-
-            static func == (lhs: ConnectionState, rhs: ConnectionState) -> Bool {
-                switch (lhs, rhs) {
-                case (.connecting, .connecting):
-                    true
-                case (.disconnected, .disconnected):
-                    true
-                case (.pinged, .pinged):
-                    true
-                case (.unknown, .unknown):
-                    true
-                default:
-                    false
-                }
-            }
+            case unknown(String)
         }
 
         let index: Int

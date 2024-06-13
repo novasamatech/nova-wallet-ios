@@ -1532,3 +1532,4 @@
 "network.details.enable.connection" = "Enable connection";
 "network.details.auto.balance" = "Auto-balance nodes";
 "network.details.add.custom.node" = "Add custom node";
+"network.details.ping.milliseconds" = "%d ms";

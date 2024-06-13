@@ -189,8 +189,16 @@ final class ChainModelMapper {
             }
         }
 
+        let modelSelectedNode: ChainNodeModel? = if case let .manual(nodeModel) = model.connectionMode {
+            nodeModel
+        } else {
+            nil
+        }
+
+        let selectedNode = nodeEntities.first { $0.url == modelSelectedNode?.url }
+
         entity.nodes = Set(nodeEntities) as NSSet
-        entity.selectedNode = try nodeMapping(model.selectedNode)
+        entity.selectedNode = selectedNode
     }
 
     private func createExplorers(from chain: CDChain) -> [ChainModel.Explorer]? {
@@ -352,7 +360,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         } ?? []
 
         let selectedNode: ChainNodeModel? = if let entitySelectedNode = entity.selectedNode as? CDChainNodeItem {
-            try? createChainNode(from: entitySelectedNode)
+            try createChainNode(from: entitySelectedNode)
         } else {
             nil
         }
@@ -381,7 +389,11 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         }
 
         let source = ChainModel.Source(rawValue: entity.source!) ?? .remote
-        let connectionMode = ChainModel.ConnectionMode(rawValue: entity.connectionMode) ?? .autoBalanced
+
+        let connectionMode = ChainModel.ConnectionMode(
+            rawValue: entity.connectionMode,
+            selectedNode: selectedNode
+        )
 
         return ChainModel(
             chainId: entity.chainId!,
@@ -400,9 +412,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: entity.enabled,
-            connectionMode: connectionMode,
-            selectedNode: selectedNode
+            connectionMode: connectionMode ?? .autoBalanced
         )
     }
 
@@ -432,7 +442,6 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue
         entity.source = model.source.rawValue
-        entity.enabled = model.enabled
         entity.connectionMode = model.connectionMode.rawValue
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)

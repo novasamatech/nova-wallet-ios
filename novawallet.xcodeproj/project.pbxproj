@@ -685,6 +685,7 @@
 		2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */; };
 		2DAF53952C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */; };
 		2DAF539B2C1842D00076B4B6 /* NetworkDetailsNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */; };
+		2DAF539E2C1B2AA00076B4B6 /* NodePingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -5310,9 +5311,10 @@
 		2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksListTableViewCell.swift; sourceTree = "<group>"; };
 		2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksEmptyPlaceholderView.swift; sourceTree = "<group>"; };
 		2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrateNetworksBanner.swift; sourceTree = "<group>"; };
-		2DAF539C2C198E690076B4B6 /* SubstrateDataModel29.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel29.xcdatamodel; sourceTree = "<group>"; };
 		2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsNodeView.swift; sourceTree = "<group>"; };
+		2DAF539C2C198E690076B4B6 /* SubstrateDataModel29.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel29.xcdatamodel; sourceTree = "<group>"; };
+		2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodePingOperationFactory.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
 		2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmInteractor.swift; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
@@ -11101,6 +11103,7 @@
 				0DCD5C5B0CCF665B18B0E13A /* NetworkDetailsInteractor.swift */,
 				5D02002370AEE6699D07F2CC /* NetworkDetailsViewController.swift */,
 				8DFA76F5EE586D52B3A9E7CE /* NetworkDetailsViewFactory.swift */,
+				2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */,
 			);
 			path = NetworkDetails;
 			sourceTree = "<group>";
@@ -24883,6 +24886,7 @@
 				84ADA60E29B9E12700EB687E /* MultiExtrinsicSubmitRetryInputProtocol.swift in Sources */,
 				848CCB4E2833CC4D00A1FD00 /* StakingMainStaticViewModel.swift in Sources */,
 				0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */,
+				2DAF539E2C1B2AA00076B4B6 /* NodePingOperationFactory.swift in Sources */,
 				842806F52847A82500702F3A /* StackAccountSelectionCell.swift in Sources */,
 				84F1CB3A27CEB9850095D523 /* NftListItemCell.swift in Sources */,
 				8499FEE427C1059700712589 /* RMRKV1SyncService.swift in Sources */,

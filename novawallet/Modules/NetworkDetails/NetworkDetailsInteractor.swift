@@ -10,24 +10,26 @@ final class NetworkDetailsInteractor {
     private let connectionFactory: ConnectionFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let repository: AnyDataProviderRepository<ChainModel>
-    private let storageRequestFactory: StorageRequestFactoryProtocol
+    private let nodePingOperationFactory: NodePingOperationFactoryProtocol
     private let operationQueue: OperationQueue
 
     private var nodesConnections: [String: ChainConnection] = [:]
+
+    private var currentSelectedNode: ChainNodeModel?
 
     init(
         chain: ChainModel,
         connectionFactory: ConnectionFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
-        storageRequestFactory: StorageRequestFactoryProtocol,
+        nodePingOperationFactory: NodePingOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.connectionFactory = connectionFactory
         self.chainRegistry = chainRegistry
         self.repository = repository
-        self.storageRequestFactory = storageRequestFactory
+        self.nodePingOperationFactory = nodePingOperationFactory
         self.operationQueue = operationQueue
     }
 }
@@ -36,20 +38,19 @@ final class NetworkDetailsInteractor {
 
 extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     func setup() {
+        presenter?.didReceive(chain)
+
         connectToNodes(of: chain)
         subscribeChainChanges()
     }
 
-    func toggleNetwork() {
+    func setSetNetworkConnection(enabled: Bool) {
         let saveOperation = repository.saveOperation({ [weak self] in
             guard let self else { return [] }
 
-            var updatedChain = chain.byChanging(enabled: !chain.enabled)
-
-            if chain.enabled {
-                updatedChain = updatedChain.updatingSelectedNode(with: nil)
-                updatedChain = updatedChain.updatingConnectionMode(for: .manual)
-            }
+            var updatedChain = enabled
+                ? chain.updatingSyncMode(for: .full)
+                : chain.updatingSyncMode(for: .disabled)
 
             return [updatedChain]
         }, {
@@ -59,17 +60,15 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
         operationQueue.addOperation(saveOperation)
     }
 
-    func toggleConnectionMode() {
+    func setAutoBalance(enabled: Bool) {
         let saveOperation = repository.saveOperation({ [weak self] in
             guard let self else { return [] }
 
-            let newMode: ChainModel.ConnectionMode = if chain.connectionMode == .autoBalanced {
-                .manual
-            } else {
-                .autoBalanced
+            guard let currentSelectedNode, !enabled else {
+                return [chain.updatingConnectionMode(for: .autoBalanced)]
             }
 
-            return [chain.updatingConnectionMode(for: newMode)]
+            return [chain.updatingConnectionMode(for: .manual(currentSelectedNode))]
         }, {
             []
         })
@@ -81,7 +80,7 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
         let saveOperation = repository.saveOperation({ [weak self] in
             guard let self else { return [] }
 
-            return [chain.updatingSelectedNode(with: node)]
+            return [chain.updatingConnectionMode(for: .manual(node))]
         }, {
             []
         })
@@ -128,9 +127,23 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
         state: WebSocketEngine.State,
         for chainId: ChainModel.Id
     ) {
-        guard chainId == chain.chainId else { return }
+        guard
+            chainId == chain.chainId,
+            state == .connected
+        else {
+            return
+        }
 
-        print(state)
+        let selectedNode: ChainNodeModel = switch chain.connectionMode {
+        case let .manual(chainNodeModel):
+            chainNodeModel
+        case .autoBalanced:
+            chain.nodes.first!
+        }
+
+        currentSelectedNode = selectedNode
+
+        presenter?.didReceive(selectedNode)
     }
 }
 
@@ -163,19 +176,21 @@ private extension NetworkDetailsInteractor {
             )
 
             chain = changedChain
-            presenter?.didReceive(updatedChain: changedChain)
+            presenter?.didReceive(changedChain)
         }
+
+        chainRegistry.subscribeChainState(self, chainId: chain.chainId)
     }
 
     func toggleNodesAfterChainUpdate(
         beforeChange chain: ChainModel,
         updatedChain: ChainModel
     ) {
-        guard chain.enabled != updatedChain.enabled else {
+        guard chain.syncMode != updatedChain.syncMode else {
             return
         }
 
-        if updatedChain.enabled {
+        if updatedChain.syncMode == .full {
             connectToNodes(of: updatedChain)
         } else {
             disconnectNodes()
@@ -207,33 +222,17 @@ private extension NetworkDetailsInteractor {
     }
 
     func measureNodePing(for nodeUrl: URL) {
-        guard
-            let connection = nodesConnections[nodeUrl.absoluteString],
-            let key = try? StorageKeyFactory().accountInfoKeyForId(
-                AccountId.zeroAccountId(of: chain.accountIdSize)
-            )
-        else {
+        guard let connection = nodesConnections[nodeUrl.absoluteString] else {
             return
         }
 
-        let measureOperation: BaseOperation<Int> = if chain.isEthereumBased {
-            createPingMeasureOperation(
-                with: createEVMQueryOperation(with: connection),
-                queue: operationQueue
-            )
-        } else {
-            createPingMeasureOperation(
-                with: storageRequestFactory.queryOperation(
-                    for: { [key] },
-                    at: nil,
-                    engine: connection
-                ),
-                queue: operationQueue
-            )
-        }
+        let nodePingOperation = nodePingOperationFactory.createOperation(
+            for: chain,
+            connection: connection
+        )
 
         execute(
-            operation: measureOperation,
+            operation: nodePingOperation,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -244,43 +243,11 @@ private extension NetworkDetailsInteractor {
                     .pinged(ping),
                     for: nodeUrl.absoluteString
                 )
-            case let .failure(error):
-                print(error)
-            }
-        }
-    }
-
-    func createEVMQueryOperation(with connection: ChainConnection) -> BaseOperation<Result<String, Error>> {
-        AsyncClosureOperation { resultClosure in
-            let params = EvmBalanceMessage.Params(
-                holder: String(),
-                block: .latest
-            )
-            _ = try connection.callMethod(
-                EvmBalanceMessage.method,
-                params: params,
-                options: .init(resendOnReconnect: false)
-            ) { (result: Result<String, Error>) in
-                resultClosure(.success(result))
-            }
-        }
-    }
-
-    func createPingMeasureOperation<T>(
-        with queryOperation: BaseOperation<T>,
-        queue: OperationQueue
-    ) -> BaseOperation<Int> {
-        AsyncClosureOperation { resultClosure in
-            let startTime = CFAbsoluteTimeGetCurrent()
-            execute(
-                operation: queryOperation,
-                inOperationQueue: queue,
-                runningCallbackIn: nil
-            ) { _ in
-                let endTime = CFAbsoluteTimeGetCurrent()
-                let ping = Int((endTime - startTime) * 1000)
-
-                resultClosure(.success(ping))
+            case .failure:
+                self?.presenter?.didReceive(
+                    .unknown,
+                    for: nodeUrl.absoluteString
+                )
             }
         }
     }

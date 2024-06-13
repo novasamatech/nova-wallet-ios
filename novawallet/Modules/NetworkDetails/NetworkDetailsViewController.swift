@@ -44,7 +44,7 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
 
                 let indexPath = IndexPath(
                     row: nodeModel.index,
-                    section: 2
+                    section: Constants.nodesSectionIndex
                 )
 
                 let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworkDetailsNodeTableViewCell
@@ -164,10 +164,10 @@ extension NetworkDetailsViewController: SwitchSettingsTableViewCellDelegate {
         }
 
         switch indexPath.row {
-        case 0:
-            presenter.toggleEnabled()
-        case 1:
-            presenter.toggleConnectionMode()
+        case Constants.connectionStateRowIndex:
+            presenter.setNetwork(enabled: cell.rightView.isOn)
+        case Constants.connectionModeRowIndex:
+            presenter.setAutoBalance(enabled: cell.rightView.isOn)
         default:
             break
         }
@@ -203,6 +203,9 @@ private extension NetworkDetailsViewController {
 
 private extension NetworkDetailsViewController {
     enum Constants {
+        static let nodesSectionIndex: Int = 2
+        static let connectionStateRowIndex: Int = 0
+        static let connectionModeRowIndex: Int = 1
         static let headerHeight: CGFloat = 37.0
         static let networkIconSize = CGSize(
             width: 32,

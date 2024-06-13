@@ -1532,3 +1532,4 @@
 "network.details.enable.connection" = "Включить соединение";
 "network.details.auto.balance" = "Авто-балансирвоать ноды";
 "network.details.add.custom.node" = "Добавить пользовательскую ноду";
+"network.details.ping.milliseconds" = "%d мс";

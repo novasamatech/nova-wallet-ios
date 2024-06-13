@@ -20,6 +20,7 @@ class NetworkDetailsViewModelFactory {
     func createViewModel(
         for network: ChainModel,
         nodes: [ChainNodeModel],
+        selectedNode: ChainNodeModel?,
         nodesIndexes: [String: Int],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Details {
@@ -30,6 +31,7 @@ class NetworkDetailsViewModelFactory {
                 createAddNodeSection(),
                 createNodesSection(
                     with: nodes,
+                    selectedNode: selectedNode,
                     chain: network,
                     nodesIndexes: nodesIndexes,
                     connectionStates: connectionStates
@@ -40,6 +42,7 @@ class NetworkDetailsViewModelFactory {
 
     func createNodesSection(
         with nodes: [ChainNodeModel],
+        selectedNode: ChainNodeModel?,
         chain: ChainModel,
         nodesIndexes: [String: Int],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
@@ -49,9 +52,12 @@ class NetworkDetailsViewModelFactory {
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
             ).uppercased(),
             rows: nodes.map {
-                .node(
+                let selected = $0.url == selectedNode?.url
+
+                return .node(
                     createNodeViewModel(
                         for: $0,
+                        selected: chain.syncMode == .full ? selected : false,
                         chain: chain,
                         indexes: nodesIndexes,
                         connectionStates: connectionStates
@@ -77,7 +83,7 @@ private extension NetworkDetailsViewModelFactory {
                             ),
                             icon: nil
                         ),
-                        selectable: network.enabled,
+                        selectable: network.syncMode == .full,
                         enabled: network.chainId != KnowChainId.polkadot
                     )
                 ),
@@ -89,8 +95,8 @@ private extension NetworkDetailsViewModelFactory {
                             ),
                             icon: nil
                         ),
-                        selectable: network.connectionMode == .autoBalanced && network.enabled,
-                        enabled: network.enabled
+                        selectable: network.connectionMode == .autoBalanced && network.syncMode == .full,
+                        enabled: network.syncMode == .full
                     )
                 )
             ]
@@ -117,11 +123,16 @@ private extension NetworkDetailsViewModelFactory {
 
     func createNodeViewModel(
         for node: ChainNodeModel,
+        selected: Bool,
         chain: ChainModel,
         indexes: [String: Int],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Node {
-        let connectionState: Node.ConnectionState
+        var connectionState: Node.ConnectionState = .connecting(
+            R.string.localizable.networkStatusConnecting(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).uppercased()
+        )
 
         if let nodeConnectionState = connectionStates[node.url] {
             connectionState = switch nodeConnectionState {
@@ -134,23 +145,14 @@ private extension NetworkDetailsViewModelFactory {
             case .disconnected:
                 .disconnected
             case let .pinged(ping):
-                switch ping {
-                case 0 ..< 100:
-                    .pinged(.low("\(ping) MS"))
-                case 100 ..< 500:
-                    .pinged(.medium("\(ping) MS"))
-                default:
-                    .pinged(.high("\(ping) MS"))
-                }
+                createConnectionState(for: ping)
             default:
-                .unknown
+                .unknown(
+                    R.string.localizable.commonUnknown(
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ).uppercased()
+                )
             }
-        } else {
-            connectionState = .connecting(
-                R.string.localizable.networkStatusConnecting(
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
-                ).uppercased()
-            )
         }
 
         return Node(
@@ -158,8 +160,24 @@ private extension NetworkDetailsViewModelFactory {
             name: node.name,
             url: node.url,
             connectionState: connectionState,
-            selected: chain.selectedNode?.url == node.url,
+            selected: selected,
             dimmed: chain.connectionMode == .autoBalanced
         )
+    }
+
+    func createConnectionState(for ping: Int) -> Node.ConnectionState {
+        let string = R.string.localizable.networkDetailsPingMilliseconds(
+            ping,
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).uppercased()
+
+        return switch ping {
+        case 0 ..< 100:
+            .pinged(.low(string))
+        case 100 ..< 500:
+            .pinged(.medium(string))
+        default:
+            .pinged(.high(string))
+        }
     }
 }

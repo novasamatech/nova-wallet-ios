@@ -40,9 +40,27 @@ struct ChainModel: Equatable, Hashable {
         }
     }
 
-    enum ConnectionMode: Int16 {
-        case manual = 0
-        case autoBalanced = 1
+    enum ConnectionMode: Hashable, Equatable {
+        case manual(ChainNodeModel)
+        case autoBalanced
+
+        var rawValue: Int16 {
+            switch self {
+            case .manual: 0
+            case .autoBalanced: 1
+            }
+        }
+
+        init?(rawValue: Int16, selectedNode: ChainNodeModel?) {
+            switch (rawValue, selectedNode) {
+            case let (0, .some(node)):
+                self = .manual(node)
+            case (1, _):
+                self = .autoBalanced
+            default:
+                return nil
+            }
+        }
     }
 
     let chainId: Id
@@ -61,9 +79,7 @@ struct ChainModel: Equatable, Hashable {
     let additional: JSON?
     let syncMode: ChainSyncMode
     let source: Source
-    let enabled: Bool
     let connectionMode: ConnectionMode
-    let selectedNode: ChainNodeModel?
 
     init(
         chainId: Id,
@@ -82,9 +98,7 @@ struct ChainModel: Equatable, Hashable {
         additional: JSON?,
         syncMode: ChainSyncMode,
         source: Source,
-        enabled: Bool,
-        connectionMode: ConnectionMode,
-        selectedNode: ChainNodeModel?
+        connectionMode: ConnectionMode
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -102,9 +116,7 @@ struct ChainModel: Equatable, Hashable {
         self.additional = additional
         self.syncMode = syncMode
         self.source = source
-        self.enabled = enabled
         self.connectionMode = connectionMode
-        self.selectedNode = selectedNode
     }
 
     func asset(for assetId: AssetModel.Id) -> AssetModel? {
@@ -330,9 +342,7 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: enabled,
-            connectionMode: connectionMode,
-            selectedNode: selectedNode
+            connectionMode: connectionMode
         )
     }
 
@@ -357,16 +367,13 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: enabled,
-            connectionMode: connectionMode,
-            selectedNode: selectedNode
+            connectionMode: connectionMode
         )
     }
 
     func byChanging(
         assets: Set<AssetModel>? = nil,
         name: String? = nil,
-        enabled: Bool? = nil,
         source: Source? = nil
     ) -> ChainModel {
         let newAssets = assets ?? self.assets
@@ -389,9 +396,7 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source ?? self.source,
-            enabled: enabled ?? self.enabled,
-            connectionMode: connectionMode,
-            selectedNode: selectedNode
+            connectionMode: connectionMode
         )
     }
 
@@ -413,9 +418,7 @@ extension ChainModel {
             additional: additional,
             syncMode: newMode,
             source: source,
-            enabled: enabled,
-            connectionMode: connectionMode,
-            selectedNode: selectedNode
+            connectionMode: connectionMode
         )
     }
 
@@ -437,33 +440,7 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: enabled,
-            connectionMode: newMode,
-            selectedNode: selectedNode
-        )
-    }
-
-    func updatingSelectedNode(with node: ChainNodeModel?) -> ChainModel {
-        .init(
-            chainId: chainId,
-            parentId: parentId,
-            name: name,
-            assets: assets,
-            nodes: nodes,
-            nodeSwitchStrategy: nodeSwitchStrategy,
-            addressPrefix: addressPrefix,
-            types: types,
-            icon: icon,
-            options: options,
-            externalApis: externalApis,
-            explorers: explorers,
-            order: order,
-            additional: additional,
-            syncMode: syncMode,
-            source: source,
-            enabled: enabled,
-            connectionMode: connectionMode,
-            selectedNode: node
+            connectionMode: newMode
         )
     }
 }
