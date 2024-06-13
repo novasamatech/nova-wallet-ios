@@ -11103,7 +11103,6 @@
 				0DCD5C5B0CCF665B18B0E13A /* NetworkDetailsInteractor.swift */,
 				5D02002370AEE6699D07F2CC /* NetworkDetailsViewController.swift */,
 				8DFA76F5EE586D52B3A9E7CE /* NetworkDetailsViewFactory.swift */,
-				2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */,
 			);
 			path = NetworkDetails;
 			sourceTree = "<group>";
@@ -15706,6 +15705,7 @@
 				8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */,
 				841E555A282E6B0900C8438F /* StorageDecodingOperation+Init.swift */,
 				848B2FFF286EDE3800465BA2 /* ParaIdOperationFactory.swift */,
+				2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */,
 				847999A8288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift */,
 				84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */,
 				8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */,
