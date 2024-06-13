@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 class ParaStkYieldBoostCommonInteractor {
     weak var presenter: ParaStkYieldBoostCommonInteractorOutputProtocol?

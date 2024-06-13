@@ -1,7 +1,7 @@
 import UIKit
 import SoraKeystore
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 
 class AccountConfirmInteractor: BaseAccountConfirmInteractor {
     private(set) var settings: SelectedWalletSettings

@@ -2,7 +2,7 @@ import XCTest
 @testable import novawallet
 import SoraKeystore
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 import Cuckoo
 
 class ExportMnemonicTests: XCTestCase {

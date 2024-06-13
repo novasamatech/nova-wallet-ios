@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 struct DAppSettings: Identifiable {
     // normaly it is a dapp url's host

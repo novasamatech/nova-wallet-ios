@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 struct StakingSetupProxyViewFactory {
     static func createView(state: RelaychainStakingSharedStateProtocol) -> StakingSetupProxyViewProtocol? {

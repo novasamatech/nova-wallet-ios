@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 class JsonFileRepository<Model> where Model: Decodable {
     func fetchOperationWrapper(by url: URL?, defaultValue: Model) -> CompoundOperationWrapper<Model> {

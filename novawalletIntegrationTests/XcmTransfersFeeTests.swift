@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import BigInt
-import RobinHood
+import Operation_iOS
 
 class XcmTransfersFeeTests: XCTestCase {
     func testKaruraMoonriverBnc() throws {

@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class GovV1SubsquareOperationFactory: BaseSubsquareOperationFactory {
     override func createPreviewUrl(from _: JSON?) -> URL {

@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 struct DAppGlobalSettings: Identifiable, Equatable {
     var identifier: String

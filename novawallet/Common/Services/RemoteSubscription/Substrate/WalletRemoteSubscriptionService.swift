@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol WalletRemoteSubscriptionServiceProtocol {
     // swiftlint:disable:next function_parameter_count

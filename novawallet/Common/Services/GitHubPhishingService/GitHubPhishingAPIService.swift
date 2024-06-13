@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 class GitHubPhishingAPIService: ApplicationServiceProtocol {
     private var networkOperation: BaseOperation<[PhishingItem]>!

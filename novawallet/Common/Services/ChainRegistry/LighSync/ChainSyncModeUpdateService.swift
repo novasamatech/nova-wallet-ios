@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol ChainSyncModeUpdateServiceProtocol: ApplicationServiceProtocol {
     func update(selectedMetaAccount: MetaAccountModel)

@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 final class AssetDetailsInteractor: AnyCancellableCleaning {
     weak var presenter: AssetDetailsInteractorOutputProtocol?

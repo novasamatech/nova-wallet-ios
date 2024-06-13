@@ -1,7 +1,7 @@
 import UIKit
 import IrohaCrypto
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import SoraKeystore
 
 final class AccountImportInteractor: BaseAccountImportInteractor {

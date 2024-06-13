@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 class BaseKiltTransferAssetRecipientRepository<Response: Decodable>: BaseFetchOperationFactory,
     Web3TransferRecipientRepositoryProtocol {

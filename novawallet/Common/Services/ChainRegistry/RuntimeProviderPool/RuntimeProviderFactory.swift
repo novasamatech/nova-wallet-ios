@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol RuntimeProviderFactoryProtocol {
     func createRuntimeProvider(for chain: ChainModel) -> RuntimeProviderProtocol
@@ -36,7 +36,7 @@ extension RuntimeProviderFactory: RuntimeProviderFactoryProtocol {
             chainId: chain.chainId,
             filesOperationFactory: fileOperationFactory,
             repository: repository,
-            logger: logger
+            runtimeTypeRegistryFactory: RuntimeTypeRegistryFactory(logger: logger)
         )
 
         return RuntimeProvider(

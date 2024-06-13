@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol SettingsSubscriber: AnyObject {
     var settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol { get }

@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 class ValidatorInfoInteractorBase: ValidatorInfoInteractorInputProtocol {
     weak var presenter: ValidatorInfoInteractorOutputProtocol!

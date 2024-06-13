@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import RobinHood
+import Operation_iOS
 import CoreData
 
 extension Multistaking.DashboardItemNominationPoolPart: Identifiable {
