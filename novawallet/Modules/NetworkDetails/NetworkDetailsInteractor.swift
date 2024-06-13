@@ -175,6 +175,10 @@ private extension NetworkDetailsInteractor {
                 updatedChain: changedChain
             )
 
+            if case let .manual(node) = changedChain.connectionMode {
+                currentSelectedNode = node
+            }
+
             chain = changedChain
             presenter?.didReceive(changedChain)
         }
