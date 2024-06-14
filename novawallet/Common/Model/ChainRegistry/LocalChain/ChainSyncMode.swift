@@ -4,6 +4,10 @@ enum ChainSyncMode: Equatable {
     case disabled
     case light
     case full
+
+    func enabled() -> Bool {
+        self == .full || self == .light
+    }
 }
 
 extension ChainSyncMode {

@@ -57,7 +57,7 @@ class NetworkDetailsViewModelFactory {
                 return .node(
                     createNodeViewModel(
                         for: $0,
-                        selected: chain.syncMode == .full ? selected : false,
+                        selected: chain.syncMode.enabled() ? selected : false,
                         chain: chain,
                         indexes: nodesIndexes,
                         connectionStates: connectionStates
@@ -83,7 +83,7 @@ private extension NetworkDetailsViewModelFactory {
                             ),
                             icon: nil
                         ),
-                        selectable: network.syncMode == .full,
+                        selectable: network.syncMode.enabled(),
                         enabled: network.chainId != KnowChainId.polkadot
                     )
                 ),
@@ -95,8 +95,8 @@ private extension NetworkDetailsViewModelFactory {
                             ),
                             icon: nil
                         ),
-                        selectable: network.connectionMode == .autoBalanced && network.syncMode == .full,
-                        enabled: network.syncMode == .full
+                        selectable: network.connectionMode == .autoBalanced && network.syncMode.enabled(),
+                        enabled: network.syncMode.enabled()
                     )
                 )
             ]
@@ -128,11 +128,13 @@ private extension NetworkDetailsViewModelFactory {
         indexes: [String: Int],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Node {
-        var connectionState: Node.ConnectionState = .connecting(
-            R.string.localizable.networkStatusConnecting(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ).uppercased()
-        )
+        var connectionState: Node.ConnectionState = chain.syncMode.enabled()
+            ? .connecting(
+                R.string.localizable.networkStatusConnecting(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ).uppercased()
+            )
+            : .disconnected
 
         if let nodeConnectionState = connectionStates[node.url] {
             connectionState = switch nodeConnectionState {

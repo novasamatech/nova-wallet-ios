@@ -39,16 +39,18 @@ final class NetworkDetailsInteractor {
 extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     func setup() {
         presenter?.didReceive(chain)
+        subscribeChainChanges()
+
+        guard chain.syncMode.enabled() else { return }
 
         connectToNodes(of: chain)
-        subscribeChainChanges()
     }
 
     func setSetNetworkConnection(enabled: Bool) {
         let saveOperation = repository.saveOperation({ [weak self] in
             guard let self else { return [] }
 
-            var updatedChain = enabled
+            let updatedChain = enabled
                 ? chain.updatingSyncMode(for: .full)
                 : chain.updatingSyncMode(for: .disabled)
 
@@ -194,7 +196,7 @@ private extension NetworkDetailsInteractor {
             return
         }
 
-        if updatedChain.syncMode == .full {
+        if updatedChain.syncMode.enabled() {
             connectToNodes(of: updatedChain)
         } else {
             disconnectNodes()
