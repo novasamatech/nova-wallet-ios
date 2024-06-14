@@ -279,8 +279,9 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
                 options.append(.mnemonic)
             }
 
+            // use private key for ethereum and seed for substrate
             let seedTag = chain.isEthereumBased ?
-                KeystoreTagV2.ethereumSeedTagForMetaId(metaAccount.metaId, accountId: accountId) :
+                KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaAccount.metaId, accountId: accountId) :
                 KeystoreTagV2.substrateSeedTagForMetaId(metaAccount.metaId, accountId: accountId)
             let hasSeed = try keystore.checkKey(for: seedTag)
             if hasSeed || accountResponse.cryptoType.supportsSeedFromSecretKey {

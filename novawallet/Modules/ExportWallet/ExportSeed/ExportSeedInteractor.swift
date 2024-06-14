@@ -39,9 +39,12 @@ extension ExportSeedInteractor: ExportSeedInteractorInputProtocol {
             }
 
             let accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+
+            // use private key for ethereum and seed for substrate
             let seedTag = chain.isEthereumBased ?
-                KeystoreTagV2.ethereumSeedTagForMetaId(metaAccount.metaId, accountId: accountId) :
+                KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaAccount.metaId, accountId: accountId) :
                 KeystoreTagV2.substrateSeedTagForMetaId(metaAccount.metaId, accountId: accountId)
+
             var optionalSeed: Data? = try self?.keystore.loadIfKeyExists(seedTag)
 
             if optionalSeed == nil, accountResponse.cryptoType.supportsSeedFromSecretKey {

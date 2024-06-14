@@ -12,8 +12,8 @@ final class ManualBackupWalletListWireframe: ManualBackupWalletListWireframeProt
             return
         }
 
-        authorize(animated: true, cancellable: true) { [weak self] completed in
-            guard let self, completed else { return }
+        authorize(animated: true, cancellable: true) { completed in
+            guard completed else { return }
 
             view?.controller.navigationController?.pushViewController(
                 backupAttentionView.controller,
