@@ -69,11 +69,6 @@ extension OnboardingWalletReadyPresenter: OnboardingWalletReadyInteractorOutputP
                 from: view,
                 locale: localizationManager.selectedLocale
             )
-        case .notEnoughStorageInCloud:
-            wireframe.presentNotEnoughStorageForBackup(
-                from: view,
-                locale: localizationManager.selectedLocale
-            )
         case .internalError, .timeout:
             wireframe.presentNoCloudConnection(from: view, locale: localizationManager.selectedLocale)
         }
