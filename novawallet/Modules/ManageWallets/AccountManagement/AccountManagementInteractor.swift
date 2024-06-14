@@ -152,9 +152,9 @@ final class AccountManagementInteractor {
             if let selectedWallet = settings.value,
                selectedWallet.identifier == walletId {
                 settings.setup()
-                eventCenter.notify(with: SelectedUsernameChanged())
+                eventCenter.notify(with: WalletNameChanged(isSelectedWallet: true))
             } else {
-                eventCenter.notify(with: WalletNameChanged())
+                eventCenter.notify(with: WalletNameChanged(isSelectedWallet: false))
             }
 
             presenter?.didSaveWalletName(.success(newName))
@@ -168,10 +168,10 @@ final class AccountManagementInteractor {
         if let selectedWallet = settings.value, selectedWallet.identifier == walletId {
             settings.setup()
 
-            eventCenter.notify(with: SelectedAccountChanged())
+            eventCenter.notify(with: SelectedWalletSwitched())
         }
 
-        eventCenter.notify(with: ChainAccountChanged(method: .manually))
+        eventCenter.notify(with: ChainAccountChanged())
 
         fetchWalletAndChains(with: walletId)
 

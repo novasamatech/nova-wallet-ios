@@ -56,13 +56,13 @@ extension CloudBackupSettingsInteractor: CloudBackupSettingsInteractorInputProto
     }
 
     func becomeActive() {
-        cloudBackupSyncMediator.disableDelegateNotifications()
+        cloudBackupSyncMediator.disablePresenterNotifications()
 
         cloudBackupSyncService.syncUp()
     }
 
     func becomeInactive() {
-        cloudBackupSyncMediator.enableDelegateNotifications()
+        cloudBackupSyncMediator.enablePresenterNotifications()
     }
 
     func enableBackup() {

@@ -1,6 +1,14 @@
 import Foundation
 
-protocol CloudBackupSyncConfirming: AnyObject {
+enum CloudBackupSynсPurpose {
+    case createWallet
+    case importWallet
+    case removeWallet
+    case addChainAccount
+    case unknown
+}
+
+protocol CloudBackupSynсUIPresenting: AnyObject {
     func cloudBackup(
         mediator: CloudBackupSyncMediating,
         didRequestConfirmation changes: CloudBackupSyncResult.Changes
@@ -10,16 +18,20 @@ protocol CloudBackupSyncConfirming: AnyObject {
         mediator: CloudBackupSyncMediating,
         didFound issue: CloudBackupSyncResult.Issue
     )
+
+    func cloudBackupDidSync(mediator: CloudBackupSyncMediating, for purpose: CloudBackupSynсPurpose)
 }
 
 protocol CloudBackupSyncMediating {
     var syncService: CloudBackupSyncServiceProtocol { get }
 
-    func setup(with confirmingDelegate: CloudBackupSyncConfirming)
+    func setup(with uiPresenter: CloudBackupSynсUIPresenting)
     func approveCurrentChanges()
 
-    func enableDelegateNotifications()
-    func disableDelegateNotifications()
+    func enablePresenterNotifications()
+    func disablePresenterNotifications()
+
+    func sync(for purpose: CloudBackupSynсPurpose)
 }
 
 /**
@@ -35,9 +47,11 @@ final class CloudBackupSyncMediator {
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
 
-    private var isDelegateNotificationsEnabled: Bool = true
+    private var isPresenterNotificationsEnabled: Bool = true
 
-    weak var confirmationDelegate: CloudBackupSyncConfirming?
+    private var syncPurpose: CloudBackupSynсPurpose = .unknown
+
+    weak var uiPresenter: CloudBackupSynсUIPresenting?
 
     init(
         syncService: CloudBackupSyncServiceProtocol,
@@ -68,28 +82,40 @@ final class CloudBackupSyncMediator {
         eventCenter.remove(observer: self)
     }
 
-    func notifyDelegateConfirmationIfNeeded(for changes: CloudBackupSyncResult.Changes) {
-        guard isDelegateNotificationsEnabled else {
+    func notifyPresenterWithConfirmationIfNeeded(for changes: CloudBackupSyncResult.Changes) {
+        guard isPresenterNotificationsEnabled else {
             return
         }
 
-        confirmationDelegate?.cloudBackup(
+        uiPresenter?.cloudBackup(
             mediator: self,
             didRequestConfirmation: changes
         )
     }
 
-    func notifyDelegateAboutIssueIfNeeded(_ issue: CloudBackupSyncResult.Issue) {
-        guard isDelegateNotificationsEnabled else {
+    func notifyPresenterAboutIssueIfNeeded(_ issue: CloudBackupSyncResult.Issue) {
+        guard isPresenterNotificationsEnabled else {
             return
         }
 
-        confirmationDelegate?.cloudBackup(mediator: self, didFound: issue)
+        uiPresenter?.cloudBackup(mediator: self, didFound: issue)
+    }
+
+    func notifyPresenterAboutSyncCompletion() {
+        let purpose = syncPurpose
+        syncPurpose = .unknown
+
+        guard isPresenterNotificationsEnabled else {
+            return
+        }
+
+        uiPresenter?.cloudBackupDidSync(mediator: self, for: purpose)
     }
 
     private func handleNew(state: CloudBackupSyncState) {
         switch state {
         case .disabled, .unavailable:
+            syncPurpose = .unknown
             logger.debug("No need to process disabled or unavailable")
         case let .enabled(cloudBackupSyncResult, _):
             guard let cloudBackupSyncResult = cloudBackupSyncResult else {
@@ -103,17 +129,20 @@ final class CloudBackupSyncMediator {
     private func handleSync(result: CloudBackupSyncResult) {
         switch result {
         case .noUpdates:
+            syncPurpose = .unknown
             logger.debug("No sync updates")
         case let .changes(changes):
             handleNew(changes: changes)
         case let .issue(issue):
-            notifyDelegateAboutIssueIfNeeded(issue)
+            syncPurpose = .unknown
+            notifyPresenterAboutIssueIfNeeded(issue)
         }
     }
 
     private func handleNew(changes: CloudBackupSyncResult.Changes) {
         if changes.isDestructive {
-            notifyDelegateConfirmationIfNeeded(for: changes)
+            syncPurpose = .unknown
+            notifyPresenterWithConfirmationIfNeeded(for: changes)
         } else {
             applyChanges()
         }
@@ -133,6 +162,8 @@ final class CloudBackupSyncMediator {
                     return
                 }
 
+                notifyPresenterAboutSyncCompletion()
+
                 emitEvents(
                     for: appliedChanges,
                     selectedWalletBeforeUpdate: selectedWalletBeforeUpdate
@@ -148,77 +179,88 @@ final class CloudBackupSyncMediator {
         selectedWalletBeforeUpdate: MetaAccountModel?
     ) {
         let selectedWallet = selectedWalletSettings.hasValue ? selectedWalletSettings.value : nil
-        let walletSwitched = selectedWalletBeforeUpdate != selectedWallet
+        let walletSwitched = selectedWalletBeforeUpdate?.identifier != selectedWallet?.identifier
 
         switch appliedChanges {
         case let .updateLocal(local):
-            if local.changes.hasChainAccountChanges {
-                eventCenter.notify(with: ChainAccountChanged(method: .manually))
+            if !local.changes.isEmpty {
+                eventCenter.notify(with: WalletsChanged(source: .byCloudBackup))
             }
-
-            if local.changes.hasWalletRemoves {
-                eventCenter.notify(with: AccountsRemovedManually())
+        case let .updateByUnion(updateByUnion):
+            if !updateByUnion.addingWallets.isEmpty {
+                eventCenter.notify(with: WalletsChanged(source: .byCloudBackup))
             }
-        case .updateRemote, .updateByUnion:
+        case .updateRemote:
             break
         }
 
         if walletSwitched {
-            eventCenter.notify(with: SelectedAccountChanged())
+            eventCenter.notify(with: SelectedWalletSwitched())
         } else if selectedWalletBeforeUpdate?.name != selectedWallet?.name {
-            eventCenter.notify(with: SelectedUsernameChanged())
+            eventCenter.notify(with: WalletNameChanged(isSelectedWallet: true))
         }
     }
 }
 
 extension CloudBackupSyncMediator: CloudBackupSyncMediating {
-    func setup(with confirmingDelegate: CloudBackupSyncConfirming) {
-        confirmationDelegate = confirmingDelegate
+    func setup(with uiPresenter: CloudBackupSynсUIPresenting) {
+        self.uiPresenter = uiPresenter
 
         setupCurrentState()
     }
 
     func approveCurrentChanges() {
+        syncPurpose = .unknown
         applyChanges()
     }
 
     func throttle() {
-        confirmationDelegate = nil
+        uiPresenter = nil
 
         clearCurrentState()
     }
 
-    func enableDelegateNotifications() {
-        isDelegateNotificationsEnabled = true
+    func enablePresenterNotifications() {
+        isPresenterNotificationsEnabled = true
     }
 
-    func disableDelegateNotifications() {
-        isDelegateNotificationsEnabled = false
+    func disablePresenterNotifications() {
+        isPresenterNotificationsEnabled = false
+    }
+
+    func sync(for purpose: CloudBackupSynсPurpose) {
+        syncPurpose = purpose
+        syncService.syncUp()
     }
 }
 
 extension CloudBackupSyncMediator: EventVisitorProtocol {
-    func processChainAccountChanged(event: ChainAccountChanged) {
-        if event.method == .manually {
-            syncService.syncUp()
+    func processNewWalletCreated(event _: NewWalletCreated) {
+        sync(for: .createWallet)
+    }
+
+    func processWalletImported(event _: NewWalletImported) {
+        sync(for: .importWallet)
+    }
+
+    func processWalletRemoved(event _: WalletRemoved) {
+        sync(for: .removeWallet)
+    }
+
+    func processChainAccountChanged(event _: ChainAccountChanged) {
+        sync(for: .addChainAccount)
+    }
+
+    func processWalletsChanged(event: WalletsChanged) {
+        switch event.source {
+        case .byCloudBackup, .byUserManually:
+            sync(for: .unknown)
+        case .byProxyService:
+            break
         }
-    }
-
-    func processAccountsChanged(event: AccountsChanged) {
-        if event.method == .manually {
-            syncService.syncUp()
-        }
-    }
-
-    func processAccountsRemoved(event _: AccountsRemovedManually) {
-        syncService.syncUp()
-    }
-
-    func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
-        syncService.syncUp()
     }
 
     func processWalletNameChanged(event _: WalletNameChanged) {
-        syncService.syncUp()
+        sync(for: .unknown)
     }
 }

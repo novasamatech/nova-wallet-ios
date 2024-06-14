@@ -1644,3 +1644,6 @@
 "cloud.backup.created.successfully" = "Бэкап успешно создан";
 "no.manual.backup.alert.title" = "Нет кошельков для бэкапа";
 "no.manual.backup.alert.message" = "У Вас нет ни одного кошелька с секретной фразой.";
+"common.wallet.created" = "Кошелёк успешно создан";
+"common.wallet.imported" = "Кошелёк успешно импортирован";
+"common.wallet.removed" = "Кошелёк успешно удалён";

@@ -51,8 +51,8 @@ extension AddAccount {
                     switch saveOperation.result {
                     case .success:
                         self?.settings.setup()
-                        self?.eventCenter.notify(with: SelectedAccountChanged())
-                        self?.eventCenter.notify(with: AccountsChanged(method: .manually))
+                        self?.eventCenter.notify(with: SelectedWalletSwitched())
+                        self?.eventCenter.notify(with: NewWalletCreated())
                         self?.presenter?.didCompleteConfirmation()
 
                     case let .failure(error):

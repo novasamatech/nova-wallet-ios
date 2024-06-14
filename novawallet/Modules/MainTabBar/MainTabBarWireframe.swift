@@ -142,6 +142,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
                 return
             }
 
+            cloudBackupSettings.controller.hidesBottomBarWhenPushed = true
+
             settingsNavigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
         }
     }

@@ -52,6 +52,45 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         }
     }
 
+    func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose) {
+        switch purpose {
+        case .addChainAccount:
+            wireframe.presentMultilineSuccessNotification(
+                R.string.localizable.commonAccountHasChanged(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                from: view?.controller.topModalViewController,
+                completion: nil
+            )
+        case .createWallet:
+            wireframe.presentMultilineSuccessNotification(
+                R.string.localizable.commonWalletCreated(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                from: view?.controller.topModalViewController,
+                completion: nil
+            )
+        case .importWallet:
+            wireframe.presentMultilineSuccessNotification(
+                R.string.localizable.commonWalletImported(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                from: view?.controller.topModalViewController,
+                completion: nil
+            )
+        case .removeWallet:
+            wireframe.presentMultilineSuccessNotification(
+                R.string.localizable.commonWalletRemoved(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                from: view?.controller.topModalViewController,
+                completion: nil
+            )
+        case .unknown:
+            break
+        }
+    }
+
     func didRequestPushNotificationsSetupOpen() {
         wireframe.presentPushNotificationsSetup(on: view) { [weak self] in
             self?.interactor.setPushNotificationsSetupScreenSeen()

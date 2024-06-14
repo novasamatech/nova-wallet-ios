@@ -1644,3 +1644,6 @@
 "cloud.backup.created.successfully" = "Backup has been created successfully";
 "no.manual.backup.alert.title" = "No wallets to back up";
 "no.manual.backup.alert.message" = "You haven't added any wallets with a passphrase.";
+"common.wallet.created" = "The wallet has been created successfully";
+"common.wallet.imported" = "The wallet has been imported successfully";
+"common.wallet.removed" = "Wallet has been removed successfully";

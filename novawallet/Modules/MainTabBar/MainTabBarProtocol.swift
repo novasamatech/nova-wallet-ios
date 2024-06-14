@@ -21,9 +21,10 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestReviewCloud(changes: CloudBackupSyncResult.Changes)
     func didFoundCloudBackup(issue: CloudBackupSyncResult.Issue)
     func didRequestPushNotificationsSetupOpen()
+    func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
 }
 
-protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible {
+protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible, ModalAlertPresenting {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource)
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,

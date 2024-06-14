@@ -113,19 +113,27 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 }
 
 extension MainTabBarInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         serviceCoordinator.updateOnWalletSelectionChange()
     }
 
-    func processAccountsChanged(event: AccountsChanged) {
-        serviceCoordinator.updateOnWalletChange(for: event.method)
+    func processWalletImported(event _: NewWalletImported) {
+        serviceCoordinator.updateOnWalletChange(for: .byUserManually)
     }
 
-    func processChainAccountChanged(event: ChainAccountChanged) {
-        serviceCoordinator.updateOnWalletChange(for: event.method)
+    func processNewWalletCreated(event _: NewWalletCreated) {
+        serviceCoordinator.updateOnWalletChange(for: .byUserManually)
     }
 
-    func processAccountsRemoved(event _: AccountsRemovedManually) {
+    func processChainAccountChanged(event _: ChainAccountChanged) {
+        serviceCoordinator.updateOnWalletChange(for: .byUserManually)
+    }
+
+    func processWalletsChanged(event: WalletsChanged) {
+        serviceCoordinator.updateOnWalletChange(for: event.source)
+    }
+
+    func processWalletRemoved(event _: WalletRemoved) {
         serviceCoordinator.updateOnWalletRemove()
     }
 }
@@ -160,7 +168,7 @@ extension MainTabBarInteractor: PushNotificationOpenDelegate {
     }
 }
 
-extension MainTabBarInteractor: CloudBackupSyncConfirming {
+extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
     func cloudBackup(
         mediator _: CloudBackupSyncMediating,
         didRequestConfirmation changes: CloudBackupSyncResult.Changes
@@ -174,5 +182,9 @@ extension MainTabBarInteractor: CloudBackupSyncConfirming {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.presenter?.didFoundCloudBackup(issue: issue)
         }
+    }
+
+    func cloudBackupDidSync(mediator _: CloudBackupSyncMediating, for purpose: CloudBackupSynсPurpose) {
+        presenter?.didSyncCloudBackup(on: purpose)
     }
 }

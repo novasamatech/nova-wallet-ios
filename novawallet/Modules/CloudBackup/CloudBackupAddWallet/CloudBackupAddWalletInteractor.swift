@@ -63,8 +63,8 @@ extension CloudBackupAddWalletInteractor: CloudBackupAddWalletInteractorInputPro
                 switch result {
                 case .success:
                     self?.walletSettings.setup()
-                    self?.eventCenter.notify(with: SelectedAccountChanged())
-                    self?.eventCenter.notify(with: AccountsChanged(method: .manually))
+                    self?.eventCenter.notify(with: SelectedWalletSwitched())
+                    self?.eventCenter.notify(with: NewWalletCreated())
                     self?.presenter?.didCreateWallet()
 
                 case let .failure(error):
