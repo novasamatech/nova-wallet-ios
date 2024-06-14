@@ -12,8 +12,16 @@ protocol NetworkAddNodePresenterProtocol: AnyObject {
     func confirmAddNode()
 }
 
-protocol NetworkAddNodeInteractorInputProtocol: AnyObject {}
+protocol NetworkAddNodeInteractorInputProtocol: AnyObject {
+    func addNode(
+        with url: String,
+        name: String
+    )
+}
 
-protocol NetworkAddNodeInteractorOutputProtocol: AnyObject {}
+protocol NetworkAddNodeInteractorOutputProtocol: AnyObject {
+    func didReceive(_ error: Error)
+    func didAddNode()
+}
 
 protocol NetworkAddNodeWireframeProtocol: AnyObject {}

@@ -35,12 +35,27 @@ extension NetworkAddNodePresenter: NetworkAddNodePresenterProtocol {
         partialName = name
     }
 
-    func confirmAddNode() {}
+    func confirmAddNode() {
+        guard let partialURL, let partialName else { return }
+        
+        interactor.addNode(
+            with: partialURL,
+            name: partialName
+        )
+    }
 }
 
 // MARK: NetworkAddNodeInteractorOutputProtocol
 
-extension NetworkAddNodePresenter: NetworkAddNodeInteractorOutputProtocol {}
+extension NetworkAddNodePresenter: NetworkAddNodeInteractorOutputProtocol {
+    func didReceive(_ error: Error) {
+        print(error)
+    }
+    
+    func didAddNode() {
+        print("ADDED NODE")
+    }
+}
 
 // MARK: Private
 

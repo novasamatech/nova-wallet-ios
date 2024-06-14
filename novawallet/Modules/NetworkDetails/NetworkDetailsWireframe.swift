@@ -3,9 +3,9 @@ import Foundation
 final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
     func showAddNode(
         from view: NetworkDetailsViewProtocol?,
-        chainId _: ChainModel.Id
+        chainId: ChainModel.Id
     ) {
-        guard let addNodeView = NetworkAddNodeViewFactory.createView() else {
+        guard let addNodeView = NetworkAddNodeViewFactory.createView(with: chainId) else {
             return
         }
 

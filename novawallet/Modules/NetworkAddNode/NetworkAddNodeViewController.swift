@@ -65,11 +65,11 @@ extension NetworkAddNodeViewController: Localizable {
 
 private extension NetworkAddNodeViewController {
     func setupHandlers() {
-//        rootView.actionButton.addTarget(
-//            self,
-//            action: #selector(actionAddNode),
-//            for: .touchUpInside
-//        )
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(actionAddNode),
+            for: .touchUpInside
+        )
 
         rootView.urlInput.addTarget(
             self,
