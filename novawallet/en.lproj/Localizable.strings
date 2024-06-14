@@ -63,6 +63,7 @@
 "common.secret.derivation.path.substrate" = "Substrate secret derivation path";
 "common.secret.derivation.path.ethereum" = "Ethereum secret derivation path";
 "common.choose.network" = "Choose network";
+"common.name" = "Name";
 "sr25519.selection.subtitle" = "sr25519 (recommended)";
 "ed25519.selection.subtitle" = "ed25519 (alternative)";
 "ecdsa.selection.subtitle" = "(BTC/ETH compatible)";
@@ -134,6 +135,7 @@
 "wallet.assets.total.title" = "Assets value";
 "network.info.title" = "Node Info";
 "network.info.name" = "Node name";
+"network.info.node.url" = "Node URL";
 "network.info.address" = "Node address";
 "common.add" = "Add";
 "common.update" = "Update";
@@ -1533,3 +1535,5 @@
 "network.details.auto.balance" = "Auto-balance nodes";
 "network.details.add.custom.node" = "Add custom node";
 "network.details.ping.milliseconds" = "%d ms";
+"network.node.add.button.add" = "Add node";
+"network.node.add.button.enter.details" = "Enter details";

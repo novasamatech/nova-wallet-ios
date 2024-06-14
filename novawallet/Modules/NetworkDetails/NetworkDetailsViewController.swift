@@ -133,6 +133,8 @@ extension NetworkDetailsViewController: UITableViewDelegate {
         switch row {
         case .node:
             presenter.selectNode(at: indexPath.row)
+        case .addCustomNode:
+            presenter.addNode()
         default:
             break
         }
