@@ -21,6 +21,7 @@ enum SettingsKey: String {
     case lastCloudBackupTimestamp
     case cloudBackupEnabled
     case cloudBackupAutoSyncConfirm
+    case cloudBackupPasswordId
 }
 
 extension SettingsManagerProtocol {
@@ -230,6 +231,20 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.cloudBackupAutoSyncConfirm.rawValue)
+        }
+    }
+
+    var cloudBackupPasswordId: String? {
+        get {
+            string(for: SettingsKey.cloudBackupPasswordId.rawValue)
+        }
+
+        set {
+            if let value = newValue {
+                set(value: value, for: SettingsKey.cloudBackupPasswordId.rawValue)
+            } else {
+                removeValue(for: SettingsKey.cloudBackupPasswordId.rawValue)
+            }
         }
     }
 }
