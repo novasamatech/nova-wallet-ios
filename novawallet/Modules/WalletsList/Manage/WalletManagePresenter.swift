@@ -88,6 +88,16 @@ final class WalletManagePresenter: WalletsListPresenter {
             wireframe?.showCreateWalletWithManualBackup(from: view)
         }
     }
+
+    private func showImportWallet() {
+        if let cloudBackupState, cloudBackupState.canAutoSync {
+            wireframe?.showCloudBackupRemind(from: view) { [weak self] in
+                self?.wireframe?.showImportWallet(from: self?.view)
+            }
+        } else {
+            wireframe?.showImportWallet(from: view)
+        }
+    }
 }
 
 extension WalletManagePresenter: WalletManagePresenterProtocol {
@@ -180,7 +190,7 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
             case .addNew:
                 self?.showAddWallet()
             case .importExisting:
-                self?.wireframe?.showImportWallet(from: self?.view)
+                self?.showImportWallet()
             case .none:
                 break
             }
