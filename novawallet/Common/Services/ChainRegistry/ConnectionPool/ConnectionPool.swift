@@ -54,7 +54,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
         subscribers.append(WeakWrapper(target: subscriber))
         stateSubscriptions[chainId] = subscribers
 
-        let connection = connections[chainId] as? ChainConnection
+        let connection = connections[chainId]?.target as? ChainConnection
 
         DispatchQueue.main.async {
             subscriber.didReceive(state: connection?.state ?? .notConnected, for: chainId)
