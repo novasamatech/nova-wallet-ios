@@ -7,17 +7,14 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     typealias RootViewType = AccountCreateViewLayout
 
     let presenter: AccountCreatePresenterProtocol
-    let appearanceAnimator: ViewAnimatorProtocol
 
     // MARK: - Lifecycle
 
     init(
         presenter: AccountCreatePresenterProtocol,
-        localizationManager: LocalizationManagerProtocol,
-        appearanceAnimator: ViewAnimatorProtocol
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.appearanceAnimator = appearanceAnimator
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -37,17 +34,17 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        presenter.prepareToDisplayMnemonic()
+        presenter.becomeActive()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        rootView.hideMnemonicCard()
+        presenter.becomeInactive()
     }
 
     override func loadView() {
-        view = AccountCreateViewLayout(appearanceAnimator: appearanceAnimator)
+        view = AccountCreateViewLayout()
     }
 
     // MARK: - Setup functions
@@ -60,7 +57,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
 
     private func setupNavigationItem() {
         let advancedBarButtonItem = UIBarButtonItem(
-            image: R.image.iconOptions()?.tinted(with: R.color.colorIconChip()!),
+            image: R.image.iconOptions()?.tinted(with: R.color.colorIconPrimary()!),
             style: .plain,
             target: self,
             action: #selector(openAdvanced)
@@ -95,10 +92,6 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
 
     func update(using checkboxListViewModel: BackupAttentionViewLayout.Model) {
         rootView.bind(checkboxListViewModel)
-    }
-
-    func displayMnemonic() {
-        rootView.displayMnemonicCard()
     }
 }
 

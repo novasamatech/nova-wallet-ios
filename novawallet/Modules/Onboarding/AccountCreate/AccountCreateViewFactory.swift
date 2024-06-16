@@ -20,16 +20,9 @@ final class AccountCreateViewFactory {
             mnemonicViewModelFactory: mnemonicViewModelFactory
         )
 
-        let appearanceAnimator = FadeAnimator(
-            from: 0.0,
-            to: 1.0,
-            options: .curveLinear
-        )
-
         let view = AccountCreateViewController(
             presenter: presenter,
-            localizationManager: localizationManager,
-            appearanceAnimator: appearanceAnimator
+            localizationManager: localizationManager
         )
 
         let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
@@ -67,11 +60,7 @@ final class AccountCreateViewFactory {
             options: .curveLinear
         )
 
-        let view = AccountCreateViewController(
-            presenter: presenter,
-            localizationManager: localizationManager,
-            appearanceAnimator: appearanceAnimator
-        )
+        let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
 
         let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
 

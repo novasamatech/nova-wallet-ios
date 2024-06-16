@@ -18,8 +18,7 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
     }
 
     override func processProceed() {
-        let metadata = metadata ?? interactor.createMetadata()
-        let selectedSubstrateCryptoType = selectedSubstrateCryptoType ?? metadata?.defaultCryptoType
+        let selectedSubstrateCryptoType = selectedSubstrateCryptoType ?? availableCrypto?.defaultCryptoType
 
         guard let metadata = metadata,
               let substrateCryptoType = selectedSubstrateCryptoType
@@ -36,15 +35,13 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
     }
 
     override func getAdvancedSettings() -> AdvancedWalletSettings? {
-        let metadata = metadata ?? interactor.createMetadata()
-
-        guard let metadata = metadata else {
+        guard let availableCrypto = availableCrypto else {
             return nil
         }
 
         let substrateSettings = AdvancedNetworkTypeSettings(
-            availableCryptoTypes: metadata.availableCryptoTypes,
-            selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+            availableCryptoTypes: availableCrypto.availableCryptoTypes,
+            selectedCryptoType: selectedSubstrateCryptoType ?? availableCrypto.defaultCryptoType,
             derivationPath: substrateDerivationPath
         )
 

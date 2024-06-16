@@ -10,9 +10,7 @@ final class AccountCreateViewLayout: ScrollableContainerLayoutView {
         view.numberOfLines = 0
     }
 
-    let mnemonicCardView: HiddenMnemonicCardView = .create { view in
-        view.alpha = 0
-    }
+    let mnemonicCardView = HiddenMnemonicCardView()
 
     var checkBoxViews: [CheckBoxIconDetailsView] = [
         .init(frame: .zero),
@@ -29,16 +27,12 @@ final class AccountCreateViewLayout: ScrollableContainerLayoutView {
         view.applyDefaultStyle()
     }
 
-    private let appearanceAnimator: ViewAnimatorProtocol
-
     var footerHeightConstraint: Constraint?
 
     private var checkboxListViewModel: BackupAttentionViewLayout.Model?
 
-    init(appearanceAnimator: ViewAnimatorProtocol) {
-        self.appearanceAnimator = appearanceAnimator
-
-        super.init(frame: .zero)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
         setupHandlers()
     }
@@ -100,17 +94,6 @@ final class AccountCreateViewLayout: ScrollableContainerLayoutView {
             .forEach { $0.element.bind(viewModel: checkboxListViewModel.rows[$0.offset]) }
 
         setNeedsLayout()
-    }
-
-    func displayMnemonicCard() {
-        appearanceAnimator.animate(
-            view: mnemonicCardView,
-            completionBlock: nil
-        )
-    }
-
-    func hideMnemonicCard() {
-        mnemonicCardView.alpha = 0
     }
 }
 

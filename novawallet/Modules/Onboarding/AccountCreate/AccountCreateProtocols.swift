@@ -3,22 +3,23 @@ import SoraFoundation
 
 protocol AccountCreateViewProtocol: ControllerBackedProtocol, CheckboxListViewProtocol {
     func update(with mnemonicCardViewModel: HiddenMnemonicCardView.State)
-    func displayMnemonic()
 }
 
 protocol AccountCreatePresenterProtocol: AnyObject {
     func setup()
     func activateAdvanced()
-    func prepareToDisplayMnemonic()
     func provideMnemonic()
+    func becomeActive()
+    func becomeInactive()
 }
 
 protocol AccountCreateInteractorInputProtocol: AnyObject {
-    func provideMetadata()
-    func createMetadata() -> MetaAccountCreationMetadata?
+    func setup()
+    func provideMnemonic()
 }
 
 protocol AccountCreateInteractorOutputProtocol: AnyObject {
+    func didReceive(availableCrypto: MetaAccountAvailableCryptoTypes)
     func didReceive(metadata: MetaAccountCreationMetadata)
     func didReceiveMnemonicGeneration(error: Error)
 }
