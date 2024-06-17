@@ -13,6 +13,7 @@ final class NetworkDetailsInteractor {
     private let nodePingOperationFactory: NodePingOperationFactoryProtocol
     private let operationQueue: OperationQueue
 
+    private var filteredNodes: Set<ChainNodeModel> = []
     private var nodesConnections: [String: ChainConnection] = [:]
 
     private var currentSelectedNode: ChainNodeModel?
@@ -38,7 +39,13 @@ final class NetworkDetailsInteractor {
 
 extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     func setup() {
-        presenter?.didReceive(chain)
+        filteredNodes = filtered(chain.nodes)
+
+        presenter?.didReceive(
+            chain,
+            filteredNodes: filteredNodes
+        )
+
         subscribeChainChanges()
 
         guard chain.syncMode.enabled() else { return }
@@ -131,7 +138,8 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
     ) {
         guard
             chainId == chain.chainId,
-            state == .connected
+            !chain.nodes.isEmpty,
+            case let .connected(selectedUrl) = state
         else {
             return
         }
@@ -140,7 +148,7 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
         case let .manual(chainNodeModel):
             chainNodeModel
         case .autoBalanced:
-            chain.nodes.first!
+            chain.nodes.first { $0.url == selectedUrl.absoluteString } ?? chain.nodes.first!
         }
 
         currentSelectedNode = selectedNode
@@ -182,7 +190,11 @@ private extension NetworkDetailsInteractor {
             }
 
             chain = changedChain
-            presenter?.didReceive(changedChain)
+            filteredNodes = filtered(chain.nodes)
+            presenter?.didReceive(
+                changedChain,
+                filteredNodes: filteredNodes
+            )
         }
 
         chainRegistry.subscribeChainState(self, chainId: chain.chainId)
@@ -206,17 +218,18 @@ private extension NetworkDetailsInteractor {
     func connectToNodes(of chain: ChainModel) {
         nodesConnections = [:]
 
-        chain.nodes.forEach { node in
-            guard let connection = try? connectionFactory.createConnection(
-                for: node,
-                chain: chain,
-                delegate: self
-            ) else {
-                return
-            }
+        filteredNodes
+            .forEach { node in
+                guard let connection = try? connectionFactory.createConnection(
+                    for: node,
+                    chain: chain,
+                    delegate: self
+                ) else {
+                    return
+                }
 
-            nodesConnections[node.url] = connection
-        }
+                nodesConnections[node.url] = connection
+            }
     }
 
     func disconnectNodes() {
@@ -256,6 +269,10 @@ private extension NetworkDetailsInteractor {
                 )
             }
         }
+    }
+
+    func filtered(_ nodes: Set<ChainNodeModel>) -> Set<ChainNodeModel> {
+        nodes.filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
     }
 }
 

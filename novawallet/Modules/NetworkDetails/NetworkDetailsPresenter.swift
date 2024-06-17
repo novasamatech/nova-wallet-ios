@@ -55,10 +55,13 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
 // MARK: NetworkDetailsInteractorOutputProtocol
 
 extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
-    func didReceive(_ chain: ChainModel) {
+    func didReceive(
+        _ chain: ChainModel,
+        filteredNodes: Set<ChainNodeModel>
+    ) {
         self.chain = chain
 
-        sortedNodes = chain.nodes.sorted { $0.order < $1.order }
+        sortedNodes = filteredNodes.sorted { $0.order < $1.order }
 
         if sortedNodes.count == 1 {
             selectedNode = sortedNodes[0]
