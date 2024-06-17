@@ -1630,7 +1630,6 @@
 "common.review.issue" = "Устранить Проблему";
 "cloud.backup.alert.remove.wallets.title" = "Вы уверены, что хотите применить эти изменения?";
 "cloud.backup.alert.remove.wallets.message" = "Если вы не сохранили секретные фразы для всех кошельков, которые удаляются, то доступ к этим кошелькам и их токенам будет утерян навсегда.";
-"common.delete" = "Удалить";
 "common.manage.backup" = "Управление бэкапом";
 "cloud.backup.will.delete.title" = "Бэкап будет удалён из iCloud";
 "cloud.backup.will.delete.message" = "%@ и всегда сохраняйте их оффлайн все безопасного восстановления. Вы можете это сделать в настройках бэкапа.";

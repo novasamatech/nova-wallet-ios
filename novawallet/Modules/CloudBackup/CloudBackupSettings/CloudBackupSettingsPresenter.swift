@@ -60,7 +60,7 @@ final class CloudBackupSettingsPresenter {
                 return LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconDelete(),
-                        title: R.string.localizable.commonDelete(preferredLanguages: locale.rLanguages),
+                        title: R.string.localizable.commonDeleteBackup(preferredLanguages: locale.rLanguages),
                         isDestructive: true
                     )
                 }
