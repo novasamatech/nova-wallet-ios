@@ -24,8 +24,10 @@ final class OnboardingWalletReadyViewLayout: UIView {
     }
 
     let cloudBackupActionView: LoadableActionView = .create { view in
-        view.actionButton.applyDefaultStyle()
-        view.actionLoadingView.applyPrimaryButtonEnabledStyle()
+        view.actionButton.imageWithTitleView?.iconImage = R.image.iconAppleLogo()
+        view.actionButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 4
+        view.actionButton.applyCloudBackupEnabledStyle()
+        view.actionLoadingView.applyDisableButtonStyle()
     }
 
     var cloudBackupButton: TriangularedButton {

@@ -38,11 +38,11 @@ final class OnboardingWalletReadyViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.cloudBackupButton.imageWithTitleView?.title = R.string.localizable.commonBackupCloudWithIcon(
+        rootView.cloudBackupButton.imageWithTitleView?.title = R.string.localizable.commonContinueWithAppleBackup(
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.manualBackupButton.imageWithTitleView?.title = R.string.localizable.commonBackupManuallyWithIcon(
+        rootView.manualBackupButton.imageWithTitleView?.title = R.string.localizable.commonContinueWithManualBackup(
             preferredLanguages: selectedLocale.rLanguages
         )
     }

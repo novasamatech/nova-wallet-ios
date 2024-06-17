@@ -5,4 +5,9 @@ extension ActionLoadingView {
         backgroundView.applyPrimaryButtonBackgroundStyle()
         activityIndicator.style = .medium
     }
+
+    func applyDisableButtonStyle() {
+        backgroundView.applyDisabledBackgroundStyle()
+        activityIndicator.style = .medium
+    }
 }

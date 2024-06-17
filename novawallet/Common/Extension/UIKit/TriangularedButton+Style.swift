@@ -2,6 +2,14 @@ import Foundation
 import SoraUI
 
 extension TriangularedButton {
+    func applyCloudBackupEnabledStyle() {
+        imageWithTitleView?.titleFont = .semiBoldSubheadline
+        applyEnabledStyle(
+            colored: R.color.colorCloudBackupButtonBackground()!,
+            textColor: R.color.colorCloudBackupButtonText()!
+        )
+    }
+
     func applyDefaultStyle() {
         imageWithTitleView?.titleFont = .semiBoldSubheadline
         applyEnabledStyle()
@@ -31,14 +39,17 @@ extension TriangularedButton {
         changesContentOpacityWhenHighlighted = true
     }
 
-    func applyEnabledStyle(colored color: UIColor = R.color.colorButtonBackgroundPrimary()!) {
+    func applyEnabledStyle(
+        colored color: UIColor = R.color.colorButtonBackgroundPrimary()!,
+        textColor: UIColor = R.color.colorButtonText()!
+    ) {
         triangularedView?.shadowOpacity = 0.0
         triangularedView?.fillColor = color
         triangularedView?.highlightedFillColor = color
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 
-        imageWithTitleView?.titleColor = R.color.colorButtonText()!
+        imageWithTitleView?.titleColor = textColor
 
         changesContentOpacityWhenHighlighted = true
     }
