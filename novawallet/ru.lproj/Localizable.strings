@@ -559,7 +559,6 @@
 "wallet.import.mnemonic.hint" = "Зачастую 12 слов (но возможно импортирование 15, 18, 21 или 24)";
 "wallet.import.seed.title" = "Введите ваш сид";
 "wallet.import.no.mnemonic.title" = "Введите слова...";
-"wallet.import.no.name.title" = "Введите название кошелька...";
 "wallet.import.no.seed.title" = "Введите сид...";
 "wallet.import.keystore.title" = "Загрузите JSON для восстановления";
 "wallet.import.no.json.title" = "Загрузите JSON файл...";
@@ -588,7 +587,6 @@
 "crowdloan.completed.section" = "Завершённые";
 "staking.title" = "Стейкинг";
 "export.mnemonic.check.hint" = "Пожалуйста, убедитесь, что ваш сид записан корректно и разборчиво";
-"wallet.create.button.title.disabled_v2_2_0" = "Введите имя кошелька...";
 "export.password.title" = "Установите пароль";
 "export.password.proceed.set.title" = "Установите пароль...";
 "export.password.proceed.confirm.title" = "Подтвердите пароль...";
@@ -1512,9 +1510,9 @@
 "notifications.error.disabled.in.settings.title" = "Включите уведомления для Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Перейдите в Настройки → Нажмите \"Уведомления\" → Включите \"Разрешить уведомления\"";
 "notifications.wallet.list.limit.error.message" = "К сожалению, в настоящее время установлен лимит push-уведомлений только для %d ваших кошельков.";
-"wallet.name.input.placeholder" = "Новое имя кошелька";
-"wallet.name.title" = "Назовите кошелёк";
-"wallet.name.subtitle" = "Имя будет использоваться только локально в приложении. Вы сможете изменить его позже";
+"wallet.name.input.placeholder" = "Мой новый кошелёк";
+"wallet.name.title" = "Задайте название Вашему кошельку";
+"wallet.name.subtitle" = "Оно будет видно только вам\nи может быть изменено позже";
 "wallet.ready.title" = "Ваш кошелёк готов";
 "wallet.ready.subtitle" = "Теперь давайте сохраним вам кошелёк. Бэкап гарантирует безопасность средств, и даёт возможность восстановить кошелёк в любое время";
 "common.backup.cloud.with.icon" = "☁️ Сохранить в облако";
@@ -1654,3 +1652,4 @@
 "cloud.backup.increase.security.title" = "Увеличьте Безопасность\nВаших кошельков";
 "cloud.backup.increase.security.message" = "У вас уже есть Cloud Backup. Мы также рекомендуем вам %@ чтобы удостовериться, что всё в безопасности. Вы можете просмотреть Вашу секретную фразу в любой момент в Настройках бэкапа.";
 "cloud.backup.increase.security.highlighted1" = "вручную записать вашу секретную фразу";
+"common.enter.wallet.name.disabled" = "Введите имя кошелька";

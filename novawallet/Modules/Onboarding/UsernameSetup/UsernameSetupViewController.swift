@@ -68,7 +68,7 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
             rootView.proceedButton.isUserInteractionEnabled = false
 
             rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-                .walletCreateButtonTitleDisabled_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+                .commonEnterWalletNameDisabled(preferredLanguages: selectedLocale.rLanguages)
         }
 
         rootView.proceedButton.invalidateLayout()
