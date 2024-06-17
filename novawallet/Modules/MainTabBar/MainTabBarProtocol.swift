@@ -41,7 +41,7 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible,
     func presentPushNotificationsSetup(
         on view: MainTabBarViewProtocol?,
         presentationCompletion: @escaping () -> Void,
-        flowCompletion: @escaping () -> Void
+        flowCompletion: @escaping (Bool) -> Void
     )
 
     func presentCloudBackupUnsyncedChanges(

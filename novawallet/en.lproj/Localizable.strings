@@ -1653,3 +1653,4 @@
 "cloud.backup.increase.security.message" = "You have a Cloud Backup already. We also recommend you to %@ to be sure that everything is safe. You can view your Passphrase at any time in the Backup Settings.";
 "cloud.backup.increase.security.highlighted1" = "manually write down your Passphrase";
 "common.enter.wallet.name.disabled" = "Enter wallet name";
+"cloud.backup.settings.empty.or.broken" = "Review Backup Error";

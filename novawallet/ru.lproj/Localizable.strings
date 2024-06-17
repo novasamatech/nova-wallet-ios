@@ -1653,3 +1653,4 @@
 "cloud.backup.increase.security.message" = "У вас уже есть Cloud Backup. Мы также рекомендуем вам %@ чтобы удостовериться, что всё в безопасности. Вы можете просмотреть Вашу секретную фразу в любой момент в Настройках бэкапа.";
 "cloud.backup.increase.security.highlighted1" = "вручную записать вашу секретную фразу";
 "common.enter.wallet.name.disabled" = "Введите имя кошелька";
+"cloud.backup.settings.empty.or.broken" = "Просмотр Ошибки бэкапа";

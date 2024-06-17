@@ -97,7 +97,7 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
             presentationCompletion: { [weak self] in
                 self?.interactor.setPushNotificationsSetupScreenSeen()
             },
-            flowCompletion: { [weak self] in
+            flowCompletion: { [weak self] _ in
                 self?.interactor.requestNextOnLaunchAction()
             }
         )

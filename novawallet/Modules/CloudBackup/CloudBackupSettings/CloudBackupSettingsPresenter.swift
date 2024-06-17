@@ -303,7 +303,9 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
             showBackupStateAfterSync(for: waitingBackupEnable)
         }
 
-        waitingBackupEnable = false
+        if !state.isSyncing {
+            waitingBackupEnable = false
+        }
     }
 
     func didReceive(error: CloudBackupSettingsInteractorError) {

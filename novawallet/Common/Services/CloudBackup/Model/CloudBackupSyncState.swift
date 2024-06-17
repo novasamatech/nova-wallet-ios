@@ -26,4 +26,12 @@ enum CloudBackupSyncState: Equatable {
             return nil
         }
     }
+
+    var isSyncing: Bool {
+        if case let .enabled(cloudBackupSyncResult, _) = self, cloudBackupSyncResult == nil {
+            return true
+        } else {
+            return false
+        }
+    }
 }

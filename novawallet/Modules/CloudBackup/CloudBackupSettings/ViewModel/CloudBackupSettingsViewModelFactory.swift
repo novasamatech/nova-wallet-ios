@@ -4,6 +4,7 @@ import SoraFoundation
 enum CloudBackupSettingsIssue {
     case reviewUpdates
     case enterPassword
+    case emptyOrBroken
     case icloudError
 }
 
@@ -12,7 +13,9 @@ extension CloudBackupSettingsIssue {
         switch backupIssue {
         case .missingOrInvalidPassword, .newBackupCreationNeeded:
             self = .enterPassword
-        case .remoteReadingFailed, .remoteDecodingFailed, .internalFailure:
+        case .remoteDecodingFailed:
+            self = .emptyOrBroken
+        case .remoteReadingFailed, .internalFailure:
             self = .icloudError
         }
     }
@@ -97,7 +100,7 @@ extension CloudBackupSettingsViewModelFactoryProtocol {
 final class CloudBackupSettingsViewModelFactory {
     let dateFormatter: LocalizableResource<DateFormatter>
 
-    init(dateFormatter: LocalizableResource<DateFormatter> = DateFormatter.shortDateAndTime) {
+    init(dateFormatter: LocalizableResource<DateFormatter> = DateFormatter.shortDateHoursMinutes) {
         self.dateFormatter = dateFormatter
     }
 
@@ -141,6 +144,8 @@ final class CloudBackupSettingsViewModelFactory {
             return R.string.localizable.cloudBackupReviewBackupUpdates(preferredLanguages: locale.rLanguages)
         case .enterPassword:
             return R.string.localizable.cloudBackupEnterPasswordIssue(preferredLanguages: locale.rLanguages)
+        case .emptyOrBroken:
+            return R.string.localizable.cloudBackupSettingsEmptyOrBroken(preferredLanguages: locale.rLanguages)
         case .icloudError:
             return R.string.localizable.cloudBackupReviewIcloudIssue(preferredLanguages: locale.rLanguages)
         }

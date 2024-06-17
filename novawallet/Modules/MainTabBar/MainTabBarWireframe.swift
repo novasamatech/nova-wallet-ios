@@ -82,7 +82,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentPushNotificationsSetup(
         on view: MainTabBarViewProtocol?,
         presentationCompletion: @escaping () -> Void,
-        flowCompletion: @escaping () -> Void
+        flowCompletion: @escaping (Bool) -> Void
     ) {
         guard let setupPushNotificationsView = NotificationsSetupViewFactory.createView(
             completion: flowCompletion
