@@ -14,6 +14,7 @@ final class CloudBackupSettingsPresenter {
     let logger: LoggerProtocol
 
     private var isActive: Bool = false
+    private var waitingBackupEnable = false
 
     private var cloudBackupState: CloudBackupSyncState?
 
@@ -96,7 +97,7 @@ final class CloudBackupSettingsPresenter {
         )
     }
 
-    private func showBackupIssueAfterSync(_ issue: CloudBackupSyncResult.Issue) {
+    private func showBackupIssueAfterSync(_ issue: CloudBackupSyncResult.Issue, waitingBackupEnable: Bool) {
         switch issue {
         case .missingOrInvalidPassword:
             wireframe.showPasswordChangedConfirmation(
@@ -106,7 +107,9 @@ final class CloudBackupSettingsPresenter {
                 self?.wireframe.showEnterPassword(from: self?.view)
             }
         case .newBackupCreationNeeded:
-            wireframe.showBackupCreation(from: view)
+            if waitingBackupEnable {
+                wireframe.showBackupCreation(from: view)
+            }
         case .remoteDecodingFailed:
             wireframe.showCloudBackupDelete(
                 from: view,
@@ -124,7 +127,10 @@ final class CloudBackupSettingsPresenter {
         }
     }
 
-    private func showBackupStateSyncResultAfterSync(_ cloudBackupSyncResult: CloudBackupSyncResult) {
+    private func showBackupStateSyncResultAfterSync(
+        _ cloudBackupSyncResult: CloudBackupSyncResult,
+        waitingBackupEnable: Bool
+    ) {
         switch cloudBackupSyncResult {
         case let .changes(changes):
             guard changes.isDestructive else {
@@ -147,16 +153,14 @@ final class CloudBackupSettingsPresenter {
                 )
             }
         case let .issue(issue):
-            showBackupIssueAfterSync(issue)
+            showBackupIssueAfterSync(issue, waitingBackupEnable: waitingBackupEnable)
         case .noUpdates:
             logger.debug("No updates after sync")
         }
     }
 
-    private func showBackupStateAfterSync() {
-        guard
-            case let .enabled(optSyncResult, _) = cloudBackupState,
-            let syncResult = optSyncResult else {
+    private func showBackupStateAfterSync(for waitingBackupEnable: Bool) {
+        guard case let .enabled(optSyncResult, _) = cloudBackupState else {
             return
         }
 
@@ -172,7 +176,7 @@ final class CloudBackupSettingsPresenter {
                 return
             }
 
-            showBackupStateSyncResultAfterSync(syncResult)
+            showBackupStateSyncResultAfterSync(syncResult, waitingBackupEnable: waitingBackupEnable)
         case .disabled, .none:
             break
         }
@@ -217,6 +221,8 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
         switch cloudBackupState {
         case .disabled:
             self.cloudBackupState = nil
+
+            waitingBackupEnable = true
 
             interactor.enableBackup()
         case .unavailable, .enabled:
@@ -294,8 +300,10 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
         provideViewModel()
 
         if isActive {
-            showBackupStateAfterSync()
+            showBackupStateAfterSync(for: waitingBackupEnable)
         }
+
+        waitingBackupEnable = false
     }
 
     func didReceive(error: CloudBackupSettingsInteractorError) {

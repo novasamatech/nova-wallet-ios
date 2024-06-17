@@ -12,6 +12,7 @@ enum CloudBackupServiceFacadeError: Error {
     case backupDecoding(Error)
     case invalidBackupPassword
     case noBackup
+    case backupAlreadyExists
 }
 
 protocol CloudBackupServiceFacadeProtocol {
