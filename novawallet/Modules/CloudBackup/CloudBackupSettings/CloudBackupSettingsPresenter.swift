@@ -160,10 +160,6 @@ final class CloudBackupSettingsPresenter {
     }
 
     private func showBackupStateAfterSync(for waitingBackupEnable: Bool) {
-        guard case let .enabled(optSyncResult, _) = cloudBackupState else {
-            return
-        }
-
         switch cloudBackupState {
         case .unavailable:
             guard let view else {

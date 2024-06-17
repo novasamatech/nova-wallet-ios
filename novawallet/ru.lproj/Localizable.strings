@@ -1518,7 +1518,7 @@
 "common.continue.with.apple.backup" = "Продолжить с Apple";
 "common.continue.with.manual.backup" = "Продолжить с бэкапом вручную";
 "cloud.backup.not.available.title" = "Ошибка доступа к iCloud";
-"cloud.backup.not.available.message" = "Для использования облачного бэкапа, убедитесь, что вы вошли в аккаунт iCloud, включили iCloud Drive и предоставили Nova Wallet доступ к iCloud Drive настройках вашего устройства";
+"cloud.backup.not.available.message" = "Пожалуйста, убедитесь, что вы вошли в аккаунт iCloud.";
 "cloud.backup.not.enough.storage.title" = "Недостаточно места";
 "cloud.backup.not.enough.storage.message" = "Пожалуйста, убедитесь, что у вас доступно достаточно места в iCloud. Вы можете управлять местом в iCloud в Настройках.";
 "ledger.instructions.step1" = "Удостоверьтесь, что %@ на Ваше устройство Ledger, используя приложение Ledger Live";
@@ -1654,3 +1654,4 @@
 "cloud.backup.increase.security.highlighted1" = "вручную записать вашу секретную фразу";
 "common.enter.wallet.name.disabled" = "Введите имя кошелька";
 "cloud.backup.settings.empty.or.broken" = "Просмотр Ошибки бэкапа";
+"common.button.settings" = "Настройки";

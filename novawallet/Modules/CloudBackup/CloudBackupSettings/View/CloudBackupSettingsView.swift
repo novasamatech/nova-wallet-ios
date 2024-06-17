@@ -77,7 +77,7 @@ final class CloudBackupSettingsView: UIView {
         }
 
         switch viewModel.status {
-        case .disabled, .syncing:
+        case .disabled, .syncing, .unavailable:
             syncCell.isUserInteractionEnabled = false
         case .unsynced, .synced:
             syncCell.isUserInteractionEnabled = true
@@ -144,7 +144,7 @@ final class CloudBackupActionCell: RowView<
         labelsView.bind(topValue: title, bottomValue: lastSynced)
 
         switch status {
-        case .disabled, .syncing:
+        case .disabled, .syncing, .unavailable:
             iconView.image = nil
         case .unsynced, .synced:
             iconView.image = R.image.iconMore()
@@ -201,7 +201,7 @@ final class CloudBackupActionStateView: UIView {
             backgroundView.fillColor = R.color.colorWaitingStatusBackground()!
             iconView.image = R.image.iconBackupDisabled()
             activityIndicator.stopAnimating()
-        case .unsynced:
+        case .unsynced, .unavailable:
             backgroundView.fillColor = R.color.colorWarningBlockBackground()!
             iconView.image = R.image.iconBackupUnsynced()
             activityIndicator.stopAnimating()

@@ -1518,7 +1518,7 @@
 "common.continue.with.apple.backup" = "Continue with Apple";
 "common.continue.with.manual.backup" = "Continue with manual backup";
 "cloud.backup.not.available.title" = "iCloud authentication failed";
-"cloud.backup.not.available.message" = "To use Cloud Backup, ensure you have logged into iCloud account, enabled iCloud Drive and granted Nova access to iCloud Drive in your device settings";
+"cloud.backup.not.available.message" = "Please, ensure that you are logged into iCloud account";
 "cloud.backup.not.enough.storage.title" = "Not Enough Storage";
 "cloud.backup.not.enough.storage.message" = "Please, ensure you have enough iCloud storage available. You can manage your storage in Settings.";
 "ledger.instructions.step1" = "Make sure %@ to your Ledger device using Ledger Live app";
@@ -1654,3 +1654,4 @@
 "cloud.backup.increase.security.highlighted1" = "manually write down your Passphrase";
 "common.enter.wallet.name.disabled" = "Enter wallet name";
 "cloud.backup.settings.empty.or.broken" = "Review Backup Error";
+"common.button.settings" = "Settings";

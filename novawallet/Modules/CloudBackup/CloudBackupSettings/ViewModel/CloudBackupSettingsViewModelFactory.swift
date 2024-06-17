@@ -79,7 +79,7 @@ extension CloudBackupSettingsViewModelFactoryProtocol {
             )
         case let .unavailable(lastSyncDate):
             return createViewModel(
-                from: .unsynced,
+                from: .unavailable,
                 lastSync: lastSyncDate,
                 issue: .icloudError,
                 locale: locale
@@ -110,7 +110,7 @@ final class CloudBackupSettingsViewModelFactory {
             return R.string.localizable.cloudBackupDisabled(preferredLanguages: locale.rLanguages)
         case .syncing:
             return R.string.localizable.cloudBackupSyncing(preferredLanguages: locale.rLanguages)
-        case .unsynced:
+        case .unsynced, .unavailable:
             return R.string.localizable.cloudBackupUnsynced(preferredLanguages: locale.rLanguages)
         case .synced:
             return R.string.localizable.cloudBackupSynced(preferredLanguages: locale.rLanguages)
@@ -125,7 +125,7 @@ final class CloudBackupSettingsViewModelFactory {
         switch status {
         case .disabled:
             return R.string.localizable.cloudBackupDisabledDescription(preferredLanguages: locale.rLanguages)
-        case .syncing, .unsynced, .synced:
+        case .syncing, .unsynced, .synced, .unavailable:
             if let lastSync {
                 let formattedDate = dateFormatter.value(for: locale).string(from: lastSync)
                 return R.string.localizable.cloudBackupLastSyncedFormat(
