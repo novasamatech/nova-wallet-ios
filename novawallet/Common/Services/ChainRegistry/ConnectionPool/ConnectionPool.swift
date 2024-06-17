@@ -54,7 +54,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
         subscribers.append(WeakWrapper(target: subscriber))
         stateSubscriptions[chainId] = subscribers
 
-        let connection = connections[chainId] as? ChainConnection
+        let connection = connections[chainId]?.target as? ChainConnection
 
         DispatchQueue.main.async {
             subscriber.didReceive(state: connection?.state ?? .notConnected, for: chainId)
@@ -99,7 +99,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
             mutex.unlock()
         }
 
-        let optConnection = connections[chainId]
+        let optConnection = connections[chainId]?.target
         connections[chainId] = nil
         oneShotConnections[chainId] = nil
         stateSubscriptions[chainId] = nil
