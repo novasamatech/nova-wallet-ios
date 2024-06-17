@@ -99,7 +99,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
             mutex.unlock()
         }
 
-        let optConnection = connections[chainId]
+        let optConnection = connections[chainId]?.target
         connections[chainId] = nil
         oneShotConnections[chainId] = nil
         stateSubscriptions[chainId] = nil
