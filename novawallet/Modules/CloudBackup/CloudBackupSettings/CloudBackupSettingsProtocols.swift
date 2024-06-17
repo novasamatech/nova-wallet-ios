@@ -46,6 +46,18 @@ protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentabl
         onConfirm: @escaping () -> Void
     )
 
+    func showReviewUpdatesConfirmation(
+        on view: CloudBackupSettingsViewProtocol?,
+        locale: Locale,
+        onConfirm: @escaping () -> Void
+    )
+
+    func showPasswordChangedConfirmation(
+        on view: CloudBackupSettingsViewProtocol?,
+        locale: Locale,
+        onConfirm: @escaping () -> Void
+    )
+
     func showCloudBackupReview(
         from view: CloudBackupSettingsViewProtocol?,
         changes: CloudBackupSyncResult.Changes,

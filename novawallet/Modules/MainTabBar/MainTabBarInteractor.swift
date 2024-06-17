@@ -18,6 +18,13 @@ final class MainTabBarInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    let onLauchQueue = OnLaunchActionsQueue(
+        possibleActions: [
+            OnLaunchAction.PushNotificationsSetup(),
+            OnLaunchAction.IncreaseWalletsSecurity()
+        ]
+    )
+
     deinit {
         stopServices()
     }
@@ -75,11 +82,23 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func showPushNotificationsSetupIfNeeded() {
+    private func showPushNotificationsSetupOrNextAction() {
         if !settingsManager.notificationsSetupSeen {
             securedLayer.scheduleExecutionIfAuthorized { [weak self] in
                 self?.presenter?.didRequestPushNotificationsSetupOpen()
             }
+        } else {
+            onLauchQueue.runNext()
+        }
+    }
+
+    private func showIncreaseSecurityOrNextAction() {
+        if settingsManager.shouldPresentIncreaseSecurity {
+            securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+                self?.presenter?.didReceiveNeedsIncreaseSecurity()
+            }
+        } else {
+            onLauchQueue.runNext()
         }
     }
 }
@@ -94,21 +113,29 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         screenOpenService.delegate = self
         pushScreenOpenService.delegate = self
 
+        cloudBackupMediator.setup(with: self)
+
+        onLauchQueue.delegate = self
+
         if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
-        }
-
-        if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
+        } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
+        } else {
+            onLauchQueue.runNext()
         }
-
-        showPushNotificationsSetupIfNeeded()
-
-        cloudBackupMediator.setup(with: self)
     }
 
     func setPushNotificationsSetupScreenSeen() {
         settingsManager.notificationsSetupSeen = true
+    }
+
+    func setIncreaseSecuritySeen() {
+        settingsManager.shouldPresentIncreaseSecurity = false
+    }
+
+    func requestNextOnLaunchAction() {
+        onLauchQueue.runNext()
     }
 }
 
@@ -186,5 +213,15 @@ extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
 
     func cloudBackupDidSync(mediator _: CloudBackupSyncMediating, for purpose: CloudBackupSynсPurpose) {
         presenter?.didSyncCloudBackup(on: purpose)
+    }
+}
+
+extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
+    func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
+        showPushNotificationsSetupOrNextAction()
+    }
+
+    func onLaunchProccessIncreaseSecurity(_: OnLaunchAction.IncreaseWalletsSecurity) {
+        showIncreaseSecurityOrNextAction()
     }
 }

@@ -96,34 +96,86 @@ final class CloudBackupSettingsPresenter {
         )
     }
 
-    private func checkDestructiveChanges() {
-        guard
-            case let .enabled(optSyncResult, _) = cloudBackupState,
-            case let .changes(changes) = optSyncResult else {
-            logger.debug("No destructive changes found")
-            return
-        }
-
-        if changes.isDestructive {
-            logger.debug("Found destructive changed")
-
-            wireframe.showCloudBackupReview(
+    private func showBackupIssueAfterSync(_ issue: CloudBackupSyncResult.Issue) {
+        switch issue {
+        case .missingOrInvalidPassword:
+            wireframe.showPasswordChangedConfirmation(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.wireframe.showEnterPassword(from: self?.view)
+            }
+        case .newBackupCreationNeeded:
+            wireframe.showBackupCreation(from: view)
+        case .remoteDecodingFailed:
+            wireframe.showCloudBackupDelete(
                 from: view,
-                changes: changes,
-                delegate: self
-            )
+                reason: .brokenOrEmpty,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.deleteBackup()
+            }
+        case .remoteReadingFailed, .internalFailure:
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentNoCloudConnection(from: view, locale: selectedLocale)
         }
     }
 
-    private func checkEnableBackupNeeded() {
+    private func showBackupStateSyncResultAfterSync(_ cloudBackupSyncResult: CloudBackupSyncResult) {
+        switch cloudBackupSyncResult {
+        case let .changes(changes):
+            guard changes.isDestructive else {
+                logger.debug("No destructive changes found")
+                return
+            }
+
+            wireframe.showReviewUpdatesConfirmation(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                self.wireframe.showCloudBackupReview(
+                    from: view,
+                    changes: changes,
+                    delegate: self
+                )
+            }
+        case let .issue(issue):
+            showBackupIssueAfterSync(issue)
+        case .noUpdates:
+            logger.debug("No updates after sync")
+        }
+    }
+
+    private func showBackupStateAfterSync() {
         guard
             case let .enabled(optSyncResult, _) = cloudBackupState,
-            case let .issue(issue) = optSyncResult,
-            case .newBackupCreationNeeded = issue else {
+            let syncResult = optSyncResult else {
             return
         }
 
-        wireframe.showBackupCreation(from: view)
+        switch cloudBackupState {
+        case .unavailable:
+            guard let view else {
+                return
+            }
+
+            wireframe.presentCloudBackupUnavailable(from: view, locale: selectedLocale)
+        case let .enabled(cloudBackupSyncResult, _):
+            guard let syncResult = cloudBackupSyncResult else {
+                return
+            }
+
+            showBackupStateSyncResultAfterSync(syncResult)
+        case .disabled, .none:
+            break
+        }
     }
 
     private func handleSync(issue: CloudBackupSyncResult.Issue) {
@@ -204,8 +256,16 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsPresenterProtocol {
         }
 
         switch optSyncResult {
-        case .changes:
-            checkDestructiveChanges()
+        case let .changes(changes):
+            guard changes.isDestructive else {
+                return
+            }
+
+            wireframe.showCloudBackupReview(
+                from: view,
+                changes: changes,
+                delegate: self
+            )
         case let .issue(issue):
             handleSync(issue: issue)
         case .noUpdates, .none:
@@ -234,8 +294,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
         provideViewModel()
 
         if isActive {
-            checkEnableBackupNeeded()
-            checkDestructiveChanges()
+            showBackupStateAfterSync()
         }
     }
 

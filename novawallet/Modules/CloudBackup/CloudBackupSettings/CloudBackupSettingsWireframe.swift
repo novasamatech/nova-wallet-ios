@@ -54,6 +54,38 @@ final class CloudBackupSettingsWireframe: CloudBackupSettingsWireframeProtocol {
         present(viewModel: viewModel, style: .alert, from: view)
     }
 
+    func showReviewUpdatesConfirmation(
+        on view: CloudBackupSettingsViewProtocol?,
+        locale _: Locale,
+        onConfirm: @escaping () -> Void
+    ) {
+        guard
+            let reviewUpdatesView = CloudBackupMessageSheetViewFactory.createUnsyncedChangesSheet(
+                completionClosure: onConfirm,
+                cancelClosure: nil
+            ) else {
+            return
+        }
+
+        view?.controller.present(reviewUpdatesView.controller, animated: true)
+    }
+
+    func showPasswordChangedConfirmation(
+        on view: CloudBackupSettingsViewProtocol?,
+        locale _: Locale,
+        onConfirm: @escaping () -> Void
+    ) {
+        guard
+            let passwordChangedView = CloudBackupMessageSheetViewFactory.createPasswordChangedSheet(
+                completionClosure: onConfirm,
+                cancelClosure: nil
+            ) else {
+            return
+        }
+
+        view?.controller.present(passwordChangedView.controller, animated: true)
+    }
+
     func showEnterPassword(from view: CloudBackupSettingsViewProtocol?) {
         guard let enterPasswordView = ImportCloudPasswordViewFactory.createSetPasswordView() else {
             return

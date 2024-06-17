@@ -12,6 +12,8 @@ protocol MainTabBarPresenterProtocol: AnyObject {
 protocol MainTabBarInteractorInputProtocol: AnyObject {
     func setup()
     func setPushNotificationsSetupScreenSeen()
+    func setIncreaseSecuritySeen()
+    func requestNextOnLaunchAction()
 }
 
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
@@ -22,6 +24,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didFoundCloudBackup(issue: CloudBackupSyncResult.Issue)
     func didRequestPushNotificationsSetupOpen()
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
+    func didReceiveNeedsIncreaseSecurity()
 }
 
 protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible, ModalAlertPresenting {
@@ -37,7 +40,8 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible,
     )
     func presentPushNotificationsSetup(
         on view: MainTabBarViewProtocol?,
-        completion: @escaping () -> Void
+        presentationCompletion: @escaping () -> Void,
+        flowCompletion: @escaping () -> Void
     )
 
     func presentCloudBackupUnsyncedChanges(
@@ -50,7 +54,13 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible,
         onReviewIssues: @escaping () -> Void
     )
 
-    func presentReviewUpdates(from view: MainTabBarViewProtocol?)
+    func presentIncreaseSecurity(
+        from view: MainTabBarViewProtocol?,
+        onBackup: @escaping () -> Void,
+        onNotNow: @escaping () -> Void
+    )
+
+    func presentCloudBackupSettings(from view: MainTabBarViewProtocol?)
 }
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {

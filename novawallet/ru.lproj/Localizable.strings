@@ -1647,3 +1647,10 @@
 "common.wallet.created" = "Кошелёк успешно создан";
 "common.wallet.imported" = "Кошелёк успешно импортирован";
 "common.wallet.removed" = "Кошелёк успешно удалён";
+"cloud.backup.sheet.password.changed.title" = "Пароль от бэкапа изменился";
+"cloud.backup.sheet.password.changed.message" = "Ваш пароль от бэкапа был ранее изменён. Чтобы продолжить использование Cloud Backup, %@";
+"cloud.backup.sheet.password.changed.enter.new" = "пожалуйста введите новый пароль от бэкапа.";
+"common.enter.password.button" = "Ввести пароль";
+"cloud.backup.increase.security.title" = "Увеличьте Безопасность\nВаших кошельков";
+"cloud.backup.increase.security.message" = "У вас уже есть Cloud Backup. Мы также рекомендуем вам %@ чтобы удостовериться, что всё в безопасности. Вы можете просмотреть Вашу секретную фразу в любой момент в Настройках бэкапа.";
+"cloud.backup.increase.security.highlighted1" = "вручную записать вашу секретную фразу";

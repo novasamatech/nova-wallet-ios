@@ -79,8 +79,14 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
     }
 
-    func presentPushNotificationsSetup(on view: MainTabBarViewProtocol?, completion: @escaping () -> Void) {
-        guard let setupPushNotificationsView = NotificationsSetupViewFactory.createView() else {
+    func presentPushNotificationsSetup(
+        on view: MainTabBarViewProtocol?,
+        presentationCompletion: @escaping () -> Void,
+        flowCompletion: @escaping () -> Void
+    ) {
+        guard let setupPushNotificationsView = NotificationsSetupViewFactory.createView(
+            completion: flowCompletion
+        ) else {
             return
         }
 
@@ -88,7 +94,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         view?.controller.present(
             setupPushNotificationsView.controller,
             animated: true,
-            completion: completion
+            completion: presentationCompletion
         )
     }
 
@@ -126,7 +132,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         view?.controller.present(bottomSheet.controller, animated: true)
     }
 
-    func presentReviewUpdates(from view: MainTabBarViewProtocol?) {
+    func presentCloudBackupSettings(from view: MainTabBarViewProtocol?) {
         guard let tabBarController = view?.controller as? UITabBarController else {
             return
         }
@@ -146,6 +152,24 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
 
             settingsNavigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
         }
+    }
+
+    func presentIncreaseSecurity(
+        from view: MainTabBarViewProtocol?,
+        onBackup: @escaping () -> Void,
+        onNotNow: @escaping () -> Void
+    ) {
+        guard
+            let tabBarController = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: tabBarController),
+            let bottomSheet = CloudBackupMessageSheetViewFactory.createIncreaseSecurityMessageSheet(
+                for: onBackup,
+                notNowClosure: onNotNow
+            ) else {
+            return
+        }
+
+        view?.controller.present(bottomSheet.controller, animated: true)
     }
 
     private func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {

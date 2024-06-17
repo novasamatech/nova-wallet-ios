@@ -42,13 +42,13 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
 
     func didRequestReviewCloud(changes _: CloudBackupSyncResult.Changes) {
         wireframe.presentCloudBackupUnsyncedChanges(from: view) { [weak self] in
-            self?.wireframe.presentReviewUpdates(from: self?.view)
+            self?.wireframe.presentCloudBackupSettings(from: self?.view)
         }
     }
 
     func didFoundCloudBackup(issue _: CloudBackupSyncResult.Issue) {
         wireframe.presentCloudBackupUpdateFailedIfNeeded(from: view) { [weak self] in
-            self?.wireframe.presentReviewUpdates(from: self?.view)
+            self?.wireframe.presentCloudBackupSettings(from: self?.view)
         }
     }
 
@@ -92,8 +92,28 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
     }
 
     func didRequestPushNotificationsSetupOpen() {
-        wireframe.presentPushNotificationsSetup(on: view) { [weak self] in
-            self?.interactor.setPushNotificationsSetupScreenSeen()
-        }
+        wireframe.presentPushNotificationsSetup(
+            on: view,
+            presentationCompletion: { [weak self] in
+                self?.interactor.setPushNotificationsSetupScreenSeen()
+            },
+            flowCompletion: { [weak self] in
+                self?.interactor.requestNextOnLaunchAction()
+            }
+        )
+    }
+
+    func didReceiveNeedsIncreaseSecurity() {
+        wireframe.presentIncreaseSecurity(
+            from: view,
+            onBackup: { [weak self] in
+                self?.interactor.setIncreaseSecuritySeen()
+                self?.wireframe.presentCloudBackupSettings(from: self?.view)
+            },
+            onNotNow: { [weak self] in
+                self?.interactor.setIncreaseSecuritySeen()
+                self?.interactor.requestNextOnLaunchAction()
+            }
+        )
     }
 }

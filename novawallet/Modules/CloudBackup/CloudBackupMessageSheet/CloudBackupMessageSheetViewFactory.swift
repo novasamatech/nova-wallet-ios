@@ -43,6 +43,54 @@ enum CloudBackupMessageSheetViewFactory {
         return messageSheetView
     }
 
+    static func createIncreaseSecurityMessageSheet(
+        for backupManualClosure: @escaping MessageSheetCallback,
+        notNowClosure: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        let messageSheetView = MessageSheetViewFactory.createNoContentView(
+            viewModel: .init(
+                title: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupIncreaseSecurityTitle(preferredLanguages: locale.rLanguages)
+                },
+                message: LocalizableResource { locale in
+                    NSAttributedString.coloredItems(
+                        [
+                            R.string.localizable.cloudBackupIncreaseSecurityHighlighted1(
+                                preferredLanguages: locale.rLanguages
+                            )
+                        ],
+                        formattingClosure: { items in
+                            R.string.localizable.cloudBackupIncreaseSecurityMessage(
+                                items[0],
+                                preferredLanguages: locale.rLanguages
+                            )
+                        },
+                        color: R.color.colorTextPrimary()!
+                    )
+                },
+                graphics: R.image.imageIncreseSecurity(),
+                content: nil,
+                mainAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonBackupManual(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: backupManualClosure
+                ),
+                secondaryAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: notNowClosure
+                )
+            ),
+            allowsSwipeDown: false
+        )
+
+        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 356) }
+
+        return messageSheetView
+    }
+
     static func createBackupAlreadyExists(
         for recoverClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
@@ -283,6 +331,57 @@ enum CloudBackupMessageSheetViewFactory {
         )
 
         messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 296) }
+
+        return messageSheetView
+    }
+
+    static func createPasswordChangedSheet(
+        completionClosure: @escaping MessageSheetCallback,
+        cancelClosure: MessageSheetCallback?
+    ) -> MessageSheetViewProtocol? {
+        let messageSheetView = MessageSheetViewFactory.createNoContentView(
+            viewModel: .init(
+                title: LocalizableResource { locale in
+                    R.string.localizable.cloudBackupSheetPasswordChangedTitle(preferredLanguages: locale.rLanguages)
+                },
+                message: LocalizableResource { locale in
+                    NSAttributedString.coloredItems(
+                        [
+                            R.string.localizable.cloudBackupSheetPasswordChangedEnterNew(
+                                preferredLanguages: locale.rLanguages
+                            )
+                        ],
+                        formattingClosure: { items in
+                            R.string.localizable.cloudBackupSheetPasswordChangedMessage(
+                                items[0],
+                                preferredLanguages: locale.rLanguages
+                            )
+                        },
+                        color: R.color.colorTextPrimary()!
+                    )
+                },
+                graphics: R.image.imageNoPasswordCloudBackup(),
+                content: nil,
+                mainAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonEnterPasswordButton(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: completionClosure,
+                    actionType: .normal
+                ),
+                secondaryAction: .init(
+                    title: LocalizableResource { locale in
+                        R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
+                    },
+                    handler: {
+                        cancelClosure?()
+                    }
+                )
+            ),
+            allowsSwipeDown: false
+        )
+
+        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 314) }
 
         return messageSheetView
     }

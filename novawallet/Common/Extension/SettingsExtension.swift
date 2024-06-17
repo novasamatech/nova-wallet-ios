@@ -22,6 +22,7 @@ enum SettingsKey: String {
     case cloudBackupEnabled
     case cloudBackupAutoSyncConfirm
     case cloudBackupPasswordId
+    case shouldPresentIncreaseSecurity
 }
 
 extension SettingsManagerProtocol {
@@ -197,6 +198,16 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.notificationsSetupSeen.rawValue)
+        }
+    }
+
+    var shouldPresentIncreaseSecurity: Bool {
+        get {
+            bool(for: SettingsKey.shouldPresentIncreaseSecurity.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.shouldPresentIncreaseSecurity.rawValue)
         }
     }
 
