@@ -631,6 +631,7 @@
 		0CF193D72A861D7E003F12F6 /* StartStakingInfoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */; };
 		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
 		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
+		0CF692892C20E2B1000FC395 /* BackupManualWarningPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */; };
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
 		0CF8176F2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */; };
@@ -5445,6 +5446,7 @@
 		0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoConstants.swift; sourceTree = "<group>"; };
 		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
 		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
+		0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupManualWarningPresentable.swift; sourceTree = "<group>"; };
 		0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameView.swift; sourceTree = "<group>"; };
 		0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupErrorPresentable.swift; sourceTree = "<group>"; };
 		0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUploadMonitoring.swift; sourceTree = "<group>"; };
@@ -11835,6 +11837,7 @@
 				2A9F8D4F274E4EB6003720E0 /* AccountCreateViewLayout.swift */,
 				2A9F8D51274E4EC4003720E0 /* AccountCreateViewController.swift */,
 				2AF8204E274FD2110092E3E7 /* BaseAccountCreatePresenter.swift */,
+				0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */,
 			);
 			path = AccountCreate;
 			sourceTree = "<group>";
@@ -26523,6 +26526,7 @@
 				CDAB179209D12B81430E377C /* LedgerAccountConfirmationViewLayout.swift in Sources */,
 				FA894DFA8EEBB0B4562CD788 /* LedgerAccountConfirmationViewFactory.swift in Sources */,
 				99A045F3C6403FB48B39971D /* LedgerWalletConfirmProtocols.swift in Sources */,
+				0CF692892C20E2B1000FC395 /* BackupManualWarningPresentable.swift in Sources */,
 				DCE9FE8A75C2FE7B5CB92CC2 /* LedgerWalletConfirmWireframe.swift in Sources */,
 				106CC4BFC48B6BFFF31434A9 /* LedgerWalletConfirmPresenter.swift in Sources */,
 				0CCDB2E82B749798007BC5D6 /* HydraStableswap+Storages.swift in Sources */,

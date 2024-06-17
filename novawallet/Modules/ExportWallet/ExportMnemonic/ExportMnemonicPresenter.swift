@@ -1,39 +1,66 @@
 import Foundation
 import SoraFoundation
+import IrohaCrypto
 
-final class ExportMnemonicPresenter {
-    weak var view: ExportGenericViewProtocol?
+final class ExportMnemonicPresenter: CheckboxListPresenterTrait {
+    weak var view: AccountCreateViewProtocol?
     let wireframe: ExportMnemonicWireframeProtocol
     let interactor: ExportMnemonicInteractorInputProtocol
     let localizationManager: LocalizationManagerProtocol
+    let checkboxListViewModelFactory: CheckboxListViewModelFactory
+    let mnemonicViewModelFactory: MnemonicViewModelFactory
 
+    var checkboxView: CheckboxListViewProtocol? { view }
+    var checkboxViewModels: [CheckBoxIconDetailsView.Model] = []
+
+    private var wasActive: Bool = false
     private(set) var exportData: ExportMnemonicData?
 
     init(
         interactor: ExportMnemonicInteractorInputProtocol,
         wireframe: ExportMnemonicWireframeProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        checkboxListViewModelFactory: CheckboxListViewModelFactory,
+        mnemonicViewModelFactory: MnemonicViewModelFactory
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.localizationManager = localizationManager
+        self.checkboxListViewModelFactory = checkboxListViewModelFactory
+        self.mnemonicViewModelFactory = mnemonicViewModelFactory
+    }
+
+    private func provideNotVisibleViewModel() {
+        let mnemonicCardViewModel: HiddenMnemonicCardView.State = .mnemonicNotVisible(
+            model: mnemonicViewModelFactory.createMnemonicCardHiddenModel()
+        )
+
+        view?.update(with: mnemonicCardViewModel)
+    }
+
+    private func provideVisibleViewModel(for mnemonic: IRMnemonicProtocol) {
+        let mnemonicCardViewModel: HiddenMnemonicCardView.State = .mnemonicVisible(
+            model: mnemonicViewModelFactory.createMnemonicCardViewModel(
+                for: mnemonic.allWords()
+            )
+        )
+
+        view?.update(with: mnemonicCardViewModel)
     }
 }
 
-extension ExportMnemonicPresenter: ExportGenericPresenterProtocol {
+extension ExportMnemonicPresenter: AccountCreatePresenterProtocol {
     func setup() {
-        interactor.fetchExportData()
+        checkboxViewModels = checkboxListViewModelFactory.makeWarningsInitialViewModel(
+            showingIcons: false,
+            checkBoxTapped
+        )
+
+        updateCheckBoxListView()
+        provideNotVisibleViewModel()
     }
 
-    func activateExport() {
-        guard let exportData = exportData else {
-            return
-        }
-
-        wireframe.openConfirmationForMnemonic(exportData.mnemonic, from: view)
-    }
-
-    func activateAdvancedSettings() {
+    func activateAdvanced() {
         guard let exportData = exportData, let accountResponse = exportData.metaAccount.fetch(
             for: exportData.chain.accountRequest()
         ) else {
@@ -58,14 +85,48 @@ extension ExportMnemonicPresenter: ExportGenericPresenterProtocol {
 
         wireframe.showAdvancedSettings(from: view, secretSource: .mnemonic, settings: advancedSettings)
     }
+
+    func provideMnemonic() {
+        if let mnemonic = exportData?.mnemonic {
+            provideVisibleViewModel(for: mnemonic)
+        }
+    }
+
+    func becomeActive() {
+        guard !wasActive else {
+            return
+        }
+
+        wasActive = true
+
+        wireframe.presentBackupManualWarning(
+            from: view,
+            locale: localizationManager.selectedLocale,
+            onProceed: { [weak self] in
+                self?.interactor.fetchExportData()
+            },
+            onCancel: { [weak self] in
+                self?.wireframe.close(view: self?.view)
+            }
+        )
+    }
+
+    func becomeInactive() {
+        provideNotVisibleViewModel()
+    }
+
+    func continueTapped() {
+        guard let exportData = exportData else {
+            return
+        }
+
+        wireframe.openConfirmationForMnemonic(exportData.mnemonic, from: view)
+    }
 }
 
 extension ExportMnemonicPresenter: ExportMnemonicInteractorOutputProtocol {
     func didReceive(exportData: ExportMnemonicData) {
         self.exportData = exportData
-
-        let viewModel = ExportGenericViewModel(sourceDetails: exportData.mnemonic.toString())
-        view?.set(viewModel: viewModel)
     }
 
     func didReceive(error: Error) {

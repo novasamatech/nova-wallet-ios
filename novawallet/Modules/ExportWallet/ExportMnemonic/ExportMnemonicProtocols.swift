@@ -9,6 +9,6 @@ protocol ExportMnemonicInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol ExportMnemonicWireframeProtocol: ExportGenericWireframeProtocol {
-    func openConfirmationForMnemonic(_ mnemonic: IRMnemonicProtocol, from view: ExportGenericViewProtocol?)
+protocol ExportMnemonicWireframeProtocol: ExportGenericWireframeProtocol, BackupManualWarningPresentable {
+    func openConfirmationForMnemonic(_ mnemonic: IRMnemonicProtocol, from view: ControllerBackedProtocol?)
 }

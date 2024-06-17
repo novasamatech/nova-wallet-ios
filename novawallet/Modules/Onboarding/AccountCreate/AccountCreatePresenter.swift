@@ -3,6 +3,8 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
     let walletName: String
 
     init(
+        interactor: AccountCreateInteractorInputProtocol,
+        wireframe: AccountCreateWireframeProtocol,
         walletName: String,
         localizationManager: LocalizationManagerProtocol,
         checkboxListViewModelFactory: CheckboxListViewModelFactory,
@@ -11,6 +13,8 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
         self.walletName = walletName
 
         super.init(
+            interactor: interactor,
+            wireframe: wireframe,
             localizationManager: localizationManager,
             checkboxListViewModelFactory: checkboxListViewModelFactory,
             mnemonicViewModelFactory: mnemonicViewModelFactory

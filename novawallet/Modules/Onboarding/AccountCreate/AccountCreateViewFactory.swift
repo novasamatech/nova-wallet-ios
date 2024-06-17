@@ -13,7 +13,11 @@ final class AccountCreateViewFactory {
         let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
         let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
+        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
+
         let presenter = AccountCreatePresenter(
+            interactor: interactor,
+            wireframe: wireframe,
             walletName: name,
             localizationManager: localizationManager,
             checkboxListViewModelFactory: checkboxListViewModelFactory,
@@ -25,11 +29,7 @@ final class AccountCreateViewFactory {
             localizationManager: localizationManager
         )
 
-        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
-
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
 
         return view
@@ -45,7 +45,11 @@ final class AccountCreateViewFactory {
         let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
         let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
+        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
+
         let presenter = AddChainAccount.AccountCreatePresenter(
+            interactor: interactor,
+            wireframe: wireframe,
             metaAccountModel: metaAccountModel,
             chainModelId: chainModelId,
             isEthereumBased: isEthereumBased,
@@ -54,19 +58,9 @@ final class AccountCreateViewFactory {
             mnemonicViewModelFactory: mnemonicViewModelFactory
         )
 
-        let appearanceAnimator = FadeAnimator(
-            from: 0.0,
-            to: 1.0,
-            options: .curveLinear
-        )
-
         let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
 
-        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
-
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
 
         view.localizationManager = localizationManager

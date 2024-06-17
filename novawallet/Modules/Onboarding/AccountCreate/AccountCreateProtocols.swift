@@ -24,7 +24,7 @@ protocol AccountCreateInteractorOutputProtocol: AnyObject {
     func didReceiveMnemonicGeneration(error: Error)
 }
 
-protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable, BackupManualWarningPresentable {
     func showAdvancedSettings(
         from view: AccountCreateViewProtocol?,
         secretSource: SecretSource,
