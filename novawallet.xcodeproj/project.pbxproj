@@ -3138,7 +3138,6 @@
 		84B7C721289BFA79001A3566 /* CrowdloanContributionSetupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6B4289BFA79001A3566 /* CrowdloanContributionSetupTests.swift */; };
 		84B7C722289BFA79001A3566 /* CrowdloanListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6B6289BFA79001A3566 /* CrowdloanListTests.swift */; };
 		84B7C723289BFA79001A3566 /* MoonbeamTermsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6B9289BFA79001A3566 /* MoonbeamTermsTests.swift */; };
-		84B7C724289BFA79001A3566 /* ExportMnemonicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6BD289BFA79001A3566 /* ExportMnemonicTests.swift */; };
 		84B7C725289BFA79001A3566 /* AdvancedWalletTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6C0289BFA79001A3566 /* AdvancedWalletTests.swift */; };
 		84B7C727289BFA79001A3566 /* ValidatorListFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6C6289BFA79001A3566 /* ValidatorListFilterTests.swift */; };
 		84B7C728289BFA79001A3566 /* YourValidatorListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6C8289BFA79001A3566 /* YourValidatorListTests.swift */; };
@@ -7910,7 +7909,6 @@
 		84B7C6B4289BFA79001A3566 /* CrowdloanContributionSetupTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionSetupTests.swift; sourceTree = "<group>"; };
 		84B7C6B6289BFA79001A3566 /* CrowdloanListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrowdloanListTests.swift; sourceTree = "<group>"; };
 		84B7C6B9289BFA79001A3566 /* MoonbeamTermsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoonbeamTermsTests.swift; sourceTree = "<group>"; };
-		84B7C6BD289BFA79001A3566 /* ExportMnemonicTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportMnemonicTests.swift; sourceTree = "<group>"; };
 		84B7C6C0289BFA79001A3566 /* AdvancedWalletTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdvancedWalletTests.swift; sourceTree = "<group>"; };
 		84B7C6C6289BFA79001A3566 /* ValidatorListFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorListFilterTests.swift; sourceTree = "<group>"; };
 		84B7C6C8289BFA79001A3566 /* YourValidatorListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YourValidatorListTests.swift; sourceTree = "<group>"; };
@@ -17659,7 +17657,6 @@
 				84B7C6AB289BFA79001A3566 /* AccountImport */,
 				84B7C6AE289BFA79001A3566 /* Crowdloan */,
 				84B7C6B8289BFA79001A3566 /* MoonbeamTerms */,
-				84B7C6BC289BFA79001A3566 /* ExportMnemonic */,
 				84B7C6BF289BFA79001A3566 /* AdvancedWallet */,
 				84B7C6C1289BFA79001A3566 /* Staking */,
 				84B7C6F1289BFA79001A3566 /* Wallet */,
@@ -17869,14 +17866,6 @@
 				84B7C6B9289BFA79001A3566 /* MoonbeamTermsTests.swift */,
 			);
 			path = MoonbeamTerms;
-			sourceTree = "<group>";
-		};
-		84B7C6BC289BFA79001A3566 /* ExportMnemonic */ = {
-			isa = PBXGroup;
-			children = (
-				84B7C6BD289BFA79001A3566 /* ExportMnemonicTests.swift */,
-			);
-			path = ExportMnemonic;
 			sourceTree = "<group>";
 		};
 		84B7C6BF289BFA79001A3566 /* AdvancedWallet */ = {
@@ -27286,7 +27275,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */,
-				84B7C724289BFA79001A3566 /* ExportMnemonicTests.swift in Sources */,
 				8410562E27AF22DA004F5CA3 /* EthereumAddressChecksum.swift in Sources */,
 				84B66A1826FE05B00038B963 /* ChainRegistryStub.swift in Sources */,
 				8467FD3924EACE08005D486C /* AccountCreationHelper.swift in Sources */,
