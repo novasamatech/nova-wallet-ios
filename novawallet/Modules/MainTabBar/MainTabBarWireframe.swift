@@ -144,6 +144,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         let optBackupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
 
         if optBackupSettings == nil {
+            settingsNavigationController?.popToRootViewController(animated: false)
+
             guard let cloudBackupSettings = CloudBackupSettingsViewFactory.createView() else {
                 return
             }
