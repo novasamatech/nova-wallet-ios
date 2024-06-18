@@ -26,10 +26,10 @@ final class NetworksListInteractor {
 
             changes.forEach { change in
                 switch change {
-                case let .insert(newItem):
+                case let .insert(chain):
                     self.chainRegistry.subscribeChainState(
                         self,
-                        chainId: newItem.chainId
+                        chainId: chain.chainId
                     )
                 case let .delete(deletedIdentifier):
                     self.chainRegistry.unsubscribeChainState(
@@ -67,10 +67,12 @@ extension NetworksListInteractor: ConnectionStateSubscription {
         for chainId: ChainModel.Id
     ) {
         let connectionState: NetworksListPresenter.ConnectionState = switch state {
-        case .notConnected, .connecting, .waitingReconnection:
+        case .connecting, .waitingReconnection:
             .connecting
         case .connected:
             .connected
+        case .notConnected:
+            .notConnected
         }
 
         presenter?.didReceive(connectionState: connectionState, for: chainId)

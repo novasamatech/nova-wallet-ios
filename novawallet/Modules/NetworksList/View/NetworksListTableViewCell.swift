@@ -125,7 +125,7 @@ final class NetworksListNetworkView: UIView {
             connectionStateLabel.isHidden = false
             connectionStateLabel.text = text
             connectionStateLabel.startShimmering()
-        case .connected:
+        case .connected, .notConnected:
             actionIconView.isHidden = false
             connectionStateLabel.stopShimmering()
             connectionStateLabel.isHidden = true

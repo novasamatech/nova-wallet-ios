@@ -75,9 +75,16 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
 
     func didReceive(
         _ connectionState: ConnectionState,
-        for nodeURL: String
+        for nodeURL: String,
+        selected: Bool
     ) {
         guard connectionState != connectionStates[nodeURL] else { return }
+
+        if selected {
+            selectedNode = nodes[nodeURL]
+        } else if selectedNode?.url == nodeURL {
+            selectedNode = nil
+        }
 
         connectionStates[nodeURL] = connectionState
 
@@ -87,12 +94,6 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         default:
             break
         }
-    }
-
-    func didReceive(_ selectedNode: ChainNodeModel) {
-        self.selectedNode = selectedNode
-
-        provideNodeViewModel(for: selectedNode.url)
     }
 }
 
