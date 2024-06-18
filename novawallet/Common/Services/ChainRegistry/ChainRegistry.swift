@@ -113,7 +113,7 @@ final class ChainRegistry {
                 case let .delete(chainId):
                     availableChains[chainId] = nil
 
-                    connectionPool.clearConnection(for: chainId)
+                    connectionPool.deactivateConnection(for: chainId)
                     clearRuntimeSubscriptionIfExists(for: chainId)
                     clearRuntimeHandlingIfNeeded(for: chainId)
 
@@ -126,10 +126,10 @@ final class ChainRegistry {
     }
 
     private func updateSyncMode(for chain: ChainModel) throws {
-        let connection = try connectionPool.setupConnection(for: chain)
-
         switch chain.syncMode {
         case .full, .light:
+            let connection = try connectionPool.setupConnection(for: chain)
+
             setupRuntimeHandlingIfNeeded(for: chain, connection: connection)
             setupRuntimeVersionSubscriptionIfNeeded(for: chain, connection: connection)
         case .disabled:
