@@ -263,8 +263,8 @@
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
 		0C626D212A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D202A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift */; };
-		0C63908B2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */; };
-		0C63908D2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */; };
+		0C63908B2BF073C20015D467 /* CloudBackupSyncMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908A2BF073C20015D467 /* CloudBackupSyncMonitoring.swift */; };
+		0C63908D2BF073D00015D467 /* ICloudBackupSyncMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908C2BF073D00015D467 /* ICloudBackupSyncMonitor.swift */; };
 		0C6390912BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */; };
 		0C6390932BF0931C0015D467 /* CloudBackupMetadataManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390922BF0931C0015D467 /* CloudBackupMetadataManaging.swift */; };
 		0C6390952BF1FD4F0015D467 /* CloudBackupSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390942BF1FD4F0015D467 /* CloudBackupSyncService.swift */; };
@@ -311,7 +311,6 @@
 		0C7CF4CA2BD36E480015DD45 /* CloudBackupServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4C92BD36E480015DD45 /* CloudBackupServiceFacade.swift */; };
 		0C7CF4CC2BD374930015DD45 /* CloudBackupFileManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4CB2BD374930015DD45 /* CloudBackupFileManaging.swift */; };
 		0C7CF4CE2BD3784B0015DD45 /* CloudBackupCoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4CD2BD3784B0015DD45 /* CloudBackupCoding.swift */; };
-		0C7CF4D02BD384190015DD45 /* CloudBackupUploadingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4CF2BD384190015DD45 /* CloudBackupUploadingOperationFactory.swift */; };
 		0C7CF4D22BD4C1600015DD45 /* CloudBackupFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4D12BD4C1600015DD45 /* CloudBackupFacadeTests.swift */; };
 		0C7CF4D42BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4D32BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift */; };
 		0C7CF4D62BD4E5350015DD45 /* KeychainProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4D52BD4E5350015DD45 /* KeychainProxy.swift */; };
@@ -491,7 +490,6 @@
 		0CC4CCF42A67C9C400F63041 /* Multistaking+NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC4CCF32A67C9C400F63041 /* Multistaking+NominationPools.swift */; };
 		0CC633542B3009C2001BF257 /* ChainRemoteAccountConfirmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC633532B3009C2001BF257 /* ChainRemoteAccountConfirmService.swift */; };
 		0CC6C8D82AAB401200AD8D9B /* CustomValidatorsFullList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6C8D72AAB401200AD8D9B /* CustomValidatorsFullList.swift */; };
-		0CC9AC432BB7E10900B4E670 /* CloudBackupStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC9AC422BB7E10900B4E670 /* CloudBackupStorageManager.swift */; };
 		0CCA245B2AC6917400AEF23D /* XcmV3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA245A2AC6917400AEF23D /* XcmV3.swift */; };
 		0CCA245D2AC6918800AEF23D /* XcmV3Junction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA245C2AC6918800AEF23D /* XcmV3Junction.swift */; };
 		0CCA245F2AC6974200AEF23D /* XcmV3Multilocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA245E2AC6974200AEF23D /* XcmV3Multilocation.swift */; };
@@ -634,8 +632,6 @@
 		0CF692892C20E2B1000FC395 /* BackupManualWarningPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */; };
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
-		0CF8176F2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */; };
-		0CF817712BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817702BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift */; };
 		0CFA16132B0CD8A0007AF885 /* GovSpentAmountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */; };
 		0CFA16162B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */; };
 		0CFA16192B0CE709007AF885 /* UtilityPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16182B0CE709007AF885 /* UtilityPallet.swift */; };
@@ -5063,8 +5059,8 @@
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
 		0C626D202A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNPoolsViewModelFactory.swift; sourceTree = "<group>"; };
-		0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdateMonitoring.swift; sourceTree = "<group>"; };
-		0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudBackupUpdateMonitor.swift; sourceTree = "<group>"; };
+		0C63908A2BF073C20015D467 /* CloudBackupSyncMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncMonitoring.swift; sourceTree = "<group>"; };
+		0C63908C2BF073D00015D467 /* ICloudBackupSyncMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudBackupSyncMonitor.swift; sourceTree = "<group>"; };
 		0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdateCalculationFactory.swift; sourceTree = "<group>"; };
 		0C6390922BF0931C0015D467 /* CloudBackupMetadataManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupMetadataManaging.swift; sourceTree = "<group>"; };
 		0C6390942BF1FD4F0015D467 /* CloudBackupSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncService.swift; sourceTree = "<group>"; };
@@ -5113,7 +5109,6 @@
 		0C7CF4C92BD36E480015DD45 /* CloudBackupServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacade.swift; sourceTree = "<group>"; };
 		0C7CF4CB2BD374930015DD45 /* CloudBackupFileManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupFileManaging.swift; sourceTree = "<group>"; };
 		0C7CF4CD2BD3784B0015DD45 /* CloudBackupCoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCoding.swift; sourceTree = "<group>"; };
-		0C7CF4CF2BD384190015DD45 /* CloudBackupUploadingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUploadingOperationFactory.swift; sourceTree = "<group>"; };
 		0C7CF4D12BD4C1600015DD45 /* CloudBackupFacadeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupFacadeTests.swift; sourceTree = "<group>"; };
 		0C7CF4D32BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateInteractorError.swift; sourceTree = "<group>"; };
 		0C7CF4D52BD4E5350015DD45 /* KeychainProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainProxy.swift; sourceTree = "<group>"; };
@@ -5313,7 +5308,6 @@
 		0CC4CCF32A67C9C400F63041 /* Multistaking+NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multistaking+NominationPools.swift"; sourceTree = "<group>"; };
 		0CC633532B3009C2001BF257 /* ChainRemoteAccountConfirmService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRemoteAccountConfirmService.swift; sourceTree = "<group>"; };
 		0CC6C8D72AAB401200AD8D9B /* CustomValidatorsFullList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomValidatorsFullList.swift; sourceTree = "<group>"; };
-		0CC9AC422BB7E10900B4E670 /* CloudBackupStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupStorageManager.swift; sourceTree = "<group>"; };
 		0CCA245A2AC6917400AEF23D /* XcmV3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV3.swift; sourceTree = "<group>"; };
 		0CCA245C2AC6918800AEF23D /* XcmV3Junction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV3Junction.swift; sourceTree = "<group>"; };
 		0CCA245E2AC6974200AEF23D /* XcmV3Multilocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV3Multilocation.swift; sourceTree = "<group>"; };
@@ -5444,8 +5438,6 @@
 		0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupManualWarningPresentable.swift; sourceTree = "<group>"; };
 		0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameView.swift; sourceTree = "<group>"; };
 		0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupErrorPresentable.swift; sourceTree = "<group>"; };
-		0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUploadMonitoring.swift; sourceTree = "<group>"; };
-		0CF817702BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudBackupUploadMonitor.swift; sourceTree = "<group>"; };
 		0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountExtractor.swift; sourceTree = "<group>"; };
 		0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountBatchHandler.swift; sourceTree = "<group>"; };
 		0CFA16182B0CE709007AF885 /* UtilityPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityPallet.swift; sourceTree = "<group>"; };
@@ -10756,7 +10748,6 @@
 				0CC0F8242BB52EEC002C49F6 /* CloudBackupAvailability.swift */,
 				0CC0F8262BB53376002C49F6 /* CloudBackupAvailabilityService.swift */,
 				0CC0F8282BB53ABC002C49F6 /* CloudIdentifiable.swift */,
-				0CC9AC422BB7E10900B4E670 /* CloudBackupStorageManager.swift */,
 			);
 			path = Availability;
 			sourceTree = "<group>";
@@ -10765,7 +10756,6 @@
 			isa = PBXGroup;
 			children = (
 				0CC0F82B2BB570C2002C49F6 /* CloudBackupOperationFactory.swift */,
-				0C7CF4CF2BD384190015DD45 /* CloudBackupUploadingOperationFactory.swift */,
 				0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */,
 				0CCE3AA92BF395DC00D55F03 /* CloudBackupUpdateApplicationFactory.swift */,
 				0C2B18B12BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift */,
@@ -11035,10 +11025,8 @@
 		0CF8176D2BC6527B00CB9183 /* Monitor */ = {
 			isa = PBXGroup;
 			children = (
-				0CF8176E2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift */,
-				0CF817702BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift */,
-				0C63908A2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift */,
-				0C63908C2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift */,
+				0C63908A2BF073C20015D467 /* CloudBackupSyncMonitoring.swift */,
+				0C63908C2BF073D00015D467 /* ICloudBackupSyncMonitor.swift */,
 			);
 			path = Monitor;
 			sourceTree = "<group>";
@@ -23133,7 +23121,7 @@
 				84AE7AAF27D38B1800495267 /* DrawableIconViewModel.swift in Sources */,
 				849976D027B3AC0100B14A6C /* MetamaskEvent.swift in Sources */,
 				0CE629DD2AA9B6BF00E250BD /* RewardDestinationViewModel.swift in Sources */,
-				0C63908D2BF073D00015D467 /* ICloudBackupUpdateMonitor.swift in Sources */,
+				0C63908D2BF073D00015D467 /* ICloudBackupSyncMonitor.swift in Sources */,
 				849976BC27B25A6600B14A6C /* DAppTransportModel.swift in Sources */,
 				771901A42AE7E48800D9C918 /* SwapBaseProtocols.swift in Sources */,
 				84D2F1B32775A3220040C680 /* ExtrinsicJSONProcessor.swift in Sources */,
@@ -24550,7 +24538,7 @@
 				84E63C1728FFC69A0093534A /* DiscreteGradientSlider.swift in Sources */,
 				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
 				84FC190D29B7EE1600BCCAA5 /* MultiExtrinsicFeeProxy.swift in Sources */,
-				0C63908B2BF073C20015D467 /* CloudBackupUpdateMonitoring.swift in Sources */,
+				0C63908B2BF073C20015D467 /* CloudBackupSyncMonitoring.swift in Sources */,
 				844C3E6F2A08E74D00C4305F /* BalanceCalculator.swift in Sources */,
 				8814774029B07B66001E98A1 /* DelegateGroupActionTitleControl.swift in Sources */,
 				F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */,
@@ -24606,7 +24594,6 @@
 				84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */,
 				84C5ADE628141D21006D7388 /* LinkView.swift in Sources */,
 				0C59E8DF2AA60DAB001E11F3 /* ExternalAssetBalanceServiceFactoryProtocol.swift in Sources */,
-				0CF817712BC6536F00CB9183 /* ICloudBackupUploadMonitor.swift in Sources */,
 				84C2064028D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift in Sources */,
 				8469D5A628F5E8F20074FEE3 /* Staking.swift in Sources */,
 				848FFE8325E686C200652AA5 /* StorageDecodingOperation.swift in Sources */,
@@ -25914,7 +25901,6 @@
 				8452585527ABF270004F9082 /* AssetListEmptyCell.swift in Sources */,
 				D72773CE9AF638387DA9BA77 /* MoonbeamTermsInteractor.swift in Sources */,
 				888B8E95291D274B00AA78E9 /* MercuryoProvider.swift in Sources */,
-				0CC9AC432BB7E10900B4E670 /* CloudBackupStorageManager.swift in Sources */,
 				2B1E63AF98584341D670FB40 /* MoonbeamTermsViewController.swift in Sources */,
 				B1B0F4818510EB082ACA83AB /* MoonbeamTermsViewLayout.swift in Sources */,
 				0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */,
@@ -26033,7 +26019,6 @@
 				0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */,
 				0C3205DC2A89677B002EB914 /* EvmGasLimitProviderFactory.swift in Sources */,
 				8487580727EDEB9600495306 /* BorderedIconLabelView.swift in Sources */,
-				0CF8176F2BC652D000CB9183 /* CloudBackupUploadMonitoring.swift in Sources */,
 				0C6F0C9E2A69723B007170C6 /* StartStakingStateProtocol.swift in Sources */,
 				0CE933862BFF90B4000F3EFE /* RuntimeLocalMigrator.swift in Sources */,
 				84AE7AAD27D3839D00495267 /* StackCellViewModel.swift in Sources */,
@@ -26074,7 +26059,6 @@
 				982696E7AA7ACDA0B5131F6D /* AssetsSettingsViewController.swift in Sources */,
 				54110818BE6218276B4C55AF /* AssetsSettingsViewLayout.swift in Sources */,
 				84B8AA8129F9097D00347A37 /* WalletConnectTransport.swift in Sources */,
-				0C7CF4D02BD384190015DD45 /* CloudBackupUploadingOperationFactory.swift in Sources */,
 				599CEA840B4E888B643AEB5E /* AssetsSettingsViewFactory.swift in Sources */,
 				04B85867D67D56994D99FF14 /* NftListProtocols.swift in Sources */,
 				E9625CE429290F5504728D62 /* NftListWireframe.swift in Sources */,
@@ -27529,7 +27513,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -27545,7 +27529,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 7.4.2;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -27569,7 +27553,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -27585,7 +27569,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 7.4.2;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev-extension";
@@ -27607,7 +27591,7 @@
 				CODE_SIGN_ENTITLEMENTS = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -27623,7 +27607,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 7.4.2;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.notificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -27644,7 +27628,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -27660,7 +27644,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 7.4.2;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.notificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

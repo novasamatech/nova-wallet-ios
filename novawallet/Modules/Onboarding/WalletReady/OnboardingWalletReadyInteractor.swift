@@ -6,8 +6,6 @@ final class OnboardingWalletReadyInteractor {
     let factory: CloudBackupServiceFactoryProtocol
     let serviceFacade: CloudBackupServiceFacadeProtocol
 
-    private var storageManager: CloudBackupStorageManaging?
-
     init(factory: CloudBackupServiceFactoryProtocol, serviceFacade: CloudBackupServiceFacadeProtocol) {
         self.factory = factory
         self.serviceFacade = serviceFacade

@@ -220,8 +220,7 @@ final class CloudBackupUpdateApplicationFactory {
         let fileManager = serviceFactory.createFileManager()
 
         guard
-            let remoteUrl = fileManager.getFileUrl(),
-            let tempUrl = fileManager.getTempUrl() else {
+            let remoteUrl = fileManager.getFileUrl() else {
             return CompoundOperationWrapper.createWithError(
                 CloudBackupUpdateApplicationFactoryError.cloudUnavailable
             )
@@ -241,17 +240,18 @@ final class CloudBackupUpdateApplicationFactory {
 
         encodingOperation.addDependency(exportOperation)
 
-        let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
-            for: remoteUrl,
-            tempUrl: tempUrl,
-            timeoutInterval: CloudBackup.backupSaveTimeout
+        let writeOperation = serviceFactory.createOperationFactory().createWritingOperation(
+            for: remoteUrl
         ) {
             try encodingOperation.extractNoCancellableResultData()
         }
 
-        uploadWrapper.addDependency(operations: [encodingOperation])
+        writeOperation.addDependency(encodingOperation)
 
-        return uploadWrapper.insertingHead(operations: [exportOperation, encodingOperation])
+        return CompoundOperationWrapper(
+            targetOperation: writeOperation,
+            dependencies: [exportOperation, encodingOperation]
+        )
     }
 
     private func createUpdateRemoteWrapper(

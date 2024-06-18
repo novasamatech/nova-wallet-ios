@@ -36,27 +36,6 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
         CloudBackupAvailabilityService(fileManager: fileManager, logger: logger)
     }
 
-    func createStorageManager(for baseUrl: URL) -> CloudBackupStorageManaging {
-        let cloudOperationFactory = createOperationFactory()
-
-        let uploadOperationFactory = ICloudBackupUploadFactory(
-            operationFactory: cloudOperationFactory,
-            monitoringOperationQueue: monitoringQueue,
-            notificationCenter: notificationCenter,
-            logger: logger
-        )
-
-        return ICloudBackupStorageManager(
-            baseUrl: baseUrl,
-            cloudOperationFactory: cloudOperationFactory,
-            uploadOperationFactory: uploadOperationFactory,
-            operationQueue: operationQueue,
-            workingQueue: .global(),
-            notificationCenter: notificationCenter,
-            logger: logger
-        )
-    }
-
     func createOperationFactory() -> CloudBackupOperationFactoryProtocol {
         CloudBackupOperationFactory(
             fileCoordinator: fileCoordinator,
@@ -95,15 +74,6 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
             cryptoManager: createCryptoManager(),
             validator: ICloudBackupValidator(),
             keychain: keychain
-        )
-    }
-
-    func createUploadFactory() -> CloudBackupUploadFactoryProtocol {
-        ICloudBackupUploadFactory(
-            operationFactory: createOperationFactory(),
-            monitoringOperationQueue: monitoringQueue,
-            notificationCenter: notificationCenter,
-            logger: logger
         )
     }
 }

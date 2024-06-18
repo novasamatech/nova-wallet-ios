@@ -51,6 +51,8 @@ final class CloudBackupSyncMediator {
 
     private var syncPurpose: CloudBackupSynсPurpose = .unknown
 
+    private var backupSyncMonitor: CloudBackupSyncMonitoring?
+
     weak var uiPresenter: CloudBackupSynсUIPresenting?
 
     init(
@@ -65,6 +67,37 @@ final class CloudBackupSyncMediator {
         self.selectedWalletSettings = selectedWalletSettings
         self.operationQueue = operationQueue
         self.logger = logger
+    }
+
+    private func setupBackupMonitorIfNeeded() {
+        guard backupSyncMonitor == nil else {
+            return
+        }
+
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 1
+
+        let monitor = ICloudBackupSyncMonitor(
+            filename: CloudBackup.walletsFilename,
+            operationQueue: operationQueue,
+            notificationCenter: NotificationCenter.default,
+            logger: logger
+        )
+
+        backupSyncMonitor = monitor
+
+        monitor.start(notifyingIn: .main) { [weak self] status in
+            self?.logger.debug("Status: \(status)")
+        }
+    }
+
+    private func clearBackupMonitorIfNeeded() {
+        guard let backupSyncMonitor else {
+            return
+        }
+
+        self.backupSyncMonitor = nil
+        backupSyncMonitor.stop()
     }
 
     private func setupCurrentState() {
@@ -115,9 +148,13 @@ final class CloudBackupSyncMediator {
     private func handleNew(state: CloudBackupSyncState) {
         switch state {
         case .disabled, .unavailable:
+            clearBackupMonitorIfNeeded()
+
             syncPurpose = .unknown
             logger.debug("No need to process disabled or unavailable")
         case let .enabled(cloudBackupSyncResult, _):
+            setupBackupMonitorIfNeeded()
+
             guard let cloudBackupSyncResult = cloudBackupSyncResult else {
                 return
             }
@@ -218,6 +255,8 @@ extension CloudBackupSyncMediator: CloudBackupSyncMediating {
         uiPresenter = nil
 
         clearCurrentState()
+
+        clearBackupMonitorIfNeeded()
     }
 
     func enablePresenterNotifications() {
