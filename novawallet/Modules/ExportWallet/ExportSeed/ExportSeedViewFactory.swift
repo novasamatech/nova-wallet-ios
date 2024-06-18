@@ -40,11 +40,15 @@ final class ExportSeedViewFactory {
                 R.string.localizable.exportSeedHint(preferredLanguages: locale.rLanguages)
             },
             sourceTitle: LocalizableResource { locale in
-                R.string.localizable.importRawSeed(preferredLanguages: locale.rLanguages)
+                if chain.isEthereumBased {
+                    return R.string.localizable.secretTypePrivateKeyTitle(preferredLanguages: locale.rLanguages)
+                } else {
+                    return R.string.localizable.importRawSeed(preferredLanguages: locale.rLanguages)
+                }
             },
             sourceHint: LocalizableResource { locale in
                 if chain.isEthereumBased {
-                    return R.string.localizable.accountImportEthereumSeedPlaceholder_v2_2_0(
+                    return R.string.localizable.accountExportEthereumPrivateKeyPlaceholder(
                         preferredLanguages: locale.rLanguages
                     )
                 } else {

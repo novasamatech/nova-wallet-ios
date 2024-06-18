@@ -75,7 +75,7 @@ final class AccountConfirmViewController: UIViewController, ViewHolder {
         )
 
         resetBarButtonItem.tintColor = R.color.colorButtonTextAccent()
-        
+
         navigationItem.rightBarButtonItem = resetBarButtonItem
     }
 

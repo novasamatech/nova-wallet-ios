@@ -1654,3 +1654,4 @@
 "common.enter.wallet.name.disabled" = "Enter wallet name";
 "cloud.backup.settings.empty.or.broken" = "Review Backup Error";
 "common.button.settings" = "Settings";
+"account.export.ethereum.private.key.placeholder" = "64 hex symbols";

@@ -1654,3 +1654,4 @@
 "common.enter.wallet.name.disabled" = "Введите имя кошелька";
 "cloud.backup.settings.empty.or.broken" = "Просмотр Ошибки бэкапа";
 "common.button.settings" = "Настройки";
+"account.export.ethereum.private.key.placeholder" = "64 шест. символа";
