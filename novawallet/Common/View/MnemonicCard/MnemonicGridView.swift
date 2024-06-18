@@ -91,6 +91,7 @@ class MnemonicGridView: UIView {
         button.changesContentOpacityWhenHighlighted = true
         button.controlContentView.textAlignment = .center
         button.controlContentView.text = text
+        button.controlContentView.adjustsFontSizeToFitWidth = true
         button.tag = index
 
         addAction(for: button)
