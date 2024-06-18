@@ -51,7 +51,14 @@ extension AccountExportPasswordPresenter: AccountExportPasswordPresenterProtocol
 
 extension AccountExportPasswordPresenter: AccountExportPasswordInteractorOutputProtocol {
     func didExport(json: RestoreJson) {
-        wireframe.showJSONExport(json, from: view)
+        wireframe.share(
+            source: TextSharingSource(message: json.data),
+            from: view
+        ) { [weak self] completed in
+            if completed {
+                self?.wireframe.close(view: self?.view)
+            }
+        }
     }
 
     func didReceive(error: Error) {

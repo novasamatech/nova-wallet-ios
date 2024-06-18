@@ -2600,11 +2600,7 @@
 		847C96302553426D002D288F /* ExportGenericViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C962F2553426D002D288F /* ExportGenericViewModel.swift */; };
 		847C963525534E41002D288F /* UIFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C963425534E41002D288F /* UIFactory.swift */; };
 		847C963D255351BB002D288F /* ScrollableContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C963C255351BB002D288F /* ScrollableContainerView.swift */; };
-		847C96492553614F002D288F /* ExportRestoreJsonPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C96482553614F002D288F /* ExportRestoreJsonPresenter.swift */; };
-		847C965425536199002D288F /* ExportRestoreJsonProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C965325536199002D288F /* ExportRestoreJsonProtocols.swift */; };
 		847C9659255362F7002D288F /* RestoreJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C9658255362F7002D288F /* RestoreJson.swift */; };
-		847C965E255363B9002D288F /* ExportRestoreJsonWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C965D255363B9002D288F /* ExportRestoreJsonWireframe.swift */; };
-		847C966325536455002D288F /* ExportRestoreJsonViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C966225536455002D288F /* ExportRestoreJsonViewFactory.swift */; };
 		847CD46626416D0900E1542F /* SlashesOperationFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847CD46526416D0900E1542F /* SlashesOperationFactoryStub.swift */; };
 		847DD8DC26034B99003DE053 /* LocalizableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847DD8DB26034B99003DE053 /* LocalizableViewProtocol.swift */; };
 		847EA1D42A1CA43A00F1CBD8 /* SubqueryNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847EA1D32A1CA43A00F1CBD8 /* SubqueryNodes.swift */; };
@@ -7361,11 +7357,7 @@
 		847C962F2553426D002D288F /* ExportGenericViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportGenericViewModel.swift; sourceTree = "<group>"; };
 		847C963425534E41002D288F /* UIFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFactory.swift; sourceTree = "<group>"; };
 		847C963C255351BB002D288F /* ScrollableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollableContainerView.swift; sourceTree = "<group>"; };
-		847C96482553614F002D288F /* ExportRestoreJsonPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportRestoreJsonPresenter.swift; sourceTree = "<group>"; };
-		847C965325536199002D288F /* ExportRestoreJsonProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportRestoreJsonProtocols.swift; sourceTree = "<group>"; };
 		847C9658255362F7002D288F /* RestoreJson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreJson.swift; sourceTree = "<group>"; };
-		847C965D255363B9002D288F /* ExportRestoreJsonWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportRestoreJsonWireframe.swift; sourceTree = "<group>"; };
-		847C966225536455002D288F /* ExportRestoreJsonViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportRestoreJsonViewFactory.swift; sourceTree = "<group>"; };
 		847CD46526416D0900E1542F /* SlashesOperationFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashesOperationFactoryStub.swift; sourceTree = "<group>"; };
 		847DD8DB26034B99003DE053 /* LocalizableViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizableViewProtocol.swift; sourceTree = "<group>"; };
 		847EA1D32A1CA43A00F1CBD8 /* SubqueryNodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryNodes.swift; sourceTree = "<group>"; };
@@ -10906,7 +10898,6 @@
 				11D6949C2D985BCB5ED43789 /* ExportSeed */,
 				2CE2BCE6C5A7AA59B600FE93 /* ExportMnemonicConfirm */,
 				3F64CF6065463B01222F1B8F /* ExportMnemonic */,
-				847C964725536137002D288F /* ExportRestoreJson */,
 				847C961E255340CD002D288F /* ExportGenericView */,
 				249BACDEE5CB2B1ECDF470D9 /* AccountExportPassword */,
 			);
@@ -15636,17 +15627,6 @@
 				84B72C702756092A0042118E /* ExportGenericViewLayout.swift */,
 			);
 			path = ExportGenericView;
-			sourceTree = "<group>";
-		};
-		847C964725536137002D288F /* ExportRestoreJson */ = {
-			isa = PBXGroup;
-			children = (
-				847C96482553614F002D288F /* ExportRestoreJsonPresenter.swift */,
-				847C965325536199002D288F /* ExportRestoreJsonProtocols.swift */,
-				847C965D255363B9002D288F /* ExportRestoreJsonWireframe.swift */,
-				847C966225536455002D288F /* ExportRestoreJsonViewFactory.swift */,
-			);
-			path = ExportRestoreJson;
 			sourceTree = "<group>";
 		};
 		847F2D4B27AA68CB00AFD476 /* Models */ = {
@@ -23026,7 +23006,6 @@
 				84DD5F4C263DE82C00425ACF /* DataValidationRunner.swift in Sources */,
 				84D6D7FC27A7F4B40094FC33 /* AssetListNetworkView.swift in Sources */,
 				84D8F16B24D8263300AF43E9 /* ModalPickerFactory.swift in Sources */,
-				847C965E255363B9002D288F /* ExportRestoreJsonWireframe.swift in Sources */,
 				8434C9E425401EF3009E4191 /* TransactionHistoryItem.swift in Sources */,
 				88421062289BBD1900306F2C /* JsonFileRepository.swift in Sources */,
 				AE8B8835267349C200AB0AA9 /* CustomVlidatorListFilter.swift in Sources */,
@@ -24551,7 +24530,6 @@
 				84FEADF228783F55001DFC26 /* BaseParaStakingRewardCalculatoService.swift in Sources */,
 				848CC93D28D9F6D8009EB4B0 /* OnChainDispatchTime.swift in Sources */,
 				841E5534282CD9A900C8438F /* StakingType.swift in Sources */,
-				847C966325536455002D288F /* ExportRestoreJsonViewFactory.swift in Sources */,
 				F436BB9E2726FBF7004B1794 /* Coordinator.swift in Sources */,
 				0CB313682C0F0DB100353724 /* CloudBackupEnterPasswordCheckInteractor.swift in Sources */,
 				848F5FE1298911B80058CD74 /* SubqueryDelegationsOperationFactory.swift in Sources */,
@@ -24826,7 +24804,6 @@
 				2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */,
 				845B07F329159C15005785D3 /* Democracy+CodingPath.swift in Sources */,
 				0CD846152BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift in Sources */,
-				847C96492553614F002D288F /* ExportRestoreJsonPresenter.swift in Sources */,
 				77EF9A722B9ECCA90034D619 /* PushNotificationOpenScreenFacade.swift in Sources */,
 				0C13DFD32AF949B400E5F355 /* BalanceViewModelFactoryFacade+Formatting.swift in Sources */,
 				84A04622277DE83E000B24DA /* DAppListErrorView.swift in Sources */,
@@ -25085,7 +25062,6 @@
 				8436E94626C85405003D4EA7 /* RuntimeSnapshot.swift in Sources */,
 				84216FDC2827E0E100479375 /* BaseParaStakingRewardCalculatoService+Fetch.swift in Sources */,
 				84BFE8AC28C38C6B00140F1F /* RemoteStorageRequest.swift in Sources */,
-				847C965425536199002D288F /* ExportRestoreJsonProtocols.swift in Sources */,
 				844CB56826F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift in Sources */,
 				84F9D4CF2664CCA500F7AAD2 /* CommonInputView.swift in Sources */,
 				0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */,

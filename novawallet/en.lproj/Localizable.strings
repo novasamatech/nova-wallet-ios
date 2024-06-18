@@ -186,7 +186,7 @@
 "account.export.action" = "Export";
 "account.export.warning.message" = "Sharing or copying your secret is a high risk operation, don’t send it to anyone. Would you like to proceed with sharing/copying process?";
 "account.export.warning.title" = "Be careful";
-"account.export.json.hint" = "Password is required to encrypt your account and store as Restore JSON. Please, create password to continue operation.";
+"account.export.json.hint" = "This password is required to encrypt your account and is used alongside this JSON file to restore your wallet.";
 "common.set.password" = "Set password";
 "common.confirm.password" = "Confirm password";
 "common.error.password.mismatch" = "Passwords do not match";
@@ -587,7 +587,7 @@
 "crowdloan.completed.section" = "Completed";
 "staking.title" = "Staking";
 "export.mnemonic.check.hint" = "Please, make sure to write down your phrase correctly \nand legibly";
-"export.password.title" = "Set a new password";
+"export.password.title" = "Set a password for your JSON file";
 "export.password.proceed.set.title" = "Set password...";
 "export.password.proceed.confirm.title" = "Confirm password...";
 "wallet.username.setup.choose.title_v2_2_0" = "Wallet name";
@@ -1537,7 +1537,6 @@
 "cloud.backup.create.hint.password.match" = "Password match";
 "common.enter.password" = "Enter password";
 "common.backup.password" = "Backup password";
-"common.confirm.password" = "Confirm password";
 "cloud.backup.create.bottom.sheet.title" = "Remember Backup Password";
 "cloud.backup.create.bottom.sheet.message" = "In the future, without backup password it is not possible to restore your wallets from Cloud Backup.\n%@";
 "cloud.backup.create.bottom.sheet.password" = "This password cannot be recovered.";
@@ -1655,3 +1654,4 @@
 "cloud.backup.settings.empty.or.broken" = "Review Backup Error";
 "common.button.settings" = "Settings";
 "account.export.ethereum.private.key.placeholder" = "64 hex symbols";
+"restore.json.download.button" = "Download Restore JSON";

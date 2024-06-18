@@ -20,6 +20,6 @@ protocol AccountExportPasswordInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol AccountExportPasswordWireframeProtocol: ErrorPresentable, AlertPresentable {
-    func showJSONExport(_ json: RestoreJson, from view: AccountExportPasswordViewProtocol?)
+protocol AccountExportPasswordWireframeProtocol: ErrorPresentable, AlertPresentable, SharingPresentable {
+    func close(view: AccountExportPasswordViewProtocol?)
 }

@@ -186,7 +186,7 @@
 "account.export.action" = "Экспортировать";
 "account.export.warning.message" = "Передача или копирование вашего секрета - операция с высоким риском, не отправляйте ее никому. Хотите продолжить процесс обмена / копирования?";
 "account.export.warning.title" = "Будьте осторожны";
-"account.export.json.hint" = "Пароль необходим для шифрования вашей учетной записи и сохранения как Recovery JSON. Пожалуйста, придумайте пароль для продолжения работы.";
+"account.export.json.hint" = "Этот пароль необходим для шифрования аккаунт и используется вместе с JSON файлом для восстановления.";
 "common.set.password" = "Новый пароль";
 "common.confirm.password" = "Подтверждение пароля";
 "common.error.password.mismatch" = "Пароли не совпадают";
@@ -587,7 +587,7 @@
 "crowdloan.completed.section" = "Завершённые";
 "staking.title" = "Стейкинг";
 "export.mnemonic.check.hint" = "Пожалуйста, убедитесь, что ваш сид записан корректно и разборчиво";
-"export.password.title" = "Установите пароль";
+"export.password.title" = "Установите пароль для вашего JSON файла";
 "export.password.proceed.set.title" = "Установите пароль...";
 "export.password.proceed.confirm.title" = "Подтвердите пароль...";
 "wallet.username.setup.choose.title_v2_2_0" = "Имя кошелька";
@@ -1537,7 +1537,6 @@
 "cloud.backup.create.hint.password.match" = "Пароли совпадают";
 "common.enter.password" = "Введите пароль";
 "common.backup.password" = "Пароль бэкапа";
-"common.confirm.password" = "Подтвердите пароль";
 "cloud.backup.create.bottom.sheet.title" = "Запомните пароль бэкапа";
 "cloud.backup.create.bottom.sheet.message" = "В будущем, без пароля бэкапа вы не сможете восстановить кошельки из iCloud.\n%@";
 "cloud.backup.create.bottom.sheet.password" = "Это пароль нельзя восстановить.";
@@ -1655,3 +1654,4 @@
 "cloud.backup.settings.empty.or.broken" = "Просмотр Ошибки бэкапа";
 "common.button.settings" = "Настройки";
 "account.export.ethereum.private.key.placeholder" = "64 шест. символа";
+"restore.json.download.button" = "Получить JSON";
