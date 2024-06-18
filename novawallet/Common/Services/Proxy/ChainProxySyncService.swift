@@ -133,10 +133,10 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
             switch result {
             case let .success(update):
                 DispatchQueue.main.async {
-                    self?.eventCenter.notify(with: AccountsChanged(method: .automatically))
+                    self?.eventCenter.notify(with: WalletsChanged(source: .byProxyService))
 
                     if update.isWalletSwitched {
-                        self?.eventCenter.notify(with: SelectedAccountChanged())
+                        self?.eventCenter.notify(with: SelectedWalletSwitched())
                     }
                 }
 

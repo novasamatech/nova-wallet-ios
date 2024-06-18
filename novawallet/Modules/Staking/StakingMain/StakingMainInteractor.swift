@@ -114,7 +114,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 }
 
 extension StakingMainInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         provideStakingRewardsFilter()
     }
 }

@@ -37,4 +37,6 @@ extension MockCloudBackupSyncMetadataManager: CloudBackupSyncMetadataManaging {
     func hasPassword() throws -> Bool {
         password != nil
     }
+    
+    func setNotifyIncreaseSecurity() {}
 }

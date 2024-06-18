@@ -284,6 +284,16 @@ final class AccountManagementPresenter {
         wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
+    private func presentCloudRemindIfNeededBefore(closure: @escaping () -> Void) {
+        if let cloudBackupSyncState, cloudBackupSyncState.canAutoSync {
+            wireframe.showCloudBackupRemind(from: view) {
+                closure()
+            }
+        } else {
+            closure()
+        }
+    }
+
     // MARK: - Actions
 
     private func activateCopyAddress(_ address: String) {
@@ -300,7 +310,13 @@ final class AccountManagementPresenter {
             displaySecretsReplaceActions(for: chainModel)
         case .watchOnly, .proxied:
             if let wallet = wallet {
-                wireframe.showChangeWatchOnlyAccount(from: view, wallet: wallet, chain: chainModel)
+                presentCloudRemindIfNeededBefore { [weak self] in
+                    self?.wireframe.showChangeWatchOnlyAccount(
+                        from: self?.view,
+                        wallet: wallet,
+                        chain: chainModel
+                    )
+                }
             }
         case .paritySigner, .polkadotVault, .ledger:
             // change account not supported for Parity Signer and Ledger Wallets
@@ -332,12 +348,14 @@ final class AccountManagementPresenter {
               let wallet = wallet
         else { return }
 
-        wireframe.showImportAccount(
-            from: view,
-            wallet: wallet,
-            chainId: chainModel.chainId,
-            isEthereumBased: chainModel.isEthereumBased
-        )
+        presentCloudRemindIfNeededBefore { [weak self] in
+            self?.wireframe.showImportAccount(
+                from: view,
+                wallet: wallet,
+                chainId: chainModel.chainId,
+                isEthereumBased: chainModel.isEthereumBased
+            )
+        }
     }
 
     // MARK: - Bottom sheet items creation
@@ -418,11 +436,13 @@ final class AccountManagementPresenter {
                     return
                 }
 
-                self?.wireframe.showAddLedgerAccount(
-                    from: self?.view,
-                    wallet: wallet,
-                    chain: chain
-                )
+                self?.presentCloudRemindIfNeededBefore {
+                    self?.wireframe.showAddLedgerAccount(
+                        from: self?.view,
+                        wallet: wallet,
+                        chain: chain
+                    )
+                }
             }
         }
 
@@ -601,10 +621,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
     func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain _: ChainModel) {
         switch result {
         case .success:
-            wireframe.presentSuccessNotification(
-                R.string.localizable.commonAccountHasChanged(preferredLanguages: selectedLocale.rLanguages),
-                from: view
-            )
+            break
         case let .failure(error):
             if !wireframe.present(error: error, from: view, locale: selectedLocale) {
                 logger?.error("Did receive export error \(error)")

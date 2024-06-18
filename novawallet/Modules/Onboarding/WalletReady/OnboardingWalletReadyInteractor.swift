@@ -12,34 +12,6 @@ final class OnboardingWalletReadyInteractor {
         self.factory = factory
         self.serviceFacade = serviceFacade
     }
-
-    private func handleStorageManager(error: CloudBackupUploadError) {
-        switch error {
-        case let .internalError(details):
-            presenter?.didReceive(error: .internalError(details))
-        case .timeout:
-            presenter?.didReceive(error: .timeout)
-        case .notEnoughSpace:
-            presenter?.didReceive(error: .notEnoughStorageInCloud)
-        }
-    }
-
-    private func checkEnoughStorage(for url: URL) {
-        storageManager = factory.createStorageManager(for: url)
-
-        storageManager?.checkStorage(
-            of: CloudBackup.requiredCloudSize,
-            timeoutInterval: CloudBackup.backupSaveTimeout,
-            runningIn: .main
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.presenter?.didReceiveCloudBackupAvailable()
-            case let .failure(error):
-                self?.handleStorageManager(error: error)
-            }
-        }
-    }
 }
 
 extension OnboardingWalletReadyInteractor: OnboardingWalletReadyInteractorInputProtocol {
@@ -47,9 +19,7 @@ extension OnboardingWalletReadyInteractor: OnboardingWalletReadyInteractorInputP
         let availabilityService = factory.createAvailabilityService()
         availabilityService.setup()
 
-        guard
-            case .available = availabilityService.stateObserver.state,
-            let url = factory.createFileManager().getBaseUrl() else {
+        guard case .available = availabilityService.stateObserver.state else {
             presenter?.didReceive(error: .cloudBackupNotAvailable)
             return
         }
@@ -60,7 +30,7 @@ extension OnboardingWalletReadyInteractor: OnboardingWalletReadyInteractorInputP
                 if isBackupExists {
                     self?.presenter?.didDetectExistingCloudBackup()
                 } else {
-                    self?.checkEnoughStorage(for: url)
+                    self?.presenter?.didReceiveCloudBackupAvailable()
                 }
             case let .failure(error):
                 self?.presenter?.didReceive(error: .internalError(error))

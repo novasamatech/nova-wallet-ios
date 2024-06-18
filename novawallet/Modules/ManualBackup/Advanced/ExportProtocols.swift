@@ -38,5 +38,9 @@ protocol ExportInteractorOutputProtocol: AnyObject {
 }
 
 protocol ExportWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showExportRestoreJSON(from view: ExportViewProtocol?)
+    func showExportRestoreJSON(
+        from view: ExportViewProtocol?,
+        wallet: MetaAccountModel,
+        chain: ChainModel?
+    )
 }

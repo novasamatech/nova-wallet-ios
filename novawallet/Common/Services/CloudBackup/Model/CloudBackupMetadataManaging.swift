@@ -10,6 +10,8 @@ protocol CloudBackupSyncMetadataManaging: AnyObject {
     func savePassword(_ newValue: String?) throws
     func hasPassword() throws -> Bool
 
+    func setNotifyIncreaseSecurity()
+
     var isBackupEnabled: Bool { get set }
 }
 
@@ -26,7 +28,6 @@ extension CloudBackupSyncMetadataManaging {
     }
 
     func deleteBackup() throws {
-        try savePassword(nil)
         saveLastSyncTimestamp(nil)
         isBackupEnabled = false
     }
@@ -43,6 +44,18 @@ final class CloudBackupSyncMetadataManager {
     init(settings: SettingsManagerProtocol, keystore: KeystoreProtocol) {
         self.settings = settings
         self.keystore = keystore
+    }
+
+    private func getOrCreatePasswordId() -> String {
+        if let passwordId = settings.cloudBackupPasswordId {
+            return passwordId
+        }
+
+        let passwordId = UUID().uuidString
+
+        settings.cloudBackupPasswordId = passwordId
+
+        return passwordId
     }
 }
 
@@ -70,7 +83,10 @@ extension CloudBackupSyncMetadataManager: CloudBackupSyncMetadataManaging {
     }
 
     func getPassword() throws -> String? {
-        guard let rawData = try keystore.loadIfKeyExists(KeystoreTagV2.cloudBackupPassword.rawValue) else {
+        let passwordId = getOrCreatePasswordId()
+
+        let tag = KeystoreTagV2.cloudBackupPasswordTag(for: passwordId)
+        guard let rawData = try keystore.loadIfKeyExists(tag) else {
             return nil
         }
 
@@ -78,18 +94,27 @@ extension CloudBackupSyncMetadataManager: CloudBackupSyncMetadataManaging {
     }
 
     func savePassword(_ newValue: String?) throws {
+        let passwordId = getOrCreatePasswordId()
+        let tag = KeystoreTagV2.cloudBackupPasswordTag(for: passwordId)
+
         if let password = newValue {
             guard let rawData = password.data(using: .utf8) else {
                 throw CloudBackupSyncMetadataManagingError.badArgument
             }
 
-            try keystore.saveKey(rawData, with: KeystoreTagV2.cloudBackupPassword.rawValue)
+            try keystore.saveKey(rawData, with: tag)
         } else {
-            try keystore.deleteKeyIfExists(for: KeystoreTagV2.cloudBackupPassword.rawValue)
+            try keystore.deleteKeyIfExists(for: tag)
         }
     }
 
     func hasPassword() throws -> Bool {
-        try keystore.checkKey(for: KeystoreTagV2.cloudBackupPassword.rawValue)
+        let passwordId = getOrCreatePasswordId()
+        let tag = KeystoreTagV2.cloudBackupPasswordTag(for: passwordId)
+        return try keystore.checkKey(for: tag)
+    }
+
+    func setNotifyIncreaseSecurity() {
+        settings.shouldPresentIncreaseSecurity = true
     }
 }

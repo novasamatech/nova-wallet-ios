@@ -43,7 +43,7 @@ extension VoteInteractor: VoteInteractorInputProtocol {
 }
 
 extension VoteInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         provideSelectedWallet()
     }
 

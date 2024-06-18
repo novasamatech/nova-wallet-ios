@@ -43,8 +43,6 @@ class AccountCreateTests: XCTestCase {
             when(stub).update(using: any()).then { _ in
                 setupCheckboxesExpectation.fulfill()
             }
-
-            when(stub).displayMnemonic().thenDoNothing()
         }
 
         let expectation = XCTestExpectation()
@@ -61,6 +59,8 @@ class AccountCreateTests: XCTestCase {
         // when
 
         presenter.setup()
+        
+        interactor.provideMnemonic()
 
         wait(
             for: [

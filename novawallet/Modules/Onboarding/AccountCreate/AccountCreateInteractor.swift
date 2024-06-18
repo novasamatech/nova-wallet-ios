@@ -3,7 +3,7 @@ import IrohaCrypto
 import Operation_iOS
 
 final class AccountCreateInteractor {
-    weak var presenter: AccountCreateInteractorOutputProtocol!
+    weak var presenter: AccountCreateInteractorOutputProtocol?
 
     let walletRequestFactory: WalletCreationRequestFactoryProtocol
 
@@ -13,28 +13,33 @@ final class AccountCreateInteractor {
         self.walletRequestFactory = walletRequestFactory
     }
 
-    private func generateMnemonicMetadata() throws -> MetaAccountCreationMetadata {
-        let mnemonic = try walletRequestFactory.generateMnemonic()
-
-        return MetaAccountCreationMetadata(
-            mnemonic: mnemonic.allWords(),
+    private func provideAvailableCrypto() {
+        let availableCrypto = MetaAccountAvailableCryptoTypes(
             availableCryptoTypes: [.sr25519, .ed25519, .substrateEcdsa],
             defaultCryptoType: .sr25519
         )
+
+        presenter?.didReceive(availableCrypto: availableCrypto)
+    }
+
+    private func generateMnemonicMetadata() throws -> MetaAccountCreationMetadata {
+        let mnemonic = try walletRequestFactory.generateMnemonic()
+
+        return MetaAccountCreationMetadata(mnemonic: mnemonic.allWords())
     }
 }
 
 extension AccountCreateInteractor: AccountCreateInteractorInputProtocol {
-    func provideMetadata() {
-        do {
-            let metadata = try generateMnemonicMetadata()
-            presenter.didReceive(metadata: metadata)
-        } catch {
-            presenter.didReceiveMnemonicGeneration(error: error)
-        }
+    func setup() {
+        provideAvailableCrypto()
     }
 
-    func createMetadata() -> MetaAccountCreationMetadata? {
-        try? generateMnemonicMetadata()
+    func provideMnemonic() {
+        do {
+            let metadata = try generateMnemonicMetadata()
+            presenter?.didReceive(metadata: metadata)
+        } catch {
+            presenter?.didReceiveMnemonicGeneration(error: error)
+        }
     }
 }

@@ -14,6 +14,16 @@ extension CloudBackupDiff {
         return Set<MetaAccountModel>(newWallets)
     }
 
+    var hasNewWallets: Bool {
+        contains { change in
+            if case .new = change {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
+
     var hasChainAccountChanges: Bool {
         contains { change in
             if case .updatedChainAccounts = change {

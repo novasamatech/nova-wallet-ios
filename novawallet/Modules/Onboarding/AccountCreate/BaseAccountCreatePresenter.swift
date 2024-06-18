@@ -13,7 +13,10 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
 
     let localizationManager: LocalizationManagerProtocol
 
+    private(set) var wasActive: Bool = false
+
     private(set) var metadata: MetaAccountCreationMetadata?
+    private(set) var availableCrypto: MetaAccountAvailableCryptoTypes?
 
     private(set) var selectedSubstrateCryptoType: MultiassetCryptoType?
     private(set) var substrateDerivationPath: String = ""
@@ -55,15 +58,12 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
         let proceedTitle = R.string.localizable
             .commonUnderstand(preferredLanguages: locale.rLanguages)
 
-        let proceedClosure = {
-            self.view?.displayMnemonic()
-            return
-        }
-
         return AlertPresentableAction(
             title: proceedTitle,
             style: .normal,
-            handler: proceedClosure
+            handler: { [weak self] in
+                self?.interactor.provideMnemonic()
+            }
         )
     }
 
@@ -87,20 +87,20 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
         )
     }
 
-    private func updateMnemonicView() {
-        let mnemonicCardViewModel: HiddenMnemonicCardView.State = {
-            if let metadata {
-                .mnemonicVisible(
-                    model: mnemonicViewModelFactory.createMnemonicCardViewModel(
-                        for: metadata.mnemonic
-                    )
-                )
-            } else {
-                .mnemonicNotVisible(
-                    model: mnemonicViewModelFactory.createMnemonicCardHiddenModel()
-                )
-            }
-        }()
+    private func provideNotVisibleViewModel() {
+        let mnemonicCardViewModel: HiddenMnemonicCardView.State = .mnemonicNotVisible(
+            model: mnemonicViewModelFactory.createMnemonicCardHiddenModel()
+        )
+
+        view?.update(with: mnemonicCardViewModel)
+    }
+
+    private func provideVisibleViewModel(for metadata: MetaAccountCreationMetadata) {
+        let mnemonicCardViewModel: HiddenMnemonicCardView.State = .mnemonicVisible(
+            model: mnemonicViewModelFactory.createMnemonicCardViewModel(
+                for: metadata.mnemonic
+            )
+        )
 
         view?.update(with: mnemonicCardViewModel)
     }
@@ -143,10 +143,18 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
         )
 
         updateCheckBoxListView()
-        updateMnemonicView()
+        provideNotVisibleViewModel()
+
+        interactor.setup()
     }
 
-    func prepareToDisplayMnemonic() {
+    func becomeActive() {
+        guard !wasActive else {
+            return
+        }
+
+        wasActive = true
+
         let viewModel = createWarningViewModel()
 
         wireframe.present(
@@ -156,10 +164,16 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
         )
     }
 
+    func becomeInactive() {
+        provideNotVisibleViewModel()
+    }
+
     func activateAdvanced() {
         guard let settings = getAdvancedSettings() else {
             return
         }
+
+        provideNotVisibleViewModel()
 
         wireframe.showAdvancedSettings(
             from: view,
@@ -170,7 +184,9 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
     }
 
     func provideMnemonic() {
-        interactor.provideMetadata()
+        if let metadata {
+            provideVisibleViewModel(for: metadata)
+        }
     }
 
     func continueTapped() {
@@ -181,10 +197,13 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
 // MARK: - AccountCreateInteractorOutputProtocol
 
 extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
+    func didReceive(availableCrypto: MetaAccountAvailableCryptoTypes) {
+        self.availableCrypto = availableCrypto
+        selectedSubstrateCryptoType = availableCrypto.defaultCryptoType
+    }
+
     func didReceive(metadata: MetaAccountCreationMetadata) {
         self.metadata = metadata
-        selectedSubstrateCryptoType = metadata.defaultCryptoType
-        updateMnemonicView()
     }
 
     func didReceiveMnemonicGeneration(error: Error) {

@@ -1642,3 +1642,15 @@
 "cloud.backup.update.password.title" = "Update backup password";
 "cloud.backup.password.changed" = "Backup password has been changed successfully";
 "cloud.backup.created.successfully" = "Backup has been created successfully";
+"no.manual.backup.alert.title" = "No wallets to back up";
+"no.manual.backup.alert.message" = "You haven't added any wallets with a passphrase.";
+"common.wallet.created" = "The wallet has been created successfully";
+"common.wallet.imported" = "The wallet has been imported successfully";
+"common.wallet.removed" = "Wallet has been removed successfully";
+"cloud.backup.sheet.password.changed.title" = "Backup password was changed";
+"cloud.backup.sheet.password.changed.message" = "Your backup password was previously updated. To continue using Cloud Backup, %@";
+"cloud.backup.sheet.password.changed.enter.new" = "please enter the new backup password.";
+"common.enter.password.button" = "Enter password";
+"cloud.backup.increase.security.title" = "Increase the Security\nof Your Wallets";
+"cloud.backup.increase.security.message" = "You have a Cloud Backup already. We also recommend you to %@ to be sure that everything is safe. You can view your Passphrase at any time in the Backup Settings.";
+"cloud.backup.increase.security.highlighted1" = "manually write down your Passphrase";

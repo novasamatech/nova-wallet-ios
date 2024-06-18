@@ -26,11 +26,13 @@ protocol CloudBackupSettingsInteractorInputProtocol: AnyObject {
     func becomeActive()
     func becomeInactive()
     func approveBackupChanges()
+    func fetchNumberOfWalletsWithSecrets()
 }
 
 protocol CloudBackupSettingsInteractorOutputProtocol: AnyObject {
     func didReceive(state: CloudBackupSyncState)
     func didReceive(error: CloudBackupSettingsInteractorError)
+    func didReceive(numberOfWalletsWithSecrets: Int)
     func didDeleteBackup()
 }
 
@@ -39,6 +41,18 @@ protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentabl
     func showManualBackup(from view: CloudBackupSettingsViewProtocol?)
 
     func showWalletsRemoveConfirmation(
+        on view: CloudBackupSettingsViewProtocol?,
+        locale: Locale,
+        onConfirm: @escaping () -> Void
+    )
+
+    func showReviewUpdatesConfirmation(
+        on view: CloudBackupSettingsViewProtocol?,
+        locale: Locale,
+        onConfirm: @escaping () -> Void
+    )
+
+    func showPasswordChangedConfirmation(
         on view: CloudBackupSettingsViewProtocol?,
         locale: Locale,
         onConfirm: @escaping () -> Void
@@ -59,4 +73,5 @@ protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentabl
 
 enum CloudBackupSettingsInteractorError: Error {
     case deleteBackup(Error)
+    case secretsCounter(Error)
 }

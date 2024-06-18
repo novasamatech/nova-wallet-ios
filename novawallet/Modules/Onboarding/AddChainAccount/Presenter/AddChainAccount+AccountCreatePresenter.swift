@@ -46,7 +46,7 @@ extension AddChainAccount {
         // MARK: - Overrides
 
         override func processProceed() {
-            let mnemonic = metadata?.mnemonic ?? interactor.createMetadata()?.mnemonic
+            let mnemonic = metadata?.mnemonic
 
             guard let phrase = mnemonic?.joined(separator: " "),
                   let request = getRequest(with: phrase) else { return }
@@ -60,17 +60,14 @@ extension AddChainAccount {
         }
 
         override func getAdvancedSettings() -> AdvancedWalletSettings? {
-            let metadata = metadata ?? interactor.createMetadata()
-
-            guard let metadata = metadata else { return nil }
-
             if isEthereumBased {
                 return .ethereum(derivationPath: ethereumDerivationPath)
-
             } else {
+                guard let availableCrypto = availableCrypto else { return nil }
+
                 let substrateSettings = AdvancedNetworkTypeSettings(
-                    availableCryptoTypes: metadata.availableCryptoTypes,
-                    selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+                    availableCryptoTypes: availableCrypto.availableCryptoTypes,
+                    selectedCryptoType: selectedSubstrateCryptoType ?? availableCrypto.defaultCryptoType,
                     derivationPath: substrateDerivationPath
                 )
 

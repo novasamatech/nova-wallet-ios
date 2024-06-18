@@ -42,19 +42,78 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
 
     func didRequestReviewCloud(changes _: CloudBackupSyncResult.Changes) {
         wireframe.presentCloudBackupUnsyncedChanges(from: view) { [weak self] in
-            self?.wireframe.presentReviewUpdates(from: self?.view)
+            self?.wireframe.presentCloudBackupSettings(from: self?.view)
         }
     }
 
     func didFoundCloudBackup(issue _: CloudBackupSyncResult.Issue) {
         wireframe.presentCloudBackupUpdateFailedIfNeeded(from: view) { [weak self] in
-            self?.wireframe.presentReviewUpdates(from: self?.view)
+            self?.wireframe.presentCloudBackupSettings(from: self?.view)
+        }
+    }
+
+    func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose) {
+        switch purpose {
+        case .addChainAccount:
+            wireframe.presentMultilineSuccessNotification(
+                R.string.localizable.commonAccountHasChanged(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                from: view?.controller.topModalViewController,
+                completion: nil
+            )
+        case .createWallet:
+            wireframe.presentMultilineSuccessNotification(
+                R.string.localizable.commonWalletCreated(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                from: view?.controller.topModalViewController,
+                completion: nil
+            )
+        case .importWallet:
+            wireframe.presentMultilineSuccessNotification(
+                R.string.localizable.commonWalletImported(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                from: view?.controller.topModalViewController,
+                completion: nil
+            )
+        case .removeWallet:
+            wireframe.presentMultilineSuccessNotification(
+                R.string.localizable.commonWalletRemoved(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                from: view?.controller.topModalViewController,
+                completion: nil
+            )
+        case .unknown:
+            break
         }
     }
 
     func didRequestPushNotificationsSetupOpen() {
-        wireframe.presentPushNotificationsSetup(on: view) { [weak self] in
-            self?.interactor.setPushNotificationsSetupScreenSeen()
-        }
+        wireframe.presentPushNotificationsSetup(
+            on: view,
+            presentationCompletion: { [weak self] in
+                self?.interactor.setPushNotificationsSetupScreenSeen()
+            },
+            flowCompletion: { [weak self] in
+                self?.interactor.requestNextOnLaunchAction()
+            }
+        )
+    }
+
+    func didReceiveNeedsIncreaseSecurity() {
+        wireframe.presentIncreaseSecurity(
+            from: view,
+            onBackup: { [weak self] in
+                self?.interactor.setIncreaseSecuritySeen()
+                self?.wireframe.presentCloudBackupSettings(from: self?.view)
+            },
+            onNotNow: { [weak self] in
+                self?.interactor.setIncreaseSecuritySeen()
+                self?.interactor.requestNextOnLaunchAction()
+            }
+        )
     }
 }

@@ -44,7 +44,7 @@ final class WalletManageInteractor: WalletsListInteractor {
         switch result {
         case let .success(update):
             if update.isWalletSwitched {
-                eventCenter.notify(with: SelectedAccountChanged())
+                eventCenter.notify(with: SelectedWalletSwitched())
             }
 
             if update.selectedWallet == nil {
@@ -96,7 +96,7 @@ extension WalletManageInteractor: WalletManageInteractorInputProtocol {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { result in
-            self.eventCenter.notify(with: AccountsRemovedManually())
+            self.eventCenter.notify(with: WalletRemoved())
             self.handleWalletsUpdate(result: result)
         }
     }

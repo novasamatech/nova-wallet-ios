@@ -46,7 +46,7 @@ extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {
         settings.save(value: item.info, runningCompletionIn: .main) { [weak self] result in
             switch result {
             case .success:
-                self?.eventCenter.notify(with: SelectedAccountChanged())
+                self?.eventCenter.notify(with: SelectedWalletSwitched())
                 self?.presenter?.didCompleteSelection()
             case let .failure(error):
                 self?.presenter?.didReceive(saveError: error)

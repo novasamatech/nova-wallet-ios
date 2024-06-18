@@ -88,12 +88,22 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
             return
         }
 
+        let readBackupOperation = serviceFactory.createOperationFactory().createReadingOperation(
+            for: fileUrl
+        )
+
         let exporter = serviceFactory.createSecretsExporter(from: keystore)
         let encoder = serviceFactory.createCodingManager()
 
         let modifiedAt = UInt64(Date().timeIntervalSince1970)
 
         let dataOperation = ClosureOperation<Data> {
+            let existingData = try readBackupOperation.extractNoCancellableResultData()
+
+            if existingData != nil {
+                throw CloudBackupServiceFacadeError.backupAlreadyExists
+            }
+
             do {
                 let model = try exporter.backup(
                     wallets: wallets,
@@ -107,6 +117,8 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
             }
         }
 
+        dataOperation.addDependency(readBackupOperation)
+
         let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
             for: fileUrl,
             tempUrl: tempUrl,
@@ -118,7 +130,7 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
 
         uploadWrapper.addDependency(operations: [dataOperation])
 
-        let totalWrapper = uploadWrapper.insertingHead(operations: [dataOperation])
+        let totalWrapper = uploadWrapper.insertingHead(operations: [readBackupOperation, dataOperation])
 
         execute(
             wrapper: totalWrapper,

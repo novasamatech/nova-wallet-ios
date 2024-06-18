@@ -6,7 +6,7 @@ import Operation_iOS
 final class AccountExportPasswordViewFactory {
     static func createView(
         with metaAccount: MetaAccountModel,
-        chain: ChainModel
+        chain: ChainModel?
     ) -> AccountExportPasswordViewProtocol? {
         let localizationManager = LocalizationManager.shared
 

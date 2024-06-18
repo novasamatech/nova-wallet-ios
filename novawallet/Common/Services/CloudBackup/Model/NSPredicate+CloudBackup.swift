@@ -11,4 +11,11 @@ extension NSPredicate {
             excludedTypeValues
         )
     }
+
+    static var onlySecretsWallets: NSPredicate {
+        NSPredicate(
+            format: "%K == %d", #keyPath(CDMetaAccount.type),
+            MetaAccountModelType.secrets.rawValue
+        )
+    }
 }

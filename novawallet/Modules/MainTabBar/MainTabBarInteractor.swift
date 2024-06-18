@@ -18,6 +18,13 @@ final class MainTabBarInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    let onLauchQueue = OnLaunchActionsQueue(
+        possibleActions: [
+            OnLaunchAction.PushNotificationsSetup(),
+            OnLaunchAction.IncreaseWalletsSecurity()
+        ]
+    )
+
     deinit {
         stopServices()
     }
@@ -75,11 +82,23 @@ final class MainTabBarInteractor {
         }
     }
 
-    private func showPushNotificationsSetupIfNeeded() {
+    private func showPushNotificationsSetupOrNextAction() {
         if !settingsManager.notificationsSetupSeen {
             securedLayer.scheduleExecutionIfAuthorized { [weak self] in
                 self?.presenter?.didRequestPushNotificationsSetupOpen()
             }
+        } else {
+            onLauchQueue.runNext()
+        }
+    }
+
+    private func showIncreaseSecurityOrNextAction() {
+        if settingsManager.shouldPresentIncreaseSecurity {
+            securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+                self?.presenter?.didReceiveNeedsIncreaseSecurity()
+            }
+        } else {
+            onLauchQueue.runNext()
         }
     }
 }
@@ -94,38 +113,54 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         screenOpenService.delegate = self
         pushScreenOpenService.delegate = self
 
+        cloudBackupMediator.setup(with: self)
+
+        onLauchQueue.delegate = self
+
         if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
-        }
-
-        if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
+        } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
+        } else {
+            onLauchQueue.runNext()
         }
-
-        showPushNotificationsSetupIfNeeded()
-
-        cloudBackupMediator.setup(with: self)
     }
 
     func setPushNotificationsSetupScreenSeen() {
         settingsManager.notificationsSetupSeen = true
     }
+
+    func setIncreaseSecuritySeen() {
+        settingsManager.shouldPresentIncreaseSecurity = false
+    }
+
+    func requestNextOnLaunchAction() {
+        onLauchQueue.runNext()
+    }
 }
 
 extension MainTabBarInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         serviceCoordinator.updateOnWalletSelectionChange()
     }
 
-    func processAccountsChanged(event: AccountsChanged) {
-        serviceCoordinator.updateOnWalletChange(for: event.method)
+    func processWalletImported(event _: NewWalletImported) {
+        serviceCoordinator.updateOnWalletChange(for: .byUserManually)
     }
 
-    func processChainAccountChanged(event: ChainAccountChanged) {
-        serviceCoordinator.updateOnWalletChange(for: event.method)
+    func processNewWalletCreated(event _: NewWalletCreated) {
+        serviceCoordinator.updateOnWalletChange(for: .byUserManually)
     }
 
-    func processAccountsRemoved(event _: AccountsRemovedManually) {
+    func processChainAccountChanged(event _: ChainAccountChanged) {
+        serviceCoordinator.updateOnWalletChange(for: .byUserManually)
+    }
+
+    func processWalletsChanged(event: WalletsChanged) {
+        serviceCoordinator.updateOnWalletChange(for: event.source)
+    }
+
+    func processWalletRemoved(event _: WalletRemoved) {
         serviceCoordinator.updateOnWalletRemove()
     }
 }
@@ -160,7 +195,7 @@ extension MainTabBarInteractor: PushNotificationOpenDelegate {
     }
 }
 
-extension MainTabBarInteractor: CloudBackupSyncConfirming {
+extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
     func cloudBackup(
         mediator _: CloudBackupSyncMediating,
         didRequestConfirmation changes: CloudBackupSyncResult.Changes
@@ -174,5 +209,19 @@ extension MainTabBarInteractor: CloudBackupSyncConfirming {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.presenter?.didFoundCloudBackup(issue: issue)
         }
+    }
+
+    func cloudBackupDidSync(mediator _: CloudBackupSyncMediating, for purpose: CloudBackupSynсPurpose) {
+        presenter?.didSyncCloudBackup(on: purpose)
+    }
+}
+
+extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
+    func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
+        showPushNotificationsSetupOrNextAction()
+    }
+
+    func onLaunchProccessIncreaseSecurity(_: OnLaunchAction.IncreaseWalletsSecurity) {
+        showIncreaseSecurityOrNextAction()
     }
 }

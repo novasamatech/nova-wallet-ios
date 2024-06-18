@@ -43,8 +43,8 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
                 switch saveOperation.result {
                 case .success:
                     self?.settings.setup()
-                    self?.eventCenter.notify(with: SelectedAccountChanged())
-                    self?.eventCenter.notify(with: AccountsChanged(method: .manually))
+                    self?.eventCenter.notify(with: SelectedWalletSwitched())
+                    self?.eventCenter.notify(with: NewWalletImported())
                     self?.presenter?.didCompleteAccountImport()
 
                 case let .failure(error):

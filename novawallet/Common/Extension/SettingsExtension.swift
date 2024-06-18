@@ -21,6 +21,8 @@ enum SettingsKey: String {
     case lastCloudBackupTimestamp
     case cloudBackupEnabled
     case cloudBackupAutoSyncConfirm
+    case cloudBackupPasswordId
+    case shouldPresentIncreaseSecurity
 }
 
 extension SettingsManagerProtocol {
@@ -199,6 +201,16 @@ extension SettingsManagerProtocol {
         }
     }
 
+    var shouldPresentIncreaseSecurity: Bool {
+        get {
+            bool(for: SettingsKey.shouldPresentIncreaseSecurity.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.shouldPresentIncreaseSecurity.rawValue)
+        }
+    }
+
     var lastCloudBackupTimestampSeen: UInt64? {
         get {
             string(for: SettingsKey.lastCloudBackupTimestamp.rawValue).flatMap { UInt64($0) }
@@ -230,6 +242,20 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.cloudBackupAutoSyncConfirm.rawValue)
+        }
+    }
+
+    var cloudBackupPasswordId: String? {
+        get {
+            string(for: SettingsKey.cloudBackupPasswordId.rawValue)
+        }
+
+        set {
+            if let value = newValue {
+                set(value: value, for: SettingsKey.cloudBackupPasswordId.rawValue)
+            } else {
+                removeValue(for: SettingsKey.cloudBackupPasswordId.rawValue)
+            }
         }
     }
 }

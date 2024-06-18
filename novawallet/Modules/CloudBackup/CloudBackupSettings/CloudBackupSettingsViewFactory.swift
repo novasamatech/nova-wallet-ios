@@ -36,13 +36,21 @@ struct CloudBackupSettingsViewFactory {
             operationQueue: operationQueue
         )
 
+        let repositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let secretsWalletRepository = repositoryFactory.createMetaAccountRepository(
+            for: NSPredicate.onlySecretsWallets,
+            sortDescriptors: []
+        )
+
         let interactor = CloudBackupSettingsInteractor(
             cloudBackupSyncMediator: CloudBackupSyncMediatorFacade.sharedMediator,
             cloudBackupServiceFacade: serviceFacade,
             syncMetadataManager: CloudBackupSyncMetadataManager(
                 settings: SettingsManager.shared,
                 keystore: Keychain()
-            )
+            ),
+            secretsWalletRepository: secretsWalletRepository,
+            operationQueue: OperationManagerFacade.cloudBackupQueue
         )
 
         return interactor

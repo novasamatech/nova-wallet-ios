@@ -1,10 +1,8 @@
 import Foundation
 
 protocol EventVisitorProtocol: AnyObject {
-    func processChainAccountChanged(event: ChainAccountChanged)
-    func processSelectedAccountChanged(event: SelectedAccountChanged)
-    func processSelectedUsernameChanged(event: SelectedUsernameChanged)
     func processSelectedConnectionChanged(event: SelectedConnectionChanged)
+
     func processTransactionHistoryUpdate(event: WalletTransactionListUpdated)
     func processPurchaseCompletion(event: PurchaseCompleted)
     func processTypeRegistryPrepared(event: TypeRegistryPrepared)
@@ -28,17 +26,18 @@ protocol EventVisitorProtocol: AnyObject {
 
     func processAssetBalanceChanged(event: AssetBalanceChanged)
 
-    func processAccountsChanged(event: AccountsChanged)
-    func processAccountsRemoved(event: AccountsRemovedManually)
+    func processNewWalletCreated(event: NewWalletCreated)
+    func processWalletImported(event: NewWalletImported)
+    func processWalletRemoved(event: WalletRemoved)
+    func processChainAccountChanged(event: ChainAccountChanged)
+    func processWalletsChanged(event: WalletsChanged)
     func processWalletNameChanged(event: WalletNameChanged)
+    func processSelectedWalletChanged(event: SelectedWalletSwitched)
 }
 
 extension EventVisitorProtocol {
-    func processChainAccountChanged(event _: ChainAccountChanged) {}
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {}
     func processSelectedConnectionChanged(event _: SelectedConnectionChanged) {}
     func processTransactionHistoryUpdate(event _: WalletTransactionListUpdated) {}
-    func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {}
     func processPurchaseCompletion(event _: PurchaseCompleted) {}
     func processTypeRegistryPrepared(event _: TypeRegistryPrepared) {}
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {}
@@ -61,9 +60,11 @@ extension EventVisitorProtocol {
 
     func processAssetBalanceChanged(event _: AssetBalanceChanged) {}
 
-    func processAccountsChanged(event _: AccountsChanged) {}
-
-    func processAccountsRemoved(event _: AccountsRemovedManually) {}
-
+    func processNewWalletCreated(event _: NewWalletCreated) {}
+    func processWalletImported(event _: NewWalletImported) {}
+    func processWalletRemoved(event _: WalletRemoved) {}
+    func processChainAccountChanged(event _: ChainAccountChanged) {}
+    func processWalletsChanged(event _: WalletsChanged) {}
     func processWalletNameChanged(event _: WalletNameChanged) {}
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {}
 }

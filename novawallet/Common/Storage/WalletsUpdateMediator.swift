@@ -125,15 +125,9 @@ final class WalletUpdateMediator {
                 let newChanges = SyncChanges(newOrUpdatedItems: newUpdatedWallets, removedItems: changes.removedItems)
                 return ProcessingResult(changes: newChanges, selectedWallet: selectedWallet)
             } else {
-                let existingWallets = Set(newState.keys)
-                let newSelectedWallet = allWallets.first {
-                    $0.info.type != .proxied && existingWallets.contains($0.identifier)
-                }.map {
-                    ManagedMetaAccountModel(
-                        info: $0.info,
-                        isSelected: true,
-                        order: $0.order
-                    )
+                // if no selected wallets then select existing not proxied wallet
+                let newSelectedWallet = newState.values.first { $0.info.type != .proxied }.map {
+                    ManagedMetaAccountModel(info: $0.info, isSelected: true, order: $0.order)
                 }
 
                 let newChanges = SyncChanges(

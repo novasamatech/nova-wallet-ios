@@ -25,7 +25,9 @@ final class NotificationsSetupWireframe: NotificationsSetupWireframeProtocol, Mo
         view?.controller.dismiss(animated: true) {
             self.completion?()
 
-            self.presentSuccessNotification(title, from: presenter, completion: nil)
+            if presenter?.presentedViewController == nil {
+                self.presentSuccessNotification(title, from: presenter, completion: nil)
+            }
         }
     }
 

@@ -152,9 +152,9 @@ final class AccountManagementInteractor {
             if let selectedWallet = settings.value,
                selectedWallet.identifier == walletId {
                 settings.setup()
-                eventCenter.notify(with: SelectedUsernameChanged())
+                eventCenter.notify(with: WalletNameChanged(isSelectedWallet: true))
             } else {
-                eventCenter.notify(with: WalletNameChanged())
+                eventCenter.notify(with: WalletNameChanged(isSelectedWallet: false))
             }
 
             presenter?.didSaveWalletName(.success(newName))
@@ -168,10 +168,10 @@ final class AccountManagementInteractor {
         if let selectedWallet = settings.value, selectedWallet.identifier == walletId {
             settings.setup()
 
-            eventCenter.notify(with: SelectedAccountChanged())
+            eventCenter.notify(with: SelectedWalletSwitched())
         }
 
-        eventCenter.notify(with: ChainAccountChanged(method: .manually))
+        eventCenter.notify(with: ChainAccountChanged())
 
         fetchWalletAndChains(with: walletId)
 
@@ -279,8 +279,9 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
                 options.append(.mnemonic)
             }
 
+            // use private key for ethereum and seed for substrate
             let seedTag = chain.isEthereumBased ?
-                KeystoreTagV2.ethereumSeedTagForMetaId(metaAccount.metaId, accountId: accountId) :
+                KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaAccount.metaId, accountId: accountId) :
                 KeystoreTagV2.substrateSeedTagForMetaId(metaAccount.metaId, accountId: accountId)
             let hasSeed = try keystore.checkKey(for: seedTag)
             if hasSeed || accountResponse.cryptoType.supportsSeedFromSecretKey {

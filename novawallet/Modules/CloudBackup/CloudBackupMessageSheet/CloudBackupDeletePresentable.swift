@@ -16,6 +16,29 @@ protocol CloudBackupDeletePresentable: AlertPresentable {
 }
 
 extension CloudBackupDeletePresentable {
+    private func createMessageSheet(
+        for reason: CloudBackupDeleteReason,
+        confirmationClosure: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        switch reason {
+        case .forgotPassword:
+            return CloudBackupMessageSheetViewFactory.createNoOrForgotPassword(
+                deleteClosure: confirmationClosure,
+                cancelClosure: nil
+            )
+        case .brokenOrEmpty:
+            return CloudBackupMessageSheetViewFactory.createEmptyOrBrokenBackup(
+                deleteClosure: confirmationClosure,
+                cancelClosure: nil
+            )
+        case .regular:
+            return CloudBackupMessageSheetViewFactory.createDeleteBackupSheet(
+                deleteClosure: confirmationClosure,
+                cancelClosure: nil
+            )
+        }
+    }
+
     func showCloudBackupDelete(
         from view: ControllerBackedProtocol?,
         reason: CloudBackupDeleteReason,
@@ -43,25 +66,7 @@ extension CloudBackupDeletePresentable {
             self.present(viewModel: viewModel, style: .actionSheet, from: view)
         }
 
-        let optDeleteView: MessageSheetViewProtocol? = switch reason {
-        case .forgotPassword:
-            CloudBackupMessageSheetViewFactory.createNoOrForgotPassword(
-                deleteClosure: confirmationClosure,
-                cancelClosure: nil
-            )
-        case .brokenOrEmpty:
-            CloudBackupMessageSheetViewFactory.createEmptyOrBrokenBackup(
-                deleteClosure: confirmationClosure,
-                cancelClosure: nil
-            )
-        case .regular:
-            CloudBackupMessageSheetViewFactory.createDeleteBackupSheet(
-                deleteClosure: confirmationClosure,
-                cancelClosure: nil
-            )
-        }
-
-        guard let deleteView = optDeleteView else {
+        guard let deleteView = createMessageSheet(for: reason, confirmationClosure: confirmationClosure) else {
             return
         }
 
