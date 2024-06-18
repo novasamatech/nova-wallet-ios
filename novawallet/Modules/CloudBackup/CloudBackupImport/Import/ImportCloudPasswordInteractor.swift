@@ -40,8 +40,6 @@ final class ImportCloudPasswordInteractor {
         // we already saved the wallet better to ask a user to resolve the password in settings
         try? syncMetadataManager.enableBackup(for: password)
 
-        syncMetadataManager.setNotifyIncreaseSecurity()
-
         presenter?.didImportBackup(with: password)
     }
 

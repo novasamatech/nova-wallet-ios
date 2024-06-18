@@ -10,10 +10,4 @@ enum OnLaunchAction {
             visitor.onLaunchProccessPushNotificationsSetup(self)
         }
     }
-
-    struct IncreaseWalletsSecurity: OnLaunchActionProtocol {
-        func accept(visitor: OnLaunchActionsQueueDelegate) {
-            visitor.onLaunchProccessIncreaseSecurity(self)
-        }
-    }
 }

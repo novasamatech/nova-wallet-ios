@@ -2,7 +2,6 @@ import Foundation
 
 protocol OnLaunchActionsQueueDelegate: AnyObject {
     func onLaunchProccessPushNotificationsSetup(_ event: OnLaunchAction.PushNotificationsSetup)
-    func onLaunchProccessIncreaseSecurity(_ event: OnLaunchAction.IncreaseWalletsSecurity)
 }
 
 protocol OnLaunchActionsQueueProtocol {

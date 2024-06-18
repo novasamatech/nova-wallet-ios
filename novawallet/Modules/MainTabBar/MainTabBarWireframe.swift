@@ -156,24 +156,6 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
     }
 
-    func presentIncreaseSecurity(
-        from view: MainTabBarViewProtocol?,
-        onBackup: @escaping () -> Void,
-        onNotNow: @escaping () -> Void
-    ) {
-        guard
-            let tabBarController = view?.controller as? UITabBarController,
-            canPresentScreenWithoutBreakingFlow(on: tabBarController),
-            let bottomSheet = CloudBackupMessageSheetViewFactory.createIncreaseSecurityMessageSheet(
-                for: onBackup,
-                notNowClosure: onNotNow
-            ) else {
-            return
-        }
-
-        view?.controller.present(bottomSheet.controller, animated: true)
-    }
-
     private func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {
         guard let tabBarController = view?.controller as? UITabBarController else {
             return nil

@@ -18,10 +18,9 @@ final class MainTabBarInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    let onLauchQueue = OnLaunchActionsQueue(
+    let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
-            OnLaunchAction.PushNotificationsSetup(),
-            OnLaunchAction.IncreaseWalletsSecurity()
+            OnLaunchAction.PushNotificationsSetup()
         ]
     )
 
@@ -88,17 +87,7 @@ final class MainTabBarInteractor {
                 self?.presenter?.didRequestPushNotificationsSetupOpen()
             }
         } else {
-            onLauchQueue.runNext()
-        }
-    }
-
-    private func showIncreaseSecurityOrNextAction() {
-        if settingsManager.shouldPresentIncreaseSecurity {
-            securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-                self?.presenter?.didReceiveNeedsIncreaseSecurity()
-            }
-        } else {
-            onLauchQueue.runNext()
+            onLaunchQueue.runNext()
         }
     }
 }
@@ -115,14 +104,14 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
         cloudBackupMediator.setup(with: self)
 
-        onLauchQueue.delegate = self
+        onLaunchQueue.delegate = self
 
         if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
         } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
         } else {
-            onLauchQueue.runNext()
+            onLaunchQueue.runNext()
         }
     }
 
@@ -130,12 +119,8 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         settingsManager.notificationsSetupSeen = true
     }
 
-    func setIncreaseSecuritySeen() {
-        settingsManager.shouldPresentIncreaseSecurity = false
-    }
-
     func requestNextOnLaunchAction() {
-        onLauchQueue.runNext()
+        onLaunchQueue.runNext()
     }
 }
 
@@ -219,9 +204,5 @@ extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
 extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
     func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
         showPushNotificationsSetupOrNextAction()
-    }
-
-    func onLaunchProccessIncreaseSecurity(_: OnLaunchAction.IncreaseWalletsSecurity) {
-        showIncreaseSecurityOrNextAction()
     }
 }

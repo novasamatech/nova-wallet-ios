@@ -102,18 +102,4 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
             }
         )
     }
-
-    func didReceiveNeedsIncreaseSecurity() {
-        wireframe.presentIncreaseSecurity(
-            from: view,
-            onBackup: { [weak self] in
-                self?.interactor.setIncreaseSecuritySeen()
-                self?.wireframe.presentCloudBackupSettings(from: self?.view)
-            },
-            onNotNow: { [weak self] in
-                self?.interactor.setIncreaseSecuritySeen()
-                self?.interactor.requestNextOnLaunchAction()
-            }
-        )
-    }
 }
