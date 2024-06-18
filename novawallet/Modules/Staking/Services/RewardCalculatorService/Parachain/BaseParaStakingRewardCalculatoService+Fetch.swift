@@ -1,37 +1,52 @@
 import Foundation
+import SubstrateSdk
+import BigInt
+import Operation_iOS
 
 extension BaseParaStakingRewardCalculatoService {
-    func updateTotalStaked() throws {
-        totalStakedService?.throttle()
-        totalStakedService = nil
+    func updateTotalStaked() {
+        totalStakeCancellable.cancel()
 
-        let storagePath = ParachainStaking.totalPath
-
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            storagePath,
-            chainId: chainId
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue),
+            timeout: JSONRPCTimeout.hour
         )
 
-        let repository = repositoryFactory.createChainStorageItemRepository()
+        let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
 
-        let request = UnkeyedSubscriptionRequest(storagePath: storagePath, localKey: localKey)
+        let fetchWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>>
 
-        totalStakedService = StorageItemSyncService(
-            chainId: chainId,
-            storagePath: storagePath,
-            request: request,
-            repository: repository,
-            connection: connection,
-            runtimeCodingService: runtimeCodingService,
-            operationQueue: operationQueue,
-            logger: logger,
-            completionQueue: syncQueue
-        ) { [weak self] totalStaked in
-            if let totalStaked = totalStaked?.value {
+        fetchWrapper = requestFactory.queryItem(
+            engine: connection,
+            factory: {
+                try codingFactoryOperation.extractNoCancellableResultData()
+            },
+            storagePath: ParachainStaking.totalPath,
+            at: nil
+        )
+
+        fetchWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let totalWrapper = fetchWrapper.insertingHead(operations: [codingFactoryOperation])
+
+        executeCancellable(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: totalStakeCancellable,
+            runningCallbackIn: syncQueue
+        ) { [weak self] result in
+            switch result {
+            case let .success(response):
+                guard let totalStaked = response.value?.value else {
+                    self?.logger.error("Unexpected empty total stake")
+                    return
+                }
+
                 self?.didUpdateTotalStaked(totalStaked)
+            case let .failure(error):
+                self?.logger.error("Unexpected error on total stake loading: \(error)")
             }
         }
-
-        totalStakedService?.setup()
     }
 }

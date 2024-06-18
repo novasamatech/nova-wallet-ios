@@ -19,12 +19,15 @@ protocol NetworkDetailsInteractorInputProtocol: AnyObject {
 }
 
 protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
-    func didReceive(_ chain: ChainModel)
+    func didReceive(
+        _ chain: ChainModel,
+        filteredNodes: Set<ChainNodeModel>
+    )
     func didReceive(
         _ connectionState: NetworkDetailsPresenter.ConnectionState,
-        for nodeURL: String
+        for nodeURL: String,
+        selected: Bool
     )
-    func didReceive(_ selectedNode: ChainNodeModel)
 }
 
 protocol NetworkDetailsWireframeProtocol: AnyObject {

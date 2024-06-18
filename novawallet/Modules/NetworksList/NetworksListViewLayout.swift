@@ -55,6 +55,7 @@ extension NetworksListViewLayout {
         enum ConnectionState {
             case connecting(String)
             case connected
+            case notConnected
         }
 
         var id: Int { networkModel.identifier }

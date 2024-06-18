@@ -3365,6 +3365,21 @@ import SubstrateSdk
     
     
     
+     func clearConnection(for chainId: ChainModel.Id)  {
+        
+    return cuckoo_manager.call("clearConnection(for: ChainModel.Id)",
+            parameters: (chainId),
+            escapingParameters: (chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.clearConnection(for: chainId))
+        
+    }
+    
+    
+    
      func getConnection(for chainId: ChainModel.Id) -> ChainConnection? {
         
     return cuckoo_manager.call("getConnection(for: ChainModel.Id) -> ChainConnection?",
@@ -3452,6 +3467,11 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionPoolProtocol.self, method: "setupConnection(for: ChainModel) throws -> ChainConnection", parameterMatchers: matchers))
 	    }
 	    
+	    func clearConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.Id)> where M1.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionPoolProtocol.self, method: "clearConnection(for: ChainModel.Id)", parameterMatchers: matchers))
+	    }
+	    
 	    func getConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id), ChainConnection?> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionPoolProtocol.self, method: "getConnection(for: ChainModel.Id) -> ChainConnection?", parameterMatchers: matchers))
@@ -3500,6 +3520,12 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
+	    func clearConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), Void> where M1.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
+	        return cuckoo_manager.verify("clearConnection(for: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func getConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), ChainConnection?> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
 	        return cuckoo_manager.verify("getConnection(for: ChainModel.Id) -> ChainConnection?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -3542,6 +3568,12 @@ import SubstrateSdk
     
      func setupConnection(for chain: ChainModel) throws -> ChainConnection  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection).self)
+    }
+    
+    
+    
+     func clearConnection(for chainId: ChainModel.Id)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
@@ -3692,7 +3724,7 @@ import SubstrateSdk
     
     
     
-     override var connections: [ChainModel.Id: WeakWrapper] {
+     override var connections: [ChainModel.Id: ChainConnection] {
         get {
             return cuckoo_manager.getter("connections",
                 superclassCall:
@@ -3745,7 +3777,7 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    var connections: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockConnectionPool, [ChainModel.Id: WeakWrapper]> {
+	    var connections: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockConnectionPool, [ChainModel.Id: ChainConnection]> {
 	        return .init(manager: cuckoo_manager, name: "connections")
 	    }
 	    
@@ -3775,7 +3807,7 @@ import SubstrateSdk
 	
 	    
 	    
-	    var connections: Cuckoo.VerifyReadOnlyProperty<[ChainModel.Id: WeakWrapper]> {
+	    var connections: Cuckoo.VerifyReadOnlyProperty<[ChainModel.Id: ChainConnection]> {
 	        return .init(manager: cuckoo_manager, name: "connections", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
@@ -3798,9 +3830,9 @@ import SubstrateSdk
         
     
     
-     override var connections: [ChainModel.Id: WeakWrapper] {
+     override var connections: [ChainModel.Id: ChainConnection] {
         get {
-            return DefaultValueRegistry.defaultValue(for: ([ChainModel.Id: WeakWrapper]).self)
+            return DefaultValueRegistry.defaultValue(for: ([ChainModel.Id: ChainConnection]).self)
         }
         
     }

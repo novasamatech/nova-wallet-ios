@@ -173,6 +173,7 @@ private extension NetworksListPresenter {
 
 extension NetworksListPresenter {
     enum ConnectionState {
+        case notConnected
         case connecting
         case connected
     }

@@ -4,6 +4,7 @@ import SoraFoundation
 
 protocol ConnectionPoolProtocol {
     func setupConnection(for chain: ChainModel) throws -> ChainConnection
+    func clearConnection(for chainId: ChainModel.Id)
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection?
     func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
     func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
@@ -21,14 +22,10 @@ class ConnectionPool {
 
     private var mutex = NSLock()
 
-    private(set) var connections: [ChainModel.Id: WeakWrapper] = [:]
+    private(set) var connections: [ChainModel.Id: ChainConnection] = [:]
     private(set) var oneShotConnections: [ChainModel.Id: OneShotConnection] = [:]
 
     private(set) var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] = [:]
-
-    private func clearUnusedConnections() {
-        connections = connections.filter { $0.value.target != nil }
-    }
 
     init(connectionFactory: ConnectionFactoryProtocol, applicationHandler: ApplicationHandlerProtocol) {
         self.connectionFactory = connectionFactory
@@ -54,10 +51,10 @@ extension ConnectionPool: ConnectionPoolProtocol {
         subscribers.append(WeakWrapper(target: subscriber))
         stateSubscriptions[chainId] = subscribers
 
-        let connection = connections[chainId] as? ChainConnection
+        let connection = connections[chainId]
 
         DispatchQueue.main.async {
-            subscriber.didReceive(state: connection?.state ?? .notConnected, for: chainId)
+            subscriber.didReceive(state: connection?.state ?? .notConnected(url: nil), for: chainId)
         }
     }
 
@@ -79,17 +76,28 @@ extension ConnectionPool: ConnectionPoolProtocol {
             mutex.unlock()
         }
 
-        clearUnusedConnections()
-
-        if let connection = connections[chain.chainId]?.target as? ChainConnection {
+        if let connection = connections[chain.chainId] {
             connectionFactory.updateConnection(connection, chain: chain)
             return connection
         }
 
         let connection = try connectionFactory.createConnection(for: chain, delegate: self)
-        connections[chain.chainId] = WeakWrapper(target: connection)
+        connections[chain.chainId] = connection
 
         return connection
+    }
+
+    func clearConnection(for chainId: ChainModel.Id) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let connection = connections[chainId] {
+            connection.disconnect(true)
+            connections[chainId] = nil
+        }
     }
 
     func deactivateConnection(for chainId: ChainModel.Id) {
@@ -99,12 +107,9 @@ extension ConnectionPool: ConnectionPoolProtocol {
             mutex.unlock()
         }
 
-        let optConnection = connections[chainId]
-        connections[chainId] = nil
         oneShotConnections[chainId] = nil
-        stateSubscriptions[chainId] = nil
 
-        if let connection = optConnection as? ChainConnection {
+        if let connection = connections[chainId] {
             connection.disconnect(true)
         }
     }
@@ -116,7 +121,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
             mutex.unlock()
         }
 
-        return connections[chainId]?.target as? ChainConnection
+        return connections[chainId]
     }
 
     func getOneShotConnection(for chain: ChainModel) -> JSONRPCEngine? {
@@ -137,7 +142,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
 
             return connection
         } else {
-            return connections[chain.chainId]?.target as? JSONRPCEngine
+            return connections[chain.chainId] as? JSONRPCEngine
         }
     }
 }
@@ -157,7 +162,7 @@ extension ConnectionPool: WebSocketEngineDelegate {
         }
 
         let allChainIds = connections.keys
-        let maybeChainId = allChainIds.first(where: { connections[$0]?.target === connection })
+        let maybeChainId = allChainIds.first(where: { connections[$0] === connection })
 
         guard let chainId = maybeChainId else {
             return
@@ -183,13 +188,7 @@ extension ConnectionPool: ApplicationHandlerDelegate {
             mutex.unlock()
         }
 
-        connections.values.forEach { wrapper in
-            guard let connection = wrapper.target as? ChainConnection else {
-                return
-            }
-
-            connection.connect()
-        }
+        connections.values.forEach { $0.connect() }
     }
 
     func didReceiveDidEnterBackground(notification _: Notification) {
@@ -199,12 +198,6 @@ extension ConnectionPool: ApplicationHandlerDelegate {
             mutex.unlock()
         }
 
-        connections.values.forEach { wrapper in
-            guard let connection = wrapper.target as? ChainConnection else {
-                return
-            }
-
-            connection.disconnect(true)
-        }
+        connections.values.forEach { $0.disconnect(true) }
     }
 }

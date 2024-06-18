@@ -58,10 +58,13 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
 // MARK: NetworkDetailsInteractorOutputProtocol
 
 extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
-    func didReceive(_ chain: ChainModel) {
+    func didReceive(
+        _ chain: ChainModel,
+        filteredNodes: Set<ChainNodeModel>
+    ) {
         self.chain = chain
 
-        sortedNodes = chain.nodes.sorted { $0.order < $1.order }
+        sortedNodes = filteredNodes.sorted { $0.order < $1.order }
 
         if sortedNodes.count == 1 {
             selectedNode = sortedNodes[0]
@@ -75,9 +78,16 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
 
     func didReceive(
         _ connectionState: ConnectionState,
-        for nodeURL: String
+        for nodeURL: String,
+        selected: Bool
     ) {
         guard connectionState != connectionStates[nodeURL] else { return }
+
+        if selected {
+            selectedNode = nodes[nodeURL]
+        } else if selectedNode?.url == nodeURL {
+            selectedNode = nil
+        }
 
         connectionStates[nodeURL] = connectionState
 
@@ -87,12 +97,6 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         default:
             break
         }
-    }
-
-    func didReceive(_ selectedNode: ChainNodeModel) {
-        self.selectedNode = selectedNode
-
-        provideNodeViewModel(for: selectedNode.url)
     }
 }
 
