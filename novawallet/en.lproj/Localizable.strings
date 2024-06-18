@@ -543,7 +543,7 @@
 "wallet.nickname.create.caption" = "Examples: Savings, Investments, Crowdloans, Staking.";
 "wallet.empty.description_v2_2_0" = "Your operations will be displayed here";
 "wallet.nickname.create.subtitle_v2_2_0" = "Name will be used only locally in this application. You can edit it later";
-"common.no.screenshot.title_v2_2_0" = "Attention!";
+"common.no.screenshot.title_v2_2_0" = "Prepare to save your wallet!";
 "common.no.screenshot.message_v2_2_0" = "We are going to show your mnemonic. Make sure no one can see your screen and do not take screenshots — they can be collected by third-party malware";
 "access.restore.phrase.error.message_v2_2_0" = "Invalid mnemonic passphrase, please check one more time the words order";
 "secret.type.keystore.title" = "Restore JSON";

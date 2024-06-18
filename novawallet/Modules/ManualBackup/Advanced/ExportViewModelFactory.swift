@@ -147,7 +147,7 @@ final class ExportViewModelFactory {
                     blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
                         preferredLanguages: selectedLocale.rLanguages
                     ),
-                    content: model.derivationPath
+                    content: derivationPath
                 ))
             )
         }
