@@ -99,7 +99,11 @@ final class CloudBackupSettingsPresenter {
 
     private func showBackupIssueAfterSync(_ issue: CloudBackupSyncResult.Issue, waitingBackupEnable: Bool) {
         switch issue {
-        case .missingOrInvalidPassword:
+        case .missingPassword:
+            if waitingBackupEnable {
+                wireframe.showEnterPassword(from: view)
+            }
+        case .invalidPassword:
             wireframe.showPasswordChangedConfirmation(
                 on: view,
                 locale: selectedLocale
@@ -180,7 +184,7 @@ final class CloudBackupSettingsPresenter {
 
     private func handleSync(issue: CloudBackupSyncResult.Issue) {
         switch issue {
-        case .missingOrInvalidPassword:
+        case .missingPassword, .invalidPassword:
             wireframe.showEnterPassword(from: view)
         case .remoteDecodingFailed:
             wireframe.showCloudBackupDelete(

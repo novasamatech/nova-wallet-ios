@@ -11,7 +11,7 @@ enum CloudBackupSettingsIssue {
 extension CloudBackupSettingsIssue {
     init(backupIssue: CloudBackupSyncResult.Issue) {
         switch backupIssue {
-        case .missingOrInvalidPassword, .newBackupCreationNeeded:
+        case .missingPassword, .invalidPassword, .newBackupCreationNeeded:
             self = .enterPassword
         case .remoteDecodingFailed:
             self = .emptyOrBroken
