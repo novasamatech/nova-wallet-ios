@@ -14,6 +14,7 @@ final class ImportCloudPasswordViewLayout: SCLoadableActionLayoutView {
 
     let passwordView: PasswordInputView = .create { view in
         view.textField.returnKeyType = .done
+        view.textField.textContentType = .password
     }
 
     let forgetPasswordButton: RoundedButton = .create { button in
