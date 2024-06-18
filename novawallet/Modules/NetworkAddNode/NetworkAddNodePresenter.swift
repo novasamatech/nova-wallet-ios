@@ -38,6 +38,8 @@ extension NetworkAddNodePresenter: NetworkAddNodePresenterProtocol {
     func confirmAddNode() {
         guard let partialURL, let partialName else { return }
         
+        view?.setLoading(true)
+        
         interactor.addNode(
             with: partialURL,
             name: partialName
@@ -49,11 +51,57 @@ extension NetworkAddNodePresenter: NetworkAddNodePresenterProtocol {
 
 extension NetworkAddNodePresenter: NetworkAddNodeInteractorOutputProtocol {
     func didReceive(_ error: Error) {
-        print(error)
+        guard let error = error as? NetworkAddNodeInteractor.Errors else {
+            return
+        }
+                
+        var title: String?
+        var message: String?
+        
+        let close = R.string.localizable.commonClose(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        
+        switch error {
+        case let .alreadyExists(nodeName):
+            title = R.string.localizable.networkNodeAddAlertAlreadyExistsTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            message = R.string.localizable.networkNodeAddAlertAlreadyExistsMessage(
+                nodeName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .wrongFormat:
+            title = R.string.localizable.networkNodeAddAlertNodeErrorTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            message = R.string.localizable.networkNodeAddAlertNodeErrorMessageWss(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case let .unableToConnect(networkName):
+            title = R.string.localizable.networkNodeAddAlertWrongNetworkTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            message = R.string.localizable.networkNodeAddAlertWrongNetworkMessage(
+                networkName,
+                networkName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+        
+        view?.setLoading(false)
+        
+        wireframe.present(
+            message: message,
+            title: title,
+            closeAction: close,
+            from: view
+        )
     }
     
     func didAddNode() {
-        print("ADDED NODE")
+        wireframe.showNetworkDetails(from: view)
+        view?.setLoading(false)
     }
 }
 

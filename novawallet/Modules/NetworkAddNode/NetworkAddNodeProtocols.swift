@@ -3,6 +3,7 @@ import SoraFoundation
 protocol NetworkAddNodeViewProtocol: ControllerBackedProtocol {
     func didReceiveUrl(viewModel: InputViewModelProtocol)
     func didReceiveName(viewModel: InputViewModelProtocol)
+    func setLoading(_ loading: Bool)
 }
 
 protocol NetworkAddNodePresenterProtocol: AnyObject {
@@ -24,4 +25,6 @@ protocol NetworkAddNodeInteractorOutputProtocol: AnyObject {
     func didAddNode()
 }
 
-protocol NetworkAddNodeWireframeProtocol: AnyObject {}
+protocol NetworkAddNodeWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func showNetworkDetails(from view: NetworkAddNodeViewProtocol?)
+}

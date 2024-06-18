@@ -12,10 +12,10 @@ final class NetworkAddNodeInteractor {
     
     private let chainId: ChainModel.Id
     
+    private let wssPredicate = NSPredicate.websocket
+    
     private var currentAddingNode: ChainNodeModel?
     private var currentConnection: ChainConnection?
-    
-    private var chain: ChainModel?
     
     init(
         chainRegistry: any ChainRegistryProtocol,
@@ -39,13 +39,28 @@ extension NetworkAddNodeInteractor: NetworkAddNodeInteractorInputProtocol {
         with url: String,
         name: String
     ) {
+        guard let chain = chainRegistry.getChain(for: chainId) else { return }
+        
+        if let existingNode = chain.nodes.first { $0.url == url } {
+            let error = Errors.alreadyExists(nodeName: existingNode.name)
+            presenter?.didReceive(error)
+            
+            return
+        }
+        
+        guard wssPredicate.evaluate(with: url) else {
+            presenter?.didReceive(Errors.wrongFormat)
+            
+            return
+        }
+        
         do {
-           try connectToNode(
-            with: url,
-            name: name
-           )
+            try connectToNode(
+                with: url,
+                name: name
+            )
         } catch {
-            presenter?.didReceive(Errors.unableToCreateConnection)
+            presenter?.didReceive(Errors.unableToConnect(networkName: chain.name))
         }
     }
 }
@@ -64,15 +79,15 @@ extension NetworkAddNodeInteractor: WebSocketEngineDelegate {
         
         DispatchQueue.main.async {
             guard
-                let connection = connection as? ChainConnection,
-                let nodeUrl = connection.urls.first
+                let chain = self.chainRegistry.getChain(for: self.chainId),
+                let connection = connection as? ChainConnection
             else {
                 return
             }
 
             switch newState {
             case .notConnected:
-                self.presenter?.didReceive(Errors.unableToConnect)
+                self.presenter?.didReceive(Errors.unableToConnect(networkName: chain.name))
             case .connected:
                 self.handleConnected()
             default:
@@ -84,8 +99,9 @@ extension NetworkAddNodeInteractor: WebSocketEngineDelegate {
 
 extension NetworkAddNodeInteractor {
     enum Errors: Error {
-        case unableToConnect
-        case unableToCreateConnection
+        case alreadyExists(nodeName: String)
+        case unableToConnect(networkName: String)
+        case wrongFormat
     }
 }
 
@@ -109,7 +125,6 @@ private extension NetworkAddNodeInteractor {
         )
         
         currentAddingNode = node
-        self.chain = chain
         
         currentConnection = try connectionFactory.createConnection(
             for: node,
@@ -119,7 +134,10 @@ private extension NetworkAddNodeInteractor {
     }
     
     func handleConnected() {
-        guard let currentAddingNode, let chain else { return }
+        guard
+            let currentAddingNode,
+            let chain = chainRegistry.getChain(for: chainId)
+        else { return }
         
         let saveOperation = repository.saveOperation(
             { [chain.adding(node: currentAddingNode)] },

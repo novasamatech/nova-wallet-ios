@@ -67,7 +67,7 @@ extension InputViewModel {
         let inputHandling = InputHandler(
             value: value,
             required: required,
-            predicate: required ? NSPredicate.websocket : nil,
+            predicate: required ? NSPredicate.notEmpty : nil,
             processor: TrimmingCharacterProcessor(charset: .whitespaces)
         )
 

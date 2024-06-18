@@ -49,6 +49,12 @@ extension NetworkAddNodeViewController: NetworkAddNodeViewProtocol {
 
         updateActionButton()
     }
+    
+    func setLoading(_ loading: Bool) {
+        loading
+            ? rootView.actionLoadableView.startLoading()
+            : rootView.actionLoadableView.stopLoading()
+    }
 }
 
 // MARK: Localizable

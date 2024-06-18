@@ -1537,3 +1537,10 @@
 "network.details.ping.milliseconds" = "%d ms";
 "network.node.add.button.add" = "Add node";
 "network.node.add.button.enter.details" = "Enter details";
+"network.node.add.alert.node.error.title" = "Node error";
+"network.node.add.alert.node.error.message.wss" = "The Node URL you entered is either not responding or contains incorrect format. The URL format should start with \"wss://\"";
+"network.node.add.alert.wrong.network.title" = "Wrong network";
+"network.node.add.alert.wrong.network.message" = "The URL you entered is not corresponding to Node for %@.
+Please enter URL of the valid %@ node.";
+"network.node.add.alert.already.exists.title" = "This Node already exists";
+"network.node.add.alert.already.exists.message" = "The URL you entered already exists as the %@ Node.";
