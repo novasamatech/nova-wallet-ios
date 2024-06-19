@@ -34,6 +34,7 @@ protocol CloudBackupSettingsInteractorOutputProtocol: AnyObject {
     func didReceive(error: CloudBackupSettingsInteractorError)
     func didReceive(numberOfWalletsWithSecrets: Int)
     func didDeleteBackup()
+    func didReceive(syncMonitorStatus: CloudBackupSyncMonitorStatus?)
 }
 
 protocol CloudBackupSettingsWireframeProtocol: AlertPresentable, ErrorPresentable, CloudBackupErrorPresentable,

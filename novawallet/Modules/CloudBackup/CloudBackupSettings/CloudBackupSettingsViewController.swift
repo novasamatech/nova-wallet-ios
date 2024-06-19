@@ -103,7 +103,6 @@ extension CloudBackupSettingsViewController: CloudBackupSettingsViewProtocol {
         rootView.settingsView.bind(viewModel: viewModel)
 
         rootView.cloudBackupActionControl.switchControl.isOn = viewModel.status.isEnabled
-        rootView.cloudBackupActionControl.switchControl.isEnabled = !viewModel.status.isSyncing
     }
 }
 

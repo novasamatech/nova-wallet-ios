@@ -31,15 +31,27 @@ protocol CloudBackupSettingsViewModelFactoryProtocol {
 }
 
 extension CloudBackupSettingsViewModelFactoryProtocol {
+    private func convert(syncMonitorStatus: CloudBackupSyncMonitorStatus?) -> CloudBackupSettingsViewModel.Status {
+        switch syncMonitorStatus {
+        case .noFile, .synced, nil:
+            return .synced
+        case .notDownloaded, .downloading, .uploading:
+            return .syncing
+        }
+    }
+
     private func createViewModel(
         using result: CloudBackupSyncResult?,
+        syncMonitorStatus: CloudBackupSyncMonitorStatus?,
         lastSyncDate: Date?,
         locale: Locale
     ) -> CloudBackupSettingsViewModel {
         switch result {
         case .noUpdates:
+            let viewModelStatus = convert(syncMonitorStatus: syncMonitorStatus)
+
             return createViewModel(
-                from: .synced,
+                from: viewModelStatus,
                 lastSync: lastSyncDate,
                 issue: nil,
                 locale: locale
@@ -68,7 +80,11 @@ extension CloudBackupSettingsViewModelFactoryProtocol {
         }
     }
 
-    func createViewModel(with state: CloudBackupSyncState?, locale: Locale) -> CloudBackupSettingsViewModel {
+    func createViewModel(
+        with state: CloudBackupSyncState?,
+        syncMonitorStatus: CloudBackupSyncMonitorStatus?,
+        locale: Locale
+    ) -> CloudBackupSettingsViewModel {
         switch state {
         case let .disabled(lastSyncDate):
             return createViewModel(
@@ -85,7 +101,12 @@ extension CloudBackupSettingsViewModelFactoryProtocol {
                 locale: locale
             )
         case let .enabled(result, lastSyncDate):
-            return createViewModel(using: result, lastSyncDate: lastSyncDate, locale: locale)
+            return createViewModel(
+                using: result,
+                syncMonitorStatus: syncMonitorStatus,
+                lastSyncDate: lastSyncDate,
+                locale: locale
+            )
         case nil:
             return createViewModel(
                 from: .syncing,

@@ -17,6 +17,7 @@ final class CloudBackupSettingsPresenter {
     private var waitingBackupEnable = false
 
     private var cloudBackupState: CloudBackupSyncState?
+    private var cloudBackupSyncMonitorStatus: CloudBackupSyncMonitorStatus?
 
     init(
         interactor: CloudBackupSettingsInteractorInputProtocol,
@@ -36,6 +37,7 @@ final class CloudBackupSettingsPresenter {
     private func provideViewModel() {
         let viewModel = viewModelFactory.createViewModel(
             with: cloudBackupState,
+            syncMonitorStatus: cloudBackupSyncMonitorStatus,
             locale: selectedLocale
         )
 
@@ -349,6 +351,14 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
                 from: view
             )
         }
+    }
+
+    func didReceive(syncMonitorStatus: CloudBackupSyncMonitorStatus?) {
+        logger.debug("Sync monitor: \(String(describing: syncMonitorStatus))")
+
+        cloudBackupSyncMonitorStatus = syncMonitorStatus
+
+        provideViewModel()
     }
 }
 
