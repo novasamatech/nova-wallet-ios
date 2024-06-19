@@ -27,10 +27,13 @@ struct NetworkAddNodeViewFactory {
         )
         
         let wireframe = NetworkAddNodeWireframe()
+        
+        let networkViewModelFactory = NetworkViewModelFactory()
 
         let presenter = NetworkAddNodePresenter(
             interactor: interactor,
             wireframe: wireframe,
+            networkViewModelFactory: networkViewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 

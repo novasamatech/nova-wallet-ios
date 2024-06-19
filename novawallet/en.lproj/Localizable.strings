@@ -1535,6 +1535,7 @@
 "network.details.auto.balance" = "Auto-balance nodes";
 "network.details.add.custom.node" = "Add custom node";
 "network.details.ping.milliseconds" = "%d ms";
+"network.node.add.title" = "Add custom node";
 "network.node.add.button.add" = "Add node";
 "network.node.add.button.enter.details" = "Enter details";
 "network.node.add.alert.node.error.title" = "Node error";

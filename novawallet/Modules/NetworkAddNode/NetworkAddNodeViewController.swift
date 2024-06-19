@@ -50,6 +50,10 @@ extension NetworkAddNodeViewController: NetworkAddNodeViewProtocol {
         updateActionButton()
     }
     
+    func didReceiveChain(viewModel: NetworkViewModel) {
+        rootView.chainView.bind(viewModel: viewModel)
+    }
+    
     func setLoading(_ loading: Bool) {
         loading
             ? rootView.actionLoadableView.startLoading()

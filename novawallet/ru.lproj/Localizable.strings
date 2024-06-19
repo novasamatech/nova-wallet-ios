@@ -1534,5 +1534,6 @@
 "network.details.auto.balance" = "Авто-балансирвоать ноды";
 "network.details.add.custom.node" = "Добавить пользовательскую ноду";
 "network.details.ping.milliseconds" = "%d мс";
+"network.node.add.title" = "Добавить пользовательскую ноду";
 "network.node.add.button.add" = "Добавить ноду";
 "network.node.add.button.enter.details" = "Введите детали";

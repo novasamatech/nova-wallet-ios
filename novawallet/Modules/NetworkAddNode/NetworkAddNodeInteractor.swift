@@ -35,6 +35,10 @@ final class NetworkAddNodeInteractor {
 // MARK: NetworkAddNodeInteractorInputProtocol
 
 extension NetworkAddNodeInteractor: NetworkAddNodeInteractorInputProtocol {
+    func setup() {
+        subscribeChainChanges()
+    }
+    
     func addNode(
         with url: String,
         name: String
@@ -151,5 +155,24 @@ private extension NetworkAddNodeInteractor {
         }
 
         operationQueue.addOperation(saveOperation)
+    }
+    
+    func subscribeChainChanges() {
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .main
+        ) { [weak self] changes in
+            let changedChain = changes
+                .first { $0.item?.chainId == self?.chainId }?.item
+
+            guard
+                let self,
+                let changedChain
+            else {
+                return
+            }
+
+            presenter?.didReceive(changedChain)
+        }
     }
 }
