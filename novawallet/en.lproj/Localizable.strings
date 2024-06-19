@@ -1545,3 +1545,4 @@
 Please enter URL of the valid %@ node.";
 "network.node.add.alert.already.exists.title" = "This Node already exists";
 "network.node.add.alert.already.exists.message" = "The URL you entered already exists as the %@ Node.";
+"common.for" = "For";

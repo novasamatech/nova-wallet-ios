@@ -92,6 +92,9 @@ extension NetworkAddNodeInteractor: WebSocketEngineDelegate {
             switch newState {
             case .notConnected:
                 self.presenter?.didReceive(Errors.unableToConnect(networkName: chain.name))
+                self.currentConnection = nil
+            case .waitingReconnection:
+                connection.disconnect(true)
             case .connected:
                 self.handleConnected()
             default:

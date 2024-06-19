@@ -2,6 +2,7 @@ import UIKit
 
 final class NetworkAddNodeViewLayout: ScrollableContainerLayoutView {
     let titleLabel: UILabel = .create { $0.apply(style: .boldTitle2Primary) }
+    let titleLabelFor: UILabel = .create { $0.apply(style: .boldTitle2Primary) }
     
     let chainView = AssetListChainView()
     
@@ -34,7 +35,6 @@ final class NetworkAddNodeViewLayout: ScrollableContainerLayoutView {
         super.init(frame: frame)
 
         applyLocalization()
-        setupTextFields()
     }
 
     @available(*, unavailable)
@@ -48,9 +48,16 @@ final class NetworkAddNodeViewLayout: ScrollableContainerLayoutView {
         addArrangedSubview(titleLabel, spacingAfter: 8)
         
         let container = UIView()
+        container.addSubview(titleLabelFor)
         container.addSubview(chainView)
+        
+        titleLabelFor.snp.makeConstraints { make in
+            make.leading.centerY.equalToSuperview()
+        }
+        
         chainView.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
+            make.leading.equalTo(titleLabelFor.snp.trailing).offset(10)
+            make.bottom.top.equalToSuperview()
         }
         
         addArrangedSubview(container, spacingAfter: 16)
@@ -75,12 +82,11 @@ final class NetworkAddNodeViewLayout: ScrollableContainerLayoutView {
 private extension NetworkAddNodeViewLayout {
     func applyLocalization() {
         titleLabel.text = R.string.localizable.networkNodeAddTitle(preferredLanguages: locale.rLanguages)
+        titleLabelFor.text = R.string.localizable.commonFor(preferredLanguages: locale.rLanguages).lowercased()
         
         nameTitleLabel.text = R.string.localizable.networkInfoName(preferredLanguages: locale.rLanguages)
         urlTitleLabel.text = R.string.localizable.networkInfoNodeUrl(preferredLanguages: locale.rLanguages)
 
         urlInput.locale = locale
     }
-
-    private func setupTextFields() {}
 }
