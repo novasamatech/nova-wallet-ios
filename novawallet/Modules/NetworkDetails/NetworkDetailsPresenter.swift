@@ -52,7 +52,7 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     func selectNode(at indexPath: IndexPath) {
         let node: ChainNodeModel = switch indexPath.section {
         case Constants.addNodeSectionIndex:
-            sortedNodes.custom[indexPath.row]
+            sortedNodes.custom[indexPath.row - Constants.addNodeSectionNodeIndexOffset]
         default:
             sortedNodes.remote[indexPath.row]
         }
@@ -168,7 +168,7 @@ private extension NetworkDetailsPresenter {
             .forEach { index, node in
                 nodes[node.url] = node
                 nodesIndexes[node.url] = IndexPath(
-                    row: index+1,
+                    row: index + Constants.addNodeSectionNodeIndexOffset,
                     section: Constants.addNodeSectionIndex
                 )
             }
@@ -202,5 +202,6 @@ extension NetworkDetailsPresenter {
     enum Constants {
         static let addNodeSectionIndex: Int = 1
         static let remoteNodesSectionIndex: Int = 2
+        static let addNodeSectionNodeIndexOffset: Int = 1
     }
 }

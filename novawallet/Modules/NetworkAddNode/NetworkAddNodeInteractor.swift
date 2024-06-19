@@ -123,10 +123,21 @@ private extension NetworkAddNodeInteractor {
             return
         }
         
+        let currentLastIndex = chain.nodes
+            .map { $0.order }
+            .sorted { $0 < $1 }
+            .last
+        
+        let nodeIndex: Int16 = if let currentLastIndex {
+            currentLastIndex + 1
+        } else {
+            0
+        }
+        
         let node = ChainNodeModel(
             url: url,
             name: name,
-            order: 0,
+            order: nodeIndex,
             features: nil,
             source: .user
         )
