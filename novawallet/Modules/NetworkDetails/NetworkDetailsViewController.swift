@@ -7,7 +7,7 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
     let presenter: NetworkDetailsPresenterProtocol
 
     private var viewModel: ViewModel?
-    private var nodesViewModels: [RootViewType.NodeModel] = []
+    private var nodesViewModels: [IndexPath: RootViewType.NodeModel] = [:]
 
     init(presenter: NetworkDetailsPresenterProtocol) {
         self.presenter = presenter
@@ -42,14 +42,9 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
                     return
                 }
 
-                let indexPath = IndexPath(
-                    row: nodeModel.index,
-                    section: Constants.nodesSectionIndex
-                )
-
-                let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworkDetailsNodeTableViewCell
+                let cell = rootView.tableView.cellForRow(at: nodeModel.indexPath) as? NetworkDetailsNodeTableViewCell
                 cell?.bind(viewModel: nodeModel)
-                nodesViewModels[indexPath.row] = nodeModel
+                nodesViewModels[nodeModel.indexPath] = nodeModel
             }
     }
 
@@ -100,7 +95,9 @@ extension NetworkDetailsViewController: UITableViewDataSource {
 
             cell = titleCell
         case .node:
-            let viewModel = nodesViewModels[indexPath.row]
+            guard let viewModel = nodesViewModels[indexPath] else {
+                return UITableViewCell()
+            }
 
             let nodeCell = tableView.dequeueReusableCellWithType(NetworkDetailsNodeTableViewCell.self)!
             nodeCell.bind(viewModel: viewModel)
@@ -131,8 +128,8 @@ extension NetworkDetailsViewController: UITableViewDelegate {
         let row = section.rows[indexPath.row]
 
         switch row {
-        case .node:
-            presenter.selectNode(at: indexPath.row)
+        case let .node(model):
+            presenter.selectNode(with: model.url)
         case .addCustomNode:
             presenter.addNode()
         default:
@@ -192,20 +189,19 @@ private extension NetworkDetailsViewController {
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
 
-    func extractNodesViewModels(from viewModel: ViewModel) -> [RootViewType.NodeModel] {
+    func extractNodesViewModels(from viewModel: ViewModel) -> [IndexPath: RootViewType.NodeModel] {
         viewModel.sections
             .flatMap(\.rows)
-            .compactMap { row -> RootViewType.NodeModel? in
-                guard case let .node(nodeModel) = row else { return nil }
-
-                return nodeModel
+            .reduce(into: [:]) { acc, row in
+                guard case let .node(nodeModel) = row else { return }
+                
+                acc[nodeModel.indexPath] = nodeModel
             }
     }
 }
 
-private extension NetworkDetailsViewController {
+extension NetworkDetailsViewController {
     enum Constants {
-        static let nodesSectionIndex: Int = 2
         static let connectionStateRowIndex: Int = 0
         static let connectionModeRowIndex: Int = 1
         static let headerHeight: CGFloat = 37.0

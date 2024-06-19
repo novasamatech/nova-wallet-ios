@@ -60,7 +60,7 @@ extension NetworkDetailsViewLayout {
             case unknown(String)
         }
 
-        let index: Int
+        let indexPath: IndexPath
         let name: String
         let url: String
         let connectionState: ConnectionState

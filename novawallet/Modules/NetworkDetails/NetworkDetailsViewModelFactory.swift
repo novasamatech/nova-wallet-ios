@@ -18,21 +18,27 @@ class NetworkDetailsViewModelFactory {
     }
 
     func createViewModel(
-        for network: ChainModel,
-        nodes: [ChainNodeModel],
+        for chain: ChainModel,
+        nodes: NetworkDetailsPresenter.SortedNodes,
         selectedNode: ChainNodeModel?,
-        nodesIndexes: [String: Int],
+        nodesIndexes: [String: IndexPath],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Details {
         Details(
-            networkViewModel: networkViewModelFactory.createViewModel(from: network),
+            networkViewModel: networkViewModelFactory.createViewModel(from: chain),
             sections: [
-                createSwitchesSection(for: network),
-                createAddNodeSection(),
-                createNodesSection(
-                    with: nodes,
+                createSwitchesSection(for: chain),
+                createAddNodeSection(
+                    with: nodes.custom,
                     selectedNode: selectedNode,
-                    chain: network,
+                    chain: chain,
+                    nodesIndexes: nodesIndexes,
+                    connectionStates: connectionStates
+                ),
+                createNodesSection(
+                    with: nodes.remote,
+                    selectedNode: selectedNode,
+                    chain: chain,
                     nodesIndexes: nodesIndexes,
                     connectionStates: connectionStates
                 )
@@ -44,26 +50,56 @@ class NetworkDetailsViewModelFactory {
         with nodes: [ChainNodeModel],
         selectedNode: ChainNodeModel?,
         chain: ChainModel,
-        nodesIndexes: [String: Int],
+        nodesIndexes: [String: IndexPath],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Section {
         Section(
             title: R.string.localizable.networkDetailsDefaultNodesSectionTitle(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
             ).uppercased(),
-            rows: nodes.map {
-                let selected = $0.url == selectedNode?.url
-
-                return .node(
-                    createNodeViewModel(
-                        for: $0,
-                        selected: chain.syncMode.enabled() ? selected : false,
-                        chain: chain,
-                        indexes: nodesIndexes,
-                        connectionStates: connectionStates
-                    )
+            rows: createNodeViewModels(
+                for: nodes,
+                chain: chain,
+                selectedNode: selectedNode,
+                indexes: nodesIndexes,
+                connectionStates: connectionStates
+            )
+        )
+    }
+    
+    func createAddNodeSection(
+        with nodes: [ChainNodeModel],
+        selectedNode: ChainNodeModel?,
+        chain: ChainModel,
+        nodesIndexes: [String: IndexPath],
+        connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
+    ) -> Section {
+        var rows: [NetworkDetailsViewLayout.Row] = [
+            .addCustomNode(
+                .init(
+                    title: R.string.localizable.networkDetailsAddCustomNode(
+                        preferredLanguages: localizationManager.selectedLocale.rLanguages
+                    ),
+                    icon: nil
                 )
-            }
+            )
+        ]
+        
+        let nodeRows = createNodeViewModels(
+            for: nodes,
+            chain: chain,
+            selectedNode: selectedNode,
+            indexes: nodesIndexes,
+            connectionStates: connectionStates
+        )
+        
+        rows.append(contentsOf: nodeRows)
+        
+        return Section(
+            title: R.string.localizable.networkDetailsCustomNodesSectionTitle(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ).uppercased(),
+            rows: rows
         )
     }
 }
@@ -102,30 +138,34 @@ private extension NetworkDetailsViewModelFactory {
             ]
         )
     }
+    
+    func createNodeViewModels(
+        for nodes: [ChainNodeModel],
+        chain: ChainModel,
+        selectedNode: ChainNodeModel?,
+        indexes: [String: IndexPath],
+        connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
+    ) -> [NetworkDetailsViewLayout.Row] {
+        nodes.map {
+            let selected = $0.url == selectedNode?.url
 
-    func createAddNodeSection() -> Section {
-        Section(
-            title: R.string.localizable.networkDetailsCustomNodesSectionTitle(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ).uppercased(),
-            rows: [
-                .addCustomNode(
-                    .init(
-                        title: R.string.localizable.networkDetailsAddCustomNode(
-                            preferredLanguages: localizationManager.selectedLocale.rLanguages
-                        ),
-                        icon: nil
-                    )
+            return .node(
+                createNodeViewModel(
+                    for: $0,
+                    selected: chain.syncMode.enabled() ? selected : false,
+                    chain: chain,
+                    indexes: indexes,
+                    connectionStates: connectionStates
                 )
-            ]
-        )
+            )
+        }
     }
 
     func createNodeViewModel(
         for node: ChainNodeModel,
         selected: Bool,
         chain: ChainModel,
-        indexes: [String: Int],
+        indexes: [String: IndexPath],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Node {
         var connectionState: Node.ConnectionState = chain.syncMode.enabled()
@@ -158,7 +198,7 @@ private extension NetworkDetailsViewModelFactory {
         }
 
         return Node(
-            index: indexes[node.url]!,
+            indexPath: indexes[node.url]!,
             name: node.name,
             url: node.url,
             connectionState: connectionState,

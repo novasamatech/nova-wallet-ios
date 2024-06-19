@@ -1,3 +1,5 @@
+import Foundation
+
 protocol NetworkDetailsViewProtocol: ControllerBackedProtocol {
     func update(with viewModel: NetworkDetailsViewLayout.Model)
     func updateNodes(with viewModel: NetworkDetailsViewLayout.Section)
@@ -8,7 +10,7 @@ protocol NetworkDetailsPresenterProtocol: AnyObject {
     func setNetwork(enabled: Bool)
     func setAutoBalance(enabled: Bool)
     func addNode()
-    func selectNode(at index: Int)
+    func selectNode(with url: String)
 }
 
 protocol NetworkDetailsInteractorInputProtocol: AnyObject {
