@@ -90,6 +90,12 @@ final class MainTabBarInteractor {
             onLaunchQueue.runNext()
         }
     }
+
+    private func subscribeCloudSyncMonitor() {
+        cloudBackupMediator.subscribeSyncMonitorStatus(for: self) { [weak self] status in
+            self?.presenter?.didReceiveCloudSync(status: status)
+        }
+    }
 }
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
@@ -113,6 +119,8 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         } else {
             onLaunchQueue.runNext()
         }
+
+        subscribeCloudSyncMonitor()
     }
 
     func setPushNotificationsSetupScreenSeen() {

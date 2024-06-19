@@ -2,6 +2,7 @@ import UIKit
 
 protocol MainTabBarViewProtocol: ControllerBackedProtocol {
     func didReplaceView(for newView: UIViewController, for index: Int)
+    func setIsSyncing(_ isSyncing: Bool)
 }
 
 protocol MainTabBarPresenterProtocol: AnyObject {
@@ -23,6 +24,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didFoundCloudBackup(issue: CloudBackupSyncResult.Issue)
     func didRequestPushNotificationsSetupOpen()
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
+    func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
 }
 
 protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible, ModalAlertPresenting {

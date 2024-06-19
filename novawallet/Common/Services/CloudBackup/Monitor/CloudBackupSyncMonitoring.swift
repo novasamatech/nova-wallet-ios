@@ -1,10 +1,10 @@
 import Foundation
 
-enum CloudBackupSyncMonitorStatus {
+enum CloudBackupSyncMonitorStatus: Equatable {
     case noFile
     case notDownloaded(requested: Bool)
-    case downloading(Result<Double, Error>)
-    case uploading(Result<Double, Error>)
+    case downloading(Result<Double, NSError>)
+    case uploading(Result<Double, NSError>)
     case synced
 }
 

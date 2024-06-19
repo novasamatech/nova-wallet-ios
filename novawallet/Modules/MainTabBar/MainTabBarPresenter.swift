@@ -102,4 +102,13 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
             }
         )
     }
+
+    func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?) {
+        switch status {
+        case .noFile, .synced, nil:
+            view?.setIsSyncing(false)
+        case .notDownloaded, .downloading, .uploading:
+            view?.setIsSyncing(true)
+        }
+    }
 }
