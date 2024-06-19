@@ -5,3 +5,7 @@ protocol NetworkManageNodeViewProtocol: ControllerBackedProtocol {
 protocol NetworkManageNodePresenterProtocol: AnyObject {
     func setup()
 }
+
+protocol NetworkManageNodeWireframeProtocol: AnyObject {
+    func dismiss(_ view: NetworkManageNodeViewProtocol?)
+}

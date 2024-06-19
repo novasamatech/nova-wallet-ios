@@ -3,6 +3,7 @@ import SoraFoundation
 
 final class NetworkManageNodePresenter {
     weak var view: NetworkManageNodeViewProtocol?
+    var wireframe: NetworkManageNodeWireframeProtocol
     
     var onNodeEdit: () -> Void
     var onNodeDelete: () -> Void
@@ -10,11 +11,13 @@ final class NetworkManageNodePresenter {
     let node: ChainNodeModel
 
     init(
+        wireframe: NetworkManageNodeWireframeProtocol,
         node: ChainNodeModel,
         localizationManager: LocalizationManagerProtocol,
         onNodeEdit: @escaping () -> Void,
         onNodeDelete: @escaping () -> Void
     ) {
+        self.wireframe = wireframe
         self.node = node
         
         self.onNodeEdit = onNodeEdit
@@ -30,16 +33,26 @@ final class NetworkManageNodePresenter {
                     preferredLanguages: selectedLocale.rLanguages
                 ),
                 icon: R.image.iconPencilEdit(),
-                onSelection: onNodeEdit,
-                negative: false
+                negative: false,
+                onSelection: { [weak self] in
+                    guard let self else { return }
+                    
+                    onNodeEdit()
+                    wireframe.dismiss(view)
+                }
             ),
             .init(
                 title: R.string.localizable.networkManageNodeDelete(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
                 icon: R.image.iconDelete(),
-                onSelection: onNodeDelete,
-                negative: true
+                negative: true,
+                onSelection: { [weak self] in
+                    guard let self else { return }
+                    
+                    onNodeDelete()
+                    wireframe.dismiss(view)
+                }
             )
         ]
 

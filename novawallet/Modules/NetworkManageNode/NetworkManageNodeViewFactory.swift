@@ -7,7 +7,9 @@ struct NetworkManageNodeViewFactory {
         onNodeEdit: @escaping () -> Void,
         onNodeDelete: @escaping () -> Void
     ) -> NetworkManageNodeViewProtocol? {
+        let wireframe = NetworkManageNodeWireframe()
         let presenter = NetworkManageNodePresenter(
+            wireframe: wireframe,
             node: node,
             localizationManager: LocalizationManager.shared,
             onNodeEdit: onNodeEdit,

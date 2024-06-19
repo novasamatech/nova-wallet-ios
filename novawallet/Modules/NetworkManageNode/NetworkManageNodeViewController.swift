@@ -101,8 +101,8 @@ struct NetworkManageNodeViewModel {
     struct Action {
         let title: String
         let icon: UIImage?
-        let onSelection: () -> Void
         let negative: Bool
+        let onSelection: () -> Void
     }
 
     let title: String

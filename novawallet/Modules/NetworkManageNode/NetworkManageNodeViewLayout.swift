@@ -53,25 +53,30 @@ final class NetworkManageNodeViewLayout: UIView {
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+
+        let titleContainer = UIView()
+        titleContainer.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(UIConstants.horizontalInset)
+            make.top.bottom.equalToSuperview()
+        }
         
-        containerView.layoutMargins = UIEdgeInsets(
-            top: 0.0,
-            left: UIConstants.horizontalInset,
-            bottom: 0.0,
-            right: UIConstants.horizontalInset
-        )
-
-        containerView.stackView.addArrangedSubview(titleLabel)
-        containerView.stackView.addArrangedSubview(nodeNameLabel)
-
+        let nodeNameContainer = UIView()
+        nodeNameContainer.addSubview(nodeNameLabel)
+        nodeNameLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(UIConstants.horizontalInset)
+            make.top.bottom.equalToSuperview()
+        }
+        
+        containerView.stackView.addArrangedSubview(titleContainer)
+        containerView.stackView.addArrangedSubview(nodeNameContainer)
         containerView.stackView.setCustomSpacing(
             NetworkManageNodeMeasurement.titleSpacing,
-            after: titleLabel
+            after: titleContainer
         )
-
         containerView.stackView.setCustomSpacing(
             NetworkManageNodeMeasurement.nodeNameSpacing,
-            after: nodeNameLabel
+            after: nodeNameContainer
         )
     }
 }
