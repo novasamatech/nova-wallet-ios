@@ -49,8 +49,13 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
         )
     }
 
-    func selectNode(with url: String) {
-        guard let node = nodes[url] else { return }
+    func selectNode(at indexPath: IndexPath) {
+        let node: ChainNodeModel = switch indexPath.section {
+        case Constants.addNodeSectionIndex:
+            sortedNodes.custom[indexPath.row]
+        default:
+            sortedNodes.remote[indexPath.row]
+        }
         
         interactor.selectNode(node)
     }

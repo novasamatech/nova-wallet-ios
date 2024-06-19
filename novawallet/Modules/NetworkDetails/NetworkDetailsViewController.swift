@@ -129,7 +129,7 @@ extension NetworkDetailsViewController: UITableViewDelegate {
 
         switch row {
         case let .node(model):
-            presenter.selectNode(with: model.url)
+            presenter.selectNode(at: indexPath)
         case .addCustomNode:
             presenter.addNode()
         default:

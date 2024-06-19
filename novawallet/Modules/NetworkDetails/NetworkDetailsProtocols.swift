@@ -10,7 +10,7 @@ protocol NetworkDetailsPresenterProtocol: AnyObject {
     func setNetwork(enabled: Bool)
     func setAutoBalance(enabled: Bool)
     func addNode()
-    func selectNode(with url: String)
+    func selectNode(at indexPath: IndexPath)
 }
 
 protocol NetworkDetailsInteractorInputProtocol: AnyObject {
