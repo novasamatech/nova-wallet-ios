@@ -229,9 +229,13 @@ private extension NetworkDetailsViewModelFactory {
             resolvingAgainstBaseURL: false
         )
         urlComponents?.path = ""
+        urlComponents?.queryItems = []
         
-        let trimmedUrl = urlComponents?.url
+        let trimmedUrlString = urlComponents?
+            .url?
+            .absoluteString
+            .trimmingCharacters(in: CharacterSet(charactersIn:"?"))
         
-        return trimmedUrl?.absoluteString ?? urlString
+        return trimmedUrlString ?? urlString
     }
 }
