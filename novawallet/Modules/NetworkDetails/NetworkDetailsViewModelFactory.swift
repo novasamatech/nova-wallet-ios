@@ -196,11 +196,11 @@ private extension NetworkDetailsViewModelFactory {
                 )
             }
         }
-
+        
         return Node(
             indexPath: indexes[node.url]!,
             name: node.name,
-            url: node.url,
+            url: trimUrlPath(urlString: node.url),
             connectionState: connectionState,
             selected: selected,
             dimmed: chain.connectionMode == .autoBalanced
@@ -221,5 +221,17 @@ private extension NetworkDetailsViewModelFactory {
         default:
             .pinged(.high(string))
         }
+    }
+    
+    func trimUrlPath(urlString: String) -> String {
+        var urlComponents = URLComponents(
+            url: URL(string: urlString)!,
+            resolvingAgainstBaseURL: false
+        )
+        urlComponents?.path = ""
+        
+        let trimmedUrl = urlComponents?.url
+        
+        return trimmedUrl?.absoluteString ?? urlString
     }
 }
