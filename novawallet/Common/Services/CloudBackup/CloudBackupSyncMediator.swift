@@ -49,6 +49,7 @@ protocol CloudBackupSyncMediating {
 final class CloudBackupSyncMediator {
     let syncService: CloudBackupSyncServiceProtocol
 
+    private let serviceFactory: CloudBackupServiceFactoryProtocol
     private let eventCenter: EventCenterProtocol
     private let selectedWalletSettings: SelectedWalletSettings
     private let operationQueue: OperationQueue
@@ -66,11 +67,13 @@ final class CloudBackupSyncMediator {
 
     init(
         syncService: CloudBackupSyncServiceProtocol,
+        serviceFactory: CloudBackupServiceFactoryProtocol,
         eventCenter: EventCenterProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.serviceFactory = serviceFactory
         self.syncService = syncService
         self.eventCenter = eventCenter
         self.selectedWalletSettings = selectedWalletSettings
@@ -83,15 +86,7 @@ final class CloudBackupSyncMediator {
             return
         }
 
-        let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 1
-
-        let monitor = ICloudBackupSyncMonitor(
-            filename: CloudBackup.walletsFilename,
-            operationQueue: operationQueue,
-            notificationCenter: NotificationCenter.default,
-            logger: logger
-        )
+        let monitor = serviceFactory.createSyncStatusMonitoring()
 
         backupSyncMonitor = monitor
 

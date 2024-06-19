@@ -6,27 +6,19 @@ final class ICloudBackupServiceFactory {
     let fileManager: FileManager
     let fileCoordinator: NSFileCoordinator
     let logger: LoggerProtocol
-    let operationQueue: OperationQueue
     let notificationCenter: NotificationCenter
-    let monitoringQueue: OperationQueue
 
     init(
         containerId: String = CloudBackup.containerId,
         fileManager: FileManager = FileManager.default,
         fileCoordinator: NSFileCoordinator = NSFileCoordinator(),
-        operationQueue: OperationQueue,
         notificationCenter: NotificationCenter = .default,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.containerId = containerId
         self.fileManager = fileManager
         self.fileCoordinator = fileCoordinator
-        self.operationQueue = operationQueue
         self.notificationCenter = notificationCenter
-
-        monitoringQueue = OperationQueue()
-        monitoringQueue.maxConcurrentOperationCount = 1
-
         self.logger = logger
     }
 }
@@ -74,6 +66,18 @@ extension ICloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
             cryptoManager: createCryptoManager(),
             validator: ICloudBackupValidator(),
             keychain: keychain
+        )
+    }
+
+    func createSyncStatusMonitoring() -> CloudBackupSyncMonitoring {
+        let monitoringQueue = OperationQueue()
+        monitoringQueue.maxConcurrentOperationCount = 1
+
+        return ICloudBackupSyncMonitor(
+            filename: CloudBackup.walletsFilename,
+            operationQueue: monitoringQueue,
+            notificationCenter: notificationCenter,
+            logger: logger
         )
     }
 }

@@ -10,4 +10,5 @@ protocol CloudBackupServiceFactoryProtocol {
     func createDiffCalculator() -> CloudBackupDiffCalculating
     func createSecretsExporter(from keychain: KeystoreProtocol) -> CloudBackupSecretsExporting
     func createSecretsImporter(to keychain: KeystoreProtocol) -> CloudBackupSecretsImporting
+    func createSyncStatusMonitoring() -> CloudBackupSyncMonitoring
 }

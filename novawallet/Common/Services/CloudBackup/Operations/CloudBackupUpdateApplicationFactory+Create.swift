@@ -4,7 +4,7 @@ import SoraKeystore
 extension CloudBackupUpdateApplicationFactory {
     static func createDefault() -> CloudBackupUpdateApplicationFactory {
         let operationQueue = OperationManagerFacade.cloudBackupQueue
-        let serviceFactory = ICloudBackupServiceFactory(operationQueue: operationQueue)
+        let serviceFactory = ICloudBackupServiceFactory()
         let syncMetadataManaging = CloudBackupSyncMetadataManager(
             settings: SettingsManager.shared,
             keystore: Keychain()
