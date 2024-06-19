@@ -1,4 +1,5 @@
 import Foundation
+import SoraUI
 
 final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
     func showAddNode(
@@ -13,5 +14,24 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
             addNodeView.controller,
             animated: true
         )
+    }
+    
+    func showManageNode(
+        from view: NetworkDetailsViewProtocol?,
+        node: ChainNodeModel,
+        onNodeEdit: @escaping () -> Void,
+        onNodeDelete: @escaping () -> Void
+    ) {
+        guard let manageNode = NetworkManageNodeViewFactory.createView(
+            node: node, onNodeEdit: onNodeEdit,
+            onNodeDelete: onNodeDelete
+        ) else { return }
+        
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+
+        manageNode.controller.modalTransitioningFactory = factory
+        manageNode.controller.modalPresentationStyle = .custom
+        
+        view?.controller.present(manageNode.controller, animated: true)
     }
 }

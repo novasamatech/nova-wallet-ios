@@ -1,11 +1,7 @@
-protocol NetworkManageNodeViewProtocol: AnyObject {}
+protocol NetworkManageNodeViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: NetworkManageNodeViewModel)
+}
 
 protocol NetworkManageNodePresenterProtocol: AnyObject {
     func setup()
 }
-
-protocol NetworkManageNodeInteractorInputProtocol: AnyObject {}
-
-protocol NetworkManageNodeInteractorOutputProtocol: AnyObject {}
-
-protocol NetworkManageNodeWireframeProtocol: AnyObject {}

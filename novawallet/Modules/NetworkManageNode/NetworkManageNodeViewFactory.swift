@@ -1,16 +1,28 @@
 import Foundation
+import SoraFoundation
 
 struct NetworkManageNodeViewFactory {
-    static func createView() -> NetworkManageNodeViewProtocol? {
-        let interactor = NetworkManageNodeInteractor()
-        let wireframe = NetworkManageNodeWireframe()
-
-        let presenter = NetworkManageNodePresenter(interactor: interactor, wireframe: wireframe)
+    static func createView(
+        node: ChainNodeModel,
+        onNodeEdit: @escaping () -> Void,
+        onNodeDelete: @escaping () -> Void
+    ) -> NetworkManageNodeViewProtocol? {
+        let presenter = NetworkManageNodePresenter(
+            node: node,
+            localizationManager: LocalizationManager.shared,
+            onNodeEdit: onNodeEdit,
+            onNodeDelete: onNodeDelete
+        )
 
         let view = NetworkManageNodeViewController(presenter: presenter)
+        
+        let preferredHeight = NetworkManageNodeMeasurement.measurePreferredHeight(
+            for: [onNodeEdit, onNodeDelete].count
+        )
+
+        view.controller.preferredContentSize = CGSize(width: 0.0, height: preferredHeight)
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }

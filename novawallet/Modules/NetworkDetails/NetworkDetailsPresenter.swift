@@ -124,7 +124,8 @@ private extension NetworkDetailsPresenter {
             nodes: sortedNodes,
             selectedNode: selectedNode,
             nodesIndexes: nodesIndexes,
-            connectionStates: connectionStates
+            connectionStates: connectionStates,
+            onTapMore: editNode(at:)
         )
         view?.update(with: viewModel)
     }
@@ -144,7 +145,8 @@ private extension NetworkDetailsPresenter {
                 selectedNode: selectedNode,
                 chain: chain,
                 nodesIndexes: nodesIndexes,
-                connectionStates: connectionStates
+                connectionStates: connectionStates,
+                onTapMore: editNode(at:)
             )
         case .remote:
             viewModelFactory.createNodesSection(
@@ -182,6 +184,17 @@ private extension NetworkDetailsPresenter {
                     section: Constants.remoteNodesSectionIndex
                 )
             }
+    }
+    
+    func editNode(at indexPath: IndexPath) {
+        let node = sortedNodes.custom[indexPath.row - Constants.addNodeSectionNodeIndexOffset]
+        
+        wireframe.showManageNode(
+            from: view,
+            node: node,
+            onNodeEdit: { print("EDIT") },
+            onNodeDelete: { print("DELETE") }
+        )
     }
 }
 

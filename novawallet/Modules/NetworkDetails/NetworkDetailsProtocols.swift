@@ -37,4 +37,10 @@ protocol NetworkDetailsWireframeProtocol: AnyObject {
         from view: NetworkDetailsViewProtocol?,
         chainId: ChainModel.Id
     )
+    func showManageNode(
+        from view: NetworkDetailsViewProtocol?,
+        node: ChainNodeModel,
+        onNodeEdit: @escaping () -> Void,
+        onNodeDelete: @escaping () -> Void
+    )
 }

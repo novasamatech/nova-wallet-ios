@@ -66,6 +66,9 @@ extension NetworkDetailsViewLayout {
         let connectionState: ConnectionState
         let selected: Bool
         let dimmed: Bool
+        let custom: Bool
+        
+        let onTapMore: ((IndexPath) -> Void)?
     }
 
     enum Row {
