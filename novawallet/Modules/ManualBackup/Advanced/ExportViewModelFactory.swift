@@ -26,7 +26,7 @@ final class ExportViewModelFactory {
 
             sections.append(
                 .headerTitle(
-                    text: R.string.localizable.advancedExportCustomKeyHeaderTitle(
+                    text: R.string.localizable.manualBackupCustomKey(
                         preferredLanguages: selectedLocale.rLanguages
                     )
                 )

@@ -1600,7 +1600,6 @@
 "mnemonic.card.cover.message.message" = "Make sure no one can see your screen and do not take screenshots";
 "mnemonic.card.revealed.header.message" = "Please %@ anyone";
 "mnemonic.card.revealed.header.message.highlighted" = "do not share with";
-"advanced.export.custom.key.header.title" = "Custom key";
 "advanced.export.header.message" = "Do not share any of this information with anyone - If you do you will permanently and irretreveably lose all of your assets";
 "advanced.export.json.button.title" = "Export JSON file";
 "chain.accounts.list.header" = "Select the key to back up";
@@ -1657,3 +1656,5 @@
 "restore.json.download.button" = "Download Restore JSON";
 "common.status.backup.syncing" = "Backup Syncing...";
 "common.status.backup.synced" = "Backup Synced";
+"manual.backup.common.key" = "Default key";
+"manual.backup.custom.key" = "Custom key";

@@ -631,6 +631,7 @@
 		0CF6928C2C231CA5000FC395 /* SharedStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF6928B2C231CA5000FC395 /* SharedStatusView.swift */; };
 		0CF6928E2C23EBEA000FC395 /* SharedSyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */; };
 		0CF692902C240E91000FC395 /* MockCloudBackupSyncMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF6928F2C240E91000FC395 /* MockCloudBackupSyncMonitor.swift */; };
+		0CF692922C2412AB000FC395 /* BackupMnemonicAccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692912C2412AB000FC395 /* BackupMnemonicAccountType.swift */; };
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
 		0CFA16132B0CD8A0007AF885 /* GovSpentAmountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */; };
@@ -5438,6 +5439,7 @@
 		0CF6928B2C231CA5000FC395 /* SharedStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStatusView.swift; sourceTree = "<group>"; };
 		0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSyncStatus.swift; sourceTree = "<group>"; };
 		0CF6928F2C240E91000FC395 /* MockCloudBackupSyncMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupSyncMonitor.swift; sourceTree = "<group>"; };
+		0CF692912C2412AB000FC395 /* BackupMnemonicAccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupMnemonicAccountType.swift; sourceTree = "<group>"; };
 		0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameView.swift; sourceTree = "<group>"; };
 		0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupErrorPresentable.swift; sourceTree = "<group>"; };
 		0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountExtractor.swift; sourceTree = "<group>"; };
@@ -11738,6 +11740,7 @@
 				B268F6C7DE7BF3495829C2E4 /* BackupMnemonicCardViewController.swift */,
 				15DD6F8FF5A73F29F7980D4F /* BackupMnemonicCardViewLayout.swift */,
 				293D06BBDA4C28526DAA1018 /* BackupMnemonicCardViewFactory.swift */,
+				0CF692912C2412AB000FC395 /* BackupMnemonicAccountType.swift */,
 			);
 			path = BackupMnemonicCard;
 			sourceTree = "<group>";
@@ -26846,6 +26849,7 @@
 				3592E885646B3ED9F2717412 /* GovernanceRevokeDelegationTracksViewController.swift in Sources */,
 				1F205FE059A7099A1A7391EC /* GovernanceRevokeDelegationTracksViewFactory.swift in Sources */,
 				39373DDCEE7CB9D04C310BC9 /* GovernanceRevokeDelegationConfirmProtocols.swift in Sources */,
+				0CF692922C2412AB000FC395 /* BackupMnemonicAccountType.swift in Sources */,
 				676B1511C4A34528C668751D /* GovernanceRevokeDelegationConfirmWireframe.swift in Sources */,
 				DD35DDD9114DF482D04F7498 /* GovernanceRevokeDelegationConfirmPresenter.swift in Sources */,
 				7D3A5862F4A8F757A091F422 /* GovernanceRevokeDelegationConfirmInteractor.swift in Sources */,

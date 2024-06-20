@@ -32,8 +32,17 @@ struct BackupMnemonicCardViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
+        let keyType: BackupMnemonicKeyType = if chain != nil {
+            .customKey
+        } else if metaAccount.chainAccounts.isEmpty {
+            .defaultKey
+        } else {
+            .commonKey
+        }
+
         let view = BackupMnemonicCardViewController(
             presenter: presenter,
+            keyType: keyType,
             localizationManager: LocalizationManager.shared
         )
 
