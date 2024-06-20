@@ -25,8 +25,7 @@ final class CloudBackupFacadeTests: XCTestCase {
             let operationQueue = OperationQueue()
             
             let serviceFactory = ICloudBackupServiceFactory(
-                containerId: CloudBackup.containerId,
-                operationQueue: operationQueue
+                containerId: CloudBackup.containerId
             )
             
             let facade = CloudBackupServiceFacade(
@@ -74,8 +73,7 @@ final class CloudBackupFacadeTests: XCTestCase {
         let operationQueue = OperationQueue()
         
         let serviceFactory = ICloudBackupServiceFactory(
-            containerId: CloudBackup.containerId,
-            operationQueue: operationQueue
+            containerId: CloudBackup.containerId
         )
         
         let facade = CloudBackupServiceFacade(
