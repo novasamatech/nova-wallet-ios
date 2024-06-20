@@ -93,8 +93,10 @@ final class MainTabBarInteractor {
 
     private func subscribeCloudSyncMonitor() {
         cloudBackupMediator.subscribeSyncMonitorStatus(for: self) { [weak self] oldStatus, newStatus in
-            self?.presenter?.didReceiveCloudSync(status: newStatus)
-            self?.checkNeededSync(for: oldStatus, newStatus: newStatus)
+            self?.securedLayer.scheduleExecutionIfAuthorized {
+                self?.presenter?.didReceiveCloudSync(status: newStatus)
+                self?.checkNeededSync(for: oldStatus, newStatus: newStatus)
+            }
         }
     }
 
