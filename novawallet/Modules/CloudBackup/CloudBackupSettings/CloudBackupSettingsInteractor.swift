@@ -48,8 +48,8 @@ final class CloudBackupSettingsInteractor {
     private func subscribeSyncMonitorStatus() {
         cloudBackupSyncMediator.unsubscribeSyncMonitorStatus(for: self)
 
-        cloudBackupSyncMediator.subscribeSyncMonitorStatus(for: self) { [weak self] status in
-            self?.presenter?.didReceive(syncMonitorStatus: status)
+        cloudBackupSyncMediator.subscribeSyncMonitorStatus(for: self) { [weak self] _, newStatus in
+            self?.presenter?.didReceive(syncMonitorStatus: newStatus)
         }
     }
 }

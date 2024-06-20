@@ -35,7 +35,7 @@ protocol CloudBackupSyncMediating {
 
     func subscribeSyncMonitorStatus(
         for target: AnyObject,
-        closure: @escaping (CloudBackupSyncMonitorStatus?) -> Void
+        closure: @escaping (CloudBackupSyncMonitorStatus?, CloudBackupSyncMonitorStatus?) -> Void
     )
 
     func unsubscribeSyncMonitorStatus(for target: AnyObject)
@@ -283,14 +283,14 @@ extension CloudBackupSyncMediator: CloudBackupSyncMediating {
 
     func subscribeSyncMonitorStatus(
         for target: AnyObject,
-        closure: @escaping (CloudBackupSyncMonitorStatus?) -> Void
+        closure: @escaping (CloudBackupSyncMonitorStatus?, CloudBackupSyncMonitorStatus?) -> Void
     ) {
         stateObservable.addObserver(
             with: target,
             sendStateOnSubscription: true,
             queue: .main
-        ) { _, newState in
-            closure(newState)
+        ) { oldState, newState in
+            closure(oldState, newState)
         }
     }
 

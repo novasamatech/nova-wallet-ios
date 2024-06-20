@@ -92,8 +92,22 @@ final class MainTabBarInteractor {
     }
 
     private func subscribeCloudSyncMonitor() {
-        cloudBackupMediator.subscribeSyncMonitorStatus(for: self) { [weak self] status in
-            self?.presenter?.didReceiveCloudSync(status: status)
+        cloudBackupMediator.subscribeSyncMonitorStatus(for: self) { [weak self] oldStatus, newStatus in
+            self?.presenter?.didReceiveCloudSync(status: newStatus)
+            self?.checkNeededSync(for: oldStatus, newStatus: newStatus)
+        }
+    }
+
+    private func checkNeededSync(
+        for oldStatus: CloudBackupSyncMonitorStatus?,
+        newStatus: CloudBackupSyncMonitorStatus?
+    ) {
+        guard let oldStatus, let newStatus else {
+            return
+        }
+
+        if oldStatus.isDowndloading, !newStatus.isSyncing {
+            cloudBackupMediator.sync(for: .unknown)
         }
     }
 }
