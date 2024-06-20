@@ -201,7 +201,9 @@ private extension NetworkDetailsPresenter {
                     chainId: chain.chainId
                 )
             },
-            onNodeDelete: { print("DELETE") }
+            onNodeDelete: { [weak self] in
+                self?.interactor.deleteNode(node)
+            }
         )
     }
 }

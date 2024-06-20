@@ -18,6 +18,7 @@ protocol NetworkDetailsInteractorInputProtocol: AnyObject {
     func setSetNetworkConnection(enabled: Bool)
     func setAutoBalance(enabled: Bool)
     func selectNode(_ node: ChainNodeModel)
+    func deleteNode(_ node: ChainNodeModel)
 }
 
 protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
