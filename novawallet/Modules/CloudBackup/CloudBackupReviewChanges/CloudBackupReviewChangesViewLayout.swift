@@ -20,7 +20,7 @@ final class CloudBackupReviewChangesViewLayout: GenericCollectionViewLayout<Mult
 
         view.sView.applyDefaultStyle()
         view.fView.applySecondaryDefaultStyle()
-        
+
         view.backgroundColor = R.color.colorBottomSheetBackground()
     }
 

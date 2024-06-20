@@ -8,7 +8,7 @@ final class CloudBackupEnterPasswordSetWireframe: ImportCloudPasswordWireframePr
     ) {
         view?.controller.navigationController?.popViewController(animated: true)
 
-        presentSuccessNotification(
+        presentMultilineSuccessNotification(
             R.string.localizable.commonPasswordEnteredCorrectly(
                 preferredLanguages: locale.rLanguages
             ),
@@ -20,7 +20,7 @@ final class CloudBackupEnterPasswordSetWireframe: ImportCloudPasswordWireframePr
         let navigationController = view?.controller.navigationController
         navigationController?.popViewController(animated: true)
 
-        presentSuccessNotification(
+        presentMultilineSuccessNotification(
             R.string.localizable.cloudBackupDeleted(
                 preferredLanguages: locale.rLanguages
             ),
