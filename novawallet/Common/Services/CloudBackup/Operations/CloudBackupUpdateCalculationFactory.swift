@@ -35,6 +35,7 @@ enum CloudBackupSyncResult: Equatable {
         case newBackupCreationNeeded
         case remoteReadingFailed
         case remoteDecodingFailed
+        case remoteEmpty
         case internalFailure
     }
 
@@ -118,6 +119,10 @@ final class CloudBackupUpdateCalculationFactory {
                 }
 
                 if lastSyncTime < remoteModel.publicData.modifiedAt {
+                    guard !remoteModel.publicData.wallets.isEmpty else {
+                        return .issue(.remoteEmpty)
+                    }
+
                     let state = CloudBackupSyncResult.UpdateLocal(
                         localWallets: Set(wallets),
                         remoteModel: remoteModel,

@@ -13,7 +13,7 @@ extension CloudBackupSettingsIssue {
         switch backupIssue {
         case .missingPassword, .invalidPassword, .newBackupCreationNeeded:
             self = .enterPassword
-        case .remoteDecodingFailed:
+        case .remoteDecodingFailed, .remoteEmpty:
             self = .emptyOrBroken
         case .remoteReadingFailed, .internalFailure:
             self = .icloudError

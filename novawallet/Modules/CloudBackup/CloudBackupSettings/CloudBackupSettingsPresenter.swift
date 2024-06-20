@@ -116,7 +116,7 @@ final class CloudBackupSettingsPresenter {
             if waitingBackupEnable {
                 wireframe.showBackupCreation(from: view)
             }
-        case .remoteDecodingFailed:
+        case .remoteDecodingFailed, .remoteEmpty:
             wireframe.showCloudBackupDelete(
                 from: view,
                 reason: .brokenOrEmpty,
@@ -188,7 +188,7 @@ final class CloudBackupSettingsPresenter {
         switch issue {
         case .missingPassword, .invalidPassword:
             wireframe.showEnterPassword(from: view)
-        case .remoteDecodingFailed:
+        case .remoteDecodingFailed, .remoteEmpty:
             wireframe.showCloudBackupDelete(
                 from: view,
                 reason: .brokenOrEmpty,
