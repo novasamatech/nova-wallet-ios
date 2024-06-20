@@ -1,6 +1,6 @@
 import UIKit
 
-final class NetworkAddNodeViewLayout: ScrollableContainerLayoutView {
+final class NetworkNodeViewLayout: ScrollableContainerLayoutView {
     let titleLabel: UILabel = .create { $0.apply(style: .boldTitle2Primary) }
     let titleLabelFor: UILabel = .create { $0.apply(style: .boldTitle2Primary) }
     
@@ -77,11 +77,20 @@ final class NetworkAddNodeViewLayout: ScrollableContainerLayoutView {
     }
 }
 
+// MARK: Model
+
+extension NetworkNodeViewLayout {
+    struct LoadingButtonViewModel {
+        let title: String
+        let enabled: Bool
+        let loading: Bool
+    }
+}
+
 // MARK: Private
 
-private extension NetworkAddNodeViewLayout {
+private extension NetworkNodeViewLayout {
     func applyLocalization() {
-        titleLabel.text = R.string.localizable.networkNodeAddTitle(preferredLanguages: locale.rLanguages)
         titleLabelFor.text = R.string.localizable.commonFor(preferredLanguages: locale.rLanguages).lowercased()
         
         nameTitleLabel.text = R.string.localizable.networkInfoName(preferredLanguages: locale.rLanguages)

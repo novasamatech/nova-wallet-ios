@@ -396,6 +396,36 @@ extension ChainModel {
             connectionMode: connectionMode
         )
     }
+    
+    func replacing(
+        _ oldNode: ChainNodeModel,
+        with newNode: ChainNodeModel
+    ) -> ChainModel {
+        var mutNodes = nodes
+        
+        mutNodes.remove(oldNode)
+        mutNodes.insert(newNode)
+        
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: mutNodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
 
     func byChanging(
         assets: Set<AssetModel>? = nil,

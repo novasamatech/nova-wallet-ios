@@ -6,12 +6,27 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
         from view: NetworkDetailsViewProtocol?,
         chainId: ChainModel.Id
     ) {
-        guard let addNodeView = NetworkAddNodeViewFactory.createView(with: chainId) else {
+        guard let addNodeView = NetworkNodeViewFactory.createNodeAddView(with: chainId) else {
             return
         }
 
         view?.controller.navigationController?.pushViewController(
             addNodeView.controller,
+            animated: true
+        )
+    }
+    
+    func showEditNode(
+        from view: NetworkDetailsViewProtocol?,
+        node: ChainNodeModel,
+        chainId: ChainModel.Id
+    ) {
+        guard let editNodeView = NetworkNodeViewFactory.createNodeEditView(with: chainId, node) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            editNodeView.controller,
             animated: true
         )
     }

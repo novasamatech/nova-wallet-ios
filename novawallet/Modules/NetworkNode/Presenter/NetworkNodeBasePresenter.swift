@@ -1,21 +1,21 @@
 import Foundation
 import SoraFoundation
 
-final class NetworkAddNodePresenter {
-    weak var view: NetworkAddNodeViewProtocol?
-    let wireframe: NetworkAddNodeWireframeProtocol
-    let interactor: NetworkAddNodeInteractorInputProtocol
+class NetworkNodeBasePresenter {
+    weak var view: NetworkNodeViewProtocol?
+    let wireframe: NetworkNodeWireframeProtocol
+    private let interactor: NetworkNodeBaseInteractorInputProtocol
     
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
 
-    private var partialURL: String?
-    private var partialName: String?
+    var partialURL: String?
+    var partialName: String?
     
-    private var chain: ChainModel?
+    var chain: ChainModel?
 
     init(
-        interactor: NetworkAddNodeInteractorInputProtocol,
-        wireframe: NetworkAddNodeWireframeProtocol,
+        interactor: NetworkNodeBaseInteractorInputProtocol,
+        wireframe: NetworkNodeWireframeProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -24,44 +24,100 @@ final class NetworkAddNodePresenter {
         self.networkViewModelFactory = networkViewModelFactory
         self.localizationManager = localizationManager
     }
+    
+    func actionConfirm() {
+        fatalError("Must be overriden by subclass")
+    }
+    
+    func completeButtonTitle() -> String {
+        fatalError("Must be overriden by subclass")
+    }
+    
+    func provideTitle() {
+        fatalError("Must be overriden by subclass")
+    }
+    
+    func provideButtonViewModel(loading: Bool) {
+        let completed: Bool = if let partialName, let partialURL {
+            !partialName.isEmpty && !partialURL.isEmpty
+        } else {
+            false
+        }
+        
+        let title: String = if completed {
+            completeButtonTitle()
+        } else {
+            R.string.localizable.networkNodeAddButtonEnterDetails(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+        
+        let viewModel = NetworkNodeViewLayout.LoadingButtonViewModel(
+            title: title,
+            enabled: completed,
+            loading: loading
+        )
+        
+        view?.didReceiveButton(viewModel: viewModel)
+    }
+    
+    func provideURLViewModel(for chain: ChainModel?) {
+        let inputViewModel = InputViewModel.createSubstrateNodeURLInputViewModel(
+            for: partialURL ?? "",
+            placeholder: chain?.nodes
+                .filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
+                .sorted { $0.order < $1.order }
+                .first?
+                .url ?? ""
+        )
+        view?.didReceiveUrl(viewModel: inputViewModel)
+    }
+
+    func provideNameViewModel() {
+        let inputViewModel = InputViewModel.createSubstrateNodeNameInputViewModel(
+            for: partialName ?? "",
+            placeholder: R.string.localizable.commonName(preferredLanguages: selectedLocale.rLanguages)
+        )
+        view?.didReceiveName(viewModel: inputViewModel)
+    }
 }
 
-// MARK: NetworkAddNodePresenterProtocol
+// MARK: NetworkNodePresenterProtocol
 
-extension NetworkAddNodePresenter: NetworkAddNodePresenterProtocol {
+extension NetworkNodeBasePresenter: NetworkNodePresenterProtocol {
     func setup() {
         interactor.setup()
+        provideButtonViewModel(loading: false)
     }
 
     func handlePartial(url: String) {
         partialURL = url
+        
+        provideButtonViewModel(loading: false)
     }
 
     func handlePartial(name: String) {
         partialName = name
+        
+        provideButtonViewModel(loading: false)
     }
 
-    func confirmAddNode() {
-        guard let partialURL, let partialName else { return }
+    func confirm() {
+        actionConfirm()
         
-        view?.setLoading(true)
-        
-        interactor.addNode(
-            with: partialURL,
-            name: partialName
-        )
+        provideButtonViewModel(loading: true)
     }
 }
 
-// MARK: NetworkAddNodeInteractorOutputProtocol
+// MARK: NetworkNodeBaseInteractorOutputProtocol
 
-extension NetworkAddNodePresenter: NetworkAddNodeInteractorOutputProtocol {
+extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
     func didReceive(_ chain: ChainModel) {
         provideViewModel(with: chain)
     }
     
     func didReceive(_ error: Error) {
-        guard let error = error as? NetworkAddNodeInteractor.Errors else {
+        guard let error = error as? NetworkNodeBaseInteractor.Errors else {
             return
         }
                 
@@ -99,7 +155,7 @@ extension NetworkAddNodePresenter: NetworkAddNodeInteractorOutputProtocol {
             )
         }
         
-        view?.setLoading(false)
+        provideButtonViewModel(loading: false)
         
         wireframe.present(
             message: message,
@@ -108,42 +164,19 @@ extension NetworkAddNodePresenter: NetworkAddNodeInteractorOutputProtocol {
             from: view
         )
     }
-    
-    func didAddNode() {
-        wireframe.showNetworkDetails(from: view)
-        view?.setLoading(false)
-    }
 }
 
 // MARK: Private
 
-private extension NetworkAddNodePresenter {
+private extension NetworkNodeBasePresenter {
     func provideViewModel(with chain: ChainModel?) {
         guard let chain else { return }
         
+        provideTitle()
         provideURLViewModel(for: chain)
         provideNameViewModel()
         provideChainViewModel(for: chain)
-    }
-
-    func provideURLViewModel(for chain: ChainModel) {
-        let inputViewModel = InputViewModel.createSubstrateNodeURLInputViewModel(
-            for: partialURL ?? "",
-            placeholder: chain.nodes
-                .filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
-                .sorted { $0.order < $1.order }
-                .first?
-                .url ?? ""
-        )
-        view?.didReceiveUrl(viewModel: inputViewModel)
-    }
-
-    func provideNameViewModel() {
-        let inputViewModel = InputViewModel.createSubstrateNodeNameInputViewModel(
-            for: partialName ?? "",
-            placeholder: R.string.localizable.commonName(preferredLanguages: selectedLocale.rLanguages)
-        )
-        view?.didReceiveName(viewModel: inputViewModel)
+        provideButtonViewModel(loading: false)
     }
     
     func provideChainViewModel(for chain: ChainModel) {
@@ -154,7 +187,7 @@ private extension NetworkAddNodePresenter {
 
 // MARK: Localizable
 
-extension NetworkAddNodePresenter: Localizable {
+extension NetworkNodeBasePresenter: Localizable {
     func applyLocalization() {
         guard let view, view.isSetup else { return }
 

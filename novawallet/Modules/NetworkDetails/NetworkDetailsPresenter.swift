@@ -192,7 +192,15 @@ private extension NetworkDetailsPresenter {
         wireframe.showManageNode(
             from: view,
             node: node,
-            onNodeEdit: { print("EDIT") },
+            onNodeEdit: { [weak self] in
+                guard let self else { return }
+                
+                wireframe.showEditNode(
+                    from: view,
+                    node: node,
+                    chainId: chain.chainId
+                )
+            },
             onNodeDelete: { print("DELETE") }
         )
     }
