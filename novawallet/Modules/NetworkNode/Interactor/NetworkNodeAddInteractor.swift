@@ -7,8 +7,6 @@ class NetworkNodeAddInteractor: NetworkNodeBaseInteractor {
         }
     }
     
-    var currentAddingNode: ChainNodeModel?
-    
     override func findExistingNode(
         with url: String,
         in chain: ChainModel
@@ -18,15 +16,15 @@ class NetworkNodeAddInteractor: NetworkNodeBaseInteractor {
     
     override func handleConnected() {
         guard
-            let currentAddingNode,
+            let currentConnectingNode,
             let chain = chainRegistry.getChain(for: chainId)
         else { return }
         
         let saveOperation = repository.saveOperation(
-            { [chain.adding(node: currentAddingNode)] },
+            { [chain.adding(node: currentConnectingNode)] },
             { [] }
         )
-        
+
         saveOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 self?.presenter?.didAddNode()

@@ -111,8 +111,10 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
         })
         
         saveOperation.completionBlock = { [weak self] in
-            self?.nodesConnections[node.url]?.disconnect(true)
-            self?.nodesConnections[node.url] = nil
+            DispatchQueue.main.async {
+                self?.nodesConnections[node.url]?.disconnect(true)
+                self?.nodesConnections[node.url] = nil
+            }
         }
 
         operationQueue.addOperation(saveOperation)

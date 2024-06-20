@@ -43,7 +43,7 @@ struct NetworkNodeViewFactory {
         )
 
         presenter.view = view
-        interactor.basePresenter = presenter
+        interactor.presenter = presenter
 
         return view
     }
