@@ -4,15 +4,17 @@ import SoraFoundation
 
 final class NotificationsSetupWireframe: NotificationsSetupWireframeProtocol, ModalAlertPresenting {
     let localizationManager: LocalizationManagerProtocol
-    let completion: (() -> Void)?
+    let completion: ((Bool) -> Void)?
 
-    init(localizationManager: LocalizationManagerProtocol, completion: (() -> Void)?) {
+    init(localizationManager: LocalizationManagerProtocol, completion: ((Bool) -> Void)?) {
         self.localizationManager = localizationManager
         self.completion = completion
     }
 
     func complete(on view: ControllerBackedProtocol?) {
-        view?.controller.dismiss(animated: true, completion: completion)
+        view?.controller.dismiss(animated: true) {
+            self.completion?(false)
+        }
     }
 
     func saved(on view: ControllerBackedProtocol?) {
@@ -23,16 +25,12 @@ final class NotificationsSetupWireframe: NotificationsSetupWireframeProtocol, Mo
         let presenter = view?.controller.presentingViewController
 
         view?.controller.dismiss(animated: true) {
-            self.completion?()
+            self.completion?(true)
 
             if presenter?.presentedViewController == nil {
                 self.presentSuccessNotification(title, from: presenter, completion: nil)
             }
         }
-    }
-
-    func close(on view: ControllerBackedProtocol?) {
-        view?.controller.dismiss(animated: true)
     }
 
     func show(url: URL, from view: ControllerBackedProtocol?) {

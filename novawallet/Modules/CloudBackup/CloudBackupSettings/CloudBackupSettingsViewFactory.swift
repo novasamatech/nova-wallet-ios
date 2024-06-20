@@ -29,7 +29,7 @@ struct CloudBackupSettingsViewFactory {
 
     private static func createInteractor() -> CloudBackupSettingsInteractor {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let serviceFactory = ICloudBackupServiceFactory(operationQueue: operationQueue)
+        let serviceFactory = ICloudBackupServiceFactory()
 
         let serviceFacade = CloudBackupServiceFacade(
             serviceFactory: serviceFactory,

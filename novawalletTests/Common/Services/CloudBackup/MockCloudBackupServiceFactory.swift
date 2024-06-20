@@ -7,18 +7,15 @@ final class MockCloudBackupServiceFactory {
     let availablityService: CloudBackupAvailabilityServiceProtocol
     let operationFactory: CloudBackupOperationFactoryProtocol
     let fileManager: CloudBackupFileManaging
-    let storageManager: CloudBackupStorageManaging
     
     init(
         availablityService: CloudBackupAvailabilityServiceProtocol = MockCloudBackupAvailabilityService(),
         operationFactory: CloudBackupOperationFactoryProtocol = MockCloudBackupOperationFactory(),
-        fileManager: CloudBackupFileManaging = MockCloudBackupFileManager(),
-        storageManager: CloudBackupStorageManaging = MockCloudBackupStorageManager()
+        fileManager: CloudBackupFileManaging = MockCloudBackupFileManager()
     ) {
         self.availablityService = availablityService
         self.operationFactory = operationFactory
         self.fileManager = fileManager
-        self.storageManager = storageManager
     }
 }
 
@@ -27,12 +24,12 @@ extension MockCloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
        availablityService
     }
     
-    func createStorageManager(for baseUrl: URL) -> CloudBackupStorageManaging {
-        MockCloudBackupStorageManager()
-    }
-    
     func createOperationFactory() -> CloudBackupOperationFactoryProtocol {
         operationFactory
+    }
+    
+    func createSyncStatusMonitoring() -> CloudBackupSyncMonitoring {
+        MockCloudBackupSyncMonitor()
     }
     
     func createFileManager() -> CloudBackupFileManaging {
@@ -66,9 +63,5 @@ extension MockCloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
             validator: ICloudBackupValidator(),
             keychain: keychain
         )
-    }
-    
-    func createUploadFactory() -> CloudBackupUploadFactoryProtocol {
-        MockCloudBackupUploadFactory(operationFactory: operationFactory)
     }
 }

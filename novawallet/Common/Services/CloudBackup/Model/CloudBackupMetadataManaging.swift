@@ -10,8 +10,6 @@ protocol CloudBackupSyncMetadataManaging: AnyObject {
     func savePassword(_ newValue: String?) throws
     func hasPassword() throws -> Bool
 
-    func setNotifyIncreaseSecurity()
-
     var isBackupEnabled: Bool { get set }
 }
 
@@ -112,9 +110,5 @@ extension CloudBackupSyncMetadataManager: CloudBackupSyncMetadataManaging {
         let passwordId = getOrCreatePasswordId()
         let tag = KeystoreTagV2.cloudBackupPasswordTag(for: passwordId)
         return try keystore.checkKey(for: tag)
-    }
-
-    func setNotifyIncreaseSecurity() {
-        settings.shouldPresentIncreaseSecurity = true
     }
 }

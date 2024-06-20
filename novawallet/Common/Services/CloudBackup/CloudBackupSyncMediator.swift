@@ -32,6 +32,13 @@ protocol CloudBackupSyncMediating {
     func disablePresenterNotifications()
 
     func sync(for purpose: CloudBackupSynсPurpose)
+
+    func subscribeSyncMonitorStatus(
+        for target: AnyObject,
+        closure: @escaping (CloudBackupSyncMonitorStatus?, CloudBackupSyncMonitorStatus?) -> Void
+    )
+
+    func unsubscribeSyncMonitorStatus(for target: AnyObject)
 }
 
 /**
@@ -42,6 +49,7 @@ protocol CloudBackupSyncMediating {
 final class CloudBackupSyncMediator {
     let syncService: CloudBackupSyncServiceProtocol
 
+    private let serviceFactory: CloudBackupServiceFactoryProtocol
     private let eventCenter: EventCenterProtocol
     private let selectedWalletSettings: SelectedWalletSettings
     private let operationQueue: OperationQueue
@@ -51,15 +59,21 @@ final class CloudBackupSyncMediator {
 
     private var syncPurpose: CloudBackupSynсPurpose = .unknown
 
+    private var backupSyncMonitor: CloudBackupSyncMonitoring?
+
+    private var stateObservable: Observable<CloudBackupSyncMonitorStatus?> = .init(state: nil)
+
     weak var uiPresenter: CloudBackupSynсUIPresenting?
 
     init(
         syncService: CloudBackupSyncServiceProtocol,
+        serviceFactory: CloudBackupServiceFactoryProtocol,
         eventCenter: EventCenterProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.serviceFactory = serviceFactory
         self.syncService = syncService
         self.eventCenter = eventCenter
         self.selectedWalletSettings = selectedWalletSettings
@@ -67,9 +81,37 @@ final class CloudBackupSyncMediator {
         self.logger = logger
     }
 
+    private func setupBackupMonitorIfNeeded() {
+        guard backupSyncMonitor == nil else {
+            return
+        }
+
+        let monitor = serviceFactory.createSyncStatusMonitoring()
+
+        backupSyncMonitor = monitor
+
+        monitor.start(notifyingIn: .main) { [weak self] status in
+            self?.logger.debug("Status: \(status)")
+            self?.stateObservable.state = status
+        }
+    }
+
+    private func clearBackupMonitorIfNeeded() {
+        guard let backupSyncMonitor else {
+            return
+        }
+
+        stateObservable.state = nil
+
+        self.backupSyncMonitor = nil
+        backupSyncMonitor.stop()
+    }
+
     private func setupCurrentState() {
+        eventCenter.remove(observer: self)
         eventCenter.add(observer: self, dispatchIn: .main)
 
+        syncService.unsubscribeState(self)
         syncService.subscribeState(self, notifyingIn: .main) { [weak self] state in
             self?.logger.debug("Backup state: \(state)")
             self?.handleNew(state: state)
@@ -115,9 +157,13 @@ final class CloudBackupSyncMediator {
     private func handleNew(state: CloudBackupSyncState) {
         switch state {
         case .disabled, .unavailable:
+            clearBackupMonitorIfNeeded()
+
             syncPurpose = .unknown
             logger.debug("No need to process disabled or unavailable")
         case let .enabled(cloudBackupSyncResult, _):
+            setupBackupMonitorIfNeeded()
+
             guard let cloudBackupSyncResult = cloudBackupSyncResult else {
                 return
             }
@@ -218,6 +264,8 @@ extension CloudBackupSyncMediator: CloudBackupSyncMediating {
         uiPresenter = nil
 
         clearCurrentState()
+
+        clearBackupMonitorIfNeeded()
     }
 
     func enablePresenterNotifications() {
@@ -231,6 +279,23 @@ extension CloudBackupSyncMediator: CloudBackupSyncMediating {
     func sync(for purpose: CloudBackupSynсPurpose) {
         syncPurpose = purpose
         syncService.syncUp()
+    }
+
+    func subscribeSyncMonitorStatus(
+        for target: AnyObject,
+        closure: @escaping (CloudBackupSyncMonitorStatus?, CloudBackupSyncMonitorStatus?) -> Void
+    ) {
+        stateObservable.addObserver(
+            with: target,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { oldState, newState in
+            closure(oldState, newState)
+        }
+    }
+
+    func unsubscribeSyncMonitorStatus(for target: AnyObject) {
+        stateObservable.removeObserver(by: target)
     }
 }
 

@@ -4,8 +4,7 @@ import Operation_iOS
 
 final class CloudBackupAvailabilityTests: XCTestCase {
     func testCloudBackupAvailable() {
-        let operationQueue = OperationQueue()
-        let service = ICloudBackupServiceFactory(operationQueue: operationQueue).createAvailabilityService()
+        let service = ICloudBackupServiceFactory().createAvailabilityService()
         service.setup()
         
         switch service.stateObserver.state {
@@ -18,44 +17,9 @@ final class CloudBackupAvailabilityTests: XCTestCase {
         }
     }
     
-    func testEnoughStorage() {
-        let factory = ICloudBackupServiceFactory(operationQueue: OperationQueue())
-        
-        guard let baseUrl = factory.createFileManager().getBaseUrl() else {
-            XCTFail("ICloud unavailable")
-            return
-        }
-        
-        let manager = factory.createStorageManager(for: baseUrl)
-        
-        let expectation = XCTestExpectation()
-        var checkError: CloudBackupUploadError?
-        
-        manager.checkStorage(
-            of: 1 * 1024,
-            timeoutInterval: 10,
-            runningIn: .main
-        ) { result in
-            switch result {
-            case .success:
-                break
-            case let .failure(error):
-                checkError = error
-            }
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 120)
-        
-        if let checkError {
-            XCTFail("\(checkError)")
-        }
-    }
-    
     func testCloudWriting() {
         let operationQueue = OperationQueue()
-        let serviceFactory = ICloudBackupServiceFactory(operationQueue: operationQueue)
+        let serviceFactory = ICloudBackupServiceFactory()
         let operationFactory = serviceFactory.createOperationFactory()
         
         guard let baseUrl = serviceFactory.createFileManager().getBaseUrl() else {

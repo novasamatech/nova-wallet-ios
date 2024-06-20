@@ -11,11 +11,15 @@ final class BackupMnemonicCardViewController: UIViewController, ViewHolder {
 
     let presenter: BackupMnemonicCardPresenterProtocol
 
+    private var keyType: BackupMnemonicKeyType
+
     init(
         presenter: BackupMnemonicCardPresenterProtocol,
+        keyType: BackupMnemonicKeyType,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.keyType = keyType
 
         super.init(nibName: nil, bundle: nil)
 
@@ -92,14 +96,27 @@ private extension BackupMnemonicCardViewController {
     }
 
     func setupLocalization() {
-        rootView.titleView.text = R.string.localizable.commonPassphrase(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        switch keyType {
+        case .defaultKey:
+            rootView.titleView.text = R.string.localizable.commonPassphrase(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .commonKey:
+            rootView.titleView.text = R.string.localizable.manualBackupCommonKey(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .customKey:
+            rootView.titleView.text = R.string.localizable.manualBackupCustomKey(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
     }
 
     func setupBarButtonItem() {
         let advancedItem = UIBarButtonItem(
-            image: R.image.iconOptions()?.tinted(with: R.color.colorIconPrimary()!),
+            image: R.image.iconOptions()?.tinted(
+                with: R.color.colorIconPrimary()!.withAlphaComponent(1)
+            ),
             style: .plain,
             target: self,
             action: #selector(advancedTapped)

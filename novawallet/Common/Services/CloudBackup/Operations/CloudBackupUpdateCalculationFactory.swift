@@ -30,10 +30,12 @@ enum CloudBackupSyncResult: Equatable {
     }
 
     enum Issue: Equatable {
-        case missingOrInvalidPassword
+        case missingPassword
+        case invalidPassword
         case newBackupCreationNeeded
         case remoteReadingFailed
         case remoteDecodingFailed
+        case remoteEmpty
         case internalFailure
     }
 
@@ -47,7 +49,8 @@ protocol CloudBackupUpdateCalculationFactoryProtocol {
 }
 
 enum CloudBackupUpdateCalculationError: Error {
-    case missingOrInvalidPassword
+    case missingPassword
+    case invalidPassword
     case invalidPublicData
     case newBackupNeeded
 }
@@ -116,6 +119,10 @@ final class CloudBackupUpdateCalculationFactory {
                 }
 
                 if lastSyncTime < remoteModel.publicData.modifiedAt {
+                    guard !remoteModel.publicData.wallets.isEmpty else {
+                        return .issue(.remoteEmpty)
+                    }
+
                     let state = CloudBackupSyncResult.UpdateLocal(
                         localWallets: Set(wallets),
                         remoteModel: remoteModel,
@@ -130,8 +137,10 @@ final class CloudBackupUpdateCalculationFactory {
                 }
             } catch CloudBackupUpdateCalculationError.newBackupNeeded {
                 return .issue(.newBackupCreationNeeded)
-            } catch CloudBackupUpdateCalculationError.missingOrInvalidPassword {
-                return .issue(.missingOrInvalidPassword)
+            } catch CloudBackupUpdateCalculationError.missingPassword {
+                return .issue(.missingPassword)
+            } catch CloudBackupUpdateCalculationError.invalidPassword {
+                return .issue(.invalidPassword)
             } catch CloudBackupUpdateCalculationError.invalidPublicData {
                 return .issue(.remoteDecodingFailed)
             } catch CloudBackupOperationFactoryError.readingFailed {
@@ -156,7 +165,7 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
                 throw CloudBackupUpdateCalculationError.newBackupNeeded
             }
 
-            guard let data = try optData else {
+            guard let data = optData else {
                 return nil
             }
 
@@ -165,14 +174,14 @@ extension CloudBackupUpdateCalculationFactory: CloudBackupUpdateCalculationFacto
             }
 
             guard let password = optPassword else {
-                throw CloudBackupUpdateCalculationError.missingOrInvalidPassword
+                throw CloudBackupUpdateCalculationError.missingPassword
             }
 
             let privateData = try Data(hexString: encryptedModel.privateData)
             let optDecryption = try? self.cryptoManager.decrypt(data: privateData, password: password)
 
             if optDecryption == nil {
-                throw CloudBackupUpdateCalculationError.missingOrInvalidPassword
+                throw CloudBackupUpdateCalculationError.invalidPassword
             }
 
             return encryptedModel

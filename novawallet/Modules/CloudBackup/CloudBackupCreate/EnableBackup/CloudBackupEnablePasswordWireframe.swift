@@ -13,7 +13,7 @@ final class CloudBackupEnablePasswordWireframe: BaseCloudBackupUpdatePasswordWir
 
         navigationController.popToViewController(cloudBackupSettingsView, animated: true)
 
-        presentSuccessNotification(
+        presentMultilineSuccessNotification(
             R.string.localizable.cloudBackupCreatedSuccessfully(
                 preferredLanguages: locale.rLanguages
             ),

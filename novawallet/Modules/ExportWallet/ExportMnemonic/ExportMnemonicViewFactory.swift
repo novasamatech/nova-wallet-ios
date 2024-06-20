@@ -7,7 +7,7 @@ final class ExportMnemonicViewFactory {
     static func createViewForMetaAccount(
         _ metaAccount: MetaAccountModel,
         chain: ChainModel
-    ) -> ExportGenericViewProtocol? {
+    ) -> AccountCreateViewProtocol? {
         let keychain = Keychain()
 
         let interactor = ExportMnemonicInteractor(
@@ -21,32 +21,20 @@ final class ExportMnemonicViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
+        let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
+
         let presenter = ExportMnemonicPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            checkboxListViewModelFactory: checkboxListViewModelFactory,
+            mnemonicViewModelFactory: mnemonicViewModelFactory
         )
 
-        let view = ExportGenericViewController(
+        let view = AccountCreateViewController(
             presenter: presenter,
-            localizationManager: localizationManager,
-            exportTitle: LocalizableResource { locale in
-                R.string.localizable.accountBackupMnemonicTitle(preferredLanguages: locale.rLanguages)
-            },
-            exportSubtitle: LocalizableResource { locale in
-                R.string.localizable.accountCreateDetails_v2_2_0(preferredLanguages: locale.rLanguages)
-            },
-            exportHint: LocalizableResource { locale in
-                R.string.localizable.exportMnemonicCheckHint(preferredLanguages: locale.rLanguages)
-            },
-            sourceTitle: LocalizableResource { locale in
-                R.string.localizable.importMnemonic(preferredLanguages: locale.rLanguages)
-            },
-            sourceHint: nil,
-            actionTitle: LocalizableResource { locale in
-                R.string.localizable.accountConfirmationTitle(preferredLanguages: locale.rLanguages)
-            },
-            isSourceMultiline: true
+            localizationManager: localizationManager
         )
 
         presenter.view = view

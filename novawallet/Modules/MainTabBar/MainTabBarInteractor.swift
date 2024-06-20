@@ -18,10 +18,9 @@ final class MainTabBarInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    let onLauchQueue = OnLaunchActionsQueue(
+    let onLaunchQueue = OnLaunchActionsQueue(
         possibleActions: [
-            OnLaunchAction.PushNotificationsSetup(),
-            OnLaunchAction.IncreaseWalletsSecurity()
+            OnLaunchAction.PushNotificationsSetup()
         ]
     )
 
@@ -88,17 +87,29 @@ final class MainTabBarInteractor {
                 self?.presenter?.didRequestPushNotificationsSetupOpen()
             }
         } else {
-            onLauchQueue.runNext()
+            onLaunchQueue.runNext()
         }
     }
 
-    private func showIncreaseSecurityOrNextAction() {
-        if settingsManager.shouldPresentIncreaseSecurity {
-            securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-                self?.presenter?.didReceiveNeedsIncreaseSecurity()
+    private func subscribeCloudSyncMonitor() {
+        cloudBackupMediator.subscribeSyncMonitorStatus(for: self) { [weak self] oldStatus, newStatus in
+            self?.securedLayer.scheduleExecutionIfAuthorized {
+                self?.presenter?.didReceiveCloudSync(status: newStatus)
+                self?.checkNeededSync(for: oldStatus, newStatus: newStatus)
             }
-        } else {
-            onLauchQueue.runNext()
+        }
+    }
+
+    private func checkNeededSync(
+        for oldStatus: CloudBackupSyncMonitorStatus?,
+        newStatus: CloudBackupSyncMonitorStatus?
+    ) {
+        guard let oldStatus, let newStatus else {
+            return
+        }
+
+        if oldStatus.isDowndloading, !newStatus.isSyncing {
+            cloudBackupMediator.sync(for: .unknown)
         }
     }
 }
@@ -114,15 +125,17 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         pushScreenOpenService.delegate = self
 
         cloudBackupMediator.setup(with: self)
+        subscribeCloudSyncMonitor()
+        cloudBackupMediator.sync(for: .unknown)
 
-        onLauchQueue.delegate = self
+        onLaunchQueue.delegate = self
 
         if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
         } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
         } else {
-            onLauchQueue.runNext()
+            onLaunchQueue.runNext()
         }
     }
 
@@ -130,12 +143,8 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         settingsManager.notificationsSetupSeen = true
     }
 
-    func setIncreaseSecuritySeen() {
-        settingsManager.shouldPresentIncreaseSecurity = false
-    }
-
     func requestNextOnLaunchAction() {
-        onLauchQueue.runNext()
+        onLaunchQueue.runNext()
     }
 }
 
@@ -219,9 +228,5 @@ extension MainTabBarInteractor: CloudBackupSynсUIPresenting {
 extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
     func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {
         showPushNotificationsSetupOrNextAction()
-    }
-
-    func onLaunchProccessIncreaseSecurity(_: OnLaunchAction.IncreaseWalletsSecurity) {
-        showIncreaseSecurityOrNextAction()
     }
 }

@@ -6,6 +6,8 @@ extension AddChainAccount {
         let isEthereumBased: Bool
 
         init(
+            interactor: AccountCreateInteractorInputProtocol,
+            wireframe: AccountCreateWireframeProtocol,
             metaAccountModel: MetaAccountModel,
             chainModelId: ChainModel.Id,
             isEthereumBased: Bool,
@@ -18,6 +20,8 @@ extension AddChainAccount {
             self.isEthereumBased = isEthereumBased
 
             super.init(
+                interactor: interactor,
+                wireframe: wireframe,
                 localizationManager: localizationManager,
                 checkboxListViewModelFactory: checkboxListViewModelFactory,
                 mnemonicViewModelFactory: mnemonicViewModelFactory

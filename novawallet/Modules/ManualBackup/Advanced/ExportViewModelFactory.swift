@@ -26,7 +26,7 @@ final class ExportViewModelFactory {
 
             sections.append(
                 .headerTitle(
-                    text: R.string.localizable.advancedExportCustomKeyHeaderTitle(
+                    text: R.string.localizable.manualBackupCustomKey(
                         preferredLanguages: selectedLocale.rLanguages
                     )
                 )
@@ -147,7 +147,7 @@ final class ExportViewModelFactory {
                     blockLeftTitle: R.string.localizable.commonSecretDerivationPath(
                         preferredLanguages: selectedLocale.rLanguages
                     ),
-                    content: model.derivationPath
+                    content: derivationPath
                 ))
             )
         }

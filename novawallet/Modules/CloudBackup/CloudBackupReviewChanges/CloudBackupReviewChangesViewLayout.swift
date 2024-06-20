@@ -13,6 +13,10 @@ final class CloudBackupReviewChangesViewLayout: GenericCollectionViewLayout<Mult
         )
     }
 
+    private let buttonsBackground: UIView = .create { view in
+        view.backgroundColor = R.color.colorBottomSheetBackground()
+    }
+
     private let buttonsView: GenericPairValueView<TriangularedButton, TriangularedButton> = .create { view in
         view.makeHorizontal()
         view.spacing = 12
@@ -50,6 +54,13 @@ final class CloudBackupReviewChangesViewLayout: GenericCollectionViewLayout<Mult
     }
 
     private func setupLayout() {
+        addSubview(buttonsBackground)
+
+        buttonsBackground.snp.makeConstraints { make in
+            make.trailing.leading.bottom.equalToSuperview()
+            make.height.equalTo(Constants.settings.collectionViewContentInset.bottom)
+        }
+
         addSubview(buttonsView)
 
         buttonsView.snp.makeConstraints { make in

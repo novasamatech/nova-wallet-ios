@@ -2,17 +2,18 @@ import UIKit
 
 protocol MainTabBarViewProtocol: ControllerBackedProtocol {
     func didReplaceView(for newView: UIViewController, for index: Int)
+    func setSyncStatus(_ syncStatus: SharedSyncStatus)
 }
 
 protocol MainTabBarPresenterProtocol: AnyObject {
     func setup()
     func viewDidAppear()
+    func activateStatusAction()
 }
 
 protocol MainTabBarInteractorInputProtocol: AnyObject {
     func setup()
     func setPushNotificationsSetupScreenSeen()
-    func setIncreaseSecuritySeen()
     func requestNextOnLaunchAction()
 }
 
@@ -24,7 +25,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didFoundCloudBackup(issue: CloudBackupSyncResult.Issue)
     func didRequestPushNotificationsSetupOpen()
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
-    func didReceiveNeedsIncreaseSecurity()
+    func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
 }
 
 protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible, ModalAlertPresenting {
@@ -41,7 +42,7 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible,
     func presentPushNotificationsSetup(
         on view: MainTabBarViewProtocol?,
         presentationCompletion: @escaping () -> Void,
-        flowCompletion: @escaping () -> Void
+        flowCompletion: @escaping (Bool) -> Void
     )
 
     func presentCloudBackupUnsyncedChanges(
@@ -52,12 +53,6 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible,
     func presentCloudBackupUpdateFailedIfNeeded(
         from view: MainTabBarViewProtocol?,
         onReviewIssues: @escaping () -> Void
-    )
-
-    func presentIncreaseSecurity(
-        from view: MainTabBarViewProtocol?,
-        onBackup: @escaping () -> Void,
-        onNotNow: @escaping () -> Void
     )
 
     func presentCloudBackupSettings(from view: MainTabBarViewProtocol?)

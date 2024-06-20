@@ -15,20 +15,10 @@ extension CloudBackupErrorPresentable where Self: AlertPresentable {
         message: String,
         locale: Locale
     ) {
-        let settingsAction = AlertPresentableAction(
-            title: R.string.localizable.commonOpenSettings(preferredLanguages: locale.rLanguages)
-        ) {
-            if
-                let url = URL(string: UIApplication.openSettingsURLString),
-                UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
-        }
-
         let viewModel = AlertPresentableViewModel(
             title: title,
             message: message,
-            actions: [settingsAction],
+            actions: [],
             closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
         )
 

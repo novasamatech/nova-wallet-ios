@@ -17,6 +17,7 @@ final class CloudBackupSettingsPresenter {
     private var waitingBackupEnable = false
 
     private var cloudBackupState: CloudBackupSyncState?
+    private var cloudBackupSyncMonitorStatus: CloudBackupSyncMonitorStatus?
 
     init(
         interactor: CloudBackupSettingsInteractorInputProtocol,
@@ -36,6 +37,7 @@ final class CloudBackupSettingsPresenter {
     private func provideViewModel() {
         let viewModel = viewModelFactory.createViewModel(
             with: cloudBackupState,
+            syncMonitorStatus: cloudBackupSyncMonitorStatus,
             locale: selectedLocale
         )
 
@@ -60,7 +62,7 @@ final class CloudBackupSettingsPresenter {
                 return LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconDelete(),
-                        title: R.string.localizable.commonDelete(preferredLanguages: locale.rLanguages),
+                        title: R.string.localizable.commonDeleteBackup(preferredLanguages: locale.rLanguages),
                         isDestructive: true
                     )
                 }
@@ -99,7 +101,11 @@ final class CloudBackupSettingsPresenter {
 
     private func showBackupIssueAfterSync(_ issue: CloudBackupSyncResult.Issue, waitingBackupEnable: Bool) {
         switch issue {
-        case .missingOrInvalidPassword:
+        case .missingPassword:
+            if waitingBackupEnable {
+                wireframe.showEnterPassword(from: view)
+            }
+        case .invalidPassword:
             wireframe.showPasswordChangedConfirmation(
                 on: view,
                 locale: selectedLocale
@@ -110,7 +116,7 @@ final class CloudBackupSettingsPresenter {
             if waitingBackupEnable {
                 wireframe.showBackupCreation(from: view)
             }
-        case .remoteDecodingFailed:
+        case .remoteDecodingFailed, .remoteEmpty:
             wireframe.showCloudBackupDelete(
                 from: view,
                 reason: .brokenOrEmpty,
@@ -160,10 +166,6 @@ final class CloudBackupSettingsPresenter {
     }
 
     private func showBackupStateAfterSync(for waitingBackupEnable: Bool) {
-        guard case let .enabled(optSyncResult, _) = cloudBackupState else {
-            return
-        }
-
         switch cloudBackupState {
         case .unavailable:
             guard let view else {
@@ -184,9 +186,9 @@ final class CloudBackupSettingsPresenter {
 
     private func handleSync(issue: CloudBackupSyncResult.Issue) {
         switch issue {
-        case .missingOrInvalidPassword:
+        case .missingPassword, .invalidPassword:
             wireframe.showEnterPassword(from: view)
-        case .remoteDecodingFailed:
+        case .remoteDecodingFailed, .remoteEmpty:
             wireframe.showCloudBackupDelete(
                 from: view,
                 reason: .brokenOrEmpty,
@@ -303,7 +305,9 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
             showBackupStateAfterSync(for: waitingBackupEnable)
         }
 
-        waitingBackupEnable = false
+        if !state.isSyncing {
+            waitingBackupEnable = false
+        }
     }
 
     func didReceive(error: CloudBackupSettingsInteractorError) {
@@ -328,7 +332,7 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
     }
 
     func didDeleteBackup() {
-        wireframe.presentSuccessNotification(
+        wireframe.presentMultilineSuccessNotification(
             R.string.localizable.cloudBackupDeleted(
                 preferredLanguages: selectedLocale.rLanguages
             ),
@@ -347,6 +351,14 @@ extension CloudBackupSettingsPresenter: CloudBackupSettingsInteractorOutputProto
                 from: view
             )
         }
+    }
+
+    func didReceive(syncMonitorStatus: CloudBackupSyncMonitorStatus?) {
+        logger.debug("Sync monitor: \(String(describing: syncMonitorStatus))")
+
+        cloudBackupSyncMonitorStatus = syncMonitorStatus
+
+        provideViewModel()
     }
 }
 

@@ -53,7 +53,7 @@ struct WalletImportOptionsViewFactory {
     private static func createInteractor() -> OnboardingImportOptionsInteractor {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let serviceFacade = CloudBackupServiceFacade(
-            serviceFactory: ICloudBackupServiceFactory(operationQueue: operationQueue),
+            serviceFactory: ICloudBackupServiceFactory(),
             operationQueue: operationQueue
         )
 

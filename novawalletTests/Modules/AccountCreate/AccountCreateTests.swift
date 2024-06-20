@@ -20,14 +20,14 @@ class AccountCreateTests: XCTestCase {
 
         let name = "myname"
         let presenter = AccountCreatePresenter(
+            interactor: interactor,
+            wireframe: wireframe,
             walletName: name,
             localizationManager: localizationManager,
             checkboxListViewModelFactory: checkboxListViewModelFactory,
             mnemonicViewModelFactory: mnemonicViewModelFactory
         )
         presenter.view = view
-        presenter.wireframe = wireframe
-        presenter.interactor = interactor
         interactor.presenter = presenter
 
         let setupCheckboxesExpectation = XCTestExpectation()

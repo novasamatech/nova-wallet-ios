@@ -4,6 +4,7 @@ struct CloudBackupSettingsViewModel {
     enum Status {
         case disabled
         case syncing
+        case unavailable
         case unsynced
         case synced
 
@@ -11,7 +12,7 @@ struct CloudBackupSettingsViewModel {
             switch self {
             case .disabled:
                 return false
-            case .syncing, .synced, .unsynced:
+            case .syncing, .synced, .unsynced, .unavailable:
                 return true
             }
         }
@@ -20,7 +21,7 @@ struct CloudBackupSettingsViewModel {
             switch self {
             case .syncing:
                 return true
-            case .disabled, .synced, .unsynced:
+            case .disabled, .synced, .unsynced, .unavailable:
                 return false
             }
         }

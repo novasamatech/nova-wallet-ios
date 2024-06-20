@@ -31,43 +31,13 @@ final class AccountExportPasswordViewLayout: UIView {
         return label
     }()
 
-    let setPasswordBackroundView: RoundedView = UIFactory.default.createRoundedBackgroundView()
+    let enterPasswordView: PasswordInputView = .create { view in
+        view.textField.returnKeyType = .next
+    }
 
-    let setPasswordView: AnimatedTextField = {
-        let view = UIFactory.default.createAnimatedTextField()
-
-        return view
-    }()
-
-    let setPasswordEyeButton: RoundedButton = {
-        let button = RoundedButton()
-        button.roundedBackgroundView?.fillColor = .clear
-        button.roundedBackgroundView?.highlightedFillColor = .clear
-        button.roundedBackgroundView?.strokeColor = .clear
-        button.roundedBackgroundView?.highlightedStrokeColor = .clear
-        button.roundedBackgroundView?.shadowOpacity = 0.0
-        button.imageWithTitleView?.iconImage = R.image.iconEyeShow()
-        return button
-    }()
-
-    let confirmPasswordBackroundView: RoundedView = UIFactory.default.createRoundedBackgroundView()
-
-    let confirmPasswordView: AnimatedTextField = {
-        let view = UIFactory.default.createAnimatedTextField()
-
-        return view
-    }()
-
-    let confirmPasswordEyeButton: RoundedButton = {
-        let button = RoundedButton()
-        button.roundedBackgroundView?.fillColor = .clear
-        button.roundedBackgroundView?.highlightedFillColor = .clear
-        button.roundedBackgroundView?.strokeColor = .clear
-        button.roundedBackgroundView?.highlightedStrokeColor = .clear
-        button.roundedBackgroundView?.shadowOpacity = 0.0
-        button.imageWithTitleView?.iconImage = R.image.iconEyeShow()
-        return button
-    }()
+    let confirmPasswordView: PasswordInputView = .create { view in
+        view.textField.returnKeyType = .done
+    }
 
     let proceedButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -109,40 +79,16 @@ final class AccountExportPasswordViewLayout: UIView {
         containerView.stackView.addArrangedSubview(subtitleLabel)
         containerView.stackView.setCustomSpacing(24.0, after: subtitleLabel)
 
-        containerView.stackView.addArrangedSubview(setPasswordBackroundView)
-        setPasswordBackroundView.snp.makeConstraints { make in
-            make.height.equalTo(UIConstants.triangularedViewHeight)
+        containerView.stackView.addArrangedSubview(enterPasswordView)
+        enterPasswordView.snp.makeConstraints { make in
+            make.height.equalTo(48)
         }
 
-        setPasswordBackroundView.addSubview(setPasswordEyeButton)
-        setPasswordEyeButton.snp.makeConstraints { make in
-            make.top.trailing.bottom.equalToSuperview()
-            make.width.equalTo(UIConstants.triangularedViewHeight)
-        }
+        containerView.stackView.setCustomSpacing(16.0, after: enterPasswordView)
 
-        setPasswordBackroundView.addSubview(setPasswordView)
-        setPasswordView.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
-            make.trailing.equalTo(setPasswordEyeButton.snp.leading)
-        }
-
-        containerView.stackView.setCustomSpacing(16.0, after: setPasswordBackroundView)
-
-        containerView.stackView.addArrangedSubview(confirmPasswordBackroundView)
-        confirmPasswordBackroundView.snp.makeConstraints { make in
-            make.height.equalTo(UIConstants.triangularedViewHeight)
-        }
-
-        confirmPasswordBackroundView.addSubview(confirmPasswordEyeButton)
-        confirmPasswordEyeButton.snp.makeConstraints { make in
-            make.top.trailing.bottom.equalToSuperview()
-            make.width.equalTo(UIConstants.triangularedViewHeight)
-        }
-
-        confirmPasswordBackroundView.addSubview(confirmPasswordView)
+        containerView.stackView.addArrangedSubview(confirmPasswordView)
         confirmPasswordView.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
-            make.trailing.equalTo(confirmPasswordEyeButton.snp.leading)
+            make.height.equalTo(48)
         }
     }
 }

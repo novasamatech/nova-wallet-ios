@@ -98,8 +98,8 @@
 "profile.pincode.change.title" = "Change PIN code";
 "common.invalid.hard.soft.message" = "Please, check that input is a mix of //'hard' and /'soft' where 'hard' and 'soft' can be any sequence of characters not including /.";
 "common.invalid.hard.message" = "Please, check that input is a mix of //'hard' where 'hard' can be any sequence of characters not including /.";
-"confirm.mnemonic.mismatch.error.title" = "Invalid mnemonic";
-"confirm.mnemonic.mismatch.error.message" = "Please, check order of the words one more time.";
+"confirm.mnemonic.mismatch.error.title" = "Error";
+"confirm.mnemonic.mismatch.error.message" = "Invalid passphrase, please check one more time the words order";
 "common.edit" = "Edit";
 "common.done" = "Done";
 "accounts.add.account" = "Add account";
@@ -186,7 +186,7 @@
 "account.export.action" = "Export";
 "account.export.warning.message" = "Sharing or copying your secret is a high risk operation, don’t send it to anyone. Would you like to proceed with sharing/copying process?";
 "account.export.warning.title" = "Be careful";
-"account.export.json.hint" = "Password is required to encrypt your account and store as Restore JSON. Please, create password to continue operation.";
+"account.export.json.hint" = "This password is required to encrypt your account and is used alongside this JSON file to restore your wallet.";
 "common.set.password" = "Set password";
 "common.confirm.password" = "Confirm password";
 "common.error.password.mismatch" = "Passwords do not match";
@@ -543,7 +543,7 @@
 "wallet.nickname.create.caption" = "Examples: Savings, Investments, Crowdloans, Staking.";
 "wallet.empty.description_v2_2_0" = "Your operations will be displayed here";
 "wallet.nickname.create.subtitle_v2_2_0" = "Name will be used only locally in this application. You can edit it later";
-"common.no.screenshot.title_v2_2_0" = "Attention!";
+"common.no.screenshot.title_v2_2_0" = "Prepare to save your wallet!";
 "common.no.screenshot.message_v2_2_0" = "We are going to show your mnemonic. Make sure no one can see your screen and do not take screenshots — they can be collected by third-party malware";
 "access.restore.phrase.error.message_v2_2_0" = "Invalid mnemonic passphrase, please check one more time the words order";
 "secret.type.keystore.title" = "Restore JSON";
@@ -559,7 +559,6 @@
 "wallet.import.mnemonic.hint" = "Typically 12-word phrase (but may be 15, 18, 21 or 24)";
 "wallet.import.seed.title" = "Enter your raw seed";
 "wallet.import.no.mnemonic.title" = "Enter the words...";
-"wallet.import.no.name.title" = "Enter wallet name...";
 "wallet.import.no.seed.title" = "Enter the raw seed...";
 "wallet.import.keystore.title" = "Provide your Restore JSON";
 "wallet.import.no.json.title" = "Provide your Restore JSON...";
@@ -588,8 +587,7 @@
 "crowdloan.completed.section" = "Completed";
 "staking.title" = "Staking";
 "export.mnemonic.check.hint" = "Please, make sure to write down your phrase correctly \nand legibly";
-"wallet.create.button.title.disabled_v2_2_0" = "Enter a wallet name...";
-"export.password.title" = "Set a new password";
+"export.password.title" = "Set a password for your JSON file";
 "export.password.proceed.set.title" = "Set password...";
 "export.password.proceed.confirm.title" = "Confirm password...";
 "wallet.username.setup.choose.title_v2_2_0" = "Wallet name";
@@ -1512,15 +1510,15 @@
 "notifications.error.disabled.in.settings.title" = "Enable Notifications for Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Go to Settings → Tap \"Notifications\" → Turn on \"Allow Notifications\"";
 "notifications.wallet.list.limit.error.message" = "Unfortunately, there is currently a limit in push notifications for only %d of your wallets.";
-"wallet.name.input.placeholder" = "My new wallet name";
-"wallet.name.title" = "Name your wallet";
-"wallet.name.subtitle" = "Name will be used only locally in this application. You can edit it later";
+"wallet.name.input.placeholder" = "My new wallet";
+"wallet.name.title" = "Give your wallet a name";
+"wallet.name.subtitle" = "This will only be visible to you\nand you can edit it later.";
 "wallet.ready.title" = "Your wallet is ready";
-"wallet.ready.subtitle" = "Now lets back up your wallet. Backup will make sure that your funds are safe and sound, and you can always restore your wallet anytime";
-"common.backup.cloud.with.icon" = "☁️ Back up to Cloud";
-"common.backup.manually.with.icon" = "📝 Back up Manually";
+"wallet.ready.subtitle" = "Now lets back up your wallet.\nThis makes sure that your funds are safe and secure. Backups allow you to restore your wallet at any time.";
+"common.continue.with.apple.backup" = "Continue with Apple";
+"common.continue.with.manual.backup" = "Continue with manual backup";
 "cloud.backup.not.available.title" = "iCloud authentication failed";
-"cloud.backup.not.available.message" = "To use Cloud Backup, ensure you have logged into iCloud account, enabled iCloud Drive and granted Nova access to iCloud Drive in your device settings";
+"cloud.backup.not.available.message" = "Please, ensure that you are logged into iCloud account";
 "cloud.backup.not.enough.storage.title" = "Not Enough Storage";
 "cloud.backup.not.enough.storage.message" = "Please, ensure you have enough iCloud storage available. You can manage your storage in Settings.";
 "ledger.instructions.step1" = "Make sure %@ to your Ledger device using Ledger Live app";
@@ -1539,7 +1537,6 @@
 "cloud.backup.create.hint.password.match" = "Password match";
 "common.enter.password" = "Enter password";
 "common.backup.password" = "Backup password";
-"common.confirm.password" = "Confirm password";
 "cloud.backup.create.bottom.sheet.title" = "Remember Backup Password";
 "cloud.backup.create.bottom.sheet.message" = "In the future, without backup password it is not possible to restore your wallets from Cloud Backup.\n%@";
 "cloud.backup.create.bottom.sheet.password" = "This password cannot be recovered.";
@@ -1603,7 +1600,6 @@
 "mnemonic.card.cover.message.message" = "Make sure no one can see your screen and do not take screenshots";
 "mnemonic.card.revealed.header.message" = "Please %@ anyone";
 "mnemonic.card.revealed.header.message.highlighted" = "do not share with";
-"advanced.export.custom.key.header.title" = "Custom key";
 "advanced.export.header.message" = "Do not share any of this information with anyone - If you do you will permanently and irretreveably lose all of your assets";
 "advanced.export.json.button.title" = "Export JSON file";
 "chain.accounts.list.header" = "Select the key to back up";
@@ -1632,7 +1628,6 @@
 "common.review.issue" = "Review the Issue";
 "cloud.backup.alert.remove.wallets.title" = "Are you sure that you want to apply these changes?";
 "cloud.backup.alert.remove.wallets.message" = "If you have not manually written down your Passphrase for wallets that will be removed, then those wallets and all of their assets will be permanently and irretrievably lost forever.";
-"common.delete" = "Delete";
 "common.manage.backup" = "Manage backup";
 "cloud.backup.will.delete.title" = "Backup will be deleted from iCloud";
 "cloud.backup.will.delete.message" = "%@ and remember to always keep them offline to restore them anytime. You can do this in the Backup Settings.";
@@ -1654,3 +1649,12 @@
 "cloud.backup.increase.security.title" = "Increase the Security\nof Your Wallets";
 "cloud.backup.increase.security.message" = "You have a Cloud Backup already. We also recommend you to %@ to be sure that everything is safe. You can view your Passphrase at any time in the Backup Settings.";
 "cloud.backup.increase.security.highlighted1" = "manually write down your Passphrase";
+"common.enter.wallet.name.disabled" = "Enter wallet name";
+"cloud.backup.settings.empty.or.broken" = "Review Backup Error";
+"common.button.settings" = "Settings";
+"account.export.ethereum.private.key.placeholder" = "64 hex symbols";
+"restore.json.download.button" = "Download Restore JSON";
+"common.status.backup.syncing" = "Backup Syncing...";
+"common.status.backup.synced" = "Backup Synced";
+"manual.backup.common.key" = "Default key";
+"manual.backup.custom.key" = "Custom key";

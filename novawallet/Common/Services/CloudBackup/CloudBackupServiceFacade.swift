@@ -80,8 +80,7 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
         let fileManager = serviceFactory.createFileManager()
 
         guard
-            let fileUrl = fileManager.getFileUrl(),
-            let tempUrl = fileManager.getTempUrl() else {
+            let fileUrl = fileManager.getFileUrl() else {
             dispatchInQueueWhenPossible(queue) {
                 completionClosure(.failure(.cloudNotAvailable))
             }
@@ -119,18 +118,18 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
 
         dataOperation.addDependency(readBackupOperation)
 
-        let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
-            for: fileUrl,
-            tempUrl: tempUrl,
-            timeoutInterval: CloudBackup.backupSaveTimeout,
-            dataClosure: {
-                try dataOperation.extractNoCancellableResultData()
-            }
+        let writingOperation = serviceFactory.createOperationFactory().createWritingOperation(
+            for: fileUrl
+        ) {
+            try dataOperation.extractNoCancellableResultData()
+        }
+
+        writingOperation.addDependency(dataOperation)
+
+        let totalWrapper = CompoundOperationWrapper(
+            targetOperation: writingOperation,
+            dependencies: [readBackupOperation, dataOperation]
         )
-
-        uploadWrapper.addDependency(operations: [dataOperation])
-
-        let totalWrapper = uploadWrapper.insertingHead(operations: [readBackupOperation, dataOperation])
 
         execute(
             wrapper: totalWrapper,
@@ -350,8 +349,7 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
         let fileManager = serviceFactory.createFileManager()
 
         guard
-            let fileUrl = fileManager.getFileUrl(),
-            let tempUrl = fileManager.getTempUrl() else {
+            let fileUrl = fileManager.getFileUrl() else {
             dispatchInQueueWhenPossible(queue) { completionClosure(.failure(.cloudNotAvailable)) }
             return
         }
@@ -382,18 +380,18 @@ extension CloudBackupServiceFacade: CloudBackupServiceFacadeProtocol {
 
         encryptingOperation.addDependency(readingOperation)
 
-        let uploadWrapper = serviceFactory.createUploadFactory().createUploadWrapper(
-            for: fileUrl,
-            tempUrl: tempUrl,
-            timeoutInterval: CloudBackup.backupSaveTimeout,
-            dataClosure: {
-                try encryptingOperation.extractNoCancellableResultData()
-            }
+        let writeOperation = serviceFactory.createOperationFactory().createWritingOperation(
+            for: fileUrl
+        ) {
+            try encryptingOperation.extractNoCancellableResultData()
+        }
+
+        writeOperation.addDependency(encryptingOperation)
+
+        let totalWrapper = CompoundOperationWrapper(
+            targetOperation: writeOperation,
+            dependencies: [readingOperation, encryptingOperation]
         )
-
-        uploadWrapper.addDependency(operations: [encryptingOperation])
-
-        let totalWrapper = uploadWrapper.insertingHead(operations: [readingOperation, encryptingOperation])
 
         execute(
             wrapper: totalWrapper,

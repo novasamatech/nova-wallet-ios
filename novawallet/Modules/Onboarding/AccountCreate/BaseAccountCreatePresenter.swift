@@ -3,9 +3,9 @@ import SoraFoundation
 
 class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
     weak var view: AccountCreateViewProtocol?
-    var wireframe: AccountCreateWireframeProtocol!
-    var interactor: AccountCreateInteractorInputProtocol!
-    var checkboxListViewModelFactory: CheckboxListViewModelFactory
+    let wireframe: AccountCreateWireframeProtocol
+    let interactor: AccountCreateInteractorInputProtocol
+    let checkboxListViewModelFactory: CheckboxListViewModelFactory
     let mnemonicViewModelFactory: MnemonicViewModelFactory
 
     var checkboxView: CheckboxListViewProtocol? { view }
@@ -25,67 +25,20 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
     private(set) var ethereumDerivationPath: String = DerivationPathConstants.defaultEthereum
 
     init(
+        interactor: AccountCreateInteractorInputProtocol,
+        wireframe: AccountCreateWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         checkboxListViewModelFactory: CheckboxListViewModelFactory,
         mnemonicViewModelFactory: MnemonicViewModelFactory
     ) {
+        self.interactor = interactor
+        self.wireframe = wireframe
         self.checkboxListViewModelFactory = checkboxListViewModelFactory
         self.mnemonicViewModelFactory = mnemonicViewModelFactory
         self.localizationManager = localizationManager
     }
 
     // MARK: - Private functions
-
-    private func createCancelAction() -> AlertPresentableAction {
-        let cancelTitle = R.string.localizable
-            .commonCancel(preferredLanguages: localizationManager.selectedLocale.rLanguages)
-
-        let cancelClosure = {
-            self.wireframe.cancelFlow(from: self.view)
-            return
-        }
-
-        return AlertPresentableAction(
-            title: cancelTitle,
-            style: .destructive,
-            handler: cancelClosure
-        )
-    }
-
-    private func createProceedAction() -> AlertPresentableAction {
-        let locale = localizationManager.selectedLocale
-
-        let proceedTitle = R.string.localizable
-            .commonUnderstand(preferredLanguages: locale.rLanguages)
-
-        return AlertPresentableAction(
-            title: proceedTitle,
-            style: .normal,
-            handler: { [weak self] in
-                self?.interactor.provideMnemonic()
-            }
-        )
-    }
-
-    private func createWarningViewModel() -> AlertPresentableViewModel {
-        let locale = localizationManager.selectedLocale
-
-        let alertTitle = R.string.localizable
-            .commonNoScreenshotTitle_v2_2_0(preferredLanguages: locale.rLanguages)
-        let alertMessage = R.string.localizable
-            .commonNoScreenshotMessage_v2_2_0(preferredLanguages: locale.rLanguages)
-
-        let cancelAction = createCancelAction()
-        let proceedAction = createProceedAction()
-        let actions = [cancelAction, proceedAction]
-
-        return AlertPresentableViewModel(
-            title: alertTitle,
-            message: alertMessage,
-            actions: actions,
-            closeAction: nil
-        )
-    }
 
     private func provideNotVisibleViewModel() {
         let mnemonicCardViewModel: HiddenMnemonicCardView.State = .mnemonicNotVisible(
@@ -103,23 +56,6 @@ class BaseAccountCreatePresenter: CheckboxListPresenterTrait {
         )
 
         view?.update(with: mnemonicCardViewModel)
-    }
-
-    private func createCardTitle() -> NSAttributedString {
-        NSAttributedString.coloredItems(
-            [
-                R.string.localizable.mnemonicCardRevealedHeaderMessageHighlighted(
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
-                )
-            ],
-            formattingClosure: { items in
-                R.string.localizable.mnemonicCardRevealedHeaderMessage(
-                    items[0],
-                    preferredLanguages: localizationManager.selectedLocale.rLanguages
-                )
-            },
-            color: R.color.colorTextPrimary()!
-        )
     }
 
     // MARK: - Processing
@@ -155,12 +91,15 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
 
         wasActive = true
 
-        let viewModel = createWarningViewModel()
-
-        wireframe.present(
-            viewModel: viewModel,
-            style: .alert,
-            from: view
+        wireframe.presentBackupManualWarning(
+            from: view,
+            locale: localizationManager.selectedLocale,
+            onProceed: { [weak self] in
+                self?.interactor.provideMnemonic()
+            },
+            onCancel: { [weak self] in
+                self?.wireframe.cancelFlow(from: self?.view)
+            }
         )
     }
 

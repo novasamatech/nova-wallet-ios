@@ -18,6 +18,10 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     }
 
     func viewDidAppear() {}
+
+    func activateStatusAction() {
+        wireframe.presentCloudBackupSettings(from: view)
+    }
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
@@ -97,23 +101,20 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
             presentationCompletion: { [weak self] in
                 self?.interactor.setPushNotificationsSetupScreenSeen()
             },
-            flowCompletion: { [weak self] in
+            flowCompletion: { [weak self] _ in
                 self?.interactor.requestNextOnLaunchAction()
             }
         )
     }
 
-    func didReceiveNeedsIncreaseSecurity() {
-        wireframe.presentIncreaseSecurity(
-            from: view,
-            onBackup: { [weak self] in
-                self?.interactor.setIncreaseSecuritySeen()
-                self?.wireframe.presentCloudBackupSettings(from: self?.view)
-            },
-            onNotNow: { [weak self] in
-                self?.interactor.setIncreaseSecuritySeen()
-                self?.interactor.requestNextOnLaunchAction()
-            }
-        )
+    func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?) {
+        switch status {
+        case .noFile, .synced:
+            view?.setSyncStatus(.synced)
+        case .notDownloaded, .downloading, .uploading:
+            view?.setSyncStatus(.syncing)
+        case nil:
+            view?.setSyncStatus(.disabled)
+        }
     }
 }

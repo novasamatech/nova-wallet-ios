@@ -16,22 +16,22 @@ extension ExportGenericPresenterProtocol {
 }
 
 protocol ExportGenericWireframeProtocol: ErrorPresentable, AlertPresentable, SharingPresentable {
-    func close(view: ExportGenericViewProtocol?)
+    func close(view: ControllerBackedProtocol?)
 
     func showAdvancedSettings(
-        from view: ExportGenericViewProtocol?,
+        from view: ControllerBackedProtocol?,
         secretSource: SecretSource,
         settings: AdvancedWalletSettings
     )
 }
 
 extension ExportGenericWireframeProtocol {
-    func close(view: ExportGenericViewProtocol?) {
+    func close(view: ControllerBackedProtocol?) {
         view?.controller.navigationController?.popToRootViewController(animated: true)
     }
 
     func showAdvancedSettings(
-        from view: ExportGenericViewProtocol?,
+        from view: ControllerBackedProtocol?,
         secretSource: SecretSource,
         settings: AdvancedWalletSettings
     ) {

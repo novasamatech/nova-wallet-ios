@@ -285,7 +285,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
                   (usernameTextField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoNameTitle(
+            proceedButton.imageWithTitleView?.title = R.string.localizable.commonEnterWalletNameDisabled(
                 preferredLanguages: locale?.rLanguages
             )
         } else {

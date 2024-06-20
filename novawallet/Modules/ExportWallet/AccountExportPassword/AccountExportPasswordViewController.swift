@@ -9,16 +9,6 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
 
     var keyboardHandler: KeyboardHandler?
 
-    private var passwordInputViewModel: InputViewModelProtocol?
-    private var passwordConfirmViewModel: InputViewModelProtocol?
-
-    var inputCompleted: Bool {
-        let passwordCompleted = passwordInputViewModel?.inputHandler.completed ?? false
-        let confirmationCompleted = passwordConfirmViewModel?.inputHandler.completed ?? false
-
-        return passwordCompleted && confirmationCompleted
-    }
-
     init(
         presenter: AccountExportPasswordPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -72,27 +62,37 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.setPasswordView.title = R.string.localizable
-            .commonSetPassword(preferredLanguages: selectedLocale.rLanguages)
+        let enterPasswordPlaceholder = NSAttributedString(
+            string: R.string.localizable.commonSetPassword(preferredLanguages: selectedLocale.rLanguages),
+            attributes: [
+                .foregroundColor: R.color.colorHintText()!,
+                .font: UIFont.regularSubheadline
+            ]
+        )
 
-        rootView.confirmPasswordView.title = R.string.localizable
-            .commonConfirmPassword(preferredLanguages: selectedLocale.rLanguages)
+        rootView.enterPasswordView.textField.attributedPlaceholder = enterPasswordPlaceholder
+
+        let confirmPasswordPlaceholder = NSAttributedString(
+            string: R.string.localizable.commonConfirmPassword(preferredLanguages: selectedLocale.rLanguages),
+            attributes: [
+                .foregroundColor: R.color.colorHintText()!,
+                .font: UIFont.regularSubheadline
+            ]
+        )
+
+        rootView.confirmPasswordView.textField.attributedPlaceholder = confirmPasswordPlaceholder
 
         updateNextButton()
     }
 
     private func setupTextFields() {
-        rootView.setPasswordView.textField.isSecureTextEntry = true
-        rootView.setPasswordView.textField.returnKeyType = .done
-        rootView.setPasswordView.delegate = self
-        rootView.setPasswordView.addTarget(
+        rootView.enterPasswordView.delegate = self
+        rootView.enterPasswordView.addTarget(
             self,
             action: #selector(actionPasswordInputChange),
             for: .editingChanged
         )
 
-        rootView.confirmPasswordView.textField.isSecureTextEntry = true
-        rootView.confirmPasswordView.textField.returnKeyType = .done
         rootView.confirmPasswordView.delegate = self
         rootView.confirmPasswordView.addTarget(
             self,
@@ -102,18 +102,6 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
     }
 
     private func setupButtonHandlers() {
-        rootView.setPasswordEyeButton.addTarget(
-            self,
-            action: #selector(actionPasswordInputEyeToggle),
-            for: .touchUpInside
-        )
-
-        rootView.confirmPasswordEyeButton.addTarget(
-            self,
-            action: #selector(actionPasswordConfirmEyeToggle),
-            for: .touchUpInside
-        )
-
         rootView.proceedButton.addTarget(self, action: #selector(actionNext), for: .touchUpInside)
     }
 
@@ -121,19 +109,21 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
         let enabled: Bool
         let title: String
 
-        if let viewModel = passwordInputViewModel, !viewModel.inputHandler.completed {
+        if let viewModel = rootView.enterPasswordView.inputViewModel, !viewModel.inputHandler.completed {
             enabled = false
             title = R.string.localizable.exportPasswordProceedSetTitle(
                 preferredLanguages: selectedLocale.rLanguages
             )
-        } else if let viewModel = passwordConfirmViewModel, !viewModel.inputHandler.completed {
+        } else if
+            let viewModel = rootView.confirmPasswordView.inputViewModel,
+            !viewModel.inputHandler.completed {
             enabled = false
             title = R.string.localizable.exportPasswordProceedConfirmTitle(
                 preferredLanguages: selectedLocale.rLanguages
             )
         } else {
             enabled = true
-            title = R.string.localizable.commonContinue(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string.localizable.restoreJsonDownloadButton(preferredLanguages: selectedLocale.rLanguages)
         }
 
         rootView.proceedButton.imageWithTitleView?.title = title
@@ -147,43 +137,12 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
         rootView.proceedButton.isUserInteractionEnabled = enabled
     }
 
-    private func toggleSecurity(_ textField: UITextField, eyeButton: RoundedButton) {
-        let isSecure = !textField.isSecureTextEntry
-
-        if isSecure {
-            eyeButton.imageWithTitleView?.iconImage = R.image.iconEyeShow()
-        } else {
-            eyeButton.imageWithTitleView?.iconImage = R.image.iconEyeHide()
-        }
-
-        textField.isSecureTextEntry = isSecure
-    }
-
     @objc private func actionPasswordInputChange() {
-        if passwordInputViewModel?.inputHandler.value != rootView.setPasswordView.text {
-            rootView.setPasswordView.text = passwordInputViewModel?.inputHandler.value
-        }
-
         updateNextButton()
     }
 
     @objc private func actionConfirmationInputChange() {
-        if passwordConfirmViewModel?.inputHandler.value != rootView.confirmPasswordView.text {
-            rootView.confirmPasswordView.text = passwordConfirmViewModel?.inputHandler.value
-        }
-
         updateNextButton()
-    }
-
-    @objc private func actionPasswordInputEyeToggle() {
-        toggleSecurity(rootView.setPasswordView.textField, eyeButton: rootView.setPasswordEyeButton)
-    }
-
-    @objc private func actionPasswordConfirmEyeToggle() {
-        toggleSecurity(
-            rootView.confirmPasswordView.textField,
-            eyeButton: rootView.confirmPasswordEyeButton
-        )
     }
 
     @objc private func actionNext() {
@@ -193,57 +152,28 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
 
 extension AccountExportPasswordViewController: AccountExportPasswordViewProtocol {
     func setPasswordInputViewModel(_ viewModel: InputViewModelProtocol) {
-        passwordInputViewModel = viewModel
+        rootView.enterPasswordView.bind(inputViewModel: viewModel)
         updateNextButton()
     }
 
     func setPasswordConfirmationViewModel(_ viewModel: InputViewModelProtocol) {
-        passwordConfirmViewModel = viewModel
+        rootView.confirmPasswordView.bind(inputViewModel: viewModel)
         updateNextButton()
     }
 }
 
-extension AccountExportPasswordViewController: AnimatedTextFieldDelegate {
-    func animatedTextFieldShouldReturn(_ textField: AnimatedTextField) -> Bool {
-        if
-            textField === rootView.setPasswordView,
-            passwordConfirmViewModel?.inputHandler.value.isEmpty == true {
-            rootView.confirmPasswordView.becomeFirstResponder()
-        } else if textField === rootView.confirmPasswordView, inputCompleted {
-            textField.resignFirstResponder()
+extension AccountExportPasswordViewController: PasswordInputViewDelegate {
+    func passwordInputViewWillStartEditing(_: PasswordInputView) {}
 
-            presenter.proceed()
+    func passwordInputViewShouldReturn(_ inputView: PasswordInputView) -> Bool {
+        if inputView === rootView.enterPasswordView {
+            rootView.enterPasswordView.textField.resignFirstResponder()
+            rootView.confirmPasswordView.textField.becomeFirstResponder()
         } else {
-            textField.resignFirstResponder()
+            rootView.confirmPasswordView.textField.resignFirstResponder()
         }
 
         return false
-    }
-
-    func animatedTextField(
-        _ textField: AnimatedTextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        let viewModel: InputViewModelProtocol?
-
-        if textField === rootView.setPasswordView {
-            viewModel = passwordInputViewModel
-        } else {
-            viewModel = passwordConfirmViewModel
-        }
-
-        guard let currentViewModel = viewModel else {
-            return true
-        }
-
-        let shouldApply = currentViewModel.inputHandler.didReceiveReplacement(string, for: range)
-
-        if !shouldApply, textField.text != currentViewModel.inputHandler.value {
-            textField.text = currentViewModel.inputHandler.value
-        }
-
-        return shouldApply
     }
 }
 
@@ -261,10 +191,10 @@ extension AccountExportPasswordViewController: KeyboardAdoptable {
         if contentInsets.bottom > 0.0 {
             let targetView: UIView?
 
-            if rootView.setPasswordView.isFirstResponder {
-                targetView = rootView.setPasswordBackroundView
+            if rootView.enterPasswordView.isFirstResponder {
+                targetView = rootView.enterPasswordView
             } else if rootView.confirmPasswordView.isFirstResponder {
-                targetView = rootView.confirmPasswordBackroundView
+                targetView = rootView.confirmPasswordView
             } else {
                 targetView = nil
             }

@@ -19,7 +19,7 @@ final class CloudBackupEnterPasswordCheckWireframe: ImportCloudPasswordWireframe
         let navigationController = view?.controller.navigationController
         navigationController?.popViewController(animated: true)
 
-        presentSuccessNotification(
+        presentMultilineSuccessNotification(
             R.string.localizable.cloudBackupDeleted(
                 preferredLanguages: locale.rLanguages
             ),

@@ -82,7 +82,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentPushNotificationsSetup(
         on view: MainTabBarViewProtocol?,
         presentationCompletion: @escaping () -> Void,
-        flowCompletion: @escaping () -> Void
+        flowCompletion: @escaping (Bool) -> Void
     ) {
         guard let setupPushNotificationsView = NotificationsSetupViewFactory.createView(
             completion: flowCompletion
@@ -144,6 +144,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         let optBackupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
 
         if optBackupSettings == nil {
+            settingsNavigationController?.popToRootViewController(animated: false)
+
             guard let cloudBackupSettings = CloudBackupSettingsViewFactory.createView() else {
                 return
             }
@@ -152,24 +154,6 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
 
             settingsNavigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
         }
-    }
-
-    func presentIncreaseSecurity(
-        from view: MainTabBarViewProtocol?,
-        onBackup: @escaping () -> Void,
-        onNotNow: @escaping () -> Void
-    ) {
-        guard
-            let tabBarController = view?.controller as? UITabBarController,
-            canPresentScreenWithoutBreakingFlow(on: tabBarController),
-            let bottomSheet = CloudBackupMessageSheetViewFactory.createIncreaseSecurityMessageSheet(
-                for: onBackup,
-                notNowClosure: onNotNow
-            ) else {
-            return
-        }
-
-        view?.controller.present(bottomSheet.controller, animated: true)
     }
 
     private func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {

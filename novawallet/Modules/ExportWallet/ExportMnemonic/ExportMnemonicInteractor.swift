@@ -9,7 +9,7 @@ enum ExportMnemonicInteractorError: Error {
 }
 
 final class ExportMnemonicInteractor {
-    weak var presenter: ExportMnemonicInteractorOutputProtocol!
+    weak var presenter: ExportMnemonicInteractorOutputProtocol?
 
     let metaAccount: MetaAccountModel
     let chain: ChainModel
@@ -74,9 +74,9 @@ extension ExportMnemonicInteractor: ExportMnemonicInteractorInputProtocol {
                     let model = try exportOperation
                         .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
-                    self?.presenter.didReceive(exportData: model)
+                    self?.presenter?.didReceive(exportData: model)
                 } catch {
-                    self?.presenter.didReceive(error: error)
+                    self?.presenter?.didReceive(error: error)
                 }
             }
         }

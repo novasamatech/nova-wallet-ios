@@ -26,7 +26,7 @@ struct OnboardingWalletReadyViewFactory {
     }
 
     static func createInteractor() -> OnboardingWalletReadyInteractor {
-        let factory = ICloudBackupServiceFactory(operationQueue: OperationManagerFacade.sharedDefaultQueue)
+        let factory = ICloudBackupServiceFactory()
         return .init(
             factory: factory,
             serviceFacade: CloudBackupServiceFacade(

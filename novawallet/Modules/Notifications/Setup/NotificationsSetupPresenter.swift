@@ -32,7 +32,7 @@ extension NotificationsSetupPresenter: NotificationsSetupPresenterProtocol {
     }
 
     func skip() {
-        wireframe.close(on: view)
+        wireframe.complete(on: view)
     }
 
     func activateTerms() {

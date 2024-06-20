@@ -12,10 +12,12 @@ final class CloudBackupCreateViewLayout: SCLoadableActionLayoutView {
 
     let enterPasswordView: PasswordInputView = .create { view in
         view.textField.returnKeyType = .next
+        view.textField.textContentType = .newPassword
     }
 
     let confirmPasswordView: PasswordInputView = .create { view in
         view.textField.returnKeyType = .done
+        view.textField.textContentType = .newPassword
     }
 
     let hintView: HintListView = .create { view in
