@@ -108,8 +108,10 @@ final class CloudBackupSyncMediator {
     }
 
     private func setupCurrentState() {
+        eventCenter.remove(observer: self)
         eventCenter.add(observer: self, dispatchIn: .main)
 
+        syncService.unsubscribeState(self)
         syncService.subscribeState(self, notifyingIn: .main) { [weak self] state in
             self?.logger.debug("Backup state: \(state)")
             self?.handleNew(state: state)

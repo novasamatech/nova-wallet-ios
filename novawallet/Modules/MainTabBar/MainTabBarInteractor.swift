@@ -109,6 +109,8 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         pushScreenOpenService.delegate = self
 
         cloudBackupMediator.setup(with: self)
+        subscribeCloudSyncMonitor()
+        cloudBackupMediator.sync(for: .unknown)
 
         onLaunchQueue.delegate = self
 
@@ -119,8 +121,6 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
         } else {
             onLaunchQueue.runNext()
         }
-
-        subscribeCloudSyncMonitor()
     }
 
     func setPushNotificationsSetupScreenSeen() {
