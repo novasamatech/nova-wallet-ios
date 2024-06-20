@@ -1655,3 +1655,5 @@
 "common.button.settings" = "Settings";
 "account.export.ethereum.private.key.placeholder" = "64 hex symbols";
 "restore.json.download.button" = "Download Restore JSON";
+"common.status.backup.syncing" = "Backup Syncing...";
+"common.status.backup.synced" = "Backup Synced";

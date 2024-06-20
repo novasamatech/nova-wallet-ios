@@ -90,14 +90,17 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             cont1.0 < cont2.0
         }
 
-        let view = MainTabBarViewController()
-        view.viewControllers = indexedControllers.map(\.1)
-
         let presenter = MainTabBarPresenter(localizationManager: LocalizationManager.shared)
+
+        let view = MainTabBarViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
+        view.viewControllers = indexedControllers.map(\.1)
 
         let wireframe = MainTabBarWireframe()
 
-        view.presenter = presenter
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe

@@ -18,6 +18,10 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     }
 
     func viewDidAppear() {}
+
+    func activateStatusAction() {
+        wireframe.presentCloudBackupSettings(from: view)
+    }
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
@@ -105,10 +109,12 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
 
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?) {
         switch status {
-        case .noFile, .synced, nil:
-            view?.setIsSyncing(false)
+        case .noFile, .synced:
+            view?.setSyncStatus(.synced)
         case .notDownloaded, .downloading, .uploading:
-            view?.setIsSyncing(true)
+            view?.setSyncStatus(.syncing)
+        case nil:
+            view?.setSyncStatus(.disabled)
         }
     }
 }

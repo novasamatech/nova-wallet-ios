@@ -630,6 +630,8 @@
 		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
 		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
 		0CF692892C20E2B1000FC395 /* BackupManualWarningPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */; };
+		0CF6928C2C231CA5000FC395 /* SharedStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF6928B2C231CA5000FC395 /* SharedStatusView.swift */; };
+		0CF6928E2C23EBEA000FC395 /* SharedSyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */; };
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
 		0CFA16132B0CD8A0007AF885 /* GovSpentAmountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */; };
@@ -5436,6 +5438,8 @@
 		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
 		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
 		0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupManualWarningPresentable.swift; sourceTree = "<group>"; };
+		0CF6928B2C231CA5000FC395 /* SharedStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStatusView.swift; sourceTree = "<group>"; };
+		0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSyncStatus.swift; sourceTree = "<group>"; };
 		0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameView.swift; sourceTree = "<group>"; };
 		0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupErrorPresentable.swift; sourceTree = "<group>"; };
 		0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountExtractor.swift; sourceTree = "<group>"; };
@@ -11012,6 +11016,14 @@
 				0CE933BF2C068BF2000F3EFE /* AddAccount+ImportOptionsPresenter.swift */,
 			);
 			path = Presenters;
+			sourceTree = "<group>";
+		};
+		0CF6928A2C231C89000FC395 /* SharedStatusView */ = {
+			isa = PBXGroup;
+			children = (
+				0CF6928B2C231CA5000FC395 /* SharedStatusView.swift */,
+			);
+			path = SharedStatusView;
 			sourceTree = "<group>";
 		};
 		0CF817482BBD0CE800CB9183 /* View */ = {
@@ -16610,6 +16622,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				0CF6928A2C231C89000FC395 /* SharedStatusView */,
 				2D5493322C04C0C000607BF7 /* MnemonicCard */,
 				0CC0F7F52BB070C6002C49F6 /* LoadableAction */,
 				0C9951CD2AE2BAA700B65615 /* PromotionBannerView */,
@@ -16792,6 +16805,7 @@
 				0C21D77F2AB432B100EB2DBD /* MainTabBarIndex.swift */,
 				0C7071282C1F600F0080DDCD /* OnLauchAction.swift */,
 				0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */,
+				0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */,
 			);
 			path = MainTabBar;
 			sourceTree = "<group>";
@@ -23149,6 +23163,7 @@
 				8499FEDE27C0AB0200712589 /* NftSource.swift in Sources */,
 				84D2F1B12775999F0040C680 /* DAppParsedExtrinsic.swift in Sources */,
 				7738FB6A2A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift in Sources */,
+				0CF6928E2C23EBEA000FC395 /* SharedSyncStatus.swift in Sources */,
 				0C59E8D32AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift in Sources */,
 				84AE7AAB27D373A200495267 /* StackInfoTableCell.swift in Sources */,
 				84A59160292B468300BCCF8F /* EvmTransactionService.swift in Sources */,
@@ -23615,6 +23630,7 @@
 				8433B34A29B63661005E5D0F /* ExtrinsicSplitter.swift in Sources */,
 				843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */,
 				0C3205DA2A896029002EB914 /* EvmConstantNonceProvider.swift in Sources */,
+				0CF6928C2C231CA5000FC395 /* SharedStatusView.swift in Sources */,
 				8499FEDC27BFDD4300712589 /* NftLocalSubscriptionFactory.swift in Sources */,
 				0C6D66AB2A8C0B6700AAB988 /* BaseSigner.swift in Sources */,
 				88BB0B4529C1E29F00D041C1 /* Web3NameLocal.swift in Sources */,

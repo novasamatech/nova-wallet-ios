@@ -2,12 +2,13 @@ import UIKit
 
 protocol MainTabBarViewProtocol: ControllerBackedProtocol {
     func didReplaceView(for newView: UIViewController, for index: Int)
-    func setIsSyncing(_ isSyncing: Bool)
+    func setSyncStatus(_ syncStatus: SharedSyncStatus)
 }
 
 protocol MainTabBarPresenterProtocol: AnyObject {
     func setup()
     func viewDidAppear()
+    func activateStatusAction()
 }
 
 protocol MainTabBarInteractorInputProtocol: AnyObject {

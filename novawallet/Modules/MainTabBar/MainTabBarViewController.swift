@@ -1,25 +1,29 @@
 import UIKit
+import SoraFoundation
 
 final class MainTabBarViewController: UITabBarController {
-    var presenter: MainTabBarPresenterProtocol!
+    let presenter: MainTabBarPresenterProtocol
 
     private var viewAppeared: Bool = false
 
-    // Status message label
-    private let statusLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Syncing..."
-        label.textAlignment = .center
-        label.backgroundColor = UIColor.red
-        label.textColor = .white
-        label.isHidden = true
-        return label
-    }()
+    private let sharedStatusBarPresenter = SharedStatusPresenter()
 
-    var isSyncing: Bool = false {
-        didSet {
-            updateStatusLabel()
-        }
+    var syncStatus: SharedSyncStatus = .disabled
+
+    init(
+        presenter: MainTabBarPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
@@ -27,22 +31,9 @@ final class MainTabBarViewController: UITabBarController {
 
         delegate = self
 
+        sharedStatusBarPresenter.delegate = self
+
         configureTabBar()
-
-        setupStatusLabel()
-    }
-
-    private func setupStatusLabel() {
-        view.addSubview(statusLabel)
-        statusLabel.snp.makeConstraints { make in
-            make.trailing.leading.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.height.equalTo(30)
-        }
-    }
-
-    private func updateStatusLabel() {
-        statusLabel.isHidden = !isSyncing
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -107,7 +98,52 @@ extension MainTabBarViewController: MainTabBarViewProtocol {
         setViewControllers(newViewControllers, animated: false)
     }
 
-    func setIsSyncing(_ isSyncing: Bool) {
-        self.isSyncing = isSyncing
+    func setSyncStatus(_ syncStatus: SharedSyncStatus) {
+        let wasSyncing = self.syncStatus == .syncing
+        self.syncStatus = syncStatus
+
+        switch syncStatus {
+        case .disabled:
+            sharedStatusBarPresenter.hide()
+        case .syncing:
+            sharedStatusBarPresenter.showPending(
+                for: R.string.localizable.commonStatusBackupSyncing(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                on: view
+            )
+        case .synced:
+            if wasSyncing {
+                sharedStatusBarPresenter.complete(
+                    with: R.string.localizable.commonStatusBackupSynced(
+                        preferredLanguages: selectedLocale.rLanguages
+                    )
+                )
+            }
+        }
+    }
+}
+
+extension MainTabBarViewController: SharedStatusPresenterDelegate {
+    func didTapSharedStatusView() {
+        presenter.activateStatusAction()
+    }
+}
+
+extension MainTabBarViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            switch syncStatus {
+            case .disabled, .synced:
+                break
+            case .syncing:
+                sharedStatusBarPresenter.showPending(
+                    for: R.string.localizable.commonStatusBackupSyncing(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    on: view
+                )
+            }
+        }
     }
 }

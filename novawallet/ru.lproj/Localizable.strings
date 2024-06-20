@@ -1655,3 +1655,5 @@
 "common.button.settings" = "Настройки";
 "account.export.ethereum.private.key.placeholder" = "64 шест. символа";
 "restore.json.download.button" = "Получить JSON";
+"common.status.backup.syncing" = "Обновление бэкапа...";
+"common.status.backup.synced" = "Бэкап обновлён";
