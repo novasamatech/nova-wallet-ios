@@ -38,7 +38,7 @@ final class StakingProxyManagementViewController: UIViewController, ViewHolder {
 
     private func setupTableView() {
         rootView.tableView.rowHeight = 48
-        rootView.tableView.registerClassForCell(WalletsListTableViewCell<UIImageView>.self)
+        rootView.tableView.registerClassForCell(WalletsListTableViewCell<WalletView, UIImageView>.self)
         rootView.tableView.registerHeaderFooterView(withClass: SectionTextHeaderView.self)
         rootView.tableView.delegate = self
     }
@@ -55,7 +55,7 @@ final class StakingProxyManagementViewController: UIViewController, ViewHolder {
 
     private func makeDataSource() -> DataSource {
         .init(tableView: rootView.tableView) { tableView, _, viewModel in
-            let cell = tableView.dequeueReusableCellWithType(WalletsListTableViewCell<UIImageView>.self)
+            let cell = tableView.dequeueReusableCellWithType(WalletsListTableViewCell<WalletView, UIImageView>.self)
             cell?.contentDisplayView.valueView.image = R.image.iconMore()?.withTintColor(R.color.colorIconSecondary()!)
             cell?.infoView.bind(viewModel: viewModel.info)
             return cell

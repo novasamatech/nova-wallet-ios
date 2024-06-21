@@ -40,7 +40,23 @@ final class ActionManageTableViewCell: UITableViewCell, ModalPickerCellProtocol 
     }
 
     func bind(model: Model) {
-        manageContentView.iconImageView.image = model.icon
+        let iconColor: UIColor
+        let textColor: UIColor
+
+        if model.isDestructive {
+            iconColor = R.color.colorIconNegative()!
+            textColor = R.color.colorTextNegative()!
+        } else {
+            iconColor = R.color.colorIconPrimary()!
+            textColor = R.color.colorTextPrimary()!
+        }
+
+        manageContentView.iconImageView.image = model.icon?
+            .withRenderingMode(.alwaysTemplate)
+            .tinted(with: iconColor)
+
+        manageContentView.titleLabel.textColor = textColor
+
         manageContentView.titleLabel.text = model.title
     }
 }

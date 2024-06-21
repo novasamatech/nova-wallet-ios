@@ -2,7 +2,7 @@ import UIKit
 
 final class NetworkTracksContainerView: UIView {
     let titleLabel: UILabel = .create {
-        $0.apply(style: .boldTitle2Primary)
+        $0.apply(style: .boldTitle3Primary)
     }
 
     let networkView = AssetListChainView()

@@ -11,7 +11,7 @@ final class StakingTotalRewardView: UIView {
     let rewardView: MultiValueView = .create { view in
         view.valueTop.textColor = R.color.colorTextPrimary()
         view.valueTop.textAlignment = .left
-        view.valueTop.font = .boldTitle2
+        view.valueTop.font = .boldTitle3
         view.valueBottom.textColor = R.color.colorTextSecondary()
         view.valueBottom.textAlignment = .left
         view.valueBottom.font = .regularSubheadline

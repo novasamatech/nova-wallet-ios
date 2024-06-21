@@ -29,9 +29,12 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             keystoreImportService: keystoreImportService,
             screenOpenService: screenOpenService,
             pushScreenOpenService: pushScreenOpenService,
+            cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,
             securedLayer: securedLayer,
             inAppUpdatesService: inAppUpdatesService,
-            settingsManager: SettingsManager.shared
+            settingsManager: SettingsManager.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         let walletNotificationService = serviceCoordinator.walletNotificationService
@@ -72,9 +75,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
         guard let settingsController = createProfileController(
             for: localizationManager,
-            dappMediator: serviceCoordinator.dappMediator,
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
+            serviceCoordinator: serviceCoordinator
         ) else {
             return nil
         }
@@ -89,14 +90,17 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             cont1.0 < cont2.0
         }
 
-        let view = MainTabBarViewController()
-        view.viewControllers = indexedControllers.map(\.1)
-
         let presenter = MainTabBarPresenter(localizationManager: LocalizationManager.shared)
+
+        let view = MainTabBarViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
+        view.viewControllers = indexedControllers.map(\.1)
 
         let wireframe = MainTabBarWireframe()
 
-        view.presenter = presenter
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe
@@ -191,14 +195,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createProfileController(
         for localizationManager: LocalizationManagerProtocol,
-        dappMediator: DAppInteractionMediating,
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol
     ) -> UIViewController? {
         guard let view = SettingsViewFactory.createView(
-            with: dappMediator,
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
+            with: serviceCoordinator
         ) else { return nil }
 
         let viewController = view.controller

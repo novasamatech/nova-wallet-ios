@@ -1,3 +1,4 @@
+"push.notification.sent.tokens.no.address.subtitle" = "在%@上发送了%@ %@";
 "push.notification.receive.tokens.title" = "⬇️ 已收到";
 "push.notification.sent.tokens.title" = "💸 已发送";
 "push.notification.staking.reward.title" = "⭐ 新奖励";
@@ -25,4 +26,3 @@
 "push.notification.unsupported.body" = "不支持的消息内容";
 "push.notification.sent.tokens.subtitle" = "向 %@ 发送 %@ %@ 在 %@";
 "push.notification.receive.tokens.subtitle" = "在 %@ 收到 %@ %@";
-"push.notification.sent.tokens.no.address.subtitle" = "在%@上发送了%@ %@";

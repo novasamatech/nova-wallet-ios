@@ -12,6 +12,12 @@ class HintListView: UIView {
 
     private var hints: [IconDetailsView] = []
 
+    var style: Style? {
+        didSet {
+            applyStyleIfNeeded()
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -39,6 +45,20 @@ class HintListView: UIView {
 
             hints += newHints
         }
+
+        applyStyleIfNeeded()
+    }
+
+    private func applyStyleIfNeeded() {
+        guard let style = style else {
+            return
+        }
+
+        for hint in hints {
+            hint.stackView.alignment = style.itemAlignment
+            hint.iconWidth = style.iconWidth
+            hint.imageView.contentMode = style.iconContentMode
+        }
     }
 
     func bind(texts: [String]) {
@@ -61,10 +81,35 @@ class HintListView: UIView {
         setNeedsLayout()
     }
 
+    func bind(viewModels: [ViewModel]) {
+        updateHints(for: viewModels.count)
+
+        for (viewModel, hint) in zip(viewModels, hints) {
+            if let icon = viewModel.icon {
+                hint.imageView.image = icon
+            }
+
+            hint.detailsLabel.attributedText = viewModel.attributedText
+        }
+    }
+
     private func setupLayout() {
         addSubview(stackView)
         stackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+}
+
+extension HintListView {
+    struct Style {
+        let itemAlignment: UIStackView.Alignment
+        let iconWidth: CGFloat
+        let iconContentMode: UIView.ContentMode
+    }
+
+    struct ViewModel {
+        let icon: UIImage?
+        let attributedText: NSAttributedString
     }
 }

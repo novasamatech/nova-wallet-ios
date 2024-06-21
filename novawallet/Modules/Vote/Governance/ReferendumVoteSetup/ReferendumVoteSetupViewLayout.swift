@@ -27,7 +27,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
     let titleLabel: UILabel = .create { view in
         view.textColor = R.color.colorTextPrimary()
-        view.font = .boldTitle2
+        view.font = .boldTitle3
         view.numberOfLines = 0
     }
 

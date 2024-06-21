@@ -3,6 +3,7 @@ import Operation_iOS
 
 final class WalletManageInteractor: WalletsListInteractor {
     let walletUpdateMediator: WalletUpdateMediating
+    let cloudBackupSyncService: CloudBackupSyncServiceProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -18,6 +19,7 @@ final class WalletManageInteractor: WalletsListInteractor {
     }
 
     init(
+        cloudBackupSyncService: CloudBackupSyncServiceProtocol,
         balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         walletUpdateMediator: WalletUpdateMediating,
@@ -25,6 +27,7 @@ final class WalletManageInteractor: WalletsListInteractor {
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.cloudBackupSyncService = cloudBackupSyncService
         self.walletUpdateMediator = walletUpdateMediator
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
@@ -41,7 +44,7 @@ final class WalletManageInteractor: WalletsListInteractor {
         switch result {
         case let .success(update):
             if update.isWalletSwitched {
-                eventCenter.notify(with: SelectedAccountChanged())
+                eventCenter.notify(with: SelectedWalletSwitched())
             }
 
             if update.selectedWallet == nil {
@@ -50,6 +53,21 @@ final class WalletManageInteractor: WalletsListInteractor {
         case let .failure(error):
             logger.error("Did receive wallet update error: \(error)")
         }
+    }
+
+    private func subscribeCloudBackupState() {
+        cloudBackupSyncService.subscribeState(
+            self,
+            notifyingIn: .main
+        ) { [weak self] state in
+            self?.presenter?.didReceiveCloudBackup(state: state)
+        }
+    }
+
+    override func setup() {
+        super.setup()
+
+        subscribeCloudBackupState()
     }
 }
 
@@ -78,7 +96,7 @@ extension WalletManageInteractor: WalletManageInteractorInputProtocol {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { result in
-            self.eventCenter.notify(with: AccountsRemovedManually())
+            self.eventCenter.notify(with: WalletRemoved())
             self.handleWalletsUpdate(result: result)
         }
     }

@@ -258,7 +258,7 @@ extension StakingDashboardInteractor: PriceLocalStorageSubscriber, PriceLocalSub
 }
 
 extension StakingDashboardInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         guard let wallet = walletSettings.value else {
             return
         }
