@@ -160,6 +160,10 @@ final class CloudBackupActionCell: RowView<
         titleLabel.textAlignment = .left
         subtitleLabel.apply(style: .caption1Secondary)
         subtitleLabel.textAlignment = .left
+
+        statusView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        labelsView.setContentCompressionResistancePriority(.low, for: .horizontal)
+        iconView.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
 

@@ -55,8 +55,12 @@ extension BaseBackupEnterPasswordInteractor: ImportCloudPasswordInteractorInputP
         cloudBackupServiceFacade.deleteBackup(runCompletionIn: .main) { [weak self] result in
             switch result {
             case .success:
-                self?.syncMetadataManager.isBackupEnabled = false
-                self?.presenter?.didDeleteBackup()
+                do {
+                    try self?.syncMetadataManager.deleteBackup()
+                    self?.presenter?.didDeleteBackup()
+                } catch {
+                    self?.presenter?.didReceive(error: .deleteFailed(error))
+                }
             case let .failure(error):
                 self?.presenter?.didReceive(error: .deleteFailed(error))
             }
