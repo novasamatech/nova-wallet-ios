@@ -38,55 +38,7 @@ enum CloudBackupMessageSheetViewFactory {
             allowsSwipeDown: false
         )
 
-        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 306) }
-
-        return messageSheetView
-    }
-
-    static func createIncreaseSecurityMessageSheet(
-        for backupManualClosure: @escaping MessageSheetCallback,
-        notNowClosure: @escaping MessageSheetCallback
-    ) -> MessageSheetViewProtocol? {
-        let messageSheetView = MessageSheetViewFactory.createNoContentView(
-            viewModel: .init(
-                title: LocalizableResource { locale in
-                    R.string.localizable.cloudBackupIncreaseSecurityTitle(preferredLanguages: locale.rLanguages)
-                },
-                message: LocalizableResource { locale in
-                    NSAttributedString.coloredItems(
-                        [
-                            R.string.localizable.cloudBackupIncreaseSecurityHighlighted1(
-                                preferredLanguages: locale.rLanguages
-                            )
-                        ],
-                        formattingClosure: { items in
-                            R.string.localizable.cloudBackupIncreaseSecurityMessage(
-                                items[0],
-                                preferredLanguages: locale.rLanguages
-                            )
-                        },
-                        color: R.color.colorTextPrimary()!
-                    )
-                },
-                graphics: R.image.imageIncreseSecurity(),
-                content: nil,
-                mainAction: .init(
-                    title: LocalizableResource { locale in
-                        R.string.localizable.commonBackupManual(preferredLanguages: locale.rLanguages)
-                    },
-                    handler: backupManualClosure
-                ),
-                secondaryAction: .init(
-                    title: LocalizableResource { locale in
-                        R.string.localizable.commonNotNow(preferredLanguages: locale.rLanguages)
-                    },
-                    handler: notNowClosure
-                )
-            ),
-            allowsSwipeDown: false
-        )
-
-        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 356) }
+        messageSheetView.map { MessageSheetViewFacade.setupBottomSheet(from: $0.controller, preferredHeight: 316) }
 
         return messageSheetView
     }
@@ -292,7 +244,7 @@ enum CloudBackupMessageSheetViewFactory {
 
         presenter.view = view
 
-        MessageSheetViewFacade.setupBottomSheet(from: view, preferredHeight: 360)
+        MessageSheetViewFacade.setupBottomSheet(from: view, preferredHeight: 370)
 
         return .present(view: view)
     }
