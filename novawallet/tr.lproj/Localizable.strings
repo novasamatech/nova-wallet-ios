@@ -1604,7 +1604,7 @@
 "common.cloud.backup" = "Bulut yedekleme";
 "passphrase.import.description" = "12, 15, 18, 21 veya 24 kelimelik ifadenizi kullanın";
 "wallet.import.title" = "Cüzdanınızı nasıl içe aktarmak istediğinizi seçin";
-"common.continue.with.apple.backup" = "Apple ile devam et";
+"common.continue.with.apple.backup" = "Apple iCloud ile devam et";
 "cloud.backup.not.available.title" = "iCloud kimlik doğrulaması başarısız";
 "cloud.backup.not.available.message" = "Lütfen iCloud hesabınıza giriş yaptığınızdan emin olun";
 "cloud.backup.not.enough.storage.message" = "Lütfen yeterli iCloud depolama alanınızın olduğundan emin olun. Depolama alanınızı Ayarlar'dan yönetebilirsiniz.";

@@ -1604,7 +1604,7 @@
 "common.cloud.backup" = "Copia de seguridad en la nube";
 "passphrase.import.description" = "Usa tu frase de 12, 15, 18, 21 o 24 palabras";
 "wallet.import.title" = "Elige cómo te gustaría importar tu cartera";
-"common.continue.with.apple.backup" = "Continuar con Apple";
+"common.continue.with.apple.backup" = "Continuar con Apple iCloud";
 "cloud.backup.not.available.title" = "La autenticación de iCloud ha fallado";
 "cloud.backup.not.available.message" = "Por favor, asegúrate de que has iniciado sesión en tu cuenta de iCloud";
 "cloud.backup.not.enough.storage.message" = "Por favor, asegúrate de tener suficiente almacenamiento disponible en iCloud. Puedes gestionar tu almacenamiento en Configuración.";
