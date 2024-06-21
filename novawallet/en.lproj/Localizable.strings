@@ -1604,7 +1604,7 @@
 "common.cloud.backup" = "Cloud backup";
 "passphrase.import.description" = "Use your 12, 15, 18, 21 or 24-word phrase";
 "wallet.import.title" = "Choose how you would like to import your wallet";
-"common.continue.with.apple.backup" = "Continue with iCloud";
+"common.continue.with.apple.backup" = "Continue with Apple iCloud";
 "cloud.backup.not.available.title" = "iCloud authentication failed";
 "cloud.backup.not.available.message" = "Please, ensure that you are logged into iCloud account";
 "cloud.backup.not.enough.storage.message" = "Please, ensure you have enough iCloud storage available. You can manage your storage in Settings.";
