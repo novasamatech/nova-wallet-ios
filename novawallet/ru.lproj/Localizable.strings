@@ -1531,7 +1531,7 @@
 "advanced.export.json.button.title" = "Экспортировать JSON-файл";
 "backup.attention.title" = "Не сообщайте свою секретную фразу!";
 "backup.attention.description" = "Пожалуйста, внимательно прочитайте следующее перед просмотром своего бэкапа";
-"backup.attention.passphrase.description" = "Эта секретная фраза дает вам полный и постоянный доступ ко всем подключенным кошелькам и средствам в них. \n %s";
+"backup.attention.passphrase.description" = "Эта секретная фраза дает вам полный и постоянный доступ ко всем подключенным кошелькам и средствам в них. \n %@";
 "backup.attention.passphrase.description.highlighted" = "НЕ ПЕРЕДАВАЙТЕ ЕЁ НИКОМУ.";
 "backup.attention.passphrase.write.description.highlighted" = "ВАШИ СРЕДСТВА БУДУТ ПОТЕРЯНЫ НАВСЕГДА.";
 "backup.attention.passphrase.support.description.highlighted" = "ОСТЕРЕГАЙТЕСЬ МОШЕННИКОВ.";
@@ -1546,9 +1546,9 @@
 "cloud.backup.alert.remove.wallets.title" = "Вы уверены, что хотите применить эти изменения?";
 "cloud.backup.alert.remove.wallets.message" = "Если вы не записали вручную свою секретную фразу для кошельков, которые будут удалены, то эти кошельки и все их активы будут навсегда и безвозвратно потеряны.";
 "cloud.backup.unsynced.changes.title" = "Обнаружены изменения в Облачном Бэкапе";
-"cloud_backup_destructive_changes_action_subtitle" = "На данный момент ваш бэкап не синхронизирован. Пожалуйста, ознакомьтесь с этими изменениями.";
+"cloud.backup.unsynced.changes.message" = "На данный момент ваш бэкап не синхронизирован. Пожалуйста, ознакомьтесь с этими изменениями.";
 "common.review.updates" = "Обзор Изменений";
-"state_new" = "Добавлен";
+"common.new" = "Добавлен";
 "common.modified" = "Изменён";
 "common.removed" = "Удалён";
 "cloud.backup.review.title" = "Применить Изменения Бэкапа?";
@@ -1571,10 +1571,10 @@
 "common.manual" = "Вручную";
 "common.backup.manual" = "Создать бэкап вручную";
 "cloud.backup.broken.title" = "Найден пустой или поврежденный бэкап";
-"cloud.backup.broken.message" = "Обнаружена проблема с бэкапом. Вы можете удалить текущий бэкап и создать новый. %s, перед тем как продолжить.";
+"cloud.backup.broken.message" = "Обнаружена проблема с бэкапом. Вы можете удалить текущий бэкап и создать новый. %@, перед тем как продолжить.";
 "cloud.backup.broken.highlighted" = "Убедитесь, что вы сохранили секретные фразы для всех кошельков";
 "common.recover.wallets" = "Восстановить кошельки";
-"loud.backup.existing.bottom.sheet.title" = "Обнаружен существующий Бэкап";
+"cloud.backup.existing.bottom.sheet.title" = "Обнаружен существующий Бэкап";
 "cloud.backup.existing.bottom.sheet.recover" = "Хотите восстановить свои кошельки?";
 "cloud.backup.not.found.title" = "Бэкап не найден";
 "cloud.backup.not.found.message" = "К сожалению, Бэкап с вашими кошельками не найден.";
@@ -1652,3 +1652,4 @@
 "account.export.ethereum.private.key.placeholder" = "64 шест. символа";
 "common.status.backup.syncing" = "Обновление бэкапа...";
 "common.status.backup.synced" = "Бэкап обновлён";
+"ledger.instructions.step4" = "%@ для добавления в кошелёк";

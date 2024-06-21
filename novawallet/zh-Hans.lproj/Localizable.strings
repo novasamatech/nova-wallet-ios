@@ -1546,9 +1546,9 @@
 "cloud.backup.alert.remove.wallets.title" = "您确定要应用这些更改吗？";
 "cloud.backup.alert.remove.wallets.message" = "如果您未手动写下要删除的钱包的助记词，那么这些钱包及其所有资产将永久且不可恢复地丢失。";
 "cloud.backup.unsynced.changes.title" = "发现云备份更改";
-"cloud_backup_destructive_changes_action_subtitle" = "目前您的备份未同步。请查看这些更新。";
+"cloud.backup.unsynced.changes.message" = "目前您的备份未同步。请查看这些更新。";
 "common.review.updates" = "查看更新";
-"state_new" = "新的";
+"common.new" = "新的";
 "common.modified" = "已修改";
 "common.removed" = "已移除";
 "cloud.backup.review.title" = "应用备份更新？";
@@ -1574,7 +1574,7 @@
 "cloud.backup.broken.message" = "已检测到您的备份出现问题。您可以选择删除当前备份并创建新备份。在继续之前 %@。";
 "cloud.backup.broken.highlighted" = "确保您已保存所有钱包的密码短语";
 "common.recover.wallets" = "恢复钱包";
-"loud.backup.existing.bottom.sheet.title" = "找到现有的云备份";
+"cloud.backup.existing.bottom.sheet.title" = "找到现有的云备份";
 "cloud.backup.existing.bottom.sheet.recover" = "你想恢复你的钱包吗？";
 "cloud.backup.not.found.title" = "未找到备份";
 "cloud.backup.not.found.message" = "很遗憾，没有找到您的钱包备份。";
@@ -1652,3 +1652,4 @@
 "account.export.ethereum.private.key.placeholder" = "64个十六进制符号";
 "common.status.backup.syncing" = "正在同步备份...";
 "common.status.backup.synced" = "备份已同步";
+"ledger.instructions.step4" = "%@添加到钱包";

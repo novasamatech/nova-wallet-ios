@@ -1531,7 +1531,7 @@
 "advanced.export.json.button.title" = "Export JSON file";
 "backup.attention.title" = "Do not share your passphrase!";
 "backup.attention.description" = "Please read the following carefully before viewing your backup";
-"backup.attention.passphrase.description" = "This passphrase gives you total and permanent access to all connected wallets and the funds within them.\n%s";
+"backup.attention.passphrase.description" = "This passphrase gives you total and permanent access to all connected wallets and the funds within them.\n%@";
 "backup.attention.passphrase.description.highlighted" = "DO NOT SHARE IT.";
 "backup.attention.passphrase.write.description.highlighted" = "FUNDS MAY BE LOST FOREVER.";
 "backup.attention.passphrase.support.description.highlighted" = "BEWARE OF IMPERSONATORS.";
@@ -1546,9 +1546,9 @@
 "cloud.backup.alert.remove.wallets.title" = "Are you sure that you want to apply these changes?";
 "cloud.backup.alert.remove.wallets.message" = "If you have not manually written down your Passphrase for wallets that will be removed, then those wallets and all of their assets will be permanently and irretrievably lost forever.";
 "cloud.backup.unsynced.changes.title" = "Cloud Backup changes found";
-"cloud_backup_destructive_changes_action_subtitle" = "At the moment your backup is not synchronized. Please review these updates.";
+"cloud.backup.unsynced.changes.message" = "At the moment your backup is not synchronized. Please review these updates.";
 "common.review.updates" = "Review Updates";
-"state_new" = "New";
+"common.new" = "New";
 "common.modified" = "Modified";
 "common.removed" = "Removed";
 "cloud.backup.review.title" = "Apply Backup Updates?";
@@ -1571,10 +1571,10 @@
 "common.manual" = "Manual";
 "common.backup.manual" = "Back up manually";
 "cloud.backup.broken.title" = "Backup found but empty or broken";
-"cloud.backup.broken.message" = "An issue has been identified with your backup. You have the option to delete the current backup and create a new one. %s before proceeding.";
+"cloud.backup.broken.message" = "An issue has been identified with your backup. You have the option to delete the current backup and create a new one. %@ before proceeding.";
 "cloud.backup.broken.highlighted" = "Ensure you have saved Passphrases for all wallets";
 "common.recover.wallets" = "Recover Wallets";
-"loud.backup.existing.bottom.sheet.title" = "Existing Cloud Backup found";
+"cloud.backup.existing.bottom.sheet.title" = "Existing Cloud Backup found";
 "cloud.backup.existing.bottom.sheet.recover" = "Do you want to recover your wallets?";
 "cloud.backup.not.found.title" = "Backup Not Found";
 "cloud.backup.not.found.message" = "Unfortunately, Backup with your wallets has not been found.";
@@ -1652,3 +1652,4 @@
 "account.export.ethereum.private.key.placeholder" = "64 hex symbols";
 "common.status.backup.syncing" = "Backup Syncing...";
 "common.status.backup.synced" = "Backup Synced";
+"ledger.instructions.step4" = "%@ to add to wallet";

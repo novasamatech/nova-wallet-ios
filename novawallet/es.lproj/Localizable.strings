@@ -1546,9 +1546,9 @@
 "cloud.backup.alert.remove.wallets.title" = "¿Estás seguro de que deseas aplicar estos cambios?";
 "cloud.backup.alert.remove.wallets.message" = "Si no has escrito manualmente tu Frase de Contraseña para las billeteras que serán eliminadas, entonces esas billeteras y todos sus activos se perderán permanentemente e irremediablemente.";
 "cloud.backup.unsynced.changes.title" = "Se encontraron cambios en el Respaldo en la Nube";
-"cloud_backup_destructive_changes_action_subtitle" = "En este momento tu respaldo no está sincronizado. Por favor, revisa estas actualizaciones.";
+"cloud.backup.unsynced.changes.message" = "En este momento tu respaldo no está sincronizado. Por favor, revisa estas actualizaciones.";
 "common.review.updates" = "Revisar Actualizaciones";
-"state_new" = "Nuevo";
+"common.new" = "Nuevo";
 "common.modified" = "Modificado";
 "common.removed" = "Eliminado";
 "cloud.backup.review.title" = "¿Aplicar actualizaciones de respaldo?";
@@ -1574,7 +1574,7 @@
 "cloud.backup.broken.message" = "Se ha identificado un problema con tu copia de seguridad. Tienes la opción de eliminar la copia de seguridad actual y crear una nueva. %@ antes de proceder.";
 "cloud.backup.broken.highlighted" = "Asegúrate de haber guardado las frases de recuperación para todas las billeteras";
 "common.recover.wallets" = "Recuperar Carteras";
-"loud.backup.existing.bottom.sheet.title" = "Se encontró una Copia de Seguridad en la Nube existente";
+"cloud.backup.existing.bottom.sheet.title" = "Se encontró una Copia de Seguridad en la Nube existente";
 "cloud.backup.existing.bottom.sheet.recover" = "¿Quieres recuperar tus carteras?";
 "cloud.backup.not.found.title" = "Copia de Seguridad No Encontrada";
 "cloud.backup.not.found.message" = "Desafortunadamente, no se ha encontrado una Copia de Seguridad con tus carteras.";
@@ -1652,3 +1652,4 @@
 "account.export.ethereum.private.key.placeholder" = "64 símbolos hexadecimales";
 "common.status.backup.syncing" = "Sincronizando Respaldo...";
 "common.status.backup.synced" = "Respaldo Sincronizado";
+"ledger.instructions.step4" = "%@ para agregarla a la billetera";

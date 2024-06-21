@@ -1546,9 +1546,9 @@
 "cloud.backup.alert.remove.wallets.title" = "Você tem certeza de que deseja aplicar essas alterações?";
 "cloud.backup.alert.remove.wallets.message" = "Se você não anotou manualmente sua Frase de Segurança para as carteiras que serão removidas, essas carteiras e todos os seus ativos serão permanentemente e irremediavelmente perdidos para sempre.";
 "cloud.backup.unsynced.changes.title" = "Alterações no Backup na Nuvem encontradas";
-"cloud_backup_destructive_changes_action_subtitle" = "No momento, seu backup não está sincronizado. Por favor, reveja estas atualizações.";
+"cloud.backup.unsynced.changes.message" = "No momento, seu backup não está sincronizado. Por favor, reveja estas atualizações.";
 "common.review.updates" = "Revisar Atualizações";
-"state_new" = "Novo";
+"common.new" = "Novo";
 "common.modified" = "Modificado";
 "common.removed" = "Removido";
 "cloud.backup.review.title" = "Aplicar Atualizações de Backup?";
@@ -1574,7 +1574,7 @@
 "cloud.backup.broken.message" = "Foi identificado um problema com o seu backup. Você tem a opção de deletar o backup atual e criar um novo. %@ antes de continuar.";
 "cloud.backup.broken.highlighted" = "<font>Certifique-se de que salvou as Frases Secretas para todas as carteiras</font>";
 "common.recover.wallets" = "Recuperar Carteiras";
-"loud.backup.existing.bottom.sheet.title" = "Backup na Nuvem Existente encontrado";
+"cloud.backup.existing.bottom.sheet.title" = "Backup na Nuvem Existente encontrado";
 "cloud.backup.existing.bottom.sheet.recover" = "Você quer recuperar suas carteiras?";
 "cloud.backup.not.found.title" = "Backup Não Encontrado";
 "cloud.backup.not.found.message" = "Infelizmente, o backup com suas carteiras não foi encontrado.";
@@ -1652,3 +1652,4 @@
 "account.export.ethereum.private.key.placeholder" = "64 símbolos hexadecimais";
 "common.status.backup.syncing" = "Sincronizando Backup...";
 "common.status.backup.synced" = "Backup Sincronizado";
+"ledger.instructions.step4" = "%@ para adicionar à carteira";

@@ -1546,9 +1546,9 @@
 "cloud.backup.alert.remove.wallets.title" = "Bu değişiklikleri uygulamak istediğinizden emin misiniz?";
 "cloud.backup.alert.remove.wallets.message" = "Silinecek cüzdanlar için şifre kelimenizi manuel olarak yazmadıysanız, bu cüzdanlar ve tüm varlıkları kalıcı ve geri dönülmez bir şekilde kaybolacaktır.";
 "cloud.backup.unsynced.changes.title" = "Bulut Yedeklemede değişiklikler bulundu";
-"cloud_backup_destructive_changes_action_subtitle" = "Şu anda yedeğiniz senkronize değil. Lütfen bu güncellemeleri inceleyin.";
+"cloud.backup.unsynced.changes.message" = "Şu anda yedeğiniz senkronize değil. Lütfen bu güncellemeleri inceleyin.";
 "common.review.updates" = "Güncellemeleri İncele";
-"state_new" = "Yeni";
+"common.new" = "Yeni";
 "common.modified" = "Değiştirildi";
 "common.removed" = "Kaldırıldı";
 "cloud.backup.review.title" = "Yedek Güncellemelerini Uygula?";
@@ -1574,7 +1574,7 @@
 "cloud.backup.broken.message" = "Yedeklemenizde bir sorun tespit edildi. Mevcut yedeklemeyi silip yeni bir tane oluşturma seçeneğiniz var. Devam etmeden önce %@.";
 "cloud.backup.broken.highlighted" = "<font>Tüm cüzdanlar için Şifre Cümlelerini kaydettiğinizden emin olun</font>";
 "common.recover.wallets" = "Cüzdanları Geri Yükle";
-"loud.backup.existing.bottom.sheet.title" = "Mevcut Cloud Backup bulundu";
+"cloud.backup.existing.bottom.sheet.title" = "Mevcut Cloud Backup bulundu";
 "cloud.backup.existing.bottom.sheet.recover" = "Cüzdanlarınızı geri yüklemek ister misiniz?";
 "cloud.backup.not.found.title" = "Yedekleme Bulunamadı";
 "cloud.backup.not.found.message" = "Maalesef, cüzdanlarınızın bulunduğu yedekleme bulunamadı.";
@@ -1652,3 +1652,4 @@
 "account.export.ethereum.private.key.placeholder" = "64 hex semboller";
 "common.status.backup.syncing" = "Yedekleme Senkronize Ediliyor...";
 "common.status.backup.synced" = "Yedekleme Senkronize Edildi";
+"ledger.instructions.step4" = "Cüzdana eklenecek %@";

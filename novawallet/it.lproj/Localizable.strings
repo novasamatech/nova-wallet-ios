@@ -1546,9 +1546,9 @@
 "cloud.backup.alert.remove.wallets.title" = "Sei sicuro di voler applicare queste modifiche?";
 "cloud.backup.alert.remove.wallets.message" = "Se non hai scritto manualmente la Passphrase per i portafogli che verranno rimossi, quei portafogli e tutti i loro asset saranno persi permanentemente e irreversibilmente.";
 "cloud.backup.unsynced.changes.title" = "Trovate modifiche al Backup Cloud";
-"cloud_backup_destructive_changes_action_subtitle" = "Al momento il tuo backup non è sincronizzato. Per favore, esamina questi aggiornamenti.";
+"cloud.backup.unsynced.changes.message" = "Al momento il tuo backup non è sincronizzato. Per favore, esamina questi aggiornamenti.";
 "common.review.updates" = "Rivedi Aggiornamenti";
-"state_new" = "Nuovo";
+"common.new" = "Nuovo";
 "common.modified" = "Modificato";
 "common.removed" = "Rimosso";
 "cloud.backup.review.title" = "Applicare aggiornamenti di backup?";
@@ -1574,7 +1574,7 @@
 "cloud.backup.broken.message" = "È stato identificato un problema con il tuo backup. Hai la possibilità di eliminare il backup attuale e crearne uno nuovo. %@ prima di procedere.";
 "cloud.backup.broken.highlighted" = "Assicurati di aver salvato le Frasi di sicurezza per tutti i wallet";
 "common.recover.wallets" = "Ripristina portafogli";
-"loud.backup.existing.bottom.sheet.title" = "Trovato backup cloud esistente";
+"cloud.backup.existing.bottom.sheet.title" = "Trovato backup cloud esistente";
 "cloud.backup.existing.bottom.sheet.recover" = "Vuoi ripristinare i tuoi portafogli?";
 "cloud.backup.not.found.title" = "Backup non trovato";
 "cloud.backup.not.found.message" = "Purtroppo, non è stato trovato nessun backup con i tuoi portafogli.";
@@ -1652,3 +1652,4 @@
 "account.export.ethereum.private.key.placeholder" = "64 simboli esadecimali";
 "common.status.backup.syncing" = "Sincronizzazione del backup...";
 "common.status.backup.synced" = "Backup sincronizzato";
+"ledger.instructions.step4" = "%@ da aggiungere al portafoglio";
