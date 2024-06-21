@@ -1604,7 +1604,7 @@
 "common.cloud.backup" = "Backup na nuvem";
 "passphrase.import.description" = "Use sua frase de 12, 15, 18, 21 ou 24 palavras";
 "wallet.import.title" = "Escolha como você gostaria de importar sua carteira";
-"common.continue.with.apple.backup" = "Continuar com Apple";
+"common.continue.with.apple.backup" = "Continuar com iCloud";
 "cloud.backup.not.available.title" = "Falha na autenticação do iCloud";
 "cloud.backup.not.available.message" = "Por favor, certifique-se de que está conectado à conta do iCloud";
 "cloud.backup.not.enough.storage.message" = "Por favor, certifique-se de que tem espaço suficiente no iCloud disponível. Você pode gerenciar seu armazenamento nas Configurações.";
