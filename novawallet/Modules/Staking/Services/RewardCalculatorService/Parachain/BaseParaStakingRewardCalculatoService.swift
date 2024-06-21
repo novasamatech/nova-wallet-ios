@@ -35,7 +35,7 @@ class BaseParaStakingRewardCalculatoService {
     private var inflationProvider: AnyDataProvider<ParachainStaking.DecodedInflationConfig>?
     private var parachainBondProvider: AnyDataProvider<ParachainStaking.DecodedParachainBondConfig>?
 
-    var totalStakedService: StorageItemSyncService<StringScaleMapper<BigUInt>>?
+    private(set) var totalStakeCancellable = CancellableCallStore()
 
     private var pendingRequests: [UUID: PendingRequest] = [:]
 
@@ -181,7 +181,7 @@ class BaseParaStakingRewardCalculatoService {
             try subscribeTotalIssuance()
             try subscribeInflationConfig()
             try subscribeParachainBondConfig()
-            try updateTotalStaked()
+            updateTotalStaked()
         } catch {
             logger.error("Can't make subscription")
         }
@@ -197,8 +197,7 @@ class BaseParaStakingRewardCalculatoService {
         parachainBondProvider?.removeObserver(self)
         parachainBondProvider = nil
 
-        totalStakedService?.throttle()
-        totalStakedService = nil
+        totalStakeCancellable.cancel()
     }
 }
 
