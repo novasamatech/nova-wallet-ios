@@ -28,6 +28,8 @@ extension CloudBackupSyncMetadataManaging {
     func deleteBackup() throws {
         saveLastSyncTimestamp(nil)
         isBackupEnabled = false
+
+        try savePassword(nil)
     }
 }
 
