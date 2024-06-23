@@ -28,6 +28,10 @@ extension RuntimeCoderFactoryProtocol {
     func hasStorage(for storagePath: StorageCodingPath) -> Bool {
         metadata.getStorageMetadata(for: storagePath) != nil
     }
+
+    func supportsMetadataHash() -> Bool {
+        metadata.getSignedExtensions().contains(Extrinsic.SignedExtensionId.checkMetadataHash)
+    }
 }
 
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {

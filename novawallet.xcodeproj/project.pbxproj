@@ -574,6 +574,8 @@
 		0CD8463F2BE20CF20026B5CA /* AvailSignedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8463E2BE20CF20026B5CA /* AvailSignedExtension.swift */; };
 		0CD846412BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846402BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift */; };
 		0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */; };
+		0CDEF1642C27E578003878F2 /* MetadataShortenerOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1632C27E578003878F2 /* MetadataShortenerOperationFactory.swift */; };
+		0CDEF1662C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */; };
@@ -5380,6 +5382,8 @@
 		0CD8463E2BE20CF20026B5CA /* AvailSignedExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailSignedExtension.swift; sourceTree = "<group>"; };
 		0CD846402BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSignedExtensionFacade.swift; sourceTree = "<group>"; };
 		0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredValidatorsProvider.swift; sourceTree = "<group>"; };
+		0CDEF1632C27E578003878F2 /* MetadataShortenerOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataShortenerOperationFactory.swift; sourceTree = "<group>"; };
+		0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataRepositoryFactory.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
@@ -16488,6 +16492,7 @@
 				0C38B5082B7CB96800882A8B /* MaxCounter.swift */,
 				0C93FCA22B885979009EE2DD /* DeviceOrientationManager.swift */,
 				0C7CF4D52BD4E5350015DD45 /* KeychainProxy.swift */,
+				0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -17430,6 +17435,7 @@
 				0C0E0A942B3E89D200865F10 /* ExtrinsicWrapperResult.swift */,
 				0C0E0A9A2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift */,
 				0CE9338F2C01A009000F3EFE /* ExtrinsicServiceTypes+Conversion.swift */,
+				0CDEF1632C27E578003878F2 /* MetadataShortenerOperationFactory.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -25399,6 +25405,7 @@
 				84A3B8A62836E08600DE2669 /* CollatorSelectionInfo.swift in Sources */,
 				8438432E2913B3150048595C /* Gov1OperationFactory.swift in Sources */,
 				843125CD299A71B20063745B /* StackButtonsCell.swift in Sources */,
+				0CDEF1642C27E578003878F2 /* MetadataShortenerOperationFactory.swift in Sources */,
 				84CFF1E926526FBC00DB7CF7 /* StakingBondMoreWireframe.swift in Sources */,
 				84D17ECE2804290700F7BAFF /* RadioSelectorView.swift in Sources */,
 				841E5567282EAC1000C8438F /* ParachainStakingInitState.swift in Sources */,
@@ -27142,6 +27149,7 @@
 				188AE5B5729B576EB2AA5776 /* GovernanceNotificationsViewFactory.swift in Sources */,
 				9CFA514776771FBBD64D18DB /* StakingRewardsNotificationsProtocols.swift in Sources */,
 				EC59E978027A1DCBC2268A29 /* StakingRewardsNotificationsWireframe.swift in Sources */,
+				0CDEF1662C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift in Sources */,
 				3218B290FDE5446C49B8A6A9 /* StakingRewardsNotificationsPresenter.swift in Sources */,
 				2B574C3229CE5DFC5DCCEEF3 /* StakingRewardsNotificationsInteractor.swift in Sources */,
 				37B9EAD4CAAAE3DAFAFD639E /* StakingRewardsNotificationsViewController.swift in Sources */,
