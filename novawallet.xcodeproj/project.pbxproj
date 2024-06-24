@@ -280,6 +280,9 @@
 		0C6F0C9E2A69723B007170C6 /* StartStakingStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */; };
 		0C7071292C1F600F0080DDCD /* OnLauchAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7071282C1F600F0080DDCD /* OnLauchAction.swift */; };
 		0C70712B2C1F60F50080DDCD /* OnLaunchActionsQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */; };
+		0C71046D2C29B3D200487E64 /* MetadataHashOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */; };
+		0C7104702C29B62800487E64 /* MetadataHashGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046F2C29B62800487E64 /* MetadataHashGenerationTests.swift */; };
+		0C7104722C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */; };
 		0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */; };
 		0C77B5612A8371AA00B5AE08 /* StaticValidatorListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */; };
 		0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */; };
@@ -574,7 +577,7 @@
 		0CD8463F2BE20CF20026B5CA /* AvailSignedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8463E2BE20CF20026B5CA /* AvailSignedExtension.swift */; };
 		0CD846412BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846402BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift */; };
 		0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */; };
-		0CDEF1642C27E578003878F2 /* MetadataShortenerOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1632C27E578003878F2 /* MetadataShortenerOperationFactory.swift */; };
+		0CDEF1642C27E578003878F2 /* ExtrinsicProofOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */; };
 		0CDEF1662C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
@@ -5081,6 +5084,9 @@
 		0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingStateProtocol.swift; sourceTree = "<group>"; };
 		0C7071282C1F600F0080DDCD /* OnLauchAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLauchAction.swift; sourceTree = "<group>"; };
 		0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLaunchActionsQueue.swift; sourceTree = "<group>"; };
+		0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashOperationFactory.swift; sourceTree = "<group>"; };
+		0C71046F2C29B62800487E64 /* MetadataHashGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashGenerationTests.swift; sourceTree = "<group>"; };
+		0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProofGenerationTests.swift; sourceTree = "<group>"; };
 		0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewController.swift; sourceTree = "<group>"; };
 		0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListProtocols.swift; sourceTree = "<group>"; };
 		0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewLayout.swift; sourceTree = "<group>"; };
@@ -5382,7 +5388,7 @@
 		0CD8463E2BE20CF20026B5CA /* AvailSignedExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailSignedExtension.swift; sourceTree = "<group>"; };
 		0CD846402BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSignedExtensionFacade.swift; sourceTree = "<group>"; };
 		0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredValidatorsProvider.swift; sourceTree = "<group>"; };
-		0CDEF1632C27E578003878F2 /* MetadataShortenerOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataShortenerOperationFactory.swift; sourceTree = "<group>"; };
+		0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProofOperationFactory.swift; sourceTree = "<group>"; };
 		0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataRepositoryFactory.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
@@ -10275,6 +10281,15 @@
 			path = StakingSharedState;
 			sourceTree = "<group>";
 		};
+		0C71046E2C29B60D00487E64 /* MetadataShortener */ = {
+			isa = PBXGroup;
+			children = (
+				0C71046F2C29B62800487E64 /* MetadataHashGenerationTests.swift */,
+				0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */,
+			);
+			path = MetadataShortener;
+			sourceTree = "<group>";
+		};
 		0C77B55D2A83713D00B5AE08 /* StaticValidatorList */ = {
 			isa = PBXGroup;
 			children = (
@@ -14019,6 +14034,7 @@
 		8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
+				0C71046E2C29B60D00487E64 /* MetadataShortener */,
 				0CA26D8E2BBBBD9A0086748F /* CloudBackup */,
 				0CA7198A2B78FDC5000B086E /* HydraDx */,
 				77DC54822B1FE2DC00C7E45A /* Proxy */,
@@ -17435,7 +17451,8 @@
 				0C0E0A942B3E89D200865F10 /* ExtrinsicWrapperResult.swift */,
 				0C0E0A9A2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift */,
 				0CE9338F2C01A009000F3EFE /* ExtrinsicServiceTypes+Conversion.swift */,
-				0CDEF1632C27E578003878F2 /* MetadataShortenerOperationFactory.swift */,
+				0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */,
+				0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -22849,6 +22866,7 @@
 				844304672A28F7A500DE36DE /* MultistakingSyncTests.swift in Sources */,
 				84E8AC7727BBC8E400402635 /* NFTIntegrationTests.swift in Sources */,
 				0CCA24652AC6B51200AEF23D /* AssetHubSwapTests.swift in Sources */,
+				0C7104722C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift in Sources */,
 				849ABE8A262833C000011A2A /* PayoutRewardsServiceTests.swift in Sources */,
 				8461CC8526BC1306007460E4 /* MortalEraFactoryTests.swift in Sources */,
 				840874E02978882700ACFA55 /* Gov2DelegationTests.swift in Sources */,
@@ -22867,6 +22885,7 @@
 				84FACB7125F57E4400F32ED4 /* SubstrateStorageTestFacade.swift in Sources */,
 				8418167728253B120007684A /* ParachainStakingCollatorsTests.swift in Sources */,
 				0CA7198C2B78FEF9000B086E /* HydraQuoteTests.swift in Sources */,
+				0C7104702C29B62800487E64 /* MetadataHashGenerationTests.swift in Sources */,
 				84F3B27E27F4206B00D64CF5 /* PhishingSitesSyncIntegrationTests.swift in Sources */,
 				846CA7842709C2BE0011124C /* ChainRegistry+Setup.swift in Sources */,
 				84264EE1285B6C6700BF6D4A /* XcmTransfersSyncTests.swift in Sources */,
@@ -23852,6 +23871,7 @@
 				8427495128FEB6E500B2B70B /* GovernanceLockState.swift in Sources */,
 				8472C5B4265CF9C500E2481B /* StakingRewardDestConfirmPresenter.swift in Sources */,
 				880059DC28EF092F00E87B9B /* SegmentedSliderView.swift in Sources */,
+				0C71046D2C29B3D200487E64 /* MetadataHashOperationFactory.swift in Sources */,
 				8402CC9C275B92AC00E5BF30 /* ControlView.swift in Sources */,
 				77EF9A702B9ECAE00034D619 /* PushNotificationHandlingService.swift in Sources */,
 				0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */,
@@ -25405,7 +25425,7 @@
 				84A3B8A62836E08600DE2669 /* CollatorSelectionInfo.swift in Sources */,
 				8438432E2913B3150048595C /* Gov1OperationFactory.swift in Sources */,
 				843125CD299A71B20063745B /* StackButtonsCell.swift in Sources */,
-				0CDEF1642C27E578003878F2 /* MetadataShortenerOperationFactory.swift in Sources */,
+				0CDEF1642C27E578003878F2 /* ExtrinsicProofOperationFactory.swift in Sources */,
 				84CFF1E926526FBC00DB7CF7 /* StakingBondMoreWireframe.swift in Sources */,
 				84D17ECE2804290700F7BAFF /* RadioSelectorView.swift in Sources */,
 				841E5567282EAC1000C8438F /* ParachainStakingInitState.swift in Sources */,

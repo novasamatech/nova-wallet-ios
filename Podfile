@@ -46,7 +46,7 @@ abstract_target 'novawalletAll' do
     pod 'Sourcery', '~> 1.4'
     pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.10'
     pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.1'
-    
+    pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :commit => 'd112a9525f6023276e8835798f20b057734a42ee'
   end
 
   target 'novawalletIntegrationTests'
