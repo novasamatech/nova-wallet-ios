@@ -281,6 +281,7 @@
 		0C7071292C1F600F0080DDCD /* OnLauchAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7071282C1F600F0080DDCD /* OnLauchAction.swift */; };
 		0C70712B2C1F60F50080DDCD /* OnLaunchActionsQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */; };
 		0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104682C2966C000487E64 /* LedgerConversionTests.swift */; };
+		0C71046B2C29815600487E64 /* MockKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046A2C29815600487E64 /* MockKeychainStore.swift */; };
 		0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */; };
 		0C77B5612A8371AA00B5AE08 /* StaticValidatorListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */; };
 		0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */; };
@@ -5081,6 +5082,7 @@
 		0C7071282C1F600F0080DDCD /* OnLauchAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLauchAction.swift; sourceTree = "<group>"; };
 		0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLaunchActionsQueue.swift; sourceTree = "<group>"; };
 		0C7104682C2966C000487E64 /* LedgerConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerConversionTests.swift; sourceTree = "<group>"; };
+		0C71046A2C29815600487E64 /* MockKeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockKeychainStore.swift; sourceTree = "<group>"; };
 		0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewController.swift; sourceTree = "<group>"; };
 		0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListProtocols.swift; sourceTree = "<group>"; };
 		0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewLayout.swift; sourceTree = "<group>"; };
@@ -10127,6 +10129,7 @@
 				0C41D2192BF899EF000950EE /* MockCloudBackupAvailabilityService.swift */,
 				0C41D21B2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift */,
 				0CF6928F2C240E91000FC395 /* MockCloudBackupSyncMonitor.swift */,
+				0C71046A2C29815600487E64 /* MockKeychainStore.swift */,
 			);
 			path = CloudBackup;
 			sourceTree = "<group>";
@@ -27381,6 +27384,7 @@
 				84DD49F828EEAFFF00B804F3 /* DecimalTests.swift in Sources */,
 				F477CD75262FFA4F004DF739 /* PayoutRewardsServiceStub.swift in Sources */,
 				84B7C710289BFA79001A3566 /* CrowdloanYourContributionsTests.swift in Sources */,
+				0C71046B2C29815600487E64 /* MockKeychainStore.swift in Sources */,
 				0C41D2222BFB0BAC000950EE /* KeystoreValidationHelper.swift in Sources */,
 				8476D39827F431D5004D9A7A /* MockApplicationService.swift in Sources */,
 				84B7C731289BFA79001A3566 /* ValidatorInfoTests.swift in Sources */,

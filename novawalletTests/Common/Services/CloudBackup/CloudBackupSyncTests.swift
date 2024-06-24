@@ -6,14 +6,14 @@ import SoraKeystore
 final class CloudBackupSyncTests: XCTestCase {
     struct LocalWalletsSetupParams {
         let walletSettings: SelectedWalletSettings
-        let keystore: KeystoreProtocol
+        let keystore: MockKeychain
     }
     
     typealias LocalWalletsSetupClosure = (LocalWalletsSetupParams) -> Void
     
     struct LocalWalletsChangeParams {
         let walletSettings: SelectedWalletSettings
-        let keystore: KeystoreProtocol
+        let keystore: MockKeychain
         let syncMetadataManager: CloudBackupSyncMetadataManaging
     }
     
@@ -21,7 +21,7 @@ final class CloudBackupSyncTests: XCTestCase {
     
     struct BackupSetupParams {
         let serviceFactory: CloudBackupServiceFactoryProtocol
-        let keystore: KeystoreProtocol
+        let keystore: MockKeychain
         let syncMetadataManager: CloudBackupSyncMetadataManaging
     }
     
@@ -38,7 +38,8 @@ final class CloudBackupSyncTests: XCTestCase {
         
         let selectedWalletSettings: SelectedWalletSettings
         
-        let keystore: KeystoreProtocol
+        let keystoreAfterSetup: MockKeychain
+        let keystoreAfterSync: MockKeychain
         let syncMetadataManager: CloudBackupSyncMetadataManaging
     }
     
@@ -50,7 +51,7 @@ final class CloudBackupSyncTests: XCTestCase {
         let serviceFactory: CloudBackupServiceFactoryProtocol
         let selectedWalletSettings: SelectedWalletSettings
         let accountRepository: AccountRepositoryFactoryProtocol
-        let keystore: KeystoreProtocol
+        let keystore: MockKeychain
     }
     
     static let defaultPassword = "Test7777"
@@ -133,7 +134,7 @@ final class CloudBackupSyncTests: XCTestCase {
                         case let .new(remote):
                             let hasSecrets = try KeystoreValidationHelper.validateMnemonicSecrets(
                                 for: remote,
-                                keystore: params.keystore
+                                keystore: params.keystoreAfterSync
                             )
                             
                             return afterBackupWallets.contains(remote) && hasSecrets
@@ -256,6 +257,321 @@ final class CloudBackupSyncTests: XCTestCase {
         )
     }
     
+    func testBackupLedgerWallet() throws {
+        try performSyncTest(
+            configuringLocal: { params in
+                for ledgerApp in SupportedLedgerApp.substrate() {
+                    try? AccountCreationHelper.createSubstrateLedgerAccount(
+                        from: ledgerApp,
+                        keychain: params.keystore,
+                        settings: params.walletSettings
+                    )
+                }
+            },
+            changingAfterBackup: { params in
+                params.syncMetadataManager.saveLastSyncTimestamp(0)
+                
+                let wallet = params.walletSettings.value!
+                params.walletSettings.remove(value: wallet)
+                try? KeystoreValidationHelper.clearKeystore(for: wallet, keystore: params.keystore)
+                
+            }, 
+            validateClosure: { params in
+                guard case let .updateLocal(updateLocal) = params.changes else {
+                    XCTFail("Expected local update")
+                    return
+                }
+                
+                XCTAssertEqual(updateLocal.changes.count, 1)
+                
+                do {
+                    let afterBackupWallets = Set(params.localWalletsAfterSync.map({ $0.info }))
+                    
+                    let properInsert = try updateLocal.changes.contains { change in
+                        switch change {
+                        case let .new(remote):
+                            let hasDerivPath = try KeystoreValidationHelper.validateChainAccountsHaveDerivationPaths(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            return afterBackupWallets.contains(remote) && hasDerivPath
+                        default:
+                            return false
+                        }
+                    }
+                    
+                    XCTAssertTrue(properInsert)
+                    
+                    XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
+                    XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
+                    XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
+                    XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
+                } catch {
+                    XCTFail("Error: \(error)")
+                }
+            }
+        )
+    }
+    
+    func testBackupSecretsDerivationPath() throws {
+        try performSyncTest(
+            configuringLocal: { params in
+                try? AccountCreationHelper.createMetaAccountFromMnemonic(
+                    cryptoType: .sr25519,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+            },
+            changingAfterBackup: { params in
+                params.syncMetadataManager.saveLastSyncTimestamp(0)
+                
+                let wallet = params.walletSettings.value!
+                params.walletSettings.remove(value: wallet)
+                try? KeystoreValidationHelper.clearKeystore(for: wallet, keystore: params.keystore)
+                
+            },
+            validateClosure: { params in
+                guard case let .updateLocal(updateLocal) = params.changes else {
+                    XCTFail("Expected local update")
+                    return
+                }
+                
+                XCTAssertEqual(updateLocal.changes.count, 1)
+                
+                do {
+                    let afterBackupWallets = Set(params.localWalletsAfterSync.map({ $0.info }))
+                    
+                    let properInsert = try updateLocal.changes.contains { change in
+                        switch change {
+                        case let .new(remote):
+                            let hasDerivPath = try KeystoreValidationHelper.validateMainAccountsHaveDerivationPaths(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            let hasSecrets = try KeystoreValidationHelper.validateMnemonicSecrets(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            return afterBackupWallets.contains(remote) && hasSecrets && hasDerivPath
+                        default:
+                            return false
+                        }
+                    }
+                    
+                    XCTAssertTrue(properInsert)
+                    
+                    XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
+                    XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
+                    XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
+                    XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
+                } catch {
+                    XCTFail("Error: \(error)")
+                }
+            }
+        )
+    }
+    
+    func testBackupSecretsDerivationPathAndChainAccounts() throws {
+        try performSyncTest(
+            configuringLocal: { params in
+                let substrateDerivPath = "//hard/soft///password"
+                let ethereumPath = "//44//0//0/0/0"
+                
+                try? AccountCreationHelper.createMetaAccountFromMnemonic(
+                    cryptoType: .sr25519,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+                
+                try? AccountCreationHelper.addMnemonicChainAccount(
+                    to: params.walletSettings.value!,
+                    chainId: KnowChainId.kusama,
+                    cryptoType: .sr25519,
+                    derivationPath: substrateDerivPath,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+                
+                try? AccountCreationHelper.addMnemonicChainAccount(
+                    to: params.walletSettings.value!,
+                    chainId: KnowChainId.ethereum,
+                    cryptoType: .ethereumEcdsa,
+                    derivationPath: ethereumPath,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+            },
+            changingAfterBackup: { params in
+                params.syncMetadataManager.saveLastSyncTimestamp(0)
+                
+                let wallet = params.walletSettings.value!
+                params.walletSettings.remove(value: wallet)
+                try? KeystoreValidationHelper.clearKeystore(for: wallet, keystore: params.keystore)
+                
+            },
+            validateClosure: { params in
+                guard case let .updateLocal(updateLocal) = params.changes else {
+                    XCTFail("Expected local update")
+                    return
+                }
+                
+                XCTAssertEqual(updateLocal.changes.count, 1)
+                
+                do {
+                    let afterBackupWallets = Set(params.localWalletsAfterSync.map({ $0.info }))
+                    
+                    let properInsert = try updateLocal.changes.contains { change in
+                        switch change {
+                        case let .new(remote):
+                            let hasDerivPath = try KeystoreValidationHelper.validateMainAccountsHaveDerivationPaths(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            let hasDerivChainAccountsPath = try KeystoreValidationHelper.validateChainAccountsHaveDerivationPaths(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            let hasSecrets = try KeystoreValidationHelper.validateMnemonicSecrets(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            return afterBackupWallets.contains(remote) && hasSecrets &&
+                                hasDerivPath && hasDerivChainAccountsPath
+                        default:
+                            return false
+                        }
+                    }
+                    
+                    XCTAssertTrue(properInsert)
+                    
+                    XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
+                    XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
+                    XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
+                    XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
+                } catch {
+                    XCTFail("Error: \(error)")
+                }
+            }
+        )
+    }
+    
+    func testBackupSeedWithChainAccounts() throws {
+        try performSyncTest(
+            configuringLocal: { params in
+                let mainSeed = Data.random(of: 32)!
+                let substrateSeed = Data.random(of: 32)!
+                let ethereumSeed = Data.random(of: 64)!
+                
+                try? AccountCreationHelper.createMetaAccountFromSeed(
+                    mainSeed.toHexString(),
+                    cryptoType: .sr25519,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+                
+                try? AccountCreationHelper.addSeedChainAccount(
+                    to: params.walletSettings.value!,
+                    chainId: KnowChainId.polkadot,
+                    seed: substrateSeed.toHexString(),
+                    cryptoType: .sr25519,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+                
+                try? AccountCreationHelper.addSeedChainAccount(
+                    to: params.walletSettings.value,
+                    chainId: KnowChainId.ethereum,
+                    seed: ethereumSeed.toHexString(),
+                    cryptoType: .ethereumEcdsa,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+            },
+            changingAfterBackup: { params in
+                params.syncMetadataManager.saveLastSyncTimestamp(0)
+                
+                let wallet = params.walletSettings.value!
+                params.walletSettings.remove(value: wallet)
+                try? KeystoreValidationHelper.clearKeystore(for: wallet, keystore: params.keystore)
+                
+            },
+            validateClosure: { params in
+                guard case let .updateLocal(updateLocal) = params.changes else {
+                    XCTFail("Expected local update")
+                    return
+                }
+                
+                XCTAssertEqual(updateLocal.changes.count, 1)
+                
+                XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
+                XCTAssertEqual(Self.defaultPassword, try? params.syncMetadataManager.getPassword())
+                XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
+                XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
+            }
+        )
+    }
+    
+    func testBackupKeystoreWalletWithChainAccounts() throws {
+        try performSyncTest(
+            configuringLocal: { params in
+                let substrateSeed = Data.random(of: 32)!
+                let ethereumSeed = Data.random(of: 64)!
+                
+                try? AccountCreationHelper.createMetaAccountFromKeystore(
+                    Constants.validSrKeystoreName,
+                    password: Constants.validSrKeystorePassword,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+                
+                try? AccountCreationHelper.addSeedChainAccount(
+                    to: params.walletSettings.value!,
+                    chainId: KnowChainId.polkadot,
+                    seed: substrateSeed.toHexString(),
+                    cryptoType: .sr25519,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+                
+                try? AccountCreationHelper.addSeedChainAccount(
+                    to: params.walletSettings.value,
+                    chainId: KnowChainId.ethereum,
+                    seed: ethereumSeed.toHexString(),
+                    cryptoType: .ethereumEcdsa,
+                    keychain: params.keystore,
+                    settings: params.walletSettings
+                )
+            },
+            changingAfterBackup: { params in
+                params.syncMetadataManager.saveLastSyncTimestamp(0)
+                
+                let wallet = params.walletSettings.value!
+                params.walletSettings.remove(value: wallet)
+                try? KeystoreValidationHelper.clearKeystore(for: wallet, keystore: params.keystore)
+                
+            },
+            validateClosure: { params in
+                guard case let .updateLocal(updateLocal) = params.changes else {
+                    XCTFail("Expected local update")
+                    return
+                }
+                
+                XCTAssertEqual(updateLocal.changes.count, 1)
+                
+                XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
+                XCTAssertEqual(Self.defaultPassword, try? params.syncMetadataManager.getPassword())
+                XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
+                XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
+            }
+        )
+    }
+    
     private func performSyncTest(
         configuringLocal: LocalWalletsSetupClosure,
         changingAfterBackup: LocalWalletsChangeClosure,
@@ -269,6 +585,9 @@ final class CloudBackupSyncTests: XCTestCase {
                 params.syncMetadataManager.saveLastSyncTimestamp(nil)
             }
         )
+        
+        let keystoreAfterSetup = MockKeychain(rawStore: setupResult.keystore.getRawStore())
+        let keystoreAfterSync = setupResult.keystore
         
         let initChanges: CloudBackupSyncResult.Changes? = syncAndWait(service: setupResult.syncService) { result in
             switch result {
@@ -286,7 +605,7 @@ final class CloudBackupSyncTests: XCTestCase {
         changingAfterBackup(
             .init(
                 walletSettings: setupResult.selectedWalletSettings,
-                keystore: setupResult.keystore,
+                keystore: keystoreAfterSync,
                 syncMetadataManager: setupResult.syncMetadataManager
             )
         )
@@ -326,7 +645,8 @@ final class CloudBackupSyncTests: XCTestCase {
             localWalletsAfterSync: walletsAfterSync,
             backupAfterSync: backupAfterSync,
             selectedWalletSettings: setupResult.selectedWalletSettings,
-            keystore: setupResult.keystore,
+            keystoreAfterSetup: keystoreAfterSetup,
+            keystoreAfterSync: keystoreAfterSync,
             syncMetadataManager: setupResult.syncMetadataManager
         )
         
@@ -369,7 +689,7 @@ final class CloudBackupSyncTests: XCTestCase {
         
         let accountsRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         
-        let keystore = InMemoryKeychain()
+        let keystore = MockKeychain()
         
         let syncMetadataManager = MockCloudBackupSyncMetadataManager()
         
