@@ -29,32 +29,34 @@ final class MetadataShortenerOperationFactory {
         self.metadataRepositoryFactory = metadataRepositoryFactory
         self.operationQueue = operationQueue
     }
-    
-    private func fetchRuntimeVersionOperation(
+
+    private func createRuntimeVersionOperation(
         for connection: JSONRPCEngine
     ) -> BaseOperation<RuntimeVersionFull> {
-        let operation = JSONRPCOperation(
+        JSONRPCOperation<[String], RuntimeVersionFull>(
             engine: connection,
             method: RPCMethod.getRuntimeVersion,
-            parameters: nil,
             timeout: JSONRPCTimeout.hour
         )
     }
 
     private func createFetchMetadataHashWrapper(
         for chain: ChainModel,
-        connection _: JSONRPCEngine,
-        codingFactory: RuntimeCoderFactoryProtocol
+        connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<Data?> {
         let rawMetadataOperation = metadataRepositoryFactory.createRepository().fetchOperation(
             by: { chain.chainId },
             options: RepositoryFetchOptions()
         )
 
+        let runtimeVersionOperation = createRuntimeVersionOperation(for: connection)
+
         let fetchOperation = ClosureOperation<Data?> {
             guard let rawMetadata = try rawMetadataOperation.extractNoCancellableResultData() else {
                 throw CommonError.dataCorruption
             }
+
+            let runtimeVersion = try runtimeVersionOperation.extractNoCancellableResultData()
 
             guard let utilityAsset = chain.utilityAsset() else {
                 throw CommonError.dataCorruption
@@ -68,8 +70,8 @@ final class MetadataShortenerOperationFactory {
 
             let params = MetadataHashParams(
                 metadata: rawMetadata.metadata,
-                specVersion: codingFactory.specVersion,
-                specName: "",
+                specVersion: runtimeVersion.specVersion,
+                specName: runtimeVersion.specName,
                 decimals: decimals,
                 base58Prefix: chain.addressPrefix,
                 tokenSymbol: utilityAsset.symbol
@@ -78,9 +80,13 @@ final class MetadataShortenerOperationFactory {
             return try MetadataShortenerApi().generateMetadataHash(for: params)
         }
 
+        fetchOperation.addDependency(runtimeVersionOperation)
         fetchOperation.addDependency(rawMetadataOperation)
 
-        return CompoundOperationWrapper(targetOperation: fetchOperation, dependencies: [rawMetadataOperation])
+        return CompoundOperationWrapper(
+            targetOperation: fetchOperation,
+            dependencies: [rawMetadataOperation, runtimeVersionOperation]
+        )
     }
 }
 
@@ -103,8 +109,7 @@ extension MetadataShortenerOperationFactory: MetadataShortenerOperationFactoryPr
 
             return self.createFetchMetadataHashWrapper(
                 for: chain,
-                connection: connection,
-                codingFactory: codingFactory
+                connection: connection
             )
         }
 
@@ -113,7 +118,7 @@ extension MetadataShortenerOperationFactory: MetadataShortenerOperationFactoryPr
 
     func createExtrinsicProofWrapper(
         for chain: ChainModel,
-        connection _: JSONRPCEngine,
+        connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         signatureParamsClosure: @escaping () throws -> ExtrinsicSignatureParams
     ) -> CompoundOperationWrapper<Data> {
@@ -124,6 +129,8 @@ extension MetadataShortenerOperationFactory: MetadataShortenerOperationFactoryPr
             options: RepositoryFetchOptions()
         )
 
+        let runtimeVersionOperation = createRuntimeVersionOperation(for: connection)
+
         let fetchOperation = ClosureOperation<Data> {
             guard let rawMetadata = try rawMetadataOperation.extractNoCancellableResultData() else {
                 throw CommonError.dataCorruption
@@ -132,6 +139,8 @@ extension MetadataShortenerOperationFactory: MetadataShortenerOperationFactoryPr
             let signatureParams = try signatureParamsClosure()
 
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let runtimeVersion = try runtimeVersionOperation.extractNoCancellableResultData()
 
             guard let utilityAsset = chain.utilityAsset() else {
                 throw CommonError.dataCorruption
@@ -148,8 +157,8 @@ extension MetadataShortenerOperationFactory: MetadataShortenerOperationFactoryPr
                 encodedSignedExtra: signatureParams.includedInExtrinsicExtra,
                 encodedAdditionalSigned: signatureParams.includedInSignatureExtra,
                 encodedMetadata: rawMetadata.metadata,
-                specVersion: codingFactory.specVersion,
-                specName: "",
+                specVersion: runtimeVersion.specVersion,
+                specName: runtimeVersion.specName,
                 decimals: decimals,
                 base58Prefix: chain.addressPrefix,
                 tokenSymbol: utilityAsset.symbol
