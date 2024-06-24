@@ -118,6 +118,16 @@ final class AccountCreationHelper {
         try selectMetaAccount(accountItem, settings: settings)
     }
 
+    static func createLedgerAccount(
+        from coinIndex: UInt32,
+        accountIndex: UInt32,
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings,
+        username: String = "username"
+    ) throws {
+        throw CommonError.dataCorruption
+    }
+    
     static func selectMetaAccount(_ accountItem: MetaAccountModel, settings: SelectedWalletSettings) throws {
         settings.save(value: accountItem)
         settings.setup()
