@@ -11,6 +11,8 @@ protocol ExtrinsicProofOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<Data>
 }
 
+enum ExtrinsicProofOperationFactoryError: Error {}
+
 final class ExtrinsicProofOperationFactory {
     let metadataRepositoryFactory: RuntimeMetadataRepositoryFactoryProtocol
 
@@ -44,19 +46,26 @@ extension ExtrinsicProofOperationFactory: ExtrinsicProofOperationFactoryProtocol
 
         let fetchOperation = ClosureOperation<Data> {
             guard let rawMetadata = try rawMetadataOperation.extractNoCancellableResultData() else {
-                throw CommonError.dataCorruption
+                throw CommonMetadataShortenerError.metadataMissing
             }
 
             let signatureParams = try signatureParamsClosure()
 
             let runtimeVersion = try runtimeVersionOperation.extractNoCancellableResultData()
 
+            guard rawMetadata.version == runtimeVersion.specVersion else {
+                throw CommonMetadataShortenerError.invalidMetadata(
+                    localVersion: rawMetadata.version,
+                    remoteVersion: runtimeVersion.specVersion
+                )
+            }
+
             guard let utilityAsset = chain.utilityAsset() else {
-                throw CommonError.dataCorruption
+                throw CommonMetadataShortenerError.missingNativeAsset
             }
 
             guard utilityAsset.decimalPrecision <= UInt8.max, utilityAsset.decimalPrecision >= 0 else {
-                throw CommonError.dataCorruption
+                throw CommonMetadataShortenerError.invalidDecimals
             }
 
             let decimals = UInt8(utilityAsset.decimalPrecision)

@@ -15,12 +15,15 @@ final class MetadataHashOperationFactory {
     let operationQueue: OperationQueue
     let metadataRepositoryFactory: RuntimeMetadataRepositoryFactoryProtocol
 
+    let cache: InMemoryCache<ChainModel.Id, Data>
+
     init(
         metadataRepositoryFactory: RuntimeMetadataRepositoryFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.metadataRepositoryFactory = metadataRepositoryFactory
         self.operationQueue = operationQueue
+        cache = InMemoryCache()
     }
 
     private func createRuntimeVersionOperation(
@@ -44,19 +47,26 @@ final class MetadataHashOperationFactory {
 
         let runtimeVersionOperation = createRuntimeVersionOperation(for: connection)
 
-        let fetchOperation = ClosureOperation<Data?> {
+        let generateAndCacheOperation = ClosureOperation<Data?> {
             guard let rawMetadata = try rawMetadataOperation.extractNoCancellableResultData() else {
-                throw CommonError.dataCorruption
+                throw CommonMetadataShortenerError.metadataMissing
             }
 
             let runtimeVersion = try runtimeVersionOperation.extractNoCancellableResultData()
 
+            guard rawMetadata.version == runtimeVersion.specVersion else {
+                throw CommonMetadataShortenerError.invalidMetadata(
+                    localVersion: rawMetadata.version,
+                    remoteVersion: runtimeVersion.specVersion
+                )
+            }
+
             guard let utilityAsset = chain.utilityAsset() else {
-                throw CommonError.dataCorruption
+                throw CommonMetadataShortenerError.missingNativeAsset
             }
 
             guard utilityAsset.decimalPrecision <= UInt8.max, utilityAsset.decimalPrecision >= 0 else {
-                throw CommonError.dataCorruption
+                throw CommonMetadataShortenerError.invalidDecimals
             }
 
             let decimals = UInt8(utilityAsset.decimalPrecision)
@@ -70,14 +80,17 @@ final class MetadataHashOperationFactory {
                 tokenSymbol: utilityAsset.symbol
             )
 
-            return try MetadataShortenerApi().generateMetadataHash(for: params)
+            let newHash = try MetadataShortenerApi().generateMetadataHash(for: params)
+            self.cache.store(value: newHash, for: chain.chainId)
+
+            return newHash
         }
 
-        fetchOperation.addDependency(runtimeVersionOperation)
-        fetchOperation.addDependency(rawMetadataOperation)
+        generateAndCacheOperation.addDependency(runtimeVersionOperation)
+        generateAndCacheOperation.addDependency(rawMetadataOperation)
 
         return CompoundOperationWrapper(
-            targetOperation: fetchOperation,
+            targetOperation: generateAndCacheOperation,
             dependencies: [rawMetadataOperation, runtimeVersionOperation]
         )
     }
@@ -89,6 +102,10 @@ extension MetadataHashOperationFactory: MetadataHashOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<Data?> {
+        if let existingHash = cache.fetchValue(for: chain.chainId) {
+            return CompoundOperationWrapper.createWithResult(existingHash)
+        }
+
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let wrapper: CompoundOperationWrapper<Data?> = OperationCombiningService.compoundOptionalWrapper(

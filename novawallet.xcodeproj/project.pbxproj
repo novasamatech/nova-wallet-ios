@@ -283,6 +283,8 @@
 		0C71046D2C29B3D200487E64 /* MetadataHashOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */; };
 		0C7104702C29B62800487E64 /* MetadataHashGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046F2C29B62800487E64 /* MetadataHashGenerationTests.swift */; };
 		0C7104722C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */; };
+		0C7104772C2AC00000487E64 /* CommonMetadataShortenerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */; };
+		0C7104792C2AC0F300487E64 /* InMemoryCaching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */; };
 		0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */; };
 		0C77B5612A8371AA00B5AE08 /* StaticValidatorListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */; };
 		0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */; };
@@ -5087,6 +5089,8 @@
 		0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashOperationFactory.swift; sourceTree = "<group>"; };
 		0C71046F2C29B62800487E64 /* MetadataHashGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataHashGenerationTests.swift; sourceTree = "<group>"; };
 		0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProofGenerationTests.swift; sourceTree = "<group>"; };
+		0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMetadataShortenerError.swift; sourceTree = "<group>"; };
+		0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryCaching.swift; sourceTree = "<group>"; };
 		0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewController.swift; sourceTree = "<group>"; };
 		0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListProtocols.swift; sourceTree = "<group>"; };
 		0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewLayout.swift; sourceTree = "<group>"; };
@@ -16509,6 +16513,7 @@
 				0C93FCA22B885979009EE2DD /* DeviceOrientationManager.swift */,
 				0C7CF4D52BD4E5350015DD45 /* KeychainProxy.swift */,
 				0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */,
+				0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -17453,6 +17458,7 @@
 				0CE9338F2C01A009000F3EFE /* ExtrinsicServiceTypes+Conversion.swift */,
 				0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */,
 				0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */,
+				0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -25116,6 +25122,7 @@
 				845B822926F0BB6700D25C72 /* CrowdloanChainSettings.swift in Sources */,
 				0C13D2FA2A7D473B0054BB6F /* DirectStakingRestrictionsBuilder.swift in Sources */,
 				0CE933922C043F00000F3EFE /* CloudBackupSyncMediatorFactory.swift in Sources */,
+				0C7104772C2AC00000487E64 /* CommonMetadataShortenerError.swift in Sources */,
 				AEE5FB072641669B002B8FDC /* StakingRebondSetupLayout.swift in Sources */,
 				0CE9339A2C05163A000F3EFE /* CloudBackupReviewViewModelFactory.swift in Sources */,
 				847119C0262EF3BD00716580 /* PayoutValidatorsFactoryProtocol.swift in Sources */,
@@ -26336,6 +26343,7 @@
 				F85F1BCAD47F0596FBFBA110 /* ParaStkRebondWireframe.swift in Sources */,
 				77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */,
 				777BD86029F9730F004969A2 /* ReferendumsFilterViewModel.swift in Sources */,
+				0C7104792C2AC0F300487E64 /* InMemoryCaching.swift in Sources */,
 				B61457C5248F3B0E88A7990E /* ParaStkRebondPresenter.swift in Sources */,
 				84E8BA2829FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift in Sources */,
 				F6F73F4862779FE0B58A7931 /* ParaStkRebondInteractor.swift in Sources */,
