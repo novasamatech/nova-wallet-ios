@@ -319,6 +319,7 @@ final class CloudBackupSyncTests: XCTestCase {
             configuringLocal: { params in
                 try? AccountCreationHelper.createMetaAccountFromMnemonic(
                     cryptoType: .sr25519,
+                    derivationPath: "//hard/soft///password",
                     keychain: params.keystore,
                     settings: params.walletSettings
                 )
@@ -382,6 +383,7 @@ final class CloudBackupSyncTests: XCTestCase {
                 
                 try? AccountCreationHelper.createMetaAccountFromMnemonic(
                     cryptoType: .sr25519,
+                    derivationPath: "//main/test",
                     keychain: params.keystore,
                     settings: params.walletSettings
                 )

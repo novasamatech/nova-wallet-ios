@@ -62,7 +62,7 @@ enum KeystoreValidationHelper {
         let substrateDerPath = try keystore.loadIfKeyExists(substrateTag)
         let ethereumDerPath = try keystore.loadIfKeyExists(ethereumTag)
         
-        return substrateTag != nil && ethereumTag != nil
+        return substrateDerPath != nil && ethereumDerPath != nil
     }
     
     static func validateMnemonicSecrets(
