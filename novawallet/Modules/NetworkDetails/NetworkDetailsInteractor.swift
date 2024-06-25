@@ -209,17 +209,16 @@ private extension NetworkDetailsInteractor {
             }
 
             filteredNodes = filtered(changedChain.nodes)
+            
+            toggleNodesAfterChainUpdate(for: changedChain)
 
-            toggleNodesAfterChainUpdate(
-                beforeChange: chain,
-                updatedChain: changedChain
-            )
-
-            chain = changedChain
             presenter?.didReceive(
                 changedChain,
                 filteredNodes: filteredNodes
             )
+            
+            addNewNodesIfNeeded(for: changedChain)
+            chain = changedChain
         }
 
         chainRegistry.subscribeChainState(
@@ -227,17 +226,22 @@ private extension NetworkDetailsInteractor {
             chainId: chain.chainId
         )
     }
+    
+    func addNewNodesIfNeeded(for changedChain: ChainModel) {
+        let newNodes = changedChain.nodes.subtracting(chain.nodes)
+        
+        guard !newNodes.isEmpty else { return }
+        
+        newNodes.forEach { connectTo($0, of: changedChain) }
+    }
 
-    func toggleNodesAfterChainUpdate(
-        beforeChange chain: ChainModel,
-        updatedChain: ChainModel
-    ) {
-        guard chain.syncMode != updatedChain.syncMode else {
+    func toggleNodesAfterChainUpdate(for changedChain: ChainModel) {
+        guard chain.syncMode != changedChain.syncMode else {
             return
         }
 
-        if updatedChain.syncMode.enabled() {
-            connectToNodes(of: updatedChain)
+        if changedChain.syncMode.enabled() {
+            connectToNodes(of: changedChain)
         } else {
             disconnectNodes()
         }

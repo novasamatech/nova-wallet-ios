@@ -30,4 +30,9 @@ protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
     )
 }
 
-protocol NetworkDetailsWireframeProtocol: AnyObject {}
+protocol NetworkDetailsWireframeProtocol: AnyObject {
+    func showAddNode(
+        from view: NetworkDetailsViewProtocol?,
+        chainId: ChainModel.Id
+    )
+}

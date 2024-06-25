@@ -86,6 +86,10 @@ class TextInputView: BackgroundedContentControl {
             textField.text = inputViewModel.inputHandler.value
         }
 
+        if !inputViewModel.placeholder.isEmpty {
+            textField.placeholder = inputViewModel.placeholder
+        }
+
         self.inputViewModel = inputViewModel
 
         updateControlsState()

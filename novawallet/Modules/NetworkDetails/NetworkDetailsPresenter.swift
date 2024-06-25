@@ -43,7 +43,10 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     }
 
     func addNode() {
-        // TODO: Implement
+        wireframe.showAddNode(
+            from: view,
+            chainId: chain.chainId
+        )
     }
 
     func selectNode(at index: Int) {

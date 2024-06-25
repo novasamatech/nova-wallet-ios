@@ -63,6 +63,7 @@
 "common.secret.derivation.path.substrate" = "Substrate secret derivation path";
 "common.secret.derivation.path.ethereum" = "Ethereum secret derivation path";
 "common.choose.network" = "Choose network";
+"common.name" = "Name";
 "sr25519.selection.subtitle" = "sr25519 (recommended)";
 "ed25519.selection.subtitle" = "ed25519 (alternative)";
 "ecdsa.selection.subtitle" = "(BTC/ETH compatible)";
@@ -134,6 +135,7 @@
 "wallet.assets.total.title" = "Assets value";
 "network.info.title" = "Node Info";
 "network.info.name" = "Node name";
+"network.info.node.url" = "Node URL";
 "network.info.address" = "Node address";
 "common.add" = "Add";
 "common.update" = "Update";
@@ -1533,3 +1535,14 @@
 "network.details.auto.balance" = "Auto-balance nodes";
 "network.details.add.custom.node" = "Add custom node";
 "network.details.ping.milliseconds" = "%d ms";
+"network.node.add.title" = "Add custom node";
+"network.node.add.button.add" = "Add node";
+"network.node.add.button.enter.details" = "Enter details";
+"network.node.add.alert.node.error.title" = "Node error";
+"network.node.add.alert.node.error.message.wss" = "The Node URL you entered is either not responding or contains incorrect format. The URL format should start with \"wss://\"";
+"network.node.add.alert.wrong.network.title" = "Wrong network";
+"network.node.add.alert.wrong.network.message" = "The URL you entered is not corresponding to Node for %@.
+Please enter URL of the valid %@ node.";
+"network.node.add.alert.already.exists.title" = "This Node already exists";
+"network.node.add.alert.already.exists.message" = "The URL you entered already exists as the %@ Node.";
+"common.for" = "For";

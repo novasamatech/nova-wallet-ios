@@ -134,6 +134,7 @@
 "wallet.assets.total.title" = "Стоимость активов";
 "network.info.title" = "Информация ноды";
 "network.info.name" = "Имя ноды";
+"network.info.node.url" = "URL ноды";
 "network.info.address" = "Адрес ноды";
 "common.add" = "Добавить";
 "common.update" = "Обновить";
@@ -1533,3 +1534,6 @@
 "network.details.auto.balance" = "Авто-балансирвоать ноды";
 "network.details.add.custom.node" = "Добавить пользовательскую ноду";
 "network.details.ping.milliseconds" = "%d мс";
+"network.node.add.title" = "Добавить пользовательскую ноду";
+"network.node.add.button.add" = "Добавить ноду";
+"network.node.add.button.enter.details" = "Введите детали";
