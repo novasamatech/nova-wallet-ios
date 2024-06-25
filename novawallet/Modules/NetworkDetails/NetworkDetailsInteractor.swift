@@ -96,6 +96,29 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
 
         operationQueue.addOperation(saveOperation)
     }
+    
+    func deleteNode(_ node: ChainNodeModel) {
+        guard currentSelectedNode != node else {
+            return
+        }
+        
+        let saveOperation = repository.saveOperation({ [weak self] in
+            guard let self else { return [] }
+
+            return [chain.removing(node: node)]
+        }, {
+            []
+        })
+        
+        saveOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                self?.nodesConnections[node.url]?.disconnect(true)
+                self?.nodesConnections[node.url] = nil
+            }
+        }
+
+        operationQueue.addOperation(saveOperation)
+    }
 }
 
 // MARK: WebSocketEngineDelegate

@@ -46,4 +46,17 @@ extension ChainNodeModel {
             source: source
         )
     }
+    
+    func updating(
+        _ url: String? = nil,
+        _ name: String? = nil
+    ) -> ChainNodeModel {
+        ChainNodeModel(
+            url: url ?? self.url,
+            name: name ?? self.name,
+            order: order,
+            features: features,
+            source: source
+        )
+    }
 }

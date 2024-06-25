@@ -18,6 +18,7 @@ protocol NetworkDetailsInteractorInputProtocol: AnyObject {
     func setSetNetworkConnection(enabled: Bool)
     func setAutoBalance(enabled: Bool)
     func selectNode(_ node: ChainNodeModel)
+    func deleteNode(_ node: ChainNodeModel)
 }
 
 protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
@@ -35,6 +36,11 @@ protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
 protocol NetworkDetailsWireframeProtocol: AnyObject {
     func showAddNode(
         from view: NetworkDetailsViewProtocol?,
+        chainId: ChainModel.Id
+    )
+    func showEditNode(
+        from view: NetworkDetailsViewProtocol?,
+        node: ChainNodeModel,
         chainId: ChainModel.Id
     )
     func showManageNode(

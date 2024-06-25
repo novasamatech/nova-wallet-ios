@@ -1,13 +1,13 @@
 import UIKit
 import SoraFoundation
 
-final class NetworkAddNodeViewController: UIViewController, ViewHolder {
-    typealias RootViewType = NetworkAddNodeViewLayout
+final class NetworkNodeViewController: UIViewController, ViewHolder {
+    typealias RootViewType = NetworkNodeViewLayout
 
-    let presenter: NetworkAddNodePresenterProtocol
+    let presenter: NetworkNodePresenterProtocol
 
     init(
-        presenter: NetworkAddNodePresenterProtocol,
+        presenter: NetworkNodePresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -21,7 +21,7 @@ final class NetworkAddNodeViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = NetworkAddNodeViewLayout()
+        view = NetworkNodeViewLayout()
     }
 
     override func viewDidLoad() {
@@ -31,39 +31,45 @@ final class NetworkAddNodeViewController: UIViewController, ViewHolder {
         rootView.locale = selectedLocale
 
         setupHandlers()
-        updateActionButton()
     }
 }
 
-// MARK: NetworkAddNodeViewProtocol
+// MARK: NetworkNodeViewProtocol
 
-extension NetworkAddNodeViewController: NetworkAddNodeViewProtocol {
+extension NetworkNodeViewController: NetworkNodeViewProtocol {
     func didReceiveUrl(viewModel: InputViewModelProtocol) {
         rootView.urlInput.bind(inputViewModel: viewModel)
-
-        updateActionButton()
     }
 
     func didReceiveName(viewModel: InputViewModelProtocol) {
         rootView.nameInput.bind(inputViewModel: viewModel)
-
-        updateActionButton()
     }
     
     func didReceiveChain(viewModel: NetworkViewModel) {
         rootView.chainView.bind(viewModel: viewModel)
     }
     
-    func setLoading(_ loading: Bool) {
-        loading
+    func didReceiveButton(viewModel: NetworkNodeViewLayout.LoadingButtonViewModel) {
+        viewModel.loading
             ? rootView.actionLoadableView.startLoading()
             : rootView.actionLoadableView.stopLoading()
+        
+        viewModel.enabled
+            ? rootView.actionButton.applyEnabledStyle()
+            : rootView.actionButton.applyDisabledStyle()
+        
+        rootView.actionButton.isUserInteractionEnabled = viewModel.enabled
+        rootView.actionButton.imageWithTitleView?.title = viewModel.title
+    }
+    
+    func didReceiveTitle(text: String) {
+        rootView.titleLabel.text = text
     }
 }
 
 // MARK: Localizable
 
-extension NetworkAddNodeViewController: Localizable {
+extension NetworkNodeViewController: Localizable {
     func applyLocalization() {
         guard isViewLoaded else { return }
 
@@ -73,11 +79,11 @@ extension NetworkAddNodeViewController: Localizable {
 
 // MARK: Private
 
-private extension NetworkAddNodeViewController {
+private extension NetworkNodeViewController {
     func setupHandlers() {
         rootView.actionButton.addTarget(
             self,
-            action: #selector(actionAddNode),
+            action: #selector(actionConfirm),
             for: .touchUpInside
         )
 
@@ -94,41 +100,17 @@ private extension NetworkAddNodeViewController {
         )
     }
 
-    @objc func actionAddNode() {
-        presenter.confirmAddNode()
+    @objc func actionConfirm() {
+        presenter.confirm()
     }
 
     @objc func actionURLChanged() {
         let partialAddress = rootView.urlInput.textField.text ?? ""
         presenter.handlePartial(url: partialAddress)
-
-        updateActionButton()
     }
 
     @objc func actionNameChanged() {
         let partialSymbol = rootView.nameInput.textField.text ?? ""
         presenter.handlePartial(name: partialSymbol)
-
-        updateActionButton()
-    }
-
-    private func updateActionButton() {
-        let languages = selectedLocale.rLanguages
-
-        if rootView.urlInput.completed, rootView.nameInput.completed {
-            rootView.actionButton.applyEnabledStyle()
-            rootView.actionButton.isUserInteractionEnabled = true
-
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.networkNodeAddButtonAdd(
-                preferredLanguages: languages
-            )
-        } else {
-            rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.isUserInteractionEnabled = false
-
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.networkNodeAddButtonEnterDetails(
-                preferredLanguages: languages
-            )
-        }
     }
 }

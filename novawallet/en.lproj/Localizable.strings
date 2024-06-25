@@ -1549,3 +1549,4 @@ Please enter URL of the valid %@ node.";
 "network.manage.node.edit" = "Edit node";
 "network.manage.node.delete" = "Delete node";
 "network.manage.node.manage.added.node" = "Manage added node";
+"network.node.edit.title" = "Edit custom node";
