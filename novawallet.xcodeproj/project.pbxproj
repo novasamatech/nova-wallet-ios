@@ -280,6 +280,8 @@
 		0C6F0C9E2A69723B007170C6 /* StartStakingStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */; };
 		0C7071292C1F600F0080DDCD /* OnLauchAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7071282C1F600F0080DDCD /* OnLauchAction.swift */; };
 		0C70712B2C1F60F50080DDCD /* OnLaunchActionsQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */; };
+		0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104682C2966C000487E64 /* LedgerConversionTests.swift */; };
+		0C71046B2C29815600487E64 /* MockKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71046A2C29815600487E64 /* MockKeychainStore.swift */; };
 		0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */; };
 		0C77B5612A8371AA00B5AE08 /* StaticValidatorListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */; };
 		0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */; };
@@ -3435,7 +3437,7 @@
 		84D9C41126CD361C004AB2AB /* SpecVersionSubscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C41026CD361C004AB2AB /* SpecVersionSubscriptionTests.swift */; };
 		84D9C8EB28AD903E007FB23B /* LedgerSendOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8EA28AD903E007FB23B /* LedgerSendOperation.swift */; };
 		84D9C8EF28AD97E7007FB23B /* SupportedLedgerApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8EE28AD97E7007FB23B /* SupportedLedgerApps.swift */; };
-		84D9C8F128AD9913007FB23B /* BIP32PathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8F028AD9913007FB23B /* BIP32PathBuilder.swift */; };
+		84D9C8F128AD9913007FB23B /* LedgerPathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8F028AD9913007FB23B /* LedgerPathBuilder.swift */; };
 		84D9C8F328ADA42F007FB23B /* Data+Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */; };
 		84DA03D12758AA6800E8B326 /* BaseAccountImportWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D02758AA6800E8B326 /* BaseAccountImportWireframe.swift */; };
 		84DA03D427592FAA00E8B326 /* ChainAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D327592FAA00E8B326 /* ChainAccountView.swift */; };
@@ -5079,6 +5081,8 @@
 		0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingStateProtocol.swift; sourceTree = "<group>"; };
 		0C7071282C1F600F0080DDCD /* OnLauchAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLauchAction.swift; sourceTree = "<group>"; };
 		0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLaunchActionsQueue.swift; sourceTree = "<group>"; };
+		0C7104682C2966C000487E64 /* LedgerConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerConversionTests.swift; sourceTree = "<group>"; };
+		0C71046A2C29815600487E64 /* MockKeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockKeychainStore.swift; sourceTree = "<group>"; };
 		0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewController.swift; sourceTree = "<group>"; };
 		0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListProtocols.swift; sourceTree = "<group>"; };
 		0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewLayout.swift; sourceTree = "<group>"; };
@@ -8206,7 +8210,7 @@
 		84D9C41026CD361C004AB2AB /* SpecVersionSubscriptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecVersionSubscriptionTests.swift; sourceTree = "<group>"; };
 		84D9C8EA28AD903E007FB23B /* LedgerSendOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSendOperation.swift; sourceTree = "<group>"; };
 		84D9C8EE28AD97E7007FB23B /* SupportedLedgerApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedLedgerApps.swift; sourceTree = "<group>"; };
-		84D9C8F028AD9913007FB23B /* BIP32PathBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP32PathBuilder.swift; sourceTree = "<group>"; };
+		84D9C8F028AD9913007FB23B /* LedgerPathBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerPathBuilder.swift; sourceTree = "<group>"; };
 		84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Chunk.swift"; sourceTree = "<group>"; };
 		84DA03D02758AA6800E8B326 /* BaseAccountImportWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAccountImportWireframe.swift; sourceTree = "<group>"; };
 		84DA03D327592FAA00E8B326 /* ChainAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountView.swift; sourceTree = "<group>"; };
@@ -10125,6 +10129,7 @@
 				0C41D2192BF899EF000950EE /* MockCloudBackupAvailabilityService.swift */,
 				0C41D21B2BF9AA38000950EE /* MockCloudBackupSyncMetadataManager.swift */,
 				0CF6928F2C240E91000FC395 /* MockCloudBackupSyncMonitor.swift */,
+				0C71046A2C29815600487E64 /* MockKeychainStore.swift */,
 			);
 			path = CloudBackup;
 			sourceTree = "<group>";
@@ -14362,7 +14367,7 @@
 				844DAADC28ABC5E2008E11DA /* LedgerDevice.swift */,
 				84D9C8EA28AD903E007FB23B /* LedgerSendOperation.swift */,
 				84D9C8EE28AD97E7007FB23B /* SupportedLedgerApps.swift */,
-				84D9C8F028AD9913007FB23B /* BIP32PathBuilder.swift */,
+				84D9C8F028AD9913007FB23B /* LedgerPathBuilder.swift */,
 				84CC726128AF8C7A003429E7 /* LedgerApplicationRequest.swift */,
 				84355CF528B63D19004E5C5E /* LedgerCrypto+Conversion.swift */,
 				84DC5A1228BAA8020014E081 /* LedgerInvaliDataPolkadotReason.swift */,
@@ -14514,6 +14519,7 @@
 			isa = PBXGroup;
 			children = (
 				844DAAE328AD24FA008E11DA /* LedgerTransportTests.swift */,
+				0C7104682C2966C000487E64 /* LedgerConversionTests.swift */,
 			);
 			path = Ledger;
 			sourceTree = "<group>";
@@ -23805,7 +23811,7 @@
 				84BEE0F02562897100D05EB3 /* AccountImportJsonFactory.swift in Sources */,
 				841E5545282D793900C8438F /* ParachainStakingSharedState.swift in Sources */,
 				849014DF24AA8F60008F705E /* MainTabBarViewController.swift in Sources */,
-				84D9C8F128AD9913007FB23B /* BIP32PathBuilder.swift in Sources */,
+				84D9C8F128AD9913007FB23B /* LedgerPathBuilder.swift in Sources */,
 				843E9B2F27C8B17F009C143A /* FileDownloadOperation.swift in Sources */,
 				88E8CF5E28E3789600C90112 /* CrowdloanEmptyView.swift in Sources */,
 				77204EA42A1CD59100BBDE4A /* GenericBorderedView.swift in Sources */,
@@ -27378,12 +27384,14 @@
 				84DD49F828EEAFFF00B804F3 /* DecimalTests.swift in Sources */,
 				F477CD75262FFA4F004DF739 /* PayoutRewardsServiceStub.swift in Sources */,
 				84B7C710289BFA79001A3566 /* CrowdloanYourContributionsTests.swift in Sources */,
+				0C71046B2C29815600487E64 /* MockKeychainStore.swift in Sources */,
 				0C41D2222BFB0BAC000950EE /* KeystoreValidationHelper.swift in Sources */,
 				8476D39827F431D5004D9A7A /* MockApplicationService.swift in Sources */,
 				84B7C731289BFA79001A3566 /* ValidatorInfoTests.swift in Sources */,
 				0C41D2102BF7814A000950EE /* MockCloudBackupServiceFactory.swift in Sources */,
 				845B822326EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift in Sources */,
 				84B7C71C289BFA79001A3566 /* DAppTxDetailsTests.swift in Sources */,
+				0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */,
 				84B66A1426FDF29A0038B963 /* WalletLocalSubscriptionFactoryStub.swift in Sources */,
 				887248082924F54900B0D2CC /* URL+Matchable.swift in Sources */,
 				8440F4A5295AB4E300CAFBF9 /* SecurityLayerTests.swift in Sources */,

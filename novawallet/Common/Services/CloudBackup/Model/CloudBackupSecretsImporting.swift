@@ -110,6 +110,30 @@ final class CloudBackupSecretsImporter {
         accountId: AccountId?,
         isEthereumBased: Bool
     ) throws {
+        switch wallet.type {
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+            return try saveRegularDerivationPath(
+                derivationPath,
+                wallet: wallet,
+                accountId: accountId,
+                isEthereumBased: isEthereumBased
+            )
+        case .ledger:
+            return try saveLedgerDerivationPath(
+                derivationPath,
+                wallet: wallet,
+                accountId: accountId,
+                isEthereumBased: isEthereumBased
+            )
+        }
+    }
+
+    private func saveRegularDerivationPath(
+        _ derivationPath: String,
+        wallet: MetaAccountModel,
+        accountId: AccountId?,
+        isEthereumBased: Bool
+    ) throws {
         guard let derivationPathData = derivationPath.asSecretData(), !derivationPathData.isEmpty else {
             return
         }
@@ -117,6 +141,25 @@ final class CloudBackupSecretsImporter {
         let tag = isEthereumBased ?
             KeystoreTagV2.ethereumDerivationTagForMetaId(wallet.metaId, accountId: accountId) :
             KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId, accountId: accountId)
+        try keychain.saveKey(derivationPathData, with: tag)
+    }
+
+    private func saveLedgerDerivationPath(
+        _ derivationPath: String,
+        wallet: MetaAccountModel,
+        accountId: AccountId?,
+        isEthereumBased: Bool
+    ) throws {
+        guard !derivationPath.isEmpty else {
+            return
+        }
+
+        let derivationPathData = try LedgerPathConverter().convertToChaincodesData(from: derivationPath)
+
+        let tag = isEthereumBased ?
+            KeystoreTagV2.ethereumDerivationTagForMetaId(wallet.metaId, accountId: accountId) :
+            KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId, accountId: accountId)
+
         try keychain.saveKey(derivationPathData, with: tag)
     }
 
@@ -143,6 +186,10 @@ final class CloudBackupSecretsImporter {
         if let ethereum = privateInfo.ethereum {
             if let derivationPath = ethereum.derivationPath {
                 try saveDerivationPath(derivationPath, wallet: wallet, accountId: nil, isEthereumBased: true)
+            }
+
+            if let seedHex = ethereum.seed {
+                try saveSeed(seedHex, wallet: wallet, accountId: nil, isEthereumBased: true)
             }
 
             try savePrivateKey(ethereum.keypair, wallet: wallet, accountId: nil, isEthereumBased: true)
