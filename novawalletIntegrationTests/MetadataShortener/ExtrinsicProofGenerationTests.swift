@@ -59,17 +59,31 @@ final class ExtrinsicProofGenerationTests: XCTestCase {
             let callFactory = SubstrateCallFactory()
             let call = callFactory.nativeTransferAll(to: AccountId.zeroAccountId(of: 32))
             
-            return try ExtrinsicBuilder(
+            let customExtensions = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions()
+            
+            var builder = try ExtrinsicBuilder(
                 specVersion: codingFactory.specVersion,
                 transactionVersion: codingFactory.txVersion,
                 genesisHash: chainId
             )
+            .with(runtimeJsonContext: codingFactory.createRuntimeJsonContext())
             .with(metadataHash: metadataHash)
             .adding(call: call)
-            .buildExtrinsicSignatureParams(
+            
+            for customExtension in customExtensions {
+                builder = builder.adding(extrinsicSignedExtension: customExtension)
+            }
+            
+            let params = try builder.buildExtrinsicSignatureParams(
                 encodingBy: encoder,
                 metadata: codingFactory.metadata
             )
+            
+            Logger.shared.info("Call: \(params.encodedCall.toHexString())")
+            Logger.shared.info("Include in extrinsic: \(params.includedInExtrinsicExtra.toHexString())")
+            Logger.shared.info("Include in signature: \(params.includedInSignatureExtra.toHexString())")
+            
+            return params
         }
         
         extrinsicSigningParamsOperation.addDependency(codingFactoryOperation)
