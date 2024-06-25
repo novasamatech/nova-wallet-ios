@@ -42,13 +42,13 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
     }
     
     override func completeButtonTitle() -> String {
-        R.string.localizable.networkNodeAddButtonAdd(
+        R.string.localizable.networksListAddNetworkButtonTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
     
     override func provideTitle() {
-        let title = R.string.localizable.networkNodeAddTitle(
+        let title = R.string.localizable.networkAddTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
         view?.didReceiveTitle(text: title)
