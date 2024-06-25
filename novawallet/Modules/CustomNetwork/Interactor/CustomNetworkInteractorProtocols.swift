@@ -4,7 +4,7 @@ protocol CustomNetworkBaseInteractorInputProtocol: AnyObject {
 
 protocol CustomNetworkAddInteractorInputProtocol: CustomNetworkBaseInteractorInputProtocol {
     func addNetwork(
-        networkType: ,
+        networkType: ChainType,
         url: String,
         name: String,
         currencySymbol: String,
@@ -14,9 +14,13 @@ protocol CustomNetworkAddInteractorInputProtocol: CustomNetworkBaseInteractorInp
     )
 }
 
-protocol NetworkNodeEditInteractorInputProtocol: CustomNetworkBaseInteractorInputProtocol {
-    func editNode(
-        with url: String,
-        name: String
+protocol CustomNetworkEditInteractorInputProtocol: CustomNetworkBaseInteractorInputProtocol {
+    func editNetwork(
+        url: String,
+        name: String,
+        currencySymbol: String,
+        chainId: String?,
+        blockExplorerURL: String?,
+        coingeckoURL: String?
     )
 }

@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 
-final class CustomNetworkBasePresenter {
+class CustomNetworkBasePresenter {
     weak var view: CustomNetworkViewProtocol?
     let wireframe: CustomNetworkWireframeProtocol
     private let interactor: CustomNetworkBaseInteractorInputProtocol
@@ -9,6 +9,7 @@ final class CustomNetworkBasePresenter {
     var partialURL: String?
     var partialName: String?
     var partialCurrencySymbol: String?
+    var partialChainId: String?
     var partialBlockExplorerURL: String?
     var partialCoingeckoURL: String?
     
@@ -38,18 +39,46 @@ final class CustomNetworkBasePresenter {
         fatalError("Must be overriden by subclass")
     }
     
-    func provideButtonViewModel(loading: Bool) {
-        
+    func checkInfoCompleted() -> Bool {
+        if
+            let partialURL,
+            let partialName,
+            let partialCurrencySymbol
+        {
+            !partialURL.isEmpty
+            && !partialName.isEmpty
+            && !partialCurrencySymbol.isEmpty
+        } else {
+            false
+        }
     }
     
-    func provideURLViewModel(for chain: ChainModel?) {
+    // MARK: Provide view models
+    
+    func provideButtonViewModel(loading: Bool) {
+        let completed = checkInfoCompleted()
+        
+        let title: String = if completed {
+            completeButtonTitle()
+        } else {
+            R.string.localizable.networkNodeAddButtonEnterDetails(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+        
+        let viewModel = NetworkNodeViewLayout.LoadingButtonViewModel(
+            title: title,
+            enabled: completed,
+            loading: loading
+        )
+        
+        view?.didReceiveButton(viewModel: viewModel)
+    }
+    
+    func provideURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialURL ?? "",
-            placeholder: chain?.nodes
-                .filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
-                .sorted { $0.order < $1.order }
-                .first?
-                .url ?? ""
+            placeholder: ""
         )
         view?.didReceiveUrl(viewModel: inputViewModel)
     }
@@ -67,7 +96,7 @@ final class CustomNetworkBasePresenter {
             for: partialCurrencySymbol ?? "",
             placeholder: R.string.localizable.commonToken(preferredLanguages: selectedLocale.rLanguages).uppercased()
         )
-        view?.didReceiveName(viewModel: inputViewModel)
+        view?.didReceiveCurrencySymbol(viewModel: inputViewModel)
     }
     
     func provideBlockExplorerURLViewModel() {
@@ -76,7 +105,7 @@ final class CustomNetworkBasePresenter {
             required: false,
             placeholder: ""
         )
-        view?.didReceiveUrl(viewModel: inputViewModel)
+        view?.didReceiveBlockExplorerUrl(viewModel: inputViewModel)
     }
     
     func provideCoingeckoURLViewModel() {
@@ -85,7 +114,7 @@ final class CustomNetworkBasePresenter {
             required: false,
             placeholder: ""
         )
-        view?.didReceiveUrl(viewModel: inputViewModel)
+        view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
 }
 
@@ -94,6 +123,8 @@ final class CustomNetworkBasePresenter {
 extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
     func setup() {
         interactor.setup()
+        
+        provideViewModel()
         provideButtonViewModel(loading: false)
     }
 
@@ -143,12 +174,26 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
     }
 }
 
+// MARK: Private
+
+private extension CustomNetworkBasePresenter {
+    func provideViewModel() {
+        provideTitle()
+        provideURLViewModel()
+        provideNameViewModel()
+        provideCurrencySymbolViewModel()
+        provideBlockExplorerURLViewModel()
+        provideCoingeckoURLViewModel()
+        provideButtonViewModel(loading: false)
+    }
+}
+
 // MARK: Localizable
 
 extension CustomNetworkBasePresenter: Localizable {
     func applyLocalization() {
         guard let view, view.isSetup else { return }
         
-        
+        provideViewModel()
     }
 }

@@ -21,6 +21,6 @@ protocol CustomNetworkAddInteractorOutputProtocol: CustomNetworkBaseInteractorOu
 }
 
 protocol CustomNetworkEditInteractorOutputProtocol: CustomNetworkBaseInteractorOutputProtocol {
-    func didEditNode()
+    func didEditChain()
     func didReceive(chain: ChainModel)
 }

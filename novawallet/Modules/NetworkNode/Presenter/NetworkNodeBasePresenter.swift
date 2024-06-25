@@ -62,7 +62,7 @@ class NetworkNodeBasePresenter {
     }
     
     func provideURLViewModel(for chain: ChainModel?) {
-        let inputViewModel = InputViewModel.createSubstrateNodeURLInputViewModel(
+        let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialURL ?? "",
             placeholder: chain?.nodes
                 .filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
