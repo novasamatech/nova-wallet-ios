@@ -1,7 +1,12 @@
 import UIKit
 
 class WalletsListViewLayout: UIView {
-    let tableView: UITableView = {
+    var tableView: UITableView {
+        get { baseTableView }
+        set { baseTableView = newValue }
+    }
+
+    private var baseTableView: UITableView = {
         let view = UITableView()
         view.separatorStyle = .none
         view.backgroundColor = .clear

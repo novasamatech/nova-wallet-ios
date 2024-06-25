@@ -48,6 +48,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createLanguageViewModel(from: language, locale: locale)
             ]),
             (.security, [
+                createCommonViewViewModel(row: .backup, locale: locale),
                 parameters.isBiometricAuthOn.map {
                     createSwitchViewModel(row: .biometricAuth, isOn: $0, locale: locale)
                 },

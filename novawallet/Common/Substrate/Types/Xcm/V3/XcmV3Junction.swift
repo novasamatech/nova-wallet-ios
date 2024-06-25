@@ -13,6 +13,7 @@ extension XcmV3 {
         case polkadot
         case kusama
         case westend
+        case unsupported(String)
 
         init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
@@ -30,12 +31,7 @@ extension XcmV3 {
             case Self.westendField:
                 self = .westend
             default:
-                throw DecodingError.dataCorrupted(
-                    .init(
-                        codingPath: decoder.codingPath,
-                        debugDescription: "Unsupported network id: \(type)"
-                    )
-                )
+                self = .unsupported(type)
             }
         }
 
@@ -55,6 +51,14 @@ extension XcmV3 {
             case .westend:
                 try container.encode(Self.westendField)
                 try container.encode(JSON.null)
+            case let .unsupported(networkId):
+                throw EncodingError.invalidValue(
+                    self,
+                    .init(
+                        codingPath: encoder.codingPath,
+                        debugDescription: "Unsupported network id: \(networkId)"
+                    )
+                )
             }
         }
     }

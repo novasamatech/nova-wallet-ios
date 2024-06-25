@@ -27,5 +27,4 @@ protocol NotificationsSetupWireframeProtocol: WebPresentable, AlertPresentable, 
     func complete(on view: ControllerBackedProtocol?)
     func saved(on view: ControllerBackedProtocol?)
     func show(url: URL, from view: ControllerBackedProtocol?)
-    func close(on view: ControllerBackedProtocol?)
 }

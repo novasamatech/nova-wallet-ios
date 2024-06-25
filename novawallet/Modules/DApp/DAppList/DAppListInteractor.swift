@@ -119,7 +119,7 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
 }
 
 extension DAppListInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         provideWallet()
     }
 }

@@ -2,6 +2,11 @@ import Foundation
 import SoraFoundation
 
 final class WalletManagePresenter: WalletsListPresenter {
+    enum AddWalletOptions: Int {
+        case addNew
+        case importExisting
+    }
+
     var view: WalletManageViewProtocol? {
         baseView as? WalletManageViewProtocol
     }
@@ -13,6 +18,8 @@ final class WalletManagePresenter: WalletsListPresenter {
     var wireframe: WalletManageWireframeProtocol? {
         baseWireframe as? WalletManageWireframeProtocol
     }
+
+    private var cloudBackupState: CloudBackupSyncState?
 
     init(
         interactor: WalletManageInteractorInputProtocol,
@@ -71,6 +78,26 @@ final class WalletManagePresenter: WalletsListPresenter {
             interactor?.remove(item: item)
         }
     }
+
+    private func showAddWallet() {
+        if let cloudBackupState, cloudBackupState.canAutoSync {
+            wireframe?.showCloudBackupRemind(from: view) { [weak self] in
+                self?.wireframe?.showCreateWalletWithCloudBackup(from: self?.view)
+            }
+        } else {
+            wireframe?.showCreateWalletWithManualBackup(from: view)
+        }
+    }
+
+    private func showImportWallet() {
+        if let cloudBackupState, cloudBackupState.canAutoSync {
+            wireframe?.showCloudBackupRemind(from: view) { [weak self] in
+                self?.wireframe?.showImportWallet(from: self?.view)
+            }
+        } else {
+            wireframe?.showImportWallet(from: view)
+        }
+    }
 }
 
 extension WalletManagePresenter: WalletManagePresenterProtocol {
@@ -127,20 +154,78 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
     }
 
     func removeItem(at index: Int, section: Int) {
-        askAndPerformRemoveItem(at: index, section: section) { [weak self] result in
-            if result {
+        if let cloudBackupState, cloudBackupState.canAutoSync {
+            wireframe?.showRemoveCloudBackupWalletWarning(from: view) { [weak self] in
+                self?.performRemoveItem(at: index, section: section)
                 self?.view?.didRemoveItem(at: index, section: section)
+            }
+        } else {
+            askAndPerformRemoveItem(at: index, section: section) { [weak self] result in
+                if result {
+                    self?.view?.didRemoveItem(at: index, section: section)
+                }
             }
         }
     }
 
     func activateAddWallet() {
-        wireframe?.showAddWallet(from: view)
+        guard let view = view else {
+            return
+        }
+
+        let createAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.onboardingCreateWallet(preferredLanguages: locale.rLanguages)
+
+            return ActionManageViewModel(icon: R.image.iconCircleOutline(), title: title, details: nil)
+        }
+
+        let importAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.walletImportExisting(preferredLanguages: locale.rLanguages)
+
+            return ActionManageViewModel(icon: R.image.iconImportWallet(), title: title, details: nil)
+        }
+
+        let context = ModalPickerClosureContext { [weak self] index in
+            switch AddWalletOptions(rawValue: index) {
+            case .addNew:
+                self?.showAddWallet()
+            case .importExisting:
+                self?.showImportWallet()
+            case .none:
+                break
+            }
+        }
+
+        wireframe?.presentActionsManage(
+            from: view,
+            actions: [createAction, importAction],
+            title: LocalizableResource(
+                closure: { locale in
+                    R.string.localizable.walletHowAdd(preferredLanguages: locale.rLanguages)
+                }
+            ),
+            delegate: self,
+            context: context
+        )
+    }
+}
+
+extension WalletManagePresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let context = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        context.process(selectedIndex: index)
     }
 }
 
 extension WalletManagePresenter: WalletManageInteractorOutputProtocol {
     func didRemoveAllWallets() {
         wireframe?.showOnboarding(from: view)
+    }
+
+    func didReceiveCloudBackup(state: CloudBackupSyncState) {
+        cloudBackupState = state
     }
 }

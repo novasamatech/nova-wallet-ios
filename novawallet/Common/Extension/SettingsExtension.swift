@@ -18,6 +18,10 @@ enum SettingsKey: String {
     case polkadotStakingPromoSeen
     case notificationsEnabled
     case notificationsSetupSeen
+    case lastCloudBackupTimestamp
+    case cloudBackupEnabled
+    case cloudBackupAutoSyncConfirm
+    case cloudBackupPasswordId
 }
 
 extension SettingsManagerProtocol {
@@ -193,6 +197,54 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.notificationsSetupSeen.rawValue)
+        }
+    }
+
+    var lastCloudBackupTimestampSeen: UInt64? {
+        get {
+            string(for: SettingsKey.lastCloudBackupTimestamp.rawValue).flatMap { UInt64($0) }
+        }
+
+        set {
+            if let value = newValue {
+                set(value: String(value), for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+            } else {
+                removeValue(for: SettingsKey.lastCloudBackupTimestamp.rawValue)
+            }
+        }
+    }
+
+    var isCloudBackupEnabled: Bool {
+        get {
+            bool(for: SettingsKey.cloudBackupEnabled.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.cloudBackupEnabled.rawValue)
+        }
+    }
+
+    var cloudBackupAutoSyncConfirm: Bool {
+        get {
+            bool(for: SettingsKey.cloudBackupAutoSyncConfirm.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.cloudBackupAutoSyncConfirm.rawValue)
+        }
+    }
+
+    var cloudBackupPasswordId: String? {
+        get {
+            string(for: SettingsKey.cloudBackupPasswordId.rawValue)
+        }
+
+        set {
+            if let value = newValue {
+                set(value: value, for: SettingsKey.cloudBackupPasswordId.rawValue)
+            } else {
+                removeValue(for: SettingsKey.cloudBackupPasswordId.rawValue)
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+"push.notification.sent.tokens.no.address.subtitle" = "%@ %@, %@ tarihinde gönderildi";
 "push.notification.receive.tokens.title" = "⬇️ Alındı";
 "push.notification.sent.tokens.title" = "💸 Gönderildi";
 "push.notification.staking.reward.title" = "✨ Yeni ödül";
@@ -25,4 +26,3 @@
 "push.notification.unsupported.body" = "Desteklenmeyen mesaj içeriği";
 "push.notification.sent.tokens.subtitle" = "%@ %@, %@ adına %@ üzerine gönderildi";
 "push.notification.receive.tokens.subtitle" = "%@ %@, %@ üzerinde alındı";
-"push.notification.sent.tokens.no.address.subtitle" = "%@ %@, %@ tarihinde gönderildi";

@@ -19,10 +19,14 @@ protocol WalletManageInteractorInputProtocol: WalletsListInteractorInputProtocol
 
 protocol WalletManageInteractorOutputProtocol: WalletsListInteractorOutputProtocol {
     func didRemoveAllWallets()
+    func didReceiveCloudBackup(state: CloudBackupSyncState)
 }
 
-protocol WalletManageWireframeProtocol: WalletsListWireframeProtocol {
+protocol WalletManageWireframeProtocol: WalletsListWireframeProtocol, ActionsManagePresentable,
+    CloudBackupRemindPresentable {
     func showWalletDetails(from view: WalletManageViewProtocol?, metaAccount: MetaAccountModel)
-    func showAddWallet(from view: WalletManageViewProtocol?)
+    func showCreateWalletWithManualBackup(from view: WalletManageViewProtocol?)
+    func showCreateWalletWithCloudBackup(from view: WalletManageViewProtocol?)
+    func showImportWallet(from view: WalletManageViewProtocol?)
     func showOnboarding(from view: WalletManageViewProtocol?)
 }

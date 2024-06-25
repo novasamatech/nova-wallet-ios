@@ -2,15 +2,14 @@ import Foundation
 import UIKit
 
 final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentable {
-    let dappMediator: DAppInteractionMediating
-    let proxySyncService: ProxySyncServiceProtocol
+    let serviceCoordinator: ServiceCoordinatorProtocol
 
-    init(
-        dappMediator: DAppInteractionMediating,
-        proxySyncService: ProxySyncServiceProtocol
-    ) {
-        self.dappMediator = dappMediator
-        self.proxySyncService = proxySyncService
+    var proxySyncService: ProxySyncServiceProtocol {
+        serviceCoordinator.proxySyncService
+    }
+
+    init(serviceCoordinator: ServiceCoordinatorProtocol) {
+        self.serviceCoordinator = serviceCoordinator
     }
 
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?) {
@@ -95,7 +94,7 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
     func showWalletConnect(from view: ControllerBackedProtocol?) {
         guard
             let walletConnectView = WalletConnectSessionsViewFactory.createView(
-                with: dappMediator
+                with: serviceCoordinator.dappMediator
             ) else {
             return
         }
@@ -111,6 +110,19 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         manageNotificationsView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(
             manageNotificationsView.controller,
+            animated: true
+        )
+    }
+
+    func showBackup(from view: ControllerBackedProtocol?) {
+        guard let backupView = CloudBackupSettingsViewFactory.createView() else {
+            return
+        }
+
+        backupView.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.pushViewController(
+            backupView.controller,
             animated: true
         )
     }

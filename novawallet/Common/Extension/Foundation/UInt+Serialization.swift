@@ -38,4 +38,10 @@ extension UInt32 {
 
         self = (UInt32(bytes[0]) << 24) | (UInt32(bytes[1]) << 16) | (UInt32(bytes[2]) << 8) | UInt32(bytes[3])
     }
+
+    init(littleEndianData: Data) {
+        let bytes = [UInt8](littleEndianData)
+
+        self = (UInt32(bytes[3]) << 24) | (UInt32(bytes[2]) << 16) | (UInt32(bytes[1]) << 8) | UInt32(bytes[0])
+    }
 }
