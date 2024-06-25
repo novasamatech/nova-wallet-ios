@@ -161,6 +161,7 @@ final class HydraQuoteTests: XCTestCase {
             connection: connection,
             runtimeProvider: runtimeService,
             userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
         )
         

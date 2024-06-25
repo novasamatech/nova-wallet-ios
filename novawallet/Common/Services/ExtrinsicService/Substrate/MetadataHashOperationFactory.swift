@@ -7,7 +7,7 @@ protocol MetadataHashOperationFactoryProtocol {
     func createCheckMetadataHashWrapper(
         for chain: ChainModel,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol
+        runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<Data?>
 }
 
@@ -87,7 +87,7 @@ extension MetadataHashOperationFactory: MetadataHashOperationFactoryProtocol {
     func createCheckMetadataHashWrapper(
         for chain: ChainModel,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol
+        runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<Data?> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 

@@ -103,6 +103,7 @@ final class ExtrinsicService {
         chain: ChainModel,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
+        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
         extensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol
@@ -112,6 +113,7 @@ final class ExtrinsicService {
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
             operationManager: operationManager
         )

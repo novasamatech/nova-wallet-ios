@@ -69,8 +69,9 @@ struct NPoolsRedeemViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
         let signingWrapper = SigningWrapperFactory.createSigner(from: selectedAccount)
