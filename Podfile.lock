@@ -945,7 +945,7 @@ DEPENDENCIES:
   - FireMock
   - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.1`)
   - Kingfisher
-  - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, commit `430c9f042451a67ea4159b3aefe60665040977b9`)
+  - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
   - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
   - R.swift
   - ReachabilitySwift
@@ -1028,8 +1028,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
   MetadataShortenerApi:
-    :commit: 430c9f042451a67ea4159b3aefe60665040977b9
     :git: https://github.com/novasamatech/metadata-shortener-ios.git
+    :tag: 0.1.0
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.0.1
@@ -1068,8 +1068,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
   MetadataShortenerApi:
-    :commit: 430c9f042451a67ea4159b3aefe60665040977b9
     :git: https://github.com/novasamatech/metadata-shortener-ios.git
+    :tag: 0.1.0
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.0.1
@@ -1161,6 +1161,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: f5aafdd63efe6ed7e4f5f3a5eebe8f3b355b11f3
+PODFILE CHECKSUM: 39ba0ebae3f70e7ad96af1394ae3e711af2f2fd7
 
 COCOAPODS: 1.15.2
