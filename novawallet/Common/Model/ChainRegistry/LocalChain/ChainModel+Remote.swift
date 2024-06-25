@@ -4,6 +4,7 @@ extension ChainModel {
     init(
         remoteModel: RemoteChainModel,
         assets: Set<AssetModel>,
+        nodes: Set<ChainNodeModel>,
         syncMode: ChainSyncMode,
         order: Int64,
         connectionMode: ConnectionMode
@@ -13,12 +14,7 @@ extension ChainModel {
         name = remoteModel.name
         self.assets = assets
         self.syncMode = syncMode
-
-        let nodeList = remoteModel.nodes.enumerated().map { index, node in
-            ChainNodeModel(remoteModel: node, order: Int16(index))
-        }
-
-        nodes = Set(nodeList)
+        self.nodes = nodes
 
         nodeSwitchStrategy = .init(rawStrategy: remoteModel.nodeSelectionStrategy)
 

@@ -1,4 +1,5 @@
 import SoraUI
+import UIKit
 
 class NetworkDetailsNodeTableViewCell: PlainBaseTableViewCell<NetworkDetailsNodeView>, TableViewCellPositioning {
     let separatorView: BorderedContainerView = .create { view in
@@ -18,6 +19,7 @@ class NetworkDetailsNodeTableViewCell: PlainBaseTableViewCell<NetworkDetailsNode
         super.setupLayout()
 
         contentDisplayView.roundedContainerView.backgroundView.addSubview(separatorView)
+        contentDisplayView.roundedContainerView.backgroundView.sendSubviewToBack(separatorView)
         separatorView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.top.equalToSuperview().inset(separatorView.strokeWidth)
@@ -58,45 +60,55 @@ class NetworkDetailsNodeTableViewCell: PlainBaseTableViewCell<NetworkDetailsNode
 }
 
 final class NetworkDetailsNodeView: UIView {
+    var viewModel: NetworkDetailsViewLayout.NodeModel?
+    
     var roundedContainerView = GenericBorderedView<
         GenericPairValueView<
-            UIImageView,
-            GenericMultiValueView<
+            GenericPairValueView<
+                UIImageView,
                 GenericMultiValueView<
-                    GenericPairValueView<UIImageView, ShimmerLabel>
+                    GenericMultiValueView<
+                        GenericPairValueView<UIImageView, ShimmerLabel>
+                    >
                 >
-            >
+            >,
+            UIImageView
         >
     >()
 
     var selectionImageView: UIImageView {
-        roundedContainerView.contentView.fView
+        roundedContainerView.contentView.fView.fView
     }
 
     var nameLabel: UILabel {
-        roundedContainerView.contentView.sView.valueTop
+        roundedContainerView.contentView.fView.sView.valueTop
     }
 
     var urlLabel: UILabel {
-        roundedContainerView.contentView.sView.valueBottom.valueTop
+        roundedContainerView.contentView.fView.sView.valueBottom.valueTop
     }
 
     var networkStatusIcon: UIImageView {
-        roundedContainerView.contentView.sView.valueBottom.valueBottom.fView
+        roundedContainerView.contentView.fView.sView.valueBottom.valueBottom.fView
     }
 
     var networkStatusLabel: ShimmerLabel {
-        roundedContainerView.contentView.sView.valueBottom.valueBottom.sView
+        roundedContainerView.contentView.fView.sView.valueBottom.valueBottom.sView
     }
 
     var networkStatusView: GenericPairValueView<UIImageView, ShimmerLabel> {
-        roundedContainerView.contentView.sView.valueBottom.valueBottom
+        roundedContainerView.contentView.fView.sView.valueBottom.valueBottom
+    }
+    
+    var accessoryIcon: UIImageView {
+        roundedContainerView.contentView.sView
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
+        setupActions()
         setupStyle()
     }
 
@@ -106,10 +118,18 @@ final class NetworkDetailsNodeView: UIView {
     }
 
     func bind(viewModel: NetworkDetailsViewLayout.NodeModel) {
+        self.viewModel = viewModel
+        
         if viewModel.selected {
             selectionImageView.image = R.image.iconRadioButtonSelected()
         } else {
             selectionImageView.image = R.image.iconRadioButtonUnselected()
+        }
+        
+        if viewModel.custom {
+            accessoryIcon.image = R.image.iconMore()
+        } else {
+            accessoryIcon.image = nil
         }
 
         nameLabel.text = viewModel.name
@@ -168,25 +188,32 @@ private extension NetworkDetailsNodeView {
 
         roundedContainerView.contentView.makeHorizontal()
         roundedContainerView.contentView.stackView.alignment = .center
+        
+        roundedContainerView.contentView.fView.makeHorizontal()
+        roundedContainerView.contentView.fView.stackView.alignment = .center
         roundedContainerView.contentInsets = Constants.contentInsets
 
-        roundedContainerView.contentView.spacing = Constants.roundedContainerSpacing
+        roundedContainerView.contentView.fView.spacing = Constants.roundedContainerSpacing
 
         selectionImageView.snp.makeConstraints { make in
             make.width.height.equalTo(Constants.selectionImageHeight)
         }
 
-        roundedContainerView.contentView.sView.stackView.alignment = .leading
-        roundedContainerView.contentView.sView.spacing = Constants.stackSpacing
+        roundedContainerView.contentView.fView.sView.stackView.alignment = .leading
+        roundedContainerView.contentView.fView.sView.spacing = Constants.stackSpacing
 
-        roundedContainerView.contentView.sView.valueBottom.spacing = Constants.stackSpacing
-        roundedContainerView.contentView.sView.valueBottom.stackView.alignment = .leading
+        roundedContainerView.contentView.fView.sView.valueBottom.spacing = Constants.stackSpacing
+        roundedContainerView.contentView.fView.sView.valueBottom.stackView.alignment = .leading
 
         networkStatusView.makeHorizontal()
         networkStatusView.spacing = Constants.stackSpacing
 
         networkStatusIcon.snp.makeConstraints { make in
             make.width.height.equalTo(12)
+        }
+        
+        accessoryIcon.snp.makeConstraints { make in
+            make.width.height.equalTo(24)
         }
     }
 
@@ -199,6 +226,22 @@ private extension NetworkDetailsNodeView {
         roundedContainerView.backgroundView.cornerRadius = Constants.cornerRadius
 
         networkStatusLabel.apply(style: .semiboldCaps2Primary)
+    }
+    
+    func setupActions() {
+        let tapGestureRecognizer = UITapGestureRecognizer(
+            target: self,
+            action: #selector(actionMore)
+        )
+        
+        accessoryIcon.addGestureRecognizer(tapGestureRecognizer)
+        accessoryIcon.isUserInteractionEnabled = true
+    }
+    
+    @objc func actionMore() {
+        guard let viewModel, viewModel.custom else { return }
+        
+        viewModel.onTapMore?(viewModel.indexPath)
     }
 }
 

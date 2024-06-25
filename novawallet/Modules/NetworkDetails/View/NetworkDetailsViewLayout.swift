@@ -60,12 +60,15 @@ extension NetworkDetailsViewLayout {
             case unknown(String)
         }
 
-        let index: Int
+        let indexPath: IndexPath
         let name: String
         let url: String
         let connectionState: ConnectionState
         let selected: Bool
         let dimmed: Bool
+        let custom: Bool
+        
+        let onTapMore: ((IndexPath) -> Void)?
     }
 
     enum Row {
