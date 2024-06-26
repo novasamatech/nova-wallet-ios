@@ -112,6 +112,14 @@ final class ChainAccountViewModelFactory {
                 )
 
                 hasAction = accountAddress != nil
+            case .genericLedger:
+                guard chainModel.supportsGenericLedgerApp else {
+                    return nil
+                }
+
+                // TODO: Fix warning for Generic Ledger
+                warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
+                hasAction = true
             }
 
             return ChainAccountViewModelItem(
@@ -189,7 +197,8 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                     chainAccounts: sharedSecretAccountList
                 )
             ]
-        case .ledger, .proxied:
+        case .ledger, .proxied, .genericLedger:
+            // TODO: Fix Generic Ledger
             let allChainAccounts = customSecretAccountList + sharedSecretAccountList
 
             let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)

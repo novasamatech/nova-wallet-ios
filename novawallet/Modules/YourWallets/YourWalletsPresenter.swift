@@ -93,6 +93,14 @@ final class YourWalletsPresenter {
                 ).uppercased(),
                 icon: R.image.iconProxy()
             )
+        case .genericLedger:
+            // TODO: Fix icon
+            return .init(
+                title: R.string.localizable.commonLedger(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).uppercased(),
+                icon: R.image.iconLedger()
+            )
         }
     }
 

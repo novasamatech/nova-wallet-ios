@@ -32,7 +32,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         self.completion = completion
 
         super.init(
-            chainName: chainName,
+            appName: chainName,
             baseInteractor: interactor,
             baseWireframe: wireframe,
             localizationManager: localizationManager
@@ -56,7 +56,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
             wireframe?.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: chainName,
+                networkName: appName,
                 cancelClosure: { [weak self] in
                     self?.performCancellation()
                 },

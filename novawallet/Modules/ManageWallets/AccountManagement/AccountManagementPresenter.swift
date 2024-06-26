@@ -318,7 +318,7 @@ final class AccountManagementPresenter {
                     )
                 }
             }
-        case .paritySigner, .polkadotVault, .ledger:
+        case .paritySigner, .polkadotVault, .ledger, .genericLedger:
             // change account not supported for Parity Signer and Ledger Wallets
             break
         }
@@ -430,7 +430,7 @@ final class AccountManagementPresenter {
             handlingClosure = { [weak self] in
                 self?.activateChangeAccount(for: chain, walletType: walletType)
             }
-        case .ledger:
+        case .ledger, .genericLedger:
             handlingClosure = { [weak self] in
                 guard let wallet = self?.wallet else {
                     return
@@ -516,6 +516,13 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
                 displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
             }
         case .ledger:
+            if chainViewModel.address != nil {
+                displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
+            } else {
+                displayAddAddress(for: chainModel, walletType: .ledger)
+            }
+        case .genericLedger:
+            // TODO: Fix Generic Ledger
             if chainViewModel.address != nil {
                 displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
             } else {

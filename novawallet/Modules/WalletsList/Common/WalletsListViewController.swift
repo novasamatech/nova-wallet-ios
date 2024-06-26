@@ -117,6 +117,16 @@ class WalletsListViewController<
 
             view.bind(title: title, icon: icon)
             return view
+        case .genericLedger:
+            // TODO: Fix Generic Ledger style
+            let view = dequeueCommonHeader(from: tableView)
+            let icon = R.image.iconLedgerHeader()
+            let title = R.string.localizable.commonLedger(
+                preferredLanguages: selectedLocale.rLanguages
+            ).uppercased()
+
+            view.bind(title: title, icon: icon)
+            return view
         }
     }
 
@@ -132,7 +142,7 @@ class WalletsListViewController<
         switch section.type {
         case .secrets:
             return 0.0
-        case .watchOnly, .paritySigner, .polkadotVault, .ledger, .proxied:
+        case .watchOnly, .paritySigner, .polkadotVault, .ledger, .proxied, .genericLedger:
             return 46.0
         }
     }

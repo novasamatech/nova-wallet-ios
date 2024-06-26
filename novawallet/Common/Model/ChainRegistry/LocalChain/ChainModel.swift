@@ -266,6 +266,10 @@ struct ChainModel: Equatable, Hashable {
     var identityChain: ChainModel.Id? {
         additional?.identityChain?.stringValue
     }
+
+    var supportsGenericLedgerApp: Bool {
+        additional?.supportsGenericLedgerApp?.boolValue ?? false
+    }
 }
 
 extension ChainModel: Identifiable {

@@ -21,9 +21,13 @@ struct LedgerDiscoverViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = LedgerDiscoverAccountAddWireframe(wallet: wallet, application: ledgerApplication)
+        let wireframe = LedgerDiscoverAccountAddWireframe(
+            wallet: wallet,
+            application: ledgerApplication,
+            chain: chain
+        )
 
-        return createView(interactor: interactor, wireframe: wireframe, chain: chain)
+        return createView(interactor: interactor, wireframe: wireframe, appName: chain.name)
     }
 
     static func createNewPairingView(
@@ -47,19 +51,37 @@ struct LedgerDiscoverViewFactory {
 
         let wireframe = LedgerDiscoverWalletCreateWireframe(
             accountsStore: accountsStore,
-            application: ledgerApplication
+            application: ledgerApplication,
+            chain: chain
         )
 
-        return createView(interactor: interactor, wireframe: wireframe, chain: chain)
+        return createView(interactor: interactor, wireframe: wireframe, appName: chain.name)
+    }
+
+    static func createGenericLedgerView() -> ControllerBackedProtocol? {
+        let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
+
+        let ledgerApplication = GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
+
+        let interactor = GenericLedgerDiscoverInteractor(
+            ledgerApplication: ledgerApplication,
+            ledgerConnection: ledgerConnection,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
+        let wireframe = GenericLedgerDiscoverWireframe()
+
+        return createView(interactor: interactor, wireframe: wireframe, appName: ledgerApplication.displayName)
     }
 
     private static func createView(
-        interactor: LedgerDiscoverInteractor,
+        interactor: LedgerPerformOperationInteractor,
         wireframe: LedgerDiscoverWireframeProtocol,
-        chain: ChainModel
+        appName: String
     ) -> ControllerBackedProtocol? {
         let presenter = LedgerDiscoverPresenter(
-            chain: chain,
+            appName: appName,
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared

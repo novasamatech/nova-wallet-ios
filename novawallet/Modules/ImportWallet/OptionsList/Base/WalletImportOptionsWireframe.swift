@@ -23,7 +23,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
             return
         }
 
-        let hwWalletOptions: [HardwareWalletOptions] = [.polkadotVault, .ledger, .paritySigner]
+        let hwWalletOptions: [HardwareWalletOptions] = [.polkadotVault, .genericLedger, .ledger, .paritySigner]
 
         let viewModels: [LocalizableResource<ActionManageViewModel>] = hwWalletOptions.map { option in
             switch option {
@@ -47,7 +47,15 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                 return LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconLedgerAction(),
-                        title: R.string.localizable.commonLedgerNanoX(preferredLanguages: locale.rLanguages),
+                        title: R.string.localizable.commonLedgerLegacy(preferredLanguages: locale.rLanguages),
+                        details: nil
+                    )
+                }
+            case .genericLedger:
+                return LocalizableResource { locale in
+                    ActionManageViewModel(
+                        icon: R.image.iconLedgerAction(),
+                        title: R.string.localizable.commonLedgerGeneric(preferredLanguages: locale.rLanguages),
                         details: nil
                     )
                 }
@@ -71,7 +79,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
         fatalError("Must be overriden in subclass")
     }
 
-    func showLedgerWalletCreation(from _: ControllerBackedProtocol?) {
+    func showLedgerWalletCreation(from _: ControllerBackedProtocol?, appType _: LedgerAppType) {
         fatalError("Must be overriden in subclass")
     }
 
@@ -94,7 +102,9 @@ extension WalletImportOptionsWireframe: ModalPickerViewControllerDelegate {
         case .polkadotVault:
             showParitySignerWalletCreation(from: view, type: .vault)
         case .ledger:
-            showLedgerWalletCreation(from: view)
+            showLedgerWalletCreation(from: view, appType: .legacy)
+        case .genericLedger:
+            showLedgerWalletCreation(from: view, appType: .generic)
         }
     }
 }

@@ -247,7 +247,7 @@ final class CloudBackupSecretsExporter {
         switch wallet.type {
         case .secrets:
             return try createPrivateInfoFromSecretsWalletType(wallet)
-        case .ledger:
+        case .ledger, .genericLedger:
             return try createPrivateInfoFromLedgerWalletType(wallet)
         case .watchOnly, .polkadotVault, .paritySigner:
             return nil

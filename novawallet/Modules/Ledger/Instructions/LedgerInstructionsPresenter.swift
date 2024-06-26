@@ -26,6 +26,6 @@ extension LedgerInstructionsPresenter: LedgerInstructionsPresenterProtocol {
     }
 
     func proceed() {
-        wireframe.showNetworkSelection(from: view)
+        wireframe.showOnContinue(from: view)
     }
 }

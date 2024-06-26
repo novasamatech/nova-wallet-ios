@@ -142,6 +142,17 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             let icon = R.image.iconProxiedWallet()
 
             rootView.headerView.bindHint(text: text, icon: icon)
+        case .genericLedger:
+            // TODO: Fix Generic Ledger style
+            rootView.headerView.showsHintView = true
+
+            let text = R.string.localizable.ledgerDetailsHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            let icon = R.image.iconLedger()
+
+            rootView.headerView.bindHint(text: text, icon: icon)
         }
 
         rootView.updateHeaderLayout()
