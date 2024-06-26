@@ -4,7 +4,7 @@ import SubstrateSdk
 enum ExtrinsicSigningContext {
     struct Substrate {
         let senderResolution: ExtrinsicSenderResolution
-        let calls: [JSON]
+        let extrinsicMemo: ExtrinsicBuilderMemoProtocol
     }
 
     case substrateExtrinsic(Substrate)

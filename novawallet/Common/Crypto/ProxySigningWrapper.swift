@@ -58,7 +58,7 @@ final class ProxySigningWrapper {
         _ originalData: Data,
         proxiedId: MetaAccountModel.Id,
         proxy: ExtrinsicSenderResolution.ResolvedProxy,
-        calls: [JSON]
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol
     ) throws -> IRSignatureProtocol {
         if proxy.failures.isEmpty, proxy.proxyAccount != nil {
             return try signWithUiFlow { completionClosure in
@@ -66,7 +66,7 @@ final class ProxySigningWrapper {
                     for: originalData,
                     proxiedId: proxiedId,
                     resolution: proxy,
-                    calls: calls,
+                    extrinsicMemo: extrinsicMemo,
                     completion: completionClosure
                 )
             }
@@ -84,11 +84,11 @@ final class ProxySigningWrapper {
     private func sign(
         _ originalData: Data,
         sender: ExtrinsicSenderResolution,
-        calls: [JSON]
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol
     ) throws -> IRSignatureProtocol {
         switch sender {
         case let .proxy(resolvedProxy):
-            return try sign(originalData, proxiedId: metaId, proxy: resolvedProxy, calls: calls)
+            return try sign(originalData, proxiedId: metaId, proxy: resolvedProxy, extrinsicMemo: extrinsicMemo)
         case .current:
             throw NoKeysSigningWrapperError.watchOnly
         }
@@ -99,7 +99,11 @@ extension ProxySigningWrapper: SigningWrapperProtocol {
     func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         switch context {
         case let .substrateExtrinsic(substrate):
-            return try sign(originalData, sender: substrate.senderResolution, calls: substrate.calls)
+            return try sign(
+                originalData,
+                sender: substrate.senderResolution,
+                extrinsicMemo: substrate.extrinsicMemo
+            )
         case .evmTransaction, .rawBytes:
             throw NoSigningSupportError.notSupported(type: .proxy)
         }

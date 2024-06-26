@@ -7,6 +7,7 @@ struct LedgerTxConfirmViewFactory {
         with signingData: Data,
         metaId: String,
         chainId: ChainModel.Id,
+        ledgerType: LedgerAppType,
         completion: @escaping TransactionSigningClosure
     ) -> ControllerBackedProtocol? {
         let walletRepository = AccountRepositoryFactory(

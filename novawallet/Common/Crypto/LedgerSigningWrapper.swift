@@ -12,15 +12,18 @@ final class LedgerSigningWrapper {
     let uiPresenter: TransactionSigningPresenting
     let metaId: String
     let chainId: ChainModel.Id
+    let ledgerType: LedgerAppType
 
     init(
         uiPresenter: TransactionSigningPresenting,
         metaId: String,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        ledgerType: LedgerAppType
     ) {
         self.uiPresenter = uiPresenter
         self.metaId = metaId
         self.chainId = chainId
+        self.ledgerType = ledgerType
     }
 }
 
@@ -34,7 +37,8 @@ extension LedgerSigningWrapper: SigningWrapperProtocol {
             self.uiPresenter.presentLedgerFlow(
                 for: originalData,
                 metaId: self.metaId,
-                chainId: self.chainId
+                chainId: self.chainId,
+                ledgerType: self.ledgerType
             ) { result in
                 signingResult = result
 

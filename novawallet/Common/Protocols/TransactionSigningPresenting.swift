@@ -21,6 +21,7 @@ protocol TransactionSigningPresenting: AnyObject {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
+        ledgerType: LedgerAppType,
         completion: @escaping TransactionSigningClosure
     )
 
@@ -28,7 +29,7 @@ protocol TransactionSigningPresenting: AnyObject {
         for data: Data,
         proxiedId: MetaAccountModel.Id,
         resolution: ExtrinsicSenderResolution.ResolvedProxy,
-        calls: [JSON],
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol,
         completion: @escaping TransactionSigningClosure
     )
 
@@ -96,6 +97,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
+        ledgerType: LedgerAppType,
         completion: @escaping TransactionSigningClosure
     ) {
         guard
@@ -103,6 +105,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
                 with: data,
                 metaId: metaId,
                 chainId: chainId,
+                ledgerType: ledgerType,
                 completion: completion
             ) else {
             completion(.failure(CommonError.dataCorruption))
@@ -115,7 +118,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
     private func createProxySigningClosure(
         for data: Data,
         proxy: MetaChainAccountResponse,
-        calls: [JSON],
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol,
         completion: @escaping TransactionSigningClosure
     ) -> () -> Void {
         { [weak self] in
@@ -131,7 +134,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
             let context = ExtrinsicSigningContext.Substrate(
                 senderResolution: .current(proxy.chainAccount),
-                calls: calls
+                extrinsicMemo: extrinsicMemo
             )
             let signingWrapper = signingWrapperFactory.createSigningWrapper(
                 for: proxy.metaId,
@@ -152,7 +155,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
     private func createProxyValidationClosure(
         resolution: ExtrinsicSenderResolution.ResolvedProxy,
-        calls: [JSON]
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol
     ) -> (@escaping ProxySignValidationCompletion) -> Void {
         { [weak self] completionClosure in
             guard
@@ -161,7 +164,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
                 let presenter = ProxySignValidationViewFactory.createView(
                     from: presentationController,
                     resolvedProxy: resolution,
-                    calls: calls,
+                    calls: extrinsicMemo.restoreBuilder().getCalls(),
                     completionClosure: { result in
                         self?.flowHolder = nil
                         completionClosure(result)
@@ -181,7 +184,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         for data: Data,
         proxiedId: MetaAccountModel.Id,
         resolution: ExtrinsicSenderResolution.ResolvedProxy,
-        calls: [JSON],
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol,
         completion: @escaping TransactionSigningClosure
     ) {
         guard let proxy = resolution.proxyAccount else {
@@ -192,11 +195,11 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         let signClosure = createProxySigningClosure(
             for: data,
             proxy: proxy,
-            calls: calls,
+            extrinsicMemo: extrinsicMemo,
             completion: completion
         )
 
-        let validationClosure = createProxyValidationClosure(resolution: resolution, calls: calls)
+        let validationClosure = createProxyValidationClosure(resolution: resolution, extrinsicMemo: extrinsicMemo)
 
         let cancelClosure: () -> Void = {
             completion(.failure(ProxySigningWrapperError.canceled))

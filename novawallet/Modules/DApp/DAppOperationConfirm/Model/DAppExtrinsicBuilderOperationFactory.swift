@@ -89,7 +89,7 @@ final class DAppExtrinsicBuilderOperationFactory {
             let builder = builderResult.builder
             let context = ExtrinsicSigningContext.Substrate(
                 senderResolution: builderResult.sender,
-                calls: builder.getCalls()
+                extrinsicMemo: builder.makeMemo()
             )
 
             let signedExtrinsic = try builder.signing(
@@ -162,7 +162,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
             let context = ExtrinsicSigningContext.substrateExtrinsic(
                 .init(
                     senderResolution: builderResult.sender,
-                    calls: builder.getCalls()
+                    extrinsicMemo: builder.makeMemo()
                 )
             )
 
