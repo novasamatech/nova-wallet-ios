@@ -21,7 +21,7 @@ final class LedgerInstructionsWireframe: LedgerInstructionsWireframeProtocol {
     }
 
     func showGenericDiscovery(from view: LedgerInstructionsViewProtocol?) {
-        guard let genericAppDiscoverView = LedgerDiscoverViewFactory.createGenericLedgerView() else {
+        guard let genericAppDiscoverView = LedgerDiscoverViewFactory.createGenericLedgerView(for: flow) else {
             return
         }
 

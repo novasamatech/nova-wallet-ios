@@ -58,7 +58,7 @@ struct LedgerDiscoverViewFactory {
         return createView(interactor: interactor, wireframe: wireframe, appName: chain.name)
     }
 
-    static func createGenericLedgerView() -> ControllerBackedProtocol? {
+    static func createGenericLedgerView(for flow: WalletCreationFlow) -> ControllerBackedProtocol? {
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
         let ledgerApplication = GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
@@ -70,7 +70,7 @@ struct LedgerDiscoverViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = GenericLedgerDiscoverWireframe()
+        let wireframe = GenericLedgerDiscoverWireframe(application: ledgerApplication, flow: flow)
 
         return createView(interactor: interactor, wireframe: wireframe, appName: ledgerApplication.displayName)
     }

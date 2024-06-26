@@ -1,9 +1,26 @@
 import Foundation
 
 final class GenericLedgerDiscoverWireframe: LedgerDiscoverWireframeProtocol {
-    init() {}
+    let application: GenericLedgerSubstrateApplicationProtocol
+    let flow: WalletCreationFlow
 
-    func showAccountSelection(from _: ControllerBackedProtocol?, device _: LedgerDeviceProtocol) {
-        Logger.shared.info("Did select device")
+    init(application: GenericLedgerSubstrateApplicationProtocol, flow: WalletCreationFlow) {
+        self.application = application
+        self.flow = flow
+    }
+
+    func showAccountSelection(from view: ControllerBackedProtocol?, device: LedgerDeviceProtocol) {
+        guard let accountsView = GenericLedgerWalletViewFactory.createView(
+            for: application,
+            device: device,
+            flow: flow
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            accountsView.controller,
+            animated: true
+        )
     }
 }

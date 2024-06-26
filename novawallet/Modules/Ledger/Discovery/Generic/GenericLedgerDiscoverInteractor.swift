@@ -29,12 +29,7 @@ final class GenericLedgerDiscoverInteractor: LedgerPerformOperationInteractor {
     }
 
     override func performOperation(using deviceId: UUID) {
-        let wrapper = ledgerApplication.getAccountWrapper(
-            for: deviceId,
-            index: 0,
-            addressPrefix: SubstrateConstants.genericAddressPrefix,
-            displayVerificationDialog: false
-        )
+        let wrapper = ledgerApplication.getUniversalAccountWrapper(for: deviceId)
 
         execute(
             wrapper: wrapper,
