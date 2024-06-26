@@ -160,7 +160,7 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
             case .connected:
                 self.measureNodePing(
                     for: nodeUrl,
-                    selected: false
+                    selected: self.currentSelectedNode?.url == nodeUrl.absoluteString
                 )
             }
         }
@@ -181,34 +181,31 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
             return
         }
 
-        var nodeUrl: URL?
-
         switch state {
         case let .connected(selectedUrl):
-            nodeUrl = selectedUrl
+            updateCurrentSelectedNode(with: selectedUrl)
             measureNodePing(
                 for: selectedUrl,
                 selected: true
             )
         case let .connecting(selectedUrl), let .waitingReconnection(selectedUrl):
-            nodeUrl = selectedUrl
+            updateCurrentSelectedNode(with: selectedUrl)
             presenter?.didReceive(
                 .connecting,
                 for: selectedUrl.absoluteString,
                 selected: true
             )
         case let .notConnected(selectedUrl):
+            updateCurrentSelectedNode(with: selectedUrl)
+            
             guard let selectedUrl else { return }
 
-            nodeUrl = selectedUrl
             presenter?.didReceive(
                 .disconnected,
                 for: selectedUrl.absoluteString,
                 selected: true
             )
         }
-
-        updateCurrentSelectedNode(with: nodeUrl)
     }
 }
 
