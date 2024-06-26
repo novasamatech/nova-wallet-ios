@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {
@@ -78,8 +79,14 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
     }
 
-    func presentPushNotificationsSetup(on view: MainTabBarViewProtocol?, completion: @escaping () -> Void) {
-        guard let setupPushNotificationsView = NotificationsSetupViewFactory.createView() else {
+    func presentPushNotificationsSetup(
+        on view: MainTabBarViewProtocol?,
+        presentationCompletion: @escaping () -> Void,
+        flowCompletion: @escaping (Bool) -> Void
+    ) {
+        guard let setupPushNotificationsView = NotificationsSetupViewFactory.createView(
+            completion: flowCompletion
+        ) else {
             return
         }
 
@@ -87,8 +94,76 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         view?.controller.present(
             setupPushNotificationsView.controller,
             animated: true,
-            completion: completion
+            completion: presentationCompletion
         )
+    }
+
+    func presentCloudBackupUnsyncedChanges(
+        from view: MainTabBarViewProtocol?,
+        onReviewUpdates: @escaping () -> Void
+    ) {
+        guard
+            let tabBarController = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: tabBarController),
+            let bottomSheet = CloudBackupMessageSheetViewFactory.createUnsyncedChangesSheet(
+                completionClosure: onReviewUpdates,
+                cancelClosure: nil
+            ) else {
+            return
+        }
+
+        view?.controller.present(bottomSheet.controller, animated: true)
+    }
+
+    func presentCloudBackupUpdateFailedIfNeeded(
+        from view: MainTabBarViewProtocol?,
+        onReviewIssues: @escaping () -> Void
+    ) {
+        guard
+            let tabBarController = view?.controller as? UITabBarController,
+            canPresentScreenWithoutBreakingFlow(on: tabBarController),
+            let bottomSheet = CloudBackupMessageSheetViewFactory.createCloudBackupUpdateFailedSheet(
+                completionClosure: onReviewIssues,
+                cancelClosure: nil
+            ) else {
+            return
+        }
+
+        view?.controller.present(bottomSheet.controller, animated: true)
+    }
+
+    func presentCloudBackupSettings(from view: MainTabBarViewProtocol?) {
+        guard let tabBarController = view?.controller as? UITabBarController else {
+            return
+        }
+
+        tabBarController.selectedIndex = MainTabBarIndex.settings
+
+        let settingsNavigationController = getSettingsNavigationController(from: view)
+
+        let optBackupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
+
+        if optBackupSettings == nil {
+            settingsNavigationController?.popToRootViewController(animated: false)
+
+            guard let cloudBackupSettings = CloudBackupSettingsViewFactory.createView() else {
+                return
+            }
+
+            cloudBackupSettings.controller.hidesBottomBarWhenPushed = true
+
+            settingsNavigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
+        }
+    }
+
+    private func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {
+        guard let tabBarController = view?.controller as? UITabBarController else {
+            return nil
+        }
+
+        let settingsViewController = tabBarController.viewControllers?[MainTabBarIndex.settings]
+
+        return settingsViewController as? UINavigationController
     }
 
     private func openGovernanceScreen(

@@ -310,12 +310,12 @@ extension AssetListInteractor: EventVisitorProtocol {
         resetWallet()
     }
 
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         resetWallet()
     }
 
-    func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
-        guard let name = selectedWalletSettings.value?.name else {
+    func processWalletNameChanged(event: WalletNameChanged) {
+        guard event.isSelectedWallet, let name = selectedWalletSettings.value?.name else {
             return
         }
 

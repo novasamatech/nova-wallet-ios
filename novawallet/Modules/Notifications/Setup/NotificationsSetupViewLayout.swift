@@ -7,7 +7,7 @@ final class NotificationsSetupViewLayout: UIView {
     }
 
     let titleLabel: UILabel = .create {
-        $0.apply(style: .boldTitle2Primary)
+        $0.apply(style: .boldTitle3Primary)
         $0.textAlignment = .center
     }
 

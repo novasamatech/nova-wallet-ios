@@ -71,8 +71,8 @@ class MessageSheetViewController<
     }
 
     func setupHandlers() {
-        if viewModel.mainAction != nil {
-            rootView.setupMainActionButton()
+        if let mainAction = viewModel.mainAction {
+            rootView.setupMainActionButton(for: mainAction.actionType)
             rootView.mainActionButton?.addTarget(self, action: #selector(actionMain), for: .touchUpInside)
         }
 

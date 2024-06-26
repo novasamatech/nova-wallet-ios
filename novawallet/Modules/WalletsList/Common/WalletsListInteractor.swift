@@ -1,7 +1,7 @@
 import UIKit
 import Operation_iOS
 
-class WalletsListInteractor {
+class WalletsListInteractor: WalletsListInteractorInputProtocol {
     weak var basePresenter: WalletsListInteractorOutputProtocol?
 
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
@@ -38,9 +38,7 @@ class WalletsListInteractor {
     func applyWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         basePresenter?.didReceiveWalletsChanges(changes)
     }
-}
 
-extension WalletsListInteractor: WalletsListInteractorInputProtocol {
     func setup() {
         subscribeChains()
         subscribeWallets()

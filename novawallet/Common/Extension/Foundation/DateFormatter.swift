@@ -32,6 +32,16 @@ extension DateFormatter {
         }
     }
 
+    static var shortDateHoursMinutes: LocalizableResource<DateFormatter> {
+        LocalizableResource { locale in
+            let format = DateFormatter.dateFormat(fromTemplate: "ddMMMyyyyHHmm", options: 0, locale: locale)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = format
+            dateFormatter.locale = locale
+            return dateFormatter
+        }
+    }
+
     static var shortDateAndTime: LocalizableResource<DateFormatter> {
         LocalizableResource { locale in
             let format = DateFormatter.dateFormat(fromTemplate: "ddMMMyyyyHHmmss", options: 0, locale: locale)

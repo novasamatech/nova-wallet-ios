@@ -1,6 +1,6 @@
 import Foundation
 
-final class WalletSelectionTableViewCell: WalletsListTableViewCell<RadioSelectorView> {
+final class WalletSelectionTableViewCell: WalletsListTableViewCell<WalletView, RadioSelectorView> {
     var selectorView: RadioSelectorView { contentDisplayView.valueView }
 
     override func bind(viewModel: WalletsListViewModel) {

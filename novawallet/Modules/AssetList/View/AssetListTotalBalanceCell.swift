@@ -187,7 +187,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
             amountAttributedString.setAttributes(
                 [.foregroundColor: R.color.colorTextSecondary()!,
-                 .font: UIFont.boldTitle2],
+                 .font: UIFont.boldTitle3],
                 range: fractionPartRange
             )
 
