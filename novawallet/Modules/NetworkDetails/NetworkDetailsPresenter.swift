@@ -214,15 +214,4 @@ extension NetworkDetailsPresenter {
         case pinged(Int)
         case unknown
     }
-    
-    struct SortedNodes {
-        var custom: [ChainNodeModel] = []
-        var remote: [ChainNodeModel] = []
-    }
-    
-    enum Constants {
-        static let addNodeSectionIndex: Int = 1
-        static let remoteNodesSectionIndex: Int = 2
-        static let addNodeSectionNodeIndexOffset: Int = 1
-    }
 }
