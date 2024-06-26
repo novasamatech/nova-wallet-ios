@@ -59,13 +59,13 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
             { [] }
         )
         
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                self?.presenter?.didEditNode()
-            }
+        execute(
+            operation: saveOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] _ in
+            self?.presenter?.didEditNode()
         }
-
-        operationQueue.addOperation(saveOperation)
     }
 }
 

@@ -102,22 +102,23 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
             return
         }
         
-        let saveOperation = repository.saveOperation({ [weak self] in
-            guard let self else { return [] }
+        let saveOperation = repository.saveOperation(
+            { [weak self] in
+                guard let self else { return [] }
 
-            return [chain.removing(node: node)]
-        }, {
-            []
-        })
+                return [chain.removing(node: node)]
+            },
+            { [] }
+        )
         
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                self?.nodesConnections[node.url]?.disconnect(true)
-                self?.nodesConnections[node.url] = nil
-            }
+        execute(
+            operation: saveOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] _ in
+            self?.nodesConnections[node.url]?.disconnect(true)
+            self?.nodesConnections[node.url] = nil
         }
-
-        operationQueue.addOperation(saveOperation)
     }
 }
 
