@@ -126,6 +126,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             customExtensions: extensions,
             engine: engine,
             senderResolvingFactory: senderResolvingFactory,
+            blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: operationManager
         )
     }

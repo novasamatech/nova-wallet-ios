@@ -144,7 +144,7 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
             message = R.string.localizable.networkNodeAddAlertNodeErrorMessageWss(
                 preferredLanguages: selectedLocale.rLanguages
             )
-        case let .unableToConnect(networkName):
+        case let .unableToConnect(networkName), let .wrongNetwork(networkName):
             title = R.string.localizable.networkNodeAddAlertWrongNetworkTitle(
                 preferredLanguages: selectedLocale.rLanguages
             )

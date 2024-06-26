@@ -14,6 +14,7 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
         nodeToEdit: ChainNodeModel,
         chainRegistry: any ChainRegistryProtocol,
         connectionFactory: any ConnectionFactoryProtocol,
+        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         chainId: ChainModel.Id,
         repository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue
@@ -23,6 +24,7 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
         super.init(
             chainRegistry: chainRegistry,
             connectionFactory: connectionFactory,
+            blockHashOperationFactory: blockHashOperationFactory,
             chainId: chainId,
             repository: repository,
             operationQueue: operationQueue

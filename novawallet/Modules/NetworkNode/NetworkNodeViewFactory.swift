@@ -20,7 +20,8 @@ struct NetworkNodeViewFactory {
         
         let interactor = NetworkNodeAddInteractor(
             chainRegistry: chainRegistry,
-            connectionFactory: connectionFactory,
+            connectionFactory: connectionFactory, 
+            blockHashOperationFactory: BlockHashOperationFactory(),
             chainId: chainId,
             repository: repository,
             operationQueue: operationQueue
@@ -70,7 +71,8 @@ struct NetworkNodeViewFactory {
         let interactor = NetworkNodeEditInteractor(
             nodeToEdit: node,
             chainRegistry: chainRegistry,
-            connectionFactory: connectionFactory,
+            connectionFactory: connectionFactory, 
+            blockHashOperationFactory: BlockHashOperationFactory(),
             chainId: chainId,
             repository: repository,
             operationQueue: operationQueue

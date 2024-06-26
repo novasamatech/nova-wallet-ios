@@ -7,6 +7,7 @@ class NetworkNodeBaseInteractor {
     
     let chainRegistry: ChainRegistryProtocol
     let connectionFactory: ConnectionFactoryProtocol
+    let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
     let operationQueue: OperationQueue
     
@@ -20,12 +21,14 @@ class NetworkNodeBaseInteractor {
     init(
         chainRegistry: any ChainRegistryProtocol,
         connectionFactory: any ConnectionFactoryProtocol,
+        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         chainId: ChainModel.Id,
         repository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.connectionFactory = connectionFactory
+        self.blockHashOperationFactory = blockHashOperationFactory
         self.chainId = chainId
         self.repository = repository
         self.operationQueue = operationQueue
@@ -43,7 +46,6 @@ class NetworkNodeBaseInteractor {
         to node: ChainNodeModel,
         chain: ChainModel
     ) {
-        
         if let existingNode = findExistingNode(with: node.url, in: chain) {
             let error = Errors.alreadyExists(nodeName: existingNode.name)
             basePresenter?.didReceive(error)
@@ -96,6 +98,7 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
         
         DispatchQueue.main.async {
             guard
+                let node = self.currentConnectingNode,
                 let chain = self.chainRegistry.getChain(for: self.chainId),
                 let connection = connection as? ChainConnection
             else {
@@ -109,7 +112,11 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
             case .waitingReconnection:
                 connection.disconnect(true)
             case .connected:
-                self.handleConnected()
+                self.handleConnected(
+                    connection: connection,
+                    chain: chain,
+                    node: node
+                )
             default:
                 break
             }
@@ -122,6 +129,7 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
 extension NetworkNodeBaseInteractor {
     enum Errors: Error {
         case alreadyExists(nodeName: String)
+        case wrongNetwork(networkName: String)
         case unableToConnect(networkName: String)
         case wrongFormat
     }
@@ -130,6 +138,94 @@ extension NetworkNodeBaseInteractor {
 // MARK: Private
 
 private extension NetworkNodeBaseInteractor {
+    func handleConnected(
+        connection: ChainConnection,
+        chain: ChainModel,
+        node: ChainNodeModel
+    ) {
+        let chainCorrespondingOperation = chain.isEthereumBased
+            ? evmChainCorrespondingOperation(
+                connection: connection,
+                node: node,
+                chain: chain
+            )
+            : substrateChainCorrespondingOperation(
+                connection: connection,
+                node: node,
+                chain: chain
+            )
+        
+        execute(
+            wrapper: chainCorrespondingOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.handleConnected()
+            case .failure:
+                self?.basePresenter?.didReceive(Errors.wrongNetwork(networkName: chain.name))
+            }
+        }
+    }
+    
+    func substrateChainCorrespondingOperation(
+        connection: JSONRPCEngine,
+        node: ChainNodeModel,
+        chain: ChainModel
+    ) -> CompoundOperationWrapper<Void> {
+        let genesisBlockOperation = blockHashOperationFactory.createBlockHashOperation(
+            connection: connection,
+            for: { 0 }
+        )
+        
+        let checkChainCorrespondingOperation = ClosureOperation<Void> {
+            let genesisHash = try genesisBlockOperation
+                .extractNoCancellableResultData()
+                .withoutHexPrefix()
+            
+            guard genesisHash == chain.chainId else {
+                throw Errors.wrongNetwork(networkName: chain.name)
+            }
+        }
+        
+        checkChainCorrespondingOperation.addDependency(genesisBlockOperation)
+        
+        return CompoundOperationWrapper(
+            targetOperation: checkChainCorrespondingOperation,
+            dependencies: [genesisBlockOperation]
+        )
+    }
+    
+    func evmChainCorrespondingOperation(
+        connection: JSONRPCEngine,
+        node: ChainNodeModel,
+        chain: ChainModel
+    ) -> CompoundOperationWrapper<Void> {
+        let chainIdOperation = EvmWebSocketOperationFactory(
+            connection: connection,
+            timeout: 10
+        ).createChainIdOperation()
+        
+        let checkChainCorrespondingOperation = ClosureOperation<Void> {
+            let actualChainId = try chainIdOperation.extractNoCancellableResultData()
+            
+            guard
+                let localChainId = Int(chain.chainId.split(by: .colon).last ?? ""),
+                actualChainId.wrappedValue == localChainId
+            else {
+                throw Errors.wrongNetwork(networkName: chain.name)
+            }
+        }
+        
+        checkChainCorrespondingOperation.addDependency(chainIdOperation)
+        
+        return CompoundOperationWrapper(
+            targetOperation: checkChainCorrespondingOperation,
+            dependencies: [chainIdOperation]
+        )
+    }
+    
     func subscribeChainChanges() {
         chainRegistry.chainsSubscribe(
             self,
