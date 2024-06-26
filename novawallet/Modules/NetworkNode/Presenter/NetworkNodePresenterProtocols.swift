@@ -7,7 +7,7 @@ protocol NetworkNodePresenterProtocol: AnyObject {
 
 protocol NetworkNodeBaseInteractorOutputProtocol: AnyObject {
     func didReceive(_ chain: ChainModel)
-    func didReceive(_ error: Error)
+    func didReceive(_ error: NetworkNodeBaseInteractorError)
 }
 
 protocol NetworkNodeAddInteractorOutputProtocol: NetworkNodeBaseInteractorOutputProtocol {

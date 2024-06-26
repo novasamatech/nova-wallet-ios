@@ -47,14 +47,13 @@ class NetworkNodeBaseInteractor {
         chain: ChainModel
     ) {
         if let existingNode = findExistingNode(with: node.url, in: chain) {
-            let error = Errors.alreadyExists(nodeName: existingNode.name)
-            basePresenter?.didReceive(error)
+            basePresenter?.didReceive(.alreadyExists(nodeName: existingNode.name))
             
             return
         }
         
         guard wssPredicate.evaluate(with: node.url) else {
-            basePresenter?.didReceive(Errors.wrongFormat)
+            basePresenter?.didReceive(.wrongFormat)
             
             return
         }
@@ -68,7 +67,7 @@ class NetworkNodeBaseInteractor {
                 delegate: self
             )
         } catch {
-            basePresenter?.didReceive(Errors.unableToConnect(networkName: chain.name))
+            basePresenter?.didReceive(.unableToConnect(networkName: chain.name))
         }
     }
     
@@ -107,7 +106,7 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
 
             switch newState {
             case .notConnected:
-                self.basePresenter?.didReceive(Errors.unableToConnect(networkName: chain.name))
+                self.basePresenter?.didReceive(.unableToConnect(networkName: chain.name))
                 self.currentConnection = nil
             case .waitingReconnection:
                 connection.disconnect(true)
@@ -121,17 +120,6 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
                 break
             }
         }
-    }
-}
-
-// MARK: Errors
-
-extension NetworkNodeBaseInteractor {
-    enum Errors: Error {
-        case alreadyExists(nodeName: String)
-        case wrongNetwork(networkName: String)
-        case unableToConnect(networkName: String)
-        case wrongFormat
     }
 }
 
@@ -164,7 +152,7 @@ private extension NetworkNodeBaseInteractor {
             case .success:
                 self?.handleConnected()
             case .failure:
-                self?.basePresenter?.didReceive(Errors.wrongNetwork(networkName: chain.name))
+                self?.basePresenter?.didReceive(.wrongNetwork(networkName: chain.name))
             }
         }
     }
@@ -185,7 +173,7 @@ private extension NetworkNodeBaseInteractor {
                 .withoutHexPrefix()
             
             guard genesisHash == chain.chainId else {
-                throw Errors.wrongNetwork(networkName: chain.name)
+                throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
             }
         }
         
@@ -214,7 +202,7 @@ private extension NetworkNodeBaseInteractor {
                 let localChainId = Int(chain.chainId.split(by: .colon).last ?? ""),
                 actualChainId.wrappedValue == localChainId
             else {
-                throw Errors.wrongNetwork(networkName: chain.name)
+                throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
             }
         }
         
@@ -244,4 +232,13 @@ private extension NetworkNodeBaseInteractor {
             basePresenter?.didReceive(changedChain)
         }
     }
+}
+
+// MARK: Errors
+
+enum NetworkNodeBaseInteractorError: Error {
+    case alreadyExists(nodeName: String)
+    case wrongNetwork(networkName: String)
+    case unableToConnect(networkName: String)
+    case wrongFormat
 }

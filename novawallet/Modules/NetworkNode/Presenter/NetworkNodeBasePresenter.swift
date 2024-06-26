@@ -116,11 +116,7 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
         provideViewModel(with: chain)
     }
     
-    func didReceive(_ error: Error) {
-        guard let error = error as? NetworkNodeBaseInteractor.Errors else {
-            return
-        }
-                
+    func didReceive(_ error: NetworkNodeBaseInteractorError) {
         var title: String?
         var message: String?
         
