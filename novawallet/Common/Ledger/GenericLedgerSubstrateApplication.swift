@@ -2,6 +2,8 @@ import Foundation
 import Operation_iOS
 
 protocol GenericLedgerSubstrateApplicationProtocol {
+    var connectionManager: LedgerConnectionManagerProtocol { get }
+    
     func getAccountWrapper(
         for deviceId: UUID,
         index: UInt32,
