@@ -109,7 +109,7 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         switch connectionState {
         case .connecting, .disconnected, .pinged, .unknown:
             provideNodeViewModel(for: nodeURL)
-        default:
+        case .connected:
             break
         }
     }
