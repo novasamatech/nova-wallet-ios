@@ -29,8 +29,13 @@ class NetworkNodeAddInteractor: NetworkNodeBaseInteractor {
             operation: saveOperation,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
-        ) { [weak self] _ in
-            self?.presenter?.didAddNode()
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.didAddNode()
+            case .failure:
+                self?.presenter?.didReceive(.common(error: .dataCorruption))
+            }
         }
     }
 }

@@ -63,8 +63,13 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
             operation: saveOperation,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
-        ) { [weak self] _ in
-            self?.presenter?.didEditNode()
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.didEditNode()
+            case .failure:
+                self?.presenter?.didReceive(.common(error: .dataCorruption))
+            }
         }
     }
 }

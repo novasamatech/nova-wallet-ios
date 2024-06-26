@@ -60,7 +60,7 @@ extension NetworkDetailsViewLayout {
             case unknown(String)
         }
 
-        let indexPath: IndexPath
+        let id: UUID
         let name: String
         let url: String
         let connectionState: ConnectionState
@@ -68,7 +68,7 @@ extension NetworkDetailsViewLayout {
         let dimmed: Bool
         let custom: Bool
         
-        let onTapMore: ((IndexPath) -> Void)?
+        let onTapMore: ((UUID) -> Void)?
     }
 
     enum Row {

@@ -6,7 +6,6 @@ import Operation_iOS
 final class NetworkDetailsInteractor {
     weak var presenter: NetworkDetailsInteractorOutputProtocol?
 
-    private var chain: ChainModel
     private let connectionFactory: ConnectionFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let repository: AnyDataProviderRepository<ChainModel>
@@ -17,6 +16,8 @@ final class NetworkDetailsInteractor {
     private var nodesConnections: [String: ChainConnection] = [:]
 
     private var currentSelectedNode: ChainNodeModel?
+    
+    private var chain: ChainModel
 
     init(
         chain: ChainModel,
@@ -54,47 +55,50 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     }
 
     func setSetNetworkConnection(enabled: Bool) {
-        let saveOperation = repository.saveOperation({ [weak self] in
-            guard let self else { return [] }
+        let saveOperation = repository.saveOperation(
+            { [weak self] in
+                guard let self else { return [] }
 
-            let updatedChain = enabled
-                ? chain.updatingSyncMode(for: .full)
-                : chain.updatingSyncMode(for: .disabled)
+                let updatedChain = enabled
+                    ? chain.updatingSyncMode(for: .full)
+                    : chain.updatingSyncMode(for: .disabled)
 
-            return [updatedChain]
-        }, {
-            []
-        })
+                return [updatedChain]
+            }, 
+            { [] }
+        )
 
-        operationQueue.addOperation(saveOperation)
+        executeSaveWithErrorHandling(saveOperation)
     }
 
     func setAutoBalance(enabled: Bool) {
-        let saveOperation = repository.saveOperation({ [weak self] in
-            guard let self else { return [] }
+        let saveOperation = repository.saveOperation(
+            { [weak self] in
+                guard let self else { return [] }
 
-            guard let currentSelectedNode, !enabled else {
-                return [chain.updatingConnectionMode(for: .autoBalanced)]
-            }
+                guard let currentSelectedNode, !enabled else {
+                    return [chain.updatingConnectionMode(for: .autoBalanced)]
+                }
 
-            return [chain.updatingConnectionMode(for: .manual(currentSelectedNode))]
-        }, {
-            []
-        })
-
-        operationQueue.addOperation(saveOperation)
+                return [chain.updatingConnectionMode(for: .manual(currentSelectedNode))]
+            }, 
+            { [] }
+        )
+        
+        executeSaveWithErrorHandling(saveOperation)
     }
 
     func selectNode(_ node: ChainNodeModel) {
-        let saveOperation = repository.saveOperation({ [weak self] in
-            guard let self else { return [] }
+        let saveOperation = repository.saveOperation(
+            { [weak self] in
+                guard let self else { return [] }
 
-            return [chain.updatingConnectionMode(for: .manual(node))]
-        }, {
-            []
-        })
-
-        operationQueue.addOperation(saveOperation)
+                return [chain.updatingConnectionMode(for: .manual(node))]
+            },
+            { [] }
+        )
+        
+        executeSaveWithErrorHandling(saveOperation)
     }
     
     func deleteNode(_ node: ChainNodeModel) {
@@ -111,14 +115,13 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
             { [] }
         )
         
-        execute(
-            operation: saveOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] _ in
-            self?.nodesConnections[node.url]?.disconnect(true)
-            self?.nodesConnections[node.url] = nil
-        }
+        executeSaveWithErrorHandling(
+            saveOperation,
+            onSuccess: { [weak self] in
+                self?.nodesConnections[node.url]?.disconnect(true)
+                self?.nodesConnections[node.url] = nil
+            }
+        )
     }
 }
 
@@ -365,6 +368,24 @@ private extension NetworkDetailsInteractor {
 
     func filtered(_ nodes: Set<ChainNodeModel>) -> Set<ChainNodeModel> {
         nodes.filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
+    }
+    
+    func executeSaveWithErrorHandling(
+        _ operation: BaseOperation<Void>,
+        onSuccess: (() -> Void)? = nil
+    ) {
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                onSuccess?()
+            case .failure:
+                self?.presenter?.didReceive(CommonError.dataCorruption)
+            }
+        }
     }
 }
 

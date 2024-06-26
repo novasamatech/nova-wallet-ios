@@ -19,29 +19,29 @@ class NetworkDetailsViewModelFactory {
 
     func createViewModel(
         for chain: ChainModel,
-        nodes: NetworkDetailsPresenter.SortedNodes,
+        nodes: [ChainNodeModel],
         selectedNode: ChainNodeModel?,
-        nodesIndexes: [String: IndexPath],
+        nodesIds: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
-        onTapMore: @escaping (IndexPath) -> Void
+        onTapMore: @escaping (UUID) -> Void
     ) -> Details {
         Details(
             networkViewModel: networkViewModelFactory.createViewModel(from: chain),
             sections: [
                 createSwitchesSection(for: chain),
                 createAddNodeSection(
-                    with: nodes.custom,
+                    with: nodes.filter { $0.source == .user },
                     selectedNode: selectedNode,
                     chain: chain,
-                    nodesIndexes: nodesIndexes,
+                    nodesIds: nodesIds,
                     connectionStates: connectionStates,
                     onTapMore: onTapMore
                 ),
                 createNodesSection(
-                    with: nodes.remote,
+                    with: nodes.filter { $0.source == .remote },
                     selectedNode: selectedNode,
                     chain: chain,
-                    nodesIndexes: nodesIndexes,
+                    nodesIds: nodesIds,
                     connectionStates: connectionStates
                 )
             ]
@@ -52,7 +52,7 @@ class NetworkDetailsViewModelFactory {
         with nodes: [ChainNodeModel],
         selectedNode: ChainNodeModel?,
         chain: ChainModel,
-        nodesIndexes: [String: IndexPath],
+        nodesIds: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState]
     ) -> Section {
         Section(
@@ -63,7 +63,7 @@ class NetworkDetailsViewModelFactory {
                 for: nodes,
                 chain: chain,
                 selectedNode: selectedNode,
-                indexes: nodesIndexes,
+                ids: nodesIds,
                 connectionStates: connectionStates,
                 onTapMore: nil
             )
@@ -74,9 +74,9 @@ class NetworkDetailsViewModelFactory {
         with nodes: [ChainNodeModel],
         selectedNode: ChainNodeModel?,
         chain: ChainModel,
-        nodesIndexes: [String: IndexPath],
+        nodesIds: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
-        onTapMore: @escaping (IndexPath) -> Void
+        onTapMore: @escaping (UUID) -> Void
     ) -> Section {
         var rows: [NetworkDetailsViewLayout.Row] = [
             .addCustomNode(
@@ -93,7 +93,7 @@ class NetworkDetailsViewModelFactory {
             for: nodes,
             chain: chain,
             selectedNode: selectedNode,
-            indexes: nodesIndexes,
+            ids: nodesIds,
             connectionStates: connectionStates,
             onTapMore: onTapMore
         )
@@ -148,9 +148,9 @@ private extension NetworkDetailsViewModelFactory {
         for nodes: [ChainNodeModel],
         chain: ChainModel,
         selectedNode: ChainNodeModel?,
-        indexes: [String: IndexPath],
+        ids: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
-        onTapMore: ((IndexPath) -> Void)?
+        onTapMore: ((UUID) -> Void)?
     ) -> [NetworkDetailsViewLayout.Row] {
         nodes.map {
             let selected = $0.url == selectedNode?.url
@@ -160,7 +160,7 @@ private extension NetworkDetailsViewModelFactory {
                     for: $0,
                     selected: chain.syncMode.enabled() ? selected : false,
                     chain: chain,
-                    indexes: indexes,
+                    ids: ids,
                     connectionStates: connectionStates,
                     onTapMore: onTapMore
                 )
@@ -172,9 +172,9 @@ private extension NetworkDetailsViewModelFactory {
         for node: ChainNodeModel,
         selected: Bool,
         chain: ChainModel,
-        indexes: [String: IndexPath],
+        ids: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
-        onTapMore: ((IndexPath) -> Void)?
+        onTapMore: ((UUID) -> Void)?
     ) -> Node {
         var connectionState: Node.ConnectionState = chain.syncMode.enabled()
             ? .connecting(
@@ -206,7 +206,7 @@ private extension NetworkDetailsViewModelFactory {
         }
         
         return Node(
-            indexPath: indexes[node.url]!,
+            id: ids[node.url]!,
             name: node.name,
             url: trimUrlPath(urlString: node.url),
             connectionState: connectionState,

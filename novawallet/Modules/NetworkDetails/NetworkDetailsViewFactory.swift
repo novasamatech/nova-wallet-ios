@@ -53,7 +53,8 @@ struct NetworkDetailsViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory, 
+            localizationManager: LocalizationManager.shared
         )
 
         let view = NetworkDetailsViewController(presenter: presenter)

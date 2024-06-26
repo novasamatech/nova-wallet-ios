@@ -41,6 +41,7 @@ final class ConnectionFactory {
 
 enum ConnectionFactoryError: Error {
     case noNodes
+    case invalidNode
 }
 
 extension ConnectionFactory: ConnectionFactoryProtocol {
@@ -68,7 +69,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection {
         guard let urlModel = nodeUrl(from: node) else {
-            throw CommonError.undefined
+            throw ConnectionFactoryError.invalidNode
         }
 
         return try createConnection(

@@ -166,7 +166,7 @@ private extension NetworkNodeBaseInteractor {
             connection: connection,
             for: { 0 }
         )
-        
+    
         let checkChainCorrespondingOperation = ClosureOperation<Void> {
             let genesisHash = try genesisBlockOperation
                 .extractNoCancellableResultData()
@@ -198,10 +198,7 @@ private extension NetworkNodeBaseInteractor {
         let checkChainCorrespondingOperation = ClosureOperation<Void> {
             let actualChainId = try chainIdOperation.extractNoCancellableResultData()
             
-            guard
-                let localChainId = Int(chain.chainId.split(by: .colon).last ?? ""),
-                actualChainId.wrappedValue == localChainId
-            else {
+            guard actualChainId.wrappedValue == chain.addressPrefix else {
                 throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
             }
         }
@@ -241,4 +238,6 @@ enum NetworkNodeBaseInteractorError: Error {
     case wrongNetwork(networkName: String)
     case unableToConnect(networkName: String)
     case wrongFormat
+    
+    case common(error: CommonError)
 }

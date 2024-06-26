@@ -6,10 +6,10 @@ final class NetworkDetailsPresenter {
     let interactor: NetworkDetailsInteractorInputProtocol
 
     private var chain: ChainModel
-    private var sortedNodes = SortedNodes()
+    private var sortedNodes: [ChainNodeModel] = []
     private var connectionStates: [String: ConnectionState] = [:]
-    private var nodes: [String: ChainNodeModel] = [:]
-    private var nodesIndexes: [String: IndexPath] = [:]
+    private var nodesIds: [String: UUID] = [:]
+    private var nodes: [UUID: ChainNodeModel] = [:]
     private var selectedNode: ChainNodeModel?
 
     private let viewModelFactory: NetworkDetailsViewModelFactory
@@ -18,12 +18,14 @@ final class NetworkDetailsPresenter {
         interactor: NetworkDetailsInteractorInputProtocol,
         wireframe: NetworkDetailsWireframeProtocol,
         chain: ChainModel,
-        viewModelFactory: NetworkDetailsViewModelFactory
+        viewModelFactory: NetworkDetailsViewModelFactory,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
         self.viewModelFactory = viewModelFactory
+        self.localizationManager = localizationManager
     }
 }
 
@@ -49,12 +51,9 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
         )
     }
 
-    func selectNode(at indexPath: IndexPath) {
-        let node: ChainNodeModel = switch indexPath.section {
-        case Constants.addNodeSectionIndex:
-            sortedNodes.custom[indexPath.row - Constants.addNodeSectionNodeIndexOffset]
-        default:
-            sortedNodes.remote[indexPath.row]
+    func selectNode(with id: UUID) {
+        guard let node = nodes[id] else {
+            return
         }
         
         interactor.selectNode(node)
@@ -70,24 +69,15 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
     ) {
         self.chain = chain
 
-        sortedNodes = filteredNodes
-            .sorted { $0.order < $1.order }
-            .reduce(into: SortedNodes()) { acc, node  in
-                switch node.source {
-                case .remote:
-                    acc.remote.append(node)
-                case .user:
-                    acc.custom.append(node)
-                }
-            }
+        sortedNodes = filteredNodes.sorted { $0.order < $1.order }
 
-        if filteredNodes.count == 1, let selectedNode = filteredNodes.first {
+        if sortedNodes.count == 1, let selectedNode = sortedNodes.first {
             self.selectedNode = selectedNode
         } else if case let .manual(selectedNode) = chain.connectionMode {
             self.selectedNode = selectedNode
         }
 
-        indexNodes()
+        indexNodes(sortedNodes)
         provideViewModel()
     }
 
@@ -96,10 +86,16 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         for nodeURL: String,
         selected: Bool
     ) {
-        guard connectionState != connectionStates[nodeURL] else { return }
-
+        guard
+            connectionState != connectionStates[nodeURL],
+            let nodeId = nodesIds[nodeURL],
+            let node = nodes[nodeId]
+        else {
+            return
+        }
+        
         if selected {
-            selectedNode = nodes[nodeURL]
+            selectedNode = node
         } else if selectedNode?.url == nodeURL {
             selectedNode = nil
         }
@@ -108,10 +104,18 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
 
         switch connectionState {
         case .connecting, .disconnected, .pinged, .unknown:
-            provideNodeViewModel(for: nodeURL)
+            provideNodeViewModel(for: node)
         case .connected:
             break
         }
+    }
+    
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
+        )
     }
 }
 
@@ -123,37 +127,30 @@ private extension NetworkDetailsPresenter {
             for: chain,
             nodes: sortedNodes,
             selectedNode: selectedNode,
-            nodesIndexes: nodesIndexes,
+            nodesIds: nodesIds,
             connectionStates: connectionStates,
-            onTapMore: editNode(at:)
+            onTapMore: editNode(with:)
         )
         view?.update(with: viewModel)
     }
 
-    func provideNodeViewModel(for url: String) {
-        guard
-            let node = nodes[url],
-            nodesIndexes[url] != nil
-        else {
-            return
-        }
-        
+    func provideNodeViewModel(for node: ChainNodeModel) {
         let viewModel = switch node.source {
         case .user:
             viewModelFactory.createAddNodeSection(
                 with: [node],
                 selectedNode: selectedNode,
                 chain: chain,
-                nodesIndexes: nodesIndexes,
+                nodesIds: nodesIds,
                 connectionStates: connectionStates,
-                onTapMore: editNode(at:)
+                onTapMore: editNode(with:)
             )
         case .remote:
             viewModelFactory.createNodesSection(
                 with: [node],
                 selectedNode: selectedNode,
                 chain: chain,
-                nodesIndexes: nodesIndexes,
+                nodesIds: nodesIds,
                 connectionStates: connectionStates
             )
         }
@@ -161,33 +158,22 @@ private extension NetworkDetailsPresenter {
         view?.updateNodes(with: viewModel)
     }
 
-    func indexNodes() {
-        nodesIndexes = [:]
+    func indexNodes(_ sortedNodes: [ChainNodeModel]) {
         nodes = [:]
         
-        sortedNodes.custom
-            .enumerated()
-            .forEach { index, node in
-                nodes[node.url] = node
-                nodesIndexes[node.url] = IndexPath(
-                    row: index + Constants.addNodeSectionNodeIndexOffset,
-                    section: Constants.addNodeSectionIndex
-                )
+        sortedNodes.forEach { node in
+            if nodesIds[node.url] == nil {
+                nodesIds[node.url] = UUID()
             }
-        
-        sortedNodes.remote
-            .enumerated()
-            .forEach { index, node in
-                nodes[node.url] = node
-                nodesIndexes[node.url] = IndexPath(
-                    row: index,
-                    section: Constants.remoteNodesSectionIndex
-                )
-            }
+            
+            let id = nodesIds[node.url]!
+            
+            nodes[id] = node
+        }
     }
     
-    func editNode(at indexPath: IndexPath) {
-        let node = sortedNodes.custom[indexPath.row - Constants.addNodeSectionNodeIndexOffset]
+    func editNode(with id: UUID) {
+        guard let node = nodes[id] else { return }
         
         wireframe.showManageNode(
             from: view,
@@ -205,6 +191,18 @@ private extension NetworkDetailsPresenter {
                 self?.interactor.deleteNode(node)
             }
         )
+    }
+}
+
+// MARK: Localizable
+
+extension NetworkDetailsPresenter: Localizable {
+    func applyLocalization() {
+        guard let view, view.isSetup else {
+            return
+        }
+        
+        provideViewModel()
     }
 }
 

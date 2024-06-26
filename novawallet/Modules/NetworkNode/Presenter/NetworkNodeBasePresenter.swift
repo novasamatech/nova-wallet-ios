@@ -149,6 +149,14 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
                 networkName,
                 preferredLanguages: selectedLocale.rLanguages
             )
+        case let .common(error):
+            wireframe.present(
+                error: error,
+                from: view,
+                locale: selectedLocale
+            )
+            
+            return
         }
         
         provideButtonViewModel(loading: false)
