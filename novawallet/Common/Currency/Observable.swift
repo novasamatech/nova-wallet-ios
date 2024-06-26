@@ -96,7 +96,10 @@ extension Observable where TState: Equatable {
         addObserver(with: owner, queue: queue, closure: closure)
 
         if sendStateOnSubscription {
-            closure(state, state)
+            let currentState = state
+            dispatchInQueueWhenPossible(queue) {
+                closure(currentState, currentState)
+            }
         }
     }
 }

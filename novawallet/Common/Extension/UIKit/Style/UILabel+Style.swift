@@ -76,6 +76,11 @@ extension UILabel.Style {
         font: .semiBoldFootnote
     )
 
+    static let semiboldFootnoteAccentText = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .semiBoldFootnote
+    )
+
     static let semiboldCalloutPositive = UILabel.Style(
         textColor: R.color.colorTextPositive(),
         font: .semiBoldCallout
@@ -101,11 +106,6 @@ extension UILabel.Style {
         font: .caption1
     )
 
-    static let caption1Tertiary = UILabel.Style(
-        textColor: R.color.colorTextTertiary(),
-        font: .caption1
-    )
-
     static let caption1Positive = UILabel.Style(
         textColor: R.color.colorTextPositive(),
         font: .caption1
@@ -119,6 +119,11 @@ extension UILabel.Style {
     static let caption2Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .caption2
+    )
+
+    static let semiboldCaps1ChipText = UILabel.Style(
+        textColor: R.color.colorChipText(),
+        font: .semiBoldCaps1
     )
 
     static let semiboldCaps2Secondary = UILabel.Style(
@@ -148,7 +153,7 @@ extension UILabel.Style {
 
     static let secondaryScreenTitle = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
-        font: .boldTitle2
+        font: .boldTitle3
     )
 
     static let bottomSheetTitle = UILabel.Style(
@@ -169,6 +174,16 @@ extension UILabel.Style {
     static let boldTitle2Primary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .boldTitle2
+    )
+
+    static let boldTitle3Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle3
+    )
+
+    static let boldTitle3Warning = UILabel.Style(
+        textColor: R.color.colorTextWarning()!,
+        font: .boldTitle3
     )
 
     static let sourceCodePrimary = UILabel.Style(

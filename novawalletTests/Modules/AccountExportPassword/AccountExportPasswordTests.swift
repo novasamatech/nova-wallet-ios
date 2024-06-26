@@ -59,7 +59,7 @@ class AccountExportPasswordTests: XCTestCase {
         let expectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).showJSONExport(any(), from: any()).then { _ in
+            when(stub).share(source: any(), from: any(), with: any()).then { _ in
                 expectation.fulfill()
             }
         }

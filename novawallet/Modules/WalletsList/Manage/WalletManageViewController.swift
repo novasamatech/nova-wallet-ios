@@ -3,7 +3,7 @@ import SoraFoundation
 
 final class WalletManageViewController: WalletsListViewController<
     WalletManageViewLayout,
-    WalletManageTableViewCell
+    WalletManageTableViewCell<WalletView>
 > {
     var presenter: WalletManagePresenterProtocol? { basePresenter as? WalletManagePresenterProtocol }
 
@@ -63,7 +63,7 @@ final class WalletManageViewController: WalletsListViewController<
         updateRightItem()
 
         for cell in rootView.tableView.visibleCells {
-            if let walletCell = cell as? WalletManageTableViewCell {
+            if let walletCell = cell as? WalletManageTableViewCell<WalletView> {
                 walletCell.setReordering(rootView.tableView.isEditing, animated: true)
             }
         }
@@ -74,7 +74,7 @@ final class WalletManageViewController: WalletsListViewController<
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
 
-        (cell as? WalletManageTableViewCell)?.setReordering(tableView.isEditing, animated: false)
+        (cell as? WalletManageTableViewCell<WalletView>)?.setReordering(tableView.isEditing, animated: false)
 
         return cell
     }

@@ -64,8 +64,8 @@ extension LedgerWalletConfirmInteractor: LedgerWalletConfirmInteractorInputProto
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
                     self?.settings.setup()
-                    self?.eventCenter.notify(with: SelectedAccountChanged())
-                    self?.eventCenter.notify(with: AccountsChanged(method: .manually))
+                    self?.eventCenter.notify(with: SelectedWalletSwitched())
+                    self?.eventCenter.notify(with: NewWalletCreated())
                     self?.presenter?.didCreateWallet()
                 } catch {
                     self?.presenter?.didReceive(error: error)

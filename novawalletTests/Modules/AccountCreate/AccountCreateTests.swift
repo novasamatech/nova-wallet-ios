@@ -12,29 +12,37 @@ class AccountCreateTests: XCTestCase {
         let view = MockAccountCreateViewProtocol()
         let wireframe = MockAccountCreateWireframeProtocol()
 
-        let mnemonicCreator = IRMnemonicCreator()
-        let interactor = AccountCreateInteractor(mnemonicCreator: mnemonicCreator)
+        let interactor = AccountCreateInteractor(walletRequestFactory: WalletCreationRequestFactory())
+        
+        let localizationManager = LocalizationManager.shared
+        let checkboxListViewModelFactory = CheckboxListViewModelFactory(localizationManager: localizationManager)
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
         let name = "myname"
         let presenter = AccountCreatePresenter(
+            interactor: interactor,
+            wireframe: wireframe,
             walletName: name,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager,
+            checkboxListViewModelFactory: checkboxListViewModelFactory,
+            mnemonicViewModelFactory: mnemonicViewModelFactory
         )
         presenter.view = view
-        presenter.wireframe = wireframe
-        presenter.interactor = interactor
         interactor.presenter = presenter
 
-        let setupExpectation = XCTestExpectation()
+        let setupCheckboxesExpectation = XCTestExpectation()
+        let setupMnemonicExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).isSetup.get.thenReturn(false, true)
 
-            when(stub).set(mnemonic: any()).then { _ in
-                setupExpectation.fulfill()
+            when(stub).update(with: any()).then { _ in
+                setupMnemonicExpectation.fulfill()
             }
-
-            when(stub).displayMnemonic().thenDoNothing()
+            
+            when(stub).update(using: any()).then { _ in
+                setupCheckboxesExpectation.fulfill()
+            }
         }
 
         let expectation = XCTestExpectation()
@@ -51,10 +59,18 @@ class AccountCreateTests: XCTestCase {
         // when
 
         presenter.setup()
+        
+        interactor.provideMnemonic()
 
-        wait(for: [setupExpectation], timeout: Constants.defaultExpectationDuration)
+        wait(
+            for: [
+                setupMnemonicExpectation,
+                setupCheckboxesExpectation
+            ],
+            timeout: Constants.defaultExpectationDuration
+        )
 
-        presenter.proceed()
+        presenter.continueTapped()
 
         // then
 
