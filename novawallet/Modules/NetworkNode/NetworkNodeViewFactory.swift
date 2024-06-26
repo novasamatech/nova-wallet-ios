@@ -8,7 +8,7 @@ struct NetworkNodeViewFactory {
             operationQueue: OperationManagerFacade.assetsSyncQueue
         )
 
-        let chainRegistry = ChainRegistryFactory.createDefaultRegistry()
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
         
@@ -58,7 +58,7 @@ struct NetworkNodeViewFactory {
             operationQueue: OperationManagerFacade.assetsSyncQueue
         )
 
-        let chainRegistry = ChainRegistryFactory.createDefaultRegistry()
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
         
