@@ -3,21 +3,20 @@ import Operation_iOS
 
 typealias LedgerPayloadClosure = () throws -> Data
 
+enum LedgerCryptoScheme: UInt8 {
+    case ed25519 = 0x00
+    case sr25519 = 0x01
+}
+
 enum LedgerConstants {
     static let chunkSize = 250
+    static let defaultCryptoScheme: LedgerCryptoScheme = .ed25519
 }
 
 class SubstrateLedgerCommonApplication {
-    static let defaultCryptoScheme: CryptoScheme = .ed25519
-
     enum Instruction: UInt8 {
         case getAddress = 0x01
         case sign = 0x02
-    }
-
-    enum CryptoScheme: UInt8 {
-        case ed25519 = 0x00
-        case sr25519 = 0x01
     }
 
     enum PayloadType: UInt8 {
@@ -46,7 +45,7 @@ class SubstrateLedgerCommonApplication {
         for cla: UInt8,
         payloadClosure: @escaping LedgerPayloadClosure,
         displayVerificationDialog: Bool,
-        cryptoScheme: CryptoScheme
+        cryptoScheme: LedgerCryptoScheme
     ) -> BaseOperation<Data> {
         ClosureOperation {
             let payload = try payloadClosure()
@@ -82,7 +81,7 @@ class SubstrateLedgerCommonApplication {
         derivationPath: Data,
         payloadClosure: @escaping LedgerPayloadClosure,
         displayVerificationDialog: Bool = false,
-        cryptoScheme: CryptoScheme = SubstrateLedgerCommonApplication.defaultCryptoScheme
+        cryptoScheme: LedgerCryptoScheme = LedgerConstants.defaultCryptoScheme
     ) -> CompoundOperationWrapper<LedgerAccountResponse> {
         let messageOperation = createAccountMessageOperation(
             for: cla,
@@ -116,7 +115,7 @@ class SubstrateLedgerCommonApplication {
         for deviceId: UUID,
         cla: UInt8,
         chunks: [LedgerPayloadClosure],
-        cryptoScheme: CryptoScheme = SubstrateLedgerCommonApplication.defaultCryptoScheme
+        cryptoScheme: LedgerCryptoScheme = LedgerConstants.defaultCryptoScheme
     ) -> CompoundOperationWrapper<Data> {
         let requestOperations: [LedgerSendOperation] = chunks.enumerated().map { indexedChunk in
             let type = PayloadType(chunkIndex: indexedChunk.offset, totalChunks: chunks.count)
