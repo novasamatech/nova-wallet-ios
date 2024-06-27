@@ -1,3 +1,4 @@
+"push.notification.sent.tokens.no.address.subtitle" = "Enviado %@ %@ em %@";
 "push.notification.receive.tokens.title" = "⬇️ Recebido";
 "push.notification.sent.tokens.title" = "💸 Enviado";
 "push.notification.staking.reward.title" = "✨ Nova recompensa";
@@ -25,4 +26,3 @@
 "push.notification.unsupported.body" = "Conteúdo da mensagem não suportado";
 "push.notification.sent.tokens.subtitle" = "Enviado %@ %@ para %@ em %@";
 "push.notification.receive.tokens.subtitle" = "Recebido %@ %@ em %@";
-"push.notification.sent.tokens.no.address.subtitle" = "Enviado %@ %@ em %@";

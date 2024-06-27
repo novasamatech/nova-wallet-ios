@@ -24,14 +24,19 @@ class NetworkNodeAddInteractor: NetworkNodeBaseInteractor {
             { [chain.adding(node: currentConnectingNode)] },
             { [] }
         )
-
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
+        
+        execute(
+            operation: saveOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
                 self?.presenter?.didAddNode()
+            case .failure:
+                self?.presenter?.didReceive(.common(error: .dataCorruption))
             }
         }
-
-        operationQueue.addOperation(saveOperation)
     }
 }
 
@@ -72,8 +77,7 @@ private extension NetworkNodeAddInteractor {
         
         let currentLastIndex = chain.nodes
             .map { $0.order }
-            .sorted { $0 < $1 }
-            .last
+            .max()
         
         let nodeIndex: Int16 = if let currentLastIndex {
             currentLastIndex + 1

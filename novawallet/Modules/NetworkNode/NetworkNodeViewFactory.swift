@@ -8,7 +8,7 @@ struct NetworkNodeViewFactory {
             operationQueue: OperationManagerFacade.assetsSyncQueue
         )
 
-        let chainRegistry = ChainRegistryFactory.createDefaultRegistry()
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
         
@@ -20,7 +20,8 @@ struct NetworkNodeViewFactory {
         
         let interactor = NetworkNodeAddInteractor(
             chainRegistry: chainRegistry,
-            connectionFactory: connectionFactory,
+            connectionFactory: connectionFactory, 
+            blockHashOperationFactory: BlockHashOperationFactory(),
             chainId: chainId,
             repository: repository,
             operationQueue: operationQueue
@@ -57,7 +58,7 @@ struct NetworkNodeViewFactory {
             operationQueue: OperationManagerFacade.assetsSyncQueue
         )
 
-        let chainRegistry = ChainRegistryFactory.createDefaultRegistry()
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
         
@@ -70,7 +71,8 @@ struct NetworkNodeViewFactory {
         let interactor = NetworkNodeEditInteractor(
             nodeToEdit: node,
             chainRegistry: chainRegistry,
-            connectionFactory: connectionFactory,
+            connectionFactory: connectionFactory, 
+            blockHashOperationFactory: BlockHashOperationFactory(),
             chainId: chainId,
             repository: repository,
             operationQueue: operationQueue

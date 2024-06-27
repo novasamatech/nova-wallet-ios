@@ -7,12 +7,13 @@ class NetworkNodeBaseInteractor {
     
     let chainRegistry: ChainRegistryProtocol
     let connectionFactory: ConnectionFactoryProtocol
+    let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
     let operationQueue: OperationQueue
     
     let chainId: ChainModel.Id
     
-    let wssPredicate = NSPredicate.websocket
+    let wssPredicate = NSPredicate.ws
     
     var currentConnection: ChainConnection?
     var currentConnectingNode: ChainNodeModel?
@@ -20,12 +21,14 @@ class NetworkNodeBaseInteractor {
     init(
         chainRegistry: any ChainRegistryProtocol,
         connectionFactory: any ConnectionFactoryProtocol,
+        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         chainId: ChainModel.Id,
         repository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.connectionFactory = connectionFactory
+        self.blockHashOperationFactory = blockHashOperationFactory
         self.chainId = chainId
         self.repository = repository
         self.operationQueue = operationQueue
@@ -43,16 +46,14 @@ class NetworkNodeBaseInteractor {
         to node: ChainNodeModel,
         chain: ChainModel
     ) {
-        
         if let existingNode = findExistingNode(with: node.url, in: chain) {
-            let error = Errors.alreadyExists(nodeName: existingNode.name)
-            basePresenter?.didReceive(error)
+            basePresenter?.didReceive(.alreadyExists(nodeName: existingNode.name))
             
             return
         }
         
         guard wssPredicate.evaluate(with: node.url) else {
-            basePresenter?.didReceive(Errors.wrongFormat)
+            basePresenter?.didReceive(.wrongFormat)
             
             return
         }
@@ -66,7 +67,7 @@ class NetworkNodeBaseInteractor {
                 delegate: self
             )
         } catch {
-            basePresenter?.didReceive(Errors.unableToConnect(networkName: chain.name))
+            basePresenter?.didReceive(.unableToConnect(networkName: chain.name))
         }
     }
     
@@ -96,6 +97,7 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
         
         DispatchQueue.main.async {
             guard
+                let node = self.currentConnectingNode,
                 let chain = self.chainRegistry.getChain(for: self.chainId),
                 let connection = connection as? ChainConnection
             else {
@@ -104,12 +106,16 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
 
             switch newState {
             case .notConnected:
-                self.basePresenter?.didReceive(Errors.unableToConnect(networkName: chain.name))
+                self.basePresenter?.didReceive(.unableToConnect(networkName: chain.name))
                 self.currentConnection = nil
             case .waitingReconnection:
                 connection.disconnect(true)
             case .connected:
-                self.handleConnected()
+                self.handleConnected(
+                    connection: connection,
+                    chain: chain,
+                    node: node
+                )
             default:
                 break
             }
@@ -117,19 +123,94 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
     }
 }
 
-// MARK: Errors
-
-extension NetworkNodeBaseInteractor {
-    enum Errors: Error {
-        case alreadyExists(nodeName: String)
-        case unableToConnect(networkName: String)
-        case wrongFormat
-    }
-}
-
 // MARK: Private
 
 private extension NetworkNodeBaseInteractor {
+    func handleConnected(
+        connection: ChainConnection,
+        chain: ChainModel,
+        node: ChainNodeModel
+    ) {
+        let chainCorrespondingOperation = chain.isEthereumBased
+            ? evmChainCorrespondingOperation(
+                connection: connection,
+                node: node,
+                chain: chain
+            )
+            : substrateChainCorrespondingOperation(
+                connection: connection,
+                node: node,
+                chain: chain
+            )
+        
+        execute(
+            wrapper: chainCorrespondingOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.handleConnected()
+            case .failure:
+                self?.basePresenter?.didReceive(.wrongNetwork(networkName: chain.name))
+            }
+        }
+    }
+    
+    func substrateChainCorrespondingOperation(
+        connection: JSONRPCEngine,
+        node: ChainNodeModel,
+        chain: ChainModel
+    ) -> CompoundOperationWrapper<Void> {
+        let genesisBlockOperation = blockHashOperationFactory.createBlockHashOperation(
+            connection: connection,
+            for: { 0 }
+        )
+    
+        let checkChainCorrespondingOperation = ClosureOperation<Void> {
+            let genesisHash = try genesisBlockOperation
+                .extractNoCancellableResultData()
+                .withoutHexPrefix()
+            
+            guard genesisHash == chain.chainId else {
+                throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
+            }
+        }
+        
+        checkChainCorrespondingOperation.addDependency(genesisBlockOperation)
+        
+        return CompoundOperationWrapper(
+            targetOperation: checkChainCorrespondingOperation,
+            dependencies: [genesisBlockOperation]
+        )
+    }
+    
+    func evmChainCorrespondingOperation(
+        connection: JSONRPCEngine,
+        node: ChainNodeModel,
+        chain: ChainModel
+    ) -> CompoundOperationWrapper<Void> {
+        let chainIdOperation = EvmWebSocketOperationFactory(
+            connection: connection,
+            timeout: 10
+        ).createChainIdOperation()
+        
+        let checkChainCorrespondingOperation = ClosureOperation<Void> {
+            let actualChainId = try chainIdOperation.extractNoCancellableResultData()
+            
+            guard actualChainId.wrappedValue == chain.addressPrefix else {
+                throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
+            }
+        }
+        
+        checkChainCorrespondingOperation.addDependency(chainIdOperation)
+        
+        return CompoundOperationWrapper(
+            targetOperation: checkChainCorrespondingOperation,
+            dependencies: [chainIdOperation]
+        )
+    }
+    
     func subscribeChainChanges() {
         chainRegistry.chainsSubscribe(
             self,
@@ -148,4 +229,15 @@ private extension NetworkNodeBaseInteractor {
             basePresenter?.didReceive(changedChain)
         }
     }
+}
+
+// MARK: Errors
+
+enum NetworkNodeBaseInteractorError: Error {
+    case alreadyExists(nodeName: String)
+    case wrongNetwork(networkName: String)
+    case unableToConnect(networkName: String)
+    case wrongFormat
+    
+    case common(error: CommonError)
 }

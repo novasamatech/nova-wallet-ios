@@ -14,6 +14,7 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
         nodeToEdit: ChainNodeModel,
         chainRegistry: any ChainRegistryProtocol,
         connectionFactory: any ConnectionFactoryProtocol,
+        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         chainId: ChainModel.Id,
         repository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue
@@ -23,6 +24,7 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
         super.init(
             chainRegistry: chainRegistry,
             connectionFactory: connectionFactory,
+            blockHashOperationFactory: blockHashOperationFactory,
             chainId: chainId,
             repository: repository,
             operationQueue: operationQueue
@@ -57,13 +59,18 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
             { [] }
         )
         
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
+        execute(
+            operation: saveOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
                 self?.presenter?.didEditNode()
+            case .failure:
+                self?.presenter?.didReceive(.common(error: .dataCorruption))
             }
         }
-
-        operationQueue.addOperation(saveOperation)
     }
 }
 

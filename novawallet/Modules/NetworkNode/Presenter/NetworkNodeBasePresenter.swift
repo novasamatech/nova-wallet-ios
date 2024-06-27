@@ -116,11 +116,7 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
         provideViewModel(with: chain)
     }
     
-    func didReceive(_ error: Error) {
-        guard let error = error as? NetworkNodeBaseInteractor.Errors else {
-            return
-        }
-                
+    func didReceive(_ error: NetworkNodeBaseInteractorError) {
         var title: String?
         var message: String?
         
@@ -144,7 +140,7 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
             message = R.string.localizable.networkNodeAddAlertNodeErrorMessageWss(
                 preferredLanguages: selectedLocale.rLanguages
             )
-        case let .unableToConnect(networkName):
+        case let .unableToConnect(networkName), let .wrongNetwork(networkName):
             title = R.string.localizable.networkNodeAddAlertWrongNetworkTitle(
                 preferredLanguages: selectedLocale.rLanguages
             )
@@ -153,6 +149,14 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
                 networkName,
                 preferredLanguages: selectedLocale.rLanguages
             )
+        case let .common(error):
+            wireframe.present(
+                error: error,
+                from: view,
+                locale: selectedLocale
+            )
+            
+            return
         }
         
         provideButtonViewModel(loading: false)

@@ -39,6 +39,12 @@ class TextInputView: BackgroundedContentControl {
         return button
     }()
 
+    var shouldUseClearButton: Bool = true {
+        didSet {
+            applyControlsState()
+        }
+    }
+
     let stackView: UIStackView = {
         let view = UIStackView()
         view.spacing = 8.0
@@ -217,7 +223,7 @@ class TextInputView: BackgroundedContentControl {
     }
 
     func applyControlsState() {
-        if hasText {
+        if shouldUseClearButton, hasText {
             clearButton.isHidden = false
         } else {
             clearButton.isHidden = true

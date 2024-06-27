@@ -175,7 +175,7 @@ final class AssetDetailsNotificationMessageHandler {
         settings.save(value: wallet, runningCompletionIn: workingQueue) { [weak self] result in
             switch result {
             case .success:
-                self?.eventCenter.notify(with: SelectedAccountChanged())
+                self?.eventCenter.notify(with: SelectedWalletSwitched())
                 completion(nil)
             case let .failure(error):
                 completion(error)

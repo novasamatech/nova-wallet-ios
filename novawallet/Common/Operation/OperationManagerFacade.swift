@@ -42,5 +42,10 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
+    static let cloudBackupQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        return operationQueue
+    }()
+
     static let sharedManager = OperationManager(operationQueue: sharedDefaultQueue)
 }

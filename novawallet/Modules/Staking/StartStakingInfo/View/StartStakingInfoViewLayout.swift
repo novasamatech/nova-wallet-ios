@@ -15,7 +15,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         $0.linkTextAttributes = [.foregroundColor: R.color.colorTextSecondary()!,
                                  .font: UIFont.semiBoldCallout]
         $0.font = .regularCallout
-        $0.textColor = R.color.colorTextTertiary()
+        $0.textColor = R.color.colorTextSecondary()
         $0.isScrollEnabled = false
         $0.backgroundColor = .clear
         $0.isEditable = false
@@ -27,7 +27,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         $0.linkTextAttributes = [.foregroundColor: R.color.colorTextSecondary()!,
                                  .font: UIFont.semiBoldCallout]
         $0.font = .regularCallout
-        $0.textColor = R.color.colorTextTertiary()
+        $0.textColor = R.color.colorTextSecondary()
         $0.isScrollEnabled = false
         $0.backgroundColor = .clear
         $0.isEditable = false

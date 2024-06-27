@@ -241,7 +241,7 @@ private extension NetworkDetailsNodeView {
     @objc func actionMore() {
         guard let viewModel, viewModel.custom else { return }
         
-        viewModel.onTapMore?(viewModel.indexPath)
+        viewModel.onTapMore?(viewModel.id)
     }
 }
 

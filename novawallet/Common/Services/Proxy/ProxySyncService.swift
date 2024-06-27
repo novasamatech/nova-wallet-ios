@@ -263,7 +263,7 @@ extension ProxySyncService: ProxySyncServiceProtocol {
             switch result {
             case let .success(update):
                 if update.isWalletSwitched {
-                    self.eventCenter.notify(with: SelectedAccountChanged())
+                    self.eventCenter.notify(with: SelectedWalletSwitched())
                 }
 
                 self.logger.debug("Proxy statuses updated")

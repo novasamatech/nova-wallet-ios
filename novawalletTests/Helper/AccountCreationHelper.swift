@@ -11,6 +11,7 @@ final class AccountCreationHelper {
         cryptoType: MultiassetCryptoType,
         name: String = "novawallet",
         derivationPath: String = "",
+        ethereumPath: String = DerivationPathConstants.defaultEthereum,
         keychain: KeystoreProtocol,
         settings: SelectedWalletSettings
     ) throws {
@@ -25,7 +26,7 @@ final class AccountCreationHelper {
         let request = MetaAccountCreationRequest(
             username: name,
             derivationPath: derivationPath,
-            ethereumDerivationPath: DerivationPathConstants.defaultEthereum,
+            ethereumDerivationPath: ethereumPath,
             cryptoType: cryptoType)
 
         let operation = MetaAccountOperationFactory(keystore: keychain)
@@ -33,6 +34,74 @@ final class AccountCreationHelper {
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
+        let accountItem = try operation
+            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+
+        try selectMetaAccount(accountItem, settings: settings)
+    }
+    
+    static func addMnemonicChainAccount(
+        to wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        mnemonicString: String? = nil,
+        cryptoType: MultiassetCryptoType,
+        derivationPath: String = "",
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings
+    ) throws {
+        let mnemonic: IRMnemonicProtocol
+
+        if let mnemonicString = mnemonicString {
+            mnemonic = try IRMnemonicCreator().mnemonic(fromList: mnemonicString)
+        } else {
+            mnemonic = try IRMnemonicCreator().randomMnemonic(.entropy128)
+        }
+        
+        let request = ChainAccountImportMnemonicRequest(
+            mnemonic: mnemonic.toString(),
+            derivationPath: derivationPath,
+            cryptoType: cryptoType
+        )
+        
+        let operation = MetaAccountOperationFactory(keystore: keychain)
+            .replaceChainAccountOperation(
+                for: wallet,
+                request: request,
+                chainId: chainId
+            )
+
+        OperationQueue().addOperations([operation], waitUntilFinished: true)
+        
+        let accountItem = try operation
+            .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+
+        try selectMetaAccount(accountItem, settings: settings)
+    }
+    
+    static func addSeedChainAccount(
+        to wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        seed: String,
+        cryptoType: MultiassetCryptoType,
+        derivationPath: String = "",
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings
+    ) throws {
+        let request = ChainAccountImportSeedRequest(
+            seed: seed,
+            derivationPath: derivationPath,
+            cryptoType: cryptoType
+        )
+        
+        let operation = MetaAccountOperationFactory(keystore: keychain)
+            .replaceChainAccountOperation(
+                for: wallet,
+                request: request,
+                chainId: chainId
+            )
+
+        OperationQueue().addOperations([operation], waitUntilFinished: true)
+        
         let accountItem = try operation
             .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
@@ -118,6 +187,50 @@ final class AccountCreationHelper {
         try selectMetaAccount(accountItem, settings: settings)
     }
 
+    static func createSubstrateLedgerAccount(
+        from app: SupportedLedgerApp,
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings,
+        username: String = "username",
+        accountIndex: UInt32 = 0
+    ) throws {
+        let accountId = AccountId.random(of: 32)!
+        
+        let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
+            coin: app.coin,
+            accountIndex: accountIndex
+        ).build()
+        
+        let chainAccount = ChainAccountModel(
+            chainId: app.chainId,
+            accountId: accountId,
+            publicKey: accountId,
+            cryptoType: LedgerApplication.defaultCryptoScheme.walletCryptoType.rawValue,
+            proxy: nil
+        )
+        
+        let metaAccount = MetaAccountModel(
+            metaId: UUID().uuidString,
+            name: username,
+            substrateAccountId: nil,
+            substrateCryptoType: nil,
+            substratePublicKey: nil,
+            ethereumAddress: nil,
+            ethereumPublicKey: nil,
+            chainAccounts: [chainAccount],
+            type: .ledger
+        )
+        
+        let derivPathTag = KeystoreTagV2.substrateDerivationTagForMetaId(
+            metaAccount.identifier,
+            accountId: accountId
+        )
+        
+        try keychain.saveKey(derivationPath, with: derivPathTag)
+        
+        try selectMetaAccount(metaAccount, settings: settings)
+    }
+    
     static func selectMetaAccount(_ accountItem: MetaAccountModel, settings: SelectedWalletSettings) throws {
         settings.save(value: accountItem)
         settings.setup()

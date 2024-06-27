@@ -73,8 +73,8 @@ final class XcmTransferService {
             customExtensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             senderResolvingFactory: senderResolvingFactory,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            blockHashOperationFactory: BlockHashOperationFactory()
+            blockHashOperationFactory: BlockHashOperationFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
 }

@@ -9,7 +9,7 @@ struct NetworkDetailsViewFactory {
             operationQueue: OperationManagerFacade.assetsSyncQueue
         )
 
-        let chainRegistry = ChainRegistryFactory.createDefaultRegistry()
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
 
@@ -53,7 +53,8 @@ struct NetworkDetailsViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory, 
+            localizationManager: LocalizationManager.shared
         )
 
         let view = NetworkDetailsViewController(presenter: presenter)

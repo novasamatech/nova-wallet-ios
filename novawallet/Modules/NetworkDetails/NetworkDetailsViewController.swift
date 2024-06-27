@@ -7,7 +7,8 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
     let presenter: NetworkDetailsPresenterProtocol
 
     private var viewModel: ViewModel?
-    private var nodesViewModels: [IndexPath: RootViewType.NodeModel] = [:]
+    private var nodesViewModels: [UUID: RootViewType.NodeModel] = [:]
+    private var nodesIndexPaths: [UUID: IndexPath] = [:]
 
     init(presenter: NetworkDetailsPresenterProtocol) {
         self.presenter = presenter
@@ -38,20 +39,24 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
         viewModel
             .rows
             .forEach { row in
-                guard case let .node(nodeModel) = row else {
+                guard
+                    case let .node(nodeModel) = row,
+                    let indexPath = nodesIndexPaths[nodeModel.id]
+                else {
                     return
                 }
-
-                let cell = rootView.tableView.cellForRow(at: nodeModel.indexPath) as? NetworkDetailsNodeTableViewCell
+                
+                let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworkDetailsNodeTableViewCell
                 cell?.bind(viewModel: nodeModel)
-                nodesViewModels[nodeModel.indexPath] = nodeModel
+                nodesViewModels[nodeModel.id] = nodeModel
             }
     }
 
     func update(with viewModel: NetworkDetailsViewLayout.Model) {
         self.viewModel = viewModel
-
+        
         nodesViewModels = extractNodesViewModels(from: viewModel)
+        cacheIndexPaths(from: viewModel)
 
         rootView.headerView.bind(viewModel: viewModel.networkViewModel)
         rootView.tableView.reloadData()
@@ -94,11 +99,11 @@ extension NetworkDetailsViewController: UITableViewDataSource {
             titleCell.bind(titleViewModel: title)
 
             cell = titleCell
-        case .node:
-            guard let viewModel = nodesViewModels[indexPath] else {
+        case let .node(model):
+            guard let viewModel = nodesViewModels[model.id] else {
                 return UITableViewCell()
             }
-
+            
             let nodeCell = tableView.dequeueReusableCellWithType(NetworkDetailsNodeTableViewCell.self)!
             nodeCell.bind(viewModel: viewModel)
 
@@ -129,7 +134,7 @@ extension NetworkDetailsViewController: UITableViewDelegate {
 
         switch row {
         case let .node(model):
-            presenter.selectNode(at: indexPath)
+            presenter.selectNode(with: model.id)
         case .addCustomNode:
             presenter.addNode()
         default:
@@ -189,19 +194,49 @@ private extension NetworkDetailsViewController {
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
 
-    func extractNodesViewModels(from viewModel: ViewModel) -> [IndexPath: RootViewType.NodeModel] {
+    func extractNodesViewModels(from viewModel: ViewModel) -> [UUID: RootViewType.NodeModel] {
         viewModel.sections
             .flatMap(\.rows)
             .reduce(into: [:]) { acc, row in
                 guard case let .node(nodeModel) = row else { return }
                 
-                acc[nodeModel.indexPath] = nodeModel
+                acc[nodeModel.id] = nodeModel
+            }
+    }
+    
+    func cacheIndexPaths(from viewModel: ViewModel) {
+        var customNodeIndex = 1
+        var remoteNodeIndex = 0
+        
+        viewModel.sections
+            .flatMap(\.rows)
+            .compactMap { row -> RootViewType.NodeModel? in
+                guard case let .node(nodeModel) = row else { return nil }
+                
+                return nodeModel
+            }
+            .forEach { node in
+                if node.custom {
+                    nodesIndexPaths[node.id] = IndexPath(
+                        row: customNodeIndex,
+                        section: Constants.customNodesSectionIndex
+                    )
+                    customNodeIndex += 1
+                } else {
+                    nodesIndexPaths[node.id] = IndexPath(
+                        row: remoteNodeIndex,
+                        section: Constants.remoteNodesSectionIndex
+                    )
+                    remoteNodeIndex += 1
+                }
             }
     }
 }
 
 extension NetworkDetailsViewController {
     enum Constants {
+        static let customNodesSectionIndex: Int = 1
+        static let remoteNodesSectionIndex: Int = 2
         static let connectionStateRowIndex: Int = 0
         static let connectionModeRowIndex: Int = 1
         static let headerHeight: CGFloat = 37.0

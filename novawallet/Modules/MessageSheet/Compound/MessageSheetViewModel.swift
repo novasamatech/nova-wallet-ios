@@ -3,8 +3,24 @@ import SoraFoundation
 import UIKit
 
 struct MessageSheetAction {
+    enum ActionType {
+        case normal
+        case destructive
+    }
+
     let title: LocalizableResource<String>
     let handler: MessageSheetCallback
+    let actionType: ActionType
+
+    init(
+        title: LocalizableResource<String>,
+        handler: @escaping MessageSheetCallback,
+        actionType: ActionType = .normal
+    ) {
+        self.title = title
+        self.handler = handler
+        self.actionType = actionType
+    }
 }
 
 enum MessageSheetText {

@@ -10,7 +10,7 @@ protocol NetworkDetailsPresenterProtocol: AnyObject {
     func setNetwork(enabled: Bool)
     func setAutoBalance(enabled: Bool)
     func addNode()
-    func selectNode(at indexPath: IndexPath)
+    func selectNode(with id: UUID)
 }
 
 protocol NetworkDetailsInteractorInputProtocol: AnyObject {
@@ -31,9 +31,10 @@ protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
         for nodeURL: String,
         selected: Bool
     )
+    func didReceive(_ error: Error)
 }
 
-protocol NetworkDetailsWireframeProtocol: AnyObject {
+protocol NetworkDetailsWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showAddNode(
         from view: NetworkDetailsViewProtocol?,
         chainId: ChainModel.Id
