@@ -31,10 +31,7 @@ final class GenericLedgerWalletOperationFactory: GenericLedgerWalletOperationFac
                 type: .genericLedger
             )
 
-            let tag = KeystoreTagV2.substrateDerivationTagForMetaId(
-                wallet.metaId,
-                accountId: model.accountId
-            )
+            let tag = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)
 
             try keystore.saveKey(model.derivationPath, with: tag)
 

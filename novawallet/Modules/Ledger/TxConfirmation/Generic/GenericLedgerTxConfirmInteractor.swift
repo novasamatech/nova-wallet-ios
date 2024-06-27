@@ -53,10 +53,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
-            let keystoreTag: String = KeystoreTagV2.substrateDerivationTagForMetaId(
-                wallet.metaId,
-                accountId: wallet.substrateAccountId!
-            )
+            let keystoreTag: String = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)
 
             return try keystore.fetchKey(for: keystoreTag)
         }
