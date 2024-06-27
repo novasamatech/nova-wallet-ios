@@ -13,6 +13,7 @@ final class YourWalletsPresenter {
         .secrets,
         .polkadotVault,
         .paritySigner,
+        .genericLedger,
         .ledger,
         .proxied,
         .watchOnly
