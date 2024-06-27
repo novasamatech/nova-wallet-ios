@@ -15,9 +15,9 @@
         <key>one</key>
         <string>%li dzień</string>
         <key>few</key>
-        <string></string>
+        <string>%li dni</string>
         <key>many</key>
-        <string></string>
+        <string>%li dni</string>
         <key>other</key>
         <string>%li dni</string>
       </dict>
@@ -35,9 +35,9 @@
         <key>one</key>
         <string>%li godzina</string>
         <key>few</key>
-        <string></string>
+        <string>%li godziny</string>
         <key>many</key>
-        <string></string>
+        <string>%li godzin</string>
         <key>other</key>
         <string>%li godzin</string>
       </dict>
@@ -53,13 +53,13 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>Pozostał %li dzień</string>
+        <string>%li dzień pozostał</string>
         <key>few</key>
-        <string></string>
+        <string>%li dni pozostały</string>
         <key>many</key>
-        <string></string>
+        <string>%li dni pozostało</string>
         <key>other</key>
-        <string>Pozostało %li dni</string>
+        <string>%li dni pozostało</string>
       </dict>
     </dict>
     <key>staking.analytics.validators.eras.counter</key>
@@ -75,9 +75,9 @@
         <key>one</key>
         <string>%li era</string>
         <key>few</key>
-        <string></string>
+        <string>%li epoki</string>
         <key>many</key>
-        <string></string>
+        <string>%li era</string>
         <key>other</key>
         <string>%li ery</string>
       </dict>
@@ -95,9 +95,9 @@
         <key>one</key>
         <string>%li minuta</string>
         <key>few</key>
-        <string></string>
+        <string>%li minuty</string>
         <key>many</key>
-        <string></string>
+        <string>%li minut</string>
         <key>other</key>
         <string>%li minut</string>
       </dict>
@@ -115,9 +115,9 @@
         <key>one</key>
         <string>codziennie</string>
         <key>few</key>
-        <string></string>
+        <string>co %li dzień</string>
         <key>many</key>
-        <string></string>
+        <string>co %li dzień</string>
         <key>other</key>
         <string>co %li dni</string>
       </dict>
@@ -135,9 +135,9 @@
         <key>one</key>
         <string>1 utwór</string>
         <key>few</key>
-        <string></string>
+        <string>%li utwory</string>
         <key>many</key>
-        <string></string>
+        <string>%li utworów</string>
         <key>other</key>
         <string>%li utworów</string>
       </dict>
@@ -155,9 +155,9 @@
         <key>one</key>
         <string>Sieć</string>
         <key>few</key>
-        <string></string>
+        <string>Sieci</string>
         <key>many</key>
-        <string></string>
+        <string>Sieci</string>
         <key>other</key>
         <string>Sieci</string>
       </dict>
@@ -175,9 +175,9 @@
         <key>one</key>
         <string>1 nieobsługiwany</string>
         <key>few</key>
-        <string></string>
+        <string>%li nieobsługiwanych</string>
         <key>many</key>
-        <string></string>
+        <string>%li nieobsługiwanych</string>
         <key>other</key>
         <string>%li nieobsługiwanych</string>
       </dict>
@@ -195,9 +195,9 @@
         <key>one</key>
         <string>Brakuje konta %2$@. Dodaj konto do portfela w Ustawieniach</string>
         <key>few</key>
-        <string></string>
+        <string>Brakuje %2$@ kont. Dodaj konto do portfela w Ustawieniach</string>
         <key>many</key>
-        <string></string>
+        <string>Brakuje %2$@ kont. Dodaj konto do portfela w Ustawieniach</string>
         <key>other</key>
         <string>Brakuje kont %2$@. Dodaj konta do portfela w Ustawieniach</string>
       </dict>
@@ -213,11 +213,11 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>1 nieobsługiwana sieć ukryta</string>
+        <string>%li nieobsługiwana sieć jest ukryta</string>
         <key>few</key>
-        <string></string>
+        <string>%li nieobsługiwane sieci ukryte</string>
         <key>many</key>
-        <string></string>
+        <string>%li ukrytych sieci nieobsługiwanych</string>
         <key>other</key>
         <string>%li nieobsługiwanych sieci ukrytych</string>
       </dict>
@@ -235,9 +235,9 @@
         <key>one</key>
         <string>Wybierz co najmniej %li portfel</string>
         <key>few</key>
-        <string></string>
+        <string>Wybierz co najmniej %li portfele</string>
         <key>many</key>
-        <string></string>
+        <string>Wybierz co najmniej %li portfeli</string>
         <key>other</key>
         <string>Wybierz co najmniej %li portfeli</string>
       </dict>
