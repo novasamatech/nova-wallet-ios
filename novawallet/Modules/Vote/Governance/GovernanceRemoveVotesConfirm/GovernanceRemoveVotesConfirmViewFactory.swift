@@ -87,13 +87,13 @@ struct GovernanceRemoveVotesConfirmViewFactory {
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let operationManager = OperationManager(operationQueue: operationQueue)
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         let signer = SigningWrapperFactory().createSigningWrapper(

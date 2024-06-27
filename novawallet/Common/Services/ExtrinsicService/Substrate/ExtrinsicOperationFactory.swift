@@ -106,12 +106,14 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     let customExtensions: [ExtrinsicSignedExtending]
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
     let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
+    let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
         chain: ChainModel,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         customExtensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
+        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil,
         operationManager: OperationManagerProtocol
@@ -119,6 +121,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         self.chain = chain
         self.senderResolvingFactory = senderResolvingFactory
         self.customExtensions = customExtensions
+        self.metadataHashOperationFactory = metadataHashOperationFactory
         self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
 
         super.init(
@@ -189,11 +192,18 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
         eraBlockOperation.addDependency(eraWrapper.targetOperation)
 
+        let metadataHashWrapper = metadataHashOperationFactory.createCheckMetadataHashWrapper(
+            for: chain,
+            connection: engine,
+            runtimeProvider: runtimeRegistry
+        )
+
         let partialBuildersOperation = ClosureOperation<[ExtrinsicBuilderProtocol]> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let genesisHash = try genesisBlockOperation.extractNoCancellableResultData()
             let era = try eraWrapper.targetOperation.extractNoCancellableResultData().extrinsicEra
             let eraBlockHash = try eraBlockOperation.extractNoCancellableResultData()
+            let metadataHash = try metadataHashWrapper.targetOperation.extractNoCancellableResultData()
 
             let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
 
@@ -205,6 +215,10 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                 )
                 .with(runtimeJsonContext: runtimeJsonContext)
                 .with(era: era, blockHash: eraBlockHash)
+
+                if let metadataHash {
+                    builder = builder.with(metadataHash: metadataHash)
+                }
 
                 if let defaultTip = chain.defaultTip {
                     builder = builder.with(tip: defaultTip)
@@ -218,7 +232,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
             }
         }
 
-        let dependencies = [genesisBlockOperation] + eraWrapper.allOperations + [eraBlockOperation]
+        let dependencies = [genesisBlockOperation] + eraWrapper.allOperations + [eraBlockOperation] +
+            metadataHashWrapper.allOperations
 
         dependencies.forEach { partialBuildersOperation.addDependency($0) }
 
