@@ -58,4 +58,40 @@ extension InputViewModel {
 
         return InputViewModel(inputHandler: inputHandling, placeholder: placeholder ?? "")
     }
+
+    static func createSubstrateNodeURLInputViewModel(
+        for value: String,
+        required: Bool = true,
+        placeholder: String? = nil
+    ) -> InputViewModelProtocol {
+        let inputHandling = InputHandler(
+            value: value,
+            required: required,
+            predicate: required ? NSPredicate.notEmpty : nil,
+            processor: TrimmingCharacterProcessor(charset: .whitespaces)
+        )
+
+        return InputViewModel(
+            inputHandler: inputHandling,
+            placeholder: placeholder ?? ""
+        )
+    }
+
+    static func createSubstrateNodeNameInputViewModel(
+        for value: String,
+        required: Bool = true,
+        placeholder: String? = nil
+    ) -> InputViewModelProtocol {
+        let inputHandling = InputHandler(
+            value: value,
+            required: required,
+            predicate: required ? NSPredicate.notEmpty : nil,
+            processor: TrimmingCharacterProcessor(charset: .whitespaces)
+        )
+
+        return InputViewModel(
+            inputHandler: inputHandling,
+            placeholder: placeholder ?? ""
+        )
+    }
 }

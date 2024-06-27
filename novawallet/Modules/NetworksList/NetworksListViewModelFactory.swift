@@ -88,9 +88,10 @@ class NetworksListViewModelFactory {
 
             let connectionState: NetworkViewModel.ConnectionState
 
-            if let chainConnectionState = connectionStates[chainModel.chainId],
-               chainConnectionState == .connected {
+            if connectionStates[chainModel.chainId] == .connected {
                 connectionState = .connected
+            } else if connectionStates[chainModel.chainId] == .notConnected {
+                connectionState = .notConnected
             } else {
                 connectionState = .connecting(
                     R.string.localizable.networkStatusConnecting(
@@ -101,7 +102,7 @@ class NetworksListViewModelFactory {
 
             let networkState: NetworkViewModel.OverallState
 
-            if chainModel.enabled {
+            if chainModel.syncMode.enabled() {
                 networkState = .enabled
             } else {
                 networkState = .disabled(

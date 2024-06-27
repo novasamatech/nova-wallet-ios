@@ -411,14 +411,12 @@ class ChainSyncServiceTests: XCTestCase {
         XCTAssertEqual(Set(localItems), Set(expectedLocalItems))
     }
     
-    func testSyncDontOverwriteEnabledState() throws {
+    func testSyncDontOverwriteDisabledSyncMode() throws {
         try syncDontChangeLocal(
             initialLocalChainChange: { localItem in
-                localItem.byChanging(enabled: false)
+                localItem.updatingSyncMode(for: .disabled)
             },
-            updatedRemoteChainsChange: { $0
-                /* remote mapped to 'enabled' TRUE by default if there is no value in local */
-            }
+            updatedRemoteChainsChange: { $0 }
         )
     }
     

@@ -57,7 +57,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
         let connection = connections[chainId]?.target as? ChainConnection
 
         DispatchQueue.main.async {
-            subscriber.didReceive(state: connection?.state ?? .notConnected, for: chainId)
+            subscriber.didReceive(state: connection?.state ?? .notConnected(url: nil), for: chainId)
         }
     }
 
@@ -100,9 +100,9 @@ extension ConnectionPool: ConnectionPoolProtocol {
         }
 
         let optConnection = connections[chainId]?.target
-        connections[chainId] = nil
         oneShotConnections[chainId] = nil
-        stateSubscriptions[chainId] = nil
+
+        clearUnusedConnections()
 
         if let connection = optConnection as? ChainConnection {
             connection.disconnect(true)

@@ -113,6 +113,7 @@ final class ExtrinsicService {
             customExtensions: extensions,
             engine: engine,
             senderResolvingFactory: senderResolvingFactory,
+            blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: operationManager
         )
 

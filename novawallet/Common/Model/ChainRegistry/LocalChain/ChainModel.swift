@@ -40,6 +40,29 @@ struct ChainModel: Equatable, Hashable {
         }
     }
 
+    enum ConnectionMode: Hashable, Equatable {
+        case manual(ChainNodeModel)
+        case autoBalanced
+
+        var rawValue: Int16 {
+            switch self {
+            case .manual: 0
+            case .autoBalanced: 1
+            }
+        }
+
+        init?(rawValue: Int16, selectedNode: ChainNodeModel?) {
+            switch (rawValue, selectedNode) {
+            case let (0, .some(node)):
+                self = .manual(node)
+            case (1, _):
+                self = .autoBalanced
+            default:
+                return nil
+            }
+        }
+    }
+
     let chainId: Id
     let parentId: Id?
     let name: String
@@ -56,7 +79,7 @@ struct ChainModel: Equatable, Hashable {
     let additional: JSON?
     let syncMode: ChainSyncMode
     let source: Source
-    let enabled: Bool
+    let connectionMode: ConnectionMode
 
     init(
         chainId: Id,
@@ -75,7 +98,7 @@ struct ChainModel: Equatable, Hashable {
         additional: JSON?,
         syncMode: ChainSyncMode,
         source: Source,
-        enabled: Bool
+        connectionMode: ConnectionMode
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -93,7 +116,7 @@ struct ChainModel: Equatable, Hashable {
         self.additional = additional
         self.syncMode = syncMode
         self.source = source
-        self.enabled = enabled
+        self.connectionMode = connectionMode
     }
 
     func asset(for assetId: AssetModel.Id) -> AssetModel? {
@@ -319,7 +342,7 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: enabled
+            connectionMode: connectionMode
         )
     }
 
@@ -344,14 +367,95 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: enabled
+            connectionMode: connectionMode
+        )
+    }
+    
+    func adding(node: ChainNodeModel) -> ChainModel {
+        var mutNodes = nodes
+        
+        mutNodes.insert(node)
+        
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: mutNodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
+    
+    func removing(node: ChainNodeModel) -> ChainModel {
+        var mutNodes = nodes
+        
+        mutNodes.remove(node)
+        
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: mutNodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
+    
+    func replacing(
+        _ oldNode: ChainNodeModel,
+        with newNode: ChainNodeModel
+    ) -> ChainModel {
+        var mutNodes = nodes
+        
+        mutNodes.remove(oldNode)
+        mutNodes.insert(newNode)
+        
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: mutNodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
         )
     }
 
     func byChanging(
         assets: Set<AssetModel>? = nil,
         name: String? = nil,
-        enabled: Bool? = nil,
         source: Source? = nil
     ) -> ChainModel {
         let newAssets = assets ?? self.assets
@@ -374,7 +478,7 @@ extension ChainModel {
             additional: additional,
             syncMode: syncMode,
             source: source ?? self.source,
-            enabled: enabled ?? self.enabled
+            connectionMode: connectionMode
         )
     }
 
@@ -396,7 +500,29 @@ extension ChainModel {
             additional: additional,
             syncMode: newMode,
             source: source,
-            enabled: enabled
+            connectionMode: connectionMode
+        )
+    }
+
+    func updatingConnectionMode(for newMode: ConnectionMode) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: newMode
         )
     }
 }

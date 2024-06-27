@@ -40,7 +40,7 @@
         <attribute name="addressPrefix" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
         <attribute name="color" optional="YES" attributeType="String"/>
-        <attribute name="enabled" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="connectionMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="explorers" optional="YES" attributeType="Binary"/>
         <attribute name="hasCrowdloans" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="hasGovernance" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -57,13 +57,14 @@
         <attribute name="noSubstrateRuntime" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="order" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="parentId" optional="YES" attributeType="String"/>
-        <attribute name="source" optional="YES" attributeType="String"/>
+        <attribute name="source" attributeType="String" defaultValueString="remote"/>
         <attribute name="syncMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="types" optional="YES" attributeType="URI"/>
         <attribute name="typesOverrideCommon" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
         <relationship name="assets" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDAsset" inverseName="chain" inverseEntity="CDAsset"/>
         <relationship name="externalApis" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDChainApi" inverseName="chain" inverseEntity="CDChainApi"/>
         <relationship name="nodes" optional="YES" toMany="YES" minCount="1" deletionRule="Cascade" destinationEntity="CDChainNodeItem" inverseName="chain" inverseEntity="CDChainNodeItem"/>
+        <relationship name="selectedNode" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChainNodeItem" inverseName="selectedInChain" inverseEntity="CDChainNodeItem"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="chainId"/>
@@ -81,8 +82,10 @@
         <attribute name="features" optional="YES" attributeType="Binary"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="order" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="source" attributeType="String" defaultValueString="remote"/>
         <attribute name="url" optional="YES" attributeType="String"/>
         <relationship name="chain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="nodes" inverseEntity="CDChain"/>
+        <relationship name="selectedInChain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="selectedNode" inverseEntity="CDChain"/>
     </entity>
     <entity name="CDChainStorageItem" representedClassName="CDChainStorageItem" syncable="YES" codeGenerationType="class">
         <attribute name="data" optional="YES" attributeType="Binary"/>

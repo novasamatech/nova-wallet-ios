@@ -26,10 +26,10 @@ final class NetworksListInteractor {
 
             changes.forEach { change in
                 switch change {
-                case let .insert(newItem):
+                case let .insert(chain):
                     self.chainRegistry.subscribeChainState(
                         self,
-                        chainId: newItem.chainId
+                        chainId: chain.chainId
                     )
                 case let .delete(deletedIdentifier):
                     self.chainRegistry.unsubscribeChainState(
@@ -47,6 +47,8 @@ final class NetworksListInteractor {
     }
 }
 
+// MARK: NetworksListInteractorInputProtocol
+
 extension NetworksListInteractor: NetworksListInteractorInputProtocol {
     func provideChains() {
         subscribeChains()
@@ -57,16 +59,20 @@ extension NetworksListInteractor: NetworksListInteractorInputProtocol {
     }
 }
 
+// MARK: ConnectionStateSubscription
+
 extension NetworksListInteractor: ConnectionStateSubscription {
     func didReceive(
         state: WebSocketEngine.State,
         for chainId: ChainModel.Id
     ) {
         let connectionState: NetworksListPresenter.ConnectionState = switch state {
-        case .notConnected, .connecting, .waitingReconnection:
+        case .connecting, .waitingReconnection:
             .connecting
         case .connected:
             .connected
+        case .notConnected:
+            .notConnected
         }
 
         presenter?.didReceive(connectionState: connectionState, for: chainId)

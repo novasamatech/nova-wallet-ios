@@ -3,10 +3,28 @@ import SubstrateSdk
 import SoraFoundation
 
 protocol ConnectionFactoryProtocol {
-    func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection
+    func createConnection(
+        for chain: ChainModel,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection
+
+    func createConnection(
+        for node: ChainNodeModel,
+        chain: ChainModel,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection
+
+    func updateConnection(
+        _ connection: ChainConnection,
+        chain: ChainModel
+    )
+
+    func updateOneShotConnection(
+        _ connection: OneShotConnection,
+        chain: ChainModel
+    )
+
     func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection
-    func updateConnection(_ connection: ChainConnection, chain: ChainModel)
-    func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel)
 }
 
 final class ConnectionFactory {
@@ -23,32 +41,43 @@ final class ConnectionFactory {
 
 enum ConnectionFactoryError: Error {
     case noNodes
+    case invalidNode
 }
 
 extension ConnectionFactory: ConnectionFactoryProtocol {
-    func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection {
-        let urlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
+    func createConnection(
+        for chain: ChainModel,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection {
+        let urlModels = extractNodeUrls(
+            from: chain,
+            schema: ConnectionNodeSchema.wss
+        )
         let urls = urlModels.map(\.url)
 
-        tlsSupportProvider.add(support: urlModels)
+        return try createConnection(
+            urlModels: urlModels,
+            urls: urls,
+            for: chain,
+            delegate: delegate
+        )
+    }
 
-        let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
-        let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
-
-        guard
-            let connection = WebSocketEngine(
-                urls: urls,
-                connectionFactory: ConnectionTransportFactory(tlsSupportProvider: tlsSupportProvider),
-                customNodeSwitcher: nodeSwitcher,
-                healthCheckMethod: healthCheckMethod,
-                name: chain.name,
-                logger: logger
-            ) else {
-            throw ConnectionFactoryError.noNodes
+    func createConnection(
+        for node: ChainNodeModel,
+        chain: ChainModel,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection {
+        guard let urlModel = nodeUrl(from: node) else {
+            throw ConnectionFactoryError.invalidNode
         }
 
-        connection.delegate = delegate
-        return connection
+        return try createConnection(
+            urlModels: [urlModel],
+            urls: [urlModel.url],
+            for: chain,
+            delegate: delegate
+        )
     }
 
     func updateConnection(_ connection: ChainConnection, chain: ChainModel) {
@@ -90,8 +119,57 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         }
     }
 
+    private func createConnection(
+        urlModels: [ConnectionTLSSupport],
+        urls: [URL],
+        for chain: ChainModel,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection {
+        tlsSupportProvider.add(support: urlModels)
+
+        let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
+        let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
+
+        guard
+            let connection = WebSocketEngine(
+                urls: urls,
+                connectionFactory: ConnectionTransportFactory(tlsSupportProvider: tlsSupportProvider),
+                customNodeSwitcher: nodeSwitcher,
+                healthCheckMethod: healthCheckMethod,
+                name: chain.name,
+                logger: logger
+            ) else {
+            throw ConnectionFactoryError.noNodes
+        }
+
+        connection.delegate = delegate
+        return connection
+    }
+
+    private func nodeUrl(from node: ChainNodeModel) -> ConnectionTLSSupport? {
+        let builder = URLBuilder(urlTemplate: node.url)
+
+        guard let url = try? builder.buildBy(closure: { apiKeyType in
+            guard let apiKey = ConnectionApiKeys.getKey(by: apiKeyType) else {
+                throw CommonError.undefined
+            }
+
+            return apiKey
+        }) else {
+            return nil
+        }
+
+        return ConnectionTLSSupport(url: url, supportsTLS12: node.supportsTls12)
+    }
+
     private func extractNodeUrls(from chain: ChainModel, schema: String) -> [ConnectionTLSSupport] {
-        let filteredNodes = chain.nodes.filter { $0.url.hasPrefix(schema) }
+        let filteredNodes = if case let .manual(selectedNode) = chain.connectionMode {
+            selectedNode.url.hasPrefix(schema)
+                ? Set([selectedNode])
+                : Set()
+        } else {
+            chain.nodes.filter { $0.url.hasPrefix(schema) }
+        }
 
         let nodes: [ChainNodeModel]
 
@@ -102,22 +180,6 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
             nodes = filteredNodes.shuffled()
         }
 
-        return nodes.compactMap { node in
-            let builder = URLBuilder(urlTemplate: node.url)
-
-            let optUrl = try? builder.buildBy { apiKeyType in
-                guard let apiKey = ConnectionApiKeys.getKey(by: apiKeyType) else {
-                    throw CommonError.undefined
-                }
-
-                return apiKey
-            }
-
-            guard let url = optUrl else {
-                return nil
-            }
-
-            return ConnectionTLSSupport(url: url, supportsTLS12: node.supportsTls12)
-        }
+        return nodes.compactMap { nodeUrl(from: $0) }
     }
 }

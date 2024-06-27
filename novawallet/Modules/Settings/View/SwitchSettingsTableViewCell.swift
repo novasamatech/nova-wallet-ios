@@ -22,10 +22,18 @@ final class SwitchSettingsTableViewCell: SettingsBaseTableViewCell<UISwitch> {
         selectionStyle = .none
     }
 
-    func bind(titleViewModel: TitleIconViewModel, isOn: Bool) {
+    func bind(
+        titleViewModel: TitleIconViewModel,
+        isOn: Bool,
+        isEnabled: Bool = true
+    ) {
         super.bind(titleViewModel: titleViewModel)
 
         rightView.isOn = isOn
+        rightView.isEnabled = isEnabled
+        isUserInteractionEnabled = isEnabled
+
+        isEnabled ? contentStackView?.stopShimmeringOpacity() : contentStackView?.startShimmeringOpacity()
     }
 
     func bind(icon: ImageViewModelProtocol?, title: String, isOn: Bool) {

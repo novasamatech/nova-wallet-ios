@@ -80,12 +80,14 @@ final class ChainModelMapper {
 
     private func createChainNode(from entity: CDChainNodeItem) throws -> ChainNodeModel {
         let features = try createNodeFeatures(from: entity.features)
+        let source = ChainNodeModel.Source(rawValue: entity.source!) ?? .remote
 
         return ChainNodeModel(
             url: entity.url!,
             name: entity.name!,
             order: entity.order,
-            features: features
+            features: features,
+            source: source
         )
     }
 
@@ -152,7 +154,9 @@ final class ChainModelMapper {
         from model: ChainModel,
         context: NSManagedObjectContext
     ) throws {
-        let nodeEntities: [CDChainNodeItem] = try model.nodes.map { node in
+        let nodeMapping: (ChainNodeModel?) throws -> CDChainNodeItem? = { node in
+            guard let node else { return nil }
+
             let nodeEntity: CDChainNodeItem
 
             let maybeExistingEntity = entity.nodes?
@@ -167,10 +171,13 @@ final class ChainModelMapper {
             nodeEntity.url = node.url
             nodeEntity.name = node.name
             nodeEntity.order = node.order
-            nodeEntity.features = try serializeNodeFeature(from: node.features)
+            nodeEntity.features = try self.serializeNodeFeature(from: node.features)
+            nodeEntity.source = node.source.rawValue
 
             return nodeEntity
         }
+
+        let nodeEntities: [CDChainNodeItem] = model.nodes.compactMap { try? nodeMapping($0) }
 
         let existingNodeIds = Set(model.nodes.map(\.url))
 
@@ -182,7 +189,16 @@ final class ChainModelMapper {
             }
         }
 
+        let modelSelectedNode: ChainNodeModel? = if case let .manual(nodeModel) = model.connectionMode {
+            nodeModel
+        } else {
+            nil
+        }
+
+        let selectedNode = nodeEntities.first { $0.url == modelSelectedNode?.url }
+
         entity.nodes = Set(nodeEntities) as NSSet
+        entity.selectedNode = selectedNode
     }
 
     private func createExplorers(from chain: CDChain) -> [ChainModel.Explorer]? {
@@ -343,6 +359,12 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             return try createChainNode(from: node)
         } ?? []
 
+        let selectedNode: ChainNodeModel? = if let entitySelectedNode = entity.selectedNode as? CDChainNodeItem {
+            try createChainNode(from: entitySelectedNode)
+        } else {
+            nil
+        }
+
         let nodeSwitchStrategy = ChainModel.NodeSwitchStrategy(rawStrategy: entity.nodeSwitchStrategy)
 
         let types: ChainModel.TypesSettings?
@@ -366,13 +388,12 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             throw ChainModelMapperError.unexpectedSyncMode(entity.syncMode)
         }
 
-        let source: ChainModel.Source = {
-            if let entitySource = entity.source {
-                ChainModel.Source(rawValue: entitySource) ?? .remote
-            } else {
-                .remote
-            }
-        }()
+        let source = ChainModel.Source(rawValue: entity.source!) ?? .remote
+
+        let connectionMode = ChainModel.ConnectionMode(
+            rawValue: entity.connectionMode,
+            selectedNode: selectedNode
+        )
 
         return ChainModel(
             chainId: entity.chainId!,
@@ -391,7 +412,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             additional: additional,
             syncMode: syncMode,
             source: source,
-            enabled: entity.enabled
+            connectionMode: connectionMode ?? .autoBalanced
         )
     }
 
@@ -421,7 +442,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue
         entity.source = model.source.rawValue
-        entity.enabled = model.enabled
+        entity.connectionMode = model.connectionMode.rawValue
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
         }

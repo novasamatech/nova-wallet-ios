@@ -106,6 +106,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     let customExtensions: [ExtrinsicSignedExtending]
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
     let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
+    let blockHashOperationFactory: BlockHashOperationFactoryProtocol
 
     init(
         chain: ChainModel,
@@ -114,13 +115,15 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         engine: JSONRPCEngine,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil,
+        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.chain = chain
         self.senderResolvingFactory = senderResolvingFactory
         self.customExtensions = customExtensions
         self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
-
+        self.blockHashOperationFactory = blockHashOperationFactory
+        
         super.init(
             runtimeRegistry: runtimeRegistry,
             engine: engine,
@@ -151,27 +154,6 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         return operation
     }
 
-    private func createBlockHashOperation(
-        connection: JSONRPCEngine,
-        for numberClosure: @escaping () throws -> BlockNumber
-    ) -> BaseOperation<String> {
-        let requestOperation = JSONRPCListOperation<String>(
-            engine: connection,
-            method: RPCMethod.getBlockHash
-        )
-
-        requestOperation.configurationBlock = {
-            do {
-                let blockNumber = try numberClosure()
-                requestOperation.parameters = [blockNumber.toHex()]
-            } catch {
-                requestOperation.result = .failure(error)
-            }
-        }
-
-        return requestOperation
-    }
-
     private func createPartialBuildersWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
@@ -179,11 +161,11 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         customExtensions: [ExtrinsicSignedExtending],
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<[ExtrinsicBuilderProtocol]> {
-        let genesisBlockOperation = createBlockHashOperation(connection: engine, for: { 0 })
+        let genesisBlockOperation = blockHashOperationFactory.createBlockHashOperation(connection: engine, for: { 0 })
 
         let eraWrapper = eraOperationFactory.createOperation(from: engine, runtimeService: runtimeRegistry)
 
-        let eraBlockOperation = createBlockHashOperation(connection: engine) {
+        let eraBlockOperation = blockHashOperationFactory.createBlockHashOperation(connection: engine) {
             try eraWrapper.targetOperation.extractNoCancellableResultData().blockNumber
         }
 

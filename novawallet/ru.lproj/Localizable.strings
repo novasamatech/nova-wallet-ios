@@ -63,6 +63,7 @@
 "common.secret.derivation.path.substrate" = "Последовательность для вывода секрета Substrate";
 "common.secret.derivation.path.ethereum" = "Последовательность для вывода секрета Ethereum";
 "common.choose.network" = "Выберите сеть";
+"common.name" = "Имя";
 "sr25519.selection.subtitle" = "sr25519 (рекомендованный)";
 "ed25519.selection.subtitle" = "ed25519 (альтернативный)";
 "ecdsa.selection.subtitle" = "(BTC/ETH совместимый)";
@@ -134,6 +135,7 @@
 "wallet.assets.total.title" = "Стоимость активов";
 "network.info.title" = "Информация ноды";
 "network.info.name" = "Имя ноды";
+"network.info.node.url" = "URL ноды";
 "network.info.address" = "Адрес ноды";
 "common.add" = "Добавить";
 "common.update" = "Обновить";
@@ -1663,4 +1665,28 @@
 "common.disabled" = "Отключено";
 "common.testnet" = "Testnet";
 "networks.list.add.network.button.title" = "Добавить сеть";
+"integrate.network.banner.title" = "Разрабатываете для Polkadot?";
+"integrate.network.banner.message" = "Интегрируйте все возможности создаваемой вами сети в Nova Wallet, сделав ее доступной для всех.";
+"integrate.network.banner.button.link" = "Интегрируйте свою сеть";
 "networks.list.placeholder.messsage" = "Добавленные сети будут видны здесь";
+"network.details.default.nodes.section.title" = "Ноды по умолчанию";
+"network.details.custom.nodes.section.title" = "Пользовательские ноды";
+"network.details.enable.connection" = "Включить соединение";
+"network.details.auto.balance" = "Авто-балансирвоать ноды";
+"network.details.add.custom.node" = "Добавить пользовательскую ноду";
+"network.details.ping.milliseconds" = "%d мс";
+"network.node.add.title" = "Добавить пользовательскую ноду";
+"network.node.add.button.add" = "Добавить ноду";
+"network.node.add.button.enter.details" = "Введите детали";
+"network.node.add.alert.node.error.title" = "Ошибка ноды";
+"network.node.add.alert.node.error.message.wss" = "Введенный вами URL-адрес ноды либо не отвечает, либо содержит неправильный формат. Формат URL должен начинаться с \"ws://\" или \"wss://\"";
+"network.node.add.alert.wrong.network.title" = "Неверная сеть";
+"network.node.add.alert.wrong.network.message" = "Введенный вами URL-адрес не соответствует ноде для %@.
+Пожалуйста, введите URL-адрес действующей ноды %@.";
+"network.node.add.alert.already.exists.title" = "Эта нода уже существует";
+"network.node.add.alert.already.exists.message" = "Введенный вами URL-адрес уже существует в качестве ноды %@.";
+"common.for" = "Для";
+"network.manage.node.edit" = "Редактировать ноду";
+"network.manage.node.delete" = "Удалить ноду";
+"network.manage.node.manage.added.node" = "Управлять добавленной нодой";
+"network.node.edit.title" = "Редактировать пользовательскую ноду";

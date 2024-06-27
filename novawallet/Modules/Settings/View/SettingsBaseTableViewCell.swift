@@ -46,7 +46,13 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
     }
 
     func bind(titleViewModel: TitleIconViewModel) {
-        iconImageView.image = titleViewModel.icon
+        if let icon = titleViewModel.icon {
+            iconImageView.image = icon
+            iconImageView.isHidden = false
+        } else {
+            iconImageView.isHidden = true
+        }
+
         titleLabel.text = titleViewModel.title
         setNeedsLayout()
     }
@@ -128,6 +134,8 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
     }
 
     func bind(icon: ImageViewModelProtocol?, title: String) {
+        iconImageView.isHidden = false
+
         imageViewModel?.cancel(on: iconImageView)
         icon?.loadImage(
             on: iconImageView,
@@ -136,6 +144,7 @@ class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPo
         )
         imageViewModel = icon
         titleLabel.text = title
+
         setNeedsLayout()
     }
 

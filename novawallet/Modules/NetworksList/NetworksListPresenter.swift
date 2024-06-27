@@ -11,7 +11,7 @@ final class NetworksListPresenter {
     private var connectionStates: [ChainModel.Id: ConnectionState] = [:]
     private var chainIndexes: [ChainModel.Id: Int] = [:]
 
-    private var selectedNetworksType: NetworksType? = .default
+    private var selectedNetworksType: NetworksType = .default
     private var sortedChains: SortedChains?
 
     private let viewModelFactory: NetworksListViewModelFactory
@@ -30,9 +30,26 @@ final class NetworksListPresenter {
 // MARK: NetworksListPresenterProtocol
 
 extension NetworksListPresenter: NetworksListPresenterProtocol {
-    func selectChain(at _: Int) {}
+    func selectChain(at index: Int) {
+        guard let sortedChains else {
+            return
+        }
+
+        let chainModel = switch selectedNetworksType {
+        case .added:
+            sortedChains.addedChains[index]
+        case .default:
+            sortedChains.defaultChains[index]
+        }
+
+        wireframe.showNetworkDetails(from: view, with: chainModel)
+    }
 
     func select(segment: NetworksType?) {
+        guard let segment else {
+            return
+        }
+
         selectedNetworksType = segment
         indexChains()
         provideViewModels(animated: false)
@@ -77,10 +94,7 @@ extension NetworksListPresenter: NetworksListInteractorOutputProtocol {
 
 private extension NetworksListPresenter {
     func provideViewModels(animated _: Bool = true) {
-        guard
-            let selectedNetworksType,
-            let sortedChains
-        else { return }
+        guard let sortedChains else { return }
 
         let viewModel = switch selectedNetworksType {
         case .default:
@@ -159,6 +173,7 @@ private extension NetworksListPresenter {
 
 extension NetworksListPresenter {
     enum ConnectionState {
+        case notConnected
         case connecting
         case connected
     }

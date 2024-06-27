@@ -4,21 +4,17 @@ extension ChainModel {
     init(
         remoteModel: RemoteChainModel,
         assets: Set<AssetModel>,
+        nodes: Set<ChainNodeModel>,
         syncMode: ChainSyncMode,
         order: Int64,
-        enabled: Bool
+        connectionMode: ConnectionMode
     ) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
         name = remoteModel.name
         self.assets = assets
         self.syncMode = syncMode
-
-        let nodeList = remoteModel.nodes.enumerated().map { index, node in
-            ChainNodeModel(remoteModel: node, order: Int16(index))
-        }
-
-        nodes = Set(nodeList)
+        self.nodes = nodes
 
         nodeSwitchStrategy = .init(rawStrategy: remoteModel.nodeSelectionStrategy)
 
@@ -34,7 +30,7 @@ extension ChainModel {
         additional = remoteModel.additional
 
         self.order = order
-        self.enabled = enabled
         source = .remote
+        self.connectionMode = connectionMode
     }
 }

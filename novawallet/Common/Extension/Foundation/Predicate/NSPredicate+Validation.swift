@@ -48,12 +48,43 @@ extension NSPredicate {
         let format = "(0x)?[a-fA-F0-9]{128}"
         return NSPredicate(format: "SELF MATCHES %@", format)
     }
+    
+    static var ws: NSPredicate { websocketPredicate(for: .ws) }
 
-    static var websocket: NSPredicate {
+    static var websocket: NSPredicate { websocketPredicate(for: .wss) }
+
+    static var ipUrlPredicate: NSPredicate {
+        let urlRegEx = "^(https?://)?((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
+            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):[0-9]+(/[-\\w@\\+\\.~#\\?&/=%]*)?$"
+        return NSPredicate(format: "SELF MATCHES %@", urlRegEx)
+    }
+
+    static var domainUrlPredicate: NSPredicate {
+        let urlRegEx = "^(https?://)?(www\\.)?([-a-z0-9]{1,63}\\.)*?" +
+            "[a-z0-9][-a-z0-9]{0,61}[a-z0-9]\\.[a-z]{2,16}" +
+            "(/[-\\w@\\+\\.~#\\?&/=%]*)?$"
+        return NSPredicate(format: "SELF MATCHES %@", urlRegEx)
+    }
+
+    static var urlPredicate: NSPredicate {
+        NSCompoundPredicate(orPredicateWithSubpredicates: [
+            domainUrlPredicate,
+            ipUrlPredicate
+        ])
+    }
+    
+    private static func websocketPredicate(for scheme: WebsocketScheme) -> NSPredicate {
+        // protocol identifier (optional)
+        // short syntax // still required
+        let schemeRegExp = switch scheme {
+        case .ws:
+            "(?:(?:(?:wss?|ws):)?\\/\\/)"
+        case .wss:
+            "(?:(?:(?:wss?):)?\\/\\/)"
+        }
+        
         let format = "^" +
-            // protocol identifier (optional)
-            // short syntax // still required
-            "(?:(?:(?:wss?):)?\\/\\/)" +
+            schemeRegExp +
             // user:pass BasicAuth (optional)
             "(?:\\S+(?::\\S*)?@)?" +
             "(?:" +
@@ -92,24 +123,9 @@ extension NSPredicate {
 
         return NSPredicate(format: "SELF MATCHES %@", format)
     }
-
-    static var ipUrlPredicate: NSPredicate {
-        let urlRegEx = "^(https?://)?((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
-            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):[0-9]+(/[-\\w@\\+\\.~#\\?&/=%]*)?$"
-        return NSPredicate(format: "SELF MATCHES %@", urlRegEx)
-    }
-
-    static var domainUrlPredicate: NSPredicate {
-        let urlRegEx = "^(https?://)?(www\\.)?([-a-z0-9]{1,63}\\.)*?" +
-            "[a-z0-9][-a-z0-9]{0,61}[a-z0-9]\\.[a-z]{2,16}" +
-            "(/[-\\w@\\+\\.~#\\?&/=%]*)?$"
-        return NSPredicate(format: "SELF MATCHES %@", urlRegEx)
-    }
-
-    static var urlPredicate: NSPredicate {
-        NSCompoundPredicate(orPredicateWithSubpredicates: [
-            domainUrlPredicate,
-            ipUrlPredicate
-        ])
+    
+    private enum WebsocketScheme: String {
+        case ws = "ws"
+        case wss = "wss"
     }
 }
