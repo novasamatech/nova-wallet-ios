@@ -5,6 +5,7 @@ enum ExtrinsicSigningContext {
     struct Substrate {
         let senderResolution: ExtrinsicSenderResolution
         let extrinsicMemo: ExtrinsicBuilderMemoProtocol
+        let codingFactory: RuntimeCoderFactoryProtocol
     }
 
     case substrateExtrinsic(Substrate)

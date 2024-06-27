@@ -260,7 +260,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
                 let context = ExtrinsicSigningContext.Substrate(
                     senderResolution: senderResolution,
-                    extrinsicMemo: builder.makeMemo()
+                    extrinsicMemo: builder.makeMemo(),
+                    codingFactory: codingFactory
                 )
 
                 builder = try builder.signing(

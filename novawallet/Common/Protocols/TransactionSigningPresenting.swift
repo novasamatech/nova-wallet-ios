@@ -21,7 +21,7 @@ protocol TransactionSigningPresenting: AnyObject {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
-        ledgerType: LedgerAppType,
+        params: LedgerTxConfirmationParams,
         completion: @escaping TransactionSigningClosure
     )
 
@@ -29,7 +29,7 @@ protocol TransactionSigningPresenting: AnyObject {
         for data: Data,
         proxiedId: MetaAccountModel.Id,
         resolution: ExtrinsicSenderResolution.ResolvedProxy,
-        extrinsicMemo: ExtrinsicBuilderMemoProtocol,
+        substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
     )
 
@@ -97,7 +97,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
-        ledgerType: LedgerAppType,
+        params: LedgerTxConfirmationParams,
         completion: @escaping TransactionSigningClosure
     ) {
         guard
@@ -105,7 +105,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
                 with: data,
                 metaId: metaId,
                 chainId: chainId,
-                ledgerType: ledgerType,
+                params: params,
                 completion: completion
             ) else {
             completion(.failure(CommonError.dataCorruption))
@@ -118,7 +118,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
     private func createProxySigningClosure(
         for data: Data,
         proxy: MetaChainAccountResponse,
-        extrinsicMemo: ExtrinsicBuilderMemoProtocol,
+        substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
     ) -> () -> Void {
         { [weak self] in
@@ -134,7 +134,8 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
             let context = ExtrinsicSigningContext.Substrate(
                 senderResolution: .current(proxy.chainAccount),
-                extrinsicMemo: extrinsicMemo
+                extrinsicMemo: substrateContext.extrinsicMemo,
+                codingFactory: substrateContext.codingFactory
             )
             let signingWrapper = signingWrapperFactory.createSigningWrapper(
                 for: proxy.metaId,
@@ -184,7 +185,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         for data: Data,
         proxiedId: MetaAccountModel.Id,
         resolution: ExtrinsicSenderResolution.ResolvedProxy,
-        extrinsicMemo: ExtrinsicBuilderMemoProtocol,
+        substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
     ) {
         guard let proxy = resolution.proxyAccount else {
@@ -195,11 +196,14 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         let signClosure = createProxySigningClosure(
             for: data,
             proxy: proxy,
-            extrinsicMemo: extrinsicMemo,
+            substrateContext: substrateContext,
             completion: completion
         )
 
-        let validationClosure = createProxyValidationClosure(resolution: resolution, extrinsicMemo: extrinsicMemo)
+        let validationClosure = createProxyValidationClosure(
+            resolution: resolution,
+            extrinsicMemo: substrateContext.extrinsicMemo
+        )
 
         let cancelClosure: () -> Void = {
             completion(.failure(ProxySigningWrapperError.canceled))

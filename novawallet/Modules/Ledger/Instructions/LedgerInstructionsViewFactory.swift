@@ -4,7 +4,7 @@ import SoraFoundation
 struct LedgerInstructionsViewFactory {
     static func createView(
         for flow: WalletCreationFlow,
-        appType: LedgerAppType
+        appType: LedgerWalletType
     ) -> LedgerInstructionsViewProtocol? {
         let wireframe = LedgerInstructionsWireframe(flow: flow, appType: appType)
 

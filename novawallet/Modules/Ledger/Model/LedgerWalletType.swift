@@ -1,6 +1,6 @@
 import Foundation
 
-enum LedgerAppType {
+enum LedgerWalletType {
     case legacy
     case generic
 }

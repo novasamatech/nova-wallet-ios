@@ -61,7 +61,8 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return LedgerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
-                chainId: accountResponse.chainId
+                chainId: accountResponse.chainId,
+                ledgerWalletType: .legacy
             )
         case .proxied:
             return ProxySigningWrapper(
@@ -71,11 +72,11 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 uiPresenter: uiPresenter
             )
         case .genericLedger:
-            // TODO: Create a separate signing type
             return LedgerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
-                chainId: accountResponse.chainId
+                chainId: accountResponse.chainId,
+                ledgerWalletType: .generic
             )
         }
     }

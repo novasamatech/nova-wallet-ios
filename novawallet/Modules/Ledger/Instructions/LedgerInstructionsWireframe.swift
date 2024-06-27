@@ -2,9 +2,9 @@ import Foundation
 
 final class LedgerInstructionsWireframe: LedgerInstructionsWireframeProtocol {
     let flow: WalletCreationFlow
-    let appType: LedgerAppType
+    let appType: LedgerWalletType
 
-    init(flow: WalletCreationFlow, appType: LedgerAppType) {
+    init(flow: WalletCreationFlow, appType: LedgerWalletType) {
         self.flow = flow
         self.appType = appType
     }

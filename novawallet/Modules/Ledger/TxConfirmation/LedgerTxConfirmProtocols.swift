@@ -35,3 +35,7 @@ protocol LedgerTxConfirmWireframeProtocol: LedgerPerformOperationWireframeProtoc
         completion: @escaping MessageSheetCallback
     )
 }
+
+enum LedgerTxConfirmInteractorError: Error {
+    case invalidSignature
+}

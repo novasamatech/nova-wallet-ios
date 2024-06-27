@@ -4,30 +4,8 @@ import SoraKeystore
 import IrohaCrypto
 import SubstrateSdk
 
-enum LedgerTxConfirmInteractorError: Error {
-    case invalidSignature
-}
-
-final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
-    var presenter: LedgerTxConfirmInteractorOutputProtocol? {
-        get {
-            basePresenter as? LedgerTxConfirmInteractorOutputProtocol
-        }
-
-        set {
-            basePresenter = newValue
-        }
-    }
-
-    let signingData: Data
-    let metaId: String
-    let chainId: ChainModel.Id
+final class LedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
     let ledgerApplication: LedgerApplicationProtocol
-    let walletRepository: AnyDataProviderRepository<MetaAccountModel>
-    let signatureVerifier: SignatureVerificationWrapperProtocol
-    let keystore: KeystoreProtocol
-    let operationQueue: OperationQueue
-    let mortalityPeriodMilliseconds: TimeInterval
 
     init(
         signingData: Data,
@@ -41,23 +19,19 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
         operationQueue: OperationQueue,
         mortalityPeriodMilliseconds: TimeInterval
     ) {
-        self.signingData = signingData
-        self.metaId = metaId
-        self.chainId = chainId
         self.ledgerApplication = ledgerApplication
-        self.walletRepository = walletRepository
-        self.signatureVerifier = signatureVerifier
-        self.keystore = keystore
-        self.operationQueue = operationQueue
-        self.mortalityPeriodMilliseconds = mortalityPeriodMilliseconds
 
-        super.init(ledgerConnection: ledgerConnection)
-    }
-
-    private func provideExpirationTimeInterval() {
-        let expirationTime = mortalityPeriodMilliseconds.seconds
-
-        presenter?.didReceiveTransactionExpiration(timeInterval: expirationTime)
+        super.init(
+            signingData: signingData,
+            metaId: metaId,
+            chainId: chainId,
+            ledgerConnection: ledgerConnection,
+            walletRepository: walletRepository,
+            signatureVerifier: signatureVerifier,
+            keystore: keystore,
+            operationQueue: operationQueue,
+            mortalityPeriodMilliseconds: mortalityPeriodMilliseconds
+        )
     }
 
     private func createChainAccountWrapper(
@@ -84,8 +58,7 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
     private func createDerivationPathOperation(
         dependingOn chainAccountOperation: BaseOperation<ChainAccountModel>,
         keystore: KeystoreProtocol,
-        metaId: String,
-        chainId _: ChainModel.Id
+        metaId: String
     ) -> BaseOperation<Data> {
         ClosureOperation {
             let chainAccount = try chainAccountOperation.extractNoCancellableResultData()
@@ -100,48 +73,7 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
         }
     }
 
-    private func createSignatureOperation(
-        dependingOn chainAccountOperation: BaseOperation<ChainAccountModel>,
-        signatureFetchOperation: BaseOperation<Data>,
-        signingData: Data,
-        signatureVerifier: SignatureVerificationWrapperProtocol
-    ) -> BaseOperation<IRSignatureProtocol> {
-        ClosureOperation {
-            let chainAccount = try chainAccountOperation.extractNoCancellableResultData()
-
-            // drop signature type
-            let rawSignature = try signatureFetchOperation.extractNoCancellableResultData().dropFirst()
-
-            let originalData: Data
-
-            if !chainAccount.isEthereumBased {
-                originalData = try ExtrinsicSignatureConverter.convertExtrinsicPayloadToRegular(signingData)
-            } else {
-                originalData = signingData
-            }
-
-            guard
-                let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType),
-                let signature = try signatureVerifier.verify(
-                    rawSignature: rawSignature,
-                    originalData: originalData,
-                    rawPublicKey: chainAccount.publicKey,
-                    cryptoType: cryptoType
-                ) else {
-                throw LedgerTxConfirmInteractorError.invalidSignature
-            }
-
-            return signature
-        }
-    }
-
     // MARK: Overriden
-
-    override func setup() {
-        super.setup()
-
-        provideExpirationTimeInterval()
-    }
 
     override func performOperation(using deviceId: UUID) {
         let chainAccountWrapper = createChainAccountWrapper(metaId: metaId, chainId: chainId)
@@ -149,8 +81,7 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
         let derivationPathOperation = createDerivationPathOperation(
             dependingOn: chainAccountWrapper.targetOperation,
             keystore: keystore,
-            metaId: metaId,
-            chainId: chainId
+            metaId: metaId
         )
 
         derivationPathOperation.addDependency(chainAccountWrapper.targetOperation)
@@ -165,7 +96,7 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
 
         signatureFetchWrapper.addDependency(operations: [derivationPathOperation])
 
-        let signatureOperation = createSignatureOperation(
+        let signatureOperation = createSignatureCheckOperation(
             dependingOn: chainAccountWrapper.targetOperation,
             signatureFetchOperation: signatureFetchWrapper.targetOperation,
             signingData: signingData,
@@ -191,11 +122,5 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
             signatureFetchWrapper.allOperations + [signatureOperation]
 
         operationQueue.addOperations(operations, waitUntilFinished: false)
-    }
-}
-
-extension LedgerTxConfirmInteractor: LedgerTxConfirmInteractorInputProtocol {
-    func cancelTransactionRequest(for deviceId: UUID) {
-        ledgerConnection.cancelRequest(for: deviceId)
     }
 }

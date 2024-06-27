@@ -79,7 +79,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
         fatalError("Must be overriden in subclass")
     }
 
-    func showLedgerWalletCreation(from _: ControllerBackedProtocol?, appType _: LedgerAppType) {
+    func showLedgerWalletCreation(from _: ControllerBackedProtocol?, appType _: LedgerWalletType) {
         fatalError("Must be overriden in subclass")
     }
 

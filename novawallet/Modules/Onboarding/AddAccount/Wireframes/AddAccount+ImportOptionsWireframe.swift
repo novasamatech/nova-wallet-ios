@@ -24,7 +24,7 @@ extension AddAccount {
             )
         }
 
-        override func showLedgerWalletCreation(from view: ControllerBackedProtocol?, appType: LedgerAppType) {
+        override func showLedgerWalletCreation(from view: ControllerBackedProtocol?, appType: LedgerWalletType) {
             guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(
                 for: .addWallet,
                 appType: appType

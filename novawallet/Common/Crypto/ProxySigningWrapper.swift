@@ -58,7 +58,7 @@ final class ProxySigningWrapper {
         _ originalData: Data,
         proxiedId: MetaAccountModel.Id,
         proxy: ExtrinsicSenderResolution.ResolvedProxy,
-        extrinsicMemo: ExtrinsicBuilderMemoProtocol
+        substrateContext: ExtrinsicSigningContext.Substrate
     ) throws -> IRSignatureProtocol {
         if proxy.failures.isEmpty, proxy.proxyAccount != nil {
             return try signWithUiFlow { completionClosure in
@@ -66,7 +66,7 @@ final class ProxySigningWrapper {
                     for: originalData,
                     proxiedId: proxiedId,
                     resolution: proxy,
-                    extrinsicMemo: extrinsicMemo,
+                    substrateContext: substrateContext,
                     completion: completionClosure
                 )
             }
@@ -84,11 +84,16 @@ final class ProxySigningWrapper {
     private func sign(
         _ originalData: Data,
         sender: ExtrinsicSenderResolution,
-        extrinsicMemo: ExtrinsicBuilderMemoProtocol
+        substrateContext: ExtrinsicSigningContext.Substrate
     ) throws -> IRSignatureProtocol {
         switch sender {
         case let .proxy(resolvedProxy):
-            return try sign(originalData, proxiedId: metaId, proxy: resolvedProxy, extrinsicMemo: extrinsicMemo)
+            return try sign(
+                originalData,
+                proxiedId: metaId,
+                proxy: resolvedProxy,
+                substrateContext: substrateContext
+            )
         case .current:
             throw NoKeysSigningWrapperError.watchOnly
         }
@@ -102,7 +107,7 @@ extension ProxySigningWrapper: SigningWrapperProtocol {
             return try sign(
                 originalData,
                 sender: substrate.senderResolution,
-                extrinsicMemo: substrate.extrinsicMemo
+                substrateContext: substrate
             )
         case .evmTransaction, .rawBytes:
             throw NoSigningSupportError.notSupported(type: .proxy)

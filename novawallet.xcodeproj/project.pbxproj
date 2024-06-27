@@ -285,7 +285,7 @@
 		0C7104722C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */; };
 		0C7104772C2AC00000487E64 /* CommonMetadataShortenerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */; };
 		0C7104792C2AC0F300487E64 /* InMemoryCaching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */; };
-		0C71047B2C2AFF6D00487E64 /* LedgerAppType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71047A2C2AFF6D00487E64 /* LedgerAppType.swift */; };
+		0C71047B2C2AFF6D00487E64 /* LedgerWalletType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71047A2C2AFF6D00487E64 /* LedgerWalletType.swift */; };
 		0C71047F2C2B0C2C00487E64 /* GenericLedgerDiscoverWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71047E2C2B0C2C00487E64 /* GenericLedgerDiscoverWireframe.swift */; };
 		0C7104832C2B176100487E64 /* LedgerCommonApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104822C2B176100487E64 /* LedgerCommonApplication.swift */; };
 		0C7104852C2B26A100487E64 /* NewSubstrateLedgerApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104842C2B26A100487E64 /* NewSubstrateLedgerApplication.swift */; };
@@ -298,6 +298,10 @@
 		0C7104982C2C393A00487E64 /* SubstrateLedgerWalletModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104972C2C393A00487E64 /* SubstrateLedgerWalletModel.swift */; };
 		0C71049A2C2C3E5700487E64 /* GenericLedgerWalletOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104992C2C3E5700487E64 /* GenericLedgerWalletOperationFactory.swift */; };
 		0C71049C2C2C422500487E64 /* BaseLedgerWalletConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71049B2C2C422500487E64 /* BaseLedgerWalletConfirmInteractor.swift */; };
+		0C7104A02C2C6EED00487E64 /* SubstrateLedgerAppType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71049F2C2C6EED00487E64 /* SubstrateLedgerAppType.swift */; };
+		0C7104A22C2D0A6200487E64 /* LedgerTxConfirmationParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104A12C2D0A6200487E64 /* LedgerTxConfirmationParams.swift */; };
+		0C7104A42C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104A32C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift */; };
+		0C7104A82C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104A72C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift */; };
 		0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */; };
 		0C77B5612A8371AA00B5AE08 /* StaticValidatorListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */; };
 		0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */; };
@@ -5109,7 +5113,7 @@
 		0C7104712C29BB9A00487E64 /* ExtrinsicProofGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProofGenerationTests.swift; sourceTree = "<group>"; };
 		0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMetadataShortenerError.swift; sourceTree = "<group>"; };
 		0C7104782C2AC0F300487E64 /* InMemoryCaching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryCaching.swift; sourceTree = "<group>"; };
-		0C71047A2C2AFF6D00487E64 /* LedgerAppType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAppType.swift; sourceTree = "<group>"; };
+		0C71047A2C2AFF6D00487E64 /* LedgerWalletType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerWalletType.swift; sourceTree = "<group>"; };
 		0C71047E2C2B0C2C00487E64 /* GenericLedgerDiscoverWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerDiscoverWireframe.swift; sourceTree = "<group>"; };
 		0C7104822C2B176100487E64 /* LedgerCommonApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerCommonApplication.swift; sourceTree = "<group>"; };
 		0C7104842C2B26A100487E64 /* NewSubstrateLedgerApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSubstrateLedgerApplication.swift; sourceTree = "<group>"; };
@@ -5122,6 +5126,10 @@
 		0C7104972C2C393A00487E64 /* SubstrateLedgerWalletModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateLedgerWalletModel.swift; sourceTree = "<group>"; };
 		0C7104992C2C3E5700487E64 /* GenericLedgerWalletOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerWalletOperationFactory.swift; sourceTree = "<group>"; };
 		0C71049B2C2C422500487E64 /* BaseLedgerWalletConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLedgerWalletConfirmInteractor.swift; sourceTree = "<group>"; };
+		0C71049F2C2C6EED00487E64 /* SubstrateLedgerAppType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateLedgerAppType.swift; sourceTree = "<group>"; };
+		0C7104A12C2D0A6200487E64 /* LedgerTxConfirmationParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerTxConfirmationParams.swift; sourceTree = "<group>"; };
+		0C7104A32C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLedgerTxConfirmInteractor.swift; sourceTree = "<group>"; };
+		0C7104A72C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerTxConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewController.swift; sourceTree = "<group>"; };
 		0C77B5602A8371AA00B5AE08 /* StaticValidatorListProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListProtocols.swift; sourceTree = "<group>"; };
 		0C77B5622A83747200B5AE08 /* StaticValidatorListViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewLayout.swift; sourceTree = "<group>"; };
@@ -10376,6 +10384,22 @@
 			path = Generic;
 			sourceTree = "<group>";
 		};
+		0C7104A52C2D101300487E64 /* Legacy */ = {
+			isa = PBXGroup;
+			children = (
+				313B89948DC631DE61E01007 /* LedgerTxConfirmInteractor.swift */,
+			);
+			path = Legacy;
+			sourceTree = "<group>";
+		};
+		0C7104A62C2D101C00487E64 /* Generic */ = {
+			isa = PBXGroup;
+			children = (
+				0C7104A72C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift */,
+			);
+			path = Generic;
+			sourceTree = "<group>";
+		};
 		0C77B55D2A83713D00B5AE08 /* StaticValidatorList */ = {
 			isa = PBXGroup;
 			children = (
@@ -15405,7 +15429,9 @@
 				846B749728B4BA0500C39B93 /* LedgerAccountsStore.swift */,
 				846B749928B4BA1700C39B93 /* LedgerChainAccount.swift */,
 				84466B3628B7588F00FA1E0D /* LedgerWalletFactory.swift */,
-				0C71047A2C2AFF6D00487E64 /* LedgerAppType.swift */,
+				0C71047A2C2AFF6D00487E64 /* LedgerWalletType.swift */,
+				0C71049F2C2C6EED00487E64 /* SubstrateLedgerAppType.swift */,
+				0C7104A12C2D0A6200487E64 /* LedgerTxConfirmationParams.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -20596,12 +20622,14 @@
 		A2309CA128C2F2DB8F7989C1 /* TxConfirmation */ = {
 			isa = PBXGroup;
 			children = (
+				0C7104A62C2D101C00487E64 /* Generic */,
+				0C7104A52C2D101300487E64 /* Legacy */,
 				1CDBE81A72553F2198E446F7 /* LedgerTxConfirmProtocols.swift */,
 				EEB918ED70D77D1832094A8A /* LedgerTxConfirmWireframe.swift */,
 				EF75B8B6430531D2BF70C6E4 /* LedgerTxConfirmPresenter.swift */,
-				313B89948DC631DE61E01007 /* LedgerTxConfirmInteractor.swift */,
 				CCBCB7C3ABB6C06CD4681D44 /* LedgerTxConfirmViewFactory.swift */,
 				846A835728B8BC7B00D92892 /* LedgerTxConfirmViewController.swift */,
+				0C7104A32C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift */,
 			);
 			path = TxConfirmation;
 			sourceTree = "<group>";
@@ -23778,7 +23806,7 @@
 				7719018E2AE0E71F00D9C918 /* SwapErrorPresentable.swift in Sources */,
 				84DB9E982640A49E00F23DD3 /* StakingRedeemViewModelFactory.swift in Sources */,
 				84FBECFD292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift in Sources */,
-				0C71047B2C2AFF6D00487E64 /* LedgerAppType.swift in Sources */,
+				0C71047B2C2AFF6D00487E64 /* LedgerWalletType.swift in Sources */,
 				0CB313862C12BBBD00353724 /* CloudBackupEnablePasswordInteractor.swift in Sources */,
 				84ACEBF2261E664900AAE665 /* WalletHistoryFilterViewModel.swift in Sources */,
 				0C38B4FD2B7A652B00882A8B /* HydraRouter+Event.swift in Sources */,
@@ -25532,6 +25560,7 @@
 				88DC3E21292CAA0100DBCE4D /* RoundedView+Style.swift in Sources */,
 				848DAF00282294E600D56F55 /* ParachainStaking.swift in Sources */,
 				0C59E8FA2AA76A4A001E11F3 /* OperationDetailsDirectStakingProvider.swift in Sources */,
+				0C7104A22C2D0A6200487E64 /* LedgerTxConfirmationParams.swift in Sources */,
 				884A752F299B642E00FEFC30 /* DelegateVotedReferendaOption.swift in Sources */,
 				886CA9632977E9B300FC255A /* GovernanceDelegateBanner.swift in Sources */,
 				8423ADD226B2C9D000057EDD /* ImportantViewProtocol.swift in Sources */,
@@ -25883,6 +25912,7 @@
 				880855F228D09A0B004255E7 /* CrowdloanContributionData.swift in Sources */,
 				777DC2DF2B2364A90060CB2C /* UIView+cutting.swift in Sources */,
 				B51AD1836313CE26F369ED3F /* CustomValidatorListWireframe.swift in Sources */,
+				0C7104A02C2C6EED00487E64 /* SubstrateLedgerAppType.swift in Sources */,
 				D565DB5ED3B8B4D9BCFB4C21 /* CustomValidatorListPresenter.swift in Sources */,
 				8AEF593AFE8F59F7DC0A5753 /* CustomValidatorListInteractor.swift in Sources */,
 				84F1CB4027CF6BEF0095D523 /* UniquesClassDetails.swift in Sources */,
@@ -26136,6 +26166,7 @@
 				0C7104902C2BCD1F00487E64 /* HardwareWalletAddressesPresenter.swift in Sources */,
 				84BAD21C293B1BC200C55C49 /* ChainModelConversion.swift in Sources */,
 				0CAC02F92B48534200DDEC3A /* ProxyUpdateStyle.swift in Sources */,
+				0C7104A82C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift in Sources */,
 				40087CC8E6A91976807F7D44 /* DAppBrowserWireframe.swift in Sources */,
 				88FF5C7C29C8360400D1CB5D /* Caip19+ParseError.swift in Sources */,
 				37E229641DCDF64AC5AF1DCD /* DAppBrowserPresenter.swift in Sources */,
@@ -27216,6 +27247,7 @@
 				8786222ADF4643BE7A6FBBEB /* SwapSetupViewController.swift in Sources */,
 				772AB22A2B3E157B0099DB73 /* AccountManagementHintView.swift in Sources */,
 				350B8A18C9C91DF07D2E53C5 /* SwapSetupViewLayout.swift in Sources */,
+				0C7104A42C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift in Sources */,
 				77F8A1982B73769C00B25F9B /* PushNotificationsFacadeFactory.swift in Sources */,
 				66531C7E2E0E99C89A89A35A /* SwapSetupViewFactory.swift in Sources */,
 				EB280B977471EA442D91395E /* SwapConfirmProtocols.swift in Sources */,
