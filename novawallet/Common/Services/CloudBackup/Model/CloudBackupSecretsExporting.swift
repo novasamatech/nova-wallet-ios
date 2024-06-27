@@ -247,11 +247,12 @@ final class CloudBackupSecretsExporter {
         switch wallet.type {
         case .secrets:
             return try createPrivateInfoFromSecretsWalletType(wallet)
-        case .ledger, .genericLedger:
+        case .ledger:
             return try createPrivateInfoFromLedgerWalletType(wallet)
         case .watchOnly, .polkadotVault, .paritySigner:
             return nil
-        case .proxied:
+        case .proxied, .genericLedger:
+            // add backup for generic ledger
             throw CloudBackupSecretsExporterError.unsupportedWallet(wallet.type)
         }
     }
