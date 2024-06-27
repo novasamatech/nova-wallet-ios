@@ -69,6 +69,30 @@ final class CloudBackupSecretsExporter {
         chainAccount: ChainAccountModel?,
         isEthereumBased: Bool
     ) throws -> String? {
+        switch wallet.type {
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+            return try fetchRegularDerivationPath(
+                for: wallet,
+                chainAccount: chainAccount,
+                isEthereumBased: isEthereumBased
+            )
+        case .ledger:
+            return try fetchLedgerDerivationPath(
+                for: wallet,
+                chainAccount: chainAccount,
+                isEthereumBased: isEthereumBased
+            )
+        case .genericLedger:
+            // TODO: fix backup
+            throw CloudBackupSecretsExporterError.unsupportedWallet(.genericLedger)
+        }
+    }
+
+    private func fetchRegularDerivationPath(
+        for wallet: MetaAccountModel,
+        chainAccount: ChainAccountModel?,
+        isEthereumBased: Bool
+    ) throws -> String? {
         let tag = if isEthereumBased {
             KeystoreTagV2.ethereumDerivationTagForMetaId(wallet.metaId, accountId: chainAccount?.accountId)
         } else {
@@ -80,6 +104,24 @@ final class CloudBackupSecretsExporter {
         }
 
         return String(data: derivationPath, encoding: .utf8)
+    }
+
+    private func fetchLedgerDerivationPath(
+        for wallet: MetaAccountModel,
+        chainAccount: ChainAccountModel?,
+        isEthereumBased: Bool
+    ) throws -> String? {
+        let tag = if isEthereumBased {
+            KeystoreTagV2.ethereumDerivationTagForMetaId(wallet.metaId, accountId: chainAccount?.accountId)
+        } else {
+            KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId, accountId: chainAccount?.accountId)
+        }
+
+        guard let derivationPath = try keychain.loadIfKeyExists(tag) else {
+            return nil
+        }
+
+        return try LedgerPathConverter().convertFromChaincodesData(from: derivationPath)
     }
 
     private func fetchSeed(
@@ -169,9 +211,10 @@ final class CloudBackupSecretsExporter {
             return nil
         }
 
+        let seed = try fetchSeed(for: wallet, chainAccountModel: nil, isEthereumBased: true)
         let derivationPath = try fetchDerivationPath(for: wallet, chainAccount: nil, isEthereumBased: true)
 
-        return .init(keypair: keypairSecrets, derivationPath: derivationPath)
+        return .init(seed: seed, keypair: keypairSecrets, derivationPath: derivationPath)
     }
 
     private func createChainAccountSecrets(
