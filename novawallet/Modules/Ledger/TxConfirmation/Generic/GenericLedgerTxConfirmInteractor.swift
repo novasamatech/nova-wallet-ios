@@ -6,7 +6,7 @@ import SubstrateSdk
 final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
     let chain: ChainModel
     let extrinsicParams: LedgerTxConfirmationParams
-    let ledgerApplication: GenericLedgerSubstrateApplicationProtocol
+    let ledgerApplication: NewSubstrateLedgerSigningProtocol
     let proofOperationFactory: ExtrinsicProofOperationFactoryProtocol
     let chainConnection: JSONRPCEngine
 
@@ -16,7 +16,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
         chain: ChainModel,
         extrinsicParams: LedgerTxConfirmationParams,
         ledgerConnection: LedgerConnectionManagerProtocol,
-        ledgerApplication: GenericLedgerSubstrateApplicationProtocol,
+        ledgerApplication: NewSubstrateLedgerSigningProtocol,
         chainConnection: JSONRPCEngine,
         proofOperationFactory: ExtrinsicProofOperationFactoryProtocol,
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
@@ -46,6 +46,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
 
     private func createDerivationPathOperation(
         dependingOn walletOperation: BaseOperation<MetaAccountModel?>,
+        chainId: ChainModel.Id,
         keystore: KeystoreProtocol
     ) -> BaseOperation<Data> {
         ClosureOperation {
@@ -53,9 +54,20 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
-            let keystoreTag: String = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)
+            if wallet.substrateAccountId != nil {
+                let keystoreTag: String = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)
 
-            return try keystore.fetchKey(for: keystoreTag)
+                return try keystore.fetchKey(for: keystoreTag)
+            } else if let chainAccount = wallet.chainAccounts.first(where: { $0.chainId == chainId }) {
+                let keystoreTag: String = KeystoreTagV2.substrateDerivationTagForMetaId(
+                    wallet.metaId,
+                    accountId: chainAccount.accountId
+                )
+
+                return try keystore.fetchKey(for: keystoreTag)
+            } else {
+                throw CommonError.dataCorruption
+            }
         }
     }
 
@@ -115,7 +127,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
 
     private func createSignatureFetchWrapper(
         dependingOn paramsOperation: BaseOperation<GenericLedgerSubstrateSigningParams>,
-        ledgerApplication: GenericLedgerSubstrateApplicationProtocol,
+        ledgerApplication: NewSubstrateLedgerSigningProtocol,
         signingData: Data,
         deviceId: UUID
     ) -> CompoundOperationWrapper<Data> {
@@ -139,6 +151,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
 
         let derivationPathOperation = createDerivationPathOperation(
             dependingOn: walletOperation,
+            chainId: chainId,
             keystore: keystore
         )
 

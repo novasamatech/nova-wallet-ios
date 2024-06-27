@@ -49,15 +49,34 @@ struct LedgerTxConfirmViewFactory {
         chainId: ChainModel.Id,
         params: LedgerTxConfirmationParams
     ) -> BaseLedgerTxConfirmInteractor? {
-        switch params.walletType {
+        guard let chain = ChainRegistryFacade.sharedRegistry.getChain(for: chainId) else {
+            return nil
+        }
+
+        let substrateLedgerApp = LedgerSubstrateApp(
+            ledgerWalletType: params.walletType,
+            chain: chain,
+            codingFactory: params.codingFactory
+        )
+
+        switch substrateLedgerApp {
         case .legacy:
             return createLegacyInteractor(with: signingData, metaId: metaId, chainId: chainId)
+        case .migration:
+            return createGenericInteractor(
+                with: signingData,
+                metaId: metaId,
+                chainId: chainId,
+                params: params,
+                isForMigration: true
+            )
         case .generic:
             return createGenericInteractor(
                 with: signingData,
                 metaId: metaId,
                 chainId: chainId,
-                params: params
+                params: params,
+                isForMigration: false
             )
         }
     }
@@ -66,7 +85,8 @@ struct LedgerTxConfirmViewFactory {
         with signingData: Data,
         metaId: String,
         chainId: ChainModel.Id,
-        params: LedgerTxConfirmationParams
+        params: LedgerTxConfirmationParams,
+        isForMigration: Bool
     ) -> BaseLedgerTxConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -78,7 +98,11 @@ struct LedgerTxConfirmViewFactory {
 
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
-        let ledgerApplication = GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
+        let ledgerApplication: NewSubstrateLedgerSigningProtocol = if isForMigration {
+            MigrationLedgerSubstrateApplication(connectionManager: ledgerConnection)
+        } else {
+            GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
+        }
 
         let runtimeMetadataFactory = RuntimeMetadataRepositoryFactory(
             storageFacade: SubstrateDataStorageFacade.shared

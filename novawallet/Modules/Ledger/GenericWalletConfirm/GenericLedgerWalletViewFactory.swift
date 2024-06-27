@@ -13,7 +13,7 @@ struct GenericLedgerWalletViewFactory {
 
         let presenter = GenericLedgerWalletPresenter(
             deviceName: device.name,
-            appName: application.displayName,
+            appName: GenericLedgerSubstrateApplication.displayName,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: ChainAccountViewModelFactory(iconGenerator: PolkadotIconGenerator()),

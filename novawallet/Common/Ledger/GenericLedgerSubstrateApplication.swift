@@ -6,9 +6,7 @@ struct GenericLedgerSubstrateSigningParams {
     let derivationPath: Data
 }
 
-protocol GenericLedgerSubstrateApplicationProtocol {
-    var displayName: String { get }
-
+protocol GenericLedgerSubstrateAccountProtocol {
     var connectionManager: LedgerConnectionManagerProtocol { get }
 
     func getAccountWrapper(
@@ -17,15 +15,9 @@ protocol GenericLedgerSubstrateApplicationProtocol {
         addressPrefix: UInt16,
         displayVerificationDialog: Bool
     ) -> CompoundOperationWrapper<LedgerAccountResponse>
-
-    func getSignWrapper(
-        for payload: Data,
-        deviceId: UUID,
-        params: GenericLedgerSubstrateSigningParams
-    ) -> CompoundOperationWrapper<Data>
 }
 
-extension GenericLedgerSubstrateApplicationProtocol {
+extension GenericLedgerSubstrateAccountProtocol {
     func getUniversalAccountWrapper(
         for deviceId: UUID,
         index: UInt32 = 0,
@@ -40,12 +32,14 @@ extension GenericLedgerSubstrateApplicationProtocol {
     }
 }
 
+typealias GenericLedgerSubstrateApplicationProtocol = GenericLedgerSubstrateAccountProtocol &
+    NewSubstrateLedgerSigningProtocol
+
 final class GenericLedgerSubstrateApplication: NewSubstrateLedgerApplication {}
 
 extension GenericLedgerSubstrateApplication: GenericLedgerSubstrateApplicationProtocol {
     static let coin: UInt32 = 354
-
-    var displayName: String { "Generic" }
+    static let displayName = "Generic"
 
     func getAccountWrapper(
         for deviceId: UUID,
@@ -59,31 +53,6 @@ extension GenericLedgerSubstrateApplication: GenericLedgerSubstrateApplicationPr
             index: index,
             addressPrefix: addressPrefix,
             displayVerificationDialog: displayVerificationDialog
-        )
-    }
-
-    func getSignWrapper(
-        for payload: Data,
-        deviceId: UUID,
-        params: GenericLedgerSubstrateSigningParams
-    ) -> CompoundOperationWrapper<Data> {
-        let derivationPathClosure: LedgerPayloadClosure = {
-            let total = params.derivationPath.bytes + UInt16(payload.count).littleEndianBytes
-            return Data(total)
-        }
-
-        let payloadAndProof = payload + params.extrinsicProof
-
-        let payloadAndProofChunkClosures: [LedgerPayloadClosure] = payloadAndProof.chunked(
-            by: LedgerConstants.chunkSize
-        ).map { chunk in { chunk } }
-
-        let chunks = [derivationPathClosure] + payloadAndProofChunkClosures
-
-        return prepareSignatureWrapper(
-            for: deviceId,
-            cla: Self.cla,
-            chunks: chunks
         )
     }
 }
