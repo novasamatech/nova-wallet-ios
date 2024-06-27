@@ -1679,7 +1679,7 @@
 "network.node.add.button.add" = "Добавить ноду";
 "network.node.add.button.enter.details" = "Введите детали";
 "network.node.add.alert.node.error.title" = "Ошибка ноды";
-"network.node.add.alert.node.error.message.wss" = "Введенный вами URL-адрес ноды либо не отвечает, либо содержит неправильный формат. Формат URL должен начинаться с \"wss://\"";
+"network.node.add.alert.node.error.message.wss" = "Введенный вами URL-адрес ноды либо не отвечает, либо содержит неправильный формат. Формат URL должен начинаться с \"ws://\" или \"wss://\"";
 "network.node.add.alert.wrong.network.title" = "Неверная сеть";
 "network.node.add.alert.wrong.network.message" = "Введенный вами URL-адрес не соответствует ноде для %@.
 Пожалуйста, введите URL-адрес действующей ноды %@.";
