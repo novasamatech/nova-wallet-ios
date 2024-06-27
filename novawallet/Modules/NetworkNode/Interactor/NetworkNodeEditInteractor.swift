@@ -37,13 +37,6 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
         presenter?.didReceive(node: nodeToEdit)
     }
     
-    override func findExistingNode(
-        with url: String,
-        in chain: ChainModel
-    ) -> ChainNodeModel? {
-        chain.nodes.first { $0.url == url && $0.url != nodeToEdit.url }
-    }
-    
     override func handleConnected() {
         guard
             let chain = chainRegistry.getChain(for: chainId),
@@ -85,9 +78,17 @@ extension NetworkNodeEditInteractor: NetworkNodeEditInteractorInputProtocol {
         
         let editedNode = nodeToEdit.updating(url, name)
         
-        connect(
-            to: editedNode,
-            chain: chain
-        )
+        do {
+            try connect(
+                to: editedNode,
+                replacing: nodeToEdit,
+                chain: chain,
+                urlPredicate: NSPredicate.ws
+            )
+        } catch {
+            guard let networkNodeError = error as? NetworkNodeBaseInteractorError else { return }
+            
+            presenter?.didReceive(networkNodeError)
+        }
     }
 }

@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-class NetworkNodeBaseInteractor {
+class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait {
     weak var basePresenter: NetworkNodeBaseInteractorOutputProtocol?
     
     let chainRegistry: ChainRegistryProtocol
@@ -40,42 +40,6 @@ class NetworkNodeBaseInteractor {
     
     func setup() {
         completeSetup()
-    }
-    
-    func connect(
-        to node: ChainNodeModel,
-        chain: ChainModel
-    ) {
-        if let existingNode = findExistingNode(with: node.url, in: chain) {
-            basePresenter?.didReceive(.alreadyExists(nodeName: existingNode.name))
-            
-            return
-        }
-        
-        guard wssPredicate.evaluate(with: node.url) else {
-            basePresenter?.didReceive(.wrongFormat)
-            
-            return
-        }
-        
-        currentConnectingNode = node
-        
-        do {
-            currentConnection = try connectionFactory.createConnection(
-                for: node,
-                chain: chain,
-                delegate: self
-            )
-        } catch {
-            basePresenter?.didReceive(.unableToConnect(networkName: chain.name))
-        }
-    }
-    
-    func findExistingNode(
-        with url: String,
-        in chain: ChainModel
-    ) -> ChainNodeModel? {
-        fatalError("Must be overriden by subclass")
     }
     
     func handleConnected() {

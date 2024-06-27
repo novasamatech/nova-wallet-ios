@@ -1,9 +1,6 @@
-//
-//  CustomNetworkAddInteractor.swift
-//  novawallet
-//
-//  Created by Levan Chikvaidze on 21/06/2024.
-//  Copyright © 2024 Nova Foundation. All rights reserved.
-//
+import SubstrateSdk
+import Operation_iOS
 
-import Foundation
+class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
+    
+}

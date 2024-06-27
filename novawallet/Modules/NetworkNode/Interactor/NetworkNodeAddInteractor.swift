@@ -1,17 +1,10 @@
 import Foundation
 
-class NetworkNodeAddInteractor: NetworkNodeBaseInteractor {
+class NetworkNodeAddInteractor: NetworkNodeBaseInteractor, NetworkNodeCreatorTrait {
     weak var presenter: NetworkNodeAddInteractorOutputProtocol? {
         didSet {
             basePresenter = presenter
         }
-    }
-    
-    override func findExistingNode(
-        with url: String,
-        in chain: ChainModel
-    ) -> ChainNodeModel? {
-        chain.nodes.first { $0.url == url }
     }
     
     override func handleConnected() {
@@ -47,52 +40,27 @@ extension NetworkNodeAddInteractor: NetworkNodeAddInteractorInputProtocol {
         with url: String,
         name: String
     ) {
-        guard 
-            let chain = chainRegistry.getChain(for: chainId),
-            let node = createNode(
-                with: url,
-                name: name
-            )
-        else {
+        guard  let chain = chainRegistry.getChain(for: chainId) else {
             return
         }
         
-        connect(
-            to: node,
-            chain: chain
-        )
-    }
-}
-
-// MARK: Private
-
-private extension NetworkNodeAddInteractor {
-    func createNode(
-        with url: String,
-        name: String
-    ) -> ChainNodeModel? {
-        guard let chain = chainRegistry.getChain(for: chainId) else {
-            return nil
-        }
-        
-        let currentLastIndex = chain.nodes
-            .map { $0.order }
-            .max()
-        
-        let nodeIndex: Int16 = if let currentLastIndex {
-            currentLastIndex + 1
-        } else {
-            0
-        }
-        
-        let node = ChainNodeModel(
-            url: url,
+        let node = createNode(
+            with: url,
             name: name,
-            order: nodeIndex,
-            features: nil,
-            source: .user
+            for: chain
         )
         
-        return node
+        do {
+            try connect(
+                to: node,
+                replacing: nil,
+                chain: chain,
+                urlPredicate: NSPredicate.ws
+            )
+        } catch {
+            guard let networkNodeError = error as? NetworkNodeBaseInteractorError else { return }
+            
+            presenter?.didReceive(networkNodeError)
+        }
     }
 }
