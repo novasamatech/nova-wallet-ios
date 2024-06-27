@@ -1606,7 +1606,7 @@
 "wallet.import.title" = "Выберите как вы бы хотели импортировать кошелёк";
 "common.continue.with.apple.backup" = "Продолжить с Apple iCloud";
 "cloud.backup.not.available.title" = "Ошибка доступа к iCloud";
-"cloud.backup.not.available.message" = "Please, ensure that you are logged into iCloud account";
+"cloud.backup.not.available.message" = "Пожалуйста, убедитесь, что вы вошли в учетную запись iCloud";
 "cloud.backup.not.enough.storage.message" = "Пожалуйста, убедитесь, что у вас доступно достаточно места в iCloud. Вы можете управлять местом в iCloud в Настройках.";
 "ledger.instructions.step4.highlighted" = "Выберите аккаунт";
 "cloud.backup.create.title" = "Установить пароль бэкапа";

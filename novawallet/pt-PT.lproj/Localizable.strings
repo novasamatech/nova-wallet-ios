@@ -571,7 +571,7 @@
 "crowdloan.empty.message_v2_2_0" = "Crowdloans serão exibidos aqui";
 "common.existential.warning.message_v2_2_0" = "Sua conta será removida da blockchain após esta operação, pois faz com que o saldo total seja menor que o mínimo";
 "wallet.send.existential.warning_v2_2_0" = "Sua conta será removida da blockchain após a transferência pois reduzirá o saldo total abaixo do mínimo";
-"account.backup.mnemonic.title" = "Anote a frase e guarde-a em um lugar seguro";
+"account.backup.mnemonic.title" = "Anote sua Frase de Passagem";
 "common.understand" = "Entendi";
 "account.backup.mnemonic.caption" = "Por favor, certifique-se de que sua frase está escrita de forma correta e legível.";
 "account.backup.mnemonic.field.title" = "Frase Mnemônica";
@@ -1572,7 +1572,7 @@
 "common.backup.manual" = "Backup manual";
 "cloud.backup.broken.title" = "Backup encontrado, mas vazio ou corrompido";
 "cloud.backup.broken.message" = "Foi identificado um problema com o seu backup. Você tem a opção de deletar o backup atual e criar um novo. %@ antes de continuar.";
-"cloud.backup.broken.highlighted" = "<font>Certifique-se de que salvou as Frases Secretas para todas as carteiras</font>";
+"cloud.backup.broken.highlighted" = "Certifique-se de que salvou as Frases Secretas para todas as carteiras";
 "common.recover.wallets" = "Recuperar Carteiras";
 "cloud.backup.existing.bottom.sheet.title" = "Backup na Nuvem Existente encontrado";
 "cloud.backup.existing.bottom.sheet.recover" = "Você quer recuperar suas carteiras?";
@@ -1608,7 +1608,7 @@
 "cloud.backup.not.available.title" = "Falha na autenticação do iCloud";
 "cloud.backup.not.available.message" = "Por favor, certifique-se de que está conectado à conta do iCloud";
 "cloud.backup.not.enough.storage.message" = "Por favor, certifique-se de que tem espaço suficiente no iCloud disponível. Você pode gerenciar seu armazenamento nas Configurações.";
-"ledger.instructions.step4.highlighted" = "<font>Selecione a conta</font>";
+"ledger.instructions.step4.highlighted" = "Selecione a conta";
 "cloud.backup.create.title" = "Criar senha de backup";
 "cloud.backup.create.hint.min.char" = "Mín. %@ caracteres";
 "cloud.backup.create.hint.numbers" = "Dígitos";

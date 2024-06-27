@@ -571,7 +571,7 @@
 "crowdloan.empty.message_v2_2_0" = "Los crowdloans se mostrarán aquí";
 "common.existential.warning.message_v2_2_0" = "Tu cuenta será eliminada de la cadena de bloques después de esta operación ya que hace que el saldo total sea menor que el mínimo";
 "wallet.send.existential.warning_v2_2_0" = "Tu cuenta será eliminada de la blockchain después de la transferencia ya que hace que el saldo total sea menor que el mínimo";
-"account.backup.mnemonic.title" = "Apunta la frase y guárdala en un lugar seguro";
+"account.backup.mnemonic.title" = "Escribe tu Frase De Paso";
 "common.understand" = "Entiendo";
 "account.backup.mnemonic.caption" = "Por favor, asegúrate de anotar tu frase correctamente y de forma legible.";
 "account.backup.mnemonic.field.title" = "Frase mnemónica";

@@ -15,7 +15,7 @@
 "onboarding.restore.chain.account" = "Zaten bir hesabım var";
 "import.wallet.title" = "Cüzdanı İçe Aktar";
 "import.chain.account.title" = "Hesabı içe aktar";
-"onboarding.terms.and.conditions.1" = "<font>Kullanım Koşullarını ve Gizlilik Politikasını</font> okudum ve kabul ediyorum";
+"onboarding.terms.and.conditions.1" = "Kullanım Koşullarını ve Gizlilik Politikasını okudum ve kabul ediyorum";
 "onboarding.terms.and.conditions.2" = "Kullanım Koşulları";
 "onboarding.privacy.policy" = "Gizlilik Politikası";
 "pincode.enter.pin.code" = "PIN kodunu girin";
@@ -219,7 +219,7 @@
 "staking.recommended.section.title" = "Önerilen doğrulayıcılar";
 "staking.recommended.hint1" = "En karlı";
 "staking.recommended.hint2" = "Limit aşmamış";
-"staking.recommended.hint3" = "<font>Çevrimiçi kimliğe sahip</font>";
+"staking.recommended.hint3" = "Çevrimiçi kimliğe sahip";
 "staking.recommended.hint4" = "Ceza almamış";
 "staking.recommended.validators.counter" = "%@ / %@";
 "staking.recommended.custom.title" = "Özel doğrulayıcıları seçin";
@@ -571,7 +571,7 @@
 "crowdloan.empty.message_v2_2_0" = "Crowdloanlar burada gösterilecek";
 "common.existential.warning.message_v2_2_0" = "Bu işlem sonrası hesabınız, toplam bakiyeyi minimal bakiyenin altına düşürdüğü için blockchain'den kaldırılacak";
 "wallet.send.existential.warning_v2_2_0" = "Hesabınız, toplam tutarı asgari tutarın altına düşürdüğü için transfer sonrası blockchain'den kaldırılacak.";
-"account.backup.mnemonic.title" = "İfadenizi yazın ve güvenli bir yerde saklayın";
+"account.backup.mnemonic.title" = "Parolanızı not edin";
 "common.understand" = "Anladım";
 "account.backup.mnemonic.caption" = "Lütfen ifadenizi doğru ve okunaklı bir şekilde yazdığınızdan emin olun.";
 "account.backup.mnemonic.field.title" = "Anımsatıcı Şifre İfadesi";
@@ -1200,7 +1200,7 @@
 "transfer.setup.recipient.input.placeholder" = "Adres veya w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Ad araması devam ediyor";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Lütfen, %@ araması tamamlanana kadar bekleyin";
-"wallet.connect.scan.message" = "<font>QR kodunu tarayın</font>";
+"wallet.connect.scan.message" = "QR kodunu tarayın";
 "common.wallet.connect" = "WalletConnect";
 "wallet.connect.scan.button" = "Yeni bağlantı";
 "common.disconnect" = "Bağlantıyı kes";
@@ -1572,7 +1572,7 @@
 "common.backup.manual" = "Manuel olarak yedekle";
 "cloud.backup.broken.title" = "Yedekleme bulundu ancak boş veya bozuk";
 "cloud.backup.broken.message" = "Yedeklemenizde bir sorun tespit edildi. Mevcut yedeklemeyi silip yeni bir tane oluşturma seçeneğiniz var. Devam etmeden önce %@.";
-"cloud.backup.broken.highlighted" = "<font>Tüm cüzdanlar için Şifre Cümlelerini kaydettiğinizden emin olun</font>";
+"cloud.backup.broken.highlighted" = "Tüm cüzdanlar için Şifre Cümlelerini kaydettiğinizden emin olun";
 "common.recover.wallets" = "Cüzdanları Geri Yükle";
 "cloud.backup.existing.bottom.sheet.title" = "Mevcut Cloud Backup bulundu";
 "cloud.backup.existing.bottom.sheet.recover" = "Cüzdanlarınızı geri yüklemek ister misiniz?";

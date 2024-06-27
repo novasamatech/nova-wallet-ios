@@ -571,7 +571,7 @@
 "crowdloan.empty.message_v2_2_0" = "I crowdloan verranno visualizzati qui";
 "common.existential.warning.message_v2_2_0" = "Il tuo account verrà rimosso dalla blockchain dopo questa operazione perché renderà il saldo totale inferiore al minimo.";
 "wallet.send.existential.warning_v2_2_0" = "Il tuo account verrà rimosso dalla blockchain dopo il trasferimento perché il saldo totale diventa inferiore al minimo";
-"account.backup.mnemonic.title" = "Scrivi la frase e conservala in un posto sicuro";
+"account.backup.mnemonic.title" = "Scrivi la tua Passphrase";
 "common.understand" = "Ho capito";
 "account.backup.mnemonic.caption" = "Assicurati di scrivere correttamente e in modo leggibile la tua frase.";
 "account.backup.mnemonic.field.title" = "Frase mnemonica";
@@ -1608,7 +1608,7 @@
 "cloud.backup.not.available.title" = "Autenticazione iCloud fallita";
 "cloud.backup.not.available.message" = "Assicurati di essere connesso al tuo account iCloud";
 "cloud.backup.not.enough.storage.message" = "Assicurati di avere sufficiente spazio disponibile su iCloud. Puoi gestire il tuo spazio nelle Impostazioni.";
-"ledger.instructions.step4.highlighted" = "<font>Seleziona account</font>";
+"ledger.instructions.step4.highlighted" = "Seleziona account";
 "cloud.backup.create.title" = "Crea password di backup";
 "cloud.backup.create.hint.min.char" = "Min. %@ caratteri";
 "cloud.backup.create.hint.numbers" = "Numeri";
@@ -1630,7 +1630,7 @@
 "backup.attention.aggree.button.title" = "Revisione &  Accetta per Continuare";
 "mnemonic.card.cover.message.message" = "Assicurati che nessuno possa vedere il tuo schermo e non fare screenshot";
 "mnemonic.card.revealed.header.message" = "Per favore %@ nessuno";
-"mnemonic.card.revealed.header.message.highlighted" = "<font>non condividere con</font>";
+"mnemonic.card.revealed.header.message.highlighted" = "non condividere con";
 "chain.accounts.list.default.subtitle" = "+%li altri";
 "cloud.backup.review.subtitle" = "Prima di procedere con le modifiche, %@ per portafogli modificati e rimossi!";
 "cloud.backup.review.ensure.passphrase" = "assicurati di aver salvato le Frasi Segrete";

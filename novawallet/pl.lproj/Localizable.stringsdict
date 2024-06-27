@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>common.days.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li dzień</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>%li dni</string>
+      </dict>
+    </dict>
+    <key>common.hours.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li godzina</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>%li godzin</string>
+      </dict>
+    </dict>
+    <key>common.days.left.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Pozostał %li dzień</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>Pozostało %li dni</string>
+      </dict>
+    </dict>
+    <key>staking.analytics.validators.eras.counter</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li era</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>%li ery</string>
+      </dict>
+    </dict>
+    <key>common.minutes.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li minuta</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>%li minut</string>
+      </dict>
+    </dict>
+    <key>common.every.days.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>codziennie</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>co %li dni</string>
+      </dict>
+    </dict>
+    <key>common.in.tracks</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 utwór</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>%li utworów</string>
+      </dict>
+    </dict>
+    <key>common.networks.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Sieć</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>Sieci</string>
+      </dict>
+    </dict>
+    <key>common.unsupported.count</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 nieobsługiwany</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>%li nieobsługiwanych</string>
+      </dict>
+    </dict>
+    <key>missing.accounts.warning.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Brakuje konta %2$@. Dodaj konto do portfela w Ustawieniach</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>Brakuje kont %2$@. Dodaj konta do portfela w Ustawieniach</string>
+      </dict>
+    </dict>
+    <key>dapps.unsupported.networks.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 nieobsługiwana sieć ukryta</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>%li nieobsługiwanych sieci ukrytych</string>
+      </dict>
+    </dict>
+    <key>notifications.wallet.list.selection.hint</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Wybierz co najmniej %li portfel</string>
+        <key>few</key>
+        <string></string>
+        <key>many</key>
+        <string></string>
+        <key>other</key>
+        <string>Wybierz co najmniej %li portfeli</string>
+      </dict>
+    </dict>
+  </dict>
+</plist>
