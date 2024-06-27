@@ -40,7 +40,7 @@ final class AssetReceivePresenter {
 
         let viewModel = ChainAccountViewModel(
             networkName: chain.name,
-            networkIconViewModel: RemoteImageViewModel(url: chain.icon),
+            networkIconViewModel: ImageViewModelFactory.createChainIconOrDefault(from: chain.icon),
             displayAddressViewModel: .init(
                 details: accountAddress ?? "",
                 imageViewModel: icon.map { DrawableIconViewModel(icon: $0) }

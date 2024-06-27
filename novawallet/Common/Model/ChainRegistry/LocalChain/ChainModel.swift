@@ -70,7 +70,7 @@ struct ChainModel: Equatable, Hashable {
     let nodes: Set<ChainNodeModel>
     let addressPrefix: UInt16
     let types: TypesSettings?
-    let icon: URL
+    let icon: URL?
     let options: [LocalChainOptions]?
     let externalApis: LocalChainExternalApiSet?
     let nodeSwitchStrategy: NodeSwitchStrategy
@@ -90,7 +90,7 @@ struct ChainModel: Equatable, Hashable {
         nodeSwitchStrategy: NodeSwitchStrategy,
         addressPrefix: UInt16,
         types: TypesSettings?,
-        icon: URL,
+        icon: URL?,
         options: [LocalChainOptions]?,
         externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,

@@ -42,7 +42,7 @@ final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
-        let icon = RemoteImageViewModel(url: asset.icon ?? chain.icon)
+        let icon = ImageViewModelFactory.createAssetIconOrDefault(from: asset.icon ?? chain.icon) 
         let title = governanceType.title(for: chain)
         let isSelected = selectedChainId == chain.chainId && selectedGovernanceType == governanceType
         let balance = extractFormattedBalance(for: chainAsset) ?? ""

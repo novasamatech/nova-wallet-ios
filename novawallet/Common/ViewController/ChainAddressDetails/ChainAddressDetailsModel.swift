@@ -17,18 +17,18 @@ struct ChainAddressDetailsAction {
 struct ChainAddressDetailsModel {
     let address: AccountAddress?
     let chainName: String
-    let chainIcon: URL
+    let chainIcon: URL?
     let actions: [ChainAddressDetailsAction]
 }
 
 final class ChainAddressDetailsModelBuilder {
     let address: AccountAddress
     let chainName: String
-    let chainIcon: URL
+    let chainIcon: URL?
 
     private var actions: [ChainAddressDetailsAction] = []
 
-    init(address: AccountAddress, chainName: String, chainIcon: URL) {
+    init(address: AccountAddress, chainName: String, chainIcon: URL?) {
         self.address = address
         self.chainName = chainName
         self.chainIcon = chainIcon
