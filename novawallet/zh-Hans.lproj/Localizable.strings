@@ -571,7 +571,7 @@
 "crowdloan.empty.message_v2_2_0" = "众贷将显示在这里";
 "common.existential.warning.message_v2_2_0" = "此操作后，如果您的总余额低于最低余额，您的账户将从区块链中移除";
 "wallet.send.existential.warning_v2_2_0" = "转账后您的账户将因总余额低于最低限额而从区块链中移除";
-"account.backup.mnemonic.title" = "记录该短语并将其存放在安全的地方";
+"account.backup.mnemonic.title" = "写下你的密码短语";
 "common.understand" = "我明白了";
 "account.backup.mnemonic.caption" = "请确保您的短语正确且清晰地写下。";
 "account.backup.mnemonic.field.title" = "助记词密语";
@@ -1515,6 +1515,12 @@
 "notifications.error.disabled.in.settings.title" = "为Nova Wallet启用通知";
 "notifications.error.disabled.in.settings.message" = "前往设置→点击\"通知\"→开启\"允许通知\"";
 "notifications.wallet.list.limit.error.message" = "遗憾的是，您的钱包当前只允许有限的%li个推送通知。";
+"ledger.instructions.step4" = "%@添加到钱包";
+"legacy.ledger.migration.message" = "Migration 应用程序在不久的将来将无法使用。使用它将您的账户迁移到新的 Ledger 应用程序，以免丢失资金。";
+"legacy.ledger.notification.title" = "新版 Ledger 应用程序已发布";
+"legacy.ledger.notification.message" = "要进行操作签名并将您的账户迁移到新的 Generic Ledger 应用程序，请安装并打开 Migration 应用程序。旧版 Legacy 和 Migration Ledger 应用程序将来不会被支持。";
+"common.ledger.nano.legacy" = "Ledger Nano X（旧版）";
+"common.ledger.legacy" = "Ledger（旧版）";
 "common.passphrase" = "助记词";
 "cloud.backup.remove.wallet.title" = "钱包将被从云备份中移除";
 "cloud.backup.remove.wallet.message" = "确保您在继续之前已经保存了钱包的助记词。";
@@ -1580,8 +1586,8 @@
 "cloud.backup.not.found.message" = "很遗憾，没有找到您的钱包备份。";
 "common.delete.backup" = "删除备份";
 "cloud.backup.no.password.title" = "你是否丢失了密码？";
-"cloud.backup.no.password.highlighted1" = "<font>很遗憾，您的密码无法恢复。</font>";
-"cloud.backup.no.password.highlighted2" = "<font>或者，使用Passphrase进行恢复。</font>";
+"cloud.backup.no.password.highlighted1" = "很遗憾，您的密码无法恢复。";
+"cloud.backup.no.password.highlighted2" = "或者，使用Passphrase进行恢复。";
 "common.forgot.password.button" = "忘记密码？";
 "cloud.backup.import.title" = "输入备份密码";
 "cloud.backup.import.subtitle" = "请输入您在备份过程中创建的密码";
@@ -1652,4 +1658,6 @@
 "account.export.ethereum.private.key.placeholder" = "64个十六进制符号";
 "common.status.backup.syncing" = "正在同步备份...";
 "common.status.backup.synced" = "备份已同步";
-"ledger.instructions.step4" = "%@添加到钱包";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic app)";
+"generic.ledger.instructions.step1.highlighted" = "Generic 应用程序";
+"generic.ledger.instructions.step2.highlighted" = "Open the Generic app";

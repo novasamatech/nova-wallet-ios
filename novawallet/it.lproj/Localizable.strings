@@ -571,7 +571,7 @@
 "crowdloan.empty.message_v2_2_0" = "I crowdloan verranno visualizzati qui";
 "common.existential.warning.message_v2_2_0" = "Il tuo account verrà rimosso dalla blockchain dopo questa operazione perché renderà il saldo totale inferiore al minimo.";
 "wallet.send.existential.warning_v2_2_0" = "Il tuo account verrà rimosso dalla blockchain dopo il trasferimento perché il saldo totale diventa inferiore al minimo";
-"account.backup.mnemonic.title" = "Scrivi la frase e conservala in un posto sicuro";
+"account.backup.mnemonic.title" = "Scrivi la tua Passphrase";
 "common.understand" = "Ho capito";
 "account.backup.mnemonic.caption" = "Assicurati di scrivere correttamente e in modo leggibile la tua frase.";
 "account.backup.mnemonic.field.title" = "Frase mnemonica";
@@ -1515,6 +1515,12 @@
 "notifications.error.disabled.in.settings.title" = "Abilita le notifiche per Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Vai alle Impostazioni → Tocca \"Notifiche\" → Attiva \"Permetti notifiche\"";
 "notifications.wallet.list.limit.error.message" = "Sfortunatamente, attualmente c'è un limite nelle notifiche push per solo %li dei tuoi portafogli.";
+"ledger.instructions.step4" = "%@ da aggiungere al portafoglio";
+"legacy.ledger.migration.message" = "L'app Migration sarà non più disponibile nel prossimo futuro. Usala per migrare i tuoi account alla nuova app Ledger per evitare di perdere i tuoi fondi.";
+"legacy.ledger.notification.title" = "È stata rilasciata una nuova app Ledger";
+"legacy.ledger.notification.message" = "Per firmare operazioni e migrare i tuoi account alla nuova app Generic Ledger, installa e apri l'app Migration. Le app Ledger Legacy e Migration non saranno supportate in futuro.";
+"common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
+"common.ledger.legacy" = "Ledger (Legacy)";
 "common.passphrase" = "Frase di sicurezza";
 "cloud.backup.remove.wallet.title" = "Il portafoglio sarà rimosso nel Backup sul Cloud";
 "cloud.backup.remove.wallet.message" = "Assicurati di aver salvato la frase di recupero per il portafoglio prima di procedere.";
@@ -1608,7 +1614,7 @@
 "cloud.backup.not.available.title" = "Autenticazione iCloud fallita";
 "cloud.backup.not.available.message" = "Assicurati di essere connesso al tuo account iCloud";
 "cloud.backup.not.enough.storage.message" = "Assicurati di avere sufficiente spazio disponibile su iCloud. Puoi gestire il tuo spazio nelle Impostazioni.";
-"ledger.instructions.step4.highlighted" = "<font>Seleziona account</font>";
+"ledger.instructions.step4.highlighted" = "Seleziona account";
 "cloud.backup.create.title" = "Crea password di backup";
 "cloud.backup.create.hint.min.char" = "Min. %@ caratteri";
 "cloud.backup.create.hint.numbers" = "Numeri";
@@ -1630,7 +1636,7 @@
 "backup.attention.aggree.button.title" = "Revisione &  Accetta per Continuare";
 "mnemonic.card.cover.message.message" = "Assicurati che nessuno possa vedere il tuo schermo e non fare screenshot";
 "mnemonic.card.revealed.header.message" = "Per favore %@ nessuno";
-"mnemonic.card.revealed.header.message.highlighted" = "<font>non condividere con</font>";
+"mnemonic.card.revealed.header.message.highlighted" = "non condividere con";
 "chain.accounts.list.default.subtitle" = "+%li altri";
 "cloud.backup.review.subtitle" = "Prima di procedere con le modifiche, %@ per portafogli modificati e rimossi!";
 "cloud.backup.review.ensure.passphrase" = "assicurati di aver salvato le Frasi Segrete";
@@ -1652,4 +1658,6 @@
 "account.export.ethereum.private.key.placeholder" = "64 simboli esadecimali";
 "common.status.backup.syncing" = "Sincronizzazione del backup...";
 "common.status.backup.synced" = "Backup sincronizzato";
-"ledger.instructions.step4" = "%@ da aggiungere al portafoglio";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic app)";
+"generic.ledger.instructions.step1.highlighted" = "l'app Generic sia installata";
+"generic.ledger.instructions.step2.highlighted" = "Open the Generic app";
