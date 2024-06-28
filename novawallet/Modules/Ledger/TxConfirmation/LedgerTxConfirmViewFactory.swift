@@ -33,10 +33,8 @@ struct LedgerTxConfirmViewFactory {
 
         let wireframe = LedgerTxConfirmWireframe()
 
-        let chainName = ChainRegistryFacade.sharedRegistry.getChain(for: chainId)?.name ?? ""
-
         let presenter = LedgerTxConfirmPresenter(
-            chainName: chainName,
+            chainName: substrateLedgerApp.displayName(for: chain),
             needsMigration: substrateLedgerApp.isMigration,
             applicationConfig: ApplicationConfig.shared,
             interactor: interactor,

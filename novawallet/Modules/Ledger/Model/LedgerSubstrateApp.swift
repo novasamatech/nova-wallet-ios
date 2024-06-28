@@ -30,4 +30,15 @@ enum LedgerSubstrateApp {
             return true
         }
     }
+
+    func displayName(for chain: ChainModel?) -> String {
+        switch self {
+        case .legacy:
+            return chain?.name ?? ""
+        case .migration:
+            return "Migration"
+        case .generic:
+            return "Generic"
+        }
+    }
 }

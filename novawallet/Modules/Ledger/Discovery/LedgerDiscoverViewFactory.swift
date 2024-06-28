@@ -75,7 +75,7 @@ struct LedgerDiscoverViewFactory {
         return createView(
             interactor: interactor,
             wireframe: wireframe,
-            appName: GenericLedgerSubstrateApplication.displayName
+            appName: LedgerSubstrateApp.generic.displayName(for: nil)
         )
     }
 

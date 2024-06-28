@@ -39,7 +39,6 @@ final class GenericLedgerSubstrateApplication: NewSubstrateLedgerApplication {}
 
 extension GenericLedgerSubstrateApplication: GenericLedgerSubstrateApplicationProtocol {
     static let coin: UInt32 = 354
-    static let displayName = "Generic"
 
     func getAccountWrapper(
         for deviceId: UUID,
