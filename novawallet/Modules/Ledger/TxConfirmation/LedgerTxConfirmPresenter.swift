@@ -54,7 +54,9 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         }
 
         return LocalizableResource { locale in
-            MessageSheetMigrationBannerView.ViewModel.createLedgerMigration(for: locale) { [weak self] in
+            MessageSheetMigrationBannerView.ViewModel.createLedgerMigrationWillBeUnavailable(
+                for: locale
+            ) { [weak self] in
                 self?.activateMigrationPage()
             }
         }
@@ -66,9 +68,23 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         }
 
         return LocalizableResource { locale in
-            MessageSheetMigrationBannerView.ViewModel.createLedgerMigration(for: locale) { [weak self] in
+            MessageSheetMigrationBannerView.ViewModel.createLedgerMigrationDownload(
+                for: locale
+            ) { [weak self] in
                 self?.activateMigrationPage()
             }
+        }
+    }
+
+    private func createMigrationIfNeeded(
+        for error: LedgerError
+    ) -> MessageSheetMigrationBannerView.ContentViewModel? {
+        if
+            case let .response(responseError) = error,
+            responseError.isValidAppNotOpen() {
+            return createMigrationDownloadIfNeeded()
+        } else {
+            return createMigrationWillBeUnavailableIfNeeded()
         }
     }
 
@@ -76,6 +92,13 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         guard let view else {
             return
         }
+
+        if let connectingDevice {
+            interactor?.cancelTransactionRequest(for: connectingDevice.identifier)
+            stopConnecting()
+        }
+
+        wireframe?.closeMessageSheet(on: view)
 
         wireframe?.showWeb(
             url: applicationConfig.ledgerMigrationURL,
@@ -100,6 +123,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
                 on: view,
                 error: ledgerError,
                 networkName: appName,
+                migrationViewModel: createMigrationIfNeeded(for: ledgerError),
                 cancelClosure: { [weak self] in
                     self?.performCancellation()
                 },

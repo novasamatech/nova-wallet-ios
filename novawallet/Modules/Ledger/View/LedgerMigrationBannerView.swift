@@ -118,10 +118,25 @@ extension LedgerMigrationBannerView.Style {
 }
 
 extension LedgerMigrationBannerView.ViewModel {
-    static func createLedgerMigration(for locale: Locale?, action: @escaping () -> Void) -> Self {
+    static func createLedgerMigrationDownload(
+        for locale: Locale?,
+        action: @escaping () -> Void
+    ) -> Self {
         .init(
             title: R.string.localizable.legacyLedgerNotificationTitle(preferredLanguages: locale?.rLanguages),
             subtitle: R.string.localizable.legacyLedgerNotificationMessage(preferredLanguages: locale?.rLanguages),
+            actionTitle: R.string.localizable.commonFindMore(preferredLanguages: locale?.rLanguages),
+            action: action
+        )
+    }
+
+    static func createLedgerMigrationWillBeUnavailable(
+        for locale: Locale?,
+        action: @escaping () -> Void
+    ) -> Self {
+        .init(
+            title: R.string.localizable.legacyLedgerNotificationTitle(preferredLanguages: locale?.rLanguages),
+            subtitle: R.string.localizable.legacyLedgerMigrationMessage(preferredLanguages: locale?.rLanguages),
             actionTitle: R.string.localizable.commonFindMore(preferredLanguages: locale?.rLanguages),
             action: action
         )

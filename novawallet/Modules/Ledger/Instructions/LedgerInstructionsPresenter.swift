@@ -25,7 +25,9 @@ final class LedgerInstructionsPresenter {
 
     private func provideMigrationViewModelIfNeeded() {
         if isGenericAvailable, walletType.isLegacy {
-            view?.didReceive(migrationViewModel: .createLedgerMigration(for: selectedLocale) { [weak self] in
+            view?.didReceive(migrationViewModel: .createLedgerMigrationDownload(
+                for: selectedLocale
+            ) { [weak self] in
                 self?.showMigrationDetails()
             })
         }
