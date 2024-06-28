@@ -61,7 +61,9 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
             case .success:
                 self?.presenter?.didEditNode()
             case .failure:
-                self?.presenter?.didReceive(.common(error: .dataCorruption))
+                self?.presenter?.didReceive(
+                    .common(innerError: .dataCorruption)
+                )
             }
         }
     }

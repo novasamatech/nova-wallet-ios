@@ -27,7 +27,9 @@ class NetworkNodeAddInteractor: NetworkNodeBaseInteractor, NetworkNodeCreatorTra
             case .success:
                 self?.presenter?.didAddNode()
             case .failure:
-                self?.presenter?.didReceive(.common(error: .dataCorruption))
+                self?.presenter?.didReceive(
+                    .common(innerError: .dataCorruption)
+                )
             }
         }
     }

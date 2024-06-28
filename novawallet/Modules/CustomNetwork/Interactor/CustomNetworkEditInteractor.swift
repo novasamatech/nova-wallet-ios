@@ -35,7 +35,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
             { [weak self] in
                 guard let self else { return [] }
                 
-                [networkToEdit.chainId]
+                return [networkToEdit.chainId]
             }
         )
         
@@ -48,7 +48,9 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
             case .success:
                 self?.presenter?.didEditChain()
             case .failure:
-                self?.presenter?.didReceive(.common(error: .dataCorruption))
+                self?.presenter?.didReceive(
+                    .common(innerError: .dataCorruption)
+                )
             }
         }
     }

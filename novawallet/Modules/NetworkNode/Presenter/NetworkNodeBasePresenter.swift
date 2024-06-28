@@ -117,56 +117,20 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
     }
     
     func didReceive(_ error: NetworkNodeBaseInteractorError) {
-        var title: String?
-        var message: String?
-        
         let close = R.string.localizable.commonClose(
             preferredLanguages: selectedLocale.rLanguages
         )
         
-        switch error {
-        case let .alreadyExists(nodeName):
-            title = R.string.localizable.networkNodeAddAlertAlreadyExistsTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            message = R.string.localizable.networkNodeAddAlertAlreadyExistsMessage(
-                nodeName,
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        case .wrongFormat:
-            title = R.string.localizable.networkNodeAddAlertNodeErrorTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            message = R.string.localizable.networkNodeAddAlertNodeErrorMessageWss(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        case let .unableToConnect(networkName), let .wrongNetwork(networkName):
-            title = R.string.localizable.networkNodeAddAlertWrongNetworkTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            message = R.string.localizable.networkNodeAddAlertWrongNetworkMessage(
-                networkName,
-                networkName,
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        case let .common(error):
-            wireframe.present(
-                error: error,
-                from: view,
-                locale: selectedLocale
-            )
-            
-            return
-        }
-        
-        provideButtonViewModel(loading: false)
+        let errorContent = error.toErrorContent(for: selectedLocale)
         
         wireframe.present(
-            message: message,
-            title: title,
+            message: errorContent.message,
+            title: errorContent.title,
             closeAction: close,
             from: view
         )
+        
+        provideButtonViewModel(loading: false)
     }
 }
 

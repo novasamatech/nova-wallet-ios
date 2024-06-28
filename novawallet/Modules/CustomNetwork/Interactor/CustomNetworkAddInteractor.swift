@@ -23,7 +23,9 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
             case .success:
                 self?.presenter?.didAddChain()
             case .failure:
-                self?.presenter?.didReceive(.common(error: .dataCorruption))
+                self?.presenter?.didReceive(
+                    .common(innerError: .dataCorruption)
+                )
             }
         }
     }

@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeChainCorrespondingTrait {
+class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeCorrespondingTrait {
     weak var basePresenter: NetworkNodeBaseInteractorOutputProtocol?
     
     let chainRegistry: ChainRegistryProtocol
@@ -70,7 +70,9 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
 
             switch newState {
             case .notConnected:
-                self.basePresenter?.didReceive(.unableToConnect(networkName: chain.name))
+                self.basePresenter?.didReceive(
+                    .connection(innerError: .unableToConnect(networkName: chain.name))
+                )
                 self.currentConnection = nil
             case .waitingReconnection:
                 connection.disconnect(true)
@@ -116,7 +118,9 @@ private extension NetworkNodeBaseInteractor {
             case .success:
                 self?.handleConnected()
             case .failure:
-                self?.basePresenter?.didReceive(.wrongNetwork(networkName: chain.name))
+                self?.basePresenter?.didReceive(
+                    .nodeValidation(innerError: .init(networkName: chain.name))
+                )
             }
         }
     }
@@ -144,10 +148,19 @@ private extension NetworkNodeBaseInteractor {
 // MARK: Errors
 
 enum NetworkNodeBaseInteractorError: Error {
-    case alreadyExists(nodeName: String)
-    case wrongNetwork(networkName: String)
-    case unableToConnect(networkName: String)
-    case wrongFormat
-    
-    case common(error: CommonError)
+    case connection(innerError: NetworkNodeConnectingError)
+    case nodeValidation(innerError: NetworkNodeCorrespondingError)
+    case common(innerError: CommonError)
+}
+
+extension NetworkNodeBaseInteractorError: ErrorContentConvertible {
+    func toErrorContent(for locale: Locale?) -> ErrorContent {
+        let error: ErrorContentConvertible = switch self {
+        case let .connection(innerError): innerError
+        case let .nodeValidation(innerError): innerError
+        case let .common(innerError): innerError
+        }
+        
+        return error.toErrorContent(for: locale)
+    }
 }

@@ -1,11 +1,11 @@
 import Operation_iOS
 import SubstrateSdk
 
-protocol NetworkNodeChainCorrespondingTrait {
+protocol NetworkNodeCorrespondingTrait {
     var blockHashOperationFactory: BlockHashOperationFactoryProtocol { get }
 }
 
-extension NetworkNodeChainCorrespondingTrait {
+extension NetworkNodeCorrespondingTrait {
     func substrateChainCorrespondingOperation(
         connection: JSONRPCEngine,
         node: ChainNodeModel,
@@ -22,7 +22,7 @@ extension NetworkNodeChainCorrespondingTrait {
                 .withoutHexPrefix()
             
             guard genesisHash == chain.chainId else {
-                throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
+                throw NetworkNodeCorrespondingError(networkName: chain.name)
             }
             
             return genesisHash
@@ -50,7 +50,7 @@ extension NetworkNodeChainCorrespondingTrait {
             let actualChainId = try chainIdOperation.extractNoCancellableResultData()
             
             guard actualChainId.wrappedValue == chain.addressPrefix else {
-                throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
+                throw NetworkNodeCorrespondingError(networkName: chain.name)
             }
             
             return Caip2.RegisteredChain.eip155(id: actualChainId.wrappedValue).rawChainId
@@ -61,6 +61,27 @@ extension NetworkNodeChainCorrespondingTrait {
         return CompoundOperationWrapper(
             targetOperation: checkChainCorrespondingOperation,
             dependencies: [chainIdOperation]
+        )
+    }
+}
+
+// MARK: Errors
+
+struct NetworkNodeCorrespondingError: Error {
+    let networkName: String
+}
+
+extension NetworkNodeCorrespondingError: ErrorContentConvertible {
+    func toErrorContent(for locale: Locale?) -> ErrorContent {
+        ErrorContent(
+            title: R.string.localizable.networkNodeAddAlertWrongNetworkTitle(
+                preferredLanguages: locale?.rLanguages
+            ),
+            message: R.string.localizable.networkNodeAddAlertWrongNetworkMessage(
+                networkName,
+                networkName,
+                preferredLanguages: locale?.rLanguages
+            )
         )
     }
 }

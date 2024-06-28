@@ -12,4 +12,4 @@ protocol CustomNetworkViewProtocol: ControllerBackedProtocol {
     func didReceiveButton(viewModel: NetworkNodeViewLayout.LoadingButtonViewModel)
 }
 
-protocol CustomNetworkWireframeProtocol: AnyObject {}
+protocol CustomNetworkWireframeProtocol: AlertPresentable, ErrorPresentable {}

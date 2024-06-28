@@ -1,7 +1,7 @@
 import SubstrateSdk
 import Operation_iOS
 
-class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, NetworkNodeConnectingTrait, NetworkNodeChainCorrespondingTrait {
+class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, NetworkNodeConnectingTrait, NetworkNodeCorrespondingTrait {
     weak var basePresenter: CustomNetworkBaseInteractorOutputProtocol?
     
     let chainRegistry: ChainRegistryProtocol
@@ -74,16 +74,11 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, NetworkNodeConnectin
         
         self.partialChain = partialChain
         
-        do {
-            try connect(
-                to: node,
-                replacing: nil,
-                chain: partialChain,
-                urlPredicate: NSPredicate.ws
-            )
-        } catch {
-            
-        }
+        connect(
+            to: node,
+            chain: partialChain,
+            urlPredicate: NSPredicate.ws
+        )
     }
 }
 
@@ -129,6 +124,47 @@ extension CustomNetworkBaseInteractor: WebSocketEngineDelegate {
 // MARK: Private
 
 private extension CustomNetworkBaseInteractor {
+    func connect(
+        to node: ChainNodeModel,
+        chain: ChainModel,
+        urlPredicate: NSPredicate
+    ) {
+        do {
+            try connect(
+                to: node,
+                replacing: nil,
+                chain: chain,
+                urlPredicate: urlPredicate
+            )
+        } catch NetworkNodeConnectingError.alreadyExists(let existingNode, let existingChain) {
+            if existingChain.source == .user {
+                basePresenter?.didReceive(
+                    .alreadyExistCustom(
+                        node: existingNode,
+                        chain: existingChain
+                    )
+                )
+            } else {
+                basePresenter?.didReceive(
+                    .alreadyExistRemote(
+                        node: existingNode,
+                        chain: existingChain
+                    )
+                )
+            }
+        } catch is NetworkNodeCorrespondingError {
+            basePresenter?.didReceive(.invalidChainId)
+        } catch NetworkNodeConnectingError.wrongFormat {
+            basePresenter?.didReceive(
+                .wrongNodeUrlFormat(innerError: .wrongFormat)
+            )
+        } catch {
+            basePresenter?.didReceive(
+                .common(innerError: .undefined)
+            )
+        }
+    }
+    
     func handleConnected(
         connection: ChainConnection,
         chain: ChainModel,
@@ -235,10 +271,60 @@ enum ChainType: Int {
 // MARK: Errors
 
 enum CustomNetworkBaseInteractorError: Error {
-    case alreadyExistRemote
-    case alreadyExistCustom
+    case alreadyExistRemote(node: ChainNodeModel, chain: ChainModel)
+    case alreadyExistCustom(node: ChainNodeModel, chain: ChainModel)
     case invalidChainId
-    case invalidNetworkType
-    case connection(error: ConnectionFactoryError)
-    case common(error: CommonError)
+    case invalidNetworkType(selectedType: ChainType)
+    case wrongNodeUrlFormat(innerError: NetworkNodeConnectingError)
+    case common(innerError: CommonError)
+}
+
+extension CustomNetworkBaseInteractorError: ErrorContentConvertible {
+    func toErrorContent(for locale: Locale?) -> ErrorContent {
+        switch self {
+        case let .alreadyExistRemote(_, chain):
+                .init(
+                    title: R.string.localizable.networkAddAlertAlreadyExistsTitle(
+                        preferredLanguages: locale?.rLanguages
+                    ),
+                    message: R.string.localizable.networkAddAlertAlreadyExistsRemoteMessage(
+                        chain.name,
+                        preferredLanguages: locale?.rLanguages
+                    )
+                )
+        case let .alreadyExistCustom(_, chain):
+                .init(
+                    title: R.string.localizable.networkAddAlertAlreadyExistsTitle(
+                        preferredLanguages: locale?.rLanguages
+                    ),
+                    message: R.string.localizable.networkAddAlertAlreadyExistsCustomMessage(
+                        chain.name,
+                        preferredLanguages: locale?.rLanguages
+                    )
+                )
+        case .invalidChainId:
+                .init(
+                    title: R.string.localizable.networkAddAlertInvalidChainIdTitle(
+                        preferredLanguages: locale?.rLanguages
+                    ),
+                    message: R.string.localizable.networkAddAlertInvalidChainIdMessage(
+                        preferredLanguages: locale?.rLanguages
+                    )
+                )
+        case let .invalidNetworkType(selectedType):
+                .init(
+                    title: R.string.localizable.networkAddAlertInvalidNetworkTypeTitle(
+                        preferredLanguages: locale?.rLanguages
+                    ),
+                    message: R.string.localizable.networkAddAlertInvalidNetworkTypeMessage(
+                        selectedType == .evm ? "Substrate" : "EVM",
+                        preferredLanguages: locale?.rLanguages
+                    )
+                )
+        case let .wrongNodeUrlFormat(innerError):
+            innerError.toErrorContent(for: locale)
+        case let .common(innerError): 
+            innerError.toErrorContent(for: locale)
+        }
+    }
 }
