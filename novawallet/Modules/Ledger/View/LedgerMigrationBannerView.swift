@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class LedgerMigrationBannerView: GenericBorderedView<
+class LedgerMigrationBannerView: GenericBorderedView<
     IconDetailsGenericView<GenericPairValueView<MultiValueView, RoundedButton>>
 > {
     var iconView: UIImageView { contentView.imageView }

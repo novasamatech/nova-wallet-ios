@@ -21,4 +21,13 @@ enum LedgerSubstrateApp {
             self = .generic
         }
     }
+
+    var isMigration: Bool {
+        switch self {
+        case .legacy, .generic:
+            return false
+        case .migration:
+            return true
+        }
+    }
 }

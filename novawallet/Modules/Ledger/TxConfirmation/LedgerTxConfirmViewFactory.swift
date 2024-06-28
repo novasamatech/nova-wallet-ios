@@ -10,11 +10,22 @@ struct LedgerTxConfirmViewFactory {
         params: LedgerTxConfirmationParams,
         completion: @escaping TransactionSigningClosure
     ) -> ControllerBackedProtocol? {
+        guard let chain = ChainRegistryFacade.sharedRegistry.getChain(for: chainId) else {
+            return nil
+        }
+
+        let substrateLedgerApp = LedgerSubstrateApp(
+            ledgerWalletType: params.walletType,
+            chain: chain,
+            codingFactory: params.codingFactory
+        )
+
         guard let interactor = createInteractor(
             signingData: signingData,
             metaId: metaId,
             chainId: chainId,
-            params: params
+            params: params,
+            substrateLedgerApp: substrateLedgerApp
         ) else {
             completion(.failure(HardwareSigningError.signingCancelled))
             return nil
@@ -26,6 +37,8 @@ struct LedgerTxConfirmViewFactory {
 
         let presenter = LedgerTxConfirmPresenter(
             chainName: chainName,
+            needsMigration: substrateLedgerApp.isMigration,
+            applicationConfig: ApplicationConfig.shared,
             interactor: interactor,
             wireframe: wireframe,
             completion: completion,
@@ -47,18 +60,9 @@ struct LedgerTxConfirmViewFactory {
         signingData: Data,
         metaId: String,
         chainId: ChainModel.Id,
-        params: LedgerTxConfirmationParams
+        params: LedgerTxConfirmationParams,
+        substrateLedgerApp: LedgerSubstrateApp
     ) -> BaseLedgerTxConfirmInteractor? {
-        guard let chain = ChainRegistryFacade.sharedRegistry.getChain(for: chainId) else {
-            return nil
-        }
-
-        let substrateLedgerApp = LedgerSubstrateApp(
-            ledgerWalletType: params.walletType,
-            chain: chain,
-            codingFactory: params.codingFactory
-        )
-
         switch substrateLedgerApp {
         case .legacy:
             return createLegacyInteractor(with: signingData, metaId: metaId, chainId: chainId)
