@@ -1653,6 +1653,7 @@
 "common.status.backup.syncing" = "Backup Syncing...";
 "common.status.backup.synced" = "Backup Synced";
 "ledger.instructions.step4" = "%@ to add to wallet";
+"common.ledger.nano" = "Ledger Nano X";
 "common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
 "common.ledger.nano.generic" = "Ledger Nano X (Generic app)";
 "legacy.ledger.notification.title" = "New Generic Ledger app has been released";

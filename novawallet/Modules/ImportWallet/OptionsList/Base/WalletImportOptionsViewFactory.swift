@@ -4,7 +4,9 @@ import SoraFoundation
 struct WalletImportOptionsViewFactory {
     static func createViewForOnboarding() -> WalletImportOptionsViewProtocol? {
         let interactor = createInteractor()
-        let wireframe = OnboardingImportOptionsWireframe()
+        let wireframe = OnboardingImportOptionsWireframe(
+            chainRegistry: ChainRegistryFacade.sharedRegistry
+        )
 
         let presenter = OnboardingImportOptionsPresenter(
             interactor: interactor,
@@ -25,11 +27,19 @@ struct WalletImportOptionsViewFactory {
     }
 
     static func createViewForAdding() -> WalletImportOptionsViewProtocol? {
-        createNoCloudBackupOptionView(for: AddAccount.ImportOptionsWireframe())
+        createNoCloudBackupOptionView(
+            for: AddAccount.ImportOptionsWireframe(
+                chainRegistry: ChainRegistryFacade.sharedRegistry
+            )
+        )
     }
 
     static func createViewForSwitch() -> WalletImportOptionsViewProtocol? {
-        createNoCloudBackupOptionView(for: SwitchAccount.ImportOptionsWireframe())
+        createNoCloudBackupOptionView(
+            for: SwitchAccount.ImportOptionsWireframe(
+                chainRegistry: ChainRegistryFacade.sharedRegistry
+            )
+        )
     }
 
     private static func createNoCloudBackupOptionView(

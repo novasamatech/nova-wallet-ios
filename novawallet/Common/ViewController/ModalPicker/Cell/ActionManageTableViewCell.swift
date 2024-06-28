@@ -51,9 +51,13 @@ final class ActionManageTableViewCell: UITableViewCell, ModalPickerCellProtocol 
             textColor = R.color.colorTextPrimary()!
         }
 
-        manageContentView.iconImageView.image = model.icon?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: iconColor)
+        if model.allowsIconModification {
+            manageContentView.iconImageView.image = model.icon?
+                .withRenderingMode(.alwaysTemplate)
+                .tinted(with: iconColor)
+        } else {
+            manageContentView.iconImageView.image = model.icon
+        }
 
         manageContentView.titleLabel.textColor = textColor
 
