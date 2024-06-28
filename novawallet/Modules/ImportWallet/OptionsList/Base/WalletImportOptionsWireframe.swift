@@ -46,8 +46,8 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
             case .ledger:
                 return LocalizableResource { locale in
                     ActionManageViewModel(
-                        icon: R.image.iconLedgerAction(),
-                        title: R.string.localizable.commonLedgerLegacy(preferredLanguages: locale.rLanguages),
+                        icon: R.image.iconLedgerActionWarning(),
+                        title: R.string.localizable.commonLedgerNanoLegacy(preferredLanguages: locale.rLanguages),
                         details: nil
                     )
                 }
@@ -55,7 +55,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                 return LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconLedgerAction(),
-                        title: R.string.localizable.commonLedgerGeneric(preferredLanguages: locale.rLanguages),
+                        title: R.string.localizable.commonLedgerNanoGeneric(preferredLanguages: locale.rLanguages),
                         details: nil
                     )
                 }
