@@ -51,7 +51,6 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
                 icon: R.image.iconWatchOnly()
             )
         case .genericLedger:
-            // TODO: Fix icon
             return .init(
                 title: R.string.localizable.commonLedger(
                     preferredLanguages: locale.rLanguages
