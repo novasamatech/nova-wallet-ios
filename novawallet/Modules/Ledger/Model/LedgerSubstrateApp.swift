@@ -36,9 +36,9 @@ enum LedgerSubstrateApp {
         case .legacy:
             return chain?.name ?? ""
         case .migration:
-            return "Migration"
+            return "Polkadot Migration"
         case .generic:
-            return "Generic"
+            return "Polkadot"
         }
     }
 }
