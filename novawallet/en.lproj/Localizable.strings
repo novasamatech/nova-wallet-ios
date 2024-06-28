@@ -1657,3 +1657,5 @@
 "common.ledger.generic" = "Ledger Nano X (Generic app)";
 "legacy.ledger.notification.title" = "New Generic Ledger app has been released";
 "legacy.ledger.notification.message" = "To sign operations and migrate your accounts to the new Generic Ledger app you need to install and open the Migration app. Legacy and Migration Ledger apps will not be supported in the future.";
+"generic.ledger.instructions.step1.highlighted" = "Generic app is installed";
+"generic.ledger.instructions.step2.highlighted" = "Open the Generic app";

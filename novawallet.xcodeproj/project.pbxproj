@@ -195,6 +195,8 @@
 		0C38B5122B7DCB4400882A8B /* KodaDotNftModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5112B7DCB4400882A8B /* KodaDotNftModelConverter.swift */; };
 		0C38B5142B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B5132B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift */; };
 		0C3976582C2D7B9000998DD6 /* MigrationLedgerSubstrateApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976572C2D7B9000998DD6 /* MigrationLedgerSubstrateApplication.swift */; };
+		0C39765E2C2DABD100998DD6 /* LedgerMigrationBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39765D2C2DABD100998DD6 /* LedgerMigrationBannerView.swift */; };
+		0C3976602C2DBDAF00998DD6 /* ChainRegistryProtocol+Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39765F2C2DBDAF00998DD6 /* ChainRegistryProtocol+Ledger.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C41D2092BF6664C000950EE /* ConnectionTLSSupportProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2082BF6664C000950EE /* ConnectionTLSSupportProvider.swift */; };
@@ -5026,6 +5028,8 @@
 		0C38B5112B7DCB4400882A8B /* KodaDotNftModelConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodaDotNftModelConverter.swift; sourceTree = "<group>"; };
 		0C38B5132B7DCFBB00882A8B /* KodaDotDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodaDotDetailsInteractor.swift; sourceTree = "<group>"; };
 		0C3976572C2D7B9000998DD6 /* MigrationLedgerSubstrateApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationLedgerSubstrateApplication.swift; sourceTree = "<group>"; };
+		0C39765D2C2DABD100998DD6 /* LedgerMigrationBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerMigrationBannerView.swift; sourceTree = "<group>"; };
+		0C39765F2C2DBDAF00998DD6 /* ChainRegistryProtocol+Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainRegistryProtocol+Ledger.swift"; sourceTree = "<group>"; };
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C41D2082BF6664C000950EE /* ConnectionTLSSupportProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTLSSupportProvider.swift; sourceTree = "<group>"; };
@@ -14508,6 +14512,7 @@
 				0C7104842C2B26A100487E64 /* NewSubstrateLedgerApplication.swift */,
 				0C7104862C2BBE4E00487E64 /* GenericLedgerSubstrateApplication.swift */,
 				0C3976572C2D7B9000998DD6 /* MigrationLedgerSubstrateApplication.swift */,
+				0C39765F2C2DBDAF00998DD6 /* ChainRegistryProtocol+Ledger.swift */,
 			);
 			path = Ledger;
 			sourceTree = "<group>";
@@ -15381,6 +15386,7 @@
 				846A835C28B8D09600D92892 /* LedgerMessageSheetViewFactory.swift */,
 				846A836028B8DB7700D92892 /* MessageSheetTimerLabel.swift */,
 				848B59C328BCD1BD0009543C /* MessageSheetContentLabel.swift */,
+				0C39765D2C2DABD100998DD6 /* LedgerMigrationBannerView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -23206,6 +23212,7 @@
 				0C5FA9A72B8313950077934C /* String+Search.swift in Sources */,
 				841AB7922993D01A00A362E8 /* GovernanceDelegateConfirmInteractorError.swift in Sources */,
 				774091F92ACB1F4B00172516 /* SwapAmountInputView.swift in Sources */,
+				0C39765E2C2DABD100998DD6 /* LedgerMigrationBannerView.swift in Sources */,
 				7728E5912A1324A2007901E0 /* ReferendumsSearchManager.swift in Sources */,
 				843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */,
 				7730904F2B557F46002577AE /* StakingProxyBasePresenter.swift in Sources */,
@@ -24060,6 +24067,7 @@
 				0C59E8E12AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8455F19C2A1DF088003F072D /* ChainsStore+Multistaking.swift in Sources */,
+				0C3976602C2DBDAF00998DD6 /* ChainRegistryProtocol+Ledger.swift in Sources */,
 				8428768724AE046300D91AD8 /* LanguageSelectionViewFactory.swift in Sources */,
 				84FB9E26285C6C5000B42FC0 /* XcmVersionedMultiasset.swift in Sources */,
 				84953F6E2935E35D0033F47D /* EtherscanHistoryContext.swift in Sources */,

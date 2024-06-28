@@ -35,7 +35,7 @@ final class OnboardingImportOptionsWireframe: WalletImportOptionsWireframe, Onbo
         guard
             let ledgerInstructions = LedgerInstructionsViewFactory.createView(
                 for: .onboarding,
-                appType: appType
+                walletLedgerType: appType
             ) else {
             return
         }

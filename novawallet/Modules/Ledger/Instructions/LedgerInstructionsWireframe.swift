@@ -2,11 +2,11 @@ import Foundation
 
 final class LedgerInstructionsWireframe: LedgerInstructionsWireframeProtocol {
     let flow: WalletCreationFlow
-    let appType: LedgerWalletType
+    let walletLedgerType: LedgerWalletType
 
-    init(flow: WalletCreationFlow, appType: LedgerWalletType) {
+    init(flow: WalletCreationFlow, walletLedgerType: LedgerWalletType) {
         self.flow = flow
-        self.appType = appType
+        self.walletLedgerType = walletLedgerType
     }
 
     func showLegacyNetworkSelection(from view: LedgerInstructionsViewProtocol?) {
@@ -32,7 +32,7 @@ final class LedgerInstructionsWireframe: LedgerInstructionsWireframeProtocol {
     }
 
     func showOnContinue(from view: LedgerInstructionsViewProtocol?) {
-        switch appType {
+        switch walletLedgerType {
         case .legacy:
             showLegacyNetworkSelection(from: view)
         case .generic:

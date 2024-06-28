@@ -1,6 +1,6 @@
 import SoraUI
 
-final class GenericBorderedView<TContentView: UIView>: UIView {
+class GenericBorderedView<TContentView: UIView>: UIView {
     var contentView: TContentView = .init()
 
     let backgroundView: RoundedView = {
