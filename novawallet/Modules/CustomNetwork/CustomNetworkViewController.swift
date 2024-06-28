@@ -29,6 +29,7 @@ final class CustomNetworkViewController: UIViewController, ViewHolder {
 
         rootView.locale = selectedLocale
         
+        setupNetworkSwitchTitles()
         setupHandlers()
         presenter.setup()
     }
@@ -37,6 +38,19 @@ final class CustomNetworkViewController: UIViewController, ViewHolder {
 // MARK: CustomNetworkViewProtocol
 
 extension CustomNetworkViewController: CustomNetworkViewProtocol {
+    func didReceiveNetworkType(_ networkType: ChainType, show: Bool) {
+        show
+            ? rootView.showNetworkTypeSwitch()
+            : rootView.hideNetworkTypeSwitch()
+        
+        switch networkType {
+        case .evm:
+            rootView.showChainId()
+        case .substrate:
+            rootView.hideChainId()
+        }
+    }
+    
     func didReceiveTitle(text: String) {
         rootView.titleLabel.text = text
     }
@@ -99,7 +113,20 @@ extension CustomNetworkViewController: Localizable {
 // MARK: Private
 
 private extension CustomNetworkViewController {
+    func setupNetworkSwitchTitles() {
+        rootView.networkTypeSwitch.titles = [
+            "Substrate",
+            "EVM"
+        ]
+    }
+    
     func setupHandlers() {
+        rootView.networkTypeSwitch.addTarget(
+            self,
+            action: #selector(actionSegmentChanged),
+            for: .valueChanged
+        )
+        
         rootView.actionButton.addTarget(
             self,
             action: #selector(actionConfirm),
@@ -131,6 +158,12 @@ private extension CustomNetworkViewController {
                 for: .editingChanged
             )
         }
+    }
+    
+    @objc private func actionSegmentChanged() {
+        presenter.select(
+            segment: .init(rawValue: rootView.networkTypeSwitch.selectedSegmentIndex)
+        )
     }
 
     @objc func actionConfirm() {

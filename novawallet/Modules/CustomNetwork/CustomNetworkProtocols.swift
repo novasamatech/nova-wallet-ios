@@ -1,6 +1,7 @@
 import SoraFoundation
 
 protocol CustomNetworkViewProtocol: ControllerBackedProtocol {
+    func didReceiveNetworkType(_ networkType: ChainType, show: Bool)
     func didReceiveTitle(text: String)
     func didReceiveUrl(viewModel: InputViewModelProtocol)
     func didReceiveName(viewModel: InputViewModelProtocol)

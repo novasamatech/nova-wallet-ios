@@ -1,17 +1,51 @@
 import Foundation
+import SoraFoundation
 
 struct CustomNetworkViewFactory {
-//    static func createView() -> CustomNetworkViewProtocol? {
-//        let interactor = CustomNetworkInteractor()
-//        let wireframe = CustomNetworkWireframe()
-//
-//        let presenter = CustomNetworkPresenter(interactor: interactor, wireframe: wireframe)
-//
-//        let view = CustomNetworkViewController(presenter: presenter)
-//
-//        presenter.view = view
-//        interactor.presenter = presenter
-//
-//        return view
-//    }
+    static func createNetworkAddView() -> CustomNetworkViewProtocol? {
+        let connectionFactory = ConnectionFactory(
+            logger: Logger.shared,
+            operationQueue: OperationManagerFacade.assetsSyncQueue
+        )
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let repository = SubstrateRepositoryFactory().createChainRepository()
+        
+        let operationQueue: OperationQueue = {
+            let operationQueue = OperationQueue()
+            operationQueue.qualityOfService = .userInitiated
+            return operationQueue
+        }()
+        
+        let interactor = CustomNetworkAddInteractor(
+            chainRegistry: chainRegistry,
+            blockHashOperationFactory: BlockHashOperationFactory(),
+            connectionFactory: connectionFactory,
+            repository: repository,
+            operationQueue: operationQueue
+        )
+        
+        let wireframe = CustomNetworkWireframe()
+
+        let localizationManager = LocalizationManager.shared
+        
+        let presenter = CustomNetworkAddPresenter(
+            chainType: .substrate, 
+            knownChain: nil,
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager
+        )
+
+        let view = CustomNetworkViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
 }

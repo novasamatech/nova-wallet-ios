@@ -60,7 +60,7 @@ extension NetworksListPresenter: NetworksListPresenterProtocol {
     }
 
     func addNetwork() {
-        // TODO: Implement routing
+        wireframe.showAddNetwork(from: view)
     }
 
     func closeBanner() {

@@ -1,5 +1,6 @@
 protocol CustomNetworkPresenterProtocol: AnyObject {
     func setup()
+    func select(segment: ChainType?)
     func handlePartial(url: String)
     func handlePartial(name: String)
     func handlePartial(currencySymbol: String)

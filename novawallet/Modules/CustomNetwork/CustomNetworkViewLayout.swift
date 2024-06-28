@@ -3,6 +3,14 @@ import UIKit
 final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
     let titleLabel: UILabel = .create { $0.apply(style: .boldTitle2Primary) }
     
+    let networkTypeSwitch: RoundedSegmentedControl = .create { view in
+        view.backgroundView.fillColor = R.color.colorSegmentedBackgroundOnBlack()!
+        view.selectionColor = R.color.colorSegmentedTabActive()!
+        view.titleFont = .regularFootnote
+        view.selectedTitleColor = R.color.colorTextPrimary()!
+        view.titleColor = R.color.colorTextSecondary()!
+    }
+    
     let urlTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
     let urlInput: TextWithServiceInputView = .create { view in
         view.textField.returnKeyType = .done
@@ -38,10 +46,15 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
         GenericMultiValueView<TextInputView>
     > = .create { view in
         view.makeHorizontal()
+        view.stackView.distribution = .fillEqually
         view.spacing = 16
         
         view.fView.spacing = 8
         view.sView.spacing = 8
+        
+        view.fView.valueTop.textAlignment = .left
+        view.sView.valueTop.textAlignment = .left
+        
         view.fView.valueTop.apply(style: .footnoteSecondary)
         view.sView.valueTop.apply(style: .footnoteSecondary)
         
@@ -49,7 +62,7 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
         view.fView.valueBottom.textField.keyboardType = .asciiCapable
         
         view.sView.valueBottom.textField.returnKeyType = .done
-        view.sView.valueBottom.textField.keyboardType = .asciiCapable
+        view.sView.valueBottom.textField.keyboardType = .numberPad
     }
 
     let actionLoadableView = LoadableActionView()
@@ -79,6 +92,12 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
     override func setupLayout() {
         super.setupLayout()
         
+        networkTypeSwitch.snp.makeConstraints { make in
+            make.height.equalTo(Constants.segmentControlHeight)
+        }
+        
+        addArrangedSubview(networkTypeSwitch, spacingAfter: 16)
+        
         addArrangedSubview(titleLabel, spacingAfter: 16)
 
         addArrangedSubview(urlTitleLabel, spacingAfter: 8)
@@ -101,6 +120,14 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
+    }
+    
+    func hideNetworkTypeSwitch() {
+        networkTypeSwitch.isHidden = true
+    }
+    
+    func showNetworkTypeSwitch() {
+        networkTypeSwitch.isHidden = false
     }
     
     func hideChainId() {
@@ -138,5 +165,13 @@ private extension CustomNetworkViewLayout {
         urlInput.locale = locale
         blockExplorerUrlInput.locale = locale
         coingeckoUrlInput.locale = locale
+    }
+}
+
+// MARK: Constants
+
+private extension CustomNetworkViewLayout {
+    enum Constants {
+        static let segmentControlHeight: CGFloat = 40
     }
 }

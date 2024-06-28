@@ -71,6 +71,12 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, NetworkNodeConnectin
     }
 }
 
+// MARK: CustomNetworkBaseInteractorInputProtocol
+
+extension CustomNetworkBaseInteractor: CustomNetworkBaseInteractorInputProtocol {
+    func setup() {}
+}
+
 // MARK: WebSocketEngineDelegate
 
 extension CustomNetworkBaseInteractor: WebSocketEngineDelegate {
@@ -108,12 +114,6 @@ extension CustomNetworkBaseInteractor: WebSocketEngineDelegate {
             }
         }
     }
-}
-
-// MARK: CustomNetworkBaseInteractorInputProtocol
-
-extension CustomNetworkBaseInteractor: CustomNetworkBaseInteractorInputProtocol {
-    func setup() {}
 }
 
 // MARK: Private
@@ -154,6 +154,20 @@ private extension CustomNetworkBaseInteractor {
             connection: connection,
             node: node
         )
+        
+        let finishSetupWrapper = ClosureOperation<ChainModel> {
+            let chainModel = try chainIdSetupWrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+                .adding(node: node)
+            
+            return chainModel
+        }
+        
+        let wrapper = CompoundOperationWrapper(targetOperation: finishSetupWrapper)
+        wrapper.addDependency(wrapper: chainIdSetupWrapper)
+        
+        return chainIdSetupWrapper
     }
     
     func createChainIdSetupWrapper(
@@ -203,7 +217,7 @@ private extension CustomNetworkBaseInteractor {
     }
 }
 
-enum ChainType {
-    case substrate
-    case evm
+enum ChainType: Int {
+    case substrate = 0
+    case evm = 1
 }

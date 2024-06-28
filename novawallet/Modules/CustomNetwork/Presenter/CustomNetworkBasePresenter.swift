@@ -13,18 +13,21 @@ class CustomNetworkBasePresenter {
     var partialBlockExplorerURL: String?
     var partialCoingeckoURL: String?
     
-    let chainType: ChainType
+    var chainType: ChainType
+    var knownChain: ChainModel?
 
     init(
         chainType: ChainType,
+        knownChain: ChainModel?,
         interactor: CustomNetworkBaseInteractorInputProtocol,
         wireframe: CustomNetworkWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.chainType = chainType
+        self.knownChain = knownChain
         self.interactor = interactor
         self.wireframe = wireframe
-        
+        self.localizationManager = localizationManager
     }
     
     func actionConfirm() {
@@ -78,7 +81,7 @@ class CustomNetworkBasePresenter {
     func provideURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialURL ?? "",
-            placeholder: ""
+            placeholder: "wss://rpc.network.io"
         )
         view?.didReceiveUrl(viewModel: inputViewModel)
     }
@@ -94,9 +97,19 @@ class CustomNetworkBasePresenter {
     func provideCurrencySymbolViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCurrencySymbol ?? "",
-            placeholder: R.string.localizable.commonToken(preferredLanguages: selectedLocale.rLanguages).uppercased()
+            placeholder: R.string.localizable.commonToken(
+                preferredLanguages: selectedLocale.rLanguages
+            ).uppercased()
         )
         view?.didReceiveCurrencySymbol(viewModel: inputViewModel)
+    }
+    
+    func provideChainIdViewModel() {
+        let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
+            for: partialChainId ?? "",
+            placeholder: "012345"
+        )
+        view?.didReceiveChainId(viewModel: inputViewModel)
     }
     
     func provideBlockExplorerURLViewModel() {
@@ -116,11 +129,27 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
+    
+    func provideNetworkTypeViewModel() {
+        view?.didReceiveNetworkType(
+            chainType,
+            show: knownChain == nil
+        )
+    }
 }
 
 // MARK: CustomNetworkPresenterProtocol
 
 extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
+    func select(segment: ChainType?) {
+        guard let segment else { return }
+        
+        chainType = segment
+        
+        cleanPartialValues()
+        provideViewModel()
+    }
+    
     func setup() {
         interactor.setup()
         
@@ -179,12 +208,26 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
 private extension CustomNetworkBasePresenter {
     func provideViewModel() {
         provideTitle()
+        provideNetworkTypeViewModel()
         provideURLViewModel()
         provideNameViewModel()
         provideCurrencySymbolViewModel()
         provideBlockExplorerURLViewModel()
         provideCoingeckoURLViewModel()
         provideButtonViewModel(loading: false)
+        
+        if chainType == .evm {
+            provideChainIdViewModel()
+        }
+    }
+    
+    func cleanPartialValues() {
+        partialURL = ""
+        partialName = ""
+        partialCurrencySymbol = ""
+        partialChainId = ""
+        partialBlockExplorerURL = ""
+        partialCoingeckoURL = ""
     }
 }
 
