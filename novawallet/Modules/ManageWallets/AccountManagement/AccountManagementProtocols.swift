@@ -7,6 +7,7 @@ protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func set(nameViewModel: InputViewModelProtocol)
     func set(walletType: WalletsListSectionViewModel.SectionType)
     func setProxy(viewModel: AccountProxyViewModel)
+    func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
