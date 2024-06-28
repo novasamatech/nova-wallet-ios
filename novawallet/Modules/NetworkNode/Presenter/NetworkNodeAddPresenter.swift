@@ -49,6 +49,6 @@ class NetworkNodeAddPresenter: NetworkNodeBasePresenter {
 extension NetworkNodeAddPresenter: NetworkNodeAddInteractorOutputProtocol {
     func didAddNode() {
         wireframe.showNetworkDetails(from: view)
-        provideButtonViewModel(loading: true)
+        provideButtonViewModel(loading: false)
     }
 }

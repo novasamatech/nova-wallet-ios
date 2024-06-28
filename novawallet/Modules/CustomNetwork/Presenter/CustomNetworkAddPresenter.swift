@@ -48,13 +48,6 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
             preferredLanguages: selectedLocale.rLanguages
         )
     }
-    
-    override func provideTitle() {
-        let title = R.string.localizable.networkAddTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        view?.didReceiveTitle(text: title)
-    }
 }
 
 // MARK: CustomNetworkAddInteractorOutputProtocol
@@ -62,6 +55,6 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
 extension CustomNetworkAddPresenter: CustomNetworkAddInteractorOutputProtocol {
     func didAddChain() {
         // TODO: Route via wireframe
-        provideButtonViewModel(loading: true)
+        provideButtonViewModel(loading: false)
     }
 }

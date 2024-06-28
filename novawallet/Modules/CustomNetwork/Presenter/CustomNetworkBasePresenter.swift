@@ -38,10 +38,6 @@ class CustomNetworkBasePresenter {
         fatalError("Must be overriden by subclass")
     }
     
-    func provideTitle() {
-        fatalError("Must be overriden by subclass")
-    }
-    
     func checkInfoCompleted() -> Bool {
         if
             let partialURL,
@@ -136,11 +132,22 @@ class CustomNetworkBasePresenter {
             show: knownChain == nil
         )
     }
+    
+    // MARK: Setup
+    
+    func completeSetup() {
+        provideViewModel()
+        provideButtonViewModel(loading: false)
+    }
 }
 
 // MARK: CustomNetworkPresenterProtocol
 
 extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
+    func setup() {
+        completeSetup()
+    }
+    
     func select(segment: ChainType?) {
         guard let segment else { return }
         
@@ -148,13 +155,6 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
         
         cleanPartialValues()
         provideViewModel()
-    }
-    
-    func setup() {
-        interactor.setup()
-        
-        provideViewModel()
-        provideButtonViewModel(loading: false)
     }
 
     func handlePartial(url: String) {
@@ -188,16 +188,16 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
     }
 
     func confirm() {
-        actionConfirm()
-        
         provideButtonViewModel(loading: true)
+        
+        actionConfirm()
     }
 }
 
 // MARK: CustomNetworkBaseInteractorOutputProtocol
 
 extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol {
-    func didReceive(_ error: Error) {
+    func didReceive(_ error: CustomNetworkBaseInteractorError) {
         // TODO: Implement
         print(error)
     }
@@ -206,6 +206,15 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
 // MARK: Private
 
 private extension CustomNetworkBasePresenter {
+    func cleanPartialValues() {
+        partialURL = nil
+        partialName = nil
+        partialCurrencySymbol = nil
+        partialChainId = nil
+        partialBlockExplorerURL = nil
+        partialCoingeckoURL = nil
+    }
+    
     func provideViewModel() {
         provideTitle()
         provideNetworkTypeViewModel()
@@ -221,13 +230,11 @@ private extension CustomNetworkBasePresenter {
         }
     }
     
-    func cleanPartialValues() {
-        partialURL = ""
-        partialName = ""
-        partialCurrencySymbol = ""
-        partialChainId = ""
-        partialBlockExplorerURL = ""
-        partialCoingeckoURL = ""
+    func provideTitle() {
+        let title = R.string.localizable.networkAddTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        view?.didReceiveTitle(text: title)
     }
 }
 

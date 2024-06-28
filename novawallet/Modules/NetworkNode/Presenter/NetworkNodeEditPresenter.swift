@@ -48,7 +48,7 @@ class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
 extension NetworkNodeEditPresenter: NetworkNodeEditInteractorOutputProtocol {
     func didEditNode() {
         wireframe.showNetworkDetails(from: view)
-        provideButtonViewModel(loading: true)
+        provideButtonViewModel(loading: false)
     }
     
     func didReceive(node: ChainNodeModel) {

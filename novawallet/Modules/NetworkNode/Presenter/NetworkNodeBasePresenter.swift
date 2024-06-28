@@ -103,9 +103,9 @@ extension NetworkNodeBasePresenter: NetworkNodePresenterProtocol {
     }
 
     func confirm() {
-        actionConfirm()
-        
         provideButtonViewModel(loading: true)
+        
+        actionConfirm()
     }
 }
 

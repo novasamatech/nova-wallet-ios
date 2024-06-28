@@ -29,6 +29,18 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, NetworkNodeConnectin
         self.operationQueue = operationQueue
     }
     
+    func handleSetupFinished(for network: ChainModel) {
+        fatalError("Must be overriden by subclass")
+    }
+    
+    func completeSetup() {
+        fatalError("Must be overriden by subclass")
+    }
+    
+    func setup() {
+        completeSetup()
+    }
+    
     func connectToChain(
         with networkType: ChainType,
         url: String,
@@ -62,19 +74,17 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, NetworkNodeConnectin
         
         self.partialChain = partialChain
         
-        try? connect(
-            to: node,
-            replacing: nil,
-            chain: partialChain,
-            urlPredicate: NSPredicate.ws
-        )
+        do {
+            try connect(
+                to: node,
+                replacing: nil,
+                chain: partialChain,
+                urlPredicate: NSPredicate.ws
+            )
+        } catch {
+            
+        }
     }
-}
-
-// MARK: CustomNetworkBaseInteractorInputProtocol
-
-extension CustomNetworkBaseInteractor: CustomNetworkBaseInteractorInputProtocol {
-    func setup() {}
 }
 
 // MARK: WebSocketEngineDelegate
@@ -136,8 +146,8 @@ private extension CustomNetworkBaseInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case .success:
-                print("sucess") // self?.handleConnected()
+            case let .success(chain):
+                self?.handleSetupFinished(for: chain)
             case let .failure(error):
                 print(error)
             }
@@ -220,4 +230,15 @@ private extension CustomNetworkBaseInteractor {
 enum ChainType: Int {
     case substrate = 0
     case evm = 1
+}
+
+// MARK: Errors
+
+enum CustomNetworkBaseInteractorError: Error {
+    case alreadyExistRemote
+    case alreadyExistCustom
+    case invalidChainId
+    case invalidNetworkType
+    case connection(error: ConnectionFactoryError)
+    case common(error: CommonError)
 }

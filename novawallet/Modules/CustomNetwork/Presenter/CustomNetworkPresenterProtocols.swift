@@ -14,7 +14,7 @@ protocol CustomNetworkAddPresenterProtocol {
 }
 
 protocol CustomNetworkBaseInteractorOutputProtocol: AnyObject {
-    func didReceive(_ error: Error)
+    func didReceive(_ error: CustomNetworkBaseInteractorError)
 }
 
 protocol CustomNetworkAddInteractorOutputProtocol: CustomNetworkBaseInteractorOutputProtocol {
