@@ -280,7 +280,7 @@ extension AccountManagementViewController: AccountManagementViewProtocol {
 
         applyWalletType()
 
-        rootView.setNeedsLayout()
+        reload()
     }
 
     func reload() {
