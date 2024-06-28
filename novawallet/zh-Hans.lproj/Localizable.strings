@@ -1658,6 +1658,6 @@
 "account.export.ethereum.private.key.placeholder" = "64个十六进制符号";
 "common.status.backup.syncing" = "正在同步备份...";
 "common.status.backup.synced" = "备份已同步";
-"common.ledger.nano.generic" = "Ledger Nano X (Generic app)";
-"generic.ledger.instructions.step1.highlighted" = "Generic 应用程序";
-"generic.ledger.instructions.step2.highlighted" = "Open the Generic app";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot app)";
+"generic.ledger.instructions.step1.highlighted" = "Polkadot 应用程序";
+"generic.ledger.instructions.step2.highlighted" = "Open the Polkadot app";

@@ -1658,6 +1658,6 @@
 "account.export.ethereum.private.key.placeholder" = "64 hex symbols";
 "common.status.backup.syncing" = "Backup Syncing...";
 "common.status.backup.synced" = "Backup Synced";
-"common.ledger.nano.generic" = "Ledger Nano X (Generic app)";
-"generic.ledger.instructions.step1.highlighted" = "Generic app is installed";
-"generic.ledger.instructions.step2.highlighted" = "Open the Generic app";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot app)";
+"generic.ledger.instructions.step1.highlighted" = "Polkadot app is installed";
+"generic.ledger.instructions.step2.highlighted" = "Open the Polkadot app";

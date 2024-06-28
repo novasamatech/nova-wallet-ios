@@ -1658,6 +1658,6 @@
 "account.export.ethereum.private.key.placeholder" = "64 шест. символа";
 "common.status.backup.syncing" = "Обновление бэкапа...";
 "common.status.backup.synced" = "Бэкап обновлён";
-"common.ledger.nano.generic" = "Ledger Nano X (Generic приложение)";
-"generic.ledger.instructions.step1.highlighted" = "Generic приложение установлено";
-"generic.ledger.instructions.step2.highlighted" = "Откройте Generic приложение";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot приложение)";
+"generic.ledger.instructions.step1.highlighted" = "Polkadot приложение установлено";
+"generic.ledger.instructions.step2.highlighted" = "Откройте Polkadot приложение";
