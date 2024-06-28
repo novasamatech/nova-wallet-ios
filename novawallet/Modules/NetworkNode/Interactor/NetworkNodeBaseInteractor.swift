@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait {
+class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeChainCorrespondingTrait {
     weak var basePresenter: NetworkNodeBaseInteractorOutputProtocol?
     
     let chainRegistry: ChainRegistryProtocol
@@ -119,60 +119,6 @@ private extension NetworkNodeBaseInteractor {
                 self?.basePresenter?.didReceive(.wrongNetwork(networkName: chain.name))
             }
         }
-    }
-    
-    func substrateChainCorrespondingOperation(
-        connection: JSONRPCEngine,
-        node: ChainNodeModel,
-        chain: ChainModel
-    ) -> CompoundOperationWrapper<Void> {
-        let genesisBlockOperation = blockHashOperationFactory.createBlockHashOperation(
-            connection: connection,
-            for: { 0 }
-        )
-    
-        let checkChainCorrespondingOperation = ClosureOperation<Void> {
-            let genesisHash = try genesisBlockOperation
-                .extractNoCancellableResultData()
-                .withoutHexPrefix()
-            
-            guard genesisHash == chain.chainId else {
-                throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
-            }
-        }
-        
-        checkChainCorrespondingOperation.addDependency(genesisBlockOperation)
-        
-        return CompoundOperationWrapper(
-            targetOperation: checkChainCorrespondingOperation,
-            dependencies: [genesisBlockOperation]
-        )
-    }
-    
-    func evmChainCorrespondingOperation(
-        connection: JSONRPCEngine,
-        node: ChainNodeModel,
-        chain: ChainModel
-    ) -> CompoundOperationWrapper<Void> {
-        let chainIdOperation = EvmWebSocketOperationFactory(
-            connection: connection,
-            timeout: 10
-        ).createChainIdOperation()
-        
-        let checkChainCorrespondingOperation = ClosureOperation<Void> {
-            let actualChainId = try chainIdOperation.extractNoCancellableResultData()
-            
-            guard actualChainId.wrappedValue == chain.addressPrefix else {
-                throw NetworkNodeBaseInteractorError.wrongNetwork(networkName: chain.name)
-            }
-        }
-        
-        checkChainCorrespondingOperation.addDependency(chainIdOperation)
-        
-        return CompoundOperationWrapper(
-            targetOperation: checkChainCorrespondingOperation,
-            dependencies: [chainIdOperation]
-        )
     }
     
     func subscribeChainChanges() {
