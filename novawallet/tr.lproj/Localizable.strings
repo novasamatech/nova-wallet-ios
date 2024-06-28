@@ -1653,3 +1653,11 @@
 "common.status.backup.syncing" = "Yedekleme Senkronize Ediliyor...";
 "common.status.backup.synced" = "Yedekleme Senkronize Edildi";
 "ledger.instructions.step4" = "Cüzdana eklenecek %@";
+"common.ledger.nano.legacy" = "Ledger Nano X (Eski)";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic app)";
+"legacy.ledger.notification.title" = "Yeni Ledger uygulaması yayımlandı";
+"legacy.ledger.notification.message" = "İşlemleri imzalamak ve hesaplarınızı yeni Generic Ledger uygulamasına taşımak için Migration uygulamasını yükleyin ve açın. Eski Legacy ve Migration Ledger uygulamaları gelecekte desteklenmeyecektir.";
+"legacy.ledger.migration.message" = "Geçiş uygulaması yakın gelecekte kullanılamaz hale gelecektir. Hesaplarınızı yeni Ledger uygulamasına taşımak için kullanın ve fonlarınızı kaybetmeyin.";
+"generic.ledger.instructions.step1.highlighted" = "Generic uygulamanın yüklü";
+"generic.ledger.instructions.step2.highlighted" = "Open the Generic app";
+"common.ledger.legacy" = "Ledger (Eski)";

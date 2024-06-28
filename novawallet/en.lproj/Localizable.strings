@@ -1653,10 +1653,9 @@
 "common.status.backup.syncing" = "Backup Syncing...";
 "common.status.backup.synced" = "Backup Synced";
 "ledger.instructions.step4" = "%@ to add to wallet";
-"common.ledger.nano" = "Ledger Nano X";
 "common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
 "common.ledger.nano.generic" = "Ledger Nano X (Generic app)";
-"legacy.ledger.notification.title" = "New Generic Ledger app has been released";
+"legacy.ledger.notification.title" = "New Ledger app has been released";
 "legacy.ledger.notification.message" = "To sign operations and migrate your accounts to the new Generic Ledger app you need to install and open the Migration app. Legacy and Migration Ledger apps will not be supported in the future.";
 "legacy.ledger.migration.message" = "The Migration app will be unavailable in the near future. Use it to migrate your accounts to the new Ledger app to avoid losing your funds.";
 "generic.ledger.instructions.step1.highlighted" = "Generic app is installed";
