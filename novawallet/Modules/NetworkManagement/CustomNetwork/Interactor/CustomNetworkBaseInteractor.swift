@@ -217,30 +217,39 @@ private extension CustomNetworkBaseInteractor {
             node: node
         )
         
+        let chainAssetSetupWrapper = createMainAssetSetuptWrapper(
+            for: partialChain,
+            connection: connection
+        )
         
         let finishSetupOperation = ClosureOperation<ChainModel> {
             let chainId = try chainIdSetupWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
             
+            let filledPartialChain = try chainAssetSetupWrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+                
+            
             let finalChainModel = ChainModel(
                 chainId: chainId,
                 parentId: nil,
-                name: partialChain.name,
-                assets: partialChain.assets,
-                nodes: partialChain.nodes,
-                nodeSwitchStrategy: partialChain.nodeSwitchStrategy,
-                addressPrefix: partialChain.addressPrefix,
+                name: filledPartialChain.name,
+                assets: filledPartialChain.assets,
+                nodes: filledPartialChain.nodes,
+                nodeSwitchStrategy: filledPartialChain.nodeSwitchStrategy,
+                addressPrefix: filledPartialChain.addressPrefix,
                 types: nil,
                 icon: nil,
-                options: partialChain.options,
+                options: filledPartialChain.options,
                 externalApis: nil,
-                explorers: [partialChain.blockExplorer].compactMap { $0 },
+                explorers: [filledPartialChain.blockExplorer].compactMap { $0 },
                 order: 0,
                 additional: nil,
                 syncMode: .disabled,
                 source: .user,
-                connectionMode: partialChain.connectionMode
+                connectionMode: filledPartialChain.connectionMode
             )
             
             return finalChainModel
@@ -252,8 +261,8 @@ private extension CustomNetworkBaseInteractor {
         return wrapper
     }
     
-    func createAddMainAssetWrapper(
-        to chain: PartialCustomChainModel,
+    func createMainAssetSetuptWrapper(
+        for chain: PartialCustomChainModel,
         connection: ChainConnection
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let propertiesOperation: BaseOperation<SystemProperties>? = chain.isEthereumBased && chain.noSubstrateRuntime

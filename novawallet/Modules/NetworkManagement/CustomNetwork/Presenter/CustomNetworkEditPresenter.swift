@@ -66,8 +66,9 @@ extension CustomNetworkEditPresenter: CustomNetworkEditInteractorOutputProtocol 
     }
     
     func didEditChain() {
-        // TODO: Route via wireframe
         provideButtonViewModel(loading: false)
+        
+        wireframe.showPrevious(from: view)
     }
 }
 

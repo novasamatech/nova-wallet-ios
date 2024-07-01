@@ -54,7 +54,8 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
 
 extension CustomNetworkAddPresenter: CustomNetworkAddInteractorOutputProtocol {
     func didAddChain() {
-        // TODO: Route via wireframe
         provideButtonViewModel(loading: false)
+        
+        wireframe.showPrevious(from: view)
     }
 }
