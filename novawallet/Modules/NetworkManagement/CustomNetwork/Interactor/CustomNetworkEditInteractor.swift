@@ -14,6 +14,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         networkToEdit: ChainModel,
         chainRegistry: ChainRegistryProtocol,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
+        systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue
@@ -22,7 +23,8 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         
         super.init(
             chainRegistry: chainRegistry,
-            blockHashOperationFactory: blockHashOperationFactory,
+            blockHashOperationFactory: blockHashOperationFactory, 
+            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connectionFactory: connectionFactory,
             repository: repository,
             operationQueue: operationQueue

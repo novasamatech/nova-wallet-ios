@@ -12,7 +12,7 @@ extension NetworkNodeConnectingTrait {
     func connect(
         to node: ChainNodeModel,
         replacing existingNode: ChainNodeModel?,
-        chain: ChainModel,
+        chain: ChainNodeConnectable,
         urlPredicate: NSPredicate
     ) throws {
         if let existingNode = findExistingNode(with: node.url, ignoring: existingNode) {

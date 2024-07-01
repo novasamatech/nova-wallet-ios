@@ -599,3 +599,31 @@ extension ChainModel {
         )
     }
 }
+
+// MARK: ChainNodeConnectable
+
+protocol ChainNodeConnectable {
+    var chainId: String { get }
+    var name: String { get }
+    var nodes: Set<ChainNodeModel> { get }
+    var options: [LocalChainOptions]? { get }
+    var nodeSwitchStrategy: ChainModel.NodeSwitchStrategy { get }
+    var addressPrefix: UInt16 { get }
+    var connectionMode: ChainModel.ConnectionMode { get }
+}
+
+extension ChainNodeConnectable {
+    var noSubstrateRuntime: Bool {
+        options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
+    }
+
+    var hasSubstrateRuntime: Bool {
+        !noSubstrateRuntime
+    }
+    
+    var isEthereumBased: Bool {
+        options?.contains(.ethereumBased) ?? false
+    }
+}
+
+extension ChainModel: ChainNodeConnectable {}

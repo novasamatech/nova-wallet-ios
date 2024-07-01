@@ -20,7 +20,8 @@ struct CustomNetworkViewFactory {
         
         let interactor = CustomNetworkAddInteractor(
             chainRegistry: chainRegistry,
-            blockHashOperationFactory: BlockHashOperationFactory(),
+            blockHashOperationFactory: BlockHashOperationFactory(), 
+            systemPropertiesOperationFactory: SystemPropertiesOperationFactory(),
             connectionFactory: connectionFactory,
             repository: repository,
             operationQueue: operationQueue

@@ -9,7 +9,7 @@ extension NetworkNodeCorrespondingTrait {
     func substrateChainCorrespondingOperation(
         connection: JSONRPCEngine,
         node: ChainNodeModel,
-        chain: ChainModel
+        chain: ChainNodeConnectable
     ) -> CompoundOperationWrapper<String> {
         let genesisBlockOperation = blockHashOperationFactory.createBlockHashOperation(
             connection: connection,
@@ -39,7 +39,7 @@ extension NetworkNodeCorrespondingTrait {
     func evmChainCorrespondingOperation(
         connection: JSONRPCEngine,
         node: ChainNodeModel,
-        chain: ChainModel
+        chain: ChainNodeConnectable
     ) -> CompoundOperationWrapper<String> {
         let chainIdOperation = EvmWebSocketOperationFactory(
             connection: connection,
