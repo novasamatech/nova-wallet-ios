@@ -62,13 +62,15 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, NetworkNodeConnectin
             for: nil
         )
         
+        let explorer = createExplorer(from: blockExplorerURL)
+        
         let partialChain = ChainModel.partialCustomChainModel(
             ethereumBased: networkType == .evm,
             url: url,
             name: name,
             currencySymbol: currencySymbol,
             chainId: evmChainId,
-            blockExplorer: nil,
+            blockExplorer: explorer,
             coingeckoURL: nil
         )
         
@@ -260,6 +262,43 @@ private extension CustomNetworkBaseInteractor {
             targetOperation: chainSetupOperation,
             dependencies: dependency.dependencies
         )
+    }
+    
+    func createExplorer(from url: String?) -> ChainModel.Explorer? {
+        guard 
+            let url = url?.trimmingCharacters(in: CharacterSet(charactersIn: "/")),
+            checkSubscan(urlString: url)
+        else {
+            return nil
+        }
+        let path = "extrinsic/{hash}"
+        
+        let templateUrl = [
+            url,
+            path
+        ].joined(with: .slash)
+        
+        let explorer = ChainModel.Explorer(
+            name: "Subscan",
+            account: nil,
+            extrinsic: templateUrl,
+            event: nil
+        )
+        
+        return explorer
+    }
+    
+    func checkSubscan(urlString: String) -> Bool {
+        let pattern = #"^https:\/\/([a-zA-Z0-9-]+\.)*subscan\.io$"#
+        
+        let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+        
+        let range = NSRange(location: 0, length: urlString.utf16.count)
+        if let match = regex?.firstMatch(in: urlString, options: [], range: range) {
+            return match.range.length == urlString.utf16.count
+        } else {
+            return false
+        }
     }
 }
 
