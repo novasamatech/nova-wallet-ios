@@ -92,13 +92,13 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
     override func setupLayout() {
         super.setupLayout()
         
+        addArrangedSubview(titleLabel, spacingAfter: 16)
+        
         networkTypeSwitch.snp.makeConstraints { make in
             make.height.equalTo(Constants.segmentControlHeight)
         }
         
         addArrangedSubview(networkTypeSwitch, spacingAfter: 16)
-        
-        addArrangedSubview(titleLabel, spacingAfter: 16)
 
         addArrangedSubview(urlTitleLabel, spacingAfter: 8)
         addArrangedSubview(urlInput, spacingAfter: 16)
