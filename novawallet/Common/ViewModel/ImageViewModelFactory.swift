@@ -13,7 +13,7 @@ enum ImageViewModelFactory {
         if let chainIconUrl = url {
             return RemoteImageViewModel(url: chainIconUrl)
         } else {
-            return StaticImageViewModel(image: R.image.iconDefaultToken()!)
+            return StaticImageViewModel(image: R.image.iconNetworkFallback()!)
         }
     }
     
