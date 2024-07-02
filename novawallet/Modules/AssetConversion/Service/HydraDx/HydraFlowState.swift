@@ -195,7 +195,8 @@ extension HydraFlowState {
         }
 
         let services: [ObservableSyncServiceProtocol] = (omnipoolFlowState?.getAllStateServices() ?? []) +
-            (stableswapFlowState?.getAllStateServices() ?? [])
+            (stableswapFlowState?.getAllStateServices() ?? []) +
+            (xykswapFlowState?.getAllStateServices() ?? [])
 
         let reQuoteService = HydraReQuoteService(childServices: services)
         self.reQuoteService = reQuoteService
