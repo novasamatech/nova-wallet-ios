@@ -812,6 +812,7 @@ PODS:
   - keccak.c (0.1.3)
   - Kingfisher (6.3.0)
   - leveldb-library (1.22.2)
+  - MetadataShortenerApi (0.1.0)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
     - nanopb/encode (= 2.30909.1)
@@ -880,7 +881,7 @@ PODS:
   - SoraUI/Skrull (1.13.0)
   - Sourcery (1.4.1)
   - Starscream (4.0.10)
-  - SubstrateSdk (3.0.0):
+  - SubstrateSdk (3.2.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -944,6 +945,7 @@ DEPENDENCIES:
   - FireMock
   - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.1`)
   - Kingfisher
+  - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
   - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
   - R.swift
   - ReachabilitySwift
@@ -953,7 +955,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.10`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.0.0`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `b0c45d83307f7fe5ca8fddbe7bdf8038c2517113`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1025,6 +1027,9 @@ EXTERNAL SOURCES:
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
+  MetadataShortenerApi:
+    :git: https://github.com/novasamatech/metadata-shortener-ios.git
+    :tag: 0.1.0
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.0.1
@@ -1038,8 +1043,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
+    :commit: b0c45d83307f7fe5ca8fddbe7bdf8038c2517113
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.0.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1062,6 +1067,9 @@ CHECKOUT OPTIONS:
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.1'
+  MetadataShortenerApi:
+    :git: https://github.com/novasamatech/metadata-shortener-ios.git
+    :tag: 0.1.0
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.0.1
@@ -1075,8 +1083,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
+    :commit: b0c45d83307f7fe5ca8fddbe7bdf8038c2517113
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.0.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1122,6 +1130,7 @@ SPEC CHECKSUMS:
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
   Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
+  MetadataShortenerApi: b2d5d3ddb2e75e34688cc5f162881a943939ea9a
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   Operation-iOS: 5f1c2cb82bf10f46b92faefc92d5821550b14eb5
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
@@ -1137,7 +1146,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 867607a51eafadc6402b5c6f6acc0d8efdb98746
-  SubstrateSdk: 04c2fadf64483ebba8ec78999267305270017541
+  SubstrateSdk: a4190b1ec093bd09490c7ff20e1e03e2d4c45760
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1152,6 +1161,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: cfaaa2e46421095703931ad96387e1660d1734f0
+PODFILE CHECKSUM: 39ba0ebae3f70e7ad96af1394ae3e711af2f2fd7
 
 COCOAPODS: 1.15.2

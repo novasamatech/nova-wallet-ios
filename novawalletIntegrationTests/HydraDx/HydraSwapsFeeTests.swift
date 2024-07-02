@@ -101,6 +101,7 @@ final class HydraSwapsFeeTests: XCTestCase {
             wallet: wallet,
             chainRegistry: chainRegistry,
             userStorageFacade: userFacade,
+            substrateStorageFacade: substrateStorageFacade,
             generalSubscriptonFactory: generalSubscriptionFactory,
             operationQueue: operationQueue
         ).createFeeService(for: chain)

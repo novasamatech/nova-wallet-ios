@@ -85,8 +85,9 @@ struct StakingSetupAmountViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: state.chainAsset.chain)
 
         let recommendationFactory = StakingRecommendationMediatorFactory(

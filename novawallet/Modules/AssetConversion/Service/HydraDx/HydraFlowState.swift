@@ -18,6 +18,7 @@ final class HydraFlowState {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let userStorageFacade: StorageFacadeProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
     let mutex = NSLock()
@@ -36,6 +37,7 @@ final class HydraFlowState {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.account = account
@@ -43,6 +45,7 @@ final class HydraFlowState {
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
     }
 
@@ -206,8 +209,9 @@ extension HydraFlowState {
         let extrinsicFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: userStorageFacade
+            operationQueue: operationQueue,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
         ).createOperationFactory(
             account: account,
             chain: chain
@@ -233,8 +237,9 @@ extension HydraFlowState {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: userStorageFacade
+            operationQueue: operationQueue,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
         ).createService(
             account: account,
             chain: chain

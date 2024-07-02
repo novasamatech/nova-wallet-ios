@@ -1,21 +1,18 @@
 import UIKit
 import SoraFoundation
 
-final class ParitySignerAddressesViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ParitySignerAddressesViewLayout
+final class HardwareWalletAddressesViewController: UIViewController, ViewHolder {
+    typealias RootViewType = HardwareWalletAddressesViewLayout
 
-    let presenter: ParitySignerAddressesPresenterProtocol
-    let type: ParitySignerType
+    let presenter: HardwareWalletAddressesPresenterProtocol
 
     private var viewModels: [ChainAccountViewModelItem] = []
 
     init(
-        presenter: ParitySignerAddressesPresenterProtocol,
-        type: ParitySignerType,
+        presenter: HardwareWalletAddressesPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.type = type
 
         super.init(nibName: nil, bundle: nil)
 
@@ -28,7 +25,7 @@ final class ParitySignerAddressesViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ParitySignerAddressesViewLayout()
+        view = HardwareWalletAddressesViewLayout()
     }
 
     override func viewDidLoad() {
@@ -55,17 +52,9 @@ final class ParitySignerAddressesViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        rootView.titleLabel.text = R.string.localizable.paritySignerAddressesTitle(preferredLanguages: languages)
-        rootView.subtitleLabel.text = R.string.localizable.paritySignerAddressesSubtitle(
-            type.getName(for: selectedLocale),
-            preferredLanguages: languages
-        )
-
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: languages
         )
-
-        rootView.setNeedsLayout()
     }
 
     @objc private func actionProceed() {
@@ -75,7 +64,7 @@ final class ParitySignerAddressesViewController: UIViewController, ViewHolder {
 
 // MARK: - UITableViewDataSource
 
-extension ParitySignerAddressesViewController: UITableViewDataSource {
+extension HardwareWalletAddressesViewController: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         viewModels.count
     }
@@ -96,22 +85,35 @@ extension ParitySignerAddressesViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 
-extension ParitySignerAddressesViewController: UITableViewDelegate {
+extension HardwareWalletAddressesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         presenter.select(viewModel: viewModels[indexPath.row])
     }
 }
 
-extension ParitySignerAddressesViewController: ParitySignerAddressesViewProtocol {
+extension HardwareWalletAddressesViewController: HardwareWalletAddressesViewProtocol {
     func didReceive(viewModels: [ChainAccountViewModelItem]) {
         self.viewModels = viewModels
 
         rootView.tableView.reloadData()
     }
+
+    func didReceive(descriptionViewModel: TitleWithSubtitleViewModel) {
+        if descriptionViewModel.subtitle.isEmpty {
+            rootView.headerView.bind(topValue: descriptionViewModel.title, bottomValue: nil)
+        } else {
+            rootView.headerView.bind(
+                topValue: descriptionViewModel.title,
+                bottomValue: descriptionViewModel.subtitle
+            )
+        }
+
+        rootView.setNeedsLayout()
+    }
 }
 
-extension ParitySignerAddressesViewController {
+extension HardwareWalletAddressesViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

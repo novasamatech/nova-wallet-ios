@@ -8,7 +8,7 @@ extension MetaAccountModelType {
             return .regular
         case .paritySigner, .polkadotVault:
             return .paritySigner
-        case .ledger:
+        case .ledger, .genericLedger:
             return .extrinsicPayload
         }
     }
@@ -19,7 +19,7 @@ extension MetaAccountModelType {
             return nil
         case .paritySigner:
             return .paritySigner
-        case .ledger:
+        case .ledger, .genericLedger:
             return .ledger
         case .polkadotVault:
             return .polkadotVault

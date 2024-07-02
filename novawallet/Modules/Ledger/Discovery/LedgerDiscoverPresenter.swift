@@ -6,18 +6,14 @@ final class LedgerDiscoverPresenter: LedgerPerformOperationPresenter {
         baseWireframe as? LedgerDiscoverWireframeProtocol
     }
 
-    let chain: ChainModel
-
     init(
-        chain: ChainModel,
+        appName: String,
         interactor: LedgerPerformOperationInputProtocol,
         wireframe: LedgerPerformOperationWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
-        self.chain = chain
-
         super.init(
-            chainName: chain.name,
+            appName: appName,
             baseInteractor: interactor,
             baseWireframe: wireframe,
             localizationManager: localizationManager
@@ -35,7 +31,7 @@ extension LedgerDiscoverPresenter: LedgerDiscoverInteractorOutputProtocol {
                 return
             }
 
-            wireframe?.showAccountSelection(from: view, chain: chain, device: device)
+            wireframe?.showAccountSelection(from: view, device: device)
         case let .failure(error):
             handleAppConnection(error: error, deviceId: deviceId)
         }

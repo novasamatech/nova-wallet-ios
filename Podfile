@@ -4,7 +4,7 @@ platform :ios, '14.0'
 abstract_target 'novawalletAll' do
   use_frameworks!
 
-  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.0.0'
+  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'b0c45d83307f7fe5ca8fddbe7bdf8038c2517113'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
@@ -31,12 +31,13 @@ abstract_target 'novawalletAll' do
   pod 'FirebaseMessaging'
   pod 'FirebaseAppCheck'
   pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.1'
+  pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
   
   target 'novawalletTests' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.0.0'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'b0c45d83307f7fe5ca8fddbe7bdf8038c2517113'
     pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
@@ -45,7 +46,7 @@ abstract_target 'novawalletAll' do
     pod 'Sourcery', '~> 1.4'
     pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.10'
     pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.1'
-    
+    pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
   end
 
   target 'novawalletIntegrationTests'
@@ -61,7 +62,7 @@ abstract_target 'novawalletAll' do
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
     pod 'Sourcery', '~> 1.4'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.0.0'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'b0c45d83307f7fe5ca8fddbe7bdf8038c2517113'
   end
 
 

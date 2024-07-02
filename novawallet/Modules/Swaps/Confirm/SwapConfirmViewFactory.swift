@@ -89,8 +89,9 @@ struct SwapConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
 
         guard let extrinsicService = try? flowState.createExtrinsicService(for: chain) else {

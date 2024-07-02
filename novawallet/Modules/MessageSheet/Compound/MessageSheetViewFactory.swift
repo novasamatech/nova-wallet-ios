@@ -128,4 +128,26 @@ struct MessageSheetViewFactory {
 
         return view
     }
+
+    static func createMigrationBannerContentView(
+        viewModel: MessageSheetViewModel<UIImage, MessageSheetMigrationBannerView.ContentViewModel>,
+        allowsSwipeDown: Bool
+    ) -> MessageSheetViewProtocol? {
+        let wireframe = MessageSheetWireframe()
+
+        let presenter = MessageSheetPresenter(wireframe: wireframe)
+
+        let view = MessageSheetViewController<MessageSheetImageView, MessageSheetMigrationBannerView>(
+            presenter: presenter,
+            viewModel: viewModel,
+            localizationManager: LocalizationManager.shared
+        )
+
+        view.controller.preferredContentSize = CGSize(width: 0.0, height: 534.0)
+        view.allowsSwipeDown = allowsSwipeDown
+
+        presenter.view = view
+
+        return view
+    }
 }

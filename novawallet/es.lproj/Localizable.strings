@@ -571,7 +571,7 @@
 "crowdloan.empty.message_v2_2_0" = "Los crowdloans se mostrarán aquí";
 "common.existential.warning.message_v2_2_0" = "Tu cuenta será eliminada de la cadena de bloques después de esta operación ya que hace que el saldo total sea menor que el mínimo";
 "wallet.send.existential.warning_v2_2_0" = "Tu cuenta será eliminada de la blockchain después de la transferencia ya que hace que el saldo total sea menor que el mínimo";
-"account.backup.mnemonic.title" = "Apunta la frase y guárdala en un lugar seguro";
+"account.backup.mnemonic.title" = "Escribe tu Frase De Paso";
 "common.understand" = "Entiendo";
 "account.backup.mnemonic.caption" = "Por favor, asegúrate de anotar tu frase correctamente y de forma legible.";
 "account.backup.mnemonic.field.title" = "Frase mnemónica";
@@ -1515,6 +1515,12 @@
 "notifications.error.disabled.in.settings.title" = "Habilita las Notificaciones para Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Ve a Ajustes → Toca \"Notificaciones\" → Activa \"Permitir Notificaciones\"";
 "notifications.wallet.list.limit.error.message" = "Desafortunadamente, actualmente hay un límite en las notificaciones push para solo %li de tus carteras.";
+"ledger.instructions.step4" = "%@ para agregarla a la billetera";
+"legacy.ledger.migration.message" = "La aplicación Migration no estará disponible en un futuro cercano. Úsala para migrar tus cuentas a la nueva aplicación Ledger para evitar la pérdida de tus fondos.";
+"legacy.ledger.notification.title" = "Se ha lanzado una nueva aplicación Ledger";
+"legacy.ledger.notification.message" = "Para firmar operaciones y migrar tus cuentas a la nueva aplicación Generic Ledger, instala y abre la aplicación Migration. Las aplicaciones Legacy Old y Migration Ledger no serán compatibles en el futuro.";
+"common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
+"common.ledger.legacy" = "Ledger (Legacy)";
 "common.passphrase" = "Frase de recuperación";
 "cloud.backup.remove.wallet.title" = "La billetera se eliminará en la Copia de Seguridad en la Nube";
 "cloud.backup.remove.wallet.message" = "Asegúrate de haber guardado la frase de contraseña para la billetera antes de continuar.";
@@ -1652,4 +1658,6 @@
 "account.export.ethereum.private.key.placeholder" = "64 símbolos hexadecimales";
 "common.status.backup.syncing" = "Sincronizando Respaldo...";
 "common.status.backup.synced" = "Respaldo Sincronizado";
-"ledger.instructions.step4" = "%@ para agregarla a la billetera";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot app)";
+"generic.ledger.instructions.step1.highlighted" = "Polkadot app esté instalada";
+"generic.ledger.instructions.step2.highlighted" = "Open the Polkadot app";

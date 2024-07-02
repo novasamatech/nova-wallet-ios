@@ -83,8 +83,9 @@ struct ParaStkRebondViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
         let storageRequestFactory = StorageRequestFactory(
