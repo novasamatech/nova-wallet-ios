@@ -16,7 +16,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     var currentConnectingNode: ChainNodeModel?
     var currentConnection: ChainConnection?
     
-    var partialChain: PartialCustomChainModel?
+    private var partialChain: PartialCustomChainModel?
     
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -200,7 +200,7 @@ private extension CustomNetworkBaseInteractor {
             switch result {
             case let .success(chain):
                 self?.handleSetupFinished(for: chain)
-            case let .failure(error):
+            case .failure:
                 self?.basePresenter?.didReceive(.common(innerError: .undefined))
             }
         }
@@ -398,7 +398,7 @@ private extension CustomNetworkBaseInteractor {
 
 // MARK: DTO
 
-extension CustomNetworkBaseInteractor {
+private extension CustomNetworkBaseInteractor {
     struct PartialCustomChainModel: ChainNodeConnectable {
         let chainId: String
         let url: String

@@ -25,26 +25,33 @@ class NetworkDetailsViewModelFactory {
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
         onTapMore: @escaping (UUID) -> Void
     ) -> Details {
-        Details(
+        var sections: [Section] = [
+            createSwitchesSection(for: chain),
+            createAddNodeSection(
+                with: nodes.filter { $0.source == .user },
+                selectedNode: selectedNode,
+                chain: chain,
+                nodesIds: nodesIds,
+                connectionStates: connectionStates,
+                onTapMore: onTapMore
+            )
+        ]
+        
+        if chain.source == .remote {
+            let defaultNodesSection = createNodesSection(
+                with: nodes.filter { $0.source == .remote },
+                selectedNode: selectedNode,
+                chain: chain,
+                nodesIds: nodesIds,
+                connectionStates: connectionStates
+            )
+            
+            sections.append(defaultNodesSection)
+        }
+        
+        return Details(
             networkViewModel: networkViewModelFactory.createViewModel(from: chain),
-            sections: [
-                createSwitchesSection(for: chain),
-                createAddNodeSection(
-                    with: nodes.filter { $0.source == .user },
-                    selectedNode: selectedNode,
-                    chain: chain,
-                    nodesIds: nodesIds,
-                    connectionStates: connectionStates,
-                    onTapMore: onTapMore
-                ),
-                createNodesSection(
-                    with: nodes.filter { $0.source == .remote },
-                    selectedNode: selectedNode,
-                    chain: chain,
-                    nodesIds: nodesIds,
-                    connectionStates: connectionStates
-                )
-            ]
+            sections: sections
         )
     }
 
