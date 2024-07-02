@@ -63,7 +63,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         
         let node = createNode(
             with: url,
-            name: "My custom node",
+            name: Constants.defaultCustomNodeName,
             for: nil
         )
         
@@ -275,13 +275,14 @@ private extension CustomNetworkBaseInteractor {
         
         let assetOperation = ClosureOperation<PartialCustomChainModel> {
             let properties = try propertiesOperation?.extractNoCancellableResultData()
+            let precision = properties?.tokenDecimals.first ?? Constants.defaultEVMAssetPrecision
             
             let asset = AssetModel(
                 assetId: 0,
                 icon: nil,
                 name: chain.name,
                 symbol: chain.currencySymbol,
-                precision: properties?.tokenDecimals[0] ?? 18,
+                precision: precision,
                 priceId: nil,
                 stakings: nil,
                 type: nil,
@@ -419,6 +420,10 @@ private extension CustomNetworkBaseInteractor {
         
         static let etherscan = "Etherscan"
         static let etherscanTemplate = "https://etherscan.io/tx/{hash}"
+        
+        static let defaultCustomNodeName = "My custom node"
+        
+        static let defaultEVMAssetPrecision: UInt16 = 18
     }
 }
 
