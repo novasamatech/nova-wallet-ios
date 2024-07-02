@@ -73,7 +73,7 @@ private extension NetworkManageNodeViewController {
 
             cell.bind(
                 title: action.title,
-                icon: icon,
+                icon: icon?.withRenderingMode(.alwaysOriginal),
                 details: nil
             )
             

@@ -1705,3 +1705,6 @@ Please enter URL of the valid %@ node.";
 "network.add.alert.invalid.chain.id.message" = "The entered Chain ID does not match the network in the RPC URL.";
 "network.add.alert.invalid.network.type.title" = "Invalid network type";
 "network.add.alert.invalid.network.type.message" = "It seems you want to add a different type of network. Please select the “%@” to continue.";
+"network.manage.edit" = "Edit network";
+"network.manage.delete" = "Delete network";
+"network.manage.title" = "Manage added network";

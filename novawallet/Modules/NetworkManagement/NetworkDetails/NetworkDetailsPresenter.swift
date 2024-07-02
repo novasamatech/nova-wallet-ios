@@ -58,6 +58,10 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
         
         interactor.selectNode(node)
     }
+    
+    func manageNetwork() {
+        openManageNetwork()
+    }
 }
 
 // MARK: NetworkDetailsInteractorOutputProtocol
@@ -192,6 +196,74 @@ private extension NetworkDetailsPresenter {
             }
         )
     }
+    
+    func openManageNetwork() {
+        guard let view else {
+            return
+        }
+
+        let actionViewModels: [LocalizableResource<ActionManageViewModel>] = [
+            LocalizableResource { locale in
+                ActionManageViewModel(
+                    icon: R.image.iconPencil()?
+                        .tinted(with: R.color.colorIconPrimary()!)?
+                        .withRenderingMode(.alwaysOriginal),
+                    title: R.string.localizable.networkManageEdit(preferredLanguages: locale.rLanguages)
+                )
+            },
+            LocalizableResource { locale in
+                ActionManageViewModel(
+                    icon: R.image.iconDelete(),
+                    title: R.string.localizable.networkManageDelete(preferredLanguages: locale.rLanguages),
+                    isDestructive: true
+                )
+            }
+        ]
+
+        let context = ModalPickerClosureContext { [weak self] index in
+            guard 
+                let self,
+                let manageAction = ManageActions(rawValue: index)
+            else {
+                return
+            }
+
+            switch manageAction {
+            case .edit:
+                guard let selectedNode else { return }
+                
+                wireframe.showEditNetwork(
+                    from: view,
+                    network: chain,
+                    selectedNode: selectedNode
+                )
+            case .delete:
+                print("DELETE")
+            }
+        }
+
+        wireframe.presentActionsManage(
+            from: view,
+            actions: actionViewModels,
+            title: LocalizableResource { locale in
+                R.string.localizable.commonManageBackup(preferredLanguages: locale.rLanguages)
+            },
+            delegate: self,
+            context: context
+        )
+    }
+}
+
+// MARK: ModalPickerViewControllerDelegate
+
+extension NetworkDetailsPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let context = context as? ModalPickerClosureContext else {
+            return
+        }
+        
+        context.process(selectedIndex: index)
+    }
 }
 
 // MARK: Localizable
@@ -213,5 +285,12 @@ extension NetworkDetailsPresenter {
         case disconnected
         case pinged(Int)
         case unknown
+    }
+}
+
+private extension NetworkDetailsPresenter {
+    enum ManageActions: Int {
+        case edit = 0
+        case delete
     }
 }
