@@ -230,7 +230,6 @@ private extension CustomNetworkBaseInteractor {
             let filledPartialChain = try chainAssetSetupWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
-                
             
             let finalChainModel = ChainModel(
                 chainId: chainId,
@@ -255,8 +254,13 @@ private extension CustomNetworkBaseInteractor {
             return finalChainModel
         }
         
-        let wrapper = CompoundOperationWrapper(targetOperation: finishSetupOperation)
-        wrapper.addDependency(wrapper: chainIdSetupWrapper)
+        let dependencies = chainIdSetupWrapper.allOperations + chainAssetSetupWrapper.allOperations
+        dependencies.forEach { finishSetupOperation.addDependency($0) }
+        
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: finishSetupOperation,
+            dependencies: dependencies
+        )
         
         return wrapper
     }
@@ -335,9 +339,12 @@ private extension CustomNetworkBaseInteractor {
         }
         
         let chainSetupOperation = ClosureOperation<ChainModel.Id> {
-            return try dependency.targetOperation
+            let chainId = try dependency
+                .targetOperation
                 .extractNoCancellableResultData()
                 .withoutHexPrefix()
+            
+            return chainId
         }
         
         dependency.dependencies.forEach { operation in
