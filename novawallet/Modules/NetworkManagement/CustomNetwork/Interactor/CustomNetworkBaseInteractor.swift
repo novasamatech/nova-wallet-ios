@@ -401,19 +401,19 @@ private extension CustomNetworkBaseInteractor {
             return nil
         }
         
-        let nameUrl: (name: String, template: String)? = if checkExplorer(urlString: url, with: .subscan) {
-            (name: Constants.subscan, template: [url, Constants.subscanTemplatePath].joined(with: .slash))
+        let namedTemplate: NamedUrlTemplate? = if checkExplorer(urlString: url, with: .subscan) {
+            (Constants.subscan, [url, Constants.subscanTemplatePath].joined(with: .slash))
         } else if checkExplorer(urlString: url, with: .statescan) {
-            (name: Constants.statescan, template: [url, Constants.statescanTemplatePath].joined(with: .slash))
+            (Constants.statescan, [url, Constants.statescanTemplatePath].joined(with: .slash))
         } else if checkExplorer(urlString: url, with: .etherscan) {
-            (name: Constants.etherscan, template: Constants.etherscanTemplate)
+            (Constants.etherscan, Constants.etherscanTemplate)
         } else {
             nil
         }
         
         guard
-            let name = nameUrl?.name,
-            let template = nameUrl?.template
+            let name = namedTemplate?.name,
+            let template = namedTemplate?.template
         else {
             return nil
         }

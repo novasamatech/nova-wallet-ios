@@ -121,7 +121,7 @@ class CustomNetworkBasePresenter {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCoingeckoURL ?? "",
             required: false,
-            placeholder: Constants.coingeckoExplorer
+            placeholder: Constants.coingeckoTemplate
         )
         view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
@@ -264,9 +264,9 @@ extension CustomNetworkBasePresenter: Localizable {
 
 extension CustomNetworkBasePresenter {
     enum Constants {
-        static let chainIdPlaceholder: String = "012345"
-        static let chainUrlPlaceholder: String = "wss://rpc.network.io"
-        static let blockExplorerPlaceholder: String = "https://subscan.io"
-        static let coingeckoExplorer: String = "https://coingecko.com/coins/{coin_name}"
+        static let chainIdPlaceholder = "012345"
+        static let chainUrlPlaceholder = "wss://rpc.network.io"
+        static let blockExplorerPlaceholder = "https://subscan.io"
+        static let coingeckoTemplate = "https://coingecko.com/coins/{coin_name}"
     }
 }
