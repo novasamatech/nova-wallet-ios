@@ -8,9 +8,11 @@ protocol HydraQuoteFactoryProtocol {
 
 final class HydraQuoteFactory {
     let flowState: HydraFlowState
+    let logger: LoggerProtocol
 
-    init(flowState: HydraFlowState) {
+    init(flowState: HydraFlowState, logger: LoggerProtocol = Logger.shared) {
         self.flowState = flowState
+        self.logger = logger
     }
 
     private func createRouteComponentQuoteWrapper(
@@ -117,12 +119,18 @@ final class HydraQuoteFactory {
         ) {
             let routes = try routesOperation.extractNoCancellableResultData()
 
+            self.logger.debug("Routes: \(routes)")
+
             return routes.map { route in
                 let wrapper = self.createQuoteWrapper(route: route, args: args)
 
                 // silence error for particular route as we can have other results to select
                 let mappingOperation = ClosureOperation<AssetConversion.Quote?> {
-                    try? wrapper.targetOperation.extractNoCancellableResultData()
+                    let quote = try? wrapper.targetOperation.extractNoCancellableResultData()
+
+                    self.logger.debug("Quote for \(route): \(String(describing: quote))")
+
+                    return quote
                 }
 
                 mappingOperation.addDependency(wrapper.targetOperation)
