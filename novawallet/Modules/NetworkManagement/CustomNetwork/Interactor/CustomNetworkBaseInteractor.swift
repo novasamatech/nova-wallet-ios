@@ -358,34 +358,45 @@ private extension CustomNetworkBaseInteractor {
     }
     
     func createExplorer(from url: String?) -> ChainModel.Explorer? {
-        guard 
-            let url = url?.trimmingCharacters(in: CharacterSet(charactersIn: "/")),
-            checkSubscan(urlString: url)
+        guard let url = url?.trimmingCharacters(in: CharacterSet(charactersIn: "/")) else {
+            return nil
+        }
+        
+        let nameUrl: (name: String, template: String)? = if checkExplorer(urlString: url, with: .subscan) {
+            (name: Constants.subscan, template: [url, Constants.subscanTemplatePath].joined(with: .slash))
+        } else if checkExplorer(urlString: url, with: .statescan) {
+            (name: Constants.statescan, template: [url, Constants.statescanTemplatePath].joined(with: .slash))
+        } else if checkExplorer(urlString: url, with: .etherscan) {
+            (name: Constants.etherscan, template: Constants.etherscanTemplate)
+        } else {
+            nil
+        }
+        
+        guard
+            let name = nameUrl?.name,
+            let template = nameUrl?.template
         else {
             return nil
         }
         
-        let path = "extrinsic/{hash}"
-        
-        let templateUrl = [
-            url,
-            path
-        ].joined(with: .slash)
-        
         let explorer = ChainModel.Explorer(
-            name: "Subscan",
+            name: name,
             account: nil,
-            extrinsic: templateUrl,
+            extrinsic: template,
             event: nil
         )
         
         return explorer
     }
     
-    func checkSubscan(urlString: String) -> Bool {
-        let pattern = #"^https:\/\/([a-zA-Z0-9-]+\.)*subscan\.io$"#
-        
-        let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+    func checkExplorer(
+        urlString: String,
+        with pattern: BlockExplorerPatterns
+    ) -> Bool {
+        let regex = try? NSRegularExpression(
+            pattern: pattern.rawValue,
+            options: .caseInsensitive
+        )
         
         let range = NSRange(location: 0, length: urlString.utf16.count)
         if let match = regex?.firstMatch(in: urlString, options: [], range: range) {
@@ -393,6 +404,31 @@ private extension CustomNetworkBaseInteractor {
         } else {
             return false
         }
+    }
+}
+
+// MARK: Constants
+
+private extension CustomNetworkBaseInteractor {
+    enum Constants {
+        static let subscan = "Subscan"
+        static let subscanTemplatePath = "extrinsic/{hash}"
+        
+        static let statescan = "Statescan"
+        static let statescanTemplatePath = "extrinsic/{hash}"
+        
+        static let etherscan = "Etherscan"
+        static let etherscanTemplate = "https://etherscan.io/tx/{hash}"
+    }
+}
+
+// MARK: Regex patterns
+
+private extension CustomNetworkBaseInteractor {
+    enum BlockExplorerPatterns: String {
+        case subscan = #"^https:\/\/([a-zA-Z0-9-]+\.)*subscan\.io$"#
+        case statescan = #"^https:\/\/([a-zA-Z0-9-]+\.)*statescan\.io$"#
+        case etherscan = #"etherscan"#
     }
 }
 

@@ -266,7 +266,7 @@ extension CustomNetworkBasePresenter {
     enum Constants {
         static let chainIdPlaceholder: String = "012345"
         static let chainUrlPlaceholder: String = "wss://rpc.network.io"
-        static let blockExplorerPlaceholder: String = "https://www.subscan.io"
+        static let blockExplorerPlaceholder: String = "https://subscan.io"
         static let coingeckoExplorer: String = "https://coingecko.com/coins/{coin_name}"
     }
 }

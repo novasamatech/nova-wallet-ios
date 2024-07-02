@@ -157,7 +157,7 @@ private extension CustomNetworkViewLayout {
         chainIdTitleLabel.text = R.string.localizable.networkAddChainId(
             preferredLanguages: locale.rLanguages
         )
-        blockExplorerUrlTitleLabel.text = R.string.localizable.networkAddSubscanUrl(
+        blockExplorerUrlTitleLabel.text = R.string.localizable.networkAddBlockExplorerUrl(
             preferredLanguages: locale.rLanguages
         )
         coingeckoUrlTitleLabel.text = R.string.localizable.networkAddCoingeckoUrl(

@@ -1696,7 +1696,7 @@ Please enter URL of the valid %@ node.";
 "network.add.name" = "Network name";
 "network.add.currencySymbol" = "Currency Symbol";
 "network.add.chainId" = "Chain ID";
-"network.add.subscanUrl" = "Subscan URL (Optional)";
+"network.add.blockExplorerUrl" = "Block explorer URL (Optional)";
 "network.add.coingeckoUrl" = "Coingecko link for price info (Optional)";
 "network.add.alert.already.exists.title" = "This network already exist";
 "network.add.alert.already.exists.remote.message" = "The entered RPC URL is present in Nova as a %@.";
