@@ -50,6 +50,18 @@ final class HydraQuoteFactory {
                         direction: direction
                     )
                 )
+            case .xyk:
+                let xykState = flowState.getXYKSwapFlowState()
+                let quoteFactory = HydraXYKSwapQuoteFactory(flowState: xykState)
+
+                return quoteFactory.quote(
+                    for: .init(
+                        assetIn: component.assetIn,
+                        assetOut: component.assetOut,
+                        amount: amount,
+                        direction: direction
+                    )
+                )
             }
         }
     }

@@ -5,6 +5,7 @@ extension HydraDx {
         enum ComponentType: Codable {
             case omnipool
             case stableswap(Asset)
+            case xyk
         }
 
         struct Component: Codable {
@@ -30,6 +31,12 @@ extension HydraDx {
                         assetIn: newAssetIn,
                         assetOut: newAssetOut,
                         type: .stableswap(newPoolAsset)
+                    )
+                case .xyk:
+                    return SwapRoute<T>.Component(
+                        assetIn: newAssetIn,
+                        assetOut: newAssetOut,
+                        type: .xyk
                     )
                 }
             }

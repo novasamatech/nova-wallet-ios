@@ -159,8 +159,15 @@ extension HydraTokensFactory {
             operationQueue: operationQueue
         )
 
+        let xykswap = HydraXYKPoolTokensFactory(
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
         return .init(
-            poolsFactory: [omnipool, stableswap],
+            poolsFactory: [omnipool, stableswap, xykswap],
             chain: chain,
             runtimeService: runtimeService,
             connection: connection,
