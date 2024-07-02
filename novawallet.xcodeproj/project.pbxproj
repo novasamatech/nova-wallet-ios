@@ -622,6 +622,8 @@
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
 		0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */; };
 		0CE1A0572BEBCC46008206ED /* CloudBackupSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A0562BEBCC46008206ED /* CloudBackupSettingsViewModel.swift */; };
+		0CE360212C33F398006A6CE4 /* GraphModel+Dijkstra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE360202C33F398006A6CE4 /* GraphModel+Dijkstra.swift */; };
+		0CE360232C343300006A6CE4 /* PriorityQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE360222C343300006A6CE4 /* PriorityQueue.swift */; };
 		0CE550B32A49658700F0A7AC /* StakingDuration+Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */; };
 		0CE550B62A49741400F0A7AC /* StakingUnbondSetupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE550B52A49741400F0A7AC /* StakingUnbondSetupTests.swift */; };
 		0CE5BF4A6BC02563113DFDB8 /* GovernanceDelegateInfoInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7E7AAE54BF5E6A35BDD29B /* GovernanceDelegateInfoInteractor.swift */; };
@@ -5478,6 +5480,8 @@
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
 		0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsView.swift; sourceTree = "<group>"; };
 		0CE1A0562BEBCC46008206ED /* CloudBackupSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModel.swift; sourceTree = "<group>"; };
+		0CE360202C33F398006A6CE4 /* GraphModel+Dijkstra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GraphModel+Dijkstra.swift"; sourceTree = "<group>"; };
+		0CE360222C343300006A6CE4 /* PriorityQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityQueue.swift; sourceTree = "<group>"; };
 		0CE550B22A49658700F0A7AC /* StakingDuration+Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingDuration+Localizable.swift"; sourceTree = "<group>"; };
 		0CE550B52A49741400F0A7AC /* StakingUnbondSetupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondSetupTests.swift; sourceTree = "<group>"; };
 		0CE629D42AA9B5E200E250BD /* BalanceViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceViewModel.swift; sourceTree = "<group>"; };
@@ -11017,6 +11021,8 @@
 			isa = PBXGroup;
 			children = (
 				0CCDB2EA2B74DA55007BC5D6 /* GraphModel.swift */,
+				0CE360202C33F398006A6CE4 /* GraphModel+Dijkstra.swift */,
+				0CE360222C343300006A6CE4 /* PriorityQueue.swift */,
 			);
 			path = Graphs;
 			sourceTree = "<group>";
@@ -24154,6 +24160,7 @@
 				0C3205E82A898195002EB914 /* EvmValidationErrorPresentable.swift in Sources */,
 				84CE69E82566750D00559427 /* ByteLengthProcessor.swift in Sources */,
 				8499FEDA27BFDB8C00712589 /* NFTStreamableSource.swift in Sources */,
+				0CE360212C33F398006A6CE4 /* GraphModel+Dijkstra.swift in Sources */,
 				849976BE27B269A400B14A6C /* DAppTransports.swift in Sources */,
 				842876A724AE049B00D91AD8 /* SelectionListProtocols.swift in Sources */,
 				AE6F7FE22685E812002BBC3E /* ValidatorListFilterWireframe.swift in Sources */,
@@ -24774,6 +24781,7 @@
 				88D02FEA2942ED4F00E26390 /* RoundedButton+Style.swift in Sources */,
 				842BDB2A278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift in Sources */,
 				84FEADF228783F55001DFC26 /* BaseParaStakingRewardCalculatoService.swift in Sources */,
+				0CE360232C343300006A6CE4 /* PriorityQueue.swift in Sources */,
 				848CC93D28D9F6D8009EB4B0 /* OnChainDispatchTime.swift in Sources */,
 				841E5534282CD9A900C8438F /* StakingType.swift in Sources */,
 				F436BB9E2726FBF7004B1794 /* Coordinator.swift in Sources */,

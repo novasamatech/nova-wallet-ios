@@ -48,3 +48,6 @@ extension HydraDx {
     typealias LocalSwapRoute = SwapRoute<ChainAssetId>
     typealias RemoteSwapRoute = SwapRoute<HydraDx.AssetId>
 }
+
+extension HydraDx.SwapRoute.ComponentType: Equatable & Hashable where Asset: Equatable & Hashable {}
+extension HydraDx.SwapRoute.Component: Equatable & Hashable where Asset: Equatable & Hashable {}
