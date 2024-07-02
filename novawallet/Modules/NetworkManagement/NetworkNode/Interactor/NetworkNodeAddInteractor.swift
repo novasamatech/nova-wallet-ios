@@ -1,6 +1,6 @@
 import Foundation
 
-class NetworkNodeAddInteractor: NetworkNodeBaseInteractor, NetworkNodeCreatorTrait {
+final class NetworkNodeAddInteractor: NetworkNodeBaseInteractor, NetworkNodeCreatorTrait {
     weak var presenter: NetworkNodeAddInteractorOutputProtocol? {
         didSet {
             basePresenter = presenter

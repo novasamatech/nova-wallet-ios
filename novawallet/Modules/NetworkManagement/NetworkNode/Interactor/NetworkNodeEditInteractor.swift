@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
+final class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
     weak var presenter: NetworkNodeEditInteractorOutputProtocol? {
         didSet {
             basePresenter = presenter

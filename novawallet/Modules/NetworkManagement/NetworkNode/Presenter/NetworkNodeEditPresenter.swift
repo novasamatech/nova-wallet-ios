@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 
-class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
+final class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
     let interactor: NetworkNodeEditInteractorInputProtocol
     
     init(
