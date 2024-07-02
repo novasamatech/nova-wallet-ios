@@ -1515,6 +1515,11 @@
 "notifications.error.disabled.in.settings.title" = "Nova Wallet용 알림 활성화";
 "notifications.error.disabled.in.settings.message" = "설정으로 이동 \n→ \"알림\" 탭 \n→ \"알림 허용\" 켜기";
 "notifications.wallet.list.limit.error.message" = "안타깝게도, 현재 귀하의 지갑 중 %li 개만 알림을 받을 수 있는 제한이 있습니다.";
+"legacy.ledger.migration.message" = "Migration 앱은 곧 사용 불가능할 것입니다. 자금을 잃지 않기 위해 새 Ledger 앱으로 계정을 마이그레이션하세요.";
+"legacy.ledger.notification.title" = "새로운 Ledger 앱이 출시되었습니다";
+"legacy.ledger.notification.message" = "작업을 서명하고 계정을 새로운 Generic Ledger 앱으로 마이그레이션하려면 Migration 앱을 설치하고 여십시오. 레거시 구형 및 Migration Ledger 앱은 더 이상 지원되지 않을 것입니다.";
+"common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
+"common.ledger.legacy" = "Ledger (Legacy)";
 "common.passphrase" = "비밀번호 문구";
 "cloud.backup.remove.wallet.title" = "클라우드 백업에서 지갑이 제거됩니다";
 "cloud.backup.remove.wallet.message" = "진행하기 전에 지갑의 비밀번호 문구를 저장했는지 확인하십시오.";
@@ -1652,4 +1657,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 진수 기호";
 "common.status.backup.syncing" = "백업 동기화 중...";
 "common.status.backup.synced" = "백업 동기화됨";
+"common.ledger.nano.generic" = "Ledger Nano X(Generic Polkadot 앱)";
+"generic.ledger.instructions.step1.highlighted" = "폴카닷 앱이 설치되었습니다";
+"generic.ledger.instructions.step2.highlighted" = "Polkadot 앱 열기";
 "ledger.instructions.step4" = "지갑에 추가하려면 %@";

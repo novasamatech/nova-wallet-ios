@@ -1515,6 +1515,11 @@
 "notifications.error.disabled.in.settings.title" = "Nova Walletの通知を有効にする";
 "notifications.error.disabled.in.settings.message" = "設定に移動 		 「通知」をタップ		 「通知を許可」をオンにする";
 "notifications.wallet.list.limit.error.message" = "残念ながら、現在のプッシュ通知は最大%li個のウォレットに制限されています。";
+"legacy.ledger.migration.message" = "Migrationアプリは近い将来使用できなくなります。新しいLedgerアプリにアカウントを移行して資金を失わないようにしてください。";
+"legacy.ledger.notification.title" = "新しいLedgerアプリがリリースされました";
+"legacy.ledger.notification.message" = "操作にサインしてアカウントを新しいGeneric Ledgerアプリに移行するには、Migrationアプリをインストールして開いてください。Legacy OldおよびMigration Ledgerアプリは将来サポートされなくなります。";
+"common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
+"common.ledger.legacy" = "Ledger（Legacy）";
 "common.passphrase" = "パスフレーズ";
 "cloud.backup.remove.wallet.title" = "クラウドバックアップからウォレットが削除されます";
 "cloud.backup.remove.wallet.message" = "続行する前に、ウォレットのパスフレーズを保存したことを確認してください。";
@@ -1652,4 +1657,7 @@
 "account.export.ethereum.private.key.placeholder" = "64桁の16進数記号";
 "common.status.backup.syncing" = "バックアップを同期中...";
 "common.status.backup.synced" = "バックアップが同期されました";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot 専用水玉アプリ)";
+"generic.ledger.instructions.step1.highlighted" = "Polkadotアプリがインストールされています";
+"generic.ledger.instructions.step2.highlighted" = "ポルカドットアプリを開く";
 "ledger.instructions.step4" = "%@ウォレットに追加するために〜する";

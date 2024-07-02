@@ -1515,6 +1515,11 @@
 "notifications.error.disabled.in.settings.title" = "Aktifkan Notifikasi untuk Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Buka Pengaturan → Ketuk 'Notifikasi' → Aktifkan 'Izinkan Notifikasi'";
 "notifications.wallet.list.limit.error.message" = "Sayangnya, saat ini ada batasan notifikasi push hanya untuk %li dompet Anda.";
+"legacy.ledger.migration.message" = "Aplikasi Migrasi akan tidak tersedia dalam waktu dekat. Gunakan untuk memigrasikan akun Anda ke aplikasi Ledger baru untuk menghindari kehilangan dana Anda.";
+"legacy.ledger.notification.title" = "Aplikasi Ledger Baru Telah Dirilis";
+"legacy.ledger.notification.message" = "Untuk menandatangani operasi dan memigrasikan akun Anda ke aplikasi Ledger Generik yang baru, instal dan buka aplikasi Migrasi. Aplikasi Ledger Lama dan Ledger Migrasi tidak akan didukung di masa depan.";
+"common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
+"common.ledger.legacy" = "Ledger (Legacy)";
 "common.passphrase" = "Frasa sandi";
 "cloud.backup.remove.wallet.title" = "Dompet akan dihapus dalam Cadangan Awan";
 "cloud.backup.remove.wallet.message" = "Pastikan Anda telah menyimpan Frasa Sandi untuk dompet sebelum melanjutkan.";
@@ -1652,4 +1657,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 simbol heksadesimal";
 "common.status.backup.syncing" = "Sinkronisasi Backup...";
 "common.status.backup.synced" = "Backup Disinkronkan";
+"common.ledger.nano.generic" = "Ledger Nano X (aplikasi Generic Polkadot)";
+"generic.ledger.instructions.step1.highlighted" = "Aplikasi Polkadot sudah terinstal";
+"generic.ledger.instructions.step2.highlighted" = "Buka aplikasi Polkadot";
 "ledger.instructions.step4" = "%@ untuk ditambahkan ke dompet";

@@ -1515,6 +1515,11 @@
 "notifications.error.disabled.in.settings.title" = "Bật Thông báo cho Ví Nova";
 "notifications.error.disabled.in.settings.message" = "Đi tới Cài đặt ➔ Nhấn vào \"Thông báo\" ➔ Bật \"Cho phép Thông báo\"";
 "notifications.wallet.list.limit.error.message" = "Rất tiếc, hiện tại có giới hạn thông báo đẩy cho chỉ %li ví của bạn.";
+"legacy.ledger.migration.message" = "Ứng dụng Migration sẽ không còn khả dụng trong tương lai gần. Sử dụng nó để di chuyển các tài khoản của bạn sang ứng dụng Ledger mới để tránh mất tiền của bạn.";
+"legacy.ledger.notification.title" = "Ứng dụng Ledger mới đã được phát hành";
+"legacy.ledger.notification.message" = "Để ký kết các hoạt động và di chuyển các tài khoản của bạn sang ứng dụng Generic Ledger mới, cài đặt và mở ứng dụng Migration. Ứng dụng Ledger (Legacy) và Migration Ledger sẽ không còn được hỗ trợ trong tương lai.";
+"common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
+"common.ledger.legacy" = "Ledger (Legacy)";
 "common.passphrase" = "Cụm mật khẩu";
 "cloud.backup.remove.wallet.title" = "Ví sẽ bị xóa trong Sao lưu Đám mây";
 "cloud.backup.remove.wallet.message" = "Đảm bảo bạn đã lưu cụm từ bí mật cho ví trước khi tiếp tục.";
@@ -1652,4 +1657,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 ký tự hex";
 "common.status.backup.syncing" = "Đang đồng bộ sao lưu...";
 "common.status.backup.synced" = "Sao lưu đã đồng bộ";
+"common.ledger.nano.generic" = "Ledger Nano X (Ứng dụng Generic Polkadot)";
+"generic.ledger.instructions.step1.highlighted" = "Ứng dụng Polkadot đã được cài đặt";
+"generic.ledger.instructions.step2.highlighted" = "Mở ứng dụng Polkadot";
 "ledger.instructions.step4" = "%@ để thêm vào ví";
