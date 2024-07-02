@@ -86,7 +86,7 @@ enum ReferendumTrackType {
     ) -> ImageViewModelProtocol? {
         switch trackName {
         case Self.root:
-            return RemoteImageViewModel(url: chain.utilityAsset()?.icon ?? chain.icon)
+            return ImageViewModelFactory.createChainIconOrDefault(from: chain.utilityAsset()?.icon ?? chain.icon)
         case Self.whiteListedCaller, Self.fellowshipAdmin:
             return StaticImageViewModel(image: R.image.iconGovFellowship()!)
         case Self.auctionAdmin:

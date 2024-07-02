@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
+final class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
     weak var presenter: NetworkNodeEditInteractorOutputProtocol? {
         didSet {
             basePresenter = presenter
@@ -37,13 +37,6 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
         presenter?.didReceive(node: nodeToEdit)
     }
     
-    override func findExistingNode(
-        with url: String,
-        in chain: ChainModel
-    ) -> ChainNodeModel? {
-        chain.nodes.first { $0.url == url && $0.url != nodeToEdit.url }
-    }
-    
     override func handleConnected() {
         guard
             let chain = chainRegistry.getChain(for: chainId),
@@ -68,7 +61,9 @@ class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
             case .success:
                 self?.presenter?.didEditNode()
             case .failure:
-                self?.presenter?.didReceive(.common(error: .dataCorruption))
+                self?.presenter?.didReceive(
+                    .common(innerError: .dataCorruption)
+                )
             }
         }
     }
@@ -85,9 +80,17 @@ extension NetworkNodeEditInteractor: NetworkNodeEditInteractorInputProtocol {
         
         let editedNode = nodeToEdit.updating(url, name)
         
-        connect(
-            to: editedNode,
-            chain: chain
-        )
+        do {
+            try connect(
+                to: editedNode,
+                replacing: nodeToEdit,
+                chain: chain,
+                urlPredicate: NSPredicate.ws
+            )
+        } catch {
+            guard let networkNodeError = error as? NetworkNodeBaseInteractorError else { return }
+            
+            presenter?.didReceive(networkNodeError)
+        }
     }
 }

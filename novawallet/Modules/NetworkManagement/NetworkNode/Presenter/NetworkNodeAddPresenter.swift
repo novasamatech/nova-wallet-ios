@@ -1,11 +1,12 @@
 import Foundation
 import SoraFoundation
 
-class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
-    let interactor: NetworkNodeEditInteractorInputProtocol
+final class NetworkNodeAddPresenter: NetworkNodeBasePresenter {
+    
+    let interactor: NetworkNodeAddInteractorInputProtocol
     
     init(
-        interactor: any NetworkNodeEditInteractorInputProtocol,
+        interactor: any NetworkNodeAddInteractorInputProtocol,
         wireframe: any NetworkNodeWireframeProtocol,
         networkViewModelFactory: any NetworkViewModelFactoryProtocol,
         localizationManager: any LocalizationManagerProtocol
@@ -23,40 +24,31 @@ class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
     override func actionConfirm() {
         guard let partialURL, let partialName else { return }
         
-        interactor.editNode(
+        interactor.addNode(
             with: partialURL,
             name: partialName
         )
     }
     
     override func completeButtonTitle() -> String {
-        R.string.localizable.commonSave(
+        R.string.localizable.networkNodeAddButtonAdd(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
     
     override func provideTitle() {
-        let title = R.string.localizable.networkNodeEditTitle(
+        let title = R.string.localizable.networkNodeAddTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
         view?.didReceiveTitle(text: title)
     }
 }
 
-// MARK: NetworkNodeEditInteractorOutputProtocol
+// MARK: NetworkNodeAddInteractorOutputProtocol
 
-extension NetworkNodeEditPresenter: NetworkNodeEditInteractorOutputProtocol {
-    func didEditNode() {
+extension NetworkNodeAddPresenter: NetworkNodeAddInteractorOutputProtocol {
+    func didAddNode() {
         wireframe.showNetworkDetails(from: view)
-        provideButtonViewModel(loading: true)
-    }
-    
-    func didReceive(node: ChainNodeModel) {
-        partialURL = node.url
-        partialName = node.name
-        
-        provideNameViewModel()
-        provideURLViewModel(for: nil)
         provideButtonViewModel(loading: false)
     }
 }

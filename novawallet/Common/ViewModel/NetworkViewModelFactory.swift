@@ -7,7 +7,7 @@ protocol NetworkViewModelFactoryProtocol {
 
 final class NetworkViewModelFactory: NetworkViewModelFactoryProtocol {
     func createViewModel(from chain: ChainModel) -> NetworkViewModel {
-        let imageViewModel = RemoteImageViewModel(url: chain.icon)
+        let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
 
         return NetworkViewModel(name: chain.name, icon: imageViewModel)
     }

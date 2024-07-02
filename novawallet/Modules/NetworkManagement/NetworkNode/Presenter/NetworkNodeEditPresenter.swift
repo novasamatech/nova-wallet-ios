@@ -1,12 +1,11 @@
 import Foundation
 import SoraFoundation
 
-class NetworkNodeAddPresenter: NetworkNodeBasePresenter {
-    
-    let interactor: NetworkNodeAddInteractorInputProtocol
+final class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
+    let interactor: NetworkNodeEditInteractorInputProtocol
     
     init(
-        interactor: any NetworkNodeAddInteractorInputProtocol,
+        interactor: any NetworkNodeEditInteractorInputProtocol,
         wireframe: any NetworkNodeWireframeProtocol,
         networkViewModelFactory: any NetworkViewModelFactoryProtocol,
         localizationManager: any LocalizationManagerProtocol
@@ -24,31 +23,40 @@ class NetworkNodeAddPresenter: NetworkNodeBasePresenter {
     override func actionConfirm() {
         guard let partialURL, let partialName else { return }
         
-        interactor.addNode(
+        interactor.editNode(
             with: partialURL,
             name: partialName
         )
     }
     
     override func completeButtonTitle() -> String {
-        R.string.localizable.networkNodeAddButtonAdd(
+        R.string.localizable.commonSave(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
     
     override func provideTitle() {
-        let title = R.string.localizable.networkNodeAddTitle(
+        let title = R.string.localizable.networkNodeEditTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
         view?.didReceiveTitle(text: title)
     }
 }
 
-// MARK: NetworkNodeAddInteractorOutputProtocol
+// MARK: NetworkNodeEditInteractorOutputProtocol
 
-extension NetworkNodeAddPresenter: NetworkNodeAddInteractorOutputProtocol {
-    func didAddNode() {
+extension NetworkNodeEditPresenter: NetworkNodeEditInteractorOutputProtocol {
+    func didEditNode() {
         wireframe.showNetworkDetails(from: view)
-        provideButtonViewModel(loading: true)
+        provideButtonViewModel(loading: false)
+    }
+    
+    func didReceive(node: ChainNodeModel) {
+        partialURL = node.url
+        partialName = node.name
+        
+        provideNameViewModel()
+        provideURLViewModel(for: nil)
+        provideButtonViewModel(loading: false)
     }
 }

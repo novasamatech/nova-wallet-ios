@@ -165,8 +165,7 @@ final class NftDetailsPresenter {
     }
 
     private func provideNetwork() {
-        let imageViewModel = RemoteImageViewModel(url: chainAsset.chain.icon)
-
+        let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chainAsset.chain.icon)
         let viewModel = NetworkViewModel(name: chainAsset.chain.name, icon: imageViewModel)
 
         view?.didReceive(networkViewModel: viewModel)

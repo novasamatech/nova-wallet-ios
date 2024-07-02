@@ -63,7 +63,9 @@ final class StakingProxyManagementPresenter {
             }
 
             let proxyInfo = WalletView.ViewModel.ProxyInfo(
-                networkIcon: RemoteImageViewModel(url: self.chainAsset.chain.icon),
+                networkIcon: ImageViewModelFactory.createIdentifiableChainIcon(
+                    from: self.chainAsset.chain.icon
+                ),
                 proxyType: "",
                 proxyIcon: nil,
                 proxyName: nil,

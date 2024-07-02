@@ -70,7 +70,7 @@ struct ChainModel: Equatable, Hashable {
     let nodes: Set<ChainNodeModel>
     let addressPrefix: UInt16
     let types: TypesSettings?
-    let icon: URL
+    let icon: URL?
     let options: [LocalChainOptions]?
     let externalApis: LocalChainExternalApiSet?
     let nodeSwitchStrategy: NodeSwitchStrategy
@@ -90,7 +90,7 @@ struct ChainModel: Equatable, Hashable {
         nodeSwitchStrategy: NodeSwitchStrategy,
         addressPrefix: UInt16,
         types: TypesSettings?,
-        icon: URL,
+        icon: URL?,
         options: [LocalChainOptions]?,
         externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,
@@ -533,3 +533,75 @@ extension ChainModel {
         return Set(priceIds)
     }
 }
+
+extension ChainModel {
+    static func partialCustomChainModel(
+        ethereumBased: Bool,
+        url: String,
+        name: String,
+        currencySymbol: String,
+        chainId: UInt16? = nil,
+        blockExplorer: ChainModel.Explorer?,
+        coingeckoURL: String?
+    ) -> ChainModel {
+        let explorers: [Explorer]? = if let blockExplorer {
+            [blockExplorer]
+        } else {
+            nil
+        }
+        
+        let options: [LocalChainOptions]? = if ethereumBased {
+            [.ethereumBased]
+        } else {
+            nil
+        }
+        
+        return ChainModel(
+            chainId: "",
+            parentId: nil,
+            name: name,
+            assets: Set(),
+            nodes: Set(),
+            nodeSwitchStrategy: .uniform,
+            addressPrefix: chainId ?? UInt16(1),
+            types: nil,
+            icon: nil,
+            options: options,
+            externalApis: nil,
+            explorers: explorers,
+            order: 0,
+            additional: nil,
+            syncMode: .disabled,
+            source: .user,
+            connectionMode: .autoBalanced
+        )
+    }
+}
+
+// MARK: ChainNodeConnectable
+
+protocol ChainNodeConnectable {
+    var chainId: String { get }
+    var name: String { get }
+    var nodes: Set<ChainNodeModel> { get }
+    var options: [LocalChainOptions]? { get }
+    var nodeSwitchStrategy: ChainModel.NodeSwitchStrategy { get }
+    var addressPrefix: UInt16 { get }
+    var connectionMode: ChainModel.ConnectionMode { get }
+}
+
+extension ChainNodeConnectable {
+    var noSubstrateRuntime: Bool {
+        options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
+    }
+
+    var hasSubstrateRuntime: Bool {
+        !noSubstrateRuntime
+    }
+    
+    var isEthereumBased: Bool {
+        options?.contains(.ethereumBased) ?? false
+    }
+}
+
+extension ChainModel: ChainNodeConnectable {}

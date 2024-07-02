@@ -4,27 +4,27 @@ import SoraFoundation
 
 protocol ConnectionFactoryProtocol {
     func createConnection(
-        for chain: ChainModel,
+        for chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection
 
     func createConnection(
         for node: ChainNodeModel,
-        chain: ChainModel,
+        chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection
 
     func updateConnection(
         _ connection: ChainConnection,
-        chain: ChainModel
+        chain: ChainNodeConnectable
     )
 
     func updateOneShotConnection(
         _ connection: OneShotConnection,
-        chain: ChainModel
+        chain: ChainNodeConnectable
     )
 
-    func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection
+    func createOneShotConnection(for chain: ChainNodeConnectable) throws -> OneShotConnection
 }
 
 final class ConnectionFactory {
@@ -46,7 +46,7 @@ enum ConnectionFactoryError: Error {
 
 extension ConnectionFactory: ConnectionFactoryProtocol {
     func createConnection(
-        for chain: ChainModel,
+        for chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection {
         let urlModels = extractNodeUrls(
@@ -65,7 +65,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
 
     func createConnection(
         for node: ChainNodeModel,
-        chain: ChainModel,
+        chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection {
         guard let urlModel = nodeUrl(from: node) else {
@@ -80,7 +80,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         )
     }
 
-    func updateConnection(_ connection: ChainConnection, chain: ChainModel) {
+    func updateConnection(_ connection: ChainConnection, chain: ChainNodeConnectable) {
         let newUrlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
         let newUrls = newUrlModels.map(\.url)
 
@@ -91,7 +91,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         }
     }
 
-    func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection {
+    func createOneShotConnection(for chain: ChainNodeConnectable) throws -> OneShotConnection {
         let urls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https).map(\.url)
 
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
@@ -111,7 +111,10 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         return connection
     }
 
-    func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel) {
+    func updateOneShotConnection(
+        _ connection: OneShotConnection,
+        chain: ChainNodeConnectable
+    ) {
         let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https).map(\.url)
 
         if Set(connection.urls) != Set(newUrls) {
@@ -122,7 +125,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     private func createConnection(
         urlModels: [ConnectionTLSSupport],
         urls: [URL],
-        for chain: ChainModel,
+        for chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection {
         tlsSupportProvider.add(support: urlModels)
@@ -162,7 +165,10 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         return ConnectionTLSSupport(url: url, supportsTLS12: node.supportsTls12)
     }
 
-    private func extractNodeUrls(from chain: ChainModel, schema: String) -> [ConnectionTLSSupport] {
+    private func extractNodeUrls(
+        from chain: ChainNodeConnectable,
+        schema: String
+    ) -> [ConnectionTLSSupport] {
         let filteredNodes = if case let .manual(selectedNode) = chain.connectionMode {
             selectedNode.url.hasPrefix(schema)
                 ? Set([selectedNode])

@@ -93,7 +93,7 @@ private extension NetworkNodeViewLayout {
     func applyLocalization() {
         titleLabelFor.text = R.string.localizable.commonFor(preferredLanguages: locale.rLanguages).lowercased()
         
-        nameTitleLabel.text = R.string.localizable.networkInfoName(preferredLanguages: locale.rLanguages)
+        nameTitleLabel.text = R.string.localizable.networkInfoNodeName(preferredLanguages: locale.rLanguages)
         urlTitleLabel.text = R.string.localizable.networkInfoNodeUrl(preferredLanguages: locale.rLanguages)
 
         urlInput.locale = locale

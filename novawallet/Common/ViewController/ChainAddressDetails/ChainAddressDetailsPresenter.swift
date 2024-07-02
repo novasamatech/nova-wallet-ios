@@ -19,7 +19,7 @@ final class ChainAddressDetailsPresenter {
     private func provideViewModel() {
         let networkViewModel = NetworkViewModel(
             name: model.chainName,
-            icon: RemoteImageViewModel(url: model.chainIcon)
+            icon: ImageViewModelFactory.createChainIconOrDefault(from: model.chainIcon)
         )
 
         let actions = model.actions.map { action in

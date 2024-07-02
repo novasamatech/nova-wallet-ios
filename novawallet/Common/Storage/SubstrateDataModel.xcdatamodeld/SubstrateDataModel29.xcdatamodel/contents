@@ -49,7 +49,7 @@
         <attribute name="hasPushNotifications" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="hasSwapHub" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="hasSwapHydra" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="icon" attributeType="URI"/>
+        <attribute name="icon" optional="YES" attributeType="URI"/>
         <attribute name="isEthereumBased" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isTestnet" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>

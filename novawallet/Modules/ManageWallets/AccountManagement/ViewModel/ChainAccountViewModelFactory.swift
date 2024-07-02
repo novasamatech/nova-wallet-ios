@@ -48,13 +48,15 @@ final class ChainAccountViewModelFactory {
                 accountAddress = nil
                 icon = nil
             }
+            
+            let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chainModel.icon)
 
             let viewModel = ChainAccountViewModelItem(
                 chainId: chainAccount.chainId,
                 name: chainName,
                 address: accountAddress,
                 warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
-                chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
+                chainIconViewModel: imageViewModel,
                 accountIcon: icon,
                 hasAction: true
             )
@@ -113,13 +115,15 @@ final class ChainAccountViewModelFactory {
 
                 hasAction = accountAddress != nil
             }
+            
+            let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chainModel.icon)
 
             return ChainAccountViewModelItem(
                 chainId: chainId,
                 name: chainName,
                 address: accountAddress,
                 warning: warning,
-                chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
+                chainIconViewModel: imageViewModel,
                 accountIcon: icon,
                 hasAction: hasAction
             )
@@ -148,13 +152,15 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
 
         accountAddress = try? accountId.toAddress(using: chain.chainFormat)
         icon = try? iconGenerator.generateFromAccountId(accountId)
+        
+        let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
 
         let viewModel = ChainAccountViewModelItem(
             chainId: chain.chainId,
             name: chainName,
             address: accountAddress,
             warning: nil,
-            chainIconViewModel: RemoteImageViewModel(url: chain.icon),
+            chainIconViewModel: imageViewModel,
             accountIcon: icon,
             hasAction: true
         )

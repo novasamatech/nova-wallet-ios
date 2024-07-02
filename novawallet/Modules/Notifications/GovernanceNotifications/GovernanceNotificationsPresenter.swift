@@ -51,7 +51,7 @@ final class GovernanceNotificationsPresenter {
             return GovernanceNotificationsViewModel(
                 identifier: chain.chainId,
                 enabled: settings.isNotificationEnabled(for: chain.chainId),
-                icon: RemoteImageViewModel(url: chain.icon),
+                icon: ImageViewModelFactory.createChainIconOrDefault(from: chain.icon),
                 name: chain.name,
                 newReferendum: settings.isNewReferendumNotificationEnabled(for: chain.chainId),
                 referendumUpdate: settings.isReferendumUpdateNotificationEnabled(for: chain.chainId),

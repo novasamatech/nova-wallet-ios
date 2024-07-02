@@ -31,4 +31,5 @@ protocol NetworksListWireframeProtocol: AnyObject {
         from view: NetworksListViewProtocol?,
         with chain: ChainModel
     )
+    func showAddNetwork(from view: NetworksListViewProtocol?)
 }

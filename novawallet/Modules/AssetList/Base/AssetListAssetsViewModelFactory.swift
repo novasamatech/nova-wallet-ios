@@ -140,7 +140,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let networkName = chain.name.uppercased()
 
-        let iconViewModel = RemoteImageViewModel(url: chain.icon)
+        let iconViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
 
         let priceString = formatPrice(
             amount: value,

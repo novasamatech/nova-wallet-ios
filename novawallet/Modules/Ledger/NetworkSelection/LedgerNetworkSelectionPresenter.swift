@@ -29,7 +29,7 @@ final class LedgerNetworkSelectionPresenter {
 
             let chainAccountViewModel = ChainAccountViewModel(
                 networkName: chainAccount.chain.name,
-                networkIconViewModel: RemoteImageViewModel(url: chainAccount.chain.icon),
+                networkIconViewModel: ImageViewModelFactory.createChainIconOrDefault(from: chainAccount.chain.icon),
                 displayAddressViewModel: displayAddressViewModel?.cellViewModel
             )
 

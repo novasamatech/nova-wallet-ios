@@ -105,8 +105,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     let chain: ChainModel
     let customExtensions: [ExtrinsicSignedExtending]
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
-    let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
     let blockHashOperationFactory: BlockHashOperationFactoryProtocol
+    let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
 
     init(
         chain: ChainModel,

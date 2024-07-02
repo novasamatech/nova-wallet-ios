@@ -14,7 +14,7 @@ class DAppMetamaskBaseState {
         dataSource: DAppBrowserStateDataSource
     ) -> MetamaskChain {
         if let substrateChain = dataSource.fetchChainByEthereumChainId(chain.chainId) {
-            return chain.appending(iconUrl: substrateChain.icon.absoluteString)
+            return chain.appending(iconUrl: substrateChain.icon?.absoluteString)
         } else {
             return chain
         }
