@@ -25,6 +25,7 @@ final class HydraFlowState {
 
     private var omnipoolFlowState: HydraOmnipoolFlowState?
     private var stableswapFlowState: HydraStableswapFlowState?
+    private var xykswapFlowState: HydraXYKFlowState?
     private var reQuoteService: HydraReQuoteService?
     private var swapStateService: HydraSwapParamsService?
     private var routesFactory: HydraRoutesOperationFactoryProtocol?
@@ -68,6 +69,7 @@ extension HydraFlowState {
 
         omnipoolFlowState?.resetServices()
         stableswapFlowState?.resetServices()
+        xykswapFlowState?.resetServices()
 
         reQuoteService?.throttle()
         reQuoteService = nil
@@ -93,7 +95,6 @@ extension HydraFlowState {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            userStorageFacade: userStorageFacade,
             operationQueue: operationQueue
         )
 
@@ -118,11 +119,34 @@ extension HydraFlowState {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            userStorageFacade: userStorageFacade,
             operationQueue: operationQueue
         )
 
         stableswapFlowState = newState
+
+        return newState
+    }
+
+    func getXYKSwapFlowState() -> HydraXYKFlowState {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let state = xykswapFlowState {
+            return state
+        }
+
+        let newState = HydraXYKFlowState(
+            account: account,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue
+        )
+
+        xykswapFlowState = newState
 
         return newState
     }
@@ -171,7 +195,8 @@ extension HydraFlowState {
         }
 
         let services: [ObservableSyncServiceProtocol] = (omnipoolFlowState?.getAllStateServices() ?? []) +
-            (stableswapFlowState?.getAllStateServices() ?? [])
+            (stableswapFlowState?.getAllStateServices() ?? []) +
+            (xykswapFlowState?.getAllStateServices() ?? [])
 
         let reQuoteService = HydraReQuoteService(childServices: services)
         self.reQuoteService = reQuoteService

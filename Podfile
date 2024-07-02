@@ -30,7 +30,7 @@ abstract_target 'novawalletAll' do
   pod 'FirebaseFirestore'
   pod 'FirebaseMessaging'
   pod 'FirebaseAppCheck'
-  pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.1'
+  pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :commit => '9b9365d320f47705c0b2ad3c34954681cdb64d70'
   pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
   
   target 'novawalletTests' do
@@ -45,7 +45,7 @@ abstract_target 'novawalletAll' do
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
     pod 'Sourcery', '~> 1.4'
     pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.10'
-    pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.1'
+    pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :commit => '9b9365d320f47705c0b2ad3c34954681cdb64d70'
     pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
   end
 

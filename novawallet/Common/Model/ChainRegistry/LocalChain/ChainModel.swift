@@ -191,6 +191,10 @@ struct ChainModel: Equatable, Hashable {
         utilityAssets().first
     }
 
+    func chainAssets() -> [ChainAsset] {
+        assets.map { ChainAsset(chain: self, asset: $0) }
+    }
+
     func utilityAssetDisplayInfo() -> AssetBalanceDisplayInfo? {
         utilityAsset()?.displayInfo(with: icon)
     }

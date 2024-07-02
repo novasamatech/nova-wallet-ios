@@ -141,7 +141,6 @@ final class HydraOmnipoolSwapTests: XCTestCase {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeService,
-            userStorageFacade: UserDataStorageTestFacade(),
             operationQueue: operationQueue
         )
         
