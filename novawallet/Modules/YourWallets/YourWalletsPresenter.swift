@@ -82,10 +82,10 @@ final class YourWalletsPresenter {
             return .init(title: type.getName(for: selectedLocale).uppercased(), icon: type.icon)
         case .ledger:
             return .init(
-                title: R.string.localizable.commonLedger(
+                title: R.string.localizable.commonLedgerLegacy(
                     preferredLanguages: selectedLocale.rLanguages
                 ).uppercased(),
-                icon: R.image.iconLedger()
+                icon: R.image.iconLedgerWarning()
             )
         case .proxied:
             return .init(
@@ -95,7 +95,6 @@ final class YourWalletsPresenter {
                 icon: R.image.iconProxy()
             )
         case .genericLedger:
-            // TODO: Fix icon
             return .init(
                 title: R.string.localizable.commonLedger(
                     preferredLanguages: selectedLocale.rLanguages

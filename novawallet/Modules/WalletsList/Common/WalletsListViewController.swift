@@ -101,8 +101,8 @@ class WalletsListViewController<
             return view
         case .ledger:
             let view = dequeueCommonHeader(from: tableView)
-            let icon = R.image.iconLedgerHeader()
-            let title = R.string.localizable.commonLedger(
+            let icon = R.image.iconLedgerHeaderWarning()
+            let title = R.string.localizable.commonLedgerLegacy(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
 
@@ -118,7 +118,6 @@ class WalletsListViewController<
             view.bind(title: title, icon: icon)
             return view
         case .genericLedger:
-            // TODO: Fix Generic Ledger style
             let view = dequeueCommonHeader(from: tableView)
             let icon = R.image.iconLedgerHeader()
             let title = R.string.localizable.commonLedger(

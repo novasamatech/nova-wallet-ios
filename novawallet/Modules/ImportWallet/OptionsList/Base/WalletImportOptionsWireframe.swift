@@ -2,6 +2,22 @@ import Foundation
 import SoraFoundation
 
 class WalletImportOptionsWireframe: ActionsManagePresentable {
+    class HDWalletsContext {
+        let view: ControllerBackedProtocol?
+        let options: [HardwareWalletOptions]
+
+        init(view: ControllerBackedProtocol?, options: [HardwareWalletOptions]) {
+            self.view = view
+            self.options = options
+        }
+    }
+
+    let chainRegistry: ChainRegistryProtocol
+
+    init(chainRegistry: ChainRegistryProtocol) {
+        self.chainRegistry = chainRegistry
+    }
+
     func showSeedImport(from view: WalletImportOptionsViewProtocol?) {
         showWalletRestore(from: view, secretSource: .seed)
     }
@@ -23,7 +39,13 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
             return
         }
 
-        let hwWalletOptions: [HardwareWalletOptions] = [.polkadotVault, .genericLedger, .ledger, .paritySigner]
+        let isLedgerGenericAvailable = chainRegistry.genericLedgerAvailable()
+
+        let hwWalletOptions: [HardwareWalletOptions] = if isLedgerGenericAvailable {
+            [.polkadotVault, .genericLedger, .ledger, .paritySigner]
+        } else {
+            [.polkadotVault, .ledger, .paritySigner]
+        }
 
         let viewModels: [LocalizableResource<ActionManageViewModel>] = hwWalletOptions.map { option in
             switch option {
@@ -44,18 +66,29 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                     )
                 }
             case .ledger:
-                return LocalizableResource { locale in
-                    ActionManageViewModel(
-                        icon: R.image.iconLedgerAction(),
-                        title: R.string.localizable.commonLedgerLegacy(preferredLanguages: locale.rLanguages),
-                        details: nil
-                    )
+                if isLedgerGenericAvailable {
+                    return LocalizableResource { locale in
+                        ActionManageViewModel(
+                            icon: R.image.iconLedgerActionWarning(),
+                            title: R.string.localizable.commonLedgerNanoLegacy(preferredLanguages: locale.rLanguages),
+                            details: nil,
+                            allowsIconModification: false
+                        )
+                    }
+                } else {
+                    return LocalizableResource { locale in
+                        ActionManageViewModel(
+                            icon: R.image.iconLedgerAction(),
+                            title: R.string.localizable.commonLedgerNanoX(preferredLanguages: locale.rLanguages),
+                            details: nil
+                        )
+                    }
                 }
             case .genericLedger:
                 return LocalizableResource { locale in
                     ActionManageViewModel(
                         icon: R.image.iconLedgerAction(),
-                        title: R.string.localizable.commonLedgerGeneric(preferredLanguages: locale.rLanguages),
+                        title: R.string.localizable.commonLedgerNanoGeneric(preferredLanguages: locale.rLanguages),
                         details: nil
                     )
                 }
@@ -71,7 +104,10 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
             actions: viewModels,
             title: title,
             delegate: self,
-            context: view
+            context: HDWalletsContext(
+                view: view,
+                options: hwWalletOptions
+            )
         )
     }
 
@@ -90,11 +126,12 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
 
 extension WalletImportOptionsWireframe: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard
-            let option = HardwareWalletOptions(rawValue: UInt8(index)),
-            let view = context as? ControllerBackedProtocol else {
+        guard let hdContext = context as? HDWalletsContext else {
             return
         }
+
+        let option = hdContext.options[index]
+        let view = hdContext.view
 
         switch option {
         case .paritySigner:

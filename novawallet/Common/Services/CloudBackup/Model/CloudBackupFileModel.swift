@@ -64,7 +64,7 @@ extension CloudBackup {
 
         struct SubstrateSecrets: Codable, Equatable, Hashable {
             let seed: String?
-            let keypair: KeypairSecrets
+            let keypair: KeypairSecrets?
             let derivationPath: String?
         }
 

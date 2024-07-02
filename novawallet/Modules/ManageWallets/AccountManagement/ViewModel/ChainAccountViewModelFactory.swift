@@ -4,7 +4,7 @@ import UIKit
 
 protocol ChainAccountViewModelFactoryProtocol {
     func createViewModel(
-        from _: MetaAccountModel,
+        from wallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel],
         for locale: Locale
     ) -> ChainAccountListViewModel
@@ -117,7 +117,6 @@ final class ChainAccountViewModelFactory {
                     return nil
                 }
 
-                // TODO: Fix warning for Generic Ledger
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
                 hasAction = true
             }
@@ -198,7 +197,6 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                 )
             ]
         case .ledger, .proxied, .genericLedger:
-            // TODO: Fix Generic Ledger
             let allChainAccounts = customSecretAccountList + sharedSecretAccountList
 
             let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)

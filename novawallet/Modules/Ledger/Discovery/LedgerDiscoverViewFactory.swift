@@ -72,7 +72,11 @@ struct LedgerDiscoverViewFactory {
 
         let wireframe = GenericLedgerDiscoverWireframe(application: ledgerApplication, flow: flow)
 
-        return createView(interactor: interactor, wireframe: wireframe, appName: ledgerApplication.displayName)
+        return createView(
+            interactor: interactor,
+            wireframe: wireframe,
+            appName: LedgerSubstrateApp.generic.displayName(for: nil)
+        )
     }
 
     private static func createView(

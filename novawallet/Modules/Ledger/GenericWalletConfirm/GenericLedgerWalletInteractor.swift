@@ -50,7 +50,7 @@ final class GenericLedgerWalletInteractor {
             let model = SubstrateLedgerWalletModel(
                 accountId: accountId,
                 publicKey: response.account.publicKey,
-                cryptoType: LedgerApplication.defaultCryptoScheme.walletCryptoType,
+                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType,
                 derivationPath: response.derivationPath
             )
 

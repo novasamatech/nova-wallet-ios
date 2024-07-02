@@ -10,11 +10,22 @@ struct LedgerTxConfirmViewFactory {
         params: LedgerTxConfirmationParams,
         completion: @escaping TransactionSigningClosure
     ) -> ControllerBackedProtocol? {
+        guard let chain = ChainRegistryFacade.sharedRegistry.getChain(for: chainId) else {
+            return nil
+        }
+
+        let substrateLedgerApp = LedgerSubstrateApp(
+            ledgerWalletType: params.walletType,
+            chain: chain,
+            codingFactory: params.codingFactory
+        )
+
         guard let interactor = createInteractor(
             signingData: signingData,
             metaId: metaId,
             chainId: chainId,
-            params: params
+            params: params,
+            substrateLedgerApp: substrateLedgerApp
         ) else {
             completion(.failure(HardwareSigningError.signingCancelled))
             return nil
@@ -22,10 +33,10 @@ struct LedgerTxConfirmViewFactory {
 
         let wireframe = LedgerTxConfirmWireframe()
 
-        let chainName = ChainRegistryFacade.sharedRegistry.getChain(for: chainId)?.name ?? ""
-
         let presenter = LedgerTxConfirmPresenter(
-            chainName: chainName,
+            chainName: substrateLedgerApp.displayName(for: chain),
+            needsMigration: substrateLedgerApp.isMigration,
+            applicationConfig: ApplicationConfig.shared,
             interactor: interactor,
             wireframe: wireframe,
             completion: completion,
@@ -47,17 +58,27 @@ struct LedgerTxConfirmViewFactory {
         signingData: Data,
         metaId: String,
         chainId: ChainModel.Id,
-        params: LedgerTxConfirmationParams
+        params: LedgerTxConfirmationParams,
+        substrateLedgerApp: LedgerSubstrateApp
     ) -> BaseLedgerTxConfirmInteractor? {
-        switch params.walletType {
+        switch substrateLedgerApp {
         case .legacy:
             return createLegacyInteractor(with: signingData, metaId: metaId, chainId: chainId)
+        case .migration:
+            return createGenericInteractor(
+                with: signingData,
+                metaId: metaId,
+                chainId: chainId,
+                params: params,
+                isForMigration: true
+            )
         case .generic:
             return createGenericInteractor(
                 with: signingData,
                 metaId: metaId,
                 chainId: chainId,
-                params: params
+                params: params,
+                isForMigration: false
             )
         }
     }
@@ -66,7 +87,8 @@ struct LedgerTxConfirmViewFactory {
         with signingData: Data,
         metaId: String,
         chainId: ChainModel.Id,
-        params: LedgerTxConfirmationParams
+        params: LedgerTxConfirmationParams,
+        isForMigration: Bool
     ) -> BaseLedgerTxConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -78,7 +100,11 @@ struct LedgerTxConfirmViewFactory {
 
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
-        let ledgerApplication = GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
+        let ledgerApplication: NewSubstrateLedgerSigningProtocol = if isForMigration {
+            MigrationLedgerSubstrateApplication(connectionManager: ledgerConnection)
+        } else {
+            GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
+        }
 
         let runtimeMetadataFactory = RuntimeMetadataRepositoryFactory(
             storageFacade: SubstrateDataStorageFacade.shared

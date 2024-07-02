@@ -20,6 +20,8 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
     private var nameViewModel: InputViewModelProtocol?
     private var hasChanges: Bool = false
 
+    private var ledgerMigrationViewModel: LedgerMigrationBannerView.ViewModel?
+
     private var walletType: WalletsListSectionViewModel.SectionType = .secrets
 
     init(presenter: AccountManagementPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
@@ -95,9 +97,9 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
     private func applyWalletType() {
         switch walletType {
         case .secrets:
-            rootView.headerView.showsHintView = false
+            rootView.headerView.messageType = .none
         case .watchOnly:
-            rootView.headerView.showsHintView = true
+            rootView.headerView.messageType = .hint
 
             let text = R.string.localizable.accountManagementWatchOnlyHint(
                 preferredLanguages: selectedLocale.rLanguages
@@ -105,7 +107,7 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             let icon = R.image.iconWatchOnly()
             rootView.headerView.bindHint(text: text, icon: icon)
         case .paritySigner:
-            rootView.headerView.showsHintView = true
+            rootView.headerView.messageType = .hint
 
             let text = R.string.localizable.paritySignerDetailsHint(
                 ParitySignerType.legacy.getName(for: selectedLocale),
@@ -114,7 +116,7 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             let icon = R.image.iconParitySigner()
             rootView.headerView.bindHint(text: text, icon: icon)
         case .polkadotVault:
-            rootView.headerView.showsHintView = true
+            rootView.headerView.messageType = .hint
 
             let text = R.string.localizable.paritySignerDetailsHint(
                 ParitySignerType.vault.getName(for: selectedLocale),
@@ -123,17 +125,23 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             let icon = R.image.iconPolkadotVault()
             rootView.headerView.bindHint(text: text, icon: icon)
         case .ledger:
-            rootView.headerView.showsHintView = true
+            if let ledgerMigrationViewModel {
+                rootView.headerView.messageType = .banner
+                rootView.headerView.bind(bannerViewModel: ledgerMigrationViewModel)
+                rootView.headerView.apply(bannerStyle: .warning)
+            } else {
+                rootView.headerView.messageType = .hint
 
-            let text = R.string.localizable.ledgerDetailsHint(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+                let text = R.string.localizable.ledgerDetailsHint(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
 
-            let icon = R.image.iconLedger()
+                let icon = R.image.iconLedger()
 
-            rootView.headerView.bindHint(text: text, icon: icon)
+                rootView.headerView.bindHint(text: text, icon: icon)
+            }
         case .proxied:
-            rootView.headerView.showsHintView = true
+            rootView.headerView.messageType = .hint
 
             let text = R.string.localizable.proxyDetailsHint(
                 preferredLanguages: selectedLocale.rLanguages
@@ -143,8 +151,7 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
 
             rootView.headerView.bindHint(text: text, icon: icon)
         case .genericLedger:
-            // TODO: Fix Generic Ledger style
-            rootView.headerView.showsHintView = true
+            rootView.headerView.messageType = .hint
 
             let text = R.string.localizable.ledgerDetailsHint(
                 preferredLanguages: selectedLocale.rLanguages
@@ -266,6 +273,14 @@ extension AccountManagementViewController: AccountManagementViewProtocol {
 
     func setProxy(viewModel: AccountProxyViewModel) {
         rootView.headerView.hintView?.bindProxy(viewModel: viewModel)
+    }
+
+    func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel) {
+        ledgerMigrationViewModel = migrationViewModel
+
+        applyWalletType()
+
+        reload()
     }
 
     func reload() {
