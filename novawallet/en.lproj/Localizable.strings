@@ -1708,3 +1708,6 @@ Please enter URL of the valid %@ node.";
 "network.manage.edit" = "Edit network";
 "network.manage.delete" = "Delete network";
 "network.manage.title" = "Manage added network";
+"network.manage.delete.alert.title" = "Delete network?";
+"network.manage.delete.alert.description" = "You will not be able to see your token balances on that network on Assets screen";
+"common.delete" = "Delete";

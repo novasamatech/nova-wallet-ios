@@ -1,5 +1,7 @@
 import SoraFoundation
 
+private typealias ModalActionsContext = (actions: [LocalizableResource<ActionManageViewModel>], context: ModalPickerClosureContext)
+
 final class NetworkDetailsPresenter {
     weak var view: NetworkDetailsViewProtocol?
     let wireframe: NetworkDetailsWireframeProtocol
@@ -114,6 +116,10 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         }
     }
     
+    func didDeleteNetwork() {
+        wireframe.showNetworksList(from: view)
+    }
+    
     func didReceive(_ error: any Error) {
         wireframe.present(
             error: error,
@@ -202,6 +208,54 @@ private extension NetworkDetailsPresenter {
             return
         }
 
+        let modalActionsContext = createModalActionsContext()
+
+        wireframe.presentActionsManage(
+            from: view,
+            actions: modalActionsContext.actions,
+            title: LocalizableResource { locale in
+                R.string.localizable.commonManageBackup(preferredLanguages: locale.rLanguages)
+            },
+            delegate: self,
+            context: modalActionsContext.context
+        )
+    }
+    
+    func openDeleteAlert() {
+        let alertViewModel = AlertPresentableViewModel(
+            title: R.string.localizable.networkManageDeleteAlertTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            ),
+            message: R.string.localizable.networkManageDeleteAlertDescription(
+                preferredLanguages: selectedLocale.rLanguages
+            ),
+            actions: [
+                .init(
+                    title: R.string.localizable.commonCancel(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    style: .cancel
+                ),
+                .init(
+                    title: R.string.localizable.commonDelete(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    style: .destructive,
+                    handler: {
+                        [weak self] in self?.interactor.deleteNetwork()
+                    }
+                )
+            ],
+            closeAction: nil
+        )
+        wireframe.present(
+            viewModel: alertViewModel,
+            style: .alert,
+            from: view
+        )
+    }
+    
+    func createModalActionsContext() -> ModalActionsContext {
         let actionViewModels: [LocalizableResource<ActionManageViewModel>] = [
             LocalizableResource { locale in
                 ActionManageViewModel(
@@ -221,7 +275,7 @@ private extension NetworkDetailsPresenter {
         ]
 
         let context = ModalPickerClosureContext { [weak self] index in
-            guard 
+            guard
                 let self,
                 let manageAction = ManageActions(rawValue: index)
             else {
@@ -238,19 +292,11 @@ private extension NetworkDetailsPresenter {
                     selectedNode: selectedNode
                 )
             case .delete:
-                print("DELETE")
+                openDeleteAlert()
             }
         }
-
-        wireframe.presentActionsManage(
-            from: view,
-            actions: actionViewModels,
-            title: LocalizableResource { locale in
-                R.string.localizable.commonManageBackup(preferredLanguages: locale.rLanguages)
-            },
-            delegate: self,
-            context: context
-        )
+        
+        return (actionViewModels, context)
     }
 }
 

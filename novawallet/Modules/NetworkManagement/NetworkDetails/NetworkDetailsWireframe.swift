@@ -67,4 +67,8 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
             animated: true
         )
     }
+    
+    func showNetworksList(from view: NetworkDetailsViewProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
+    }
 }

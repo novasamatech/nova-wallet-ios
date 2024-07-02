@@ -33,6 +33,7 @@ protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
         for nodeURL: String,
         selected: Bool
     )
+    func didDeleteNetwork()
     func didReceive(_ error: Error)
 }
 
@@ -58,4 +59,6 @@ protocol NetworkDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, Ac
         network: ChainModel,
         selectedNode: ChainNodeModel
     )
+    
+    func showNetworksList(from view: NetworkDetailsViewProtocol?)
 }

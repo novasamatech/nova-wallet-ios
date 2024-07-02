@@ -117,7 +117,9 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
             }
         )
         
-        executeDataOperationWithErrorHandling(deleteOperation)
+        executeDataOperationWithErrorHandling(deleteOperation) { [weak self] in
+            self?.presenter?.didDeleteNetwork()
+        }
     }
 }
 
