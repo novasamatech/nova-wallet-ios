@@ -201,7 +201,7 @@ private extension CustomNetworkBaseInteractor {
             case let .success(chain):
                 self?.handleSetupFinished(for: chain)
             case let .failure(error):
-                print(error)
+                self?.basePresenter?.didReceive(.common(innerError: .undefined))
             }
         }
     }

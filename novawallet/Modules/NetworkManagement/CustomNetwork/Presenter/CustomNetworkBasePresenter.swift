@@ -77,7 +77,7 @@ class CustomNetworkBasePresenter {
     func provideURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialURL ?? "",
-            placeholder: "wss://rpc.network.io"
+            placeholder: Constants.chainUrlPlaceholder
         )
         view?.didReceiveUrl(viewModel: inputViewModel)
     }
@@ -103,7 +103,7 @@ class CustomNetworkBasePresenter {
     func provideChainIdViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialChainId ?? "",
-            placeholder: "012345"
+            placeholder: Constants.chainIdPlaceholder
         )
         view?.didReceiveChainId(viewModel: inputViewModel)
     }
@@ -112,7 +112,7 @@ class CustomNetworkBasePresenter {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialBlockExplorerURL ?? "",
             required: false,
-            placeholder: ""
+            placeholder: Constants.blockExplorerPlaceholder
         )
         view?.didReceiveBlockExplorerUrl(viewModel: inputViewModel)
     }
@@ -121,7 +121,7 @@ class CustomNetworkBasePresenter {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCoingeckoURL ?? "",
             required: false,
-            placeholder: ""
+            placeholder: Constants.coingeckoExplorer
         )
         view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
@@ -257,5 +257,16 @@ extension CustomNetworkBasePresenter: Localizable {
         guard let view, view.isSetup else { return }
         
         provideViewModel()
+    }
+}
+
+// MARK: Constants
+
+extension CustomNetworkBasePresenter {
+    enum Constants {
+        static let chainIdPlaceholder: String = "012345"
+        static let chainUrlPlaceholder: String = "wss://rpc.network.io"
+        static let blockExplorerPlaceholder: String = "https://www.subscan.io"
+        static let coingeckoExplorer: String = "https://coingecko.com/coins/{coin_name}"
     }
 }

@@ -47,10 +47,10 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
     > = .create { view in
         view.makeHorizontal()
         view.stackView.distribution = .fillEqually
-        view.spacing = 16
+        view.spacing = Constants.stackSpacing
         
-        view.fView.spacing = 8
-        view.sView.spacing = 8
+        view.fView.spacing = Constants.titleSpacing
+        view.sView.spacing = Constants.titleSpacing
         
         view.fView.valueTop.textAlignment = .left
         view.sView.valueTop.textAlignment = .left
@@ -92,27 +92,29 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
     override func setupLayout() {
         super.setupLayout()
         
-        addArrangedSubview(titleLabel, spacingAfter: 16)
+        stackView.spacing = Constants.stackSpacing
+        
+        addArrangedSubview(titleLabel)
         
         networkTypeSwitch.snp.makeConstraints { make in
             make.height.equalTo(Constants.segmentControlHeight)
         }
         
-        addArrangedSubview(networkTypeSwitch, spacingAfter: 16)
+        addArrangedSubview(networkTypeSwitch)
 
-        addArrangedSubview(urlTitleLabel, spacingAfter: 8)
-        addArrangedSubview(urlInput, spacingAfter: 16)
+        addArrangedSubview(urlTitleLabel, spacingAfter: Constants.titleSpacing)
+        addArrangedSubview(urlInput)
 
-        addArrangedSubview(nameTitleLabel, spacingAfter: 8)
-        addArrangedSubview(nameInput, spacingAfter: 16)
+        addArrangedSubview(nameTitleLabel, spacingAfter: Constants.titleSpacing)
+        addArrangedSubview(nameInput)
         
-        addArrangedSubview(currencyChainView, spacingAfter: 16)
+        addArrangedSubview(currencyChainView)
         
-        addArrangedSubview(blockExplorerUrlTitleLabel, spacingAfter: 8)
-        addArrangedSubview(blockExplorerUrlInput, spacingAfter: 16)
+        addArrangedSubview(blockExplorerUrlTitleLabel, spacingAfter: Constants.titleSpacing)
+        addArrangedSubview(blockExplorerUrlInput)
         
-        addArrangedSubview(coingeckoUrlTitleLabel, spacingAfter: 8)
-        addArrangedSubview(coingeckoUrlInput, spacingAfter: 16)
+        addArrangedSubview(coingeckoUrlTitleLabel, spacingAfter: Constants.titleSpacing)
+        addArrangedSubview(coingeckoUrlInput)
         
         addSubview(actionLoadableView)
         actionLoadableView.snp.makeConstraints { make in
@@ -155,7 +157,7 @@ private extension CustomNetworkViewLayout {
         chainIdTitleLabel.text = R.string.localizable.networkAddChainId(
             preferredLanguages: locale.rLanguages
         )
-        blockExplorerUrlTitleLabel.text = R.string.localizable.networkAddBlockExplorerUrl(
+        blockExplorerUrlTitleLabel.text = R.string.localizable.networkAddSubscanUrl(
             preferredLanguages: locale.rLanguages
         )
         coingeckoUrlTitleLabel.text = R.string.localizable.networkAddCoingeckoUrl(
@@ -173,5 +175,7 @@ private extension CustomNetworkViewLayout {
 private extension CustomNetworkViewLayout {
     enum Constants {
         static let segmentControlHeight: CGFloat = 40
+        static let stackSpacing: CGFloat = 16
+        static let titleSpacing: CGFloat = 8
     }
 }
