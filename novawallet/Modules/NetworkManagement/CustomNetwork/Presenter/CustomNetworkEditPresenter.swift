@@ -59,12 +59,17 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
 
 extension CustomNetworkEditPresenter: CustomNetworkEditInteractorOutputProtocol {
     
-    func didReceive(chain: ChainModel) {
+    func didReceive(
+        chain: ChainModel,
+        selectedNode: ChainNodeModel
+    ) {
+        knownChain = chain
+        
         let mainAsset = chain.assets.first { $0.assetId == 0 }
         
-        partialURL = chain.nodes.first?.url
+        partialURL = selectedNode.url
         partialName = chain.name
-        partialCurrencySymbol = mainAsset?.name
+        partialCurrencySymbol = mainAsset?.symbol
         partialChainId = "\(chain.addressPrefix)"
         partialBlockExplorerURL = blockExplorerUrl(from: chain.explorers?.first?.extrinsic)
         partialCoingeckoURL = if let priceId = mainAsset?.priceId {
@@ -72,6 +77,8 @@ extension CustomNetworkEditPresenter: CustomNetworkEditInteractorOutputProtocol 
         } else {
             nil
         }
+        
+        provideViewModel()
     }
     
     func didEditChain() {

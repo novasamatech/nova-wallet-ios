@@ -9,9 +9,11 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
     }
     
     private let networkToEdit: ChainModel
+    private let selectedNode: ChainNodeModel
     
     init(
         networkToEdit: ChainModel,
+        selectedNode: ChainNodeModel,
         chainRegistry: ChainRegistryProtocol,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
@@ -20,6 +22,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.networkToEdit = networkToEdit
+        self.selectedNode = selectedNode
         
         super.init(
             chainRegistry: chainRegistry,
@@ -32,13 +35,25 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
     }
     
     override func handleSetupFinished(for network: ChainModel) {
-        let saveOperation = repository.saveOperation(
-            { [network] },
-            { [weak self] in
-                guard let self else { return [] }
-                
-                return [networkToEdit.chainId]
+        var readyNetwork = network
+        
+        if network.chainId == networkToEdit.chainId {
+            var nodesToAdd = networkToEdit.nodes
+            
+            if !network.nodes.contains(where: { $0.url == selectedNode.url }) {
+                nodesToAdd.remove(selectedNode)
             }
+            
+            readyNetwork = network.adding(nodes: nodesToAdd)
+        }
+        
+        let deleteIds = network.chainId != networkToEdit.chainId
+            ? [networkToEdit.chainId]
+            : []
+        
+        let saveOperation = repository.saveOperation(
+            { [readyNetwork] },
+            { deleteIds }
         )
         
         execute(
@@ -58,7 +73,10 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
     }
     
     override func completeSetup() {
-        presenter?.didReceive(chain: networkToEdit)
+        presenter?.didReceive(
+            chain: networkToEdit,
+            selectedNode: selectedNode
+        )
     }
 }
 
@@ -80,7 +98,8 @@ extension CustomNetworkEditInteractor: CustomNetworkEditInteractorInputProtocol 
             currencySymbol: currencySymbol,
             chainId: chainId,
             blockExplorerURL: blockExplorerURL,
-            coingeckoURL: coingeckoURL
+            coingeckoURL: coingeckoURL,
+            replacingNode: selectedNode
         )
     }
 }

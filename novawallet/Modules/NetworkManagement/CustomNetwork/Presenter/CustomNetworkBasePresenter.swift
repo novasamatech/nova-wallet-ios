@@ -54,6 +54,21 @@ class CustomNetworkBasePresenter {
     
     // MARK: Provide view models
     
+    func provideViewModel() {
+        provideTitle()
+        provideNetworkTypeViewModel()
+        provideURLViewModel()
+        provideNameViewModel()
+        provideCurrencySymbolViewModel()
+        provideBlockExplorerURLViewModel()
+        provideCoingeckoURLViewModel()
+        provideButtonViewModel(loading: false)
+        
+        if chainType == .evm {
+            provideChainIdViewModel()
+        }
+    }
+    
     func provideButtonViewModel(loading: Bool) {
         let completed = checkInfoCompleted()
         
@@ -225,21 +240,6 @@ private extension CustomNetworkBasePresenter {
         partialChainId = nil
         partialBlockExplorerURL = nil
         partialCoingeckoURL = nil
-    }
-    
-    func provideViewModel() {
-        provideTitle()
-        provideNetworkTypeViewModel()
-        provideURLViewModel()
-        provideNameViewModel()
-        provideCurrencySymbolViewModel()
-        provideBlockExplorerURLViewModel()
-        provideCoingeckoURLViewModel()
-        provideButtonViewModel(loading: false)
-        
-        if chainType == .evm {
-            provideChainIdViewModel()
-        }
     }
     
     func provideTitle() {

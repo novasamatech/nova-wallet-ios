@@ -45,7 +45,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         currencySymbol: String,
         chainId: String?,
         blockExplorerURL: String?,
-        coingeckoURL: String?
+        coingeckoURL: String?,
+        replacingNode: ChainNodeModel? = nil
     ) {
         let evmChainId: UInt16? = if let chainId, let intChainId = Int(chainId) {
             UInt16(intChainId)
@@ -82,6 +83,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         
         connect(
             to: node,
+            replacingNode: replacingNode,
             chain: partialChain,
             urlPredicate: NSPredicate.ws
         )
@@ -124,13 +126,14 @@ private extension CustomNetworkBaseInteractor {
     
     func connect(
         to node: ChainNodeModel,
+        replacingNode: ChainNodeModel?,
         chain: ChainNodeConnectable,
         urlPredicate: NSPredicate
     ) {
         do {
             try connect(
                 to: node,
-                replacing: nil,
+                replacing: replacingNode,
                 chain: chain,
                 urlPredicate: urlPredicate
             )
@@ -266,7 +269,7 @@ private extension CustomNetworkBaseInteractor {
                 explorers: [filledPartialChain.blockExplorer].compactMap { $0 },
                 order: 0,
                 additional: nil,
-                syncMode: .disabled,
+                syncMode: .full,
                 source: .user,
                 connectionMode: filledPartialChain.connectionMode
             )
