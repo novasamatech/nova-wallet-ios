@@ -46,6 +46,7 @@ extension CloudBackup {
         case paritySigner = "PARITY_SIGNER"
         case ledger = "LEDGER"
         case polkadotVault = "POLKADOT_VAULT"
+        case genericLedger = "LEDGER_GENERIC"
     }
 
     struct DecryptedFileModel: Equatable {
@@ -63,7 +64,7 @@ extension CloudBackup {
 
         struct SubstrateSecrets: Codable, Equatable, Hashable {
             let seed: String?
-            let keypair: KeypairSecrets
+            let keypair: KeypairSecrets?
             let derivationPath: String?
         }
 

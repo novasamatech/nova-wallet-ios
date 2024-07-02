@@ -24,8 +24,11 @@ extension SwitchAccount {
             )
         }
 
-        override func showLedgerWalletCreation(from view: ControllerBackedProtocol?) {
-            guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(for: .switchWallet) else {
+        override func showLedgerWalletCreation(from view: ControllerBackedProtocol?, appType: LedgerWalletType) {
+            guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(
+                for: .switchWallet,
+                walletLedgerType: appType
+            ) else {
                 return
             }
 

@@ -3,7 +3,7 @@ import SoraFoundation
 import SoraKeystore
 
 struct LedgerWalletConfirmViewFactory {
-    static func createView(
+    static func createLegacyView(
         with accountsStore: LedgerAccountsStore,
         flow: WalletCreationFlow
     ) -> ControllerBackedProtocol? {
@@ -16,6 +16,29 @@ struct LedgerWalletConfirmViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
+        return createView(with: interactor, flow: flow)
+    }
+
+    static func createGenericView(
+        for model: SubstrateLedgerWalletModel,
+        flow: WalletCreationFlow
+    ) -> ControllerBackedProtocol? {
+        let interactor = GenericLedgerWalletConfirmInteractor(
+            model: model,
+            walletOperationFactory: GenericLedgerWalletOperationFactory(),
+            settings: SelectedWalletSettings.shared,
+            eventCenter: EventCenter.shared,
+            keystore: Keychain(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        return createView(with: interactor, flow: flow)
+    }
+
+    private static func createView(
+        with interactor: BaseLedgerWalletConfirmInteractor & LedgerWalletConfirmInteractorInputProtocol,
+        flow: WalletCreationFlow
+    ) -> ControllerBackedProtocol? {
         let wireframe = LedgerWalletConfirmWireframe(flow: flow)
 
         let presenter = LedgerWalletConfirmPresenter(

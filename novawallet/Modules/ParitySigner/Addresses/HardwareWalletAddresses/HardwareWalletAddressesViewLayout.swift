@@ -1,6 +1,6 @@
 import UIKit
 
-final class ParitySignerAddressesViewLayout: UIView, TableHeaderLayoutUpdatable {
+final class HardwareWalletAddressesViewLayout: UIView, TableHeaderLayoutUpdatable {
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()
         button.applyDefaultStyle()

@@ -25,7 +25,7 @@ final class LedgerNetworkSelectionWireframe: LedgerNetworkSelectionWireframeProt
     }
 
     func showWalletCreate(from view: LedgerNetworkSelectionViewProtocol?) {
-        guard let walletCreateView = LedgerWalletConfirmViewFactory.createView(
+        guard let walletCreateView = LedgerWalletConfirmViewFactory.createLegacyView(
             with: accountsStore,
             flow: flow
         ) else {

@@ -1,6 +1,6 @@
 import Foundation
 
-extension LedgerApplication.CryptoScheme {
+extension LedgerCryptoScheme {
     var walletCryptoType: MultiassetCryptoType {
         switch self {
         case .ed25519:

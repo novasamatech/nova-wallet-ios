@@ -5,7 +5,7 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
     weak var view: LedgerPerformOperationViewProtocol?
     let baseWireframe: LedgerPerformOperationWireframeProtocol
     let baseInteractor: LedgerPerformOperationInputProtocol
-    let chainName: String
+    let appName: String
 
     private(set) var devices: [LedgerDeviceProtocol] = []
 
@@ -14,12 +14,12 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
     let localizationManager: LocalizationManagerProtocol
 
     init(
-        chainName: String,
+        appName: String,
         baseInteractor: LedgerPerformOperationInputProtocol,
         baseWireframe: LedgerPerformOperationWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
-        self.chainName = chainName
+        self.appName = appName
         self.baseInteractor = baseInteractor
         self.baseWireframe = baseWireframe
         self.localizationManager = localizationManager
@@ -50,7 +50,7 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
             baseWireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: chainName,
+                networkName: appName,
                 cancelClosure: {},
                 retryClosure: { [weak self] in
                     guard let deviceIndex = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
@@ -99,7 +99,7 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
     // MARK: Protocol
 
     func setup() {
-        view?.didReceive(networkName: chainName)
+        view?.didReceive(networkName: appName)
 
         baseInteractor.setup()
     }

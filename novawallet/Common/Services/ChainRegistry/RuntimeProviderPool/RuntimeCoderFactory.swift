@@ -29,8 +29,20 @@ extension RuntimeCoderFactoryProtocol {
         metadata.getStorageMetadata(for: storagePath) != nil
     }
 
+    func atLeastV15Runtime() -> Bool {
+        if metadata is RuntimeMetadata || metadata is RuntimeMetadataV14 {
+            return false
+        } else {
+            return true
+        }
+    }
+
     func supportsMetadataHash() -> Bool {
-        metadata.getSignedExtensions().contains(Extrinsic.SignedExtensionId.checkMetadataHash)
+        let hasSignedExtension = metadata.getSignedExtensions().contains(
+            Extrinsic.SignedExtensionId.checkMetadataHash
+        )
+
+        return atLeastV15Runtime() && hasSignedExtension
     }
 }
 

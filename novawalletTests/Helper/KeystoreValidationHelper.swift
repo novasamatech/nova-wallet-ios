@@ -52,17 +52,32 @@ enum KeystoreValidationHelper {
         }
     }
     
-    static func validateMainAccountsHaveDerivationPaths(
+    static func validateMainSubstrateDerivationPath(
         for wallet: MetaAccountModel,
         keystore: KeystoreProtocol
     ) throws -> Bool {
         let substrateTag = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)
-        let ethereumTag = KeystoreTagV2.ethereumSeedTagForMetaId(wallet.metaId)
-        
         let substrateDerPath = try keystore.loadIfKeyExists(substrateTag)
-        let ethereumDerPath = try keystore.loadIfKeyExists(ethereumTag)
         
-        return substrateDerPath != nil && ethereumDerPath != nil
+        return substrateDerPath != nil
+    }
+    
+    static func validateMainEthereumDerivationPath(
+        for wallet: MetaAccountModel,
+        keystore: KeystoreProtocol
+    ) throws -> Bool {
+        let ethTag = KeystoreTagV2.ethereumDerivationTagForMetaId(wallet.metaId)
+        let ethDerPath = try keystore.loadIfKeyExists(ethTag)
+        
+        return ethDerPath != nil
+    }
+    
+    static func validateMainAccountsHaveDerivationPaths(
+        for wallet: MetaAccountModel,
+        keystore: KeystoreProtocol
+    ) throws -> Bool {
+        try validateMainSubstrateDerivationPath(for: wallet, keystore: keystore) &&
+        validateMainEthereumDerivationPath(for: wallet, keystore: keystore)
     }
     
     static func validateMnemonicSecrets(

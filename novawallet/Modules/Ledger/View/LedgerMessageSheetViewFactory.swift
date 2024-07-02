@@ -50,7 +50,8 @@ enum LedgerMessageSheetViewFactory {
     static func createReviewLedgerTransactionView(
         for timerMediator: CountdownTimerMediator,
         deviceName: String,
-        cancelClosure: @escaping () -> Void
+        cancelClosure: @escaping () -> Void,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe()
 
@@ -66,36 +67,63 @@ enum LedgerMessageSheetViewFactory {
 
         let graphicsViewModel = R.image.imageLedgerApprove()
 
-        let viewModel = MessageSheetViewModel<UIImage, CountdownTimerMediator>(
-            title: title,
-            message: message,
-            graphics: graphicsViewModel,
-            content: timerMediator,
-            mainAction: nil,
-            secondaryAction: nil
-        )
+        if let migrationViewModel {
+            let viewModel = MessageSheetViewModel<UIImage, MessageSheetTimerWithBannerView.ContentViewModel>(
+                title: title,
+                message: message,
+                graphics: graphicsViewModel,
+                content: .init(timerViewModel: timerMediator, bannerViewModel: migrationViewModel),
+                mainAction: nil,
+                secondaryAction: nil
+            )
 
-        let view = MessageSheetViewController<MessageSheetImageView, MessageSheetTimerLabel>(
-            presenter: presenter,
-            viewModel: viewModel,
-            localizationManager: LocalizationManager.shared
-        )
+            let view = MessageSheetViewController<MessageSheetImageView, MessageSheetTimerWithBannerView>(
+                presenter: presenter,
+                viewModel: viewModel,
+                localizationManager: LocalizationManager.shared
+            )
 
-        view.allowsSwipeDown = true
-        view.closeOnSwipeDownClosure = cancelClosure
+            view.allowsSwipeDown = true
+            view.closeOnSwipeDownClosure = cancelClosure
 
-        view.controller.preferredContentSize = CGSize(width: 0.0, height: 360.0)
+            view.controller.preferredContentSize = CGSize(width: 0.0, height: 514.0)
 
-        presenter.view = view
+            presenter.view = view
 
-        return view
+            return view
+        } else {
+            let viewModel = MessageSheetViewModel<UIImage, CountdownTimerMediator>(
+                title: title,
+                message: message,
+                graphics: graphicsViewModel,
+                content: timerMediator,
+                mainAction: nil,
+                secondaryAction: nil
+            )
+
+            let view = MessageSheetViewController<MessageSheetImageView, MessageSheetTimerLabel>(
+                presenter: presenter,
+                viewModel: viewModel,
+                localizationManager: LocalizationManager.shared
+            )
+
+            view.allowsSwipeDown = true
+            view.closeOnSwipeDownClosure = cancelClosure
+
+            view.controller.preferredContentSize = CGSize(width: 0.0, height: 360.0)
+
+            presenter.view = view
+
+            return view
+        }
     }
 
     static func createLedgerWarningView(
         for title: LocalizableResource<String>,
         message: LocalizableResource<String>,
         cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: MessageSheetCallback? = nil
+        retryClosure: MessageSheetCallback? = nil,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?
     ) -> MessageSheetViewProtocol? {
         let image = R.image.imageLedgerWarning()
 
@@ -115,25 +143,46 @@ enum LedgerMessageSheetViewFactory {
             secondaryAction = nil
         }
 
-        let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
-            title: title,
-            message: message,
-            graphics: image,
-            content: nil,
-            mainAction: mainAction,
-            secondaryAction: secondaryAction
-        )
+        if let migrationViewModel {
+            let viewModel = MessageSheetViewModel<UIImage, MessageSheetMigrationBannerView.ContentViewModel>(
+                title: title,
+                message: message,
+                graphics: image,
+                content: migrationViewModel,
+                mainAction: mainAction,
+                secondaryAction: secondaryAction
+            )
 
-        let view = MessageSheetViewFactory.createNoContentView(viewModel: viewModel, allowsSwipeDown: false)
+            let view = MessageSheetViewFactory.createMigrationBannerContentView(
+                viewModel: viewModel,
+                allowsSwipeDown: false
+            )
 
-        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 420.0)
+            view?.controller.preferredContentSize = CGSize(width: 0.0, height: 514)
 
-        return view
+            return view
+        } else {
+            let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
+                title: title,
+                message: message,
+                graphics: image,
+                content: nil,
+                mainAction: mainAction,
+                secondaryAction: secondaryAction
+            )
+
+            let view = MessageSheetViewFactory.createNoContentView(viewModel: viewModel, allowsSwipeDown: false)
+
+            view?.controller.preferredContentSize = CGSize(width: 0.0, height: 420.0)
+
+            return view
+        }
     }
 
     static func createTransactionExpiredView(
         for expirationTimeInterval: TimeInterval,
-        completionClosure: @escaping MessageSheetCallback
+        completionClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.commonTransactionExpired(preferredLanguages: locale.rLanguages)
@@ -151,11 +200,17 @@ enum LedgerMessageSheetViewFactory {
             )
         }
 
-        return createLedgerWarningView(for: title, message: message, cancelClosure: completionClosure)
+        return createLedgerWarningView(
+            for: title,
+            message: message,
+            cancelClosure: completionClosure,
+            migrationViewModel: migrationViewModel
+        )
     }
 
     static func createTransactionNotSupportedView(
-        completionClosure: @escaping MessageSheetCallback
+        completionClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.ledgerTransactionNotSupportedTitle(preferredLanguages: locale.rLanguages)
@@ -167,11 +222,17 @@ enum LedgerMessageSheetViewFactory {
             )
         }
 
-        return createLedgerWarningView(for: title, message: message, cancelClosure: completionClosure)
+        return createLedgerWarningView(
+            for: title,
+            message: message,
+            cancelClosure: completionClosure,
+            migrationViewModel: migrationViewModel
+        )
     }
 
     static func createSignatureInvalidView(
-        completionClosure: @escaping MessageSheetCallback
+        completionClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.commonSignatureInvalid(preferredLanguages: locale.rLanguages)
@@ -183,12 +244,18 @@ enum LedgerMessageSheetViewFactory {
             )
         }
 
-        return createLedgerWarningView(for: title, message: message, cancelClosure: completionClosure)
+        return createLedgerWarningView(
+            for: title,
+            message: message,
+            cancelClosure: completionClosure,
+            migrationViewModel: migrationViewModel
+        )
     }
 
     static func createMetadataOutdatedView(
         chainName: String,
-        completionClosure: @escaping MessageSheetCallback
+        completionClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.commonOutdatedMetadata(preferredLanguages: locale.rLanguages)
@@ -201,12 +268,18 @@ enum LedgerMessageSheetViewFactory {
             )
         }
 
-        return createLedgerWarningView(for: title, message: message, cancelClosure: completionClosure)
+        return createLedgerWarningView(
+            for: title,
+            message: message,
+            cancelClosure: completionClosure,
+            migrationViewModel: migrationViewModel
+        )
     }
 
     static func createDeviceNotConnectedView(
         cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping MessageSheetCallback
+        retryClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.ledgerOperationErrorTitle(preferredLanguages: locale.rLanguages)
@@ -220,13 +293,15 @@ enum LedgerMessageSheetViewFactory {
             for: title,
             message: message,
             cancelClosure: cancelClosure,
-            retryClosure: retryClosure
+            retryClosure: retryClosure,
+            migrationViewModel: migrationViewModel
         )
     }
 
     static func createOperationCancelledView(
         cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping MessageSheetCallback
+        retryClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.ledgerOperationTitleCancelled(preferredLanguages: locale.rLanguages)
@@ -240,14 +315,16 @@ enum LedgerMessageSheetViewFactory {
             for: title,
             message: message,
             cancelClosure: cancelClosure,
-            retryClosure: retryClosure
+            retryClosure: retryClosure,
+            migrationViewModel: migrationViewModel
         )
     }
 
     static func createNetworkAppNotLaunchedView(
         chainName: String,
         cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping MessageSheetCallback
+        retryClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.ledgerAppNotOpenTitle(chainName, preferredLanguages: locale.rLanguages)
@@ -261,14 +338,16 @@ enum LedgerMessageSheetViewFactory {
             for: title,
             message: message,
             cancelClosure: cancelClosure,
-            retryClosure: retryClosure
+            retryClosure: retryClosure,
+            migrationViewModel: migrationViewModel
         )
     }
 
     static func createMessageErrorView(
         message: String,
         cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping MessageSheetCallback
+        retryClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.ledgerOperationErrorTitle(preferredLanguages: locale.rLanguages)
@@ -278,13 +357,15 @@ enum LedgerMessageSheetViewFactory {
             for: title,
             message: LocalizableResource { _ in message },
             cancelClosure: cancelClosure,
-            retryClosure: retryClosure
+            retryClosure: retryClosure,
+            migrationViewModel: migrationViewModel
         )
     }
 
     static func createUnknownErrorView(
         cancelClosure: @escaping MessageSheetCallback,
-        retryClosure: @escaping MessageSheetCallback
+        retryClosure: @escaping MessageSheetCallback,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.ledgerOperationErrorTitle(preferredLanguages: locale.rLanguages)
@@ -298,7 +379,8 @@ enum LedgerMessageSheetViewFactory {
             for: title,
             message: message,
             cancelClosure: cancelClosure,
-            retryClosure: retryClosure
+            retryClosure: retryClosure,
+            migrationViewModel: migrationViewModel
         )
     }
 

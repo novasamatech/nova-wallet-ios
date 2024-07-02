@@ -15,6 +15,7 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
         let presenter = AccountManagementPresenter(
             viewModelFactory: viewModelFactory,
             walletId: walletId,
+            applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared
         )
 

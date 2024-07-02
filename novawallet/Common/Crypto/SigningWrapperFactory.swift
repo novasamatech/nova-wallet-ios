@@ -61,7 +61,8 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return LedgerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
-                chainId: accountResponse.chainId
+                chainId: accountResponse.chainId,
+                ledgerWalletType: .legacy
             )
         case .proxied:
             return ProxySigningWrapper(
@@ -69,6 +70,13 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 signingWrapperFactory: self,
                 settingsManager: settingsManager,
                 uiPresenter: uiPresenter
+            )
+        case .genericLedger:
+            return LedgerSigningWrapper(
+                uiPresenter: uiPresenter,
+                metaId: metaId,
+                chainId: accountResponse.chainId,
+                ledgerWalletType: .generic
             )
         }
     }
@@ -89,7 +97,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return NoSigningSupportWrapper(type: .paritySigner)
         case .polkadotVault:
             return NoSigningSupportWrapper(type: .polkadotVault)
-        case .ledger:
+        case .ledger, .genericLedger:
             return NoSigningSupportWrapper(type: .ledger)
         }
     }
@@ -108,7 +116,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return NoSigningSupportWrapper(type: .paritySigner)
         case .polkadotVault:
             return NoSigningSupportWrapper(type: .polkadotVault)
-        case .ledger:
+        case .ledger, .genericLedger:
             return NoSigningSupportWrapper(type: .ledger)
         }
     }
