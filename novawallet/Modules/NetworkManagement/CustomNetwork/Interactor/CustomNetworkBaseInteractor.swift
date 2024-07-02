@@ -34,14 +34,6 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         self.operationQueue = operationQueue
     }
     
-    func handleSetupFinished(for network: ChainModel) {
-        fatalError("Must be overriden by subclass")
-    }
-    
-    func completeSetup() {
-        fatalError("Must be overriden by subclass")
-    }
-    
     func setup() {
         completeSetup()
     }
@@ -68,6 +60,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         )
         
         let explorer = createExplorer(from: blockExplorerURL)
+        let mainAssetPriceId = extractPriceId(from: coingeckoURL)
         let options: [LocalChainOptions]? = networkType == .evm ? [.ethereumBased] : nil
         
         let partialChain = PartialCustomChainModel(
@@ -82,7 +75,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
             addressPrefix: evmChainId ?? 0,
             connectionMode: .autoBalanced,
             blockExplorer: explorer,
-            coingeckoURL: nil
+            mainAssetPriceId: mainAssetPriceId
         )
         
         self.partialChain = partialChain
@@ -92,6 +85,16 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
             chain: partialChain,
             urlPredicate: NSPredicate.ws
         )
+    }
+    
+    // MARK: To Override
+    
+    func handleSetupFinished(for network: ChainModel) {
+        fatalError("Must be overriden by subclass")
+    }
+    
+    func completeSetup() {
+        fatalError("Must be overriden by subclass")
     }
 }
 
@@ -105,41 +108,20 @@ extension CustomNetworkBaseInteractor: WebSocketEngineDelegate {
         from oldState: WebSocketEngine.State,
         to newState: WebSocketEngine.State
     ) {
-        guard oldState != newState else { return }
-        
-        DispatchQueue.main.async {
-            guard
-                let node = self.currentConnectingNode,
-                let chain = self.partialChain,
-                let connection = connection as? ChainConnection
-            else {
-                return
-            }
-
-            switch newState {
-            case .notConnected:
-                self.basePresenter?.didReceive(
-                    .connecting(innerError: .unableToConnect(networkName: chain.name))
-                )
-                self.currentConnection = nil
-            case .waitingReconnection:
-                connection.disconnect(true)
-            case .connected:
-                self.handleConnected(
-                    connection: connection,
-                    chain: chain,
-                    node: node
-                )
-            default:
-                break
-            }
-        }
+        handleWebSocketChangeState(
+            connection,
+            from: oldState,
+            to: newState
+        )
     }
 }
 
 // MARK: Private
 
 private extension CustomNetworkBaseInteractor {
+    
+    // MARK: Connection
+    
     func connect(
         to node: ChainNodeModel,
         chain: ChainNodeConnectable,
@@ -181,6 +163,42 @@ private extension CustomNetworkBaseInteractor {
         }
     }
     
+    func handleWebSocketChangeState(
+        _ connection: AnyObject,
+        from oldState: WebSocketEngine.State,
+        to newState: WebSocketEngine.State
+    ) {
+        guard oldState != newState else { return }
+        
+        DispatchQueue.main.async {
+            guard
+                let node = self.currentConnectingNode,
+                let chain = self.partialChain,
+                let connection = connection as? ChainConnection
+            else {
+                return
+            }
+
+            switch newState {
+            case .notConnected:
+                self.basePresenter?.didReceive(
+                    .connecting(innerError: .unableToConnect(networkName: chain.name))
+                )
+                self.currentConnection = nil
+            case .waitingReconnection:
+                connection.disconnect(true)
+            case .connected:
+                self.handleConnected(
+                    connection: connection,
+                    chain: chain,
+                    node: node
+                )
+            default:
+                break
+            }
+        }
+    }
+    
     func handleConnected(
         connection: ChainConnection,
         chain: PartialCustomChainModel,
@@ -206,18 +224,20 @@ private extension CustomNetworkBaseInteractor {
         }
     }
     
+    // MARK: Setup chain wrappers
+    
     func finishChainSetupWrapper(
         partialChain: PartialCustomChainModel,
         connection: ChainConnection,
         node: ChainNodeModel
     ) -> CompoundOperationWrapper<ChainModel> {
-        let chainIdSetupWrapper = createChainIdSetupWrapper(
+        let chainIdSetupWrapper = createChainIdFetchWrapper(
             chain: partialChain,
             connection: connection,
             node: node
         )
         
-        let chainAssetSetupWrapper = createMainAssetSetuptWrapper(
+        let chainAssetSetupWrapper = createMainAssetSetupWrapper(
             for: partialChain,
             connection: connection
         )
@@ -265,7 +285,7 @@ private extension CustomNetworkBaseInteractor {
         return wrapper
     }
     
-    func createMainAssetSetuptWrapper(
+    func createMainAssetSetupWrapper(
         for chain: PartialCustomChainModel,
         connection: ChainConnection
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
@@ -283,7 +303,7 @@ private extension CustomNetworkBaseInteractor {
                 name: chain.name,
                 symbol: chain.currencySymbol,
                 precision: precision,
-                priceId: nil,
+                priceId: chain.mainAssetPriceId,
                 stakings: nil,
                 type: nil,
                 typeExtras: nil,
@@ -311,7 +331,7 @@ private extension CustomNetworkBaseInteractor {
         )
     }
     
-    func createChainIdSetupWrapper(
+    func createChainIdFetchWrapper(
         chain: ChainNodeConnectable,
         connection: ChainConnection,
         node: ChainNodeModel
@@ -356,6 +376,24 @@ private extension CustomNetworkBaseInteractor {
             targetOperation: chainSetupOperation,
             dependencies: dependency.dependencies
         )
+    }
+    
+    // MARK: Optional helpers
+    
+    func extractPriceId(from coingeckoUrlTemplate: String?) -> AssetModel.PriceId? {
+        guard let coingeckoUrlTemplate else { return nil }
+        
+        let regex = try? NSRegularExpression(pattern: Constants.priceIdSearchRegexPattern)
+        let range = NSRange(location: 0, length: coingeckoUrlTemplate.utf16.count)
+        
+        guard
+            let match = regex?.firstMatch(in: coingeckoUrlTemplate, options: [], range: range),
+            let matchedRange = Range(match.range(at: 1), in: coingeckoUrlTemplate)
+        else {
+            return nil
+        }
+                
+        return String(coingeckoUrlTemplate[matchedRange])
     }
     
     func createExplorer(from url: String?) -> ChainModel.Explorer? {
@@ -424,6 +462,8 @@ private extension CustomNetworkBaseInteractor {
         static let defaultCustomNodeName = "My custom node"
         
         static let defaultEVMAssetPrecision: UInt16 = 18
+        
+        static let priceIdSearchRegexPattern = "\\{([^}]*)\\}"
     }
 }
 
@@ -452,7 +492,7 @@ private extension CustomNetworkBaseInteractor {
         let addressPrefix: UInt16
         let connectionMode: ChainModel.ConnectionMode
         let blockExplorer: ChainModel.Explorer?
-        let coingeckoURL: String?
+        let mainAssetPriceId: AssetModel.PriceId?
         
         func adding(_ asset: AssetModel) -> PartialCustomChainModel {
             PartialCustomChainModel(
@@ -467,7 +507,7 @@ private extension CustomNetworkBaseInteractor {
                 addressPrefix: addressPrefix,
                 connectionMode: connectionMode,
                 blockExplorer: blockExplorer,
-                coingeckoURL: coingeckoURL
+                mainAssetPriceId: mainAssetPriceId
             )
         }
         
@@ -484,7 +524,7 @@ private extension CustomNetworkBaseInteractor {
                 addressPrefix: addressPrefix ?? self.addressPrefix,
                 connectionMode: connectionMode,
                 blockExplorer: blockExplorer,
-                coingeckoURL: coingeckoURL
+                mainAssetPriceId: mainAssetPriceId
             )
         }
     }
