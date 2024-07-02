@@ -1515,6 +1515,12 @@
 "notifications.error.disabled.in.settings.title" = "Ative Notificações para a Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Vá para Configurações → Toque em \"Notificações\" → Ative \"Permitir Notificações\"";
 "notifications.wallet.list.limit.error.message" = "Infelizmente, atualmente existe um limite nas notificações push para apenas %li das suas carteiras.";
+"ledger.instructions.step4" = "%@ para adicionar à carteira";
+"legacy.ledger.migration.message" = "O aplicativo Migration estará indisponível em breve. Use-o para migrar suas contas para o novo aplicativo Ledger e evitar perder seus fundos.";
+"legacy.ledger.notification.title" = "Novo aplicativo Ledger foi lançado";
+"legacy.ledger.notification.message" = "Para assinar operações e migrar suas contas para o novo aplicativo Genérico Ledger, instale e abra o aplicativo Migration. Os aplicativos Legacy Old e Migration Ledger não serão suportados no futuro.";
+"common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
+"common.ledger.legacy" = "Ledger (Legacy)";
 "common.passphrase" = "Frase secreta";
 "cloud.backup.remove.wallet.title" = "A Carteira será removida no Backup em Nuvem";
 "cloud.backup.remove.wallet.message" = "Certifique-se de ter salvo a Frase de Recuperação para a carteira antes de prosseguir.";
@@ -1652,4 +1658,6 @@
 "account.export.ethereum.private.key.placeholder" = "64 símbolos hexadecimais";
 "common.status.backup.syncing" = "Sincronizando Backup...";
 "common.status.backup.synced" = "Backup Sincronizado";
-"ledger.instructions.step4" = "%@ para adicionar à carteira";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot app)";
+"generic.ledger.instructions.step1.highlighted" = "o aplicativo Polkadot está instalado";
+"generic.ledger.instructions.step2.highlighted" = "Open the Polkadot app";

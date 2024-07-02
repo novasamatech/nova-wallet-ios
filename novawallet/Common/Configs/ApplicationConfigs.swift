@@ -33,6 +33,7 @@ protocol ApplicationConfigProtocol {
     var polkadotVaultTroubleshoutingURL: URL { get }
     var controllerDeprecationURL: URL { get }
     var ledgerGuideURL: URL { get }
+    var ledgerMigrationURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
@@ -227,6 +228,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var ledgerGuideURL: URL {
         URL(string: "https://support.ledger.com/hc/en-us/articles/360019138694-Set-up-Bluetooth-connection")!
+    }
+
+    var ledgerMigrationURL: URL {
+        // swiftlint:disable:next line_length
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/ledger-nano-x/ledger-app-migration")!
     }
 
     var learnRecommendedValidatorsURL: URL {

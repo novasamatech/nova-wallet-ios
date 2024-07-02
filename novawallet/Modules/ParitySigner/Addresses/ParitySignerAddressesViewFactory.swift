@@ -6,7 +6,7 @@ struct ParitySignerAddressesViewFactory {
     static func createOnboardingView(
         with addressScan: ParitySignerAddressScan,
         type: ParitySignerType
-    ) -> ParitySignerAddressesViewProtocol? {
+    ) -> HardwareWalletAddressesViewProtocol? {
         createView(
             with: addressScan,
             type: type,
@@ -17,7 +17,7 @@ struct ParitySignerAddressesViewFactory {
     static func createAddAccountView(
         with addressScan: ParitySignerAddressScan,
         type: ParitySignerType
-    ) -> ParitySignerAddressesViewProtocol? {
+    ) -> HardwareWalletAddressesViewProtocol? {
         createView(
             with: addressScan,
             type: type,
@@ -28,7 +28,7 @@ struct ParitySignerAddressesViewFactory {
     static func createSwitchAccountView(
         with addressScan: ParitySignerAddressScan,
         type: ParitySignerType
-    ) -> ParitySignerAddressesViewProtocol? {
+    ) -> HardwareWalletAddressesViewProtocol? {
         createView(
             with: addressScan,
             type: type,
@@ -40,7 +40,7 @@ struct ParitySignerAddressesViewFactory {
         with addressScan: ParitySignerAddressScan,
         type: ParitySignerType,
         wireframe: ParitySignerAddressesWireframeProtocol
-    ) -> ParitySignerAddressesViewProtocol? {
+    ) -> HardwareWalletAddressesViewProtocol? {
         let interactor = ParitySignerAddressesInteractor(
             addressScan: addressScan,
             chainRegistry: ChainRegistryFacade.sharedRegistry
@@ -52,12 +52,12 @@ struct ParitySignerAddressesViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
-        let view = ParitySignerAddressesViewController(
+        let view = HardwareWalletAddressesViewController(
             presenter: presenter,
-            type: type,
             localizationManager: LocalizationManager.shared
         )
 

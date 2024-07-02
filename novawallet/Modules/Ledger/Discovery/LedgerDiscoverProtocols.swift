@@ -5,5 +5,5 @@ protocol LedgerDiscoverInteractorOutputProtocol: LedgerPerformOperationOutputPro
 }
 
 protocol LedgerDiscoverWireframeProtocol: LedgerPerformOperationWireframeProtocol {
-    func showAccountSelection(from view: ControllerBackedProtocol?, chain: ChainModel, device: LedgerDeviceProtocol)
+    func showAccountSelection(from view: ControllerBackedProtocol?, device: LedgerDeviceProtocol)
 }

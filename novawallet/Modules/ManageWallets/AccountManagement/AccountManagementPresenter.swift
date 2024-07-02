@@ -13,6 +13,7 @@ final class AccountManagementPresenter {
     var interactor: AccountManagementInteractorInputProtocol!
 
     let viewModelFactory: ChainAccountViewModelFactoryProtocol
+    let applicationConfig: ApplicationConfigProtocol
     let walletId: String
     let logger: LoggerProtocol?
 
@@ -27,10 +28,12 @@ final class AccountManagementPresenter {
     init(
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
         walletId: String,
+        applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.viewModelFactory = viewModelFactory
         self.walletId = walletId
+        self.applicationConfig = applicationConfig
         self.logger = logger
     }
 
@@ -81,6 +84,34 @@ final class AccountManagementPresenter {
         nameViewModel.inputHandler.addObserver(self)
 
         view?.set(nameViewModel: nameViewModel)
+    }
+
+    private func checkLedgerWarning() {
+        guard case .ledger = wallet?.type else {
+            return
+        }
+
+        if chains.contains(where: { $0.value.supportsGenericLedgerApp }) {
+            let viewModel = LedgerMigrationBannerView.ViewModel.createLedgerMigrationDownload(
+                for: selectedLocale
+            ) { [weak self] in
+                self?.showLegacyLedgerFindMore()
+            }
+
+            view?.setLedger(migrationViewModel: viewModel)
+        }
+    }
+
+    private func showLegacyLedgerFindMore() {
+        guard let view else {
+            return
+        }
+
+        wireframe.showWeb(
+            url: applicationConfig.ledgerMigrationURL,
+            from: view,
+            style: .automatic
+        )
     }
 
     // MARK: Common bottom sheet
@@ -318,7 +349,7 @@ final class AccountManagementPresenter {
                     )
                 }
             }
-        case .paritySigner, .polkadotVault, .ledger:
+        case .paritySigner, .polkadotVault, .ledger, .genericLedger:
             // change account not supported for Parity Signer and Ledger Wallets
             break
         }
@@ -430,7 +461,7 @@ final class AccountManagementPresenter {
             handlingClosure = { [weak self] in
                 self?.activateChangeAccount(for: chain, walletType: walletType)
             }
-        case .ledger:
+        case .ledger, .genericLedger:
             handlingClosure = { [weak self] in
                 guard let wallet = self?.wallet else {
                     return
@@ -521,6 +552,8 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             } else {
                 displayAddAddress(for: chainModel, walletType: .ledger)
             }
+        case .genericLedger:
+            displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
         }
     }
 
@@ -545,6 +578,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
             updateWalletType()
             updateChainViewModels()
             updateNameViewModel()
+            checkLedgerWarning()
 
         case let .failure(error):
             logger?.error("Did receive wallet fetch error: \(error)")
@@ -570,6 +604,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
         case let .success(chains):
             self.chains = chains
             updateChainViewModels()
+            checkLedgerWarning()
 
         case let .failure(error):
             logger?.error("Did receive chains fetch error: \(error)")

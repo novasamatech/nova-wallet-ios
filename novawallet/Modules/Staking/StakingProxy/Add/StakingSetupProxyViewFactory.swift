@@ -66,18 +66,18 @@ struct StakingSetupProxyViewFactory {
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let operationManager = OperationManager(operationQueue: operationQueue)
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chainAsset.chain)
 
         let accountProviderFactory = AccountProviderFactory(
             storageFacade: UserDataStorageFacade.shared,
-            operationManager: operationManager,
+            operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared
         )
 

@@ -118,7 +118,7 @@ final class CloudBackupSecretsImporter {
                 accountId: accountId,
                 isEthereumBased: isEthereumBased
             )
-        case .ledger:
+        case .ledger, .genericLedger:
             return try saveLedgerDerivationPath(
                 derivationPath,
                 wallet: wallet,
@@ -180,7 +180,9 @@ final class CloudBackupSecretsImporter {
                 try saveSeed(seedHex, wallet: wallet, accountId: nil, isEthereumBased: false)
             }
 
-            try savePrivateKey(substrate.keypair, wallet: wallet, accountId: nil, isEthereumBased: false)
+            if let keypair = substrate.keypair {
+                try savePrivateKey(keypair, wallet: wallet, accountId: nil, isEthereumBased: false)
+            }
         }
 
         if let ethereum = privateInfo.ethereum {
