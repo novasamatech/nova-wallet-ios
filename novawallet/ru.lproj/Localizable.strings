@@ -1515,7 +1515,6 @@
 "notifications.error.disabled.in.settings.title" = "Включите уведомления для Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Перейдите в Настройки → Нажмите \"Уведомления\" → Включите \"Разрешить уведомления\"";
 "notifications.wallet.list.limit.error.message" = "К сожалению, в настоящее время установлен лимит push-уведомлений только для %d ваших кошельков.";
-"ledger.instructions.step4" = "%@ для добавления в кошелёк";
 "legacy.ledger.migration.message" = "Migration приложение в ближайшее время будет недоступно. Используйте его для переноса своих учетных записей в новое приложение Ledger, чтобы не потерять свои средства.";
 "legacy.ledger.notification.title" = "Выпущено новое приложение Ledger";
 "legacy.ledger.notification.message" = "Чтобы подписать операции и перенести свои учетные записи в новое приложение Generic Ledger, установите и откройте приложение Migration. Приложения Ledger (Legacy) и Migration Ledger не будут поддерживаться в будущем.";
@@ -1661,3 +1660,4 @@
 "common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot приложение)";
 "generic.ledger.instructions.step1.highlighted" = "Polkadot приложение установлено";
 "generic.ledger.instructions.step2.highlighted" = "Откройте Polkadot приложение";
+"ledger.instructions.step4" = "%@ для добавления в кошелёк";
