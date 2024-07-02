@@ -404,7 +404,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: UInt16(bitPattern: entity.addressPrefix),
             types: types,
-            icon: entity.icon!,
+            icon: entity.icon,
             options: options,
             externalApis: externalApiSet,
             explorers: explorers,
