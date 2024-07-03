@@ -18,10 +18,17 @@ struct CustomNetworkViewFactory {
             return operationQueue
         }()
         
+        let runtimeFetchOperationFactory = RuntimeFetchOperationFactory(operationQueue: operationQueue)
+        let runtimeTypeRegistryFactory = RuntimeTypeRegistryFactory(logger: Logger.shared)
+        let blockHashOperationFactory = BlockHashOperationFactory()
+        let systemPropertiesOperationFactory = SystemPropertiesOperationFactory()
+        
         let interactor = CustomNetworkAddInteractor(
             chainRegistry: chainRegistry,
-            blockHashOperationFactory: BlockHashOperationFactory(), 
-            systemPropertiesOperationFactory: SystemPropertiesOperationFactory(),
+            runtimeFetchOperationFactory: runtimeFetchOperationFactory,
+            runtimeTypeRegistryFactory: runtimeTypeRegistryFactory,
+            blockHashOperationFactory: blockHashOperationFactory,
+            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connectionFactory: connectionFactory,
             repository: repository,
             operationQueue: operationQueue
@@ -69,12 +76,19 @@ struct CustomNetworkViewFactory {
             return operationQueue
         }()
         
+        let runtimeFetchOperationFactory = RuntimeFetchOperationFactory(operationQueue: operationQueue)
+        let runtimeTypeRegistryFactory = RuntimeTypeRegistryFactory(logger: Logger.shared)
+        let blockHashOperationFactory = BlockHashOperationFactory()
+        let systemPropertiesOperationFactory = SystemPropertiesOperationFactory()
+        
         let interactor = CustomNetworkEditInteractor(
             networkToEdit: network,
             selectedNode: selectedNode,
             chainRegistry: chainRegistry,
-            blockHashOperationFactory: BlockHashOperationFactory(),
-            systemPropertiesOperationFactory: SystemPropertiesOperationFactory(),
+            runtimeFetchOperationFactory: runtimeFetchOperationFactory,
+            runtimeTypeRegistryFactory: runtimeTypeRegistryFactory,
+            blockHashOperationFactory: blockHashOperationFactory,
+            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connectionFactory: connectionFactory,
             repository: repository,
             operationQueue: operationQueue

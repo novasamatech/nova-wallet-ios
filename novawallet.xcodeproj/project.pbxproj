@@ -802,6 +802,9 @@
 		2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */; };
 		2D039DEA2BFCAB9000A928E5 /* ExportViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE92BFCAB9000A928E5 /* ExportViewModelFactory.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
+		2D1A5F552C358E280073773D /* CustomNetworkSetupTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F542C358E280073773D /* CustomNetworkSetupTrait.swift */; };
+		2D1A5F572C35A8720073773D /* PartialCustomChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */; };
+		2D1A5F5A2C35A8A30073773D /* ChainType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F592C35A8A30073773D /* ChainType.swift */; };
 		2D1C5D0B2C241C2700E2DBDD /* NetworkNodeEditPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D0A2C241C2700E2DBDD /* NetworkNodeEditPresenter.swift */; };
 		2D1C5D0E2C24214D00E2DBDD /* NetworkNodeBasePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D0D2C24214D00E2DBDD /* NetworkNodeBasePresenter.swift */; };
 		2D1C5D102C242FF800E2DBDD /* NetworkNodeBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D0F2C242FF800E2DBDD /* NetworkNodeBaseInteractor.swift */; };
@@ -5673,6 +5676,9 @@
 		2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
 		2D039DE92BFCAB9000A928E5 /* ExportViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewModelFactory.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
+		2D1A5F542C358E280073773D /* CustomNetworkSetupTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkSetupTrait.swift; sourceTree = "<group>"; };
+		2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialCustomChainModel.swift; sourceTree = "<group>"; };
+		2D1A5F592C35A8A30073773D /* ChainType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainType.swift; sourceTree = "<group>"; };
 		2D1C5D0A2C241C2700E2DBDD /* NetworkNodeEditPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeEditPresenter.swift; sourceTree = "<group>"; };
 		2D1C5D0D2C24214D00E2DBDD /* NetworkNodeBasePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeBasePresenter.swift; sourceTree = "<group>"; };
 		2D1C5D0F2C242FF800E2DBDD /* NetworkNodeBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeBaseInteractor.swift; sourceTree = "<group>"; };
@@ -11599,6 +11605,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2D1A5F582C35A8840073773D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */,
+				2D1A5F592C35A8A30073773D /* ChainType.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		2D1C5D092C241C1300E2DBDD /* Presenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -11681,6 +11696,7 @@
 				2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */,
 				2D7C8A922C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift */,
 				2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */,
+				2D1A5F542C358E280073773D /* CustomNetworkSetupTrait.swift */,
 			);
 			path = Traits;
 			sourceTree = "<group>";
@@ -22422,6 +22438,7 @@
 		F9C6DF4BF106A135BD3BB1CF /* CustomNetwork */ = {
 			isa = PBXGroup;
 			children = (
+				2D1A5F582C35A8840073773D /* Model */,
 				2D1C5D1A2C25AC5800E2DBDD /* Interactor */,
 				2D1C5D192C25AC5100E2DBDD /* Presenter */,
 				29B33B4F2EA9F59AA29A022A /* CustomNetworkProtocols.swift */,
@@ -24789,6 +24806,7 @@
 				F418E887264D308700699085 /* StakingAlert.swift in Sources */,
 				0CB64E5A2AFE9947008F268F /* GetTokenOperation.swift in Sources */,
 				84DD5F7C263DFEC600425ACF /* StakingDataValidatorFactory.swift in Sources */,
+				2D1A5F572C35A8720073773D /* PartialCustomChainModel.swift in Sources */,
 				779107682AB8CA71000A4B17 /* AssetListSearchEmptyCell.swift in Sources */,
 				84E1CCF5260DCB91001E81B5 /* SwitchAccount+WalletManagementWireframe.swift in Sources */,
 				8467F4C926B2943A00C5B6F4 /* ImportantFlowNavigationController.swift in Sources */,
@@ -26067,6 +26085,7 @@
 				8480154E29BB6521008557F3 /* BorderedImageView.swift in Sources */,
 				84BFE89C28C23A2500140F1F /* AutomationTime.swift in Sources */,
 				846DA5592A2098BE006CD6C1 /* StakingResolvedAccountMapper.swift in Sources */,
+				2D1A5F5A2C35A8A30073773D /* ChainType.swift in Sources */,
 				D83B47B07C0D40A327AC44F7 /* CustomValidatorListViewFactory.swift in Sources */,
 				777DC2DA2B2363FA0060CB2C /* ProxyInfoTableViewCell.swift in Sources */,
 				8881043829EBC6BD000FA9BC /* EquilibriumTokenTransfer.swift in Sources */,
@@ -27282,6 +27301,7 @@
 				36B7298B980909BFEBFC3832 /* StakingMoreOptionsWireframe.swift in Sources */,
 				37FF873F9B2358FA137658D8 /* StakingMoreOptionsPresenter.swift in Sources */,
 				151722B1A7CC5B181A51869D /* StakingMoreOptionsInteractor.swift in Sources */,
+				2D1A5F552C358E280073773D /* CustomNetworkSetupTrait.swift in Sources */,
 				25E4B008933E2EF7F2FAAA46 /* StakingMoreOptionsViewController.swift in Sources */,
 				20B1463FB1F2431A0C913DCE /* StakingMoreOptionsViewLayout.swift in Sources */,
 				FF507CA7B1A33AD160DB59DE /* StakingMoreOptionsViewFactory.swift in Sources */,

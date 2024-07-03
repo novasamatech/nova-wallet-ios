@@ -3,10 +3,12 @@ import Operation_iOS
 
 class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, 
                                    NetworkNodeConnectingTrait,
-                                   NetworkNodeCorrespondingTrait {
+                                   CustomNetworkSetupTrait {
     weak var basePresenter: CustomNetworkBaseInteractorOutputProtocol?
     
     let chainRegistry: ChainRegistryProtocol
+    let runtimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol
+    let runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
     let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol
     let connectionFactory: ConnectionFactoryProtocol
@@ -20,6 +22,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     
     init(
         chainRegistry: ChainRegistryProtocol,
+        runtimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol,
+        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
@@ -27,6 +31,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
+        self.runtimeFetchOperationFactory = runtimeFetchOperationFactory
+        self.runtimeTypeRegistryFactory = runtimeTypeRegistryFactory
         self.blockHashOperationFactory = blockHashOperationFactory
         self.systemPropertiesOperationFactory = systemPropertiesOperationFactory
         self.connectionFactory = connectionFactory
@@ -62,7 +68,9 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         
         let explorer = createExplorer(from: blockExplorerURL)
         let mainAssetPriceId = extractPriceId(from: coingeckoURL)
-        let options: [LocalChainOptions]? = networkType == .evm ? [.ethereumBased] : nil
+        let options: [LocalChainOptions]? = networkType == .evm
+            ? [.ethereumBased, .noSubstrateRuntime]
+            : nil
         
         let partialChain = PartialCustomChainModel(
             chainId: "",
@@ -160,6 +168,7 @@ private extension CustomNetworkBaseInteractor {
                 .connecting(innerError: .wrongFormat)
             )
         } catch {
+            print(error)
             basePresenter?.didReceive(
                 .common(innerError: .undefined)
             )
@@ -207,14 +216,18 @@ private extension CustomNetworkBaseInteractor {
         chain: PartialCustomChainModel,
         node: ChainNodeModel
     ) {
-        let finishSetupWrapper = finishChainSetupWrapper(
+        let setupNetworkWrapper = createSetupNetworkWrapper(
             partialChain: chain,
+            rawRuntimeFetchFactory: runtimeFetchOperationFactory,
+            blockHashOperationFactory: blockHashOperationFactory,
+            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
+            typeRegistryFactory: runtimeTypeRegistryFactory,
             connection: connection,
             node: node
         )
         
         execute(
-            wrapper: finishSetupWrapper,
+            wrapper: setupNetworkWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -225,160 +238,6 @@ private extension CustomNetworkBaseInteractor {
                 self?.basePresenter?.didReceive(.common(innerError: .undefined))
             }
         }
-    }
-    
-    // MARK: Setup chain wrappers
-    
-    func finishChainSetupWrapper(
-        partialChain: PartialCustomChainModel,
-        connection: ChainConnection,
-        node: ChainNodeModel
-    ) -> CompoundOperationWrapper<ChainModel> {
-        let chainIdSetupWrapper = createChainIdFetchWrapper(
-            chain: partialChain,
-            connection: connection,
-            node: node
-        )
-        
-        let chainAssetSetupWrapper = createMainAssetSetupWrapper(
-            for: partialChain,
-            connection: connection
-        )
-        
-        let finishSetupOperation = ClosureOperation<ChainModel> {
-            let chainId = try chainIdSetupWrapper
-                .targetOperation
-                .extractNoCancellableResultData()
-            
-            let filledPartialChain = try chainAssetSetupWrapper
-                .targetOperation
-                .extractNoCancellableResultData()
-            
-            let finalChainModel = ChainModel(
-                chainId: chainId,
-                parentId: nil,
-                name: filledPartialChain.name,
-                assets: filledPartialChain.assets,
-                nodes: filledPartialChain.nodes,
-                nodeSwitchStrategy: filledPartialChain.nodeSwitchStrategy,
-                addressPrefix: filledPartialChain.addressPrefix,
-                types: nil,
-                icon: nil,
-                options: filledPartialChain.options,
-                externalApis: nil,
-                explorers: [filledPartialChain.blockExplorer].compactMap { $0 },
-                order: 0,
-                additional: nil,
-                syncMode: .full,
-                source: .user,
-                connectionMode: filledPartialChain.connectionMode
-            )
-            
-            return finalChainModel
-        }
-        
-        let dependencies = chainIdSetupWrapper.allOperations + chainAssetSetupWrapper.allOperations
-        dependencies.forEach { finishSetupOperation.addDependency($0) }
-        
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: finishSetupOperation,
-            dependencies: dependencies
-        )
-        
-        return wrapper
-    }
-    
-    func createMainAssetSetupWrapper(
-        for chain: PartialCustomChainModel,
-        connection: ChainConnection
-    ) -> CompoundOperationWrapper<PartialCustomChainModel> {
-        let propertiesOperation: BaseOperation<SystemProperties>? = chain.isEthereumBased && chain.noSubstrateRuntime
-            ? nil
-            : systemPropertiesOperationFactory.createSystemPropertiesOperation(connection: connection)
-        
-        let assetOperation = ClosureOperation<PartialCustomChainModel> {
-            let properties = try propertiesOperation?.extractNoCancellableResultData()
-            let precision = properties?.tokenDecimals.first ?? Constants.defaultEVMAssetPrecision
-            
-            let asset = AssetModel(
-                assetId: 0,
-                icon: nil,
-                name: chain.name,
-                symbol: chain.currencySymbol,
-                precision: precision,
-                priceId: chain.mainAssetPriceId,
-                stakings: nil,
-                type: nil,
-                typeExtras: nil,
-                buyProviders: nil,
-                enabled: true,
-                source: .user
-            )
-            
-            let updatedChain = if let properties {
-                chain.byChanging(addressPrefix: properties.ss58Format ?? properties.SS58Prefix)
-            } else {
-                chain
-            }
-            
-            return updatedChain.adding(asset)
-        }
-        
-        let dependencies = [propertiesOperation].compactMap { $0 }
-        
-        dependencies.forEach { assetOperation.addDependency($0) }
-                
-        return CompoundOperationWrapper(
-            targetOperation: assetOperation,
-            dependencies: dependencies
-        )
-    }
-    
-    func createChainIdFetchWrapper(
-        chain: ChainNodeConnectable,
-        connection: ChainConnection,
-        node: ChainNodeModel
-    ) -> CompoundOperationWrapper<ChainModel.Id> {
-        let dependency: (targetOperation: BaseOperation<String>, dependencies: [Operation])
-        
-        if chain.isEthereumBased {
-            let wrapper = evmChainCorrespondingOperation(
-                connection: connection,
-                node: node,
-                chain: chain
-            )
-            dependency = (
-                targetOperation: wrapper.targetOperation,
-                dependencies: wrapper.allOperations
-            )
-        } else {
-            let operation = blockHashOperationFactory.createBlockHashOperation(
-                connection: connection,
-                for: { 0 }
-            )
-            dependency = (
-                targetOperation: operation,
-                dependencies: [operation]
-            )
-        }
-        
-        let chainSetupOperation = ClosureOperation<ChainModel.Id> {
-            let chainId = try dependency
-                .targetOperation
-                .extractNoCancellableResultData()
-                .withoutHexPrefix()
-            
-            return chainId
-        }
-        
-        dependency.dependencies.forEach { operation in
-            chainSetupOperation.addDependency(operation)
-        }
-        
-        return CompoundOperationWrapper(
-            targetOperation: chainSetupOperation,
-            dependencies: dependency.dependencies
-        )
     }
     
     // MARK: Optional helpers
@@ -478,62 +337,4 @@ private extension CustomNetworkBaseInteractor {
         case statescan = #"^https:\/\/([a-zA-Z0-9-]+\.)*statescan\.io$"#
         case etherscan = #"etherscan"#
     }
-}
-
-// MARK: DTO
-
-private extension CustomNetworkBaseInteractor {
-    struct PartialCustomChainModel: ChainNodeConnectable {
-        let chainId: String
-        let url: String
-        let name: String
-        let assets: Set<AssetModel>
-        let nodes: Set<ChainNodeModel>
-        let currencySymbol: String
-        let options: [LocalChainOptions]?
-        let nodeSwitchStrategy: ChainModel.NodeSwitchStrategy
-        let addressPrefix: UInt16
-        let connectionMode: ChainModel.ConnectionMode
-        let blockExplorer: ChainModel.Explorer?
-        let mainAssetPriceId: AssetModel.PriceId?
-        
-        func adding(_ asset: AssetModel) -> PartialCustomChainModel {
-            PartialCustomChainModel(
-                chainId: chainId,
-                url: url,
-                name: name,
-                assets: assets.union([asset]), 
-                nodes: nodes,
-                currencySymbol: currencySymbol,
-                options: options,
-                nodeSwitchStrategy: nodeSwitchStrategy,
-                addressPrefix: addressPrefix,
-                connectionMode: connectionMode,
-                blockExplorer: blockExplorer,
-                mainAssetPriceId: mainAssetPriceId
-            )
-        }
-        
-        func byChanging(addressPrefix: UInt16?) -> PartialCustomChainModel {
-            PartialCustomChainModel(
-                chainId: chainId,
-                url: url,
-                name: name,
-                assets: assets, 
-                nodes: nodes,
-                currencySymbol: currencySymbol,
-                options: options,
-                nodeSwitchStrategy: nodeSwitchStrategy,
-                addressPrefix: addressPrefix ?? self.addressPrefix,
-                connectionMode: connectionMode,
-                blockExplorer: blockExplorer,
-                mainAssetPriceId: mainAssetPriceId
-            )
-        }
-    }
-}
-
-enum ChainType: Int {
-    case substrate = 0
-    case evm = 1
 }

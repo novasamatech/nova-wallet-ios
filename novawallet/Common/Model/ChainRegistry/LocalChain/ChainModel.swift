@@ -556,50 +556,6 @@ extension ChainModel {
     }
 }
 
-extension ChainModel {
-    static func partialCustomChainModel(
-        ethereumBased: Bool,
-        url: String,
-        name: String,
-        currencySymbol: String,
-        chainId: UInt16? = nil,
-        blockExplorer: ChainModel.Explorer?,
-        coingeckoURL: String?
-    ) -> ChainModel {
-        let explorers: [Explorer]? = if let blockExplorer {
-            [blockExplorer]
-        } else {
-            nil
-        }
-        
-        let options: [LocalChainOptions]? = if ethereumBased {
-            [.ethereumBased]
-        } else {
-            nil
-        }
-        
-        return ChainModel(
-            chainId: "",
-            parentId: nil,
-            name: name,
-            assets: Set(),
-            nodes: Set(),
-            nodeSwitchStrategy: .uniform,
-            addressPrefix: chainId ?? UInt16(1),
-            types: nil,
-            icon: nil,
-            options: options,
-            externalApis: nil,
-            explorers: explorers,
-            order: 0,
-            additional: nil,
-            syncMode: .disabled,
-            source: .user,
-            connectionMode: .autoBalanced
-        )
-    }
-}
-
 // MARK: ChainNodeConnectable
 
 protocol ChainNodeConnectable {

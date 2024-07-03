@@ -15,6 +15,8 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         networkToEdit: ChainModel,
         selectedNode: ChainNodeModel,
         chainRegistry: ChainRegistryProtocol,
+        runtimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol,
+        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
@@ -26,7 +28,9 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         
         super.init(
             chainRegistry: chainRegistry,
-            blockHashOperationFactory: blockHashOperationFactory, 
+            runtimeFetchOperationFactory: runtimeFetchOperationFactory,
+            runtimeTypeRegistryFactory: runtimeTypeRegistryFactory,
+            blockHashOperationFactory: blockHashOperationFactory,
             systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connectionFactory: connectionFactory,
             repository: repository,
