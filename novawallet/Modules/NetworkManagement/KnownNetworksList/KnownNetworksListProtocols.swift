@@ -13,10 +13,11 @@ protocol KnownNetworksListInteractorInputProtocol: AnyObject {
 }
 
 protocol KnownNetworksListInteractorOutputProtocol: AnyObject {
-    func didReceive(chains: [ChainModel])
+    func didReceive(_ chains: [ChainModel])
+    func didReceive(_ error: Error)
 }
 
-protocol KnownNetworksListWireframeProtocol: AnyObject {
+protocol KnownNetworksListWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showAddNetwork(
         from view: KnownNetworksListViewProtocol?,
         with knownNetwork: ChainModel?

@@ -2,7 +2,7 @@ import Foundation
 
 final class KnownNetworksListWireframe: KnownNetworksListWireframeProtocol {
     func showAddNetwork(
-        from view: NetworksListViewProtocol?,
+        from view: KnownNetworksListViewProtocol?,
         with knownNetwork: ChainModel?
     ) {
         let customNetworkView = if let knownNetwork, let node = knownNetwork.nodes.first {
@@ -17,7 +17,7 @@ final class KnownNetworksListWireframe: KnownNetworksListWireframeProtocol {
         guard let customNetworkView else { return }
         
         view?.controller.navigationController?.pushViewController(
-            customNetworkView, 
+            customNetworkView.controller, 
             animated: true
         )
     }

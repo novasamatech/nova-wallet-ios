@@ -10,9 +10,13 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
     
     private var viewModel: ViewModel?
 
-    init(presenter: KnownNetworksListPresenterProtocol) {
+    init(
+        presenter: KnownNetworksListPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -31,7 +35,13 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
     }
 }
 
-extension KnownNetworksListViewController: KnownNetworksListViewProtocol {}
+extension KnownNetworksListViewController: KnownNetworksListViewProtocol {
+    func update(with viewModel: KnownNetworksListViewLayout.Model) {
+        self.viewModel = viewModel
+        
+        rootView.tableView.reloadData()
+    }
+}
 
 // MARK: UITableViewDataSource
 

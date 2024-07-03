@@ -9,14 +9,17 @@ final class KnownNetworksListPresenter {
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
 
     private var chains: [ChainModel] = []
+    
     init(
         interactor: KnownNetworksListInteractorInputProtocol,
         wireframe: KnownNetworksListWireframeProtocol,
-        networkViewModelFactory: NetworkViewModelFactoryProtocol
+        networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.networkViewModelFactory = networkViewModelFactory
+        self.localizationManager = localizationManager
     }
 }
 
@@ -68,13 +71,21 @@ extension KnownNetworksListPresenter: KnownNetworksListInteractorOutputProtocol 
         view?.update(with: viewModel)
     }
     
-    func didReceive(chains: [ChainModel]) {
+    func didReceive(_ chains: [ChainModel]) {
         self.chains = chains.sorted {
             ChainModelCompator.defaultComparator(
                 chain1: $0,
                 chain2: $1
             )
         }
+    }
+    
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
+        )
     }
 }
 
