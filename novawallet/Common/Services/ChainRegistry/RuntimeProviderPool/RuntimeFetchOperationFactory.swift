@@ -7,6 +7,11 @@ struct RawRuntimeMetadata {
     let isOpaque: Bool
 }
 
+extension RawRuntimeMetadata: RuntimeContainerSourceProtocol {
+    var opaque: Bool { isOpaque }
+    var metadata: Data { content }
+}
+
 protocol RuntimeFetchOperationFactoryProtocol {
     func createMetadataFetchWrapper(
         for chainId: ChainModel.Id,
