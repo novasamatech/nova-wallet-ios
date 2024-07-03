@@ -1515,7 +1515,6 @@
 "notifications.error.disabled.in.settings.title" = "Nova Wallet için Bildirimleri Etkinleştirin";
 "notifications.error.disabled.in.settings.message" = "Ayarlar'a gidin \nightarrow \"Bildirimler\"'e dokunun \nightarrow \"Bildirimlere İzin Ver\"'i açın";
 "notifications.wallet.list.limit.error.message" = "Maalesef, şu anda cüzdanlarınızın sadece %li'ine yönelik push bildirimleri için bir limit bulunmaktadır.";
-"ledger.instructions.step4" = "Cüzdana eklenecek %@";
 "legacy.ledger.migration.message" = "Geçiş uygulaması yakın gelecekte kullanılamaz hale gelecektir. Hesaplarınızı yeni Ledger uygulamasına taşımak için kullanın ve fonlarınızı kaybetmeyin.";
 "legacy.ledger.notification.title" = "Yeni Ledger uygulaması yayımlandı";
 "legacy.ledger.notification.message" = "İşlemleri imzalamak ve hesaplarınızı yeni Generic Ledger uygulamasına taşımak için Migration uygulamasını yükleyin ve açın. Eski Legacy ve Migration Ledger uygulamaları gelecekte desteklenmeyecektir.";
@@ -1658,6 +1657,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 hex semboller";
 "common.status.backup.syncing" = "Yedekleme Senkronize Ediliyor...";
 "common.status.backup.synced" = "Yedekleme Senkronize Edildi";
-"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot app)";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot uygulaması)";
 "generic.ledger.instructions.step1.highlighted" = "Polkadot uygulamanın yüklü";
-"generic.ledger.instructions.step2.highlighted" = "Open the Polkadot app";
+"generic.ledger.instructions.step2.highlighted" = "Polkadot uygulamasını açın";
+"ledger.instructions.step4" = "Cüzdana eklenecek %@";
