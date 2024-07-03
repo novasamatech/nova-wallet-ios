@@ -943,7 +943,7 @@ DEPENDENCIES:
   - FirebaseFirestore
   - FirebaseMessaging
   - FireMock
-  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, commit `9b9365d320f47705c0b2ad3c34954681cdb64d70`)
+  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.2`)
   - Kingfisher
   - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
   - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
@@ -955,7 +955,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.10`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `b0c45d83307f7fe5ca8fddbe7bdf8038c2517113`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.2.0`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1025,8 +1025,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
   HydraMath:
-    :commit: 9b9365d320f47705c0b2ad3c34954681cdb64d70
     :git: https://github.com/novasamatech/hydra-math-swift.git
+    :tag: '0.2'
   MetadataShortenerApi:
     :git: https://github.com/novasamatech/metadata-shortener-ios.git
     :tag: 0.1.0
@@ -1043,8 +1043,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
-    :commit: b0c45d83307f7fe5ca8fddbe7bdf8038c2517113
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 3.2.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1065,8 +1065,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
   HydraMath:
-    :commit: 9b9365d320f47705c0b2ad3c34954681cdb64d70
     :git: https://github.com/novasamatech/hydra-math-swift.git
+    :tag: '0.2'
   MetadataShortenerApi:
     :git: https://github.com/novasamatech/metadata-shortener-ios.git
     :tag: 0.1.0
@@ -1083,8 +1083,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.10
   SubstrateSdk:
-    :commit: b0c45d83307f7fe5ca8fddbe7bdf8038c2517113
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 3.2.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1161,6 +1161,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 0faef0b89b9bbd478d146444c1af25794abe30c7
+PODFILE CHECKSUM: 95a811feaab74d22fc9cceecb2e78d4c88130fb1
 
 COCOAPODS: 1.15.2
