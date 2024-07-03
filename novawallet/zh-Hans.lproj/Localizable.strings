@@ -1515,7 +1515,6 @@
 "notifications.error.disabled.in.settings.title" = "为Nova Wallet启用通知";
 "notifications.error.disabled.in.settings.message" = "前往设置→点击\"通知\"→开启\"允许通知\"";
 "notifications.wallet.list.limit.error.message" = "遗憾的是，您的钱包当前只允许有限的%li个推送通知。";
-"ledger.instructions.step4" = "%@添加到钱包";
 "legacy.ledger.migration.message" = "Migration 应用程序在不久的将来将无法使用。使用它将您的账户迁移到新的 Ledger 应用程序，以免丢失资金。";
 "legacy.ledger.notification.title" = "新版 Ledger 应用程序已发布";
 "legacy.ledger.notification.message" = "要进行操作签名并将您的账户迁移到新的 Generic Ledger 应用程序，请安装并打开 Migration 应用程序。旧版 Legacy 和 Migration Ledger 应用程序将来不会被支持。";
@@ -1658,6 +1657,7 @@
 "account.export.ethereum.private.key.placeholder" = "64个十六进制符号";
 "common.status.backup.syncing" = "正在同步备份...";
 "common.status.backup.synced" = "备份已同步";
-"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot app)";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot 应用程序)";
 "generic.ledger.instructions.step1.highlighted" = "Polkadot 应用程序";
-"generic.ledger.instructions.step2.highlighted" = "Open the Polkadot app";
+"generic.ledger.instructions.step2.highlighted" = "打开 Polkadot 应用程序";
+"ledger.instructions.step4" = "%@添加到钱包";
