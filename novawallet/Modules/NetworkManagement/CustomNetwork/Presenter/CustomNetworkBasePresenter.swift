@@ -213,17 +213,10 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
 
 extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol {
     func didReceive(_ error: CustomNetworkBaseInteractorError) {
-        let close = R.string.localizable.commonClose(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        
-        let errorContent = error.toErrorContent(for: selectedLocale)
-        
         wireframe.present(
-            message: errorContent.message,
-            title: errorContent.title,
-            closeAction: close,
-            from: view
+            error: error,
+            from: view,
+            locale: selectedLocale
         )
         
         provideButtonViewModel(loading: false)
