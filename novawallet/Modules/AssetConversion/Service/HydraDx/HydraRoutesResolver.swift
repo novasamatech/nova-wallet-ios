@@ -87,7 +87,7 @@ enum HydraRoutesResolver {
 
         let routes = GraphModel<ChainAssetId, HydraDx.LocalSwapRoute.Component>(
             connections: allConnections
-        ).calculateShortestPath(from: assetIn, nodeEnd: assetOut, topN: 10)
+        ).calculateShortestPath(from: assetIn, nodeEnd: assetOut, topN: 4)
 
         return routes.map { HydraDx.LocalSwapRoute(components: $0) }
     }

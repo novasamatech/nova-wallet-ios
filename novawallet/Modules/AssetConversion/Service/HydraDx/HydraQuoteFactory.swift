@@ -126,11 +126,14 @@ final class HydraQuoteFactory {
 
                 // silence error for particular route as we can have other results to select
                 let mappingOperation = ClosureOperation<AssetConversion.Quote?> {
-                    let quote = try? wrapper.targetOperation.extractNoCancellableResultData()
-
-                    self.logger.debug("Quote for \(route): \(String(describing: quote))")
-
-                    return quote
+                    do {
+                        let quote = try wrapper.targetOperation.extractNoCancellableResultData()
+                        self.logger.debug("Quote for \(route): \(String(describing: quote))")
+                        return quote
+                    } catch {
+                        self.logger.error("Error Quote for \(route): \(error)")
+                        return nil
+                    }
                 }
 
                 mappingOperation.addDependency(wrapper.targetOperation)

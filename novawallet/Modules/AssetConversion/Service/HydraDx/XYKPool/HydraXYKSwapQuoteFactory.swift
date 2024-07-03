@@ -38,7 +38,7 @@ final class HydraXYKSwapQuoteFactory {
     private func calculateSellQuote(
         for amount: BigUInt,
         remoteState: HydraXYK.QuoteRemoteState,
-        fee: BigUInt
+        feeParams: HydraXYK.ExchangeFeeParams
     ) throws -> BigUInt {
         guard
             let balanceIn = remoteState.assetInBalance,
@@ -52,13 +52,19 @@ final class HydraXYKSwapQuoteFactory {
             amountIn: amount
         )
 
+        let fee = try HydraXYKSwapApi.calculaPoolFee(
+            for: amountOut,
+            feeNominator: feeParams.nominator,
+            feeDenominator: feeParams.denominator
+        )
+
         return amountOut > fee ? amountOut - fee : 0
     }
 
     private func calculateBuyQuote(
         for amount: BigUInt,
         remoteState: HydraXYK.QuoteRemoteState,
-        fee: BigUInt
+        feeParams: HydraXYK.ExchangeFeeParams
     ) throws -> BigUInt {
         guard
             let balanceIn = remoteState.assetInBalance,
@@ -70,6 +76,12 @@ final class HydraXYKSwapQuoteFactory {
             for: balanceIn,
             balanceOut: balanceOut,
             amountOut: amount
+        )
+
+        let fee = try HydraXYKSwapApi.calculaPoolFee(
+            for: amountIn,
+            feeNominator: feeParams.nominator,
+            feeDenominator: feeParams.denominator
         )
 
         return amountIn + fee
@@ -87,25 +99,19 @@ extension HydraXYKSwapQuoteFactory {
             let quoteState = try quoteStateWrapper.targetOperation.extractNoCancellableResultData()
             let feeParams = try feeParamsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let fee = try HydraXYKSwapApi.calculaPoolFee(
-                for: args.amount,
-                feeNominator: feeParams.nominator,
-                feeDenominator: feeParams.denominator
-            )
-
             switch args.direction {
             case .sell:
                 return try self.calculateSellQuote(
                     for: args.amount,
                     remoteState: quoteState,
-                    fee: fee
+                    feeParams: feeParams
                 )
 
             case .buy:
                 return try self.calculateBuyQuote(
                     for: args.amount,
                     remoteState: quoteState,
-                    fee: fee
+                    feeParams: feeParams
                 )
             }
         }
