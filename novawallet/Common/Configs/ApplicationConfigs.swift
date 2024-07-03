@@ -137,6 +137,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains_dev.json")!
         #endif
     }
+    
+    var preConfiguredChainListURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains_dev.json")!
+        #endif
+    }
 
     var evmAssetsURL: URL {
         #if F_RELEASE

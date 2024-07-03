@@ -4,8 +4,6 @@ import SoraFoundation
 final class NetworksListViewController: UIViewController, ViewHolder {
     typealias RootViewType = NetworksListViewLayout
     typealias ViewModel = RootViewType.Model
-    typealias DataSource = UITableViewDiffableDataSource<RootViewType.Section, RootViewType.Row>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<RootViewType.Section, RootViewType.Row>
     typealias ChainCell = NetworksListTableViewCell
     typealias PlaceholderCell = NetworksEmptyTableViewCell
     typealias BannerCell = IntegrateNetworkBannerTableViewCell
@@ -120,7 +118,7 @@ extension NetworksListViewController: UITableViewDelegate {
         guard let section = viewModel?.sections[indexPath.section] else { return .zero }
 
         if case let .networks(rows) = section, case .network = rows[indexPath.row] {
-            return 56
+            return Constants.cellHeight
         } else {
             return UITableView.automaticDimension
         }
@@ -286,11 +284,6 @@ extension NetworksListViewController: Localizable {
 
 private extension NetworksListViewController {
     enum Constants {
-        static let cellHeight: CGFloat = 64
-        static let headerHeight: CGFloat = 53
-        static let walletIconSize: CGSize = .init(
-            width: 28,
-            height: 28
-        )
+        static let cellHeight: CGFloat = 56
     }
 }
