@@ -111,6 +111,14 @@ extension NetworksListViewController: UITableViewDataSource {
 extension NetworksListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard 
+            let section = viewModel?.sections[indexPath.section],
+            case let .networks(rows) = section, case .network = rows[indexPath.row]
+        else {
+            return
+        }
+        
         presenter.selectChain(at: indexPath.row)
     }
 
@@ -135,9 +143,13 @@ extension NetworksListViewController: NetworksEmptyPlaceholderViewDelegate {
 
 // MARK: IntegrateNetworksBannerDekegate
 
-extension NetworksListViewController: IntegrateNetworksBannerDekegate {
+extension NetworksListViewController: IntegrateNetworksBannerDelegate {
     func didTapClose() {
         presenter.closeBanner()
+    }
+    
+    func didTapIntegrateNetwork() {
+        presenter.integrateOwnNetwork()
     }
 }
 
@@ -285,5 +297,7 @@ extension NetworksListViewController: Localizable {
 private extension NetworksListViewController {
     enum Constants {
         static let cellHeight: CGFloat = 56
+        static let bannerSection: Int = 0
+        static let networksSection: Int = 1
     }
 }

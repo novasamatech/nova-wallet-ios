@@ -62,6 +62,10 @@ extension NetworksListPresenter: NetworksListPresenterProtocol {
     func addNetwork() {
         wireframe.showAddNetwork(from: view)
     }
+    
+    func integrateOwnNetwork() {
+        wireframe.showIntegrateOwnNetwork(from: view)
+    }
 
     func closeBanner() {
         interactor.setIntegrationBannerSeen()

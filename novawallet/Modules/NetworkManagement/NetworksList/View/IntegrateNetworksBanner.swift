@@ -10,8 +10,9 @@ class IntegrateNetworkBannerTableViewCell: PlainBaseTableViewCell<IntegrateNetwo
     }
 }
 
-protocol IntegrateNetworksBannerDekegate: AnyObject {
+protocol IntegrateNetworksBannerDelegate: AnyObject {
     func didTapClose()
+    func didTapIntegrateNetwork()
 }
 
 final class IntegrateNetworksBanner: UIView {
@@ -32,7 +33,7 @@ final class IntegrateNetworksBanner: UIView {
         $0.changesContentOpacityWhenHighlighted = true
     }
 
-    weak var delegate: IntegrateNetworksBannerDekegate?
+    weak var delegate: IntegrateNetworksBannerDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -41,6 +42,12 @@ final class IntegrateNetworksBanner: UIView {
         closeButton.addTarget(
             self,
             action: #selector(actionClose),
+            for: .touchUpInside
+        )
+        
+        gradientBannerView.linkButton?.addTarget(
+            self,
+            action: #selector(actionLink),
             for: .touchUpInside
         )
     }
@@ -85,5 +92,9 @@ final class IntegrateNetworksBanner: UIView {
 
     @objc private func actionClose() {
         delegate?.didTapClose()
+    }
+    
+    @objc private func actionLink() {
+        delegate?.didTapIntegrateNetwork()
     }
 }
