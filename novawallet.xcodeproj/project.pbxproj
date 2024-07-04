@@ -11750,15 +11750,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		2DB18C902C36CB3E00A93C75 /* PreConfiguredChainFetchWrappers */ = {
-			isa = PBXGroup;
-			children = (
-				2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */,
-				2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */,
-			);
-			path = PreConfiguredChainFetchWrappers;
-			sourceTree = "<group>";
-		};
 		2DC075E12BF249F000868563 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -12273,7 +12264,6 @@
 			isa = PBXGroup;
 			children = (
 				2DEDF68B2C36F41A007D5F4A /* View */,
-				2DB18C902C36CB3E00A93C75 /* PreConfiguredChainFetchWrappers */,
 				FC303C85EF12CFE605A0950E /* KnownNetworksListProtocols.swift */,
 				141DA362D60B053F4F0A13AA /* KnownNetworksListWireframe.swift */,
 				D88BD92DF414EDD43D53954D /* KnownNetworksListPresenter.swift */,
@@ -16881,6 +16871,8 @@
 				AE2C32DB271D90DD00D57C91 /* MetaAccountOperationFactory.swift */,
 				8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */,
 				841E555A282E6B0900C8438F /* StorageDecodingOperation+Init.swift */,
+				2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */,
+				2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */,
 				848B2FFF286EDE3800465BA2 /* ParaIdOperationFactory.swift */,
 				2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */,
 				847999A8288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift */,
