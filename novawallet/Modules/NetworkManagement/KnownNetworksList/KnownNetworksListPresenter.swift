@@ -34,6 +34,10 @@ extension KnownNetworksListPresenter: KnownNetworksListPresenterProtocol {
         interactor.provideChain(with: selectedLightChain.chainId)
     }
     
+    func search(by query: String) {
+        interactor.searchChain(by: query)
+    }
+    
     func addNetworkManually() {
         wireframe.showAddNetwork(
             from: view,

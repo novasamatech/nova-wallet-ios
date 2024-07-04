@@ -9,6 +9,8 @@ final class KnownNetworksListInteractor {
     
     private let operationQueue: OperationQueue
     
+    private var lightChains: [LightChainModel] = []
+    
     init(
         lightChainsFetchFactory: LightChainsFetchFactoryProtocol,
         preConfiguredChainFetchFactory: PreConfiguredChainFetchFactoryProtocol,
@@ -33,6 +35,7 @@ extension KnownNetworksListInteractor: KnownNetworksListInteractorInputProtocol 
         ) { [weak self] result in
             switch result {
             case let .success(chains):
+                self?.lightChains = chains
                 self?.presenter?.didReceive(chains)
             case let .failure(error):
                 self?.presenter?.didReceive(error)
@@ -55,5 +58,15 @@ extension KnownNetworksListInteractor: KnownNetworksListInteractorInputProtocol 
                 self?.presenter?.didReceive(error)
             }
         }
+    }
+    
+    func searchChain(by query: String) {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespaces)
+        
+        let chains = trimmedQuery.isEmpty
+            ? lightChains
+            : lightChains.filter { $0.name.contains(substring: trimmedQuery) }
+
+        presenter?.didReceive(chains)
     }
 }

@@ -1,7 +1,16 @@
 import UIKit
 
 final class KnownNetworksListViewLayout: UIView {
+    let searchView = TopCustomSearchView()
 
+    var searchBar: CustomSearchBar {
+        searchView.searchBar
+    }
+
+    var searchTextField: UITextField {
+        searchBar.textField
+    }
+    
     let tableView: UITableView = .create { view in
         view.backgroundColor = .clear
         view.separatorStyle = .none
@@ -10,22 +19,40 @@ final class KnownNetworksListViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        setupStyle()
         setupLayout()
-
-        backgroundColor = R.color.colorSecondaryScreenBackground()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    private func setupLayout() {
+// MARK: Private
+
+private extension KnownNetworksListViewLayout {
+    func setupLayout() {
+        addSubview(searchView)
+        searchView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(52)
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+        }
+        
+        searchView.blurBackgroundView.removeFromSuperview()
+        searchView.layoutIfNeeded()
+        
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).offset(8)
+            make.top.equalTo(searchView.snp.bottom).offset(8)
             make.leading.trailing.bottom.equalToSuperview()
         }
+    }
+    
+    func setupStyle() {
+        searchView.backgroundColor = R.color.colorSecondaryScreenBackground()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
     }
 }
 

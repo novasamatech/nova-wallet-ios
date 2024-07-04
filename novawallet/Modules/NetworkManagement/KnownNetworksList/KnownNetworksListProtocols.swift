@@ -5,12 +5,14 @@ protocol KnownNetworksListViewProtocol: ControllerBackedProtocol {
 protocol KnownNetworksListPresenterProtocol: AnyObject {
     func setup()
     func selectChain(at index: Int)
+    func search(by query: String)
     func addNetworkManually()
 }
 
 protocol KnownNetworksListInteractorInputProtocol: AnyObject {
     func provideChains()
     func provideChain(with chainId: ChainModel.Id)
+    func searchChain(by query: String)
 }
 
 protocol KnownNetworksListInteractorOutputProtocol: AnyObject {

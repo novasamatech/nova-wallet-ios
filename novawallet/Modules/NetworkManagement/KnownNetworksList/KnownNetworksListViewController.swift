@@ -104,15 +104,25 @@ private extension KnownNetworksListViewController {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ChainCell.self)
 
+        setupSearchField()
         setupLocalization()
+    }
+    
+    private func setupSearchField() {
+        rootView.searchTextField.addTarget(
+            self,
+            action: #selector(actionSearchEditingChanged),
+            for: .editingChanged
+        )
+
+        rootView.searchTextField.delegate = self
     }
 
     func setupLocalization() {
-        setupNavigationBarTitle()
-    }
-    
-    func setupNavigationBarTitle() {
         navigationItem.title = R.string.localizable.networksListAddNetworkButtonTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        rootView.searchTextField.placeholder = R.string.localizable.networkKnownListSearchPlaceholder(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
@@ -140,6 +150,21 @@ private extension KnownNetworksListViewController {
         cell.selectionStyle = .none
 
         return cell
+    }
+    
+    @objc private func actionSearchEditingChanged() {
+        let query = rootView.searchTextField.text ?? ""
+
+        presenter.search(by: query)
+    }
+}
+
+// MARK: UITextFieldDelegate
+
+extension KnownNetworksListViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
     }
 }
 
