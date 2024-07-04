@@ -50,6 +50,7 @@ class NetworkDetailsViewModelFactory {
         }
         
         return Details(
+            customNetwork: chain.source == .user,
             networkViewModel: networkViewModelFactory.createViewModel(from: chain),
             sections: sections
         )

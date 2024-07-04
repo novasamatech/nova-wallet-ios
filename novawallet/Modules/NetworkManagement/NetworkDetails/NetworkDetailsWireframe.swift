@@ -49,4 +49,26 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
         
         view?.controller.present(manageNode.controller, animated: true)
     }
+    
+    func showEditNetwork(
+        from view: NetworkDetailsViewProtocol?,
+        network: ChainModel,
+        selectedNode: ChainNodeModel
+    ) {
+        guard let editNetworkView = CustomNetworkViewFactory.createNetworkEditView(
+            for: network,
+            selectedNode: selectedNode
+        ) else {
+            return
+        }
+        
+        view?.controller.navigationController?.pushViewController(
+            editNetworkView.controller,
+            animated: true
+        )
+    }
+    
+    func showNetworksList(from view: NetworkDetailsViewProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
+    }
 }

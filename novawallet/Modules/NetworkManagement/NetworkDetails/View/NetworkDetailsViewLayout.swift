@@ -83,6 +83,7 @@ extension NetworkDetailsViewLayout {
     }
 
     struct Model {
+        let customNetwork: Bool
         let networkViewModel: NetworkViewModel
         let sections: [Section]
     }

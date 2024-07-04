@@ -68,7 +68,7 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
             { [] }
         )
 
-        executeSaveWithErrorHandling(saveOperation)
+        executeDataOperationWithErrorHandling(saveOperation)
     }
 
     func setAutoBalance(enabled: Bool) {
@@ -85,7 +85,7 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
             { [] }
         )
         
-        executeSaveWithErrorHandling(saveOperation)
+        executeDataOperationWithErrorHandling(saveOperation)
     }
 
     func selectNode(_ node: ChainNodeModel) {
@@ -98,30 +98,28 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
             { [] }
         )
         
-        executeSaveWithErrorHandling(saveOperation)
+        executeDataOperationWithErrorHandling(saveOperation)
     }
     
     func deleteNode(_ node: ChainNodeModel) {
-        guard currentSelectedNode != node else {
-            return
-        }
+        delete(node)
+    }
+    
+    func deleteNetwork() {
+        chain.nodes.forEach { delete($0) }
         
-        let saveOperation = repository.saveOperation(
+        let deleteOperation = repository.saveOperation(
+            { [] },
             { [weak self] in
                 guard let self else { return [] }
-
-                return [chain.removing(node: node)]
-            },
-            { [] }
-        )
-        
-        executeSaveWithErrorHandling(
-            saveOperation,
-            onSuccess: { [weak self] in
-                self?.nodesConnections[node.url]?.disconnect(true)
-                self?.nodesConnections[node.url] = nil
+                
+                return [chain.chainId]
             }
         )
+        
+        executeDataOperationWithErrorHandling(deleteOperation) { [weak self] in
+            self?.presenter?.didDeleteNetwork()
+        }
     }
 }
 
@@ -303,6 +301,29 @@ private extension NetworkDetailsInteractor {
     func connectToNodes(of chain: ChainModel) {
         filteredNodes.forEach { connectTo($0, of: chain) }
     }
+    
+    func delete(_ node: ChainNodeModel) {
+        guard currentSelectedNode != node else {
+            return
+        }
+        
+        let saveOperation = repository.saveOperation(
+            { [weak self] in
+                guard let self else { return [] }
+
+                return [chain.removing(node: node)]
+            },
+            { [] }
+        )
+        
+        executeDataOperationWithErrorHandling(
+            saveOperation,
+            onSuccess: { [weak self] in
+                self?.nodesConnections[node.url]?.disconnect(true)
+                self?.nodesConnections[node.url] = nil
+            }
+        )
+    }
 
     func connectTo(
         _ node: ChainNodeModel,
@@ -367,7 +388,7 @@ private extension NetworkDetailsInteractor {
         nodes.filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
     }
     
-    func executeSaveWithErrorHandling(
+    func executeDataOperationWithErrorHandling(
         _ operation: BaseOperation<Void>,
         onSuccess: (() -> Void)? = nil
     ) {

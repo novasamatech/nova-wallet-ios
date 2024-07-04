@@ -55,6 +55,10 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
     func update(with viewModel: NetworkDetailsViewLayout.Model) {
         self.viewModel = viewModel
         
+        if viewModel.customNetwork {
+            setupActions()
+        }
+        
         nodesViewModels = extractNodesViewModels(from: viewModel)
         cacheIndexPaths(from: viewModel)
 
@@ -97,6 +101,7 @@ extension NetworkDetailsViewController: UITableViewDataSource {
         case let .addCustomNode(title):
             let titleCell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
             titleCell.bind(titleViewModel: title)
+            titleCell.titleLabel.textColor = R.color.colorButtonTextAccent()!
 
             cell = titleCell
         case let .node(model):
@@ -193,6 +198,17 @@ private extension NetworkDetailsViewController {
         rootView.tableView.registerClassForCell(NetworkDetailsNodeTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
+    
+    func setupActions() {
+        let rightBarButtonItem = UIBarButtonItem(
+            image: R.image.iconMore(),
+            style: .plain,
+            target: self,
+            action: #selector(actionMore)
+        )
+
+        navigationItem.rightBarButtonItem = rightBarButtonItem
+    }
 
     func extractNodesViewModels(from viewModel: ViewModel) -> [UUID: RootViewType.NodeModel] {
         viewModel.sections
@@ -230,6 +246,10 @@ private extension NetworkDetailsViewController {
                     remoteNodeIndex += 1
                 }
             }
+    }
+    
+    @objc private func actionMore() {
+        presenter.manageNetwork()
     }
 }
 
