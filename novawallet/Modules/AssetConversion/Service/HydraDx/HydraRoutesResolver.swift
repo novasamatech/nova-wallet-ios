@@ -5,118 +5,91 @@ enum HydraRoutesResolver {
         let omnipoolDirections: [ChainAssetId: Set<ChainAssetId>]
         let stableswapDirections: [ChainAssetId: Set<ChainAssetId>]
         let stableswapPoolAssets: Set<ChainAssetId>
+        let xykDirections: [ChainAssetId: Set<ChainAssetId>]
     }
 
-    private static func resolveOmnipoolRoutes(
-        assetIn: ChainAssetId,
-        assetOut: ChainAssetId,
-        data: HydraRoutesResolver.Data
-    ) -> [HydraDx.LocalSwapRoute] {
-        if let outAssets = data.omnipoolDirections[assetIn], outAssets.contains(assetOut) {
-            let route = HydraDx.LocalSwapRoute(
-                components: [
-                    .init(assetIn: assetIn, assetOut: assetOut, type: .omnipool)
-                ]
-            )
+    private static func appendingDirections(
+        _ directions: [ChainAssetId: Set<ChainAssetId>],
+        currentDirections: [ChainAssetId: Set<HydraDx.LocalSwapRoute.Component>],
+        type: HydraDx.LocalSwapRoute.ComponentType
+    ) -> [ChainAssetId: Set<HydraDx.LocalSwapRoute.Component>] {
+        directions.reduce(into: currentDirections) { accum, keyValue in
+            let assetIn = keyValue.key
+            let assetsOut = keyValue.value
 
-            return [route]
-        } else {
-            return []
-        }
-    }
-
-    private static func resolveStableswapRoutes(
-        assetIn: ChainAssetId,
-        assetOut: ChainAssetId,
-        data: HydraRoutesResolver.Data
-    ) -> [HydraDx.LocalSwapRoute] {
-        guard
-            let outAssets = data.stableswapDirections[assetIn],
-            outAssets.contains(assetOut) else {
-            return []
-        }
-
-        return data.stableswapPoolAssets
-            .filter { outAssets.contains($0) && (data.stableswapDirections[$0]?.contains(assetOut) ?? false) }
-            .map { poolAsset in
-                let component = HydraDx.LocalSwapRoute.Component(
+            let mappedConnections = assetsOut.map { assetOut in
+                HydraDx.LocalSwapRoute.Component(
                     assetIn: assetIn,
                     assetOut: assetOut,
-                    type: .stableswap(poolAsset)
+                    type: type
                 )
-
-                return HydraDx.LocalSwapRoute(components: [component])
             }
+
+            accum[assetIn] = accum[assetIn]?.union(Set(mappedConnections)) ?? Set(mappedConnections)
+        }
     }
 
-    private static func resolveOmnipoolStableswapRoutes(
+    private static func appendingStableswapDirections(
+        _ directions: [ChainAssetId: Set<ChainAssetId>],
+        stableswapPoolAssets: Set<ChainAssetId>,
+        currentDirections: [ChainAssetId: Set<HydraDx.LocalSwapRoute.Component>]
+    ) -> [ChainAssetId: Set<HydraDx.LocalSwapRoute.Component>] {
+        directions.reduce(into: currentDirections) { accum, keyValue in
+            let assetIn = keyValue.key
+            let assetsOut = keyValue.value
+
+            let mappedConnections = assetsOut.flatMap { assetOut in
+                let items: [HydraDx.LocalSwapRoute.Component] = stableswapPoolAssets.compactMap { poolAsset in
+                    let poolAssetsOut = directions[poolAsset] ?? []
+                    let connectedByPool = (poolAsset == assetIn || assetsOut.contains(poolAsset)) &&
+                        (poolAsset == assetOut || poolAssetsOut.contains(assetOut))
+
+                    guard connectedByPool else {
+                        return nil
+                    }
+
+                    return HydraDx.LocalSwapRoute.Component(
+                        assetIn: assetIn,
+                        assetOut: assetOut,
+                        type: .stableswap(poolAsset)
+                    )
+                }
+
+                return items
+            }
+
+            accum[assetIn] = accum[assetIn]?.union(Set(mappedConnections)) ?? Set(mappedConnections)
+        }
+    }
+
+    private static func resolveShortestRoutes(
         assetIn: ChainAssetId,
         assetOut: ChainAssetId,
         data: HydraRoutesResolver.Data
     ) -> [HydraDx.LocalSwapRoute] {
-        guard
-            let omniOutAssets = data.omnipoolDirections[assetIn],
-            data.stableswapDirections[assetOut] != nil else {
-            return []
-        }
+        var allConnections = appendingDirections(
+            data.omnipoolDirections,
+            currentDirections: [:],
+            type: .omnipool
+        )
 
-        let connectedPoolAssets = data.stableswapPoolAssets
-            .filter { asset in
-                omniOutAssets.contains(asset) &&
-                    (data.stableswapDirections[asset]?.contains(assetOut) ?? false)
-            }
+        allConnections = appendingDirections(
+            data.xykDirections,
+            currentDirections: allConnections,
+            type: .xyk
+        )
 
-        return connectedPoolAssets
-            .map { poolAsset in
-                let component1 = HydraDx.LocalSwapRoute.Component(
-                    assetIn: assetIn,
-                    assetOut: poolAsset,
-                    type: .omnipool
-                )
+        allConnections = appendingStableswapDirections(
+            data.stableswapDirections,
+            stableswapPoolAssets: data.stableswapPoolAssets,
+            currentDirections: allConnections
+        )
 
-                let component2 = HydraDx.LocalSwapRoute.Component(
-                    assetIn: poolAsset,
-                    assetOut: assetOut,
-                    type: .stableswap(poolAsset)
-                )
+        let routes = GraphModel<ChainAssetId, HydraDx.LocalSwapRoute.Component>(
+            connections: allConnections
+        ).calculateShortestPath(from: assetIn, nodeEnd: assetOut, topN: 4)
 
-                return HydraDx.LocalSwapRoute(components: [component1, component2])
-            }
-    }
-
-    private static func resolveStableswapOmnipoolRoutes(
-        assetIn: ChainAssetId,
-        assetOut: ChainAssetId,
-        data: HydraRoutesResolver.Data
-    ) -> [HydraDx.LocalSwapRoute] {
-        guard
-            let stableswapOutAssets = data.stableswapDirections[assetIn],
-            data.omnipoolDirections[assetOut] != nil else {
-            return []
-        }
-
-        let connectedPoolAssets = data.stableswapPoolAssets
-            .filter { asset in
-                stableswapOutAssets.contains(asset) &&
-                    (data.omnipoolDirections[asset]?.contains(assetOut) ?? false)
-            }
-
-        return connectedPoolAssets
-            .map { poolAsset in
-                let component1 = HydraDx.LocalSwapRoute.Component(
-                    assetIn: assetIn,
-                    assetOut: poolAsset,
-                    type: .stableswap(poolAsset)
-                )
-
-                let component2 = HydraDx.LocalSwapRoute.Component(
-                    assetIn: poolAsset,
-                    assetOut: assetOut,
-                    type: .omnipool
-                )
-
-                return HydraDx.LocalSwapRoute(components: [component1, component2])
-            }
+        return routes.map { HydraDx.LocalSwapRoute(components: $0) }
     }
 
     static func converLocalRoutesToRemote(
@@ -139,41 +112,25 @@ enum HydraRoutesResolver {
     }
 
     static func resolveRoutes(
-        for swapPair: HydraDx.LocalSwapPair,
+        for pair: HydraDx.LocalSwapPair,
         data: HydraRoutesResolver.Data,
         chain: ChainModel,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> [HydraDx.RemoteSwapRoute] {
-        let assetIn = swapPair.assetIn
-        let assetOut = swapPair.assetOut
-
-        let omnipoolRoutes = resolveOmnipoolRoutes(
-            assetIn: assetIn,
-            assetOut: assetOut,
+        let localRoutes = resolveShortestRoutes(
+            assetIn: pair.assetIn,
+            assetOut: pair.assetOut,
             data: data
         )
-
-        let stableswapRoutes = resolveStableswapRoutes(
-            assetIn: assetIn,
-            assetOut: assetOut,
-            data: data
-        )
-
-        let omnipoolStableswapRoutes = resolveOmnipoolStableswapRoutes(
-            assetIn: assetIn,
-            assetOut: assetOut,
-            data: data
-        )
-
-        let stableswapOmnipoolRoutes = resolveStableswapOmnipoolRoutes(
-            assetIn: assetIn,
-            assetOut: assetOut,
-            data: data
-        )
-
-        let localRoutes = omnipoolRoutes + stableswapRoutes + omnipoolStableswapRoutes +
-            stableswapOmnipoolRoutes
 
         return converLocalRoutesToRemote(localRoutes, chain: chain, codingFactory: codingFactory)
+    }
+}
+
+extension HydraDx.SwapRoute.Component: GraphEdgeProtocol where Asset: Hashable {
+    typealias Node = Asset
+
+    var destination: Asset {
+        assetOut
     }
 }

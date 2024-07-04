@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-final class HydraStableswapFlowState {
+final class HydraXYKFlowState {
     let account: ChainAccountResponse
     let chain: ChainModel
     let connection: JSONRPCEngine
@@ -11,7 +11,7 @@ final class HydraStableswapFlowState {
 
     let mutex = NSLock()
 
-    private var quoteStateServices: [HydraStableswap.PoolPair: HydraStableswapQuoteParamsService] = [:]
+    private var quoteStateServices: [HydraDx.RemoteSwapPair: HydraXYKQuoteParamsService] = [:]
 
     init(
         account: ChainAccountResponse,
@@ -32,8 +32,8 @@ final class HydraStableswapFlowState {
     }
 }
 
-extension HydraStableswapFlowState {
-    func getAllStateServices() -> [HydraStableswapQuoteParamsService] {
+extension HydraXYKFlowState {
+    func getAllStateServices() -> [HydraXYKQuoteParamsService] {
         mutex.lock()
 
         defer {
@@ -54,31 +54,28 @@ extension HydraStableswapFlowState {
         quoteStateServices = [:]
     }
 
-    func setupQuoteService(
-        for poolPair: HydraStableswap.PoolPair
-    ) -> HydraStableswapQuoteParamsService {
+    func setupQuoteService(for swapPair: HydraDx.RemoteSwapPair) -> HydraXYKQuoteParamsService {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        if let currentService = quoteStateServices[poolPair] {
+        if let currentService = quoteStateServices[swapPair] {
             return currentService
         }
 
-        let newService = HydraStableswapQuoteParamsService(
-            userAccountId: account.accountId,
-            poolAsset: poolPair.poolAsset,
-            assetIn: poolPair.assetIn,
-            assetOut: poolPair.assetOut,
+        let newService = HydraXYKQuoteParamsService(
+            chain: chain,
+            assetIn: swapPair.assetIn,
+            assetOut: swapPair.assetOut,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue
         )
 
-        quoteStateServices[poolPair]?.throttle()
-        quoteStateServices[poolPair] = newService
+        quoteStateServices[swapPair]?.throttle()
+        quoteStateServices[swapPair] = newService
 
         newService.setup()
 
