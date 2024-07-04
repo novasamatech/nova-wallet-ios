@@ -858,6 +858,7 @@
 		2DE4EBCF2BFB515E005E2D81 /* ExportData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4EBCE2BFB515E005E2D81 /* ExportData.swift */; };
 		2DEDF6882C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF6872C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift */; };
 		2DEDF68A2C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF6892C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift */; };
+		2DEDF68D2C36FDCB007D5F4A /* LightChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF68C2C36FDCB007D5F4A /* LightChainModel.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -5747,6 +5748,7 @@
 		2DE4EBCE2BFB515E005E2D81 /* ExportData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportData.swift; sourceTree = "<group>"; };
 		2DEDF6872C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNetworkManuallyTableViewCell.swift; sourceTree = "<group>"; };
 		2DEDF6892C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownNetworksListViewModelFactory.swift; sourceTree = "<group>"; };
+		2DEDF68C2C36FDCB007D5F4A /* LightChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainModel.swift; sourceTree = "<group>"; };
 		2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmInteractor.swift; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E5C5EE99A4B73789BE23039 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; sourceTree = "<group>"; };
@@ -16468,6 +16470,7 @@
 				84113B6B255B2835009BD21A /* AccountCreateError.swift */,
 				8463A72C25E3A8E1003B8160 /* ChainStorageDecodedItem.swift */,
 				843910AF253ED36C00E3C217 /* ChainStorageItem.swift */,
+				2DEDF68C2C36FDCB007D5F4A /* LightChainModel.swift */,
 				84893C0624DA890F008F6A3F /* CommonError.swift */,
 				84FAB0622542C8D600319F74 /* ContactItem.swift */,
 				84729740260A9C13009B86D0 /* DisplayAddress.swift */,
@@ -25070,6 +25073,7 @@
 				4083005E0DC01C9BB57BEBAE /* UsernameSetupViewFactory.swift in Sources */,
 				6B62E63FB9E379EA19A41464 /* AccountCreateProtocols.swift in Sources */,
 				84EBAB0B265E28590015E446 /* ChainDateCalculator.swift in Sources */,
+				2DEDF68D2C36FDCB007D5F4A /* LightChainModel.swift in Sources */,
 				887404B829828D5500EE270A /* LoadMoreFooterView.swift in Sources */,
 				84754C9A2513871300854599 /* SNAddressType+Codable.swift in Sources */,
 				84ED6BE82869A18F00B3C558 /* TransferConfirmCrossChainViewFactory.swift in Sources */,

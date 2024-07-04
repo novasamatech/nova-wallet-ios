@@ -1,13 +1,6 @@
 import Foundation
 import Operation_iOS
 
-struct LightChainModel: Decodable, ChainViewModelSource {
-    let chainId: ChainModel.Id
-    let name: String
-    let icon: URL?
-    let options: [LocalChainOptions]?
-}
-
 protocol LightChainsFetchFactoryProtocol {
     func createWrapper() -> CompoundOperationWrapper<[LightChainModel]>
 }
