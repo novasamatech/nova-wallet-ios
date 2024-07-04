@@ -70,7 +70,7 @@ struct ChainModel: Equatable, Hashable {
     let nodes: Set<ChainNodeModel>
     let addressPrefix: UInt16
     let types: TypesSettings?
-    let icon: URL
+    let icon: URL?
     let options: [LocalChainOptions]?
     let externalApis: LocalChainExternalApiSet?
     let nodeSwitchStrategy: NodeSwitchStrategy
@@ -90,7 +90,7 @@ struct ChainModel: Equatable, Hashable {
         nodeSwitchStrategy: NodeSwitchStrategy,
         addressPrefix: UInt16,
         types: TypesSettings?,
-        icon: URL,
+        icon: URL?,
         options: [LocalChainOptions]?,
         externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,
@@ -397,6 +397,28 @@ extension ChainModel {
         )
     }
     
+    func adding(nodes: Set<ChainNodeModel>) -> ChainModel {
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: self.nodes.union(nodes),
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
+    
     func removing(node: ChainNodeModel) -> ChainModel {
         var mutNodes = nodes
         
@@ -533,3 +555,31 @@ extension ChainModel {
         return Set(priceIds)
     }
 }
+
+// MARK: ChainNodeConnectable
+
+protocol ChainNodeConnectable {
+    var chainId: String { get }
+    var name: String { get }
+    var nodes: Set<ChainNodeModel> { get }
+    var options: [LocalChainOptions]? { get }
+    var nodeSwitchStrategy: ChainModel.NodeSwitchStrategy { get }
+    var addressPrefix: UInt16 { get }
+    var connectionMode: ChainModel.ConnectionMode { get }
+}
+
+extension ChainNodeConnectable {
+    var noSubstrateRuntime: Bool {
+        options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
+    }
+
+    var hasSubstrateRuntime: Bool {
+        !noSubstrateRuntime
+    }
+    
+    var isEthereumBased: Bool {
+        options?.contains(.ethereumBased) ?? false
+    }
+}
+
+extension ChainModel: ChainNodeConnectable {}

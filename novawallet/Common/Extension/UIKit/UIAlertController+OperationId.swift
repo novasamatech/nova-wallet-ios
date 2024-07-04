@@ -1,6 +1,6 @@
 import UIKit
 
-private typealias NamedUrlTemplate = (name: String, template: String)
+typealias NamedUrlTemplate = (name: String, template: String)
 
 extension UIAlertController {
     static func presentTransactionHashOptions(

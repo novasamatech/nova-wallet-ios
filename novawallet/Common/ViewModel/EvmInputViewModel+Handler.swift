@@ -59,7 +59,7 @@ extension InputViewModel {
         return InputViewModel(inputHandler: inputHandling, placeholder: placeholder ?? "")
     }
 
-    static func createSubstrateNodeURLInputViewModel(
+    static func createNotEmptyInputViewModel(
         for value: String,
         required: Bool = true,
         placeholder: String? = nil

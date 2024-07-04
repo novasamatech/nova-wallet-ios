@@ -58,7 +58,7 @@ final class GovernanceTracksSettingsPresenter: SelectTracksPresenter {
         super.setup()
         view?.didReceive(networkViewModel: .init(
             name: chain.name,
-            icon: RemoteImageViewModel(url: chain.icon)
+            icon: ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
         ))
     }
 
