@@ -3,12 +3,8 @@ import UIKit
 final class KnownNetworksListViewLayout: UIView {
     let searchView = TopCustomSearchView()
 
-    var searchBar: CustomSearchBar {
-        searchView.searchBar
-    }
-
     var searchTextField: UITextField {
-        searchBar.textField
+        searchView.searchBar.textField
     }
     
     let tableView: UITableView = .create { view in
