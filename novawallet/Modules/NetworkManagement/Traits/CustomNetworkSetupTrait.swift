@@ -229,14 +229,17 @@ private extension CustomNetworkSetupTrait {
         
         let assetOperation = ClosureOperation<PartialCustomChainModel> {
             let properties = try propertiesOperation.extractNoCancellableResultData()
-            let defaultPrecision: UInt16 = 12
+            
+            guard let precision = properties.tokenDecimals.first else {
+                throw CustomNetworkSetupError.decimalsNotFound
+            }
             
             let asset = AssetModel(
                 assetId: 0,
                 icon: nil,
                 name: chain.name,
                 symbol: chain.currencySymbol,
-                precision: properties.tokenDecimals.first ?? defaultPrecision,
+                precision: precision,
                 priceId: chain.mainAssetPriceId,
                 stakings: nil,
                 type: nil,
@@ -306,4 +309,10 @@ private extension CustomNetworkSetupTrait {
             dependencies: dependency.dependencies
         )
     }
+}
+
+// MARK: Errors
+
+enum CustomNetworkSetupError: Error {
+    case decimalsNotFound
 }
