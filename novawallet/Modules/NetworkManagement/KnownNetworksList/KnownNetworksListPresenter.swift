@@ -8,7 +8,7 @@ final class KnownNetworksListPresenter {
     
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
 
-    private var chains: [ChainModel] = []
+    private var chains: [LightChainModel] = []
     
     init(
         interactor: KnownNetworksListInteractorInputProtocol,
@@ -29,7 +29,9 @@ extension KnownNetworksListPresenter: KnownNetworksListPresenterProtocol {
     }
     
     func selectChain(at index: Int) {
+        let selectedLightChain = chains[index]
         
+        interactor.provideChain(with: selectedLightChain.chainId)
     }
     
     func addNetworkManually() {
@@ -45,11 +47,11 @@ extension KnownNetworksListPresenter: KnownNetworksListInteractorOutputProtocol 
         let chainRows: [KnownNetworksListViewLayout.Row] = chains
             .enumerated()
             .map { (index, chain) in
-                let networkType = chain.isTestnet
-                ? R.string.localizable.commonTestnet(
-                    preferredLanguages: selectedLocale.rLanguages
-                ).uppercased()
-                : nil
+                let networkType = chain.options?.contains(.testnet) ?? false
+                    ? R.string.localizable.commonTestnet(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).uppercased()
+                    : nil
                 
                 let viewModel =  NetworksListViewLayout.NetworkWithConnectionModel(
                     index: index,
@@ -71,13 +73,16 @@ extension KnownNetworksListPresenter: KnownNetworksListInteractorOutputProtocol 
         view?.update(with: viewModel)
     }
     
-    func didReceive(_ chains: [ChainModel]) {
-        self.chains = chains.sorted {
-            ChainModelCompator.defaultComparator(
-                chain1: $0,
-                chain2: $1
-            )
-        }
+    func didReceive(_ chains: [LightChainModel]) {
+        self.chains = chains
+        provideViewModels()
+    }
+    
+    func didReceive(_ chain: ChainModel) {
+        wireframe.showAddNetwork(
+            from: view,
+            with: chain
+        )
     }
     
     func didReceive(_ error: any Error) {

@@ -10,10 +10,12 @@ protocol KnownNetworksListPresenterProtocol: AnyObject {
 
 protocol KnownNetworksListInteractorInputProtocol: AnyObject {
     func provideChains()
+    func provideChain(with chainId: ChainModel.Id)
 }
 
 protocol KnownNetworksListInteractorOutputProtocol: AnyObject {
-    func didReceive(_ chains: [ChainModel])
+    func didReceive(_ chains: [LightChainModel])
+    func didReceive(_ chain: ChainModel)
     func didReceive(_ error: Error)
 }
 

@@ -4,7 +4,6 @@ import SoraFoundation
 struct KnownNetworksListViewFactory {
     static func createView() -> KnownNetworksListViewProtocol? {
         let dataFetchFactory = DataOperationFactory()
-        let chainConverter = ChainModelConverter()
         
         let operationQueue: OperationQueue = {
             let operationQueue = OperationQueue()
@@ -12,9 +11,12 @@ struct KnownNetworksListViewFactory {
             return operationQueue
         }()
         
+        let lightChainsFetchFactory = LightChainsFetchFactory(dataFetchFactory: dataFetchFactory)
+        let chainFetchFactory = PreConfiguredChainFetchFactory(dataFetchFactory: dataFetchFactory)
+        
         let interactor = KnownNetworksListInteractor(
-            dataFetchFactory: dataFetchFactory,
-            chainConverter: chainConverter,
+            lightChainsFetchFactory: lightChainsFetchFactory,
+            preConfiguredChainFetchFactory: chainFetchFactory,
             operationQueue: operationQueue
         )
         

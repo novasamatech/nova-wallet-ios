@@ -1,0 +1,49 @@
+import Foundation
+import Operation_iOS
+
+protocol PreConfiguredChainFetchFactoryProtocol {
+    func createWrapper(with chainId: ChainModel.Id) -> CompoundOperationWrapper<ChainModel>
+}
+
+class PreConfiguredChainFetchFactory {
+    private let dataFetchFactory: DataOperationFactoryProtocol
+    
+    init(dataFetchFactory: any DataOperationFactoryProtocol) {
+        self.dataFetchFactory = dataFetchFactory
+    }
+}
+
+extension PreConfiguredChainFetchFactory: PreConfiguredChainFetchFactoryProtocol {
+    func createWrapper(with chainId: ChainModel.Id) -> CompoundOperationWrapper<ChainModel> {
+        let directoryURL = ApplicationConfig.shared.preConfiguredChainDirectoryURL
+        let chainURL = directoryURL.appendingPathComponent("\(chainId).json")
+        
+        let fetchOperation = dataFetchFactory.fetchData(from: chainURL)
+        
+        let mapOperation = ClosureOperation<ChainModel> {
+            let remoteData = try fetchOperation.extractNoCancellableResultData()
+            let remoteModel = try JSONDecoder().decode(
+                RemoteChainModel.self,
+                from: remoteData
+            )
+            
+            guard let chainModel = ChainModelConverter().update(
+                localModel: nil,
+                remoteModel: remoteModel,
+                additionalAssets: [],
+                order: 0
+            ) else {
+                throw CommonError.dataCorruption
+            }
+            
+            return chainModel
+        }
+        
+        mapOperation.addDependency(fetchOperation)
+        
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [fetchOperation]
+        )
+    }
+}

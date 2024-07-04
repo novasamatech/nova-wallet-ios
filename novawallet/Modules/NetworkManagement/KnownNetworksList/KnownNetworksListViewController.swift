@@ -31,6 +31,7 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setup()
         presenter.setup()
     }
 }
@@ -103,17 +104,17 @@ private extension KnownNetworksListViewController {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ChainCell.self)
 
-        setupNavigationBarTitle()
-    }
-
-    func setupNavigationBarTitle() {
-        navigationItem.title = R.string.localizable.networksListAddNetworkButtonTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        setupLocalization()
     }
 
     func setupLocalization() {
         setupNavigationBarTitle()
+    }
+    
+    func setupNavigationBarTitle() {
+        navigationItem.title = R.string.localizable.networksListAddNetworkButtonTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
     func cellFor(
