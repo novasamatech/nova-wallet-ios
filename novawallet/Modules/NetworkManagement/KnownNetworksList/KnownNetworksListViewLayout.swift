@@ -59,17 +59,13 @@ private extension KnownNetworksListViewLayout {
 // MARK: Model
 
 extension KnownNetworksListViewLayout {
-    struct AddNetworkRow: Hashable {
-        var title: String
-    }
-
     enum Section: Hashable {
         case addNetwork([Row])
         case networks([Row])
     }
 
     enum Row: Hashable {
-        case addNetwork(AddNetworkRow)
+        case addNetwork(IconWithTitleViewModel)
         case network(NetworksListViewLayout.NetworkWithConnectionModel)
     }
 

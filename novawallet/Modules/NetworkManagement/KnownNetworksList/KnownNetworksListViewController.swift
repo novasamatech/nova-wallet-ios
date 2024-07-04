@@ -5,6 +5,7 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
     typealias RootViewType = KnownNetworksListViewLayout
     typealias ViewModel = RootViewType.Model
     typealias ChainCell = NetworksListTableViewCell
+    typealias AddNetworkCell = AddNetworkManuallyTableViewCell
 
     let presenter: KnownNetworksListPresenterProtocol
     
@@ -35,6 +36,8 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 }
+
+// MARK: KnownNetworksListViewProtocol
 
 extension KnownNetworksListViewController: KnownNetworksListViewProtocol {
     func update(with viewModel: KnownNetworksListViewLayout.Model) {
@@ -85,7 +88,15 @@ extension KnownNetworksListViewController: UITableViewDelegate {
         didSelectRowAt indexPath: IndexPath
     ) {
         tableView.deselectRow(at: indexPath, animated: true)
-        presenter.selectChain(at: indexPath.row)
+        
+        switch indexPath.section {
+        case Constants.addNetworksSection:
+            presenter.addNetworkManually()
+        case Constants.networksSection:
+            presenter.selectChain(at: indexPath.row)
+        default:
+            break
+        }
     }
 
     func tableView(
@@ -103,7 +114,8 @@ private extension KnownNetworksListViewController {
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ChainCell.self)
-
+        rootView.tableView.registerClassForCell(AddNetworkCell.self)
+        
         setupSearchField()
         setupLocalization()
     }
@@ -135,8 +147,14 @@ private extension KnownNetworksListViewController {
         let cell: UITableViewCell
 
         switch viewModel {
-        case .addNetwork:
-            cell = UITableViewCell()
+        case let .addNetwork(viewModel):
+            let addNetworkCell = tableView.dequeueReusableCellWithType(
+                AddNetworkCell.self,
+                forIndexPath: indexPath
+            )
+            addNetworkCell.bind(model: viewModel)
+            
+            cell = addNetworkCell
         case let .network(model):
             let chainCell = tableView.dequeueReusableCellWithType(
                 ChainCell.self,
@@ -183,5 +201,7 @@ extension KnownNetworksListViewController: Localizable {
 private extension KnownNetworksListViewController {
     enum Constants {
         static let cellHeight: CGFloat = 56
+        static let addNetworksSection: Int = 0
+        static let networksSection: Int = 1
     }
 }

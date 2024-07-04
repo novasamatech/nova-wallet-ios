@@ -33,7 +33,7 @@ extension PreConfiguredChainFetchFactory: PreConfiguredChainFetchFactoryProtocol
                 additionalAssets: [],
                 order: 0
             ) else {
-                throw CommonError.dataCorruption
+                throw CommonError.noDataRetrieved
             }
             
             return chainModel

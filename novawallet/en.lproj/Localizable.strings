@@ -1712,3 +1712,4 @@ Please enter URL of the valid %@ node.";
 "network.manage.delete.alert.description" = "You will not be able to see your token balances on that network on Assets screen";
 "common.delete" = "Delete";
 "network.known.list.search.placeholder" = "Search by network name";
+"network.add.network.manually" = "Add network manually";

@@ -23,8 +23,12 @@ final class KnownNetworksListPresenter {
     }
 }
 
+// MARK: KnownNetworksListPresenterProtocol
+
 extension KnownNetworksListPresenter: KnownNetworksListPresenterProtocol {
     func setup() {
+        provideViewModels()
+        
         interactor.provideChains()
     }
     
@@ -46,8 +50,21 @@ extension KnownNetworksListPresenter: KnownNetworksListPresenterProtocol {
     }
 }
 
+// MARK: KnownNetworksListInteractorOutputProtocol
+
 extension KnownNetworksListPresenter: KnownNetworksListInteractorOutputProtocol {
     func provideViewModels() {
+        var sections: [KnownNetworksListViewLayout.Section] = []
+        
+        let addNetworkRow = KnownNetworksListViewLayout.Row.addNetwork(
+            IconWithTitleViewModel(
+                icon: R.image.iconAddNetwork(),
+                title: R.string.localizable.networkAddNetworkManually(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            )
+        )
+        
         let chainRows: [KnownNetworksListViewLayout.Row] = chains
             .enumerated()
             .map { (index, chain) in
@@ -68,10 +85,14 @@ extension KnownNetworksListPresenter: KnownNetworksListInteractorOutputProtocol 
                 return .network(viewModel)
             }
         
+        sections.append(.addNetwork([addNetworkRow]))
+        
+        if !chainRows.isEmpty {
+            sections.append(.networks(chainRows))
+        }
+        
         let viewModel = KnownNetworksListViewLayout.Model(
-            sections: [
-                .networks(chainRows)
-            ]
+            sections: sections
         )
 
         view?.update(with: viewModel)

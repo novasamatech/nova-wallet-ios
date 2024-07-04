@@ -856,6 +856,8 @@
 		2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */; };
 		2DE302F12C32EAE80082FB5C /* SystemProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302F02C32EAE80082FB5C /* SystemProperties.swift */; };
 		2DE4EBCF2BFB515E005E2D81 /* ExportData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4EBCE2BFB515E005E2D81 /* ExportData.swift */; };
+		2DEDF6882C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF6872C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift */; };
+		2DEDF68A2C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF6892C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -5743,6 +5745,8 @@
 		2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPropertiesOperationFactory.swift; sourceTree = "<group>"; };
 		2DE302F02C32EAE80082FB5C /* SystemProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemProperties.swift; sourceTree = "<group>"; };
 		2DE4EBCE2BFB515E005E2D81 /* ExportData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportData.swift; sourceTree = "<group>"; };
+		2DEDF6872C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNetworkManuallyTableViewCell.swift; sourceTree = "<group>"; };
+		2DEDF6892C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownNetworksListViewModelFactory.swift; sourceTree = "<group>"; };
 		2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmInteractor.swift; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E5C5EE99A4B73789BE23039 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; sourceTree = "<group>"; };
@@ -11788,6 +11792,14 @@
 			path = WalletView;
 			sourceTree = "<group>";
 		};
+		2DEDF68B2C36F41A007D5F4A /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2DEDF6872C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		2F9F44CABD4DE8B400DC60FA /* Confirm */ = {
 			isa = PBXGroup;
 			children = (
@@ -12260,10 +12272,12 @@
 		5F9F36C10D734E30870F81AB /* KnownNetworksList */ = {
 			isa = PBXGroup;
 			children = (
+				2DEDF68B2C36F41A007D5F4A /* View */,
 				2DB18C902C36CB3E00A93C75 /* PreConfiguredChainFetchWrappers */,
 				FC303C85EF12CFE605A0950E /* KnownNetworksListProtocols.swift */,
 				141DA362D60B053F4F0A13AA /* KnownNetworksListWireframe.swift */,
 				D88BD92DF414EDD43D53954D /* KnownNetworksListPresenter.swift */,
+				2DEDF6892C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift */,
 				8EF1830DCCDBD01066DA50AE /* KnownNetworksListInteractor.swift */,
 				C5BAAC7548C5632713607CC9 /* KnownNetworksListViewController.swift */,
 				4AE50B4D81A4DAB2F3313567 /* KnownNetworksListViewLayout.swift */,
@@ -25871,6 +25885,7 @@
 				84770F27291F7CD400852A33 /* ReferendumDetailsInitData.swift in Sources */,
 				84B8AA8529F910AD00347A37 /* WalletConnectStateError.swift in Sources */,
 				8814773E29B071AD001E98A1 /* ImageViewModelProtocol+Optional.swift in Sources */,
+				2DEDF68A2C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift in Sources */,
 				84E493252731C064000534F2 /* AssetListViewModel.swift in Sources */,
 				AEA0C8B8267C905500F9666F /* SelectedValidatorCell.swift in Sources */,
 				8422F2EE2887E3D300C7B840 /* TextInputView.swift in Sources */,
@@ -27490,6 +27505,7 @@
 				C641C8A414F7F4E3B96B16CE /* ProxySignValidationProtocols.swift in Sources */,
 				1DA7B852B65ED2DC69E8A906 /* ProxySignValidationWireframe.swift in Sources */,
 				9AA018D4BDEEECF00018F049 /* ProxySignValidationPresenter.swift in Sources */,
+				2DEDF6882C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift in Sources */,
 				4DBCCC36F7CD1876D6E77ECC /* ProxySignValidationInteractor.swift in Sources */,
 				84272585149E6A422690779C /* ProxySignValidationViewFactory.swift in Sources */,
 				A63C2F992CDBB115E9495624 /* StakingConfirmProxyProtocols.swift in Sources */,
