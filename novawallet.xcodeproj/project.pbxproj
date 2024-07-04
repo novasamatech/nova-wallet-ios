@@ -846,8 +846,8 @@
 		2DAF53952C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */; };
 		2DAF539B2C1842D00076B4B6 /* NetworkDetailsNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */; };
 		2DAF539E2C1B2AA00076B4B6 /* NodePingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */; };
-		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactoryProtocol.swift */; };
-		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactoryProtocol.swift */; };
+		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */; };
+		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
@@ -5731,8 +5731,8 @@
 		2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsNodeView.swift; sourceTree = "<group>"; };
 		2DAF539C2C198E690076B4B6 /* SubstrateDataModel29.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel29.xcdatamodel; sourceTree = "<group>"; };
 		2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodePingOperationFactory.swift; sourceTree = "<group>"; };
-		2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainsFetchFactoryProtocol.swift; sourceTree = "<group>"; };
-		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactoryProtocol.swift; sourceTree = "<group>"; };
+		2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainsFetchFactory.swift; sourceTree = "<group>"; };
+		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
@@ -11749,8 +11749,8 @@
 		2DB18C902C36CB3E00A93C75 /* PreConfiguredChainFetchWrappers */ = {
 			isa = PBXGroup;
 			children = (
-				2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactoryProtocol.swift */,
-				2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactoryProtocol.swift */,
+				2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */,
+				2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */,
 			);
 			path = PreConfiguredChainFetchWrappers;
 			sourceTree = "<group>";
@@ -24366,7 +24366,7 @@
 				842B1806286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift in Sources */,
 				84002AA52992516D00A80672 /* GovernanceDelegateState.swift in Sources */,
 				84D1F2FB260F51770077DDFE /* SwitchAccount.swift in Sources */,
-				2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactoryProtocol.swift in Sources */,
+				2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */,
 				84E0EE08292D3C2D008B2953 /* GovernanceAssetSelectionProtocols.swift in Sources */,
 				84466B3C28B7680300FA1E0D /* LedgerDiscoverInteractor.swift in Sources */,
 				843CE3AA27D22B5200436F4E /* UniquesDetailsInteractor.swift in Sources */,
@@ -25416,7 +25416,7 @@
 				0CCDB2E62B7496C9007BC5D6 /* HydraStableswap.swift in Sources */,
 				842EBB372890A7BA00B952D8 /* WalletSelectionWireframe.swift in Sources */,
 				8436C79F29ACD6D70024B409 /* ElectionProviderMultiPhase+CodingPath.swift in Sources */,
-				2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactoryProtocol.swift in Sources */,
+				2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */,
 				0C79C89C2A7BE6A200B171E3 /* DirectStakingRecommendationFactory.swift in Sources */,
 				848B59C228BCC1E60009543C /* LedgerAddAccountConfirmationInteractor.swift in Sources */,
 				882A5CED28AFCE3600D0D798 /* ReturnInIntervalsViewModel.swift in Sources */,
