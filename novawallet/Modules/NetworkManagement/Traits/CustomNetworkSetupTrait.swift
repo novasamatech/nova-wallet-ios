@@ -9,7 +9,7 @@ protocol CustomNetworkSetupTrait: NetworkNodeCorrespondingTrait {
 extension CustomNetworkSetupTrait {
     func createSetupNetworkWrapper(
         partialChain: PartialCustomChainModel,
-        rawRuntimeFetchFactory: any RuntimeFetchOperationFactoryProtocol,
+        rawRuntimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         typeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
@@ -69,7 +69,7 @@ extension CustomNetworkSetupTrait {
 private extension CustomNetworkSetupTrait {
     func createFillPartialChainWrapper(
         partialChain: PartialCustomChainModel,
-        rawRuntimeFetchFactory: any RuntimeFetchOperationFactoryProtocol,
+        rawRuntimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         typeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
@@ -186,14 +186,53 @@ private extension CustomNetworkSetupTrait {
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connection: ChainConnection
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
-        let propertiesOperation: BaseOperation<SystemProperties>? = chain.isEthereumBased && chain.noSubstrateRuntime
-            ? nil
-            : systemPropertiesOperationFactory.createSystemPropertiesOperation(connection: connection)
+        let isEvmChain = chain.isEthereumBased && chain.noSubstrateRuntime
+        
+        return isEvmChain
+            ? createEvmMainAssetSetupWrapper(for: chain)
+            : createSubstrateMainAssetSetupWrapper(
+                for: chain,
+                systemPropertiesOperationFactory: systemPropertiesOperationFactory,
+                connection: connection
+            )
+    }
+    
+    func createEvmMainAssetSetupWrapper(for chain: PartialCustomChainModel) -> CompoundOperationWrapper<PartialCustomChainModel> {
+        let defaultEVMAssetPrecision: UInt16 = 18
+        
+        return .createWithResult(
+            chain.adding(
+                AssetModel(
+                    assetId: 0,
+                    icon: nil,
+                    name: chain.name,
+                    symbol: chain.currencySymbol,
+                    precision: defaultEVMAssetPrecision,
+                    priceId: chain.mainAssetPriceId,
+                    stakings: nil,
+                    type: nil,
+                    typeExtras: nil,
+                    buyProviders: nil,
+                    enabled: true,
+                    source: .user
+                )
+            )
+        )
+    }
+    
+    func createSubstrateMainAssetSetupWrapper(
+        for chain: PartialCustomChainModel,
+        systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
+        connection: ChainConnection
+    ) -> CompoundOperationWrapper<PartialCustomChainModel> {
+        let propertiesOperation = systemPropertiesOperationFactory.createSystemPropertiesOperation(connection: connection)
         
         let assetOperation = ClosureOperation<PartialCustomChainModel> {
-            let properties = try propertiesOperation?.extractNoCancellableResultData()
-            let defaultEVMAssetPrecision: UInt16 = 18
-            let precision = properties?.tokenDecimals.first ?? defaultEVMAssetPrecision
+            let properties = try propertiesOperation.extractNoCancellableResultData()
+            
+            guard let precision = properties.tokenDecimals.first else {
+                throw CustomNetworkSetupError.decimalsNotFound
+            }
             
             let asset = AssetModel(
                 assetId: 0,
@@ -210,22 +249,16 @@ private extension CustomNetworkSetupTrait {
                 source: .user
             )
             
-            let updatedChain = if let properties {
-                chain.byChanging(addressPrefix: properties.ss58Format ?? properties.SS58Prefix)
-            } else {
-                chain
-            }
-            
-            return updatedChain.adding(asset)
+            return chain
+                .byChanging(addressPrefix: properties.ss58Format ?? properties.SS58Prefix)
+                .adding(asset)
         }
         
-        let dependencies = [propertiesOperation].compactMap { $0 }
-        
-        dependencies.forEach { assetOperation.addDependency($0) }
+        assetOperation.addDependency(propertiesOperation)
                 
         return CompoundOperationWrapper(
             targetOperation: assetOperation,
-            dependencies: dependencies
+            dependencies: [propertiesOperation]
         )
     }
     
@@ -276,4 +309,10 @@ private extension CustomNetworkSetupTrait {
             dependencies: dependency.dependencies
         )
     }
+}
+
+// MARK: Errors
+
+enum CustomNetworkSetupError: Error {
+    case decimalsNotFound
 }

@@ -12,24 +12,24 @@ enum RuntimeTypeRegistryFactoryError: Error {
 
 protocol RuntimeTypeRegistryFactoryProtocol {
     func createForMetadataAndDefaultTyping(
-        chain: any RuntimeProviderChainProtocol,
+        chain: RuntimeProviderChainProtocol,
         runtimeMetadataItem: RuntimeContainerSourceProtocol
     ) throws -> RuntimeTypeRegistryInfo
 
     func createForChainTypes(
-        chain: any RuntimeProviderChainProtocol,
+        chain: RuntimeProviderChainProtocol,
         runtimeMetadataItem: RuntimeContainerSourceProtocol,
         chainTypes: Data
     ) throws -> RuntimeTypeRegistryInfo
 
     func createForCommonTypes(
-        chain: any RuntimeProviderChainProtocol,
+        chain: RuntimeProviderChainProtocol,
         runtimeMetadataItem: RuntimeContainerSourceProtocol,
         commonTypes: Data
     ) throws -> RuntimeTypeRegistryInfo
 
     func createForCommonAndChainTypes(
-        chain: any RuntimeProviderChainProtocol,
+        chain: RuntimeProviderChainProtocol,
         runtimeMetadataItem: RuntimeContainerSourceProtocol,
         commonTypes: Data,
         chainTypes: Data
@@ -56,7 +56,7 @@ final class RuntimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol {
 
     private func createForPostV14MetadataAndDefaultTyping(
         _ post14Metadata: PostV14RuntimeMetadataProtocol,
-        chain: any RuntimeProviderChainProtocol
+        chain: RuntimeProviderChainProtocol
     ) throws -> RuntimeTypeRegistryInfo {
         let augmentationFactory = RuntimeAugmentationFactory()
 
@@ -85,7 +85,7 @@ final class RuntimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol {
 
 extension RuntimeTypeRegistryFactory {
     func createForMetadataAndDefaultTyping(
-        chain: any RuntimeProviderChainProtocol,
+        chain: RuntimeProviderChainProtocol,
         runtimeMetadataItem: RuntimeContainerSourceProtocol
     ) throws -> RuntimeTypeRegistryInfo {
         let runtimeMetadataContainer = try createRuntimeContainer(from: runtimeMetadataItem)
@@ -101,7 +101,7 @@ extension RuntimeTypeRegistryFactory {
     }
 
     func createForChainTypes(
-        chain: any RuntimeProviderChainProtocol,
+        chain: RuntimeProviderChainProtocol,
         runtimeMetadataItem: RuntimeContainerSourceProtocol,
         chainTypes: Data
     ) throws -> RuntimeTypeRegistryInfo {
@@ -142,7 +142,7 @@ extension RuntimeTypeRegistryFactory {
     }
 
     func createForCommonTypes(
-        chain: any RuntimeProviderChainProtocol,
+        chain: RuntimeProviderChainProtocol,
         runtimeMetadataItem: RuntimeContainerSourceProtocol,
         commonTypes: Data
     ) throws -> RuntimeTypeRegistryInfo {
@@ -182,7 +182,7 @@ extension RuntimeTypeRegistryFactory {
     }
 
     func createForCommonAndChainTypes(
-        chain: any RuntimeProviderChainProtocol,
+        chain: RuntimeProviderChainProtocol,
         runtimeMetadataItem: RuntimeContainerSourceProtocol,
         commonTypes: Data,
         chainTypes: Data
