@@ -1,4 +1,4 @@
-protocol KnownNetworksListViewProtocol: ControllerBackedProtocol {
+protocol KnownNetworksListViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func update(with viewModel: KnownNetworksListViewLayout.Model)
 }
 

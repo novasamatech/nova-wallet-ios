@@ -22,13 +22,13 @@ struct KnownNetworksListViewFactory {
         
         let wireframe = KnownNetworksListWireframe()
 
-        let networkViewModelFactory = NetworkViewModelFactory()
+        let viewModelFactory = KnownNetworksListviewModelFactory(networkViewModelFactory: NetworkViewModelFactory())
         let localizationManager = LocalizationManager.shared
         
         let presenter = KnownNetworksListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            networkViewModelFactory: networkViewModelFactory,
+            viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
 

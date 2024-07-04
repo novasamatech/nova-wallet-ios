@@ -6,19 +6,19 @@ final class KnownNetworksListPresenter {
     let wireframe: KnownNetworksListWireframeProtocol
     let interactor: KnownNetworksListInteractorInputProtocol
     
-    private let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    private let viewModelFactory: KnownNetworksListviewModelFactory
 
     private var chains: [LightChainModel] = []
     
     init(
         interactor: KnownNetworksListInteractorInputProtocol,
         wireframe: KnownNetworksListWireframeProtocol,
-        networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        viewModelFactory: KnownNetworksListviewModelFactory,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.networkViewModelFactory = networkViewModelFactory
+        self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
 }
@@ -27,12 +27,14 @@ final class KnownNetworksListPresenter {
 
 extension KnownNetworksListPresenter: KnownNetworksListPresenterProtocol {
     func setup() {
+        view?.didStartLoading()
         provideViewModels()
         
         interactor.provideChains()
     }
     
     func selectChain(at index: Int) {
+        view?.didStartLoading()
         let selectedLightChain = chains[index]
         
         interactor.provideChain(with: selectedLightChain.chainId)
@@ -54,56 +56,24 @@ extension KnownNetworksListPresenter: KnownNetworksListPresenterProtocol {
 
 extension KnownNetworksListPresenter: KnownNetworksListInteractorOutputProtocol {
     func provideViewModels() {
-        var sections: [KnownNetworksListViewLayout.Section] = []
-        
-        let addNetworkRow = KnownNetworksListViewLayout.Row.addNetwork(
-            IconWithTitleViewModel(
-                icon: R.image.iconAddNetwork(),
-                title: R.string.localizable.networkAddNetworkManually(
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-            )
-        )
-        
-        let chainRows: [KnownNetworksListViewLayout.Row] = chains
-            .enumerated()
-            .map { (index, chain) in
-                let networkType = chain.options?.contains(.testnet) ?? false
-                    ? R.string.localizable.commonTestnet(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ).uppercased()
-                    : nil
-                
-                let viewModel =  NetworksListViewLayout.NetworkWithConnectionModel(
-                    index: index,
-                    networkType: networkType,
-                    connectionState: .connected,
-                    networkState: .enabled,
-                    networkModel: networkViewModelFactory.createDiffableViewModel(from: chain)
-                )
-                
-                return .network(viewModel)
-            }
-        
-        sections.append(.addNetwork([addNetworkRow]))
-        
-        if !chainRows.isEmpty {
-            sections.append(.networks(chainRows))
-        }
-        
-        let viewModel = KnownNetworksListViewLayout.Model(
-            sections: sections
+        let viewModel = viewModelFactory.createViewModel(
+            with: chains,
+            selectedLocale
         )
 
         view?.update(with: viewModel)
     }
     
     func didReceive(_ chains: [LightChainModel]) {
+        view?.didStopLoading()
+        
         self.chains = chains
         provideViewModels()
     }
     
     func didReceive(_ chain: ChainModel) {
+        view?.didStopLoading()
+        
         wireframe.showAddNetwork(
             from: view,
             with: chain
