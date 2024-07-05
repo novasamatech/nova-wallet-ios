@@ -1716,3 +1716,4 @@ Please enter URL of the valid %@ node.";
 "network.node.delete.alert.title" = "Delete node?";
 "network.node.delete.alert.description" = "%@ node will be deleted";
 "network.add.alert.success.title" = "Network added successfully";
+"common.modify" = "Modify";

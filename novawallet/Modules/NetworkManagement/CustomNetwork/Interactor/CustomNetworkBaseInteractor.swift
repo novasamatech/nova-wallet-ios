@@ -44,6 +44,51 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         completeSetup()
     }
     
+    func modify(
+        _ existingNetwork: ChainModel,
+        node: ChainNodeModel,
+        url: String,
+        name: String,
+        iconUrl: URL? = nil,
+        currencySymbol: String,
+        chainId: String?,
+        blockExplorerURL: String?,
+        coingeckoURL: String?
+    ) {
+        let mainAsset = existingNetwork.assets.first(where: { $0.assetId == 0 })
+        
+        let evmChainId: UInt16? = if let chainId, let intChainId = Int(chainId) {
+            UInt16(intChainId)
+        } else {
+            nil
+        }
+        
+        let partialChain = PartialCustomChainModel(
+            chainId: existingNetwork.chainId,
+            url: url,
+            name: name,
+            iconUrl: existingNetwork.icon,
+            assets: existingNetwork.assets,
+            nodes: existingNetwork.nodes,
+            currencySymbol: mainAsset?.symbol ?? currencySymbol,
+            options: existingNetwork.options,
+            nodeSwitchStrategy: existingNetwork.nodeSwitchStrategy,
+            addressPrefix: evmChainId ?? existingNetwork.addressPrefix,
+            connectionMode: .autoBalanced,
+            blockExplorer: createExplorer(from: blockExplorerURL) ?? existingNetwork.explorers?.first,
+            mainAssetPriceId: mainAsset?.priceId
+        )
+        
+        self.partialChain = partialChain
+        
+        connect(
+            to: node,
+            replacingNode: node,
+            chain: partialChain,
+            urlPredicate: NSPredicate.ws
+        )
+    }
+    
     func connectToChain(
         with networkType: ChainType,
         url: String,

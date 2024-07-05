@@ -220,13 +220,21 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
     }
     
     func didReceive(_ error: CustomNetworkBaseInteractorError) {
-        wireframe.present(
-            error: error,
-            from: view,
-            locale: selectedLocale
-        )
-        
         provideButtonViewModel(loading: false)
+        
+        if case .alreadyExistCustom = error {
+            wireframe.present(
+                viewModel: createAlreadyExistsViewModel(for: error),
+                style: .alert,
+                from: view
+            )
+        } else {
+            wireframe.present(
+                error: error,
+                from: view,
+                locale: selectedLocale
+            )
+        }
     }
     
     func didReceive(
@@ -255,6 +263,38 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
 // MARK: Private
 
 private extension CustomNetworkBasePresenter {
+    func createAlreadyExistsViewModel(
+        errorContent: ErrorContent,
+        existingChain: ChainModel,
+        existingNode: ChainNodeModel
+    ) -> AlertPresentableViewModel {
+        let viewModel = AlertPresentableViewModel(
+            title: errorContent.title,
+            message: errorContent.message,
+            actions: [
+                .init(
+                    title: R.string.localizable.commonModify(preferredLanguages: selectedLocale.rLanguages),
+                    style: .normal,
+                    handler: { [weak self] in
+                        self?.interactor.modify(
+                            existingChain,
+                            node: existingNode,
+                            url: partialURL,
+                            name: partialName,
+                            currencySymbol: partialCurrencySymbol,
+                            chainId: partialChainId,
+                            blockExplorerURL: partialBlockExplorerURL,
+                            coingeckoURL: partialCoingeckoURL
+                        )
+                    }
+                ),
+            ],
+            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+        )
+        
+        return viewModel
+    }
+    
     func cleanPartialValues() {
         partialURL = nil
         partialName = nil
