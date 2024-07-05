@@ -198,7 +198,7 @@ private extension NetworkDetailsPresenter {
                 )
             },
             onNodeDelete: { [weak self] in
-                self?.interactor.deleteNode(node)
+                self?.openDeleteNodeAlert(for: node)
             }
         )
     }
@@ -221,7 +221,42 @@ private extension NetworkDetailsPresenter {
         )
     }
     
-    func openDeleteAlert() {
+    func openDeleteNodeAlert(for node: ChainNodeModel) {
+        let alertViewModel = AlertPresentableViewModel(
+            title: R.string.localizable.networkNodeDeleteAlertTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            ),
+            message: R.string.localizable.networkNodeDeleteAlertDescription(
+                node.name,
+                preferredLanguages: selectedLocale.rLanguages
+            ),
+            actions: [
+                .init(
+                    title: R.string.localizable.commonCancel(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    style: .cancel
+                ),
+                .init(
+                    title: R.string.localizable.commonDelete(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    style: .destructive,
+                    handler: {
+                        [weak self] in self?.interactor.deleteNode(node)
+                    }
+                )
+            ],
+            closeAction: nil
+        )
+        wireframe.present(
+            viewModel: alertViewModel,
+            style: .alert,
+            from: view
+        )
+    }
+    
+    func openDeleteNetworkAlert() {
         let alertViewModel = AlertPresentableViewModel(
             title: R.string.localizable.networkManageDeleteAlertTitle(
                 preferredLanguages: selectedLocale.rLanguages
@@ -292,7 +327,7 @@ private extension NetworkDetailsPresenter {
                     selectedNode: selectedNode
                 )
             case .delete:
-                openDeleteAlert()
+                openDeleteNetworkAlert()
             }
         }
         

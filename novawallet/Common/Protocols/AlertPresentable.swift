@@ -121,7 +121,11 @@ extension AlertPresentable {
             )
             alertView.addAction(action)
         }
-
+        
+        if controller.presentedViewController != nil {
+            controller.dismiss(animated: true)
+        }
+        
         controller.present(alertView, animated: true, completion: nil)
     }
 }

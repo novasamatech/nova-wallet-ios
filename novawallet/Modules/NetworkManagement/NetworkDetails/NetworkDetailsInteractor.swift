@@ -115,11 +115,11 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     }
     
     func deleteNode(_ node: ChainNodeModel) {
-        delete(node)
+        delete(node, for: chain)
     }
     
     func deleteNetwork() {
-        chain.nodes.forEach { delete($0) }
+        chain.nodes.forEach { delete($0, for: chain) }
         
         let deleteOperation = repository.saveOperation(
             { [] },
@@ -147,6 +147,7 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
         to newState: WebSocketEngine.State
     ) {
         guard oldState != newState else { return }
+        
         DispatchQueue.main.async {
             guard
                 let connection = connection as? ChainConnection,
@@ -291,19 +292,13 @@ private extension NetworkDetailsInteractor {
         }
 
         if let currentSelectedNode, currentSelectedNode.url != newSelectedNode.url {
-            nodesConnections[newSelectedNode.url]?.disconnect(true)
             nodesConnections[newSelectedNode.url] = nil
 
             nodesConnections[newSelectedNode.url] = chainRegistry.getConnection(for: chain.chainId)
-
+            
             nodesConnections[currentSelectedNode.url] = nil
+            
             connectTo(currentSelectedNode, of: chain)
-
-            presenter?.didReceive(
-                .connecting,
-                for: currentSelectedNode.url,
-                selected: false
-            )
         } else {
             nodesConnections[newSelectedNode.url] = chainRegistry.getConnection(for: chain.chainId)
         }
@@ -315,26 +310,64 @@ private extension NetworkDetailsInteractor {
         filteredNodes.forEach { connectTo($0, of: chain) }
     }
     
-    func delete(_ node: ChainNodeModel) {
-        guard currentSelectedNode != node else {
-            return
-        }
+    func delete(
+        _ node: ChainNodeModel,
+        for chain: ChainModel
+    ) {
+        let wrapper = nodeDeletionWrapper(node, chain: chain)
         
-        let saveOperation = repository.saveOperation(
-            { [weak self] in
-                guard let self else { return [] }
-
-                return [chain.removing(node: node)]
-            },
-            { [] }
-        )
-        
-        executeDataOperationWithErrorHandling(
-            saveOperation,
-            onSuccess: { [weak self] in
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
                 self?.nodesConnections[node.url]?.disconnect(true)
                 self?.nodesConnections[node.url] = nil
+            case .failure:
+                self?.presenter?.didReceive(CommonError.dataCorruption)
             }
+        }
+    }
+    
+    func nodeDeletionWrapper(
+        _ node: ChainNodeModel,
+        chain: ChainModel
+    ) -> CompoundOperationWrapper<Void> {
+        let operation: (
+            targetOperation: BaseOperation<Void>,
+            dependencies: [BaseOperation<Void>]
+        )
+        
+        if node == currentSelectedNode {
+            let chainWithAutoBalance = chain.updatingConnectionMode(for: .autoBalanced)
+            
+            let setAutoBalanceOperation = repository.saveOperation(
+                { [chainWithAutoBalance] },
+                { [] }
+            )
+            
+            let deleteNodeOperation = repository.saveOperation(
+                { [chainWithAutoBalance.removing(node: node)] },
+                { [] }
+            )
+            
+            deleteNodeOperation.addDependency(setAutoBalanceOperation)
+            
+            operation = (deleteNodeOperation, [setAutoBalanceOperation])
+        } else {
+            let deleteNodeOperation = repository.saveOperation(
+                { [chain.removing(node: node)] },
+                { [] }
+            )
+            
+            operation = (deleteNodeOperation, [])
+        }
+        
+        return CompoundOperationWrapper(
+            targetOperation: operation.targetOperation,
+            dependencies: operation.dependencies
         )
     }
 
