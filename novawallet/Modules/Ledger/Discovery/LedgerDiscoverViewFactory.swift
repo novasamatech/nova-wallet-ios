@@ -34,7 +34,7 @@ struct LedgerDiscoverViewFactory {
             application: ledgerApplication,
             chain: chain
         )
-        
+
         let appName = chain.supportsGenericLedgerApp ?
             LedgerSubstrateApp.migration.displayName(for: nil) :
             chain.name
