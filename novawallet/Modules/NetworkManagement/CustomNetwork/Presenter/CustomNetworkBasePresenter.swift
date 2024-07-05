@@ -211,7 +211,7 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
     func didFinishWorkWithNetwork() {
         provideButtonViewModel(loading: false)
         
-        wireframe.showPrevious(from: view)
+        wireframe.showNetworksList(from: view)
     }
     
     func didReceive(_ error: CustomNetworkBaseInteractorError) {
