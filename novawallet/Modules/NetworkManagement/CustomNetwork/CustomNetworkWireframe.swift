@@ -2,24 +2,33 @@ import Foundation
 import UIKit
 
 final class CustomNetworkWireframe: CustomNetworkWireframeProtocol {
-    func showNetworksList(from view: CustomNetworkViewProtocol?) {
-        guard let viewControllers = view?.controller.navigationController?.viewControllers else {
+    let successPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)?
+    
+    init(successPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)? = nil) {
+        self.successPresenting = successPresenting
+    }
+    
+    func showNetworksList(
+        from view: CustomNetworkViewProtocol?,
+        successAlertTitle: String
+    ) {
+        guard
+            let viewControllers = view?.controller.navigationController?.viewControllers,
+            let networksListViewController = viewControllers.first(where: { $0 is NetworksListViewController })
+        else {
             return
         }
         
-        var newViewControllers: [UIViewController] = []
         
-        for controller in viewControllers {
-            newViewControllers.append(controller)
-            
-            if controller is NetworksListViewController {
-                break
-            }
-        }
         
-        view?.controller.navigationController?.setViewControllers(
-            newViewControllers,
+        view?.controller.navigationController?.popToViewController(
+            networksListViewController,
             animated: true
+        )
+        
+        successPresenting?.wireframe.presentSuccessNotification(
+            successAlertTitle,
+            from: successPresenting?.view
         )
     }
 }

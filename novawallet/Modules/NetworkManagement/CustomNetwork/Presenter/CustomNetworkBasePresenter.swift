@@ -211,7 +211,12 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
     func didFinishWorkWithNetwork() {
         provideButtonViewModel(loading: false)
         
-        wireframe.showNetworksList(from: view)
+        wireframe.showNetworksList(
+            from: view,
+            successAlertTitle: R.string.localizable.networkAddAlertSuccessTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        )
     }
     
     func didReceive(_ error: CustomNetworkBaseInteractorError) {

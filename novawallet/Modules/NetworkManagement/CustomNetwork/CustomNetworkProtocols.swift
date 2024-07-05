@@ -13,5 +13,8 @@ protocol CustomNetworkViewProtocol: ControllerBackedProtocol {
 }
 
 protocol CustomNetworkWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showNetworksList(from view: CustomNetworkViewProtocol?)
+    func showNetworksList(
+        from view: CustomNetworkViewProtocol?,
+        successAlertTitle: String
+    )
 }

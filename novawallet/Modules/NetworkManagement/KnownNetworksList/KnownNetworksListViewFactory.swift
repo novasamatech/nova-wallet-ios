@@ -2,7 +2,9 @@ import Foundation
 import SoraFoundation
 
 struct KnownNetworksListViewFactory {
-    static func createView() -> KnownNetworksListViewProtocol? {
+    static func createView(
+        successAddPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)
+    ) -> KnownNetworksListViewProtocol? {
         let dataFetchFactory = DataOperationFactory()
         
         let operationQueue: OperationQueue = {
@@ -21,7 +23,7 @@ struct KnownNetworksListViewFactory {
             operationQueue: operationQueue
         )
         
-        let wireframe = KnownNetworksListWireframe()
+        let wireframe = KnownNetworksListWireframe(successAddPresenting: successAddPresenting)
 
         let viewModelFactory = KnownNetworksListviewModelFactory(networkViewModelFactory: NetworkViewModelFactory())
         let localizationManager = LocalizationManager.shared
