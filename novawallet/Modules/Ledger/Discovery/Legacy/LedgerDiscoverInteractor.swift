@@ -12,13 +12,13 @@ final class LedgerDiscoverInteractor: LedgerPerformOperationInteractor {
     }
 
     let chain: ChainModel
-    let ledgerApplication: LedgerApplicationProtocol
+    let ledgerApplication: LedgerAccountRetrievable
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         chain: ChainModel,
-        ledgerApplication: LedgerApplicationProtocol,
+        ledgerApplication: LedgerAccountRetrievable,
         ledgerConnection: LedgerConnectionManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol

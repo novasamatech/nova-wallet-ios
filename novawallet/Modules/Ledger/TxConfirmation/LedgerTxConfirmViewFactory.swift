@@ -101,7 +101,11 @@ struct LedgerTxConfirmViewFactory {
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
         let ledgerApplication: NewSubstrateLedgerSigningProtocol = if isForMigration {
-            MigrationLedgerSubstrateApplication(connectionManager: ledgerConnection)
+            MigrationLedgerSubstrateApplication(
+                connectionManager: ledgerConnection,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                supportedApps: SupportedLedgerApp.substrate()
+            )
         } else {
             GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
         }

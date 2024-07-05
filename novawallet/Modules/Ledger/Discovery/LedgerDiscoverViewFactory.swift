@@ -8,10 +8,18 @@ struct LedgerDiscoverViewFactory {
     ) -> ControllerBackedProtocol? {
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
-        let ledgerApplication = LedgerApplication(
-            connectionManager: ledgerConnection,
-            supportedApps: SupportedLedgerApp.substrate()
-        )
+        let ledgerApplication: LedgerAccountRetrievable = if chain.supportsGenericLedgerApp {
+            MigrationLedgerSubstrateApplication(
+                connectionManager: ledgerConnection,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                supportedApps: SupportedLedgerApp.substrate()
+            )
+        } else {
+            LedgerApplication(
+                connectionManager: ledgerConnection,
+                supportedApps: SupportedLedgerApp.substrate()
+            )
+        }
 
         let interactor = LedgerDiscoverInteractor(
             chain: chain,
@@ -26,8 +34,12 @@ struct LedgerDiscoverViewFactory {
             application: ledgerApplication,
             chain: chain
         )
+        
+        let appName = chain.supportsGenericLedgerApp ?
+            LedgerSubstrateApp.migration.displayName(for: nil) :
+            chain.name
 
-        return createView(interactor: interactor, wireframe: wireframe, appName: chain.name)
+        return createView(interactor: interactor, wireframe: wireframe, appName: appName)
     }
 
     static func createNewPairingView(

@@ -15,7 +15,7 @@ final class LedgerAddAccountConfirmationInteractor: LedgerBaseAccountConfirmatio
         wallet: MetaAccountModel,
         chain: ChainModel,
         deviceId: UUID,
-        application: LedgerApplication,
+        application: LedgerAccountRetrievable,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,

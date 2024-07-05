@@ -9,7 +9,7 @@ final class LedgerWalletAccountConfirmationInteractor: LedgerBaseAccountConfirma
     init(
         chain: ChainModel,
         deviceId: UUID,
-        application: LedgerApplication,
+        application: LedgerAccountRetrievable,
         accountsStore: LedgerAccountsStore,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,

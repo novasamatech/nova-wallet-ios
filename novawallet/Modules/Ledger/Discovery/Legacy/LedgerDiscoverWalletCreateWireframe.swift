@@ -3,9 +3,9 @@ import Foundation
 final class LedgerDiscoverWalletCreateWireframe: LedgerDiscoverWireframeProtocol {
     let accountsStore: LedgerAccountsStore
     let chain: ChainModel
-    let application: LedgerApplication
+    let application: LedgerAccountRetrievable
 
-    init(accountsStore: LedgerAccountsStore, application: LedgerApplication, chain: ChainModel) {
+    init(accountsStore: LedgerAccountsStore, application: LedgerAccountRetrievable, chain: ChainModel) {
         self.accountsStore = accountsStore
         self.application = application
         self.chain = chain
@@ -27,10 +27,10 @@ final class LedgerDiscoverWalletCreateWireframe: LedgerDiscoverWireframeProtocol
 
 final class LedgerDiscoverAccountAddWireframe: LedgerDiscoverWireframeProtocol {
     let wallet: MetaAccountModel
-    let application: LedgerApplication
+    let application: LedgerAccountRetrievable
     let chain: ChainModel
 
-    init(wallet: MetaAccountModel, application: LedgerApplication, chain: ChainModel) {
+    init(wallet: MetaAccountModel, application: LedgerAccountRetrievable, chain: ChainModel) {
         self.wallet = wallet
         self.application = application
         self.chain = chain

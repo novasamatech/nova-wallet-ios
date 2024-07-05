@@ -11,7 +11,7 @@ class LedgerBaseAccountConfirmationInteractor {
 
     let chain: ChainModel
     let deviceId: UUID
-    let application: LedgerApplication
+    let application: LedgerAccountRetrievable
     let requestFactory: StorageRequestFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
@@ -20,7 +20,7 @@ class LedgerBaseAccountConfirmationInteractor {
     init(
         chain: ChainModel,
         deviceId: UUID,
-        application: LedgerApplication,
+        application: LedgerAccountRetrievable,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
