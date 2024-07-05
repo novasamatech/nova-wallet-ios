@@ -37,6 +37,12 @@ final class NetworksListViewController: UIViewController, ViewHolder {
         setup()
         presenter.setup()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        rootView.tableView.reloadData()
+    }
 }
 
 // MARK: NetworksListViewProtocol
