@@ -10,6 +10,7 @@ protocol NetworksListPresenterProtocol: AnyObject {
     func select(segment: NetworksListPresenter.NetworksType?)
     func selectChain(at index: Int)
     func addNetwork()
+    func integrateOwnNetwork()
     func closeBanner()
 }
 
@@ -32,4 +33,5 @@ protocol NetworksListWireframeProtocol: AnyObject {
         with chain: ChainModel
     )
     func showAddNetwork(from view: NetworksListViewProtocol?)
+    func showIntegrateOwnNetwork(from view: NetworksListViewProtocol?)
 }

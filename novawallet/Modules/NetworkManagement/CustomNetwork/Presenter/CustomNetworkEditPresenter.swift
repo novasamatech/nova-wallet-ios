@@ -73,7 +73,7 @@ extension CustomNetworkEditPresenter: CustomNetworkEditInteractorOutputProtocol 
         partialChainId = "\(chain.addressPrefix)"
         partialBlockExplorerURL = blockExplorerUrl(from: chain.explorers?.first?.extrinsic)
         partialCoingeckoURL = if let priceId = mainAsset?.priceId {
-            [Constants.coingeckoUrl, priceId].joined(with: .slash)
+            [Constants.coingeckoUrl, "{\(priceId)}"].joined(with: .slash)
         } else {
             nil
         }

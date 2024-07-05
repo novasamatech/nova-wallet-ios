@@ -582,4 +582,12 @@ extension ChainNodeConnectable {
     }
 }
 
+// MARK: ChainViewModelSource
+
+protocol ChainViewModelSource {
+    var icon: URL? { get }
+    var name: String { get }
+}
+
 extension ChainModel: ChainNodeConnectable {}
+extension ChainModel: ChainViewModelSource {}
