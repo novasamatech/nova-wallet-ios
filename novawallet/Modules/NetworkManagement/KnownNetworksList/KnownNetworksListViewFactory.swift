@@ -15,6 +15,7 @@ struct KnownNetworksListViewFactory {
         let chainFetchFactory = PreConfiguredChainFetchFactory(dataFetchFactory: dataFetchFactory)
         
         let interactor = KnownNetworksListInteractor(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             lightChainsFetchFactory: lightChainsFetchFactory,
             preConfiguredChainFetchFactory: chainFetchFactory,
             operationQueue: operationQueue
