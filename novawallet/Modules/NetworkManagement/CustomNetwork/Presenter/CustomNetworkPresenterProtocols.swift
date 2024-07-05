@@ -14,17 +14,10 @@ protocol CustomNetworkAddPresenterProtocol {
 }
 
 protocol CustomNetworkBaseInteractorOutputProtocol: AnyObject {
+    func didFinishWorkWithNetwork()
     func didReceive(_ error: CustomNetworkBaseInteractorError)
-}
-
-protocol CustomNetworkAddInteractorOutputProtocol: CustomNetworkBaseInteractorOutputProtocol {
-    func didAddChain()
-}
-
-protocol CustomNetworkEditInteractorOutputProtocol: CustomNetworkBaseInteractorOutputProtocol {
-    func didEditChain()
     func didReceive(
-        chain: ChainModel, 
+        chain: ChainModel,
         selectedNode: ChainNodeModel
     )
 }

@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct CustomNetworkViewFactory {
-    static func createNetworkAddView() -> CustomNetworkViewProtocol? {
+    static func createNetworkAddView(networkToAdd: ChainModel? = nil) -> CustomNetworkViewProtocol? {
         let connectionFactory = ConnectionFactory(
             logger: Logger.shared,
             operationQueue: OperationManagerFacade.assetsSyncQueue
@@ -24,6 +24,7 @@ struct CustomNetworkViewFactory {
         let systemPropertiesOperationFactory = SystemPropertiesOperationFactory()
         
         let interactor = CustomNetworkAddInteractor(
+            networkToAdd: networkToAdd,
             chainRegistry: chainRegistry,
             runtimeFetchOperationFactory: runtimeFetchOperationFactory,
             runtimeTypeRegistryFactory: runtimeTypeRegistryFactory,

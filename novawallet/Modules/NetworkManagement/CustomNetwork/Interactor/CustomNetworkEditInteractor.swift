@@ -2,12 +2,6 @@ import SubstrateSdk
 import Operation_iOS
 
 final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
-    weak var presenter: CustomNetworkEditInteractorOutputProtocol? {
-        didSet {
-            basePresenter = presenter
-        }
-    }
-    
     private let networkToEdit: ChainModel
     private let selectedNode: ChainNodeModel
     
@@ -67,7 +61,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didEditChain()
+                self?.presenter?.didFinishWorkWithNetwork()
             case .failure:
                 self?.presenter?.didReceive(
                     .common(innerError: .dataCorruption)
@@ -96,7 +90,7 @@ extension CustomNetworkEditInteractor: CustomNetworkEditInteractorInputProtocol 
         coingeckoURL: String?
     ) {
         connectToChain(
-            with: networkToEdit.isEthereumBased ? .evm : .substrate ,
+            with: networkToEdit.isEthereumBased ? .evm : .substrate,
             url: url,
             name: name,
             iconUrl: networkToEdit.icon,

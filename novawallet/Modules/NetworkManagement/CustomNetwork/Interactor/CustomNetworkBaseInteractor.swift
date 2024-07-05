@@ -4,7 +4,7 @@ import Operation_iOS
 class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait, 
                                    NetworkNodeConnectingTrait,
                                    CustomNetworkSetupTrait {
-    weak var basePresenter: CustomNetworkBaseInteractorOutputProtocol?
+    weak var presenter: CustomNetworkBaseInteractorOutputProtocol?
     
     let chainRegistry: ChainRegistryProtocol
     let runtimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol
@@ -149,14 +149,14 @@ private extension CustomNetworkBaseInteractor {
             )
         } catch NetworkNodeConnectingError.alreadyExists(let existingNode, let existingChain) {
             if existingChain.source == .user {
-                basePresenter?.didReceive(
+                presenter?.didReceive(
                     .alreadyExistCustom(
                         node: existingNode,
                         chain: existingChain
                     )
                 )
             } else {
-                basePresenter?.didReceive(
+                presenter?.didReceive(
                     .alreadyExistRemote(
                         node: existingNode,
                         chain: existingChain
@@ -164,14 +164,14 @@ private extension CustomNetworkBaseInteractor {
                 )
             }
         } catch is NetworkNodeCorrespondingError {
-            basePresenter?.didReceive(.invalidChainId)
+            presenter?.didReceive(.invalidChainId)
         } catch NetworkNodeConnectingError.wrongFormat {
-            basePresenter?.didReceive(
+            presenter?.didReceive(
                 .connecting(innerError: .wrongFormat)
             )
         } catch {
             print(error)
-            basePresenter?.didReceive(
+            presenter?.didReceive(
                 .common(innerError: .undefined)
             )
         }
@@ -195,7 +195,7 @@ private extension CustomNetworkBaseInteractor {
 
             switch newState {
             case .notConnected:
-                self.basePresenter?.didReceive(
+                self.presenter?.didReceive(
                     .connecting(innerError: .unableToConnect(networkName: chain.name))
                 )
                 self.currentConnection = nil
@@ -237,9 +237,9 @@ private extension CustomNetworkBaseInteractor {
             case let .success(chain):
                 self?.handleSetupFinished(for: chain)
             case let .failure(error as CustomNetworkSetupError) where error == .decimalsNotFound:
-                self?.basePresenter?.didReceive(.common(innerError: .noDataRetrieved))
+                self?.presenter?.didReceive(.common(innerError: .noDataRetrieved))
             default:
-                self?.basePresenter?.didReceive(.common(innerError: .undefined))
+                self?.presenter?.didReceive(.common(innerError: .undefined))
             }
         }
     }

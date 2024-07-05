@@ -147,20 +147,16 @@ class CustomNetworkBasePresenter {
             show: knownChain == nil
         )
     }
-    
-    // MARK: Setup
-    
-    func completeSetup() {
-        provideViewModel()
-        provideButtonViewModel(loading: false)
-    }
 }
 
 // MARK: CustomNetworkPresenterProtocol
 
 extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
     func setup() {
-        completeSetup()
+        provideViewModel()
+        provideButtonViewModel(loading: false)
+        
+        interactor.setup()
     }
     
     func select(segment: ChainType?) {
@@ -212,6 +208,12 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
 // MARK: CustomNetworkBaseInteractorOutputProtocol
 
 extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol {
+    func didFinishWorkWithNetwork() {
+        provideButtonViewModel(loading: false)
+        
+        wireframe.showPrevious(from: view)
+    }
+    
     func didReceive(_ error: CustomNetworkBaseInteractorError) {
         wireframe.present(
             error: error,
@@ -220,6 +222,28 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
         )
         
         provideButtonViewModel(loading: false)
+    }
+    
+    func didReceive(
+        chain: ChainModel,
+        selectedNode: ChainNodeModel
+    ) {
+        knownChain = chain
+        
+        let mainAsset = chain.assets.first { $0.assetId == 0 }
+        
+        partialURL = selectedNode.url
+        partialName = chain.name
+        partialCurrencySymbol = mainAsset?.symbol
+        partialChainId = "\(chain.addressPrefix)"
+        partialBlockExplorerURL = blockExplorerUrl(from: chain.explorers?.first?.extrinsic)
+        partialCoingeckoURL = if let priceId = mainAsset?.priceId {
+            [Constants.coingeckoUrl, "{\(priceId)}"].joined(with: .slash)
+        } else {
+            nil
+        }
+        
+        provideViewModel()
     }
 }
 
@@ -241,6 +265,24 @@ private extension CustomNetworkBasePresenter {
         )
         view?.didReceiveTitle(text: title)
     }
+    
+    func blockExplorerUrl(from template: String?) -> String? {
+        guard let template else { return nil }
+        
+        var urlComponents = URLComponents(
+            url: URL(string: template)!,
+            resolvingAgainstBaseURL: false
+        )
+        urlComponents?.path = ""
+        urlComponents?.queryItems = []
+        
+        let trimmedUrlString = urlComponents?
+            .url?
+            .absoluteString
+            .trimmingCharacters(in: CharacterSet(charactersIn:"?"))
+        
+        return trimmedUrlString ?? template
+    }
 }
 
 // MARK: Localizable
@@ -260,6 +302,7 @@ extension CustomNetworkBasePresenter {
         static let chainIdPlaceholder = "012345"
         static let chainUrlPlaceholder = "wss://"
         static let blockExplorerPlaceholder = "https://subscan.io"
-        static let coingeckoTemplate = "https://coingecko.com/coins/{coin_name}"
+        static let coingeckoUrl = "https://coingecko.com/coins"
+        static let coingeckoTemplate = "\(coingeckoUrl)/{coin_name}"
     }
 }

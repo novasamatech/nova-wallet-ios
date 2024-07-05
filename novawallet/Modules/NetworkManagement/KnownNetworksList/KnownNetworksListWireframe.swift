@@ -5,19 +5,12 @@ final class KnownNetworksListWireframe: KnownNetworksListWireframeProtocol {
         from view: KnownNetworksListViewProtocol?,
         with knownNetwork: ChainModel?
     ) {
-        let customNetworkView = if let knownNetwork, let node = knownNetwork.nodes.first {
-            CustomNetworkViewFactory.createNetworkEditView(
-                for: knownNetwork,
-                selectedNode: node
-            )
-        } else {
-            CustomNetworkViewFactory.createNetworkAddView()
+        guard let customNetworkView = CustomNetworkViewFactory.createNetworkAddView(networkToAdd: knownNetwork) else {
+            return
         }
         
-        guard let customNetworkView else { return }
-        
         view?.controller.navigationController?.pushViewController(
-            customNetworkView.controller, 
+            customNetworkView.controller,
             animated: true
         )
     }

@@ -49,13 +49,3 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
         )
     }
 }
-
-// MARK: CustomNetworkAddInteractorOutputProtocol
-
-extension CustomNetworkAddPresenter: CustomNetworkAddInteractorOutputProtocol {
-    func didAddChain() {
-        provideButtonViewModel(loading: false)
-        
-        wireframe.showPrevious(from: view)
-    }
-}
