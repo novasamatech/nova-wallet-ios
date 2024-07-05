@@ -351,7 +351,7 @@ extension ChainRegistry: ChainRegistryProtocol {
     }
 
     func unsubscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id) {
-        connectionPool.subscribe(subscriber, chainId: chainId)
+        connectionPool.unsubscribe(subscriber, chainId: chainId)
     }
 
     func syncUp() {
