@@ -119,8 +119,6 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     }
     
     func deleteNetwork() {
-        chain.nodes.forEach { delete($0, for: chain) }
-        
         let deleteOperation = repository.saveOperation(
             { [] },
             { [weak self] in
