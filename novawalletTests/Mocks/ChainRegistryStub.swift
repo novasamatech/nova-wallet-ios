@@ -27,11 +27,15 @@ extension MockChainRegistryProtocol {
 
             stub.chainsSubscribe(
                 any(),
-                runningInQueue: any(),
+                runningInQueue: any(), 
+                filterStrategy: any(),
                 updateClosure: any()
-            ).then { (_, queue, closure) in
+            ).then { (_, queue, filterStrategy, closure) in
                 queue.async {
-                    let updates = chains.map { DataProviderChange.insert(newItem: $0) }
+                    let updates = chains
+                        .map { DataProviderChange.insert(newItem: $0) }
+                        .filter(filterStrategy.filter)
+                    
                     closure(updates)
                 }
             }

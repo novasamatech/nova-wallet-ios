@@ -198,7 +198,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
 
 extension StakingDashboardInteractor: ChainsStoreDelegate {
     func didUpdateChainsStore(_ chainsStore: ChainsStoreProtocol) {
-        let newChainAssets = chainsStore.getAllStakebleAssets()
+        let newChainAssets = chainsStore.getAllStakebleAssets(filter: { $0.syncMode.enabled() })
 
         modelBuilder?.applyAssets(models: newChainAssets)
 

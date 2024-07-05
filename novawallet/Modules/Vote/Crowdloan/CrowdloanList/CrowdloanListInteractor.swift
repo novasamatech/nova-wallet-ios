@@ -5,6 +5,7 @@ import SoraFoundation
 final class CrowdloanListInteractor: RuntimeConstantFetching {
     weak var presenter: CrowdloanListInteractorOutputProtocol?
 
+    let eventCenter: EventCenterProtocol
     let selectedMetaAccount: MetaAccountModel
     let crowdloanState: CrowdloanSharedState
     let crowdloanOperationFactory: CrowdloanOperationFactoryProtocol
@@ -37,6 +38,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     }
 
     init(
+        eventCenter: EventCenterProtocol,
         selectedMetaAccount: MetaAccountModel,
         crowdloanState: CrowdloanSharedState,
         chainRegistry: ChainRegistryProtocol,
@@ -50,6 +52,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
+        self.eventCenter = eventCenter
         self.selectedMetaAccount = selectedMetaAccount
         self.crowdloanState = crowdloanState
         self.crowdloanOperationFactory = crowdloanOperationFactory
@@ -62,6 +65,8 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
         self.currencyManager = currencyManager
+        
+        self.eventCenter.add(observer: self)
     }
 
     private func clearOnchainContributionRequest(_ shouldCancel: Bool) {
@@ -469,5 +474,18 @@ extension CrowdloanListInteractor: SelectedCurrencyDepending {
            let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
+    }
+}
+
+extension CrowdloanListInteractor: EventVisitorProtocol {
+    func processNetworkEnableChanged(event: NetworkEnabledChanged) {
+        guard
+            let chain = crowdloanState.settings.value,
+            chain.chainId == event.chainId
+        else  {
+            return
+        }
+        
+        refresh(with: chain)
     }
 }

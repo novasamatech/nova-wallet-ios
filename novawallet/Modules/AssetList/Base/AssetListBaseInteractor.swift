@@ -340,7 +340,10 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     }
 
     func subscribeChains() {
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+        chainRegistry.chainsSubscribe(
+            self, runningInQueue: .main,
+            filterStrategy: .enabledChains
+        ) { [weak self] changes in
             self?.handle(changes: changes)
         }
     }

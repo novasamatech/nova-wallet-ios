@@ -85,6 +85,7 @@ final class VoteChildPresenterFactory {
         )
 
         return CrowdloanListInteractor(
+            eventCenter: EventCenter.shared,
             selectedMetaAccount: wallet,
             crowdloanState: state,
             chainRegistry: chainRegistry,
@@ -113,6 +114,7 @@ final class VoteChildPresenterFactory {
         )
 
         return ReferendumsInteractor(
+            eventCenter: EventCenter.shared,
             selectedMetaAccount: wallet,
             governanceState: state,
             chainRegistry: chainRegistry,
