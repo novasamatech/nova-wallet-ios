@@ -99,6 +99,7 @@ extension CustomNetworkEditInteractor: CustomNetworkEditInteractorInputProtocol 
             with: networkToEdit.isEthereumBased ? .evm : .substrate ,
             url: url,
             name: name,
+            iconUrl: networkToEdit.icon,
             currencySymbol: currencySymbol,
             chainId: chainId,
             blockExplorerURL: blockExplorerURL,

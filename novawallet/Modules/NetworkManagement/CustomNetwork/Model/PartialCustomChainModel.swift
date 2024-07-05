@@ -1,7 +1,10 @@
+import Foundation
+
 struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtocol {
     let chainId: String
     let url: String
     let name: String
+    let iconUrl: URL?
     let assets: Set<AssetModel>
     let nodes: Set<ChainNodeModel>
     let currencySymbol: String
@@ -19,6 +22,7 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
             chainId: chainId,
             url: url,
             name: name,
+            iconUrl: iconUrl,
             assets: assets.union([asset]),
             nodes: nodes,
             currencySymbol: currencySymbol,
@@ -42,6 +46,7 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
             chainId: chainId,
             url: url,
             name: name,
+            iconUrl: iconUrl,
             assets: assets,
             nodes: nodes,
             currencySymbol: currencySymbol,
@@ -59,6 +64,7 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
             chainId: chainId,
             url: url,
             name: name,
+            iconUrl: iconUrl,
             assets: assets,
             nodes: nodes,
             currencySymbol: currencySymbol,
@@ -76,12 +82,13 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
             chainId: chainId,
             url: url,
             name: name,
+            iconUrl: iconUrl,
             assets: assets,
             nodes: nodes,
             currencySymbol: currencySymbol,
             options: options,
             nodeSwitchStrategy: nodeSwitchStrategy,
-            addressPrefix: addressPrefix ?? self.addressPrefix,
+            addressPrefix: addressPrefix,
             connectionMode: connectionMode,
             blockExplorer: blockExplorer,
             mainAssetPriceId: mainAssetPriceId

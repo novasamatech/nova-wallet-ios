@@ -40,7 +40,7 @@ extension CustomNetworkSetupTrait {
                 nodeSwitchStrategy: filledPartialChain.nodeSwitchStrategy,
                 addressPrefix: filledPartialChain.addressPrefix,
                 types: nil,
-                icon: nil,
+                icon: filledPartialChain.iconUrl,
                 options: filledPartialChain.options,
                 externalApis: nil,
                 explorers: [filledPartialChain.blockExplorer].compactMap { $0 },
