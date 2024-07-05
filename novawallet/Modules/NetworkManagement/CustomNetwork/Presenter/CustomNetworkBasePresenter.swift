@@ -258,7 +258,7 @@ extension CustomNetworkBasePresenter: Localizable {
 extension CustomNetworkBasePresenter {
     enum Constants {
         static let chainIdPlaceholder = "012345"
-        static let chainUrlPlaceholder = "wss://rpc.network.io"
+        static let chainUrlPlaceholder = "wss://"
         static let blockExplorerPlaceholder = "https://subscan.io"
         static let coingeckoTemplate = "https://coingecko.com/coins/{coin_name}"
     }

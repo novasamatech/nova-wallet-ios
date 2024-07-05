@@ -64,11 +64,7 @@ class NetworkNodeBasePresenter {
     func provideURLViewModel(for chain: ChainModel?) {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialURL ?? "",
-            placeholder: chain?.nodes
-                .filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
-                .sorted { $0.order < $1.order }
-                .first?
-                .url ?? ""
+            placeholder: Constants.urlPlaceholder
         )
         view?.didReceiveUrl(viewModel: inputViewModel)
     }
@@ -160,5 +156,13 @@ extension NetworkNodeBasePresenter: Localizable {
         guard let view, view.isSetup else { return }
 
         provideViewModel(with: chain)
+    }
+}
+
+// MARK: Constants
+
+extension NetworkNodeBasePresenter {
+    enum Constants {
+        static let urlPlaceholder = "wss://"
     }
 }
