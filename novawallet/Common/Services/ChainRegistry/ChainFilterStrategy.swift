@@ -1,4 +1,5 @@
 import Foundation
+import Operation_iOS
 
 enum ChainFilterStrategy {
     typealias Filter = (DataProviderChange<ChainModel>) -> Bool
