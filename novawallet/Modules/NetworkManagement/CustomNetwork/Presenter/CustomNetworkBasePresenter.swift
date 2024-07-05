@@ -222,9 +222,13 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
     func didReceive(_ error: CustomNetworkBaseInteractorError) {
         provideButtonViewModel(loading: false)
         
-        if case .alreadyExistCustom = error {
+        if case let .alreadyExistCustom(node, chain) = error {
             wireframe.present(
-                viewModel: createAlreadyExistsViewModel(for: error),
+                viewModel: createAlreadyExistsViewModel(
+                    errorContent: error.toErrorContent(for: selectedLocale),
+                    existingChain: chain,
+                    existingNode: node
+                ),
                 style: .alert,
                 from: view
             )
@@ -276,12 +280,16 @@ private extension CustomNetworkBasePresenter {
                     title: R.string.localizable.commonModify(preferredLanguages: selectedLocale.rLanguages),
                     style: .normal,
                     handler: { [weak self] in
-                        self?.interactor.modify(
+                        guard let self else { return }
+                        
+                        provideButtonViewModel(loading: true)
+                        
+                        interactor.modify(
                             existingChain,
                             node: existingNode,
-                            url: partialURL,
-                            name: partialName,
-                            currencySymbol: partialCurrencySymbol,
+                            url: partialURL ?? "",
+                            name: partialName ?? "",
+                            currencySymbol: partialCurrencySymbol ?? "",
                             chainId: partialChainId,
                             blockExplorerURL: partialBlockExplorerURL,
                             coingeckoURL: partialCoingeckoURL

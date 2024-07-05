@@ -6,12 +6,10 @@ protocol CustomNetworkBaseInteractorInputProtocol: AnyObject {
         node: ChainNodeModel,
         url: String,
         name: String,
-        iconUrl: URL? = nil,
         currencySymbol: String,
         chainId: String?,
         blockExplorerURL: String?,
-        coingeckoURL: String?,
-        replacingNode: ChainNodeModel? = nil
+        coingeckoURL: String?
     )
 }
 
