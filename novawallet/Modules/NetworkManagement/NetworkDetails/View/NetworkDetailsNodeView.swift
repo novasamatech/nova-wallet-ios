@@ -61,7 +61,7 @@ class NetworkDetailsNodeTableViewCell: PlainBaseTableViewCell<NetworkDetailsNode
 
 final class NetworkDetailsNodeView: UIView {
     var viewModel: NetworkDetailsViewLayout.NodeModel?
-    
+
     var roundedContainerView = GenericBorderedView<
         GenericPairValueView<
             GenericPairValueView<
@@ -99,7 +99,7 @@ final class NetworkDetailsNodeView: UIView {
     var networkStatusView: GenericPairValueView<UIImageView, ShimmerLabel> {
         roundedContainerView.contentView.fView.sView.valueBottom.valueBottom
     }
-    
+
     var accessoryIcon: UIImageView {
         roundedContainerView.contentView.sView
     }
@@ -119,13 +119,13 @@ final class NetworkDetailsNodeView: UIView {
 
     func bind(viewModel: NetworkDetailsViewLayout.NodeModel) {
         self.viewModel = viewModel
-        
+
         if viewModel.selected {
             selectionImageView.image = R.image.iconRadioButtonSelected()
         } else {
             selectionImageView.image = R.image.iconRadioButtonUnselected()
         }
-        
+
         if viewModel.custom {
             accessoryIcon.image = R.image.iconMore()
         } else {
@@ -188,7 +188,7 @@ private extension NetworkDetailsNodeView {
 
         roundedContainerView.contentView.makeHorizontal()
         roundedContainerView.contentView.stackView.alignment = .center
-        
+
         roundedContainerView.contentView.fView.makeHorizontal()
         roundedContainerView.contentView.fView.stackView.alignment = .center
         roundedContainerView.contentInsets = Constants.contentInsets
@@ -211,7 +211,7 @@ private extension NetworkDetailsNodeView {
         networkStatusIcon.snp.makeConstraints { make in
             make.width.height.equalTo(12)
         }
-        
+
         accessoryIcon.snp.makeConstraints { make in
             make.width.height.equalTo(24)
         }
@@ -227,20 +227,20 @@ private extension NetworkDetailsNodeView {
 
         networkStatusLabel.apply(style: .semiboldCaps2Primary)
     }
-    
+
     func setupActions() {
         let tapGestureRecognizer = UITapGestureRecognizer(
             target: self,
             action: #selector(actionMore)
         )
-        
+
         accessoryIcon.addGestureRecognizer(tapGestureRecognizer)
         accessoryIcon.isUserInteractionEnabled = true
     }
-    
+
     @objc func actionMore() {
         guard let viewModel, viewModel.custom else { return }
-        
+
         viewModel.onTapMore?(viewModel.id)
     }
 }

@@ -14,18 +14,18 @@ struct CustomNetworkViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
-        
+
         let operationQueue: OperationQueue = {
             let operationQueue = OperationQueue()
             operationQueue.qualityOfService = .userInitiated
             return operationQueue
         }()
-        
+
         let runtimeFetchOperationFactory = RuntimeFetchOperationFactory(operationQueue: operationQueue)
         let runtimeTypeRegistryFactory = RuntimeTypeRegistryFactory(logger: Logger.shared)
         let blockHashOperationFactory = BlockHashOperationFactory()
         let systemPropertiesOperationFactory = SystemPropertiesOperationFactory()
-        
+
         let interactor = CustomNetworkAddInteractor(
             networkToAdd: networkToAdd,
             chainRegistry: chainRegistry,
@@ -37,13 +37,13 @@ struct CustomNetworkViewFactory {
             repository: repository,
             operationQueue: operationQueue
         )
-        
+
         let wireframe = CustomNetworkWireframe(successPresenting: successPresenting)
 
         let localizationManager = LocalizationManager.shared
-        
+
         let presenter = CustomNetworkAddPresenter(
-            chainType: .substrate, 
+            chainType: .substrate,
             knownChain: nil,
             interactor: interactor,
             wireframe: wireframe,
@@ -60,7 +60,7 @@ struct CustomNetworkViewFactory {
 
         return view
     }
-    
+
     static func createNetworkEditView(
         for network: ChainModel,
         selectedNode: ChainNodeModel
@@ -73,18 +73,18 @@ struct CustomNetworkViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
-        
+
         let operationQueue: OperationQueue = {
             let operationQueue = OperationQueue()
             operationQueue.qualityOfService = .userInitiated
             return operationQueue
         }()
-        
+
         let runtimeFetchOperationFactory = RuntimeFetchOperationFactory(operationQueue: operationQueue)
         let runtimeTypeRegistryFactory = RuntimeTypeRegistryFactory(logger: Logger.shared)
         let blockHashOperationFactory = BlockHashOperationFactory()
         let systemPropertiesOperationFactory = SystemPropertiesOperationFactory()
-        
+
         let interactor = CustomNetworkEditInteractor(
             networkToEdit: network,
             selectedNode: selectedNode,
@@ -97,11 +97,11 @@ struct CustomNetworkViewFactory {
             repository: repository,
             operationQueue: operationQueue
         )
-        
+
         let wireframe = CustomNetworkWireframe()
 
         let localizationManager = LocalizationManager.shared
-        
+
         let presenter = CustomNetworkEditPresenter(
             chainType: .substrate,
             knownChain: nil,

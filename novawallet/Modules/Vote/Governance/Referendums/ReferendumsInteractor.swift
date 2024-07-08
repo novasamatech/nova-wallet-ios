@@ -54,7 +54,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
         self.currencyManager = currencyManager
-        
+
         self.eventCenter.add(observer: self)
     }
 
@@ -359,8 +359,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 }
 
 extension ReferendumsInteractor: EventVisitorProtocol {
-    func processNetworkEnableChanged(event: NetworkEnabledChanged) {
-         if let option = governanceState.settings.value {
+    func processNetworkEnableChanged(event _: NetworkEnabledChanged) {
+        if let option = governanceState.settings.value {
             handleOptionChange(for: option)
         }
     }

@@ -44,7 +44,7 @@ final class IntegrateNetworksBanner: UIView {
             action: #selector(actionClose),
             for: .touchUpInside
         )
-        
+
         gradientBannerView.linkButton?.addTarget(
             self,
             action: #selector(actionLink),
@@ -93,7 +93,7 @@ final class IntegrateNetworksBanner: UIView {
     @objc private func actionClose() {
         delegate?.didTapClose()
     }
-    
+
     @objc private func actionLink() {
         delegate?.didTapIntegrateNetwork()
     }

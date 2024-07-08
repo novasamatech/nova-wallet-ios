@@ -67,7 +67,7 @@ extension NetworkDetailsViewLayout {
         let selected: Bool
         let dimmed: Bool
         let custom: Bool
-        
+
         let onTapMore: ((UUID) -> Void)?
     }
 

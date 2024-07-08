@@ -7,9 +7,9 @@ final class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
             basePresenter = presenter
         }
     }
-    
+
     private let nodeToEdit: ChainNodeModel
-    
+
     init(
         nodeToEdit: ChainNodeModel,
         chainRegistry: any ChainRegistryProtocol,
@@ -20,7 +20,7 @@ final class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.nodeToEdit = nodeToEdit
-        
+
         super.init(
             chainRegistry: chainRegistry,
             connectionFactory: connectionFactory,
@@ -30,28 +30,28 @@ final class NetworkNodeEditInteractor: NetworkNodeBaseInteractor {
             operationQueue: operationQueue
         )
     }
-    
+
     override func completeSetup() {
         super.completeSetup()
-        
+
         presenter?.didReceive(node: nodeToEdit)
     }
-    
+
     override func handleConnected() {
         guard
             let chain = chainRegistry.getChain(for: chainId),
             let editedNode = currentConnectingNode
         else { return }
-        
+
         let saveOperation = repository.saveOperation(
             { [weak self] in
                 guard let self else { return [] }
-                
+
                 return [chain.replacing(nodeToEdit, with: editedNode)]
             },
             { [] }
         )
-        
+
         execute(
             operation: saveOperation,
             inOperationQueue: operationQueue,
@@ -77,9 +77,9 @@ extension NetworkNodeEditInteractor: NetworkNodeEditInteractorInputProtocol {
         name: String
     ) {
         guard let chain = chainRegistry.getChain(for: chainId) else { return }
-        
+
         let editedNode = nodeToEdit.updating(url, name)
-        
+
         do {
             try connect(
                 to: editedNode,
@@ -89,7 +89,7 @@ extension NetworkNodeEditInteractor: NetworkNodeEditInteractorInputProtocol {
             )
         } catch {
             guard let networkNodeError = error as? NetworkNodeBaseInteractorError else { return }
-            
+
             presenter?.didReceive(networkNodeError)
         }
     }

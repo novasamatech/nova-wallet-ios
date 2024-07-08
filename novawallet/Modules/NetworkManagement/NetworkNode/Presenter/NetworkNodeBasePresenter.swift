@@ -5,12 +5,12 @@ class NetworkNodeBasePresenter {
     weak var view: NetworkNodeViewProtocol?
     let wireframe: NetworkNodeWireframeProtocol
     private let interactor: NetworkNodeBaseInteractorInputProtocol
-    
+
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
 
     var partialURL: String?
     var partialName: String?
-    
+
     var chain: ChainModel?
 
     init(
@@ -24,26 +24,26 @@ class NetworkNodeBasePresenter {
         self.networkViewModelFactory = networkViewModelFactory
         self.localizationManager = localizationManager
     }
-    
+
     func actionConfirm() {
         fatalError("Must be overriden by subclass")
     }
-    
+
     func completeButtonTitle() -> String {
         fatalError("Must be overriden by subclass")
     }
-    
+
     func provideTitle() {
         fatalError("Must be overriden by subclass")
     }
-    
+
     func provideButtonViewModel(loading: Bool) {
         let completed: Bool = if let partialName, let partialURL {
             !partialName.isEmpty && !partialURL.isEmpty
         } else {
             false
         }
-        
+
         let title: String = if completed {
             completeButtonTitle()
         } else {
@@ -51,17 +51,17 @@ class NetworkNodeBasePresenter {
                 preferredLanguages: selectedLocale.rLanguages
             )
         }
-        
+
         let viewModel = NetworkNodeViewLayout.LoadingButtonViewModel(
             title: title,
             enabled: completed,
             loading: loading
         )
-        
+
         view?.didReceiveButton(viewModel: viewModel)
     }
-    
-    func provideURLViewModel(for chain: ChainModel?) {
+
+    func provideURLViewModel(for _: ChainModel?) {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialURL ?? "",
             placeholder: Constants.urlPlaceholder
@@ -88,19 +88,19 @@ extension NetworkNodeBasePresenter: NetworkNodePresenterProtocol {
 
     func handlePartial(url: String) {
         partialURL = url
-        
+
         provideButtonViewModel(loading: false)
     }
 
     func handlePartial(name: String) {
         partialName = name
-        
+
         provideButtonViewModel(loading: false)
     }
 
     func confirm() {
         provideButtonViewModel(loading: true)
-        
+
         actionConfirm()
     }
 }
@@ -111,21 +111,21 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
     func didReceive(_ chain: ChainModel) {
         provideViewModel(with: chain)
     }
-    
+
     func didReceive(_ error: NetworkNodeBaseInteractorError) {
         let close = R.string.localizable.commonClose(
             preferredLanguages: selectedLocale.rLanguages
         )
-        
+
         let errorContent = error.toErrorContent(for: selectedLocale)
-        
+
         wireframe.present(
             message: errorContent.message,
             title: errorContent.title,
             closeAction: close,
             from: view
         )
-        
+
         provideButtonViewModel(loading: false)
     }
 }
@@ -135,14 +135,14 @@ extension NetworkNodeBasePresenter: NetworkNodeBaseInteractorOutputProtocol {
 private extension NetworkNodeBasePresenter {
     func provideViewModel(with chain: ChainModel?) {
         guard let chain else { return }
-        
+
         provideTitle()
         provideURLViewModel(for: chain)
         provideNameViewModel()
         provideChainViewModel(for: chain)
         provideButtonViewModel(loading: false)
     }
-    
+
     func provideChainViewModel(for chain: ChainModel) {
         let viewModel = networkViewModelFactory.createViewModel(from: chain)
         view?.didReceiveChain(viewModel: viewModel)

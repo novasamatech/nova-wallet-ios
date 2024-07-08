@@ -1,6 +1,6 @@
 protocol CustomNetworkBaseInteractorInputProtocol: AnyObject {
     func setup()
-    
+
     func modify(
         _ existingNetwork: ChainModel,
         node: ChainNodeModel,

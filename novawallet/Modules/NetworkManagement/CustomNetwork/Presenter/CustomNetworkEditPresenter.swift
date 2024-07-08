@@ -2,9 +2,8 @@ import Foundation
 import SoraFoundation
 
 final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
-    
     let interactor: CustomNetworkEditInteractorInputProtocol
-    
+
     init(
         chainType: ChainType,
         knownChain: ChainModel?,
@@ -13,7 +12,7 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
-        
+
         super.init(
             chainType: chainType,
             knownChain: knownChain,
@@ -22,7 +21,7 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
             localizationManager: localizationManager
         )
     }
-    
+
     override func actionConfirm() {
         guard
             let partialURL,
@@ -31,7 +30,7 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
         else {
             return
         }
-        
+
         interactor.editNetwork(
             url: partialURL,
             name: partialName,
@@ -41,7 +40,7 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
             coingeckoURL: partialCoingeckoURL
         )
     }
-    
+
     override func completeButtonTitle() -> String {
         R.string.localizable.commonSave(
             preferredLanguages: selectedLocale.rLanguages

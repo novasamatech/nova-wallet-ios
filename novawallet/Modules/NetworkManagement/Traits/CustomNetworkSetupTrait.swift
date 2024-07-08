@@ -25,12 +25,12 @@ extension CustomNetworkSetupTrait {
             connection: connection,
             node: node
         )
-        
+
         let finishSetupOperation = ClosureOperation<ChainModel> {
             let filledPartialChain = try fillPartialChainWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
-            
+
             let finalChainModel = ChainModel(
                 chainId: filledPartialChain.chainId,
                 parentId: nil,
@@ -50,18 +50,18 @@ extension CustomNetworkSetupTrait {
                 source: .user,
                 connectionMode: filledPartialChain.connectionMode
             )
-            
+
             return finalChainModel
         }
-        
+
         let dependencies = fillPartialChainWrapper.allOperations
         dependencies.forEach { finishSetupOperation.addDependency($0) }
-        
+
         let wrapper = CompoundOperationWrapper(
             targetOperation: finishSetupOperation,
             dependencies: dependencies
         )
-        
+
         return wrapper
     }
 }
@@ -93,12 +93,12 @@ private extension CustomNetworkSetupTrait {
             systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connection: connection
         )
-        
+
         return chainIdSetupWrapper
             .insertingHead(operations: typeSetupWrapper.allOperations + chainAssetSetupWrapper.dependencies)
             .insertingTail(operation: chainAssetSetupWrapper.targetOperation)
     }
-    
+
     func createChainAssetSetupWrapper(
         partialChainWrapper: CompoundOperationWrapper<PartialCustomChainModel>,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
@@ -110,19 +110,19 @@ private extension CustomNetworkSetupTrait {
             let partialChain = try partialChainWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
-            
+
             return createMainAssetSetupWrapper(
                 for: partialChain,
                 systemPropertiesOperationFactory: systemPropertiesOperationFactory,
                 connection: connection
             )
         }
-        
+
         assetSetupWrapper.addDependency(wrapper: partialChainWrapper)
-        
+
         return assetSetupWrapper
     }
-    
+
     func createChainTypeOptionsWrapper(
         partialChainWrapper: CompoundOperationWrapper<PartialCustomChainModel>,
         rawRuntimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
@@ -135,26 +135,26 @@ private extension CustomNetworkSetupTrait {
             let partialChain = try partialChainWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
-            
+
             guard !partialChain.isEthereumBased else {
                 return CompoundOperationWrapper.createWithResult(partialChain)
             }
-            
+
             let rawRuntimeFetchWrapper = rawRuntimeFetchFactory.createMetadataFetchWrapper(
                 for: partialChain.chainId,
                 connection: connection
             )
-            
+
             let typeSetupOperation = ClosureOperation<PartialCustomChainModel> {
                 let rawRuntimeMedatada = try rawRuntimeFetchWrapper
                     .targetOperation
                     .extractNoCancellableResultData()
-                
+
                 let typeRegistrtryInfo = try typeRegistryFactory.createForMetadataAndDefaultTyping(
                     chain: partialChain,
                     runtimeMetadataItem: rawRuntimeMedatada
                 )
-                
+
                 let ethereumBased = typeRegistrtryInfo
                     .typeRegistryCatalog
                     .nodeMatches(
@@ -162,32 +162,32 @@ private extension CustomNetworkSetupTrait {
                         typeName: "Address",
                         version: 0
                     )
-                
+
                 return ethereumBased
                     ? partialChain.adding([.ethereumBased])
                     : partialChain
             }
-            
+
             typeSetupOperation.addDependency(rawRuntimeFetchWrapper.targetOperation)
-            
+
             return CompoundOperationWrapper(
                 targetOperation: typeSetupOperation,
                 dependencies: rawRuntimeFetchWrapper.allOperations
             )
         }
-        
+
         typeSetupWrapper.addDependency(wrapper: partialChainWrapper)
-        
+
         return typeSetupWrapper
     }
-    
+
     func createMainAssetSetupWrapper(
         for chain: PartialCustomChainModel,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connection: ChainConnection
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let isEvmChain = chain.isEthereumBased && chain.noSubstrateRuntime
-        
+
         return isEvmChain
             ? createEvmMainAssetSetupWrapper(for: chain)
             : createSubstrateMainAssetSetupWrapper(
@@ -196,10 +196,10 @@ private extension CustomNetworkSetupTrait {
                 connection: connection
             )
     }
-    
+
     func createEvmMainAssetSetupWrapper(for chain: PartialCustomChainModel) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let defaultEVMAssetPrecision: UInt16 = 18
-        
+
         return .createWithResult(
             chain.adding(
                 AssetModel(
@@ -219,21 +219,21 @@ private extension CustomNetworkSetupTrait {
             )
         )
     }
-    
+
     func createSubstrateMainAssetSetupWrapper(
         for chain: PartialCustomChainModel,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connection: ChainConnection
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let propertiesOperation = systemPropertiesOperationFactory.createSystemPropertiesOperation(connection: connection)
-        
+
         let assetOperation = ClosureOperation<PartialCustomChainModel> {
             let properties = try propertiesOperation.extractNoCancellableResultData()
-            
+
             guard let precision = properties.tokenDecimals.first else {
                 throw CustomNetworkSetupError.decimalsNotFound
             }
-            
+
             let asset = AssetModel(
                 assetId: 0,
                 icon: nil,
@@ -248,20 +248,20 @@ private extension CustomNetworkSetupTrait {
                 enabled: true,
                 source: .user
             )
-            
+
             return chain
                 .byChanging(addressPrefix: properties.ss58Format ?? properties.SS58Prefix)
                 .adding(asset)
         }
-        
+
         assetOperation.addDependency(propertiesOperation)
-                
+
         return CompoundOperationWrapper(
             targetOperation: assetOperation,
             dependencies: [propertiesOperation]
         )
     }
-    
+
     func createChainIdSetupWrapper(
         chain: PartialCustomChainModel,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
@@ -269,7 +269,7 @@ private extension CustomNetworkSetupTrait {
         node: ChainNodeModel
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let dependency: (targetOperation: BaseOperation<String>, dependencies: [Operation])
-        
+
         if chain.isEthereumBased {
             let wrapper = evmChainCorrespondingOperation(
                 connection: connection,
@@ -290,20 +290,20 @@ private extension CustomNetworkSetupTrait {
                 dependencies: [operation]
             )
         }
-        
+
         let chainSetupOperation = ClosureOperation<PartialCustomChainModel> {
             let chainId = try dependency
                 .targetOperation
                 .extractNoCancellableResultData()
                 .withoutHexPrefix()
-            
+
             return chain.byChanging(chainId: chainId)
         }
-        
+
         dependency.dependencies.forEach { operation in
             chainSetupOperation.addDependency(operation)
         }
-        
+
         return CompoundOperationWrapper(
             targetOperation: chainSetupOperation,
             dependencies: dependency.dependencies

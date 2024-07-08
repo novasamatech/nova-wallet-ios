@@ -30,10 +30,10 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
         setup()
         presenter.setup()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         rootView.tableView.reloadData()
     }
 }
@@ -51,7 +51,7 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
                 else {
                     return
                 }
-                
+
                 let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworkDetailsNodeTableViewCell
                 cell?.bind(viewModel: nodeModel)
                 nodesViewModels[nodeModel.id] = nodeModel
@@ -60,11 +60,11 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
 
     func update(with viewModel: NetworkDetailsViewLayout.Model) {
         self.viewModel = viewModel
-        
+
         if viewModel.customNetwork {
             setupActions()
         }
-        
+
         nodesViewModels = extractNodesViewModels(from: viewModel)
         cacheIndexPaths(from: viewModel)
 
@@ -114,7 +114,7 @@ extension NetworkDetailsViewController: UITableViewDataSource {
             guard let viewModel = nodesViewModels[model.id] else {
                 return UITableViewCell()
             }
-            
+
             let nodeCell = tableView.dequeueReusableCellWithType(NetworkDetailsNodeTableViewCell.self)!
             nodeCell.bind(viewModel: viewModel)
 
@@ -204,7 +204,7 @@ private extension NetworkDetailsViewController {
         rootView.tableView.registerClassForCell(NetworkDetailsNodeTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
-    
+
     func setupActions() {
         let rightBarButtonItem = UIBarButtonItem(
             image: R.image.iconMore(),
@@ -221,20 +221,20 @@ private extension NetworkDetailsViewController {
             .flatMap(\.rows)
             .reduce(into: [:]) { acc, row in
                 guard case let .node(nodeModel) = row else { return }
-                
+
                 acc[nodeModel.id] = nodeModel
             }
     }
-    
+
     func cacheIndexPaths(from viewModel: ViewModel) {
         var customNodeIndex = 1
         var remoteNodeIndex = 0
-        
+
         viewModel.sections
             .flatMap(\.rows)
             .compactMap { row -> RootViewType.NodeModel? in
                 guard case let .node(nodeModel) = row else { return nil }
-                
+
                 return nodeModel
             }
             .forEach { node in
@@ -253,7 +253,7 @@ private extension NetworkDetailsViewController {
                 }
             }
     }
-    
+
     @objc private func actionMore() {
         presenter.manageNetwork()
     }

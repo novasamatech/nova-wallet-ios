@@ -37,11 +37,12 @@ final class NetworksListViewController: UIViewController, ViewHolder {
         setup()
         presenter.setup()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         rootView.tableView.reloadData()
+        setupActions()
     }
 }
 
@@ -117,14 +118,14 @@ extension NetworksListViewController: UITableViewDataSource {
 extension NetworksListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        guard 
+
+        guard
             let section = viewModel?.sections[indexPath.section],
             case let .networks(rows) = section, case .network = rows[indexPath.row]
         else {
             return
         }
-        
+
         presenter.selectChain(at: indexPath.row)
     }
 
@@ -153,7 +154,7 @@ extension NetworksListViewController: IntegrateNetworksBannerDelegate {
     func didTapClose() {
         presenter.closeBanner()
     }
-    
+
     func didTapIntegrateNetwork() {
         presenter.integrateOwnNetwork()
     }
@@ -169,7 +170,6 @@ private extension NetworksListViewController {
         rootView.tableView.registerClassForCell(PlaceholderCell.self)
         rootView.tableView.registerClassForCell(BannerCell.self)
 
-        setupActions()
         setupNetworkSwitchTitles()
         setupNavigationBarTitle()
     }

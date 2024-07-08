@@ -2,11 +2,11 @@ import Foundation
 
 final class KnownNetworksListWireframe: KnownNetworksListWireframeProtocol {
     let successAddPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)
-    
+
     init(successAddPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)) {
         self.successAddPresenting = successAddPresenting
     }
-    
+
     func showAddNetwork(
         from view: KnownNetworksListViewProtocol?,
         with knownNetwork: ChainModel?
@@ -17,7 +17,7 @@ final class KnownNetworksListWireframe: KnownNetworksListWireframeProtocol {
         ) else {
             return
         }
-        
+
         view?.controller.navigationController?.pushViewController(
             customNetworkView.controller,
             animated: true

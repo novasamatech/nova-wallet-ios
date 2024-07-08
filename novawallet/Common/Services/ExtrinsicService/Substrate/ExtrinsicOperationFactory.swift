@@ -123,7 +123,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         self.customExtensions = customExtensions
         self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
         self.blockHashOperationFactory = blockHashOperationFactory
-        
+
         super.init(
             runtimeRegistry: runtimeRegistry,
             engine: engine,

@@ -5,14 +5,14 @@ class CustomNetworkBasePresenter {
     weak var view: CustomNetworkViewProtocol?
     let wireframe: CustomNetworkWireframeProtocol
     private let interactor: CustomNetworkBaseInteractorInputProtocol
-    
+
     var partialURL: String?
     var partialName: String?
     var partialCurrencySymbol: String?
     var partialChainId: String?
     var partialBlockExplorerURL: String?
     var partialCoingeckoURL: String?
-    
+
     var chainType: ChainType
     var knownChain: ChainModel?
 
@@ -29,31 +29,30 @@ class CustomNetworkBasePresenter {
         self.wireframe = wireframe
         self.localizationManager = localizationManager
     }
-    
+
     func actionConfirm() {
         fatalError("Must be overriden by subclass")
     }
-    
+
     func completeButtonTitle() -> String {
         fatalError("Must be overriden by subclass")
     }
-    
+
     func checkInfoCompleted() -> Bool {
         if
             let partialURL,
             let partialName,
-            let partialCurrencySymbol
-        {
+            let partialCurrencySymbol {
             !partialURL.isEmpty
-            && !partialName.isEmpty
-            && !partialCurrencySymbol.isEmpty
+                && !partialName.isEmpty
+                && !partialCurrencySymbol.isEmpty
         } else {
             false
         }
     }
-    
+
     // MARK: Provide view models
-    
+
     func provideViewModel() {
         provideTitle()
         provideNetworkTypeViewModel()
@@ -63,15 +62,15 @@ class CustomNetworkBasePresenter {
         provideBlockExplorerURLViewModel()
         provideCoingeckoURLViewModel()
         provideButtonViewModel(loading: false)
-        
+
         if chainType == .evm {
             provideChainIdViewModel()
         }
     }
-    
+
     func provideButtonViewModel(loading: Bool) {
         let completed = checkInfoCompleted()
-        
+
         let title: String = if completed {
             completeButtonTitle()
         } else {
@@ -79,16 +78,16 @@ class CustomNetworkBasePresenter {
                 preferredLanguages: selectedLocale.rLanguages
             )
         }
-        
+
         let viewModel = NetworkNodeViewLayout.LoadingButtonViewModel(
             title: title,
             enabled: completed,
             loading: loading
         )
-        
+
         view?.didReceiveButton(viewModel: viewModel)
     }
-    
+
     func provideURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialURL ?? "",
@@ -104,7 +103,7 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveName(viewModel: inputViewModel)
     }
-    
+
     func provideCurrencySymbolViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCurrencySymbol ?? "",
@@ -114,7 +113,7 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveCurrencySymbol(viewModel: inputViewModel)
     }
-    
+
     func provideChainIdViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialChainId ?? "",
@@ -122,7 +121,7 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveChainId(viewModel: inputViewModel)
     }
-    
+
     func provideBlockExplorerURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialBlockExplorerURL ?? "",
@@ -131,7 +130,7 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveBlockExplorerUrl(viewModel: inputViewModel)
     }
-    
+
     func provideCoingeckoURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCoingeckoURL ?? "",
@@ -140,7 +139,7 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
-    
+
     func provideNetworkTypeViewModel() {
         view?.didReceiveNetworkType(
             chainType,
@@ -155,52 +154,52 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
     func setup() {
         provideViewModel()
         provideButtonViewModel(loading: false)
-        
+
         interactor.setup()
     }
-    
+
     func select(segment: ChainType?) {
         guard let segment else { return }
-        
+
         chainType = segment
-        
+
         cleanPartialValues()
         provideViewModel()
     }
 
     func handlePartial(url: String) {
         partialURL = url
-        
+
         provideButtonViewModel(loading: false)
     }
 
     func handlePartial(name: String) {
         partialName = name
-        
+
         provideButtonViewModel(loading: false)
     }
-    
+
     func handlePartial(currencySymbol: String) {
         partialCurrencySymbol = currencySymbol
-        
+
         provideButtonViewModel(loading: false)
     }
-    
+
     func handlePartial(blockExplorerURL: String) {
         partialBlockExplorerURL = blockExplorerURL
-        
+
         provideButtonViewModel(loading: false)
     }
-    
+
     func handlePartial(coingeckoURL: String) {
         partialCoingeckoURL = coingeckoURL
-        
+
         provideButtonViewModel(loading: false)
     }
 
     func confirm() {
         provideButtonViewModel(loading: true)
-        
+
         actionConfirm()
     }
 }
@@ -210,7 +209,7 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
 extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol {
     func didFinishWorkWithNetwork() {
         provideButtonViewModel(loading: false)
-        
+
         wireframe.showNetworksList(
             from: view,
             successAlertTitle: R.string.localizable.networkAddAlertSuccessTitle(
@@ -218,10 +217,10 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
             )
         )
     }
-    
+
     func didReceive(_ error: CustomNetworkBaseInteractorError) {
         provideButtonViewModel(loading: false)
-        
+
         if case let .alreadyExistCustom(node, chain) = error {
             wireframe.present(
                 viewModel: createAlreadyExistsViewModel(
@@ -240,15 +239,15 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
             )
         }
     }
-    
+
     func didReceive(
         chain: ChainModel,
         selectedNode: ChainNodeModel
     ) {
         knownChain = chain
-        
+
         let mainAsset = chain.assets.first { $0.assetId == 0 }
-        
+
         partialURL = selectedNode.url
         partialName = chain.name
         partialCurrencySymbol = mainAsset?.symbol
@@ -259,7 +258,7 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
         } else {
             nil
         }
-        
+
         provideViewModel()
     }
 }
@@ -281,9 +280,9 @@ private extension CustomNetworkBasePresenter {
                     style: .normal,
                     handler: { [weak self] in
                         guard let self else { return }
-                        
+
                         provideButtonViewModel(loading: true)
-                        
+
                         interactor.modify(
                             existingChain,
                             node: existingNode,
@@ -299,10 +298,10 @@ private extension CustomNetworkBasePresenter {
             ],
             closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
         )
-        
+
         return viewModel
     }
-    
+
     func cleanPartialValues() {
         partialURL = nil
         partialName = nil
@@ -311,29 +310,29 @@ private extension CustomNetworkBasePresenter {
         partialBlockExplorerURL = nil
         partialCoingeckoURL = nil
     }
-    
+
     func provideTitle() {
         let title = R.string.localizable.networkAddTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
         view?.didReceiveTitle(text: title)
     }
-    
+
     func blockExplorerUrl(from template: String?) -> String? {
         guard let template else { return nil }
-        
+
         var urlComponents = URLComponents(
             url: URL(string: template)!,
             resolvingAgainstBaseURL: false
         )
         urlComponents?.path = ""
         urlComponents?.queryItems = []
-        
+
         let trimmedUrlString = urlComponents?
             .url?
             .absoluteString
-            .trimmingCharacters(in: CharacterSet(charactersIn:"?"))
-        
+            .trimmingCharacters(in: CharacterSet(charactersIn: "?"))
+
         return trimmedUrlString ?? template
     }
 }
@@ -343,7 +342,7 @@ private extension CustomNetworkBasePresenter {
 extension CustomNetworkBasePresenter: Localizable {
     func applyLocalization() {
         guard let view, view.isSetup else { return }
-        
+
         provideViewModel()
     }
 }

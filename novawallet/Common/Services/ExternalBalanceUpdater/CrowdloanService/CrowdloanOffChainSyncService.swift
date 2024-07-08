@@ -77,7 +77,7 @@ final class CrowdloanOffChainSyncService: BaseSyncService {
             stopSyncUp()
             return
         }
-        
+
         let contributionsFetchOperation = contributionsFetchOperation(
             accountId: accountId,
             chain: chain

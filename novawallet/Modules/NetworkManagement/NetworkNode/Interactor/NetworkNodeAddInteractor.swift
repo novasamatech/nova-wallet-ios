@@ -6,18 +6,18 @@ final class NetworkNodeAddInteractor: NetworkNodeBaseInteractor, NetworkNodeCrea
             basePresenter = presenter
         }
     }
-    
+
     override func handleConnected() {
         guard
             let currentConnectingNode,
             let chain = chainRegistry.getChain(for: chainId)
         else { return }
-        
+
         let saveOperation = repository.saveOperation(
             { [chain.adding(node: currentConnectingNode)] },
             { [] }
         )
-        
+
         execute(
             operation: saveOperation,
             inOperationQueue: operationQueue,
@@ -42,16 +42,16 @@ extension NetworkNodeAddInteractor: NetworkNodeAddInteractorInputProtocol {
         with url: String,
         name: String
     ) {
-        guard  let chain = chainRegistry.getChain(for: chainId) else {
+        guard let chain = chainRegistry.getChain(for: chainId) else {
             return
         }
-        
+
         let node = createNode(
             with: url,
             name: name,
             for: chain
         )
-        
+
         do {
             try connect(
                 to: node,
@@ -61,7 +61,7 @@ extension NetworkNodeAddInteractor: NetworkNodeAddInteractorInputProtocol {
             )
         } catch {
             guard let networkNodeError = error as? NetworkNodeBaseInteractorError else { return }
-            
+
             presenter?.didReceive(networkNodeError)
         }
     }

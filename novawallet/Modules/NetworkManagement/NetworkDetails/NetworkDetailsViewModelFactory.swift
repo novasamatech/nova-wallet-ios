@@ -36,7 +36,7 @@ class NetworkDetailsViewModelFactory {
                 onTapMore: onTapMore
             )
         ]
-        
+
         if chain.source == .remote {
             let defaultNodesSection = createNodesSection(
                 with: nodes.filter { $0.source == .remote },
@@ -45,10 +45,10 @@ class NetworkDetailsViewModelFactory {
                 nodesIds: nodesIds,
                 connectionStates: connectionStates
             )
-            
+
             sections.append(defaultNodesSection)
         }
-        
+
         return Details(
             customNetwork: chain.source == .user,
             networkViewModel: networkViewModelFactory.createViewModel(from: chain),
@@ -77,7 +77,7 @@ class NetworkDetailsViewModelFactory {
             )
         )
     }
-    
+
     func createAddNodeSection(
         with nodes: [ChainNodeModel],
         selectedNode: ChainNodeModel?,
@@ -96,7 +96,7 @@ class NetworkDetailsViewModelFactory {
                 )
             )
         ]
-        
+
         let nodeRows = createNodeViewModels(
             for: nodes,
             chain: chain,
@@ -105,9 +105,9 @@ class NetworkDetailsViewModelFactory {
             connectionStates: connectionStates,
             onTapMore: onTapMore
         )
-        
+
         rows.append(contentsOf: nodeRows)
-        
+
         return Section(
             title: R.string.localizable.networkDetailsCustomNodesSectionTitle(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
@@ -151,7 +151,7 @@ private extension NetworkDetailsViewModelFactory {
             ]
         )
     }
-    
+
     func createNodeViewModels(
         for nodes: [ChainNodeModel],
         chain: ChainModel,
@@ -212,14 +212,14 @@ private extension NetworkDetailsViewModelFactory {
                 )
             }
         }
-        
+
         return Node(
             id: ids[node.url]!,
             name: node.name,
             url: trimUrlPath(urlString: node.url),
             connectionState: connectionState,
             selected: selected,
-            dimmed: chain.connectionMode == .autoBalanced, 
+            dimmed: chain.connectionMode == .autoBalanced,
             custom: node.source == .user,
             onTapMore: onTapMore
         )
@@ -240,7 +240,7 @@ private extension NetworkDetailsViewModelFactory {
             .pinged(.high(string))
         }
     }
-    
+
     func trimUrlPath(urlString: String) -> String {
         var urlComponents = URLComponents(
             url: URL(string: urlString)!,
@@ -248,12 +248,12 @@ private extension NetworkDetailsViewModelFactory {
         )
         urlComponents?.path = ""
         urlComponents?.queryItems = []
-        
+
         let trimmedUrlString = urlComponents?
             .url?
             .absoluteString
-            .trimmingCharacters(in: CharacterSet(charactersIn:"?"))
-        
+            .trimmingCharacters(in: CharacterSet(charactersIn: "?"))
+
         return trimmedUrlString ?? urlString
     }
 }

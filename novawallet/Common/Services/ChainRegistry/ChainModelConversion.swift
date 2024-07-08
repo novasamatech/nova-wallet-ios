@@ -34,26 +34,26 @@ final class ChainModelConverter: ChainModelConversionProtocol {
         let newAssets = Set(chainAssets).union(localUserAssets)
 
         let syncMode = determineSyncMode(basedOn: localModel, remoteModel: remoteModel)
-        
+
         var customNodes: [ChainNodeModel] = []
         var customNodesUrlSet: Set<String> = []
-        
+
         localModel?.nodes.forEach { node in
             guard node.source == .user else { return }
-            
+
             customNodes.append(node)
             customNodesUrlSet.insert(node.url)
         }
-        
+
         let remoteNodes = remoteModel.nodes
             .compactMap { node -> ChainNodeModel? in
-                return if customNodesUrlSet.contains(node.url) {
+                if customNodesUrlSet.contains(node.url) {
                     nil
                 } else {
                     ChainNodeModel(remoteModel: node, order: Int16(0))
                 }
             }
-        
+
         let orderedNodes = (remoteNodes + customNodes)
             .enumerated()
             .map { $0.element.updatingOrder(Int16($0.offset)) }

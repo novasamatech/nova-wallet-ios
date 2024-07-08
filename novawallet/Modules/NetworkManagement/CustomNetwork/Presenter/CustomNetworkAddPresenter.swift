@@ -2,9 +2,8 @@ import Foundation
 import SoraFoundation
 
 final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
-    
     let interactor: CustomNetworkAddInteractorInputProtocol
-    
+
     init(
         chainType: ChainType,
         knownChain: ChainModel?,
@@ -13,7 +12,7 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
-        
+
         super.init(
             chainType: chainType,
             knownChain: knownChain,
@@ -22,16 +21,16 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
             localizationManager: localizationManager
         )
     }
-    
+
     override func actionConfirm() {
-        guard 
+        guard
             let partialURL,
             let partialName,
             let partialCurrencySymbol
         else {
             return
         }
-        
+
         interactor.addNetwork(
             networkType: chainType,
             url: partialURL,
@@ -42,7 +41,7 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
             coingeckoURL: partialCoingeckoURL
         )
     }
-    
+
     override func completeButtonTitle() -> String {
         R.string.localizable.networksListAddNetworkButtonTitle(
             preferredLanguages: selectedLocale.rLanguages

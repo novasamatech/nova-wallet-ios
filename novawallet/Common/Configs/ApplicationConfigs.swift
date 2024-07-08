@@ -137,7 +137,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains_dev.json")!
         #endif
     }
-    
+
     var preConfiguredLightChainListURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains.json")!
@@ -145,7 +145,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains_dev.json")!
         #endif
     }
-    
+
     var preConfiguredChainDirectoryURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/details")!

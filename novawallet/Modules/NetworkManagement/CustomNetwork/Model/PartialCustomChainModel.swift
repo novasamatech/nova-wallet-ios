@@ -14,9 +14,9 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
     let connectionMode: ChainModel.ConnectionMode
     let blockExplorer: ChainModel.Explorer?
     let mainAssetPriceId: AssetModel.PriceId?
-    
+
     let typesUsage: ChainModel.TypesUsage = .none
-    
+
     func adding(_ asset: AssetModel) -> PartialCustomChainModel {
         PartialCustomChainModel(
             chainId: chainId,
@@ -34,14 +34,14 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
             mainAssetPriceId: mainAssetPriceId
         )
     }
-    
+
     func adding(_ options: [LocalChainOptions]) -> PartialCustomChainModel {
         let updatedOptions = if let oldOptions = self.options {
             Array(Set(oldOptions).union(Set(options)))
         } else {
             options
         }
-        
+
         return PartialCustomChainModel(
             chainId: chainId,
             url: url,
@@ -58,7 +58,7 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
             mainAssetPriceId: mainAssetPriceId
         )
     }
-    
+
     func byChanging(addressPrefix: UInt16?) -> PartialCustomChainModel {
         PartialCustomChainModel(
             chainId: chainId,
@@ -76,7 +76,7 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
             mainAssetPriceId: mainAssetPriceId
         )
     }
-    
+
     func byChanging(chainId: ChainModel.Id) -> PartialCustomChainModel {
         PartialCustomChainModel(
             chainId: chainId,

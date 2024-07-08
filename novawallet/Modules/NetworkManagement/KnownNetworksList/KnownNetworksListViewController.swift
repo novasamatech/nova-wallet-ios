@@ -8,7 +8,7 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
     typealias AddNetworkCell = AddNetworkManuallyTableViewCell
 
     let presenter: KnownNetworksListPresenterProtocol
-    
+
     private var viewModel: ViewModel?
 
     init(
@@ -34,10 +34,10 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
 
         setup()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         presenter.setup()
     }
 }
@@ -47,7 +47,7 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
 extension KnownNetworksListViewController: KnownNetworksListViewProtocol {
     func update(with viewModel: KnownNetworksListViewLayout.Model) {
         self.viewModel = viewModel
-        
+
         rootView.tableView.reloadData()
     }
 }
@@ -93,7 +93,7 @@ extension KnownNetworksListViewController: UITableViewDelegate {
         didSelectRowAt indexPath: IndexPath
     ) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
+
         switch indexPath.section {
         case Constants.addNetworksSection:
             presenter.addNetworkManually()
@@ -106,9 +106,9 @@ extension KnownNetworksListViewController: UITableViewDelegate {
 
     func tableView(
         _: UITableView,
-        heightForRowAt indexPath: IndexPath
+        heightForRowAt _: IndexPath
     ) -> CGFloat {
-        return 56
+        56
     }
 }
 
@@ -120,11 +120,11 @@ private extension KnownNetworksListViewController {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(ChainCell.self)
         rootView.tableView.registerClassForCell(AddNetworkCell.self)
-        
+
         setupSearchField()
         setupLocalization()
     }
-    
+
     private func setupSearchField() {
         rootView.searchTextField.addTarget(
             self,
@@ -158,7 +158,7 @@ private extension KnownNetworksListViewController {
                 forIndexPath: indexPath
             )
             addNetworkCell.bind(model: viewModel)
-            
+
             cell = addNetworkCell
         case let .network(model):
             let chainCell = tableView.dequeueReusableCellWithType(
@@ -174,7 +174,7 @@ private extension KnownNetworksListViewController {
 
         return cell
     }
-    
+
     @objc private func actionSearchEditingChanged() {
         let query = rootView.searchTextField.text ?? ""
 

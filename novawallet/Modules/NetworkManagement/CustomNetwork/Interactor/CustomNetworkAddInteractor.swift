@@ -3,7 +3,7 @@ import Operation_iOS
 
 final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
     private var networkToAdd: ChainModel?
-    
+
     init(
         networkToAdd: ChainModel?,
         chainRegistry: ChainRegistryProtocol,
@@ -16,7 +16,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.networkToAdd = networkToAdd
-        
+
         super.init(
             chainRegistry: chainRegistry,
             runtimeFetchOperationFactory: runtimeFetchOperationFactory,
@@ -28,13 +28,13 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
             operationQueue: operationQueue
         )
     }
-    
+
     override func handleSetupFinished(for network: ChainModel) {
         let saveOperation = repository.saveOperation(
             { [network] },
             { [] }
         )
-        
+
         execute(
             operation: saveOperation,
             inOperationQueue: operationQueue,
@@ -50,12 +50,12 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
             }
         }
     }
-    
+
     override func completeSetup() {
         guard let networkToAdd, let node = networkToAdd.nodes.first else {
             return
         }
-        
+
         presenter?.didReceive(
             chain: networkToAdd,
             selectedNode: node
@@ -80,7 +80,7 @@ extension CustomNetworkAddInteractor: CustomNetworkAddInteractorInputProtocol {
         } else {
             networkType
         }
-        
+
         connectToChain(
             with: type,
             url: url,

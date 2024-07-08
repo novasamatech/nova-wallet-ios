@@ -4,7 +4,7 @@ import Operation_iOS
 final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
     private let networkToEdit: ChainModel
     private let selectedNode: ChainNodeModel
-    
+
     init(
         networkToEdit: ChainModel,
         selectedNode: ChainNodeModel,
@@ -19,7 +19,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
     ) {
         self.networkToEdit = networkToEdit
         self.selectedNode = selectedNode
-        
+
         super.init(
             chainRegistry: chainRegistry,
             runtimeFetchOperationFactory: runtimeFetchOperationFactory,
@@ -31,29 +31,29 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
             operationQueue: operationQueue
         )
     }
-    
+
     override func handleSetupFinished(for network: ChainModel) {
         var readyNetwork = network
-        
+
         if network.chainId == networkToEdit.chainId {
             var nodesToAdd = networkToEdit.nodes
-            
+
             if !network.nodes.contains(where: { $0.url == selectedNode.url }) {
                 nodesToAdd.remove(selectedNode)
             }
-            
+
             readyNetwork = network.adding(nodes: nodesToAdd)
         }
-        
+
         let deleteIds = network.chainId != networkToEdit.chainId
             ? [networkToEdit.chainId]
             : []
-        
+
         let saveOperation = repository.saveOperation(
             { [readyNetwork] },
             { deleteIds }
         )
-        
+
         execute(
             operation: saveOperation,
             inOperationQueue: operationQueue,
@@ -69,7 +69,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
             }
         }
     }
-    
+
     override func completeSetup() {
         presenter?.didReceive(
             chain: networkToEdit,
@@ -102,4 +102,3 @@ extension CustomNetworkEditInteractor: CustomNetworkEditInteractorInputProtocol 
         )
     }
 }
-

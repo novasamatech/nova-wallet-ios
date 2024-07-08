@@ -65,7 +65,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
         self.currencyManager = currencyManager
-        
+
         self.eventCenter.add(observer: self)
     }
 
@@ -482,10 +482,10 @@ extension CrowdloanListInteractor: EventVisitorProtocol {
         guard
             let chain = crowdloanState.settings.value,
             chain.chainId == event.chainId
-        else  {
+        else {
             return
         }
-        
+
         refresh(with: chain)
     }
 }

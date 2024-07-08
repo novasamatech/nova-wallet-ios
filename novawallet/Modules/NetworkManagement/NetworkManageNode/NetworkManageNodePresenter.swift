@@ -4,10 +4,10 @@ import SoraFoundation
 final class NetworkManageNodePresenter {
     weak var view: NetworkManageNodeViewProtocol?
     var wireframe: NetworkManageNodeWireframeProtocol
-    
+
     var onNodeEdit: () -> Void
     var onNodeDelete: () -> Void
-    
+
     let node: ChainNodeModel
 
     init(
@@ -19,24 +19,24 @@ final class NetworkManageNodePresenter {
     ) {
         self.wireframe = wireframe
         self.node = node
-        
+
         self.onNodeEdit = onNodeEdit
         self.onNodeDelete = onNodeDelete
-        
+
         self.localizationManager = localizationManager
     }
-    
+
     private func provideViewModel() {
         let actions: [NetworkManageNodeViewModel.Action] = [
             .init(
                 title: R.string.localizable.networkManageNodeEdit(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
-                icon: R.image.iconPencilEdit()?.tinted(with: R.color.colorIconPrimary()!),
+                icon: R.image.iconPencilEdit()?.withRenderingMode(.alwaysTemplate).tinted(with: R.color.colorIconPrimary()!),
                 negative: false,
                 onSelection: { [weak self] in
                     guard let self else { return }
-                    
+
                     onNodeEdit()
                     wireframe.dismiss(view)
                 }
@@ -49,7 +49,7 @@ final class NetworkManageNodePresenter {
                 negative: true,
                 onSelection: { [weak self] in
                     guard let self else { return }
-                    
+
                     onNodeDelete()
                     wireframe.dismiss(view)
                 }
@@ -81,7 +81,7 @@ extension NetworkManageNodePresenter: NetworkManageNodePresenterProtocol {
 extension NetworkManageNodePresenter: Localizable {
     func applyLocalization() {
         guard let view, view.isSetup else { return }
-        
+
         provideViewModel()
     }
 }
