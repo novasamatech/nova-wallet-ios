@@ -213,7 +213,7 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
             presenter?.didReceive(
                 .disconnected,
                 for: selectedUrl.absoluteString,
-                selected: true
+                selected: selectedUrl.absoluteString == currentSelectedNode?.url
             )
         }
     }
