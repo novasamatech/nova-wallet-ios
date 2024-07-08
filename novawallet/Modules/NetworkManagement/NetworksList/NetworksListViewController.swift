@@ -111,6 +111,14 @@ extension NetworksListViewController: UITableViewDataSource {
             )
         }
     }
+
+    func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
+        UIView()
+    }
+
+    func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        UIView()
+    }
 }
 
 // MARK: UITableViewDelegate
@@ -137,6 +145,18 @@ extension NetworksListViewController: UITableViewDelegate {
         } else {
             return UITableView.automaticDimension
         }
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        section == Constants.bannerSection
+            ? Constants.sectionSpacing
+            : .zero
+    }
+
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        section == Constants.bannerSection
+            ? Constants.sectionSpacing
+            : .zero
     }
 }
 
@@ -303,6 +323,7 @@ extension NetworksListViewController: Localizable {
 private extension NetworksListViewController {
     enum Constants {
         static let cellHeight: CGFloat = 56
+        static let sectionSpacing: CGFloat = 16
         static let bannerSection: Int = 0
         static let networksSection: Int = 1
     }

@@ -37,7 +37,9 @@ final class IntegrateNetworksBanner: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
         setupLayout()
+        setupStyle()
 
         closeButton.addTarget(
             self,
@@ -71,11 +73,23 @@ final class IntegrateNetworksBanner: UIView {
 
         gradientBannerView.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 0)
         gradientBannerView.infoView.imageInsets = .init(
-            top: 24,
+            top: -15,
             left: 0,
             bottom: 0,
             right: 11
         )
+
+        gradientBannerView.infoView.textInsets = .init(
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 50
+        )
+    }
+
+    private func setupStyle() {
+        gradientBannerView.infoView.titleLabel.apply(style: .semiboldSubhedlinePrimary)
+        gradientBannerView.infoView.subtitleLabel.apply(style: .caption1Primary)
     }
 
     func set(locale: Locale) {
