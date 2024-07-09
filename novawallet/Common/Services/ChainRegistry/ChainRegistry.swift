@@ -317,9 +317,9 @@ extension ChainRegistry: ChainRegistryProtocol {
 
         let updateClosure: ([DataProviderChange<ChainModel>]) -> Void = { changes in
             runningInQueue.async {
-                let filtered = changes.filter(
-                    with: filterStrategy,
-                    availableChains: currentChains
+                let filtered = filterStrategy.filter(
+                    changes,
+                    using: currentChains
                 )
                 currentChains = filtered.mergeToDict(currentChains)
 
