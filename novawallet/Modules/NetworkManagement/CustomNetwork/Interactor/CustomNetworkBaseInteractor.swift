@@ -306,33 +306,36 @@ private extension CustomNetworkBaseInteractor {
     }
 
     func createExplorer(from url: String?) -> ChainModel.Explorer? {
-        guard let url = url?.trimmingCharacters(in: CharacterSet(charactersIn: "/")) else {
+        guard let url = url?.trimmingCharacters(
+            in: CharacterSet(charactersIn: "/").union(CharacterSet.whitespaces)
+        ) else {
             return nil
         }
 
-        let namedTemplate: NamedUrlTemplate? = if checkExplorer(urlString: url, with: .subscan) {
-            (Constants.subscan, [url, Constants.subscanTemplatePath].joined(with: .slash))
+        let explorer: ChainModel.Explorer? = if checkExplorer(urlString: url, with: .subscan) {
+            ChainModel.Explorer(
+                name: Constants.subscan,
+                account: [url, Constants.subscanAccountPath].joined(with: .slash),
+                extrinsic: [url, Constants.subscanExtrinsicPath].joined(with: .slash),
+                event: nil
+            )
         } else if checkExplorer(urlString: url, with: .statescan) {
-            (Constants.statescan, [url, Constants.statescanTemplatePath].joined(with: .slash))
+            ChainModel.Explorer(
+                name: Constants.statescan,
+                account: [url, Constants.statescanAccountPath].joined(with: .slash),
+                extrinsic: [url, Constants.statescanExtrinsicPath].joined(with: .slash),
+                event: [url, Constants.statescanEventPath].joined(with: .slash)
+            )
         } else if checkExplorer(urlString: url, with: .etherscan) {
-            (Constants.etherscan, Constants.etherscanTemplate)
+            ChainModel.Explorer(
+                name: Constants.etherscan,
+                account: Constants.etherscanAccountURL,
+                extrinsic: Constants.etherscanExtrinsicURL,
+                event: nil
+            )
         } else {
             nil
         }
-
-        guard
-            let name = namedTemplate?.name,
-            let template = namedTemplate?.template
-        else {
-            return nil
-        }
-
-        let explorer = ChainModel.Explorer(
-            name: name,
-            account: nil,
-            extrinsic: template,
-            event: nil
-        )
 
         return explorer
     }
@@ -360,13 +363,17 @@ private extension CustomNetworkBaseInteractor {
 private extension CustomNetworkBaseInteractor {
     enum Constants {
         static let subscan = "Subscan"
-        static let subscanTemplatePath = "extrinsic/{hash}"
+        static let subscanAccountPath = "account/{address}"
+        static let subscanExtrinsicPath = "extrinsic/{hash}"
 
         static let statescan = "Statescan"
-        static let statescanTemplatePath = "extrinsic/{hash}"
+        static let statescanAccountPath = "#/accounts/{address}"
+        static let statescanExtrinsicPath = "#/extrinsic/{hash}"
+        static let statescanEventPath = "#/events/{event}"
 
         static let etherscan = "Etherscan"
-        static let etherscanTemplate = "https://etherscan.io/tx/{hash}"
+        static let etherscanAccountURL = "https: // etherscan.io/tx/{hash}"
+        static let etherscanExtrinsicURL = "https://etherscan.io/tx/{hash}"
 
         static let defaultCustomNodeName = "My custom node"
 
