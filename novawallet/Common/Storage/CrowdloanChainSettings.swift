@@ -22,7 +22,8 @@ final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
 
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: DispatchQueue.global(qos: .userInteractive)
+            runningInQueue: DispatchQueue.global(qos: .userInteractive),
+            filterStrategy: .enabledChains
         ) { [weak self] changes in
             mutex.lock()
 
@@ -30,9 +31,7 @@ final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
                 mutex.unlock()
             }
 
-            let chains: [ChainModel] = changes
-                .allChangedItems()
-                .filter { $0.syncMode.enabled() }
+            let chains: [ChainModel] = changes.allChangedItems()
 
             guard !chains.isEmpty, !completed else {
                 return
