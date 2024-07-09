@@ -821,6 +821,7 @@
 		2D1C5D262C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D252C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift */; };
 		2D1C5D282C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D272C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift */; };
 		2D1C5D2A2C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D292C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift */; };
+		2D31B82E2C3D44970053C1E8 /* ChainSyncModeChangeProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31B82D2C3D44970053C1E8 /* ChainSyncModeChangeProcessor.swift */; };
 		2D350D9E2C3827DA00F34E25 /* NetworkEnabledChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */; };
 		2D350DA02C38335300F34E25 /* ChainFilterStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
@@ -5709,6 +5710,7 @@
 		2D1C5D252C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkEditPresenter.swift; sourceTree = "<group>"; };
 		2D1C5D272C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkEditInteractor.swift; sourceTree = "<group>"; };
 		2D1C5D292C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkPresenterProtocols.swift; sourceTree = "<group>"; };
+		2D31B82D2C3D44970053C1E8 /* ChainSyncModeChangeProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainSyncModeChangeProcessor.swift; sourceTree = "<group>"; };
 		2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkEnabledChanged.swift; sourceTree = "<group>"; };
 		2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategy.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
@@ -11722,6 +11724,7 @@
 			isa = PBXGroup;
 			children = (
 				2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */,
+				2D31B82D2C3D44970053C1E8 /* ChainSyncModeChangeProcessor.swift */,
 				2D7C8A922C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift */,
 				2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */,
 				2D1A5F542C358E280073773D /* CustomNetworkSetupTrait.swift */,
@@ -24630,6 +24633,7 @@
 				84E0EE0E292D69A9008B2953 /* CallMetadata+TypeCheck.swift in Sources */,
 				844384AE28538F4700611CE2 /* AlephZeroRewardEngine.swift in Sources */,
 				0CC0F7F72BB0710E002C49F6 /* ActionLoadingView+Style.swift in Sources */,
+				2D31B82E2C3D44970053C1E8 /* ChainSyncModeChangeProcessor.swift in Sources */,
 				846A2C4525271F0100731018 /* DateFormatter.swift in Sources */,
 				0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */,
 				0CD54E4B2BCE306C007B58E7 /* CloudBackupCryptoManager.swift in Sources */,

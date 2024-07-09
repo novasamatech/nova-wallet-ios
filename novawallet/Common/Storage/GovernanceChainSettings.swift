@@ -34,8 +34,7 @@ final class GovernanceChainSettings: PersistentValueSettings<GovernanceSelectedO
 
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: DispatchQueue.global(qos: .userInteractive),
-            filterStrategy: .enabledChains
+            runningInQueue: DispatchQueue.global(qos: .userInteractive)
         ) { [weak self] changes in
             mutex.lock()
 
@@ -47,7 +46,9 @@ final class GovernanceChainSettings: PersistentValueSettings<GovernanceSelectedO
                 return
             }
 
-            let chains: [ChainModel] = changes.allChangedItems()
+            let chains: [ChainModel] = changes
+                .allChangedItems()
+                .filter { $0.syncMode.enabled() }
 
             guard !chains.isEmpty, !completed else {
                 return

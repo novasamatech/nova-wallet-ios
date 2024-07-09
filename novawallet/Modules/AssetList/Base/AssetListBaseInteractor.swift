@@ -42,6 +42,8 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
         self.currencyManager = currencyManager
+
+        observeChainsSyncModeChanges(on: .main)
     }
 
     func clearAccountSubscriptions() {
@@ -493,6 +495,12 @@ extension AssetListBaseInteractor: SelectedCurrencyDepending {
         }
 
         updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+    }
+}
+
+extension AssetListBaseInteractor: ChainSyncModeChangeProcessor {
+    func handle(_ syncModeChange: DataProviderChange<ChainModel>) {
+        handle(changes: [syncModeChange])
     }
 }
 
