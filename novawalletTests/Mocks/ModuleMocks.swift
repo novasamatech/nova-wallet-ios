@@ -14412,6 +14412,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)  {
+        
+    return cuckoo_manager.call("setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)",
+            parameters: (migrationViewModel),
+            escapingParameters: (migrationViewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setLedger(migrationViewModel: migrationViewModel))
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountManagementViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -14449,6 +14464,11 @@ import SoraFoundation
 	    func setProxy<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountProxyViewModel)> where M1.MatchedType == AccountProxyViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountProxyViewModel)>] = [wrap(matchable: viewModel) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setProxy(viewModel: AccountProxyViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func setLedger<M1: Cuckoo.Matchable>(migrationViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LedgerMigrationBannerView.ViewModel)> where M1.MatchedType == LedgerMigrationBannerView.ViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(LedgerMigrationBannerView.ViewModel)>] = [wrap(matchable: migrationViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14501,6 +14521,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("setProxy(viewModel: AccountProxyViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func setLedger<M1: Cuckoo.Matchable>(migrationViewModel: M1) -> Cuckoo.__DoNotUse<(LedgerMigrationBannerView.ViewModel), Void> where M1.MatchedType == LedgerMigrationBannerView.ViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(LedgerMigrationBannerView.ViewModel)>] = [wrap(matchable: migrationViewModel) { $0 }]
+	        return cuckoo_manager.verify("setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -14549,6 +14575,12 @@ import SoraFoundation
     
     
      func setProxy(viewModel: AccountProxyViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

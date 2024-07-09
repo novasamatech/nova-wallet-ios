@@ -48,7 +48,7 @@ class LedgerBaseAccountConfirmationInteractor {
             let info = LedgerChainAccount.Info(
                 accountId: accountId,
                 publicKey: responseAccount.publicKey,
-                cryptoType: LedgerApplication.defaultCryptoScheme.walletCryptoType
+                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType
             )
 
             addAccount(for: info, chain: chain, derivationPath: response.derivationPath, index: index)

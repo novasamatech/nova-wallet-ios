@@ -16,3 +16,14 @@ struct LedgerResponseError {
         String(data: reasonData, encoding: .utf8)
     }
 }
+
+extension LedgerResponseError {
+    func isValidAppNotOpen() -> Bool {
+        switch code {
+        case .appNotOpen, .wrongAppOpen:
+            return true
+        default:
+            return false
+        }
+    }
+}

@@ -78,6 +78,8 @@ final class CloudBackupFileModelConverter {
             return .ledger
         case .polkadotVault:
             return .polkadotVault
+        case .genericLedger:
+            return .genericLedger
         }
     }
 
@@ -93,6 +95,8 @@ final class CloudBackupFileModelConverter {
             return .ledger
         case .polkadotVault:
             return .polkadotVault
+        case .genericLedger:
+            return .genericLedger
         case .proxied:
             throw CloudBackupFileModelConvertingError.unexpectedLocalWalletType(walletType)
         }

@@ -3,6 +3,12 @@ import SoraUI
 import SnapKit
 
 final class AccountManagementHeaderView: UIView {
+    enum MessageType {
+        case hint
+        case banner
+        case none
+    }
+
     let textBackgroundView: TriangularedView = {
         let view = TriangularedView()
         view.sideLength = 10.0
@@ -30,6 +36,8 @@ final class AccountManagementHeaderView: UIView {
 
     private(set) var hintView: AccountManagementHintView?
 
+    private(set) var bannerView: LedgerMigrationBannerView?
+
     var bottomInset: CGFloat = 0.0 {
         didSet {
             if let hintView = hintView {
@@ -40,16 +48,28 @@ final class AccountManagementHeaderView: UIView {
         }
     }
 
-    var showsHintView: Bool {
+    var messageType: MessageType {
         get {
-            hintView != nil
+            if hintView != nil {
+                return .hint
+            } else if bannerView != nil {
+                return .banner
+            } else {
+                return .none
+            }
         }
 
         set {
-            if newValue {
+            switch newValue {
+            case .hint:
+                clearBannerView()
                 setupHintView()
-            } else {
+            case .banner:
                 clearHintView()
+                setupBannerView()
+            case .none:
+                clearHintView()
+                clearBannerView()
             }
 
             updateFieldConstraints()
@@ -73,6 +93,14 @@ final class AccountManagementHeaderView: UIView {
         hintView?.bindHint(text: text, icon: icon)
     }
 
+    func bind(bannerViewModel: LedgerMigrationBannerView.ViewModel) {
+        bannerView?.bind(viewModel: bannerViewModel)
+    }
+
+    func apply(bannerStyle: LedgerMigrationBannerView.Style) {
+        bannerView?.apply(style: bannerStyle)
+    }
+
     private func setupHintView() {
         guard hintView == nil else {
             return
@@ -94,13 +122,36 @@ final class AccountManagementHeaderView: UIView {
         hintView = nil
     }
 
+    private func setupBannerView() {
+        guard bannerView == nil else {
+            return
+        }
+
+        let view = LedgerMigrationBannerView()
+        addSubview(view)
+
+        view.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16.0)
+            make.bottom.equalToSuperview().inset(bottomInset)
+        }
+
+        bannerView = view
+    }
+
+    private func clearBannerView() {
+        bannerView?.removeFromSuperview()
+        bannerView = nil
+    }
+
     private func applyFieldConstraints(for make: ConstraintMaker) {
         make.top.equalToSuperview().inset(10.0)
         make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         make.height.equalTo(52.0)
 
-        if let hintView = hintView {
+        if let hintView {
             make.bottom.equalTo(hintView.snp.top).offset(-16.0)
+        } else if let bannerView {
+            make.bottom.equalTo(bannerView.snp.top).offset(-16.0)
         } else {
             make.bottom.equalToSuperview().inset(textBackgroundView.strokeWidth)
         }

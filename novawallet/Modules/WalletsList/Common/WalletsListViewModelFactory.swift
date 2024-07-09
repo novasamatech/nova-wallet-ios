@@ -257,6 +257,16 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         }
 
         if
+            let genericLedger = createSection(
+                type: .genericLedger,
+                wallets: wallets,
+                balancesCalculator: balancesCalculator,
+                locale: locale
+            ) {
+            sections.append(genericLedger)
+        }
+
+        if
             let ledgerSection = createSection(
                 type: .ledger,
                 wallets: wallets,

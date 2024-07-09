@@ -40,6 +40,7 @@ struct SwapSetupViewFactory {
             wallet: selectedWallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             generalSubscriptonFactory: generalLocalSubscriptionFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

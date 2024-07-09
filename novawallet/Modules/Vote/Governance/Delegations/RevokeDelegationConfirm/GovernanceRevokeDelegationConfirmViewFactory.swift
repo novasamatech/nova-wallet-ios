@@ -103,8 +103,9 @@ struct GovRevokeDelegationConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: option.chain)
 
         let signer = SigningWrapperFactory.createSigner(from: selectedAccount)
