@@ -373,10 +373,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
 extension ReferendumsInteractor: EventVisitorProtocol {
     func processNetworkEnableChanged(event: NetworkEnabledChanged) {
-        guard
-            let chain = governanceState.settings.value,
-            chain.chainId == event.chainId
-        else  {
+        guard governanceState.settings.value.chain.chainId == event.chainId else {
             return
         }
         
