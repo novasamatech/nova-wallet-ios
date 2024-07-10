@@ -356,12 +356,34 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         operationQueue.addOperations(votingWrapper.allOperations, waitUntilFinished: false)
     }
+    
+    func setupState(onSuccess: @escaping (GovernanceSelectedOption?) -> Void) {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            self?.governanceState.settings.setup(runningCompletionIn: .main) { result in
+                switch result {
+                case let .success(option):
+                    onSuccess(option)
+                case .failure:
+                    self?.presenter?.didReceiveError(.settingsLoadFailed)
+                }
+            }
+        }
+    }
 }
 
 extension ReferendumsInteractor: EventVisitorProtocol {
     func processNetworkEnableChanged(event: NetworkEnabledChanged) {
-         if let option = governanceState.settings.value {
-            handleOptionChange(for: option)
+        guard
+            let chain = governanceState.settings.value,
+            chain.chainId == event.chainId
+        else  {
+            return
+        }
+        
+        setupState { [weak self] option in
+            if let option {
+                self?.handleOptionChange(for: option)
+            }
         }
     }
 }

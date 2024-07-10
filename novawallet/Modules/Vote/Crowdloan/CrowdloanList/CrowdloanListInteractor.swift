@@ -459,6 +459,19 @@ extension CrowdloanListInteractor {
 
         operationManager.enqueue(operations: crowdloanWrapper.allOperations, in: .transient)
     }
+    
+    func setupState(onSuccess: @escaping (ChainModel?) -> Void) {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            self?.crowdloanState.settings.setup(runningCompletionIn: .main) { result in
+                switch result {
+                case let .success(chain):
+                    onSuccess(chain)
+                case let .failure(error):
+                    self?.presenter?.didReceiveSelectedChain(result: .failure(error))
+                }
+            }
+        }
+    }
 }
 
 extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
@@ -486,6 +499,10 @@ extension CrowdloanListInteractor: EventVisitorProtocol {
             return
         }
         
-        refresh(with: chain)
+        setupState { [weak self] chain in
+            guard let chain else { return }
+            
+            self?.refresh(with: chain)
+        }
     }
 }
