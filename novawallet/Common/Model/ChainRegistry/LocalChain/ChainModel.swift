@@ -274,6 +274,10 @@ struct ChainModel: Equatable, Hashable {
     var supportsGenericLedgerApp: Bool {
         additional?.supportsGenericLedgerApp?.boolValue ?? false
     }
+
+    var disabledCheckMetadataHash: Bool {
+        additional?.disabledCheckMetadataHash?.boolValue ?? false
+    }
 }
 
 extension ChainModel: Identifiable {

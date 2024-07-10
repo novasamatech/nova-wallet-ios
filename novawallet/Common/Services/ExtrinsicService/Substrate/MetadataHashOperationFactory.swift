@@ -102,6 +102,10 @@ extension MetadataHashOperationFactory: MetadataHashOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<Data?> {
+        guard !chain.disabledCheckMetadataHash else {
+            return CompoundOperationWrapper.createWithResult(nil)
+        }
+
         if let existingHash = cache.fetchValue(for: chain.chainId) {
             return CompoundOperationWrapper.createWithResult(existingHash)
         }
