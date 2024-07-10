@@ -313,13 +313,17 @@ extension ChainRegistry: ChainRegistryProtocol {
         filterStrategy: ChainFilterStrategy,
         updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
     ) {
+        var currentChains = availableChains
+
         let updateClosure: ([DataProviderChange<ChainModel>]) -> Void = { changes in
             runningInQueue.async {
-                if case .noFilter = filterStrategy {
-                    updateClosure(changes)
-                } else {
-                    updateClosure(changes.filter(filterStrategy.filter))
-                }
+                let filtered = filterStrategy.filter(
+                    changes,
+                    using: currentChains
+                )
+                currentChains = filtered.mergeToDict(currentChains)
+
+                updateClosure(filtered)
             }
         }
 

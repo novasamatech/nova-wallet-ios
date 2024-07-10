@@ -392,16 +392,6 @@ final class MultistakingSyncService {
     }
 }
 
-extension MultistakingSyncService: ChainSyncModeChangeProcessor {
-    func handle(_ syncModeChange: DataProviderChange<ChainModel>) {
-        mutex.lock()
-        let stakableChainAssets = handleChain(changes: [syncModeChange])
-        mutex.unlock()
-
-        offchainUpdater?.apply(newChainAssets: stakableChainAssets)
-    }
-}
-
 extension MultistakingSyncService: MultistakingSyncServiceProtocol {
     func update(selectedMetaAccount: MetaAccountModel) {
         mutex.lock()
