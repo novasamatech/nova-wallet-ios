@@ -50,7 +50,7 @@ enum ChainFilterStrategy {
 
                 return if needsTransform, updatedSyncModeEnabled {
                     DataProviderChange<ChainModel>.insert(newItem: changedChain)
-                } else if !needsTransform, !updatedSyncModeEnabled {
+                } else if needsTransform, !updatedSyncModeEnabled {
                     DataProviderChange<ChainModel>.delete(deletedIdentifier: changedChain.chainId)
                 } else {
                     change
