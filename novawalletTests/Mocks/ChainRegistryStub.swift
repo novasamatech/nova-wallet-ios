@@ -6,6 +6,9 @@ import Cuckoo
 extension MockChainRegistryProtocol {
     func applyDefault(for chains: Set<ChainModel>) -> MockChainRegistryProtocol {
         stub(self) { stub in
+            let availableChains = chains
+                .reduce(into: [ChainModel.Id: ChainModel]()) { $0[$1.chainId] = $1 }
+            
             let availableChainIds = Set(chains.map({ $0.chainId }))
             stub.availableChainIds.get.thenReturn(availableChainIds)
 
@@ -32,11 +35,11 @@ extension MockChainRegistryProtocol {
                 updateClosure: any()
             ).then { (_, queue, filterStrategy, closure) in
                 queue.async {
-                    let updates = chains
-                        .map { DataProviderChange.insert(newItem: $0) }
-                        .filter(filterStrategy.filter)
+                    let changes = chains.map { DataProviderChange.insert(newItem: $0) }
                     
-                    closure(updates)
+                    let filteredChanges = filterStrategy.filter(changes, using: availableChains)
+                    
+                    closure(filteredChanges)
                 }
             }
 
