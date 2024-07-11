@@ -72,7 +72,7 @@ final class NetworkDetailsNodeView: UIView {
                     >
                 >
             >,
-            UIImageView
+            GenericPairValueView<UIImageView, UILabel>
         >
     >()
 
@@ -101,7 +101,11 @@ final class NetworkDetailsNodeView: UIView {
     }
 
     var accessoryIcon: UIImageView {
-        roundedContainerView.contentView.sView
+        roundedContainerView.contentView.sView.fView
+    }
+
+    var editLabel: UILabel {
+        roundedContainerView.contentView.sView.sView
     }
 
     override init(frame: CGRect) {
@@ -126,10 +130,18 @@ final class NetworkDetailsNodeView: UIView {
             selectionImageView.image = R.image.iconRadioButtonUnselected()
         }
 
-        if viewModel.custom {
+        switch viewModel.accessory {
+        case let .edit(text):
+            accessoryIcon.isHidden = true
+            editLabel.isHidden = false
+            editLabel.text = text
+        case .more:
             accessoryIcon.image = R.image.iconMore()
-        } else {
-            accessoryIcon.image = nil
+            accessoryIcon.isHidden = false
+            editLabel.isHidden = true
+        case .none:
+            accessoryIcon.isHidden = true
+            editLabel.isHidden = true
         }
 
         nameLabel.text = viewModel.name
@@ -205,6 +217,8 @@ private extension NetworkDetailsNodeView {
         roundedContainerView.contentView.fView.sView.valueBottom.spacing = Constants.stackSpacing
         roundedContainerView.contentView.fView.sView.valueBottom.stackView.alignment = .leading
 
+        roundedContainerView.contentView.sView.makeHorizontal()
+
         networkStatusView.makeHorizontal()
         networkStatusView.spacing = Constants.stackSpacing
 
@@ -226,22 +240,48 @@ private extension NetworkDetailsNodeView {
         roundedContainerView.backgroundView.cornerRadius = Constants.cornerRadius
 
         networkStatusLabel.apply(style: .semiboldCaps2Primary)
+
+        editLabel.apply(style: .regularSubhedlineAccent)
     }
 
     func setupActions() {
-        let tapGestureRecognizer = UITapGestureRecognizer(
+        let moreTapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(actionMore)
         )
 
-        accessoryIcon.addGestureRecognizer(tapGestureRecognizer)
+        let editTapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(actionEdit)
+        )
+
+        editLabel.addGestureRecognizer(editTapGesture)
+        editLabel.isUserInteractionEnabled = true
+
+        accessoryIcon.addGestureRecognizer(moreTapGesture)
         accessoryIcon.isUserInteractionEnabled = true
     }
 
     @objc func actionMore() {
-        guard let viewModel, viewModel.custom else { return }
+        guard
+            let viewModel,
+            case .more = viewModel.accessory
+        else {
+            return
+        }
 
         viewModel.onTapMore?(viewModel.id)
+    }
+
+    @objc func actionEdit() {
+        guard
+            let viewModel,
+            case .edit = viewModel.accessory
+        else {
+            return
+        }
+
+        viewModel.onTapEdit?(viewModel.id)
     }
 }
 
