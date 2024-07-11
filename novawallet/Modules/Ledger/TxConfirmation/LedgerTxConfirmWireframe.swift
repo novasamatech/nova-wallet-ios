@@ -11,6 +11,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         on view: ControllerBackedProtocol?,
         timer: CountdownTimerMediator,
         deviceName: String,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping () -> Void
     ) {
         guard let view = view else {
@@ -21,7 +22,8 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
             let transactionSignView = LedgerMessageSheetViewFactory.createReviewLedgerTransactionView(
                 for: timer,
                 deviceName: deviceName,
-                cancelClosure: cancelClosure
+                cancelClosure: cancelClosure,
+                migrationViewModel: migrationViewModel
             ) else {
             return
         }
@@ -32,6 +34,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
     func transitToTransactionExpired(
         on view: ControllerBackedProtocol?,
         expirationTimeInterval: TimeInterval,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         completion: @escaping MessageSheetCallback
     ) {
         guard let view = view else {
@@ -41,7 +44,8 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         guard
             let transactionExpiredView = LedgerMessageSheetViewFactory.createTransactionExpiredView(
                 for: expirationTimeInterval,
-                completionClosure: completion
+                completionClosure: completion,
+                migrationViewModel: migrationViewModel
             ) else {
             return
         }
@@ -51,6 +55,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
 
     func transitToInvalidSignature(
         on view: ControllerBackedProtocol?,
+        migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         completion: @escaping MessageSheetCallback
     ) {
         guard let view = view else {
@@ -58,7 +63,8 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         }
 
         guard let invalidSignatureView = LedgerMessageSheetViewFactory.createSignatureInvalidView(
-            completionClosure: completion
+            completionClosure: completion,
+            migrationViewModel: migrationViewModel
         ) else {
             return
         }

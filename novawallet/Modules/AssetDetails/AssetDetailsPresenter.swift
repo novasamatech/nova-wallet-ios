@@ -136,7 +136,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             showReceiveTokens()
-        case .ledger:
+        case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
                 wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
             } else {
@@ -156,7 +156,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             showPurchase()
-        case .ledger:
+        case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
                 wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
             } else {

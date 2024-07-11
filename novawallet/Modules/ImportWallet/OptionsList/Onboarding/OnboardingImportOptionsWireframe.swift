@@ -31,8 +31,12 @@ final class OnboardingImportOptionsWireframe: WalletImportOptionsWireframe, Onbo
         )
     }
 
-    override func showLedgerWalletCreation(from view: ControllerBackedProtocol?) {
-        guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(for: .onboarding) else {
+    override func showLedgerWalletCreation(from view: ControllerBackedProtocol?, appType: LedgerWalletType) {
+        guard
+            let ledgerInstructions = LedgerInstructionsViewFactory.createView(
+                for: .onboarding,
+                walletLedgerType: appType
+            ) else {
             return
         }
 

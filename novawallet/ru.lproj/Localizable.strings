@@ -1517,6 +1517,11 @@
 "notifications.error.disabled.in.settings.title" = "Включите уведомления для Nova Wallet";
 "notifications.error.disabled.in.settings.message" = "Перейдите в Настройки → Нажмите \"Уведомления\" → Включите \"Разрешить уведомления\"";
 "notifications.wallet.list.limit.error.message" = "К сожалению, в настоящее время установлен лимит push-уведомлений только для %d ваших кошельков.";
+"legacy.ledger.migration.message" = "Migration приложение в ближайшее время будет недоступно. Используйте его для переноса своих учетных записей в новое приложение Ledger, чтобы не потерять свои средства.";
+"legacy.ledger.notification.title" = "Выпущено новое приложение Ledger";
+"legacy.ledger.notification.message" = "Чтобы подписать операции и перенести свои учетные записи в новое приложение Generic Ledger, установите и откройте приложение Migration. Приложения Ledger (Legacy) и Migration Ledger не будут поддерживаться в будущем.";
+"common.ledger.nano.legacy" = "Ledger Nano X (Legacy)";
+"common.ledger.legacy" = "Ledger (Legacy)";
 "common.passphrase" = "Секретная фраза";
 "cloud.backup.remove.wallet.title" = "Кошелек будет удален из Облачного Бэкапа.";
 "cloud.backup.remove.wallet.message" = "Убедитесь, что вы сохранили секретную фразу для кошелька, прежде чем продолжить.";
@@ -1608,7 +1613,7 @@
 "wallet.import.title" = "Выберите как вы бы хотели импортировать кошелёк";
 "common.continue.with.apple.backup" = "Продолжить с Apple iCloud";
 "cloud.backup.not.available.title" = "Ошибка доступа к iCloud";
-"cloud.backup.not.available.message" = "Please, ensure that you are logged into iCloud account";
+"cloud.backup.not.available.message" = "Пожалуйста, убедитесь, что вы вошли в учетную запись iCloud";
 "cloud.backup.not.enough.storage.message" = "Пожалуйста, убедитесь, что у вас доступно достаточно места в iCloud. Вы можете управлять местом в iCloud в Настройках.";
 "ledger.instructions.step4.highlighted" = "Выберите аккаунт";
 "cloud.backup.create.title" = "Установить пароль бэкапа";
@@ -1654,6 +1659,10 @@
 "account.export.ethereum.private.key.placeholder" = "64 шест. символа";
 "common.status.backup.syncing" = "Обновление бэкапа...";
 "common.status.backup.synced" = "Бэкап обновлён";
+"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot приложение)";
+"generic.ledger.instructions.step1.highlighted" = "Polkadot приложение установлено";
+"generic.ledger.instructions.step2.highlighted" = "Откройте Polkadot приложение";
+"ledger.instructions.step4" = "%@ для добавления в кошелёк";
 "ledger.instructions.step1" = "Удостоверьтесь, что %@ на Ваше устройство Ledger, используя приложение Ledger Live";
 "ledger.instructions.step1.highlighted" = "приложение Сети установлено";
 "ledger.instructions.step2" = "%@ на Вашем Ledger устройстве";

@@ -1,6 +1,10 @@
 import Foundation
 import IrohaCrypto
 
+enum LedgerSigningWrapperError: Error {
+    case unsupportedContext
+}
+
 /**
  *  Implementation of the signing for Ledger makes
  *  an assumption that signing is called in one of the background threads.
@@ -12,20 +16,24 @@ final class LedgerSigningWrapper {
     let uiPresenter: TransactionSigningPresenting
     let metaId: String
     let chainId: ChainModel.Id
+    let ledgerWalletType: LedgerWalletType
 
     init(
         uiPresenter: TransactionSigningPresenting,
         metaId: String,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        ledgerWalletType: LedgerWalletType
     ) {
         self.uiPresenter = uiPresenter
         self.metaId = metaId
         self.chainId = chainId
+        self.ledgerWalletType = ledgerWalletType
     }
-}
 
-extension LedgerSigningWrapper: SigningWrapperProtocol {
-    func sign(_ originalData: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
+    private func signSubstrate(
+        _ originalData: Data,
+        context: ExtrinsicSigningContext.Substrate
+    ) throws -> IRSignatureProtocol {
         let semaphore = DispatchSemaphore(value: 0)
 
         var signingResult: TransactionSigningResult?
@@ -34,7 +42,12 @@ extension LedgerSigningWrapper: SigningWrapperProtocol {
             self.uiPresenter.presentLedgerFlow(
                 for: originalData,
                 metaId: self.metaId,
-                chainId: self.chainId
+                chainId: self.chainId,
+                params: .init(
+                    walletType: self.ledgerWalletType,
+                    extrinsicMemo: context.extrinsicMemo,
+                    codingFactory: context.codingFactory
+                )
             ) { result in
                 signingResult = result
 
@@ -52,6 +65,17 @@ extension LedgerSigningWrapper: SigningWrapperProtocol {
             throw error
         case .none:
             throw CommonError.undefined
+        }
+    }
+}
+
+extension LedgerSigningWrapper: SigningWrapperProtocol {
+    func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
+        switch context {
+        case let .substrateExtrinsic(substrate):
+            return try signSubstrate(originalData, context: substrate)
+        case .evmTransaction, .rawBytes:
+            throw LedgerSigningWrapperError.unsupportedContext
         }
     }
 }

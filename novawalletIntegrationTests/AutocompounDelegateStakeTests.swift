@@ -201,6 +201,10 @@ class AutocompounDelegateStakeTests: XCTestCase {
             chain: chain,
             runtimeRegistry: runtimeProvider,
             senderResolvingFactory: senderResolutionFactory,
+            metadataHashOperationFactory: MetadataHashOperationFactory(
+                metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+                operationQueue: operationQueue
+            ),
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -273,13 +277,19 @@ class AutocompounDelegateStakeTests: XCTestCase {
         
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
 
+        let operationQueue = OperationQueue()
+        
         extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeProvider,
             senderResolvingFactory: senderResolutionFactory,
+            metadataHashOperationFactory: MetadataHashOperationFactory(
+                metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+                operationQueue: operationQueue
+            ),
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
-            operationManager: OperationManager(operationQueue: OperationQueue())
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
 
         var feeResult: FeeExtrinsicResult?

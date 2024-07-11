@@ -19,6 +19,8 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
             return wallet.fetch(for: chain.accountRequest()) != nil
         case .ledger:
             return supportedLedgerChains.contains(chain.chainId)
+        case .genericLedger:
+            return chain.supportsGenericLedgerApp && (wallet.fetch(for: chain.accountRequest()) != nil)
         }
     }
 
@@ -32,6 +34,8 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
             return !chain.isEthereumBased
         case .ledger:
             return supportedLedgerChains.contains(chain.chainId)
+        case .genericLedger:
+            return chain.supportsGenericLedgerApp
         }
     }
 }

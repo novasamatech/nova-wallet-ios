@@ -28,6 +28,7 @@ final class AssetConversionFlowFacade {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
     let userStorageFacade: StorageFacadeProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
     let generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol
 
     var state: AssetConversionFlowState?
@@ -36,12 +37,14 @@ final class AssetConversionFlowFacade {
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         generalSubscriptonFactory: GeneralStorageSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
         self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
         self.generalSubscriptonFactory = generalSubscriptonFactory
         self.operationQueue = operationQueue
     }
@@ -68,6 +71,7 @@ final class AssetConversionFlowFacade {
             connection: connection,
             runtimeProvider: runtimeProvider,
             userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade,
             operationQueue: operationQueue
         )
 
@@ -103,6 +107,7 @@ final class AssetConversionFlowFacade {
             connection: connection,
             runtimeProvider: runtimeProvider,
             userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade,
             operationQueue: operationQueue
         )
 

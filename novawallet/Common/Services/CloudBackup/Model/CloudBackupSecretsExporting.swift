@@ -76,7 +76,7 @@ final class CloudBackupSecretsExporter {
                 chainAccount: chainAccount,
                 isEthereumBased: isEthereumBased
             )
-        case .ledger:
+        case .ledger, .genericLedger:
             return try fetchLedgerDerivationPath(
                 for: wallet,
                 chainAccount: chainAccount,
@@ -281,17 +281,42 @@ final class CloudBackupSecretsExporter {
         )
     }
 
+    private func createPrivateInfoFromGenericWalletType(
+        _ wallet: MetaAccountModel
+    ) throws -> CloudBackup.DecryptedFileModel.WalletPrivateInfo {
+        let derivationPath = try fetchDerivationPath(
+            for: wallet,
+            chainAccount: nil,
+            isEthereumBased: false
+        )
+
+        return .init(
+            walletId: wallet.metaId,
+            entropy: nil,
+            substrate: .init(
+                seed: nil,
+                keypair: nil,
+                derivationPath: derivationPath
+            ),
+            ethereum: nil,
+            chainAccounts: []
+        )
+    }
+
     private func createPrivateInfo(
         from wallet: MetaAccountModel
     ) throws -> CloudBackup.DecryptedFileModel.WalletPrivateInfo? {
         switch wallet.type {
         case .secrets:
             return try createPrivateInfoFromSecretsWalletType(wallet)
+        case .genericLedger:
+            return try createPrivateInfoFromGenericWalletType(wallet)
         case .ledger:
             return try createPrivateInfoFromLedgerWalletType(wallet)
         case .watchOnly, .polkadotVault, .paritySigner:
             return nil
         case .proxied:
+            // add backup for generic ledger
             throw CloudBackupSecretsExporterError.unsupportedWallet(wallet.type)
         }
     }

@@ -225,6 +225,10 @@ struct ChainModel: Equatable, Hashable {
         utilityAssets().first
     }
 
+    func chainAssets() -> [ChainAsset] {
+        assets.map { ChainAsset(chain: self, asset: $0) }
+    }
+
     func utilityAssetDisplayInfo() -> AssetBalanceDisplayInfo? {
         utilityAsset()?.displayInfo(with: icon)
     }
@@ -299,6 +303,14 @@ struct ChainModel: Equatable, Hashable {
 
     var identityChain: ChainModel.Id? {
         additional?.identityChain?.stringValue
+    }
+
+    var supportsGenericLedgerApp: Bool {
+        additional?.supportsGenericLedgerApp?.boolValue ?? false
+    }
+
+    var disabledCheckMetadataHash: Bool {
+        additional?.disabledCheckMetadataHash?.boolValue ?? false
     }
 
     var isAddedByUser: Bool {

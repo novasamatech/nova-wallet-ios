@@ -205,7 +205,7 @@ final class AccountCreationHelper {
             chainId: app.chainId,
             accountId: accountId,
             publicKey: accountId,
-            cryptoType: LedgerApplication.defaultCryptoScheme.walletCryptoType.rawValue,
+            cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType.rawValue,
             proxy: nil
         )
         
@@ -229,6 +229,40 @@ final class AccountCreationHelper {
         try keychain.saveKey(derivationPath, with: derivPathTag)
         
         try selectMetaAccount(metaAccount, settings: settings)
+    }
+    
+    static func createSubstrateGenericLedgerWallet(
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings,
+        username: String = "username",
+        accountIndex: UInt32 = 0
+    ) throws {
+        let accountId = AccountId.random(of: 32)!
+        
+        let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
+            coin: GenericLedgerSubstrateApplication.coin,
+            accountIndex: accountIndex
+        ).build()
+        
+        let factory = GenericLedgerWalletOperationFactory()
+        
+        let operation = factory.createSaveOperation(
+            for: .init(
+                accountId: accountId,
+                publicKey: accountId,
+                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType,
+                derivationPath: derivationPath
+            ),
+            name: username,
+            keystore: keychain,
+            settings: settings
+        )
+        
+        let operationQueue = OperationQueue()
+        
+        operationQueue.addOperations([operation], waitUntilFinished: true)
+        
+        _ = try operation.extractNoCancellableResultData()
     }
     
     static func selectMetaAccount(_ accountItem: MetaAccountModel, settings: SelectedWalletSettings) throws {

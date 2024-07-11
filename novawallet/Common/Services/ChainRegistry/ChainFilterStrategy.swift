@@ -4,9 +4,9 @@ import Operation_iOS
 // swiftlint:disable switch_case_alignment
 enum ChainFilterStrategy {
     typealias Filter = (DataProviderChange<ChainModel>) -> Bool
-    typealias Transform = (DataProviderChange<ChainModel>, ChainModel) -> DataProviderChange<ChainModel>
+    typealias Transform = (DataProviderChange<ChainModel>, ChainModel?) -> DataProviderChange<ChainModel>
 
-    case combined([ChainFilterStrategy])
+    case allSatisfies([ChainFilterStrategy])
 
     case enabledChains
     case hasProxy
@@ -34,34 +34,34 @@ enum ChainFilterStrategy {
                 #endif
             }
         case let .chainId(chainId): { $0.item?.chainId == chainId }
-        case let .combined(strategies): { change in
-                let resultSet = Set(strategies.map { $0.filter(change) })
-
-                return !resultSet.contains(false)
-            }
+        case let .allSatisfies(strategies): { change in strategies.allSatisfy { $0.filter(change) } }
         case .noFilter: { _ in true }
         }
     }
 
     private var transform: Transform? {
-        if case .enabledChains = self {
-            { change, currentChain in
+        switch self {
+        case .enabledChains: { change, currentChain in
                 guard let changedChain = change.item else { return change }
 
-                let currentSyncModeEnabled = currentChain.syncMode.enabled()
+                let currentSyncModeEnabled = currentChain?.syncMode.enabled()
                 let updatedSyncModeEnabled = changedChain.syncMode.enabled()
                 let needsTransform = updatedSyncModeEnabled != currentSyncModeEnabled
 
-                return switch needsTransform {
-                case true where updatedSyncModeEnabled:
+                return if needsTransform, updatedSyncModeEnabled {
                     DataProviderChange<ChainModel>.insert(newItem: changedChain)
-                case true where !updatedSyncModeEnabled:
+                } else if needsTransform, !updatedSyncModeEnabled {
                     DataProviderChange<ChainModel>.delete(deletedIdentifier: changedChain.chainId)
-                default:
+                } else {
                     change
                 }
             }
-        } else {
+        case let .allSatisfies(strategies): { change, currentChain in
+                strategies
+                    .compactMap(\.transform)
+                    .reduce(change) { $1($0, currentChain) }
+            }
+        default:
             nil
         }
     }
@@ -75,16 +75,7 @@ enum ChainFilterStrategy {
         }
 
         let mapped = if let transform {
-            changes.map { change in
-                guard
-                    let changedChain = change.item,
-                    let currentChain = chainsBeforeChanges[changedChain.chainId]
-                else {
-                    return change
-                }
-
-                return transform(change, currentChain)
-            }
+            changes.map { transform($0, chainsBeforeChanges[$0.identifier]) }
         } else {
             changes
         }

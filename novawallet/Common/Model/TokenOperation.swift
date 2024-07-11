@@ -16,14 +16,14 @@ extension TokenOperation {
         switch walletType {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             return .common(.available)
-        case .ledger:
+        case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
                 return .common(.ledgerNotSupported)
             } else {
                 return .common(.available)
             }
 
-        case .watchOnly, .proxied:
+        case .watchOnly:
             return .common(.noSigning)
         }
     }
@@ -40,7 +40,7 @@ extension TokenOperation {
         switch walletType {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             return .common(.available)
-        case .ledger:
+        case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
                 return .common(.ledgerNotSupported)
             } else {

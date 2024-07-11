@@ -101,8 +101,8 @@ class WalletsListViewController<
             return view
         case .ledger:
             let view = dequeueCommonHeader(from: tableView)
-            let icon = R.image.iconLedgerHeader()
-            let title = R.string.localizable.commonLedger(
+            let icon = R.image.iconLedgerHeaderWarning()
+            let title = R.string.localizable.commonLedgerLegacy(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
 
@@ -112,6 +112,15 @@ class WalletsListViewController<
             let view = dequeueCommonHeader(from: tableView)
             let icon = R.image.iconProxy()
             let title = R.string.localizable.commonProxieds(
+                preferredLanguages: selectedLocale.rLanguages
+            ).uppercased()
+
+            view.bind(title: title, icon: icon)
+            return view
+        case .genericLedger:
+            let view = dequeueCommonHeader(from: tableView)
+            let icon = R.image.iconLedgerHeader()
+            let title = R.string.localizable.commonLedger(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
 
@@ -132,7 +141,7 @@ class WalletsListViewController<
         switch section.type {
         case .secrets:
             return 0.0
-        case .watchOnly, .paritySigner, .polkadotVault, .ledger, .proxied:
+        case .watchOnly, .paritySigner, .polkadotVault, .ledger, .proxied, .genericLedger:
             return 46.0
         }
     }

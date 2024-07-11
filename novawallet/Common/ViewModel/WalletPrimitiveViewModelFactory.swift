@@ -14,7 +14,7 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
         switch walletType {
         case .secrets:
             return false
-        case .watchOnly, .polkadotVault, .paritySigner, .ledger, .polkadotVault, .proxied:
+        case .watchOnly, .polkadotVault, .paritySigner, .ledger, .proxied, .genericLedger:
             return true
         }
     }
@@ -31,10 +31,10 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
             return .init(title: type.getName(for: locale).uppercased(), icon: type.icon)
         case .ledger:
             return .init(
-                title: R.string.localizable.commonLedger(
+                title: R.string.localizable.commonLedgerLegacy(
                     preferredLanguages: locale.rLanguages
                 ).uppercased(),
-                icon: R.image.iconLedger()
+                icon: R.image.iconLedgerWarning()
             )
         case .proxied:
             return .init(
@@ -49,6 +49,13 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
                     preferredLanguages: locale.rLanguages
                 ).uppercased(),
                 icon: R.image.iconWatchOnly()
+            )
+        case .genericLedger:
+            return .init(
+                title: R.string.localizable.commonLedger(
+                    preferredLanguages: locale.rLanguages
+                ).uppercased(),
+                icon: R.image.iconLedger()
             )
         }
     }
