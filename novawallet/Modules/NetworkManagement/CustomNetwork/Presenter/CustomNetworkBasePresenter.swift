@@ -135,7 +135,7 @@ class CustomNetworkBasePresenter {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCoingeckoURL ?? "",
             required: false,
-            placeholder: Constants.coingeckoTemplate
+            placeholder: Constants.coingeckoUrl
         )
         view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
@@ -244,6 +244,12 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
                 ),
                 style: .alert,
                 from: view
+            )
+        case .invalidPriceUrl:
+            guard let view else { return }
+            wireframe.presentInvalidCoingeckoPriceUrl(
+                from: view,
+                locale: selectedLocale
             )
         default:
             wireframe.present(
@@ -401,7 +407,6 @@ extension CustomNetworkBasePresenter {
         static let chainIdPlaceholder = "012345"
         static let chainUrlPlaceholder = "wss://"
         static let blockExplorerPlaceholder = "https://subscan.io"
-        static let coingeckoUrl = "https://coingecko.com/coins"
-        static let coingeckoTemplate = "\(coingeckoUrl)/{coin_name}"
+        static let coingeckoUrl = "https://coingecko.com/coins/tether"
     }
 }

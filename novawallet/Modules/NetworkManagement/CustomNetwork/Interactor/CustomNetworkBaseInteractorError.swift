@@ -4,6 +4,7 @@ enum CustomNetworkBaseInteractorError: Error {
     case alreadyExistRemote(node: ChainNodeModel, chain: ChainModel)
     case alreadyExistCustom(node: ChainNodeModel, chain: ChainModel)
     case wrongCurrencySymbol(enteredSymbol: String, actualSymbol: String)
+    case invalidPriceUrl
     case invalidChainId
     case invalidNetworkType(selectedType: ChainType)
     case connecting(innerError: NetworkNodeConnectingError)
@@ -67,6 +68,8 @@ extension CustomNetworkBaseInteractorError: ErrorContentConvertible {
             innerError.toErrorContent(for: locale)
         case let .common(innerError):
             innerError.toErrorContent(for: locale)
+        default:
+            CommonError.undefined.toErrorContent(for: locale)
         }
     }
 }
