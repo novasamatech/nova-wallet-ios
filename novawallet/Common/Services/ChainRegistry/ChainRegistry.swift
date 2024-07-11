@@ -145,11 +145,7 @@ final class ChainRegistry {
             }
         }
         
-        chainsChangesObservers.forEach { observer in
-            observer.queue.async {
-                observer.updateClosure(changes, chainsBeforeChanges)
-            }
-        }
+        chainsChangesObservers.forEach { $0.updateClosure(changes, chainsBeforeChanges) }
     }
 
     private func updateSyncMode(for chain: ChainModel) throws {
@@ -347,7 +343,6 @@ extension ChainRegistry: ChainRegistryProtocol {
         chainsChangesObservers.append(
             ChainsObserver(
                 target: target,
-                queue: runningInQueue,
                 updateClosure: closure
             )
         )
@@ -382,7 +377,6 @@ extension ChainRegistry: ChainRegistryProtocol {
 extension ChainRegistry {
     struct ChainsObserver {
         weak var target: AnyObject?
-        var queue: DispatchQueue
         var updateClosure: ([DataProviderChange<ChainModel>], [ChainModel.Id: ChainModel]) -> Void
     }
 }

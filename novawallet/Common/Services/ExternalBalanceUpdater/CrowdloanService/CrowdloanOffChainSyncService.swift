@@ -73,11 +73,6 @@ final class CrowdloanOffChainSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        guard chain.syncMode.enabled() else {
-            stopSyncUp()
-            return
-        }
-        
         let contributionsFetchOperation = contributionsFetchOperation(
             accountId: accountId,
             chain: chain
