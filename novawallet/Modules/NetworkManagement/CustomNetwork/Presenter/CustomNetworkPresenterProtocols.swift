@@ -4,6 +4,7 @@ protocol CustomNetworkPresenterProtocol: AnyObject {
     func handlePartial(url: String)
     func handlePartial(name: String)
     func handlePartial(currencySymbol: String)
+    func handlePartial(chainId: String)
     func handlePartial(blockExplorerURL: String)
     func handlePartial(coingeckoURL: String)
     func confirm()

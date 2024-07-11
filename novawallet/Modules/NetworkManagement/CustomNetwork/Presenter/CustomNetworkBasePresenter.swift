@@ -185,10 +185,14 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
         provideButtonViewModel(loading: false)
     }
 
-    func handlePartial(blockExplorerURL: String) {
-        partialBlockExplorerURL = blockExplorerURL
+    func handlePartial(chainId: String) {
+        partialChainId = chainId
 
         provideButtonViewModel(loading: false)
+    }
+
+    func handlePartial(blockExplorerURL: String) {
+        partialBlockExplorerURL = blockExplorerURL
     }
 
     func handlePartial(coingeckoURL: String) {
