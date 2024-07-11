@@ -80,17 +80,10 @@ extension NetworkNodeEditInteractor: NetworkNodeEditInteractorInputProtocol {
 
         let editedNode = nodeToEdit.updating(url, name)
 
-        do {
-            try connect(
-                to: editedNode,
-                replacing: nodeToEdit,
-                chain: chain,
-                urlPredicate: NSPredicate.ws
-            )
-        } catch {
-            guard let networkNodeError = error as? NetworkNodeBaseInteractorError else { return }
-
-            presenter?.didReceive(networkNodeError)
-        }
+        connect(
+            to: editedNode,
+            replacing: nodeToEdit,
+            chain: chain
+        )
     }
 }

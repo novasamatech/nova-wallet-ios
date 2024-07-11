@@ -52,17 +52,10 @@ extension NetworkNodeAddInteractor: NetworkNodeAddInteractorInputProtocol {
             for: chain
         )
 
-        do {
-            try connect(
-                to: node,
-                replacing: nil,
-                chain: chain,
-                urlPredicate: NSPredicate.ws
-            )
-        } catch {
-            guard let networkNodeError = error as? NetworkNodeBaseInteractorError else { return }
-
-            presenter?.didReceive(networkNodeError)
-        }
+        connect(
+            to: node,
+            replacing: nil,
+            chain: chain
+        )
     }
 }

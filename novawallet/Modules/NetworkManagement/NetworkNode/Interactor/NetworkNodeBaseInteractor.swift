@@ -42,6 +42,31 @@ class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeCorrespo
         completeSetup()
     }
 
+    func connect(
+        to node: ChainNodeModel,
+        replacing _: ChainNodeModel?,
+        chain: ChainNodeConnectable
+    ) {
+        do {
+            try connect(
+                to: node,
+                replacing: nil,
+                chain: chain,
+                urlPredicate: NSPredicate.ws
+            )
+        } catch {
+            if let nodeCorrespondingError = error as? NetworkNodeCorrespondingError {
+                basePresenter?.didReceive(.nodeValidation(innerError: nodeCorrespondingError))
+            } else if let nodeConnectionError = error as? NetworkNodeConnectingError {
+                basePresenter?.didReceive(.connection(innerError: nodeConnectionError))
+            } else if let commonError = error as? CommonError {
+                basePresenter?.didReceive(.common(innerError: commonError))
+            } else {
+                basePresenter?.didReceive(.common(innerError: .undefined))
+            }
+        }
+    }
+
     func handleConnected() {
         fatalError("Must be overriden by subclass")
     }
