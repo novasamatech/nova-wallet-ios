@@ -193,7 +193,7 @@ private extension CustomNetworkViewController {
 
     @objc func actionChainIdChanged() {
         let partialChainId = rootView.chainIdInput.textField.text ?? ""
-        presenter.handlePartial(currencySymbol: partialChainId)
+        presenter.handlePartial(chainId: partialChainId)
     }
 
     @objc func actionBlockExplorerURLChanged() {
