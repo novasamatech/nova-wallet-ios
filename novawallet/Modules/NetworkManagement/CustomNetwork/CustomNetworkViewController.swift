@@ -57,6 +57,12 @@ extension CustomNetworkViewController: CustomNetworkViewProtocol {
 
     func didReceiveUrl(viewModel: InputViewModelProtocol) {
         rootView.urlInput.bind(inputViewModel: viewModel)
+
+        if viewModel.inputHandler.enabled {
+            rootView.urlInput.textField.textColor = R.color.colorTextPrimary()
+        } else {
+            rootView.urlInput.textField.textColor = R.color.colorTextSecondary()
+        }
     }
 
     func didReceiveName(viewModel: InputViewModelProtocol) {

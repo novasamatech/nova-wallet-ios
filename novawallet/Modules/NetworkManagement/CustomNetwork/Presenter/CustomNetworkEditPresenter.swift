@@ -46,4 +46,13 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
             preferredLanguages: selectedLocale.rLanguages
         )
     }
+
+    override func provideURLViewModel() {
+        let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
+            for: partialURL ?? "",
+            enabled: false,
+            placeholder: Constants.chainUrlPlaceholder
+        )
+        view?.didReceiveUrl(viewModel: inputViewModel)
+    }
 }
