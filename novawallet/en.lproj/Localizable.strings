@@ -1684,7 +1684,7 @@
 "network.node.add.alert.wrong.network.message" = "The URL you entered is not corresponding to Node for %@.
 Please enter URL of the valid %@ node.";
 "network.node.add.alert.already.exists.title" = "This Node already exists";
-"network.node.add.alert.already.exists.message" = "The URL you entered already exists as the %@ Node.";
+"network.node.add.alert.already.exists.message" = "The URL you entered already exists as the \"%@\" Node.";
 "common.for" = "For";
 "network.manage.node.edit" = "Edit node";
 "network.manage.node.delete" = "Delete node";
