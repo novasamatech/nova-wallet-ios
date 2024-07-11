@@ -43,11 +43,15 @@ extension NetworkNodeConnectingTrait {
             return nil
         }
 
+        let predicate: (ChainNodeModel) -> Bool = replacedNode == nil
+            ? { $0.url == url }
+            : { $0.url == url && $0.url != replacedNode?.url }
+
         return chainIds
             .compactMap { chainId -> (node: ChainNodeModel, chain: ChainModel)? in
                 guard
                     let chain = chainRegistry.getChain(for: chainId),
-                    let existingNode = chain.nodes.first(where: { $0.url == url && $0.url != replacedNode?.url })
+                    let existingNode = chain.nodes.first(where: predicate)
                 else { return nil }
 
                 return (node: existingNode, chain: chain)
