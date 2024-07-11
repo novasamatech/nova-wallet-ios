@@ -241,6 +241,7 @@ final class AssetHubSwapTests: XCTestCase {
             wallet: wallet,
             chainRegistry: chainRegistry,
             userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: storageFacade,
             generalSubscriptonFactory: generalLocalSubscriptionFactory,
             operationQueue: operationQueue
         ).createFeeService(for: chain)

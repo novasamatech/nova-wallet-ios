@@ -213,7 +213,7 @@ extension ServiceCoordinator {
             proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: metaAccountsRepository,
             walletUpdateMediator: walletUpdateMediator,
-            chainFilter: .combined([.enabledChains, .hasProxy]),
+            chainFilter: .allSatisfies([.enabledChains, .hasProxy]),
             chainWalletFilter: { _, wallet in
                 #if F_RELEASE
                     return wallet.type != .watchOnly

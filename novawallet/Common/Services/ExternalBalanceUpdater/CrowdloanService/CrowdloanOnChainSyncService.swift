@@ -119,15 +119,6 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        guard
-            let chain = chainRegistry.getChain(for: chainId),
-            chain.syncMode.enabled()
-        else {
-            logger.info("Chain with chainId: \(chainId) is disabled by user")
-            stopSyncUp()
-            return
-        }
-
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             logger.error("Connection for chainId: \(chainId) is unavailable")
             completeImmediate(ChainRegistryError.connectionUnavailable)

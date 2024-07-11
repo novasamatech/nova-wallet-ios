@@ -4,7 +4,7 @@ import UIKit
 
 protocol ChainAccountViewModelFactoryProtocol {
     func createViewModel(
-        from _: MetaAccountModel,
+        from wallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel],
         for locale: Locale
     ) -> ChainAccountListViewModel
@@ -114,6 +114,13 @@ final class ChainAccountViewModelFactory {
                 )
 
                 hasAction = accountAddress != nil
+            case .genericLedger:
+                guard chainModel.supportsGenericLedgerApp else {
+                    return nil
+                }
+
+                warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
+                hasAction = true
             }
 
             let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chainModel.icon)
@@ -195,7 +202,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                     chainAccounts: sharedSecretAccountList
                 )
             ]
-        case .ledger, .proxied:
+        case .ledger, .proxied, .genericLedger:
             let allChainAccounts = customSecretAccountList + sharedSecretAccountList
 
             let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)

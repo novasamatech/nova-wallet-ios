@@ -48,7 +48,7 @@ extension NoAccountSupportPresentable where Self: AlertPresentable {
                 chainName,
                 preferredLanguages: locale.rLanguages
             )
-        case .ledger:
+        case .ledger, .genericLedger:
             let ledger = R.string.localizable.commonLedger(preferredLanguages: locale.rLanguages)
             title = R.string.localizable.commonWalletNotSupportChain(
                 ledger,

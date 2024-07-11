@@ -8,10 +8,11 @@ enum MetaAccountModelType: UInt8 {
     case ledger
     case polkadotVault
     case proxied
+    case genericLedger
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner, .polkadotVault, .ledger, .proxied:
+        case .secrets, .paritySigner, .polkadotVault, .ledger, .proxied, .genericLedger:
             return true
         case .watchOnly:
             return false

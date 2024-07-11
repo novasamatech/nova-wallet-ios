@@ -61,6 +61,8 @@ final class ChainRegistry {
     private(set) var runtimeVersionSubscriptions: [ChainModel.Id: RuntimeSubscriptionInfo] = [:]
     private var availableChains: [ChainModel.Id: ChainModel] = [:]
 
+    private var chainsChangesObservers: [ChainsObserver] = []
+
     private let mutex = NSLock()
 
     init(
@@ -120,6 +122,8 @@ final class ChainRegistry {
             return
         }
 
+        let chainsBeforeChanges = availableChains
+
         changes.forEach { change in
             do {
                 switch change {
@@ -140,6 +144,8 @@ final class ChainRegistry {
                 logger?.error("Unexpected error on handling chains update: \(error)")
             }
         }
+
+        chainsChangesObservers.forEach { $0.updateClosure(changes, chainsBeforeChanges) }
     }
 
     private func updateSyncMode(for chain: ChainModel) throws {
@@ -313,36 +319,41 @@ extension ChainRegistry: ChainRegistryProtocol {
         filterStrategy: ChainFilterStrategy,
         updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
     ) {
-        var currentChains = availableChains
+        mutex.lock()
 
-        let updateClosure: ([DataProviderChange<ChainModel>]) -> Void = { changes in
+        defer {
+            mutex.unlock()
+        }
+
+        let closure: ([DataProviderChange<ChainModel>], [ChainModel.Id: ChainModel]) -> Void = { changes, currentChains in
             runningInQueue.async {
                 let filtered = filterStrategy.filter(
                     changes,
                     using: currentChains
                 )
-                currentChains = filtered.mergeToDict(currentChains)
 
                 updateClosure(filtered)
             }
         }
 
-        let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.logger?.error("Unexpected error chains listener setup: \(error)")
+        guard !chainsChangesObservers.contains(where: { $0.target === target }) else {
+            return
         }
 
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false,
-            refreshWhenEmpty: false
+        chainsChangesObservers.append(
+            ChainsObserver(
+                target: target,
+                updateClosure: closure
+            )
         )
 
-        chainProvider.addObserver(
-            target,
-            deliverOn: DispatchQueue.global(qos: .userInitiated),
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
+        guard !availableChains.isEmpty else {
+            return
+        }
+
+        closure(
+            availableChains.values.map { DataProviderChange<ChainModel>.insert(newItem: $0) },
+            availableChains
         )
     }
 
@@ -360,5 +371,12 @@ extension ChainRegistry: ChainRegistryProtocol {
 
     func syncUp() {
         syncUpServices()
+    }
+}
+
+extension ChainRegistry {
+    struct ChainsObserver {
+        weak var target: AnyObject?
+        var updateClosure: ([DataProviderChange<ChainModel>], [ChainModel.Id: ChainModel]) -> Void
     }
 }

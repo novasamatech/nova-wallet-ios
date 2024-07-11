@@ -789,7 +789,7 @@ PODS:
     - gRPC-Core/Interface (= 1.49.1)
   - gRPC-Core/Interface (1.49.1)
   - GTMSessionFetcher/Core (3.3.1)
-  - HydraMath (0.1.0)
+  - HydraMath (0.2.0)
   - IrohaCrypto/BIP39 (0.9.0):
     - IrohaCrypto/Common
   - IrohaCrypto/blake2 (0.9.0)
@@ -812,6 +812,7 @@ PODS:
   - keccak.c (0.1.3)
   - Kingfisher (6.3.0)
   - leveldb-library (1.22.2)
+  - MetadataShortenerApi (0.1.0)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
     - nanopb/encode (= 2.30909.1)
@@ -942,8 +943,9 @@ DEPENDENCIES:
   - FirebaseFirestore
   - FirebaseMessaging
   - FireMock
-  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.1`)
+  - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.2`)
   - Kingfisher
+  - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
   - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
   - R.swift
   - ReachabilitySwift
@@ -1024,7 +1026,10 @@ EXTERNAL SOURCES:
     :tag: 0.1.3
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
-    :tag: '0.1'
+    :tag: '0.2'
+  MetadataShortenerApi:
+    :git: https://github.com/novasamatech/metadata-shortener-ios.git
+    :tag: 0.1.0
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.0.1
@@ -1061,7 +1066,10 @@ CHECKOUT OPTIONS:
     :tag: 0.1.3
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
-    :tag: '0.1'
+    :tag: '0.2'
+  MetadataShortenerApi:
+    :git: https://github.com/novasamatech/metadata-shortener-ios.git
+    :tag: 0.1.0
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.0.1
@@ -1117,11 +1125,12 @@ SPEC CHECKSUMS:
   "gRPC-C++": 2df8cba576898bdacd29f0266d5236fa0e26ba6a
   gRPC-Core: a21a60aefc08c68c247b439a9ef97174b0c54f96
   GTMSessionFetcher: 8a1b34ad97ebe6f909fb8b9b77fba99943007556
-  HydraMath: 9d3eed16500b480673599494e85d60060b44a5a8
+  HydraMath: eb2fa7220956045ae5502b36cc91a34fd8ee4dcb
   IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
   Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
+  MetadataShortenerApi: b2d5d3ddb2e75e34688cc5f162881a943939ea9a
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   Operation-iOS: 5f1c2cb82bf10f46b92faefc92d5821550b14eb5
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
@@ -1152,6 +1161,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 6183cb20d18e8198ad426bcd1ac46cabe84fa815
+PODFILE CHECKSUM: 65dd64d36e6c0b46ddacb7d2629960ec17b1a716
 
 COCOAPODS: 1.15.2
