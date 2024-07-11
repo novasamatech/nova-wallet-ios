@@ -31,7 +31,7 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
             return
         }
 
-        interactor.addNetwork(
+        let request = CustomNetwork.AddRequest(
             networkType: chainType,
             url: partialURL,
             name: partialName,
@@ -40,11 +40,27 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
             blockExplorerURL: partialBlockExplorerURL,
             coingeckoURL: partialCoingeckoURL
         )
+
+        interactor.addNetwork(with: request)
     }
 
     override func completeButtonTitle() -> String {
         R.string.localizable.networksListAddNetworkButtonTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
+    }
+
+    override func handle(partial url: String) {
+        super.handle(partial: url)
+
+        guard
+            chainType == .substrate,
+            NSPredicate.ws.evaluate(with: url)
+        else {
+            return
+        }
+
+        provideButtonViewModel(loading: true)
+        interactor.fetchNetworkProperties(for: url)
     }
 }

@@ -25,14 +25,21 @@ struct CustomNetworkViewFactory {
         let runtimeTypeRegistryFactory = RuntimeTypeRegistryFactory(logger: Logger.shared)
         let blockHashOperationFactory = BlockHashOperationFactory()
         let systemPropertiesOperationFactory = SystemPropertiesOperationFactory()
+        let chainNameOperationFactory = SubstrateChainNameOperationFactory()
+
+        let customNetworkSetupFactory = CustomNetworkSetupFactory(
+            rawRuntimeFetchFactory: runtimeFetchOperationFactory,
+            blockHashOperationFactory: blockHashOperationFactory,
+            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
+            chainNameOperationFactory: chainNameOperationFactory,
+            typeRegistryFactory: runtimeTypeRegistryFactory,
+            operationQueue: operationQueue
+        )
 
         let interactor = CustomNetworkAddInteractor(
             networkToAdd: networkToAdd,
             chainRegistry: chainRegistry,
-            runtimeFetchOperationFactory: runtimeFetchOperationFactory,
-            runtimeTypeRegistryFactory: runtimeTypeRegistryFactory,
-            blockHashOperationFactory: blockHashOperationFactory,
-            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
+            customNetworkSetupFactory: customNetworkSetupFactory,
             connectionFactory: connectionFactory,
             repository: repository,
             priceIdParser: CoingeckoUrlParser(),
@@ -85,15 +92,22 @@ struct CustomNetworkViewFactory {
         let runtimeTypeRegistryFactory = RuntimeTypeRegistryFactory(logger: Logger.shared)
         let blockHashOperationFactory = BlockHashOperationFactory()
         let systemPropertiesOperationFactory = SystemPropertiesOperationFactory()
+        let chainNameOperationFactory = SubstrateChainNameOperationFactory()
+
+        let customNetworkSetupFactory = CustomNetworkSetupFactory(
+            rawRuntimeFetchFactory: runtimeFetchOperationFactory,
+            blockHashOperationFactory: blockHashOperationFactory,
+            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
+            chainNameOperationFactory: chainNameOperationFactory,
+            typeRegistryFactory: runtimeTypeRegistryFactory,
+            operationQueue: operationQueue
+        )
 
         let interactor = CustomNetworkEditInteractor(
             networkToEdit: network,
             selectedNode: selectedNode,
             chainRegistry: chainRegistry,
-            runtimeFetchOperationFactory: runtimeFetchOperationFactory,
-            runtimeTypeRegistryFactory: runtimeTypeRegistryFactory,
-            blockHashOperationFactory: blockHashOperationFactory,
-            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
+            customNetworkSetupFactory: customNetworkSetupFactory,
             connectionFactory: connectionFactory,
             repository: repository,
             priceIdParser: CoingeckoUrlParser(),

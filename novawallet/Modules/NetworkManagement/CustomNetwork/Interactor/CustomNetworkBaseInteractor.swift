@@ -2,15 +2,11 @@ import SubstrateSdk
 import Operation_iOS
 
 class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
-    NetworkNodeConnectingTrait,
-    CustomNetworkSetupTrait {
+    NetworkNodeConnectingTrait {
     weak var presenter: CustomNetworkBaseInteractorOutputProtocol?
 
     let chainRegistry: ChainRegistryProtocol
-    let runtimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol
-    let runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
-    let blockHashOperationFactory: BlockHashOperationFactoryProtocol
-    let systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol
+    let customNetworkSetupFactory: CustomNetworkSetupFactoryProtocol
     let connectionFactory: ConnectionFactoryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
     let priceIdParser: PriceUrlParserProtocol
@@ -19,24 +15,21 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     var currentConnectingNode: ChainNodeModel?
     var currentConnection: ChainConnection?
 
+    var setupNetworkWrapper: CompoundOperationWrapper<ChainModel>?
+    var setupFinishStrategy: CustomNetworkSetupFinishStrategy?
+
     private var partialChain: PartialCustomChainModel?
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        runtimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol,
-        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
-        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
-        systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
+        customNetworkSetupFactory: CustomNetworkSetupFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         priceIdParser: PriceUrlParserProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
-        self.runtimeFetchOperationFactory = runtimeFetchOperationFactory
-        self.runtimeTypeRegistryFactory = runtimeTypeRegistryFactory
-        self.blockHashOperationFactory = blockHashOperationFactory
-        self.systemPropertiesOperationFactory = systemPropertiesOperationFactory
+        self.customNetworkSetupFactory = customNetworkSetupFactory
         self.connectionFactory = connectionFactory
         self.repository = repository
         self.priceIdParser = priceIdParser
@@ -47,28 +40,42 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         completeSetup()
     }
 
-    func modify(
-        _ existingNetwork: ChainModel,
-        node: ChainNodeModel,
-        url: String,
-        name: String,
-        currencySymbol: String,
-        chainId: String?,
-        blockExplorerURL: String?,
-        coingeckoURL: String?
-    ) {
-        let mainAsset = existingNetwork.assets.first(where: { $0.assetId == 0 })
+    func modify(with request: CustomNetwork.ModifyRequest) {
+        let mainAsset = request.existingNetwork.assets.first(where: { $0.assetId == 0 })
 
-        let evmChainId: UInt16? = if let chainId, let intChainId = Int(chainId) {
+        let evmChainId: UInt16? = if let chainId = request.chainId, let intChainId = Int(chainId) {
             UInt16(intChainId)
         } else {
             nil
         }
 
-        var priceId: AssetModel.PriceId?
-
         do {
-            priceId = try extractPriceId(from: coingeckoURL) ?? mainAsset?.priceId
+            let priceId = try extractPriceId(from: request.coingeckoURL) ?? mainAsset?.priceId
+
+            let partialChain = PartialCustomChainModel(
+                chainId: request.existingNetwork.chainId,
+                url: request.url,
+                name: request.name,
+                iconUrl: request.existingNetwork.icon,
+                assets: request.existingNetwork.assets,
+                nodes: request.existingNetwork.nodes,
+                currencySymbol: mainAsset?.symbol ?? request.currencySymbol,
+                options: request.existingNetwork.options,
+                nodeSwitchStrategy: request.existingNetwork.nodeSwitchStrategy,
+                addressPrefix: evmChainId ?? request.existingNetwork.addressPrefix,
+                connectionMode: .autoBalanced,
+                blockExplorer: createExplorer(from: request.blockExplorerURL) ?? request.existingNetwork.explorers?.first,
+                mainAssetPriceId: priceId
+            )
+
+            self.partialChain = partialChain
+
+            setupConnection(
+                for: partialChain,
+                node: request.node,
+                replacing: request.node,
+                networkSetupType: .full
+            )
         } catch {
             guard let parseError = error as? CustomNetworkBaseInteractorError else {
                 return
@@ -76,65 +83,53 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
 
             presenter?.didReceive(parseError)
         }
-
-        let partialChain = PartialCustomChainModel(
-            chainId: existingNetwork.chainId,
-            url: url,
-            name: name,
-            iconUrl: existingNetwork.icon,
-            assets: existingNetwork.assets,
-            nodes: existingNetwork.nodes,
-            currencySymbol: mainAsset?.symbol ?? currencySymbol,
-            options: existingNetwork.options,
-            nodeSwitchStrategy: existingNetwork.nodeSwitchStrategy,
-            addressPrefix: evmChainId ?? existingNetwork.addressPrefix,
-            connectionMode: .autoBalanced,
-            blockExplorer: createExplorer(from: blockExplorerURL) ?? existingNetwork.explorers?.first,
-            mainAssetPriceId: priceId
-        )
-
-        self.partialChain = partialChain
-
-        connect(
-            to: node,
-            replacingNode: node,
-            chain: partialChain,
-            urlPredicate: NSPredicate.ws
-        )
     }
 
-    func connectToChain(
-        with networkType: ChainType,
-        url: String,
-        name: String,
-        iconUrl: URL? = nil,
-        currencySymbol: String,
-        chainId: String?,
-        blockExplorerURL: String?,
-        coingeckoURL: String?,
-        replacingNode: ChainNodeModel? = nil
-    ) {
-        let evmChainId: UInt16? = if let chainId, let intChainId = Int(chainId) {
+    func setupChain(with request: CustomNetwork.SetupRequest) {
+        let evmChainId: UInt16? = if let chainId = request.chainId, let intChainId = Int(chainId) {
             UInt16(intChainId)
         } else {
             nil
         }
 
         let node = createNode(
-            with: url,
+            with: request.url,
             name: Constants.defaultCustomNodeName,
             for: nil
         )
 
-        let explorer = createExplorer(from: blockExplorerURL)
-        let options: [LocalChainOptions]? = networkType == .evm
+        let explorer = createExplorer(from: request.blockExplorerURL)
+        let options: [LocalChainOptions]? = request.networkType == .evm
             ? [.ethereumBased, .noSubstrateRuntime]
             : nil
 
-        var priceId: AssetModel.PriceId?
-
         do {
-            priceId = try extractPriceId(from: coingeckoURL)
+            let priceId = try extractPriceId(from: request.coingeckoURL)
+
+            let partialChain = PartialCustomChainModel(
+                chainId: "",
+                url: request.url,
+                name: request.name,
+                iconUrl: request.iconUrl,
+                assets: Set(),
+                nodes: [node],
+                currencySymbol: request.currencySymbol,
+                options: options,
+                nodeSwitchStrategy: .roundRobin,
+                addressPrefix: evmChainId ?? 0,
+                connectionMode: .autoBalanced,
+                blockExplorer: explorer,
+                mainAssetPriceId: priceId
+            )
+
+            self.partialChain = partialChain
+
+            setupConnection(
+                for: partialChain,
+                node: node,
+                replacing: request.replacingNode,
+                networkSetupType: request.networkSetupType
+            )
         } catch {
             guard let parseError = error as? CustomNetworkBaseInteractorError else {
                 return
@@ -142,38 +137,9 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
 
             presenter?.didReceive(parseError)
         }
-
-        let partialChain = PartialCustomChainModel(
-            chainId: "",
-            url: url,
-            name: name,
-            iconUrl: iconUrl,
-            assets: Set(),
-            nodes: [node],
-            currencySymbol: currencySymbol,
-            options: options,
-            nodeSwitchStrategy: .roundRobin,
-            addressPrefix: evmChainId ?? 0,
-            connectionMode: .autoBalanced,
-            blockExplorer: explorer,
-            mainAssetPriceId: priceId
-        )
-
-        self.partialChain = partialChain
-
-        connect(
-            to: node,
-            replacingNode: replacingNode,
-            chain: partialChain,
-            urlPredicate: NSPredicate.ws
-        )
     }
 
     // MARK: To Override
-
-    func handleSetupFinished(for _: ChainModel) {
-        fatalError("Must be overriden by subclass")
-    }
 
     func completeSetup() {
         fatalError("Must be overriden by subclass")
@@ -203,46 +169,31 @@ extension CustomNetworkBaseInteractor: WebSocketEngineDelegate {
 private extension CustomNetworkBaseInteractor {
     // MARK: Connection
 
-    func connect(
-        to node: ChainNodeModel,
-        replacingNode: ChainNodeModel?,
-        chain: ChainNodeConnectable,
-        urlPredicate: NSPredicate
+    func setupConnection(
+        for partialChain: PartialCustomChainModel,
+        node: ChainNodeModel,
+        replacing existingNode: ChainNodeModel?,
+        networkSetupType: CustomNetworkSetupOperationType
     ) {
         do {
-            try connect(
+            let connection = try connect(
                 to: node,
-                replacing: replacingNode,
-                chain: chain,
-                urlPredicate: urlPredicate
+                replacing: existingNode,
+                chain: partialChain,
+                urlPredicate: NSPredicate.ws
             )
-        } catch let NetworkNodeConnectingError.alreadyExists(existingNode, existingChain) {
-            if existingChain.source == .user {
-                presenter?.didReceive(
-                    .alreadyExistCustom(
-                        node: existingNode,
-                        chain: existingChain
-                    )
-                )
-            } else {
-                presenter?.didReceive(
-                    .alreadyExistRemote(
-                        node: existingNode,
-                        chain: existingChain
-                    )
-                )
-            }
-        } catch is NetworkNodeCorrespondingError {
-            presenter?.didReceive(.invalidChainId)
-        } catch NetworkNodeConnectingError.wrongFormat {
-            presenter?.didReceive(
-                .connecting(innerError: .wrongFormat)
+
+            setupNetworkWrapper = customNetworkSetupFactory.createOperation(
+                with: partialChain,
+                connection: connection,
+                node: node,
+                type: networkSetupType
             )
+
+            currentConnection = connection
         } catch {
-            print(error)
-            presenter?.didReceive(
-                .common(innerError: .undefined)
-            )
+            let customNetworkError = CustomNetworkBaseInteractorError(from: error)
+            presenter?.didReceive(customNetworkError)
         }
     }
 
@@ -255,7 +206,6 @@ private extension CustomNetworkBaseInteractor {
 
         DispatchQueue.main.async {
             guard
-                let node = self.currentConnectingNode,
                 let chain = self.partialChain,
                 let connection = connection as? ChainConnection
             else {
@@ -271,31 +221,15 @@ private extension CustomNetworkBaseInteractor {
             case .waitingReconnection:
                 connection.disconnect(true)
             case .connected:
-                self.handleConnected(
-                    connection: connection,
-                    chain: chain,
-                    node: node
-                )
+                self.handleConnected()
             default:
                 break
             }
         }
     }
 
-    func handleConnected(
-        connection: ChainConnection,
-        chain: PartialCustomChainModel,
-        node: ChainNodeModel
-    ) {
-        let setupNetworkWrapper = createSetupNetworkWrapper(
-            partialChain: chain,
-            rawRuntimeFetchFactory: runtimeFetchOperationFactory,
-            blockHashOperationFactory: blockHashOperationFactory,
-            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
-            typeRegistryFactory: runtimeTypeRegistryFactory,
-            connection: connection,
-            node: node
-        )
+    func handleConnected() {
+        guard let setupNetworkWrapper else { return }
 
         execute(
             wrapper: setupNetworkWrapper,
@@ -304,7 +238,10 @@ private extension CustomNetworkBaseInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(chain):
-                self?.handleSetupFinished(for: chain)
+                self?.setupFinishStrategy?.handleSetupFinished(
+                    for: chain,
+                    presenter: self?.presenter
+                )
             case let .failure(error as CustomNetworkSetupError):
                 switch error {
                 case .decimalsNotFound:

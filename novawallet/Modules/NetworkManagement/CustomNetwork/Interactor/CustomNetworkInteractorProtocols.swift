@@ -1,37 +1,13 @@
 protocol CustomNetworkBaseInteractorInputProtocol: AnyObject {
     func setup()
-
-    func modify(
-        _ existingNetwork: ChainModel,
-        node: ChainNodeModel,
-        url: String,
-        name: String,
-        currencySymbol: String,
-        chainId: String?,
-        blockExplorerURL: String?,
-        coingeckoURL: String?
-    )
+    func modify(with request: CustomNetwork.ModifyRequest)
 }
 
 protocol CustomNetworkAddInteractorInputProtocol: CustomNetworkBaseInteractorInputProtocol {
-    func addNetwork(
-        networkType: ChainType,
-        url: String,
-        name: String,
-        currencySymbol: String,
-        chainId: String?,
-        blockExplorerURL: String?,
-        coingeckoURL: String?
-    )
+    func addNetwork(with request: CustomNetwork.AddRequest)
+    func fetchNetworkProperties(for url: String)
 }
 
 protocol CustomNetworkEditInteractorInputProtocol: CustomNetworkBaseInteractorInputProtocol {
-    func editNetwork(
-        url: String,
-        name: String,
-        currencySymbol: String,
-        chainId: String?,
-        blockExplorerURL: String?,
-        coingeckoURL: String?
-    )
+    func editNetwork(with request: CustomNetwork.EditRequest)
 }

@@ -9,10 +9,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         networkToEdit: ChainModel,
         selectedNode: ChainNodeModel,
         chainRegistry: ChainRegistryProtocol,
-        runtimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol,
-        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
-        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
-        systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
+        customNetworkSetupFactory: CustomNetworkSetupFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         priceIdParser: PriceUrlParserProtocol,
@@ -23,10 +20,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
 
         super.init(
             chainRegistry: chainRegistry,
-            runtimeFetchOperationFactory: runtimeFetchOperationFactory,
-            runtimeTypeRegistryFactory: runtimeTypeRegistryFactory,
-            blockHashOperationFactory: blockHashOperationFactory,
-            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
+            customNetworkSetupFactory: customNetworkSetupFactory,
             connectionFactory: connectionFactory,
             repository: repository,
             priceIdParser: priceIdParser,
@@ -34,47 +28,9 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         )
     }
 
-    override func handleSetupFinished(for network: ChainModel) {
-        var readyNetwork = network
-
-        if network.chainId == networkToEdit.chainId {
-            var nodesToAdd = networkToEdit.nodes
-
-            if !network.nodes.contains(where: { $0.url == selectedNode.url }) {
-                nodesToAdd.remove(selectedNode)
-            }
-
-            readyNetwork = network.adding(nodes: nodesToAdd)
-        }
-
-        let deleteIds = network.chainId != networkToEdit.chainId
-            ? [networkToEdit.chainId]
-            : []
-
-        let saveOperation = repository.saveOperation(
-            { [readyNetwork] },
-            { deleteIds }
-        )
-
-        execute(
-            operation: saveOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.presenter?.didFinishWorkWithNetwork()
-            case .failure:
-                self?.presenter?.didReceive(
-                    .common(innerError: .dataCorruption)
-                )
-            }
-        }
-    }
-
     override func completeSetup() {
         presenter?.didReceive(
-            chain: networkToEdit,
+            knownChain: networkToEdit,
             selectedNode: selectedNode
         )
     }
@@ -83,24 +39,22 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
 // MARK: CustomNetworkAddInteractorInputProtocol
 
 extension CustomNetworkEditInteractor: CustomNetworkEditInteractorInputProtocol {
-    func editNetwork(
-        url: String,
-        name: String,
-        currencySymbol: String,
-        chainId: String?,
-        blockExplorerURL: String?,
-        coingeckoURL: String?
-    ) {
-        connectToChain(
-            with: networkToEdit.isEthereumBased ? .evm : .substrate,
-            url: url,
-            name: name,
-            iconUrl: networkToEdit.icon,
-            currencySymbol: currencySymbol,
-            chainId: chainId,
-            blockExplorerURL: blockExplorerURL,
-            coingeckoURL: coingeckoURL,
-            replacingNode: selectedNode
+    func editNetwork(with request: CustomNetwork.EditRequest) {
+        setupFinishStrategy = CustomNetworkEditStrategy(
+            networkToEdit: networkToEdit,
+            selectedNode: selectedNode,
+            repository: repository,
+            operationQueue: operationQueue
         )
+
+        let setupRequest = CustomNetwork.SetupRequest(
+            from: request,
+            networkType: networkToEdit.isEthereumBased ? .evm : .substrate,
+            iconUrl: networkToEdit.icon,
+            replacingNode: selectedNode,
+            networkSetupType: .full
+        )
+
+        setupChain(with: setupRequest)
     }
 }

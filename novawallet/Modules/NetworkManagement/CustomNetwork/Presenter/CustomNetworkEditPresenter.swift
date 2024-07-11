@@ -31,7 +31,7 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
             return
         }
 
-        interactor.editNetwork(
+        let request = CustomNetwork.EditRequest(
             url: partialURL,
             name: partialName,
             currencySymbol: partialCurrencySymbol,
@@ -39,6 +39,8 @@ final class CustomNetworkEditPresenter: CustomNetworkBasePresenter {
             blockExplorerURL: partialBlockExplorerURL,
             coingeckoURL: partialCoingeckoURL
         )
+
+        interactor.editNetwork(with: request)
     }
 
     override func completeButtonTitle() -> String {

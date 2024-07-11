@@ -7,7 +7,7 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
     let iconUrl: URL?
     let assets: Set<AssetModel>
     let nodes: Set<ChainNodeModel>
-    let currencySymbol: String
+    let currencySymbol: String?
     let options: [LocalChainOptions]?
     let nodeSwitchStrategy: ChainModel.NodeSwitchStrategy
     let addressPrefix: UInt16
@@ -78,6 +78,24 @@ struct PartialCustomChainModel: ChainNodeConnectable, RuntimeProviderChainProtoc
     }
 
     func byChanging(chainId: ChainModel.Id) -> PartialCustomChainModel {
+        PartialCustomChainModel(
+            chainId: chainId,
+            url: url,
+            name: name,
+            iconUrl: iconUrl,
+            assets: assets,
+            nodes: nodes,
+            currencySymbol: currencySymbol,
+            options: options,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            connectionMode: connectionMode,
+            blockExplorer: blockExplorer,
+            mainAssetPriceId: mainAssetPriceId
+        )
+    }
+
+    func byChanging(name: String) -> PartialCustomChainModel {
         PartialCustomChainModel(
             chainId: chainId,
             url: url,

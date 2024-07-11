@@ -18,6 +18,10 @@ protocol CustomNetworkBaseInteractorOutputProtocol: AnyObject {
     func didFinishWorkWithNetwork()
     func didReceive(_ error: CustomNetworkBaseInteractorError)
     func didReceive(
+        knownChain: ChainModel,
+        selectedNode: ChainNodeModel
+    )
+    func didReceive(
         chain: ChainModel,
         selectedNode: ChainNodeModel
     )
