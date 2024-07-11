@@ -6,6 +6,8 @@ import Operation_iOS
 final class NetworkDetailsInteractor {
     weak var presenter: NetworkDetailsInteractorOutputProtocol?
 
+    private let eventCenter: EventCenterProtocol
+    
     private let connectionFactory: ConnectionFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let repository: AnyDataProviderRepository<ChainModel>
@@ -21,6 +23,7 @@ final class NetworkDetailsInteractor {
 
     init(
         chain: ChainModel,
+        eventCenter: EventCenterProtocol,
         connectionFactory: ConnectionFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
@@ -28,6 +31,7 @@ final class NetworkDetailsInteractor {
         operationQueue: OperationQueue
     ) {
         self.chain = chain
+        self.eventCenter = eventCenter
         self.connectionFactory = connectionFactory
         self.chainRegistry = chainRegistry
         self.repository = repository
@@ -68,7 +72,16 @@ extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
             { [] }
         )
 
-        executeDataOperationWithErrorHandling(saveOperation)
+        executeDataOperationWithErrorHandling(saveOperation) { [weak self] in
+            guard let chain = self?.chain else { return }
+            
+            self?.eventCenter.notify(
+                with: NetworkEnabledChanged(
+                    chainId: chain.chainId,
+                    enabled: enabled
+                )
+            )
+        }
     }
 
     func setAutoBalance(enabled: Bool) {

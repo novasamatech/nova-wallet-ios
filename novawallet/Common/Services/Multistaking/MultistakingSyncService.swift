@@ -72,7 +72,8 @@ final class MultistakingSyncService {
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: workingQueue
+            runningInQueue: workingQueue,
+            filterStrategy: .enabledChains
         ) { [weak self] changes in
             guard let self = self else {
                 return

@@ -31,7 +31,8 @@ final class ProxySyncService {
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let walletUpdateMediator: WalletUpdateMediating
     let eventCenter: EventCenterProtocol
-    let chainFilter: ProxySyncChainFilter?
+    
+    let chainFilter: ChainFilterStrategy
     let chainWalletFilter: ProxySyncChainWalletFilter?
 
     private(set) var isActive: Bool = false
@@ -54,7 +55,7 @@ final class ProxySyncService {
             attributes: .concurrent
         ),
         logger: LoggerProtocol = Logger.shared,
-        chainFilter: @escaping ProxySyncChainFilter,
+        chainFilter: ChainFilterStrategy,
         chainWalletFilter: ProxySyncChainWalletFilter?
     ) {
         self.chainRegistry = chainRegistry
@@ -74,7 +75,8 @@ final class ProxySyncService {
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: workingQueue
+            runningInQueue: workingQueue,
+            filterStrategy: chainFilter
         ) { [weak self] changes in
             guard let self = self else {
                 return
@@ -105,11 +107,6 @@ final class ProxySyncService {
     }
 
     private func setupSyncService(for chain: ChainModel) {
-        if let chainFilter = chainFilter, !chainFilter(chain) {
-            stopSyncSevice(for: chain.chainId)
-            return
-        }
-
         guard updaters[chain.chainId] == nil else {
             return
         }

@@ -15,6 +15,7 @@ protocol ChainRegistryProtocol: AnyObject {
     func chainsSubscribe(
         _ target: AnyObject,
         runningInQueue: DispatchQueue,
+        filterStrategy: ChainFilterStrategy,
         updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
     )
 
@@ -24,6 +25,22 @@ protocol ChainRegistryProtocol: AnyObject {
     func unsubscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
 
     func syncUp()
+}
+
+extension ChainRegistryProtocol {
+    func chainsSubscribe(
+        _ target: AnyObject,
+        runningInQueue: DispatchQueue,
+        filterStrategy: ChainFilterStrategy = .noFilter,
+        updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
+    ) {
+        chainsSubscribe(
+            target,
+            runningInQueue: runningInQueue,
+            filterStrategy: filterStrategy,
+            updateClosure: updateClosure
+        )
+    }
 }
 
 final class ChainRegistry {
@@ -43,6 +60,8 @@ final class ChainRegistry {
 
     private(set) var runtimeVersionSubscriptions: [ChainModel.Id: RuntimeSubscriptionInfo] = [:]
     private var availableChains: [ChainModel.Id: ChainModel] = [:]
+    
+    private var chainsChangesObservers: [ChainsObserver] = []
 
     private let mutex = NSLock()
 
@@ -94,7 +113,7 @@ final class ChainRegistry {
 
     private func handle(changes: [DataProviderChange<ChainModel>]) {
         mutex.lock()
-
+        
         defer {
             mutex.unlock()
         }
@@ -102,6 +121,8 @@ final class ChainRegistry {
         guard !changes.isEmpty else {
             return
         }
+        
+        let chainsBeforeChanges = availableChains
 
         changes.forEach { change in
             do {
@@ -123,6 +144,8 @@ final class ChainRegistry {
                 logger?.error("Unexpected error on handling chains update: \(error)")
             }
         }
+        
+        chainsChangesObservers.forEach { $0.updateClosure(changes, chainsBeforeChanges) }
     }
 
     private func updateSyncMode(for chain: ChainModel) throws {
@@ -293,30 +316,44 @@ extension ChainRegistry: ChainRegistryProtocol {
     func chainsSubscribe(
         _ target: AnyObject,
         runningInQueue: DispatchQueue,
+        filterStrategy: ChainFilterStrategy,
         updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
     ) {
-        let updateClosure: ([DataProviderChange<ChainModel>]) -> Void = { changes in
+        mutex.lock()
+        
+        defer {
+            mutex.unlock()
+        }
+        
+        let closure: ([DataProviderChange<ChainModel>], [ChainModel.Id: ChainModel]) -> Void = { changes, currentChains in
             runningInQueue.async {
-                updateClosure(changes)
+                let filtered = filterStrategy.filter(
+                    changes,
+                    using: currentChains
+                )
+                
+                updateClosure(filtered)
             }
         }
-
-        let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.logger?.error("Unexpected error chains listener setup: \(error)")
+        
+        guard !chainsChangesObservers.contains(where: { $0.target === target }) else {
+            return
+        }
+        
+        chainsChangesObservers.append(
+            ChainsObserver(
+                target: target,
+                updateClosure: closure
+            )
+        )
+        
+        guard !availableChains.isEmpty else {
+            return
         }
 
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false,
-            refreshWhenEmpty: false
-        )
-
-        chainProvider.addObserver(
-            target,
-            deliverOn: DispatchQueue.global(qos: .userInitiated),
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
+        closure(
+            availableChains.values.map { DataProviderChange<ChainModel>.insert(newItem: $0) },
+            availableChains
         )
     }
 
@@ -329,10 +366,17 @@ extension ChainRegistry: ChainRegistryProtocol {
     }
 
     func unsubscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id) {
-        connectionPool.subscribe(subscriber, chainId: chainId)
+        connectionPool.unsubscribe(subscriber, chainId: chainId)
     }
 
     func syncUp() {
         syncUpServices()
+    }
+}
+
+extension ChainRegistry {
+    struct ChainsObserver {
+        weak var target: AnyObject?
+        var updateClosure: ([DataProviderChange<ChainModel>], [ChainModel.Id: ChainModel]) -> Void
     }
 }

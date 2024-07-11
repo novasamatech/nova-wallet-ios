@@ -12,7 +12,7 @@ struct AssetsSearchViewFactory {
 
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
-            filter: nil,
+            filter: { $0.chain.syncMode.enabled() },
             logger: Logger.shared
         )
 

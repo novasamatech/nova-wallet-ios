@@ -296,6 +296,7 @@ class CrowdloanListTests: XCTestCase {
         )
         
         return CrowdloanListInteractor(
+            eventCenter: EventCenter.shared,
             selectedMetaAccount: selectedAccount,
             crowdloanState: crowdloanState,
             chainRegistry: chainRegistry,
