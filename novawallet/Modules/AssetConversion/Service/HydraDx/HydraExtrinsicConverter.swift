@@ -70,6 +70,12 @@ enum HydraExtrinsicConverter {
                     assetIn: component.assetIn,
                     assetOut: component.assetOut
                 )
+            case let .xyk:
+                return HydraRouter.Trade(
+                    pool: .xyk,
+                    assetIn: component.assetIn,
+                    assetOut: component.assetOut
+                )
             }
         }
     }

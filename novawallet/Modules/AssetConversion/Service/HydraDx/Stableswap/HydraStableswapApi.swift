@@ -42,7 +42,7 @@ enum HydraStableswapApi {
         for poolInfo: HydraStableswap.PoolInfo,
         currentBlock: BlockNumber
     ) throws -> BigUInt {
-        let amplificationResult = HydraStableswapMath.calculateAmplification(
+        let amplificationResult = HydraStableswapMath.stableswapCalculateAmplification(
             String(poolInfo.initialAmplification),
             String(poolInfo.finalAmplification),
             String(poolInfo.initialBlock),
@@ -72,7 +72,7 @@ enum HydraStableswapApi {
             of: params.poolInfo.fee
         ).decimalOrError().stringWithPointSeparator
 
-        let result = HydraStableswapMath.calculateOutGivenIn(
+        let result = HydraStableswapMath.stableswapCalculateOutGivenIn(
             try JsonStringify.jsonString(from: params.reserves),
             UInt32(assetIn),
             UInt32(assetOut),
@@ -103,7 +103,7 @@ enum HydraStableswapApi {
             of: params.poolInfo.fee
         ).decimalOrError().stringWithPointSeparator
 
-        let result = HydraStableswapMath.calculateInGivenOut(
+        let result = HydraStableswapMath.stableswapCalculateInGivenOut(
             try JsonStringify.jsonString(from: params.reserves),
             UInt32(assetIn),
             UInt32(assetOut),
@@ -133,7 +133,7 @@ enum HydraStableswapApi {
             of: params.poolInfo.fee
         ).decimalOrError().stringWithPointSeparator
 
-        let result = HydraStableswapMath.calculateAddOneAsset(
+        let result = HydraStableswapMath.stableswapCalculateAddOneAsset(
             try JsonStringify.jsonString(from: params.reserves),
             String(shareAmount),
             UInt32(asset),
@@ -163,7 +163,7 @@ enum HydraStableswapApi {
             of: params.poolInfo.fee
         ).decimalOrError().stringWithPointSeparator
 
-        let result = HydraStableswapMath.calculateLiquidityOutOneAsset(
+        let result = HydraStableswapMath.stableswapCalculateLiquidityOutOneAsset(
             try JsonStringify.jsonString(from: params.reserves),
             String(shareAmount),
             UInt32(asset),
@@ -193,7 +193,7 @@ enum HydraStableswapApi {
             of: params.poolInfo.fee
         ).decimalOrError().stringWithPointSeparator
 
-        let result = HydraStableswapMath.calculateSharesForAmount(
+        let result = HydraStableswapMath.stableswapCalculateSharesForAmount(
             try JsonStringify.jsonString(from: params.reserves),
             UInt32(asset),
             String(assetAmount),
@@ -225,7 +225,7 @@ enum HydraStableswapApi {
             of: params.poolInfo.fee
         ).decimalOrError().stringWithPointSeparator
 
-        let result = HydraStableswapMath.calculateShares(
+        let result = HydraStableswapMath.stableswapCalculateShares(
             try JsonStringify.jsonString(from: params.reserves),
             try JsonStringify.jsonString(from: assets),
             String(amplification),

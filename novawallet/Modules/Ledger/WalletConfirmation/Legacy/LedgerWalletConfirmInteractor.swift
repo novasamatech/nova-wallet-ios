@@ -2,9 +2,7 @@ import UIKit
 import Operation_iOS
 import SoraKeystore
 
-final class LedgerWalletConfirmInteractor {
-    weak var presenter: LedgerWalletConfirmInteractorOutputProtocol?
-
+final class LedgerWalletConfirmInteractor: BaseLedgerWalletConfirmInteractor {
     let accountsStore: LedgerAccountsStore
     let operationQueue: OperationQueue
     let settings: SelectedWalletSettings

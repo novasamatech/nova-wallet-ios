@@ -5,6 +5,7 @@ extension HydraDx {
         enum ComponentType: Codable {
             case omnipool
             case stableswap(Asset)
+            case xyk
         }
 
         struct Component: Codable {
@@ -31,6 +32,12 @@ extension HydraDx {
                         assetOut: newAssetOut,
                         type: .stableswap(newPoolAsset)
                     )
+                case .xyk:
+                    return SwapRoute<T>.Component(
+                        assetIn: newAssetIn,
+                        assetOut: newAssetOut,
+                        type: .xyk
+                    )
                 }
             }
 
@@ -41,3 +48,6 @@ extension HydraDx {
     typealias LocalSwapRoute = SwapRoute<ChainAssetId>
     typealias RemoteSwapRoute = SwapRoute<HydraDx.AssetId>
 }
+
+extension HydraDx.SwapRoute.ComponentType: Equatable & Hashable where Asset: Equatable & Hashable {}
+extension HydraDx.SwapRoute.Component: Equatable & Hashable where Asset: Equatable & Hashable {}

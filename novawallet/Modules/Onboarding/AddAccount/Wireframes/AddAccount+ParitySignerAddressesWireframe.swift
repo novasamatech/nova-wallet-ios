@@ -3,7 +3,7 @@ import Foundation
 extension AddAccount {
     final class ParitySignerAddressesWireframe: ParitySignerAddressesWireframeProtocol {
         func showConfirmation(
-            on view: ParitySignerAddressesViewProtocol?,
+            on view: HardwareWalletAddressesViewProtocol?,
             accountId: AccountId,
             type: ParitySignerType
         ) {

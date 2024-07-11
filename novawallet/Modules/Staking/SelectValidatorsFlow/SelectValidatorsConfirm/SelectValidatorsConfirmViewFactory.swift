@@ -158,8 +158,9 @@ final class SelectValidatorsConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedMetaAccount.chainAccount, chain: chainAsset.chain)
 
         let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
@@ -208,8 +209,9 @@ final class SelectValidatorsConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: extrinsicSender.chainAccount, chain: chainAsset.chain)
 
         let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(

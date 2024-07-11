@@ -5,9 +5,16 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
     typealias RootViewType = LedgerInstructionsViewLayout
 
     let presenter: LedgerInstructionsPresenterProtocol
+    let walletType: LedgerWalletType
 
-    init(presenter: LedgerInstructionsPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: LedgerInstructionsPresenterProtocol,
+        walletType: LedgerWalletType,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.walletType = walletType
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -27,6 +34,34 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
 
         setupHandlers()
         setupLocalization()
+
+        presenter.setup()
+    }
+
+    private func highlightedForStep1() -> String {
+        switch walletType {
+        case .legacy:
+            return R.string.localizable.ledgerInstructionsStep1Highlighted(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .generic:
+            return R.string.localizable.genericLedgerInstructionsStep1Highlighted(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+    }
+
+    private func highlightedForStep2() -> String {
+        switch walletType {
+        case .legacy:
+            return R.string.localizable.ledgerInstructionsStep2Highlighted(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .generic:
+            return R.string.localizable.genericLedgerInstructionsStep2Highlighted(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
     }
 
     private func setupLocalization() {
@@ -53,7 +88,7 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
         let marker = AttributedReplacementStringDecorator.marker
         let step1Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.ledgerInstructionsStep1Highlighted(preferredLanguages: languages)],
+            replacements: [highlightedForStep1()],
             attributes: highlitingAttributes
         )
 
@@ -65,7 +100,7 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
 
         let step2Decorator = AttributedReplacementStringDecorator(
             pattern: marker,
-            replacements: [R.string.localizable.ledgerInstructionsStep2Highlighted(preferredLanguages: languages)],
+            replacements: [highlightedForStep2()],
             attributes: highlitingAttributes
         )
 
@@ -123,7 +158,11 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
     }
 }
 
-extension LedgerInstructionsViewController: LedgerInstructionsViewProtocol {}
+extension LedgerInstructionsViewController: LedgerInstructionsViewProtocol {
+    func didReceive(migrationViewModel: LedgerMigrationBannerView.ViewModel) {
+        rootView.showMigrationBannerView(for: migrationViewModel)
+    }
+}
 
 extension LedgerInstructionsViewController: Localizable {
     func applyLocalization() {

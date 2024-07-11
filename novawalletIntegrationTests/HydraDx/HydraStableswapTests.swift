@@ -155,7 +155,6 @@ final class HydraStableswapTests: XCTestCase {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeService,
-            userStorageFacade: UserDataStorageTestFacade(),
             operationQueue: operationQueue
         )
         

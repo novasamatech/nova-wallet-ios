@@ -71,18 +71,26 @@ extension ExtrinsicServiceFactoryProtocol {
 final class ExtrinsicServiceFactory {
     private let runtimeRegistry: RuntimeCodingServiceProtocol
     private let engine: JSONRPCEngine
-    private let operationManager: OperationManagerProtocol
+    private let operationQueue: OperationQueue
     private let userStorageFacade: StorageFacadeProtocol
+    private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol,
-        userStorageFacade: StorageFacadeProtocol
+        operationQueue: OperationQueue,
+        userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
-        self.operationManager = operationManager
+
+        metadataHashOperationFactory = MetadataHashOperationFactory(
+            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
+            operationQueue: operationQueue
+        )
+
+        self.operationQueue = operationQueue
         self.userStorageFacade = userStorageFacade
     }
 }
@@ -103,9 +111,10 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             runtimeRegistry: runtimeRegistry,
             senderResolvingFactory: senderResolvingFactory,
+            metadataHashOperationFactory: metadataHashOperationFactory,
             extensions: extensions,
             engine: engine,
-            operationManager: operationManager
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
 
@@ -125,9 +134,10 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
-            blockHashOperationFactory: BlockHashOperationFactory(),
-            operationManager: operationManager
+            blockHashOperationFactory: BlockHashOperationFactory(), 
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
 }
