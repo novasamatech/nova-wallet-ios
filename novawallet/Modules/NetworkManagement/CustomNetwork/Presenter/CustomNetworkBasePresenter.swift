@@ -225,7 +225,8 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
     func didReceive(_ error: CustomNetworkBaseInteractorError) {
         provideButtonViewModel(loading: false)
 
-        if case let .alreadyExistCustom(node, chain) = error {
+        switch error {
+        case let .alreadyExistCustom(node, chain):
             wireframe.present(
                 viewModel: createAlreadyExistsViewModel(
                     errorContent: error.toErrorContent(for: selectedLocale),
@@ -235,7 +236,16 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
                 style: .alert,
                 from: view
             )
-        } else {
+        case let .wrongCurrencySymbol(_, actualSymbol):
+            wireframe.present(
+                viewModel: createInvalidSymbolViewModel(
+                    errorContent: error.toErrorContent(for: selectedLocale),
+                    actualSymbol: actualSymbol
+                ),
+                style: .alert,
+                from: view
+            )
+        default:
             wireframe.present(
                 error: error,
                 from: view,
@@ -268,6 +278,44 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
 }
 
 // MARK: Private
+
+private extension CustomNetworkBasePresenter {
+    func cleanPartialValues() {
+        partialURL = nil
+        partialName = nil
+        partialCurrencySymbol = nil
+        partialChainId = nil
+        partialBlockExplorerURL = nil
+        partialCoingeckoURL = nil
+    }
+
+    func provideTitle() {
+        let title = R.string.localizable.networkAddTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        view?.didReceiveTitle(text: title)
+    }
+
+    func blockExplorerUrl(from template: String?) -> String? {
+        guard let template else { return nil }
+
+        var urlComponents = URLComponents(
+            url: URL(string: template)!,
+            resolvingAgainstBaseURL: false
+        )
+        urlComponents?.path = ""
+        urlComponents?.queryItems = []
+
+        let trimmedUrlString = urlComponents?
+            .url?
+            .absoluteString
+            .trimmingCharacters(in: CharacterSet(charactersIn: "?"))
+
+        return trimmedUrlString ?? template
+    }
+}
+
+// MARK: Alert View Models
 
 private extension CustomNetworkBasePresenter {
     func createAlreadyExistsViewModel(
@@ -306,38 +354,33 @@ private extension CustomNetworkBasePresenter {
         return viewModel
     }
 
-    func cleanPartialValues() {
-        partialURL = nil
-        partialName = nil
-        partialCurrencySymbol = nil
-        partialChainId = nil
-        partialBlockExplorerURL = nil
-        partialCoingeckoURL = nil
-    }
+    func createInvalidSymbolViewModel(
+        errorContent: ErrorContent,
+        actualSymbol: String
+    ) -> AlertPresentableViewModel {
+        let viewModel = AlertPresentableViewModel(
+            title: errorContent.title,
+            message: errorContent.message,
+            actions: [
+                .init(
+                    title: R.string.localizable.commonApply(preferredLanguages: selectedLocale.rLanguages),
+                    style: .normal,
+                    handler: { [weak self] in
+                        guard let self else { return }
 
-    func provideTitle() {
-        let title = R.string.localizable.networkAddTitle(
-            preferredLanguages: selectedLocale.rLanguages
+                        provideButtonViewModel(loading: true)
+
+                        partialCurrencySymbol = actualSymbol
+                        provideCurrencySymbolViewModel()
+
+                        confirm()
+                    }
+                ),
+            ],
+            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
         )
-        view?.didReceiveTitle(text: title)
-    }
 
-    func blockExplorerUrl(from template: String?) -> String? {
-        guard let template else { return nil }
-
-        var urlComponents = URLComponents(
-            url: URL(string: template)!,
-            resolvingAgainstBaseURL: false
-        )
-        urlComponents?.path = ""
-        urlComponents?.queryItems = []
-
-        let trimmedUrlString = urlComponents?
-            .url?
-            .absoluteString
-            .trimmingCharacters(in: CharacterSet(charactersIn: "?"))
-
-        return trimmedUrlString ?? template
+        return viewModel
     }
 }
 

@@ -3,6 +3,7 @@ import Foundation
 enum CustomNetworkBaseInteractorError: Error {
     case alreadyExistRemote(node: ChainNodeModel, chain: ChainModel)
     case alreadyExistCustom(node: ChainNodeModel, chain: ChainModel)
+    case wrongCurrencySymbol(enteredSymbol: String, actualSymbol: String)
     case invalidChainId
     case invalidNetworkType(selectedType: ChainType)
     case connecting(innerError: NetworkNodeConnectingError)
@@ -29,6 +30,17 @@ extension CustomNetworkBaseInteractorError: ErrorContentConvertible {
                 ),
                 message: R.string.localizable.networkAddAlertAlreadyExistsCustomMessage(
                     chain.name,
+                    preferredLanguages: locale?.rLanguages
+                )
+            )
+        case let .wrongCurrencySymbol(enteredSymbol, actualSymbol):
+            .init(
+                title: R.string.localizable.networkAddAlertInvalidSymbolTitle(
+                    preferredLanguages: locale?.rLanguages
+                ),
+                message: R.string.localizable.networkAddAlertInvalidSymbolMessage(
+                    enteredSymbol,
+                    actualSymbol,
                     preferredLanguages: locale?.rLanguages
                 )
             )

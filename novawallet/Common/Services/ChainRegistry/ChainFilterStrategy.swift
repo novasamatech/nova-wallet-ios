@@ -12,7 +12,7 @@ enum ChainFilterStrategy {
     case hasProxy
     case chainId(ChainModel.Id)
     case noFilter
-    
+
     private var filter: Filter {
         switch self {
         case .enabledChains: { change in
@@ -65,9 +65,9 @@ enum ChainFilterStrategy {
             nil
         }
     }
-    
+
     func filter(
-        _ changes: [DataProviderChange<ChainModel>], 
+        _ changes: [DataProviderChange<ChainModel>],
         using chainsBeforeChanges: [ChainModel.Id: ChainModel]
     ) -> [DataProviderChange<ChainModel>] {
         if case .noFilter = self {

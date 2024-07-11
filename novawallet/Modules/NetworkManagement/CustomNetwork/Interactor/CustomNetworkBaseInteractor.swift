@@ -279,8 +279,18 @@ private extension CustomNetworkBaseInteractor {
             switch result {
             case let .success(chain):
                 self?.handleSetupFinished(for: chain)
-            case let .failure(error as CustomNetworkSetupError) where error == .decimalsNotFound:
-                self?.presenter?.didReceive(.common(innerError: .noDataRetrieved))
+            case let .failure(error as CustomNetworkSetupError):
+                switch error {
+                case .decimalsNotFound:
+                    self?.presenter?.didReceive(.common(innerError: .noDataRetrieved))
+                case let .wrongCurrencySymbol(enteredSymbol, actualSymbol):
+                    self?.presenter?.didReceive(
+                        .wrongCurrencySymbol(
+                            enteredSymbol: enteredSymbol,
+                            actualSymbol: actualSymbol
+                        )
+                    )
+                }
             default:
                 self?.presenter?.didReceive(.common(innerError: .undefined))
             }

@@ -155,7 +155,7 @@ extension UILabel.Style {
         textColor: R.color.colorTextSecondary(),
         font: .regularSubheadline
     )
-    
+
     static let regularSubhedlineAccent = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .regularSubheadline
