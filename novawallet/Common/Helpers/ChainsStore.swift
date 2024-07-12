@@ -1,5 +1,7 @@
 import Foundation
 
+typealias ChainsStoreFilter = (ChainModel) -> Bool
+
 protocol ChainsStoreDelegate: AnyObject {
     func didUpdateChainsStore(_ chainsStore: ChainsStoreProtocol)
 }
@@ -7,7 +9,7 @@ protocol ChainsStoreDelegate: AnyObject {
 protocol ChainsStoreProtocol: AnyObject {
     var delegate: ChainsStoreDelegate? { get set }
 
-    func setup()
+    func setup(with filter: ChainsStoreFilter?)
 
     func availableChainIds() -> Set<ChainModel.Id>
     func getChain(for chainId: ChainModel.Id) -> ChainModel?
@@ -23,6 +25,10 @@ extension ChainsStoreProtocol {
 
         return ChainAsset(chain: chain, asset: asset)
     }
+
+    func setup(with filter: ChainsStoreFilter? = nil) {
+        setup(with: filter)
+    }
 }
 
 final class ChainsStore {
@@ -30,13 +36,17 @@ final class ChainsStore {
 
     weak var delegate: ChainsStoreDelegate?
 
+    var filter: ChainsStoreFilter?
+
     init(chainRegistry: ChainRegistryProtocol) {
         self.chainRegistry = chainRegistry
     }
 }
 
 extension ChainsStore: ChainsStoreProtocol {
-    func setup() {
+    func setup(with filter: ChainsStoreFilter?) {
+        self.filter = filter
+
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] _ in
             guard let strongSelf = self else {
                 return
@@ -51,6 +61,10 @@ extension ChainsStore: ChainsStoreProtocol {
     }
 
     func getChain(for chainId: ChainModel.Id) -> ChainModel? {
-        chainRegistry.getChain(for: chainId)
+        let chain = chainRegistry.getChain(for: chainId)
+
+        guard let filter, let chain else { return chain }
+
+        return filter(chain) ? chain : nil
     }
 }
