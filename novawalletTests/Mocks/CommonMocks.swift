@@ -2788,9 +2788,9 @@ import SubstrateSdk
     
     
     
-     func chainsSubscribe(_ target: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)  {
+     func chainsSubscribe(_ target: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy?, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)  {
         
-    return cuckoo_manager.call("chainsSubscribe(_: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)",
+    return cuckoo_manager.call("chainsSubscribe(_: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy?, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)",
             parameters: (target, runningInQueue, filterStrategy, updateClosure),
             escapingParameters: (target, runningInQueue, filterStrategy, updateClosure),
             superclassCall:
@@ -2900,9 +2900,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "switchSync(mode: ChainSyncMode, chainId: ChainModel.Id) throws", parameterMatchers: matchers))
 	    }
 	    
-	    func chainsSubscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(_ target: M1, runningInQueue: M2, filterStrategy: M3, updateClosure: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject, DispatchQueue, ChainFilterStrategy, ([DataProviderChange<ChainModel>]) -> Void)> where M1.MatchedType == AnyObject, M2.MatchedType == DispatchQueue, M3.MatchedType == ChainFilterStrategy, M4.MatchedType == ([DataProviderChange<ChainModel>]) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue, ChainFilterStrategy, ([DataProviderChange<ChainModel>]) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: runningInQueue) { $0.1 }, wrap(matchable: filterStrategy) { $0.2 }, wrap(matchable: updateClosure) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "chainsSubscribe(_: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)", parameterMatchers: matchers))
+	    func chainsSubscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.Matchable>(_ target: M1, runningInQueue: M2, filterStrategy: M3, updateClosure: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject, DispatchQueue, ChainFilterStrategy?, ([DataProviderChange<ChainModel>]) -> Void)> where M1.MatchedType == AnyObject, M2.MatchedType == DispatchQueue, M3.OptionalMatchedType == ChainFilterStrategy, M4.MatchedType == ([DataProviderChange<ChainModel>]) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue, ChainFilterStrategy?, ([DataProviderChange<ChainModel>]) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: runningInQueue) { $0.1 }, wrap(matchable: filterStrategy) { $0.2 }, wrap(matchable: updateClosure) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "chainsSubscribe(_: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy?, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)", parameterMatchers: matchers))
 	    }
 	    
 	    func chainsUnsubscribe<M1: Cuckoo.Matchable>(_ target: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject)> where M1.MatchedType == AnyObject {
@@ -2977,9 +2977,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func chainsSubscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(_ target: M1, runningInQueue: M2, filterStrategy: M3, updateClosure: M4) -> Cuckoo.__DoNotUse<(AnyObject, DispatchQueue, ChainFilterStrategy, ([DataProviderChange<ChainModel>]) -> Void), Void> where M1.MatchedType == AnyObject, M2.MatchedType == DispatchQueue, M3.MatchedType == ChainFilterStrategy, M4.MatchedType == ([DataProviderChange<ChainModel>]) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue, ChainFilterStrategy, ([DataProviderChange<ChainModel>]) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: runningInQueue) { $0.1 }, wrap(matchable: filterStrategy) { $0.2 }, wrap(matchable: updateClosure) { $0.3 }]
-	        return cuckoo_manager.verify("chainsSubscribe(_: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func chainsSubscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.Matchable>(_ target: M1, runningInQueue: M2, filterStrategy: M3, updateClosure: M4) -> Cuckoo.__DoNotUse<(AnyObject, DispatchQueue, ChainFilterStrategy?, ([DataProviderChange<ChainModel>]) -> Void), Void> where M1.MatchedType == AnyObject, M2.MatchedType == DispatchQueue, M3.OptionalMatchedType == ChainFilterStrategy, M4.MatchedType == ([DataProviderChange<ChainModel>]) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue, ChainFilterStrategy?, ([DataProviderChange<ChainModel>]) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: runningInQueue) { $0.1 }, wrap(matchable: filterStrategy) { $0.2 }, wrap(matchable: updateClosure) { $0.3 }]
+	        return cuckoo_manager.verify("chainsSubscribe(_: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy?, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -3056,7 +3056,7 @@ import SubstrateSdk
     
     
     
-     func chainsSubscribe(_ target: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)   {
+     func chainsSubscribe(_ target: AnyObject, runningInQueue: DispatchQueue, filterStrategy: ChainFilterStrategy?, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
