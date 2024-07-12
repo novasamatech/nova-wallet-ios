@@ -2,10 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct CustomNetworkViewFactory {
-    static func createNetworkAddView(
-        networkToAdd: ChainModel? = nil,
-        successPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)
-    ) -> CustomNetworkViewProtocol? {
+    static func createNetworkAddView(networkToAdd: ChainModel? = nil) -> CustomNetworkViewProtocol? {
         let connectionFactory = ConnectionFactory(
             logger: Logger.shared,
             operationQueue: OperationManagerFacade.assetsSyncQueue
@@ -38,7 +35,7 @@ struct CustomNetworkViewFactory {
             operationQueue: operationQueue
         )
 
-        let wireframe = CustomNetworkWireframe(successPresenting: successPresenting)
+        let wireframe = CustomNetworkWireframe()
 
         let localizationManager = LocalizationManager.shared
 

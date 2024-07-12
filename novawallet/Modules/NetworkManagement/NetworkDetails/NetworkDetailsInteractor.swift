@@ -339,21 +339,21 @@ private extension NetworkDetailsInteractor {
         )
 
         if node == currentSelectedNode {
-            let chainWithAutoBalance = chain.updatingConnectionMode(for: .autoBalanced)
-
-            let setAutoBalanceOperation = repository.saveOperation(
-                { [chainWithAutoBalance] },
-                { [] }
-            )
+//            let setAutoBalanceOperation = repository.saveOperation(
+//                { [chainWithAutoBalance] },
+//                { [] }
+//            )
 
             let deleteNodeOperation = repository.saveOperation(
-                { [chainWithAutoBalance.removing(node: node)] },
+                { [chain
+                        .updatingConnectionMode(for: .autoBalanced)
+                        .removing(node: node)] },
                 { [] }
             )
 
-            deleteNodeOperation.addDependency(setAutoBalanceOperation)
+//            deleteNodeOperation.addDependency(setAutoBalanceOperation)
 
-            operation = (deleteNodeOperation, [setAutoBalanceOperation])
+            operation = (deleteNodeOperation, [])
         } else {
             let deleteNodeOperation = repository.saveOperation(
                 { [chain.removing(node: node)] },

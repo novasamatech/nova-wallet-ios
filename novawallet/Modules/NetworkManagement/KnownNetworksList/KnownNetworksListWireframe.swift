@@ -9,12 +9,9 @@ final class KnownNetworksListWireframe: KnownNetworksListWireframeProtocol {
 
     func showAddNetwork(
         from view: KnownNetworksListViewProtocol?,
-        with knownNetwork: ChainModel?
+        with _: ChainModel?
     ) {
-        guard let customNetworkView = CustomNetworkViewFactory.createNetworkAddView(
-            networkToAdd: knownNetwork,
-            successPresenting: successAddPresenting
-        ) else {
+        guard let customNetworkView = CustomNetworkViewFactory.createNetworkAddView() else {
             return
         }
 

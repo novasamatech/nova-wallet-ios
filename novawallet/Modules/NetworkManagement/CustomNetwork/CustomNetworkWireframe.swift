@@ -2,12 +2,6 @@ import Foundation
 import UIKit
 
 final class CustomNetworkWireframe: CustomNetworkWireframeProtocol {
-    let successPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)?
-
-    init(successPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)? = nil) {
-        self.successPresenting = successPresenting
-    }
-
     func showNetworksList(
         from view: CustomNetworkViewProtocol?,
         successAlertTitle: String
@@ -24,9 +18,9 @@ final class CustomNetworkWireframe: CustomNetworkWireframeProtocol {
             animated: true
         )
 
-        successPresenting?.wireframe.presentSuccessNotification(
+        presentSuccessNotification(
             successAlertTitle,
-            from: successPresenting?.view
+            from: networksListViewController as? ControllerBackedProtocol
         )
     }
 }
