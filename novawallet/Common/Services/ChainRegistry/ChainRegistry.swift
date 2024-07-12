@@ -15,7 +15,7 @@ protocol ChainRegistryProtocol: AnyObject {
     func chainsSubscribe(
         _ target: AnyObject,
         runningInQueue: DispatchQueue,
-        filterStrategy: ChainFilterStrategy,
+        filterStrategy: ChainFilterStrategy?,
         updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
     )
 
@@ -31,7 +31,7 @@ extension ChainRegistryProtocol {
     func chainsSubscribe(
         _ target: AnyObject,
         runningInQueue: DispatchQueue,
-        filterStrategy: ChainFilterStrategy = .noFilter,
+        filterStrategy: ChainFilterStrategy? = nil,
         updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
     ) {
         chainsSubscribe(
@@ -316,7 +316,7 @@ extension ChainRegistry: ChainRegistryProtocol {
     func chainsSubscribe(
         _ target: AnyObject,
         runningInQueue: DispatchQueue,
-        filterStrategy: ChainFilterStrategy,
+        filterStrategy: ChainFilterStrategy?,
         updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
     ) {
         mutex.lock()
@@ -327,10 +327,14 @@ extension ChainRegistry: ChainRegistryProtocol {
         
         let closure: ([DataProviderChange<ChainModel>], [ChainModel.Id: ChainModel]) -> Void = { changes, currentChains in
             runningInQueue.async {
-                let filtered = filterStrategy.filter(
-                    changes,
-                    using: currentChains
-                )
+                let filtered = if let filterStrategy {
+                    filterStrategy.filter(
+                        changes,
+                        using: currentChains
+                    )
+                } else {
+                    changes
+                }
                 
                 updateClosure(filtered)
             }
