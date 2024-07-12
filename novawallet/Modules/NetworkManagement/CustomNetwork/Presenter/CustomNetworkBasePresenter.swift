@@ -147,10 +147,8 @@ class CustomNetworkBasePresenter {
         )
     }
 
-    func handle(partial url: String) {
-        partialURL = url
-
-        provideButtonViewModel(loading: false)
+    func handleUrl(_: String) {
+        fatalError("Must be overriden by subclass")
     }
 }
 
@@ -173,8 +171,14 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
         provideViewModel()
     }
 
+    func handle(url: String) {
+        handleUrl(url)
+    }
+
     func handlePartial(url: String) {
-        handle(partial: url)
+        partialURL = url
+
+        provideButtonViewModel(loading: false)
     }
 
     func handlePartial(name: String) {

@@ -50,9 +50,7 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
         )
     }
 
-    override func handle(partial url: String) {
-        super.handle(partial: url)
-
+    override func handleUrl(_ url: String) {
         guard
             chainType == .substrate,
             NSPredicate.ws.evaluate(with: url)

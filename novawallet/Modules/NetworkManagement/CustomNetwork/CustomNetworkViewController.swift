@@ -139,6 +139,12 @@ private extension CustomNetworkViewController {
             for: .touchUpInside
         )
 
+        rootView.urlInput.textField.addTarget(
+            self,
+            action: #selector(actionURLEndEditing),
+            for: .editingDidEnd
+        )
+
         let inputs = [
             rootView.urlInput,
             rootView.nameInput,
@@ -164,6 +170,12 @@ private extension CustomNetworkViewController {
                 for: .editingChanged
             )
         }
+    }
+
+    @objc func actionURLEndEditing() {
+        guard let text = rootView.urlInput.textField.text else { return }
+
+        presenter.handle(url: text)
     }
 
     @objc private func actionSegmentChanged() {
