@@ -4,7 +4,7 @@ import UIKit
 final class CustomNetworkWireframe: CustomNetworkWireframeProtocol {
     func showNetworksList(
         from view: CustomNetworkViewProtocol?,
-        successAlertTitle: String
+        locale: Locale
     ) {
         guard
             let viewControllers = view?.controller.navigationController?.viewControllers,
@@ -12,6 +12,10 @@ final class CustomNetworkWireframe: CustomNetworkWireframeProtocol {
         else {
             return
         }
+
+        let successAlertTitle = R.string.localizable.networkAddAlertSuccessTitle(
+            preferredLanguages: locale.rLanguages
+        )
 
         view?.controller.navigationController?.popToViewController(
             networksListViewController,

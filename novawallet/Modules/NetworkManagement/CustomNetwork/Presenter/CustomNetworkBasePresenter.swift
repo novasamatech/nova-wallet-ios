@@ -212,9 +212,7 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
 
         wireframe.showNetworksList(
             from: view,
-            successAlertTitle: R.string.localizable.networkAddAlertSuccessTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            locale: selectedLocale
         )
     }
 
