@@ -438,6 +438,10 @@
 		0CA50CB32AFE6F23005668CD /* GetTokenOptionsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */; };
 		0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */; };
 		0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */; };
+		0CA5BDE72C414574000A4CDD /* BalanceRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */; };
+		0CA5BDE92C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDE82C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift */; };
+		0CA5BDEB2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDEA2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift */; };
+		0CA5BDED2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDEC2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift */; };
 		0CA719792B768ABC000B086E /* JsonStringify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719782B768ABC000B086E /* JsonStringify.swift */; };
 		0CA7197B2B773172000B086E /* HydraStableswapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197A2B773172000B086E /* HydraStableswapTests.swift */; };
 		0CA7197D2B7737D5000B086E /* HydraQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */; };
@@ -5290,6 +5294,10 @@
 		0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsPresenter.swift; sourceTree = "<group>"; };
 		0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsInteractor.swift; sourceTree = "<group>"; };
 		0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsViewFactory.swift; sourceTree = "<group>"; };
+		0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionService.swift; sourceTree = "<group>"; };
+		0CA5BDE82C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
+		0CA5BDEA2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionHandlingProxy.swift; sourceTree = "<group>"; };
+		0CA5BDEC2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateAssetsUpdatingService.swift; sourceTree = "<group>"; };
 		0CA719782B768ABC000B086E /* JsonStringify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonStringify.swift; sourceTree = "<group>"; };
 		0CA7197A2B773172000B086E /* HydraStableswapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapTests.swift; sourceTree = "<group>"; };
 		0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraQuoteFactory.swift; sourceTree = "<group>"; };
@@ -18505,6 +18513,10 @@
 				0CAC02FC2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift */,
 				77FE763F2B67682A00ADA73F /* ProxyAccountUpdatingService.swift */,
 				77A502F02B63E3830062FA51 /* ProxyAccountSubscription.swift */,
+				0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */,
+				0CA5BDE82C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift */,
+				0CA5BDEA2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift */,
+				0CA5BDEC2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -23993,6 +24005,7 @@
 				772BCCAE2B7A2E8800A516D9 /* NotificationsManagementSection.swift in Sources */,
 				849014C524AA890D008F705E /* UIFont+Style.swift in Sources */,
 				F40966DC26B29839008CD244 /* SubqueryStakeData.swift in Sources */,
+				0CA5BDE72C414574000A4CDD /* BalanceRemoteSubscriptionService.swift in Sources */,
 				8490149924AA7892008F705E /* SharingPresentable.swift in Sources */,
 				84754C9C2513B26000854599 /* AccountPickerTableViewCell.swift in Sources */,
 				8472C5B1265CF9C500E2481B /* StakingRewardDestConfirmViewFactory.swift in Sources */,
@@ -26650,6 +26663,7 @@
 				773090512B559196002577AE /* ProxyDataValidatorFactory.swift in Sources */,
 				77FF02692B21ECB900B655BC /* ProxyTableViewCell.swift in Sources */,
 				84282288289AC80600163031 /* MultiValueView+Factory.swift in Sources */,
+				0CA5BDEB2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift in Sources */,
 				0C13DFDD2AFA82BA00E5F355 /* AmountInputViewModel+Slippage.swift in Sources */,
 				99570B581EF2EE8A1070442F /* CreateWatchOnlyViewFactory.swift in Sources */,
 				6003DF3EBB77510EFB70B4E4 /* MessageSheetProtocols.swift in Sources */,
@@ -26923,6 +26937,7 @@
 				163709FEE6203813261DD771 /* ReferendumVoteConfirmViewLayout.swift in Sources */,
 				71533ED31DD45841CA8296A3 /* ReferendumVoteConfirmViewFactory.swift in Sources */,
 				879D493C025963619CFADF4F /* GovernanceUnlockSetupProtocols.swift in Sources */,
+				0CA5BDE92C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift in Sources */,
 				46298240F3528B5C62AEC29E /* GovernanceUnlockSetupWireframe.swift in Sources */,
 				9097EE6D11E2E023D2637BE5 /* GovernanceUnlockSetupPresenter.swift in Sources */,
 				0C2F86822A7233DC00593C01 /* EraNominationPoolsService.swift in Sources */,
@@ -27184,6 +27199,7 @@
 				8F8842281718604DB9C30256 /* StakingRebagConfirmInteractor.swift in Sources */,
 				37CF597ACB2A32ABCEEFEE67 /* StakingRebagConfirmViewController.swift in Sources */,
 				09AB6DE2D19F1FA36BF08288 /* StakingRebagConfirmViewLayout.swift in Sources */,
+				0CA5BDED2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift in Sources */,
 				4A24646D497B26E51926BA52 /* StakingRebagConfirmViewFactory.swift in Sources */,
 				0C59E8DA2AA6085B001E11F3 /* ExternalAssetBalanceLocalSubscriptionFactory.swift in Sources */,
 				F5AADF461ED043EAF04A50DE /* ReferendumsFiltersProtocols.swift in Sources */,
