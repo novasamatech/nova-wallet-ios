@@ -70,7 +70,7 @@ final class BalanceRemoteSubscriptionHandlingFactory {
     }
 }
 
-extension BalanceRemoteSubscriptionHandlingFactory {
+extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHandlingFactoryProtocol {
     func createNative(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,

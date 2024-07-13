@@ -17,8 +17,7 @@ protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
 
 final class ServiceCoordinator {
     let walletSettings: SelectedWalletSettings
-    let accountInfoService: AccountInfoUpdatingServiceProtocol
-    let assetsService: AssetsUpdatingServiceProtocol
+    let substrateBalancesService: AssetsUpdatingServiceProtocol
     let evmAssetsService: AssetsUpdatingServiceProtocol
     let evmNativeService: AssetsUpdatingServiceProtocol
     let githubPhishingService: ApplicationServiceProtocol
@@ -31,8 +30,7 @@ final class ServiceCoordinator {
 
     init(
         walletSettings: SelectedWalletSettings,
-        accountInfoService: AccountInfoUpdatingServiceProtocol,
-        assetsService: AssetsUpdatingServiceProtocol,
+        substrateBalancesService: AssetsUpdatingServiceProtocol,
         evmAssetsService: AssetsUpdatingServiceProtocol,
         evmNativeService: AssetsUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol,
@@ -44,8 +42,7 @@ final class ServiceCoordinator {
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
     ) {
         self.walletSettings = walletSettings
-        self.accountInfoService = accountInfoService
-        self.assetsService = assetsService
+        self.substrateBalancesService = substrateBalancesService
         self.evmAssetsService = evmAssetsService
         self.evmNativeService = evmNativeService
         self.equilibriumService = equilibriumService
@@ -61,8 +58,7 @@ final class ServiceCoordinator {
 extension ServiceCoordinator: ServiceCoordinatorProtocol {
     func updateOnWalletSelectionChange() {
         if let selectedMetaAccount = walletSettings.value {
-            accountInfoService.update(selectedMetaAccount: selectedMetaAccount)
-            assetsService.update(selectedMetaAccount: selectedMetaAccount)
+            substrateBalancesService.update(selectedMetaAccount: selectedMetaAccount)
             evmAssetsService.update(selectedMetaAccount: selectedMetaAccount)
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
@@ -87,8 +83,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
 
     func setup() {
         githubPhishingService.setup()
-        accountInfoService.setup()
-        assetsService.setup()
+        substrateBalancesService.setup()
         evmAssetsService.setup()
         evmNativeService.setup()
         equilibriumService.setup()
@@ -101,8 +96,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
 
     func throttle() {
         githubPhishingService.throttle()
-        accountInfoService.throttle()
-        assetsService.throttle()
+        substrateBalancesService.throttle()
         evmAssetsService.throttle()
         evmNativeService.throttle()
         equilibriumService.throttle()
@@ -125,8 +119,6 @@ extension ServiceCoordinator {
         let assetsSyncOperationQueue = OperationManagerFacade.assetsSyncQueue
         let assetsSyncOperationManager = OperationManager(operationQueue: assetsSyncOperationQueue)
 
-        let assetsRepositoryOperationQueue = OperationManagerFacade.assetsRepositoryQueue
-
         let walletSettings = SelectedWalletSettings.shared
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
@@ -145,26 +137,15 @@ extension ServiceCoordinator {
             sortDescriptors: []
         )
 
-        let accountInfoService = AccountInfoUpdatingService(
+        let substrateBalancesService = SubstrateAssetsUpdatingService(
             selectedAccount: walletSettings.value,
             chainRegistry: chainRegistry,
-            remoteSubscriptionService: walletRemoteSubscription,
-            storageFacade: substrateStorageFacade,
+            remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService,
+            repositoryFactory: SubstrateRepositoryFactory(storageFacade: substrateStorageFacade),
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: assetsRepositoryOperationQueue,
-            logger: logger
-        )
-
-        let assetsService = AssetsUpdatingService(
-            selectedAccount: walletSettings.value,
-            chainRegistry: chainRegistry,
-            remoteSubscriptionService: walletRemoteSubscription,
-            storageFacade: substrateStorageFacade,
-            storageRequestFactory: storageRequestFactory,
-            eventCenter: EventCenter.shared,
-            operationQueue: assetsRepositoryOperationQueue,
-            logger: logger
+            operationQueue: OperationManagerFacade.assetsSyncQueue,
+            logger: Logger.shared
         )
 
         let evmTransactionHistoryUpdaterFactory = EvmTransactionHistoryUpdaterFactory(
@@ -242,8 +223,7 @@ extension ServiceCoordinator {
 
         return ServiceCoordinator(
             walletSettings: walletSettings,
-            accountInfoService: accountInfoService,
-            assetsService: assetsService,
+            substrateBalancesService: substrateBalancesService,
             evmAssetsService: evmAssetsService,
             evmNativeService: evmNativeService,
             githubPhishingService: githubPhishingAPIService,
