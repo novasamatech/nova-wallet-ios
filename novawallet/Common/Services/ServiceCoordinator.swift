@@ -141,10 +141,6 @@ extension ServiceCoordinator {
             selectedAccount: walletSettings.value,
             chainRegistry: chainRegistry,
             remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService,
-            repositoryFactory: SubstrateRepositoryFactory(storageFacade: substrateStorageFacade),
-            storageRequestFactory: storageRequestFactory,
-            eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.assetsSyncQueue,
             logger: Logger.shared
         )
 

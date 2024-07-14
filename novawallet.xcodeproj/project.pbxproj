@@ -442,6 +442,7 @@
 		0CA5BDE92C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDE82C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift */; };
 		0CA5BDEB2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDEA2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift */; };
 		0CA5BDED2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDEC2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift */; };
+		0CA5BDF12C438A45000A4CDD /* TransactionSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDF02C438A45000A4CDD /* TransactionSubscriptionFactory.swift */; };
 		0CA719792B768ABC000B086E /* JsonStringify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719782B768ABC000B086E /* JsonStringify.swift */; };
 		0CA7197B2B773172000B086E /* HydraStableswapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197A2B773172000B086E /* HydraStableswapTests.swift */; };
 		0CA7197D2B7737D5000B086E /* HydraQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */; };
@@ -5298,6 +5299,7 @@
 		0CA5BDE82C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		0CA5BDEA2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionHandlingProxy.swift; sourceTree = "<group>"; };
 		0CA5BDEC2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateAssetsUpdatingService.swift; sourceTree = "<group>"; };
+		0CA5BDF02C438A45000A4CDD /* TransactionSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSubscriptionFactory.swift; sourceTree = "<group>"; };
 		0CA719782B768ABC000B086E /* JsonStringify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonStringify.swift; sourceTree = "<group>"; };
 		0CA7197A2B773172000B086E /* HydraStableswapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapTests.swift; sourceTree = "<group>"; };
 		0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraQuoteFactory.swift; sourceTree = "<group>"; };
@@ -10352,6 +10354,7 @@
 				0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */,
 				0C38B4FA2B7A5DB500882A8B /* ExtrinsicProcessor+HydraSwapMatching.swift */,
 				0C38B5042B7B22F000882A8B /* ExtrinsicExtraction.swift */,
+				0CA5BDF02C438A45000A4CDD /* TransactionSubscriptionFactory.swift */,
 			);
 			path = TransactionSubscription;
 			sourceTree = "<group>";
@@ -25508,6 +25511,7 @@
 				843910C9253F591D00E3C217 /* ScaleDecoderOperation.swift in Sources */,
 				0CB313792C0F499B00353724 /* CloudBackupSetupPasswordFlow.swift in Sources */,
 				84FBDBDD28C87DA800CC1037 /* ParaStkYieldBoostTasksSource.swift in Sources */,
+				0CA5BDF12C438A45000A4CDD /* TransactionSubscriptionFactory.swift in Sources */,
 				F4C086C726D1159E00716AEC /* SubqueryEraStakersInfoSource.swift in Sources */,
 				84884B5F27A1336500FAC549 /* OrmlAssetExtras.swift in Sources */,
 				849976C827B2B80700B14A6C /* DAppMetamaskWaitingAuthState.swift in Sources */,

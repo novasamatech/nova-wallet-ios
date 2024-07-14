@@ -1,30 +1,39 @@
 import Foundation
 import Operation_iOS
 
+enum BalanceRemoteSubscriptionHandlingParams {
+    struct Common {
+        let accountLocalStorageKey: String
+        let locksLocalStorageKey: String
+    }
+
+    struct AssetsPallet {
+        let assetAccountKey: String
+        let assetDetailsKey: String
+        let extras: StatemineAssetExtras
+    }
+}
+
 protocol BalanceRemoteSubscriptionHandlingFactoryProtocol {
     func createNative(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        accountLocalStorageKey: String,
-        locksLocalStorageKey: String,
-        transactionSubscription: TransactionSubscription?
+        params: BalanceRemoteSubscriptionHandlingParams.Common,
+        transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol
 
     func createOrml(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        accountLocalStorageKey: String,
-        locksLocalStorageKey: String,
-        transactionSubscription: TransactionSubscription?
+        params: BalanceRemoteSubscriptionHandlingParams.Common,
+        transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol
 
     func createAssetsPallet(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        extras: StatemineAssetExtras,
-        assetAccountKey: String,
-        assetDetailsKey: String,
-        transactionSubscription: TransactionSubscription?
+        params: BalanceRemoteSubscriptionHandlingParams.AssetsPallet,
+        transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol
 }
 
@@ -52,7 +61,7 @@ final class BalanceRemoteSubscriptionHandlingFactory {
     private func createTokensSubscriptionFactory(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription: TransactionSubscribing?
     ) -> TokenSubscriptionFactory {
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorageFacade)
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
@@ -74,9 +83,8 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
     func createNative(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        accountLocalStorageKey: String,
-        locksLocalStorageKey: String,
-        transactionSubscription: TransactionSubscription?
+        params: BalanceRemoteSubscriptionHandlingParams.Common,
+        transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol {
         let innerFactory = createTokensSubscriptionFactory(
             for: accountId,
@@ -85,8 +93,8 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
         )
 
         return AccountInfoSubscriptionHandlingFactory(
-            accountLocalStorageKey: accountLocalStorageKey,
-            locksLocalStorageKey: locksLocalStorageKey,
+            accountLocalStorageKey: params.accountLocalStorageKey,
+            locksLocalStorageKey: params.locksLocalStorageKey,
             factory: innerFactory
         )
     }
@@ -94,9 +102,8 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
     func createOrml(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        accountLocalStorageKey: String,
-        locksLocalStorageKey: String,
-        transactionSubscription: TransactionSubscription?
+        params: BalanceRemoteSubscriptionHandlingParams.Common,
+        transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol {
         let innerFactory = createTokensSubscriptionFactory(
             for: accountId,
@@ -105,8 +112,8 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
         )
 
         return OrmlTokenSubscriptionHandlingFactory(
-            accountLocalStorageKey: accountLocalStorageKey,
-            locksLocalStorageKey: locksLocalStorageKey,
+            accountLocalStorageKey: params.accountLocalStorageKey,
+            locksLocalStorageKey: params.locksLocalStorageKey,
             factory: innerFactory
         )
     }
@@ -114,10 +121,8 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
     func createAssetsPallet(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        extras: StatemineAssetExtras,
-        assetAccountKey: String,
-        assetDetailsKey: String,
-        transactionSubscription: TransactionSubscription?
+        params: BalanceRemoteSubscriptionHandlingParams.AssetsPallet,
+        transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol {
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorageFacade)
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
@@ -125,7 +130,7 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
         let balanceUpdater = AssetsBalanceUpdater(
             chainAssetId: chainAssetId,
             accountId: accountId,
-            extras: extras,
+            extras: params.extras,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
             transactionSubscription: transactionSubscription,
@@ -135,8 +140,8 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
         )
 
         return AssetsSubscriptionHandlingFactory(
-            assetAccountKey: assetAccountKey,
-            assetDetailsKey: assetDetailsKey,
+            assetAccountKey: params.assetAccountKey,
+            assetDetailsKey: params.assetDetailsKey,
             assetBalanceUpdater: balanceUpdater
         )
     }

@@ -2,10 +2,6 @@ import Foundation
 
 final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService {
     private let remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol
-    private let repositoryFactory: SubstrateRepositoryFactoryProtocol
-    private let storageRequestFactory: StorageRequestFactoryProtocol
-    private let eventCenter: EventCenterProtocol
-    private let operationQueue: OperationQueue
 
     private var subscribedAssets: [ChainModel.Id: Set<AssetModel.Id>] = [:]
 
@@ -13,17 +9,9 @@ final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService
         selectedAccount: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol,
-        repositoryFactory: SubstrateRepositoryFactoryProtocol,
-        storageRequestFactory: StorageRequestFactoryProtocol,
-        eventCenter: EventCenterProtocol,
-        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.remoteSubscriptionService = remoteSubscriptionService
-        self.operationQueue = operationQueue
-        self.repositoryFactory = repositoryFactory
-        self.storageRequestFactory = storageRequestFactory
-        self.eventCenter = eventCenter
 
         super.init(
             selectedAccount: selectedAccount,
@@ -57,13 +45,10 @@ final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService
             return
         }
 
-        let transactionSubscription = try? createTransactionSubscription(for: accountId, chain: chain)
-
         guard
             let subscriptionId = remoteSubscriptionService.attachToBalances(
                 for: accountId,
                 chain: chain,
-                transactionSubscription: transactionSubscription,
                 onlyFor: newAssetIds,
                 queue: nil,
                 closure: nil
@@ -103,28 +88,6 @@ final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService
             chainId: chainId,
             queue: nil,
             closure: nil
-        )
-    }
-
-    private func createTransactionSubscription(
-        for accountId: AccountId,
-        chain: ChainModel
-    ) throws -> TransactionSubscription {
-        let address = try accountId.toAddress(using: chain.chainFormat)
-        let txStorage = repositoryFactory.createChainAddressTxRepository(
-            for: address,
-            chainId: chain.chainId
-        )
-
-        return TransactionSubscription(
-            chainRegistry: chainRegistry,
-            accountId: accountId,
-            chainModel: chain,
-            txStorage: txStorage,
-            storageRequestFactory: storageRequestFactory,
-            operationQueue: operationQueue,
-            eventCenter: eventCenter,
-            logger: logger
         )
     }
 }

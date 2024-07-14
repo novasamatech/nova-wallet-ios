@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
 final class WalletServiceFacade {
     static let sharedRemoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol = {
@@ -24,12 +25,26 @@ final class WalletServiceFacade {
         let repositoryOperationQueue = OperationManagerFacade.assetsRepositoryQueue
         let syncOperationManager = OperationManager(operationQueue: syncOperationQueue)
         let repositoryOperationManager = OperationManager(operationQueue: repositoryOperationQueue)
+        let substrateStorageFacade = SubstrateDataStorageFacade.shared
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: syncOperationManager
+        )
 
         let subscriptionHandlingFactory = BalanceRemoteSubscriptionHandlingFactory(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            substrateStorageFacade: substrateStorageFacade,
             eventCenter: EventCenter.shared,
             operationQueue: OperationManagerFacade.assetsRepositoryQueue,
+            logger: Logger.shared
+        )
+
+        let transactionSubscriptionFactory = TransactionSubscriptionFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            eventCenter: EventCenter.shared,
+            repositoryFactory: SubstrateRepositoryFactory(storageFacade: substrateStorageFacade),
+            storageRequestFactory: storageRequestFactory,
+            operationQueue: syncOperationQueue,
             logger: Logger.shared
         )
 
@@ -37,6 +52,7 @@ final class WalletServiceFacade {
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             repository: repository,
             subscriptionHandlingFactory: subscriptionHandlingFactory,
+            transactionSubscriptionFactory: transactionSubscriptionFactory,
             syncOperationManager: syncOperationManager,
             repositoryOperationManager: repositoryOperationManager,
             logger: Logger.shared

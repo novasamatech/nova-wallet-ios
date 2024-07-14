@@ -6,7 +6,6 @@ protocol BalanceRemoteSubscriptionServiceProtocol {
     func attachToBalances(
         for accountId: AccountId,
         chain: ChainModel,
-        transactionSubscription: TransactionSubscription?,
         onlyFor assetIds: Set<AssetModel.Id>?,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
@@ -28,16 +27,19 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
     }
 
     let subscriptionHandlingFactory: BalanceRemoteSubscriptionHandlingFactoryProtocol
+    let transactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainStorageItem>,
         subscriptionHandlingFactory: BalanceRemoteSubscriptionHandlingFactoryProtocol,
+        transactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol,
         syncOperationManager: OperationManagerProtocol,
         repositoryOperationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.subscriptionHandlingFactory = subscriptionHandlingFactory
+        self.transactionSubscriptionFactory = transactionSubscriptionFactory
 
         super.init(
             chainRegistry: chainRegistry,
@@ -55,7 +57,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
     private func prepareNativeAssetSubscriptionRequests(
         from accountId: AccountId,
         chainAsset: ChainAsset,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription: TransactionSubscribing?
     ) throws -> [SubscriptionSettings] {
         let storagePath = StorageCodingPath.account
         let storageKeyFactory = LocalStorageKeyFactory()
@@ -87,8 +89,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         let handlerFactory = subscriptionHandlingFactory.createNative(
             for: accountId,
             chainAssetId: chainAsset.chainAssetId,
-            accountLocalStorageKey: accountLocalKey,
-            locksLocalStorageKey: locksLocalKey,
+            params: .init(accountLocalStorageKey: accountLocalKey, locksLocalStorageKey: locksLocalKey),
             transactionSubscription: transactionSubscription
         )
 
@@ -101,7 +102,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
     private func prepareAssetsPalletSubscriptionRequests(
         from accountId: AccountId,
         chainAsset: ChainAsset,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription: TransactionSubscribing?
     ) throws -> [SubscriptionSettings] {
         guard let extras = try chainAsset.asset.typeExtras?.map(to: StatemineAssetExtras.self) else {
             return []
@@ -144,9 +145,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         let handlerFactory = subscriptionHandlingFactory.createAssetsPallet(
             for: accountId,
             chainAssetId: chainAsset.chainAssetId,
-            extras: extras,
-            assetAccountKey: accountLocalKey,
-            assetDetailsKey: detailsLocalKey,
+            params: .init(assetAccountKey: accountLocalKey, assetDetailsKey: detailsLocalKey, extras: extras),
             transactionSubscription: transactionSubscription
         )
 
@@ -159,7 +158,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
     private func prepareOrmlSubscriptionRequests(
         from accountId: AccountId,
         chainAsset: ChainAsset,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription: TransactionSubscribing?
     ) throws -> [SubscriptionSettings] {
         guard let tokenExtras = try chainAsset.asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
             return []
@@ -200,8 +199,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         let handlerFactory = subscriptionHandlingFactory.createOrml(
             for: accountId,
             chainAssetId: chainAsset.chainAssetId,
-            accountLocalStorageKey: accountLocalKey,
-            locksLocalStorageKey: locksLocalKey,
+            params: .init(accountLocalStorageKey: accountLocalKey, locksLocalStorageKey: locksLocalKey),
             transactionSubscription: transactionSubscription
         )
 
@@ -214,7 +212,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
     private func prepareSubscriptionRequests(
         from accountId: AccountId,
         chainAsset: ChainAsset,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription: TransactionSubscribing?
     ) -> [SubscriptionSettings] {
         do {
             if let assetRawType = chainAsset.asset.type {
@@ -256,7 +254,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         from accountId: AccountId,
         chain: ChainModel,
         onlyFor assetIds: Set<AssetModel.Id>?,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription: TransactionSubscribing?
     ) -> [SubscriptionSettings] {
         let chainAssets = if let assetIds {
             chain.chainAssets().filter { assetIds.contains($0.asset.assetId) }
@@ -278,11 +276,19 @@ extension BalanceRemoteSubscriptionService: BalanceRemoteSubscriptionServiceProt
     func attachToBalances(
         for accountId: AccountId,
         chain: ChainModel,
-        transactionSubscription: TransactionSubscription?,
         onlyFor assetIds: Set<AssetModel.Id>?,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
+        guard
+            let transactionSubscription = try? transactionSubscriptionFactory.createTransactionSubscription(
+                for: accountId,
+                chain: chain
+            ) else {
+            logger.error("Can't create transaction subscription")
+            return nil
+        }
+
         let subscriptionSettingsList = prepareSubscriptionRequests(
             from: accountId,
             chain: chain,

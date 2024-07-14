@@ -42,7 +42,7 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
     let eventCenter: EventCenterProtocol
-    let transactionSubscription: TransactionSubscription?
+    let transactionSubscription: TransactionSubscribing?
     let locksRepository: AnyDataProviderRepository<AssetLock>
 
     init(
@@ -52,7 +52,7 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
         assetRepository: AnyDataProviderRepository<AssetBalance>,
         locksRepository: AnyDataProviderRepository<AssetLock>,
         eventCenter: EventCenterProtocol,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription: TransactionSubscribing?
     ) {
         self.chainAssetId = chainAssetId
         self.accountId = accountId
