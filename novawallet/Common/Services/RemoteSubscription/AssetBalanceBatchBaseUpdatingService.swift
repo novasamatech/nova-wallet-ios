@@ -1,6 +1,10 @@
 import Foundation
 import Operation_iOS
 
+protocol AssetBalanceUpdatingServiceProtocol: ApplicationServiceProtocol {
+    func update(selectedMetaAccount: MetaAccountModel)
+}
+
 class AssetBalanceBatchBaseUpdatingService {
     struct SubscriptionInfo {
         let subscriptionId: UUID
@@ -100,7 +104,7 @@ class AssetBalanceBatchBaseUpdatingService {
     }
 }
 
-extension AssetBalanceBatchBaseUpdatingService: AssetsUpdatingServiceProtocol {
+extension AssetBalanceBatchBaseUpdatingService: AssetBalanceUpdatingServiceProtocol {
     func setup() {
         performSetup()
     }

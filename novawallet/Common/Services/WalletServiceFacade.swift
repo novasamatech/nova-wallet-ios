@@ -3,14 +3,14 @@ import Operation_iOS
 import SubstrateSdk
 
 final class WalletServiceFacade {
-    static let sharedRemoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol = {
+    static let sharedEquillibriumRemoteSubscriptionService: EquillibriumRemoteSubscriptionServiceProtocol = {
         let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
         let syncOperationQueue = OperationManagerFacade.assetsSyncQueue
         let repositoryOperationQueue = OperationManagerFacade.assetsRepositoryQueue
         let syncOperationManager = OperationManager(operationQueue: syncOperationQueue)
         let repositoryOperationManager = OperationManager(operationQueue: repositoryOperationQueue)
 
-        return WalletRemoteSubscriptionService(
+        return EquillibriumRemoteSubscriptionService(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             repository: repository,
             syncOperationManager: syncOperationManager,
