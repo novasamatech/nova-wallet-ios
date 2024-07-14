@@ -46,6 +46,14 @@ class AssetBalanceBatchBaseUpdatingService {
         fatalError("Must be implemented in child class")
     }
 
+    func performSetup() {
+        subscribeToChains()
+    }
+
+    func performThrottle() {
+        unsubscribeFromChains()
+    }
+
     private func removeAllSubscriptions() {
         mutex.lock()
 
@@ -94,11 +102,11 @@ class AssetBalanceBatchBaseUpdatingService {
 
 extension AssetBalanceBatchBaseUpdatingService: AssetsUpdatingServiceProtocol {
     func setup() {
-        subscribeToChains()
+        performSetup()
     }
 
     func throttle() {
-        unsubscribeFromChains()
+        performThrottle()
     }
 
     func update(selectedMetaAccount: MetaAccountModel) {

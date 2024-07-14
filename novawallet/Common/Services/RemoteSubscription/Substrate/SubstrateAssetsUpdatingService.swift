@@ -2,6 +2,7 @@ import Foundation
 
 final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService {
     private let remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol
+    private let eventCenter: EventCenterProtocol
 
     private var subscribedAssets: [ChainModel.Id: Set<AssetModel.Id>] = [:]
 
@@ -9,9 +10,11 @@ final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService
         selectedAccount: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.remoteSubscriptionService = remoteSubscriptionService
+        self.eventCenter = eventCenter
 
         super.init(
             selectedAccount: selectedAccount,
@@ -20,17 +23,36 @@ final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService
         )
     }
 
+    private func checkChainReadyForSubscription(_ chain: ChainModel) -> Bool {
+        guard
+            chain.isFullSyncMode,
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return false
+        }
+
+        return runtimeProvider.hasSnapshot
+    }
+
+    private func supportsAssetSubscription(for asset: AssetModel) -> Bool {
+        guard let typeString = asset.type else {
+            return true
+        }
+
+        switch AssetType(rawValue: typeString) {
+        case .statemine, .orml:
+            return true
+        case .evmAsset, .evmNative, .equilibrium, .none:
+            return false
+        }
+    }
+
     override func updateSubscription(for chain: ChainModel) {
-        guard chain.isFullSyncMode else {
+        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
             removeSubscription(for: chain.chainId)
             return
         }
 
-        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            return
-        }
-
-        let newAssets = chain.assets.filter { $0.enabled }
+        let newAssets = chain.assets.filter { $0.enabled && supportsAssetSubscription(for: $0) }
         let newAssetIds = Set(newAssets.map(\.assetId))
 
         guard subscribedAssets[chain.chainId] != newAssetIds else {
@@ -41,9 +63,16 @@ final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService
         removeSubscription(for: chain.chainId)
 
         guard let anyAsset = chain.assets.first(where: { newAssetIds.contains($0.assetId) }) else {
-            logger.debug("No assets found for chain \(chain.name)")
+            logger.debug("No supported or enabled assets found for \(chain.name)")
             return
         }
+
+        guard checkChainReadyForSubscription(chain) else {
+            logger.debug("Skipping balance subscription for \(chain.name)")
+            return
+        }
+
+        logger.debug("Subscribing balances for \(chain.name)")
 
         guard
             let subscriptionId = remoteSubscriptionService.attachToBalances(
@@ -89,5 +118,37 @@ final class SubstrateAssetsUpdatingService: AssetBalanceBatchBaseUpdatingService
             queue: nil,
             closure: nil
         )
+    }
+
+    override func performSetup() {
+        super.performSetup()
+
+        eventCenter.add(observer: self)
+    }
+
+    override func performThrottle() {
+        super.performThrottle()
+
+        eventCenter.remove(observer: self)
+    }
+}
+
+extension SubstrateAssetsUpdatingService: EventVisitorProtocol {
+    func processRuntimeCoderReady(event: RuntimeCoderCreated) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let hasSubscription = getSubscriptions(for: event.chainId) != nil
+
+        guard
+            !hasSubscription,
+            let chain = chainRegistry.getChain(for: event.chainId) else {
+            return
+        }
+
+        updateSubscription(for: chain)
     }
 }
