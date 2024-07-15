@@ -206,8 +206,6 @@ extension NetworkDetailsInteractor: ConnectionStateSubscription {
                 selected: true
             )
         case let .notConnected(selectedUrl):
-            updateCurrentSelectedNode(with: selectedUrl)
-
             guard let selectedUrl else { return }
 
             presenter?.didReceive(
@@ -290,12 +288,7 @@ private extension NetworkDetailsInteractor {
         }
 
         if let currentSelectedNode, currentSelectedNode.url != newSelectedNode.url {
-            nodesConnections[newSelectedNode.url] = nil
-
             nodesConnections[newSelectedNode.url] = chainRegistry.getConnection(for: chain.chainId)
-
-            nodesConnections[currentSelectedNode.url] = nil
-
             connectTo(currentSelectedNode, of: chain)
         } else {
             nodesConnections[newSelectedNode.url] = chainRegistry.getConnection(for: chain.chainId)
@@ -321,8 +314,11 @@ private extension NetworkDetailsInteractor {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.nodesConnections[node.url]?.disconnect(true)
                 self?.nodesConnections[node.url] = nil
+
+                if node.url == self?.currentSelectedNode?.url {
+                    self?.currentSelectedNode = nil
+                }
             case .failure:
                 self?.presenter?.didReceive(CommonError.dataCorruption)
             }
