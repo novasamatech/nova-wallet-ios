@@ -333,40 +333,20 @@ private extension NetworkDetailsInteractor {
         _ node: ChainNodeModel,
         chain: ChainModel
     ) -> CompoundOperationWrapper<Void> {
-        let operation: (
-            targetOperation: BaseOperation<Void>,
-            dependencies: [BaseOperation<Void>]
-        )
-
-        if node == currentSelectedNode {
-//            let setAutoBalanceOperation = repository.saveOperation(
-//                { [chainWithAutoBalance] },
-//                { [] }
-//            )
-
-            let deleteNodeOperation = repository.saveOperation(
-                { [chain
-                        .updatingConnectionMode(for: .autoBalanced)
-                        .removing(node: node)] },
-                { [] }
-            )
-
-//            deleteNodeOperation.addDependency(setAutoBalanceOperation)
-
-            operation = (deleteNodeOperation, [])
+        let updatedChain = if node == currentSelectedNode {
+            chain
+                .removing(node: node)
+                .updatingConnectionMode(for: .autoBalanced)
         } else {
-            let deleteNodeOperation = repository.saveOperation(
-                { [chain.removing(node: node)] },
-                { [] }
-            )
-
-            operation = (deleteNodeOperation, [])
+            chain.removing(node: node)
         }
 
-        return CompoundOperationWrapper(
-            targetOperation: operation.targetOperation,
-            dependencies: operation.dependencies
+        let updateOperation = repository.saveOperation(
+            { [updatedChain] },
+            { [] }
         )
+
+        return CompoundOperationWrapper(targetOperation: updateOperation)
     }
 
     func connectTo(
