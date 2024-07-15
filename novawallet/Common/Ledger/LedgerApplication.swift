@@ -1,23 +1,18 @@
 import Foundation
 import Operation_iOS
 
-protocol LedgerApplicationProtocol {
+protocol LedgerAccountRetrievable {
+    var connectionManager: LedgerConnectionManagerProtocol { get }
+
     func getAccountWrapper(
         for deviceId: UUID,
         chainId: ChainModel.Id,
         index: UInt32,
         displayVerificationDialog: Bool
     ) -> CompoundOperationWrapper<LedgerAccountResponse>
-
-    func getSignWrapper(
-        for payload: Data,
-        deviceId: UUID,
-        chainId: ChainModel.Id,
-        derivationPathClosure: @escaping LedgerPayloadClosure
-    ) -> CompoundOperationWrapper<Data>
 }
 
-extension LedgerApplicationProtocol {
+extension LedgerAccountRetrievable {
     func getAccountWrapper(
         for deviceId: UUID,
         chainId: ChainModel.Id,
@@ -25,6 +20,15 @@ extension LedgerApplicationProtocol {
     ) -> CompoundOperationWrapper<LedgerAccountResponse> {
         getAccountWrapper(for: deviceId, chainId: chainId, index: index, displayVerificationDialog: false)
     }
+}
+
+protocol LedgerApplicationProtocol: LedgerAccountRetrievable {
+    func getSignWrapper(
+        for payload: Data,
+        deviceId: UUID,
+        chainId: ChainModel.Id,
+        derivationPathClosure: @escaping LedgerPayloadClosure
+    ) -> CompoundOperationWrapper<Data>
 }
 
 enum LedgerApplicationError: Error {
