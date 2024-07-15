@@ -15,7 +15,7 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
             animated: true
         )
     }
-    
+
     func showEditNode(
         from view: NetworkDetailsViewProtocol?,
         node: ChainNodeModel,
@@ -30,26 +30,35 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
             animated: true
         )
     }
-    
+
     func showManageNode(
         from view: NetworkDetailsViewProtocol?,
         node: ChainNodeModel,
         onNodeEdit: @escaping () -> Void,
         onNodeDelete: @escaping () -> Void
     ) {
+        let onDelete: () -> Void = {
+            if view?.controller.presentedViewController != nil {
+                view?.controller.dismiss(animated: true)
+            }
+
+            onNodeDelete()
+        }
+
         guard let manageNode = NetworkManageNodeViewFactory.createView(
-            node: node, onNodeEdit: onNodeEdit,
-            onNodeDelete: onNodeDelete
+            node: node,
+            onNodeEdit: onNodeEdit,
+            onNodeDelete: onDelete
         ) else { return }
-        
+
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
         manageNode.controller.modalTransitioningFactory = factory
         manageNode.controller.modalPresentationStyle = .custom
-        
+
         view?.controller.present(manageNode.controller, animated: true)
     }
-    
+
     func showEditNetwork(
         from view: NetworkDetailsViewProtocol?,
         network: ChainModel,
@@ -61,13 +70,13 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
         ) else {
             return
         }
-        
+
         view?.controller.navigationController?.pushViewController(
             editNetworkView.controller,
             animated: true
         )
     }
-    
+
     func showNetworksList(from view: NetworkDetailsViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }

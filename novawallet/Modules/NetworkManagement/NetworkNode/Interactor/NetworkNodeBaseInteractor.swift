@@ -4,20 +4,20 @@ import Operation_iOS
 
 class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeCorrespondingTrait {
     weak var basePresenter: NetworkNodeBaseInteractorOutputProtocol?
-    
+
     let chainRegistry: ChainRegistryProtocol
     let connectionFactory: ConnectionFactoryProtocol
     let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
     let operationQueue: OperationQueue
-    
+
     let chainId: ChainModel.Id
-    
+
     let wssPredicate = NSPredicate.ws
-    
+
     var currentConnection: ChainConnection?
     var currentConnectingNode: ChainNodeModel?
-    
+
     init(
         chainRegistry: any ChainRegistryProtocol,
         connectionFactory: any ConnectionFactoryProtocol,
@@ -33,15 +33,40 @@ class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeCorrespo
         self.repository = repository
         self.operationQueue = operationQueue
     }
-    
+
     func completeSetup() {
         subscribeChainChanges()
     }
-    
+
     func setup() {
         completeSetup()
     }
-    
+
+    func connect(
+        to node: ChainNodeModel,
+        replacing existingNode: ChainNodeModel?,
+        chain: ChainNodeConnectable
+    ) {
+        do {
+            try connect(
+                to: node,
+                replacing: existingNode,
+                chain: chain,
+                urlPredicate: NSPredicate.ws
+            )
+        } catch {
+            if let nodeCorrespondingError = error as? NetworkNodeCorrespondingError {
+                basePresenter?.didReceive(.nodeValidation(innerError: nodeCorrespondingError))
+            } else if let nodeConnectionError = error as? NetworkNodeConnectingError {
+                basePresenter?.didReceive(.connection(innerError: nodeConnectionError))
+            } else if let commonError = error as? CommonError {
+                basePresenter?.didReceive(.common(innerError: commonError))
+            } else {
+                basePresenter?.didReceive(.common(innerError: .undefined))
+            }
+        }
+    }
+
     func handleConnected() {
         fatalError("Must be overriden by subclass")
     }
@@ -58,7 +83,7 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
         to newState: WebSocketEngine.State
     ) {
         guard oldState != newState else { return }
-        
+
         DispatchQueue.main.async {
             guard
                 let node = self.currentConnectingNode,
@@ -108,7 +133,7 @@ private extension NetworkNodeBaseInteractor {
                 node: node,
                 chain: chain
             )
-        
+
         execute(
             wrapper: chainCorrespondingOperation,
             inOperationQueue: operationQueue,
@@ -124,7 +149,7 @@ private extension NetworkNodeBaseInteractor {
             }
         }
     }
-    
+
     func subscribeChainChanges() {
         chainRegistry.chainsSubscribe(
             self,
@@ -160,7 +185,7 @@ extension NetworkNodeBaseInteractorError: ErrorContentConvertible {
         case let .nodeValidation(innerError): innerError
         case let .common(innerError): innerError
         }
-        
+
         return error.toErrorContent(for: locale)
     }
 }

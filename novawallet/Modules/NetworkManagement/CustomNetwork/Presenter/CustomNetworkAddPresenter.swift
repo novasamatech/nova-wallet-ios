@@ -2,9 +2,8 @@ import Foundation
 import SoraFoundation
 
 final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
-    
     let interactor: CustomNetworkAddInteractorInputProtocol
-    
+
     init(
         chainType: ChainType,
         knownChain: ChainModel?,
@@ -13,7 +12,7 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
-        
+
         super.init(
             chainType: chainType,
             knownChain: knownChain,
@@ -22,17 +21,17 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
             localizationManager: localizationManager
         )
     }
-    
+
     override func actionConfirm() {
-        guard 
+        guard
             let partialURL,
             let partialName,
             let partialCurrencySymbol
         else {
             return
         }
-        
-        interactor.addNetwork(
+
+        let request = CustomNetwork.AddRequest(
             networkType: chainType,
             url: partialURL,
             name: partialName,
@@ -41,21 +40,25 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
             blockExplorerURL: partialBlockExplorerURL,
             coingeckoURL: partialCoingeckoURL
         )
+
+        interactor.addNetwork(with: request)
     }
-    
+
     override func completeButtonTitle() -> String {
         R.string.localizable.networksListAddNetworkButtonTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
-}
 
-// MARK: CustomNetworkAddInteractorOutputProtocol
+    override func handleUrl(_ url: String) {
+        guard
+            chainType == .substrate,
+            NSPredicate.ws.evaluate(with: url)
+        else {
+            return
+        }
 
-extension CustomNetworkAddPresenter: CustomNetworkAddInteractorOutputProtocol {
-    func didAddChain() {
-        provideButtonViewModel(loading: false)
-        
-        wireframe.showPrevious(from: view)
+        provideButtonViewModel(loading: true)
+        interactor.fetchNetworkProperties(for: url)
     }
 }

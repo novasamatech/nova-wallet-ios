@@ -2,55 +2,77 @@ import SubstrateSdk
 import Operation_iOS
 
 final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
-    weak var presenter: CustomNetworkAddInteractorOutputProtocol? {
-        didSet {
-            basePresenter = presenter
-        }
-    }
-    
-    override func handleSetupFinished(for network: ChainModel) {
-        let saveOperation = repository.saveOperation(
-            { [network] },
-            { [] }
+    private var networkToAdd: ChainModel?
+
+    init(
+        networkToAdd: ChainModel?,
+        chainRegistry: ChainRegistryProtocol,
+        customNetworkSetupFactory: CustomNetworkSetupFactoryProtocol,
+        connectionFactory: ConnectionFactoryProtocol,
+        repository: AnyDataProviderRepository<ChainModel>,
+        priceIdParser: PriceUrlParserProtocol,
+        operationQueue: OperationQueue
+    ) {
+        self.networkToAdd = networkToAdd
+
+        super.init(
+            chainRegistry: chainRegistry,
+            customNetworkSetupFactory: customNetworkSetupFactory,
+            connectionFactory: connectionFactory,
+            repository: repository,
+            priceIdParser: priceIdParser,
+            operationQueue: operationQueue
         )
-        
-        execute(
-            operation: saveOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.presenter?.didAddChain()
-            case .failure:
-                self?.presenter?.didReceive(
-                    .common(innerError: .dataCorruption)
-                )
-            }
+    }
+
+    override func completeSetup() {
+        guard let networkToAdd, let node = networkToAdd.nodes.first else {
+            return
         }
+
+        presenter?.didReceive(
+            knownChain: networkToAdd,
+            selectedNode: node
+        )
     }
 }
 
 // MARK: CustomNetworkAddInteractorInputProtocol
 
 extension CustomNetworkAddInteractor: CustomNetworkAddInteractorInputProtocol {
-    func addNetwork(
-        networkType: ChainType,
-        url: String,
-        name: String,
-        currencySymbol: String,
-        chainId: String?,
-        blockExplorerURL: String?,
-        coingeckoURL: String?
-    ) {
-        connectToChain(
-            with: networkType,
-            url: url,
-            name: name,
-            currencySymbol: currencySymbol,
-            chainId: chainId,
-            blockExplorerURL: blockExplorerURL,
-            coingeckoURL: coingeckoURL
+    func addNetwork(with request: CustomNetwork.AddRequest) {
+        setupFinishStrategy = CustomNetworkAddNewStrategy(
+            repository: repository,
+            operationQueue: operationQueue
         )
+
+        let type: ChainType = if let networkToAdd {
+            networkToAdd.isEthereumBased ? .evm : .substrate
+        } else {
+            request.networkType
+        }
+
+        let setupRequest = CustomNetwork.SetupRequest(
+            from: request,
+            networkType: type,
+            iconUrl: networkToAdd?.icon,
+            networkSetupType: .full
+        )
+
+        setupChain(with: setupRequest)
+    }
+
+    func fetchNetworkProperties(for url: String) {
+        setupFinishStrategy = CustomNetworkProvideStrategy()
+
+        let request = CustomNetwork.SetupRequest(
+            networkType: .substrate,
+            url: url,
+            name: "",
+            iconUrl: networkToAdd?.icon,
+            networkSetupType: .noRuntime
+        )
+
+        setupChain(with: request)
     }
 }

@@ -11,24 +11,24 @@ struct NetworkNodeViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
-        
+
         let operationQueue: OperationQueue = {
             let operationQueue = OperationQueue()
             operationQueue.qualityOfService = .userInitiated
             return operationQueue
         }()
-        
+
         let interactor = NetworkNodeAddInteractor(
             chainRegistry: chainRegistry,
-            connectionFactory: connectionFactory, 
+            connectionFactory: connectionFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             chainId: chainId,
             repository: repository,
             operationQueue: operationQueue
         )
-        
+
         let wireframe = NetworkNodeWireframe()
-        
+
         let networkViewModelFactory = NetworkViewModelFactory()
 
         let presenter = NetworkNodeAddPresenter(
@@ -48,7 +48,7 @@ struct NetworkNodeViewFactory {
 
         return view
     }
-    
+
     static func createNodeEditView(
         with chainId: ChainModel.Id,
         _ node: ChainNodeModel
@@ -61,25 +61,25 @@ struct NetworkNodeViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let repository = SubstrateRepositoryFactory().createChainRepository()
-        
+
         let operationQueue: OperationQueue = {
             let operationQueue = OperationQueue()
             operationQueue.qualityOfService = .userInitiated
             return operationQueue
         }()
-        
+
         let interactor = NetworkNodeEditInteractor(
             nodeToEdit: node,
             chainRegistry: chainRegistry,
-            connectionFactory: connectionFactory, 
+            connectionFactory: connectionFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             chainId: chainId,
             repository: repository,
             operationQueue: operationQueue
         )
-        
+
         let wireframe = NetworkNodeWireframe()
-        
+
         let networkViewModelFactory = NetworkViewModelFactory()
 
         let presenter = NetworkNodeEditPresenter(

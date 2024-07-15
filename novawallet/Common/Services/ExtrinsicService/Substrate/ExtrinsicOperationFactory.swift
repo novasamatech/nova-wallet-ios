@@ -126,7 +126,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         self.metadataHashOperationFactory = metadataHashOperationFactory
         self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
         self.blockHashOperationFactory = blockHashOperationFactory
-        
+
         super.init(
             runtimeRegistry: runtimeRegistry,
             engine: engine,

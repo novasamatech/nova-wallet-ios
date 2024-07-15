@@ -119,7 +119,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     private func createConnection(
-        urlModels: [ConnectionCreationParams],
+        urlModels _: [ConnectionCreationParams],
         urls: [URL],
         for chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?

@@ -48,7 +48,7 @@ extension NSPredicate {
         let format = "(0x)?[a-fA-F0-9]{128}"
         return NSPredicate(format: "SELF MATCHES %@", format)
     }
-    
+
     static var ws: NSPredicate { websocketPredicate(for: .ws) }
 
     static var websocket: NSPredicate { websocketPredicate(for: .wss) }
@@ -72,7 +72,7 @@ extension NSPredicate {
             ipUrlPredicate
         ])
     }
-    
+
     private static func websocketPredicate(for scheme: WebsocketScheme) -> NSPredicate {
         // protocol identifier (optional)
         // short syntax // still required
@@ -82,7 +82,7 @@ extension NSPredicate {
         case .wss:
             "(?:(?:(?:wss?):)?\\/\\/)"
         }
-        
+
         let format = "^" +
             schemeRegExp +
             // user:pass BasicAuth (optional)
@@ -123,9 +123,9 @@ extension NSPredicate {
 
         return NSPredicate(format: "SELF MATCHES %@", format)
     }
-    
+
     private enum WebsocketScheme: String {
-        case ws = "ws"
-        case wss = "wss"
+        case ws
+        case wss
     }
 }

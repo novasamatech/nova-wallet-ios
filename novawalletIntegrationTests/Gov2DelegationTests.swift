@@ -12,11 +12,7 @@ final class Gov2DelegationTests: XCTestCase {
         let chainId: ChainModel.Id = KnowChainId.kusama
         let recentBlockNumber: BlockNumber = 1000
 
-        guard
-            let operationFactory = setupDelegationListFactory(for: chainId, chainRegistry: chainRegistry),
-            let chain = chainRegistry.getChain(for: chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+        guard let operationFactory = setupDelegationListFactory(for: chainId, chainRegistry: chainRegistry) else {
             return
         }
 

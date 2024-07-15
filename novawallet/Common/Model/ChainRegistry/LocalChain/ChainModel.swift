@@ -311,7 +311,7 @@ struct ChainModel: Equatable, Hashable {
 
     var disabledCheckMetadataHash: Bool {
         additional?.disabledCheckMetadataHash?.boolValue ?? false
-	}
+    }
 
     var isAddedByUser: Bool {
         source == .user
@@ -382,12 +382,12 @@ extension ChainModel {
             connectionMode: connectionMode
         )
     }
-    
+
     func adding(node: ChainNodeModel) -> ChainModel {
         var mutNodes = nodes
-        
+
         mutNodes.insert(node)
-        
+
         return .init(
             chainId: chainId,
             parentId: parentId,
@@ -408,9 +408,9 @@ extension ChainModel {
             connectionMode: connectionMode
         )
     }
-    
+
     func adding(nodes: Set<ChainNodeModel>) -> ChainModel {
-        return .init(
+        .init(
             chainId: chainId,
             parentId: parentId,
             name: name,
@@ -430,12 +430,12 @@ extension ChainModel {
             connectionMode: connectionMode
         )
     }
-    
+
     func removing(node: ChainNodeModel) -> ChainModel {
         var mutNodes = nodes
-        
+
         mutNodes.remove(node)
-        
+
         return .init(
             chainId: chainId,
             parentId: parentId,
@@ -456,16 +456,16 @@ extension ChainModel {
             connectionMode: connectionMode
         )
     }
-    
+
     func replacing(
         _ oldNode: ChainNodeModel,
         with newNode: ChainNodeModel
     ) -> ChainModel {
         var mutNodes = nodes
-        
+
         mutNodes.remove(oldNode)
         mutNodes.insert(newNode)
-        
+
         return .init(
             chainId: chainId,
             parentId: parentId,
@@ -588,7 +588,7 @@ extension ChainNodeConnectable {
     var hasSubstrateRuntime: Bool {
         !noSubstrateRuntime
     }
-    
+
     var isEthereumBased: Bool {
         options?.contains(.ethereumBased) ?? false
     }

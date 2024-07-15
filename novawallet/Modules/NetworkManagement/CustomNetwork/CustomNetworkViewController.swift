@@ -14,7 +14,7 @@ final class CustomNetworkViewController: UIViewController, ViewHolder {
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
-    
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -28,7 +28,7 @@ final class CustomNetworkViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         rootView.locale = selectedLocale
-        
+
         setupNetworkSwitchTitles()
         setupHandlers()
         presenter.setup()
@@ -42,7 +42,7 @@ extension CustomNetworkViewController: CustomNetworkViewProtocol {
         show
             ? rootView.showNetworkTypeSwitch()
             : rootView.hideNetworkTypeSwitch()
-        
+
         switch networkType {
         case .evm:
             rootView.showChainId()
@@ -50,51 +50,57 @@ extension CustomNetworkViewController: CustomNetworkViewProtocol {
             rootView.hideChainId()
         }
     }
-    
+
     func didReceiveTitle(text: String) {
         rootView.titleLabel.text = text
     }
-    
+
     func didReceiveUrl(viewModel: InputViewModelProtocol) {
         rootView.urlInput.bind(inputViewModel: viewModel)
+
+        if viewModel.inputHandler.enabled {
+            rootView.urlInput.textField.textColor = R.color.colorTextPrimary()
+        } else {
+            rootView.urlInput.textField.textColor = R.color.colorTextSecondary()
+        }
     }
-    
+
     func didReceiveName(viewModel: InputViewModelProtocol) {
         rootView.nameInput.bind(inputViewModel: viewModel)
     }
-    
+
     func didReceiveCurrencySymbol(viewModel: InputViewModelProtocol) {
         rootView.currencySymbolInput.bind(inputViewModel: viewModel)
     }
-    
+
     func didReceiveChainId(viewModel: InputViewModelProtocol?) {
         guard let viewModel else {
             rootView.hideChainId()
-            
+
             return
         }
-        
+
         rootView.showChainId()
         rootView.chainIdInput.bind(inputViewModel: viewModel)
     }
-    
+
     func didReceiveBlockExplorerUrl(viewModel: InputViewModelProtocol) {
         rootView.blockExplorerUrlInput.bind(inputViewModel: viewModel)
     }
-    
+
     func didReceiveCoingeckoUrl(viewModel: InputViewModelProtocol) {
         rootView.coingeckoUrlInput.bind(inputViewModel: viewModel)
     }
-    
+
     func didReceiveButton(viewModel: NetworkNodeViewLayout.LoadingButtonViewModel) {
         viewModel.loading
             ? rootView.actionLoadableView.startLoading()
             : rootView.actionLoadableView.stopLoading()
-        
+
         viewModel.enabled
             ? rootView.actionButton.applyEnabledStyle()
             : rootView.actionButton.applyDisabledStyle()
-        
+
         rootView.actionButton.isUserInteractionEnabled = viewModel.enabled
         rootView.actionButton.imageWithTitleView?.title = viewModel.title
     }
@@ -119,20 +125,26 @@ private extension CustomNetworkViewController {
             "EVM"
         ]
     }
-    
+
     func setupHandlers() {
         rootView.networkTypeSwitch.addTarget(
             self,
             action: #selector(actionSegmentChanged),
             for: .valueChanged
         )
-        
+
         rootView.actionButton.addTarget(
             self,
             action: #selector(actionConfirm),
             for: .touchUpInside
         )
-        
+
+        rootView.urlInput.textField.addTarget(
+            self,
+            action: #selector(actionURLEndEditing),
+            for: .editingDidEnd
+        )
+
         let inputs = [
             rootView.urlInput,
             rootView.nameInput,
@@ -141,7 +153,7 @@ private extension CustomNetworkViewController {
             rootView.blockExplorerUrlInput,
             rootView.coingeckoUrlInput
         ]
-        
+
         let actions = [
             #selector(actionURLChanged),
             #selector(actionNameChanged),
@@ -159,7 +171,13 @@ private extension CustomNetworkViewController {
             )
         }
     }
-    
+
+    @objc func actionURLEndEditing() {
+        guard let text = rootView.urlInput.textField.text else { return }
+
+        presenter.handle(url: text)
+    }
+
     @objc private func actionSegmentChanged() {
         presenter.select(
             segment: .init(rawValue: rootView.networkTypeSwitch.selectedSegmentIndex)
@@ -179,22 +197,22 @@ private extension CustomNetworkViewController {
         let partialSymbol = rootView.nameInput.textField.text ?? ""
         presenter.handlePartial(name: partialSymbol)
     }
-    
+
     @objc func actionCurrencySymbolChanged() {
         let partialSymbol = rootView.currencySymbolInput.textField.text ?? ""
         presenter.handlePartial(currencySymbol: partialSymbol)
     }
-    
+
     @objc func actionChainIdChanged() {
         let partialChainId = rootView.chainIdInput.textField.text ?? ""
-        presenter.handlePartial(currencySymbol: partialChainId)
+        presenter.handlePartial(chainId: partialChainId)
     }
-    
+
     @objc func actionBlockExplorerURLChanged() {
         let partialAddress = rootView.blockExplorerUrlInput.textField.text ?? ""
         presenter.handlePartial(blockExplorerURL: partialAddress)
     }
-    
+
     @objc func actionCoingeckoURLChanged() {
         let partialAddress = rootView.coingeckoUrlInput.textField.text ?? ""
         presenter.handlePartial(coingeckoURL: partialAddress)

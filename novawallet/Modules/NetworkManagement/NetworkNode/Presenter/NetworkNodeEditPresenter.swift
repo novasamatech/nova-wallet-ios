@@ -3,7 +3,7 @@ import SoraFoundation
 
 final class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
     let interactor: NetworkNodeEditInteractorInputProtocol
-    
+
     init(
         interactor: any NetworkNodeEditInteractorInputProtocol,
         wireframe: any NetworkNodeWireframeProtocol,
@@ -11,7 +11,7 @@ final class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
         localizationManager: any LocalizationManagerProtocol
     ) {
         self.interactor = interactor
-        
+
         super.init(
             interactor: interactor,
             wireframe: wireframe,
@@ -19,22 +19,22 @@ final class NetworkNodeEditPresenter: NetworkNodeBasePresenter {
             localizationManager: localizationManager
         )
     }
-    
+
     override func actionConfirm() {
         guard let partialURL, let partialName else { return }
-        
+
         interactor.editNode(
             with: partialURL,
             name: partialName
         )
     }
-    
+
     override func completeButtonTitle() -> String {
         R.string.localizable.commonSave(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
-    
+
     override func provideTitle() {
         let title = R.string.localizable.networkNodeEditTitle(
             preferredLanguages: selectedLocale.rLanguages
@@ -50,11 +50,11 @@ extension NetworkNodeEditPresenter: NetworkNodeEditInteractorOutputProtocol {
         wireframe.showNetworkDetails(from: view)
         provideButtonViewModel(loading: false)
     }
-    
+
     func didReceive(node: ChainNodeModel) {
         partialURL = node.url
         partialName = node.name
-        
+
         provideNameViewModel()
         provideURLViewModel(for: nil)
         provideButtonViewModel(loading: false)

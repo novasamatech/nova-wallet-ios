@@ -4,8 +4,6 @@ import SubstrateSdk
 protocol NetworkNodeConnectingTrait: AnyObject, WebSocketEngineDelegate {
     var chainRegistry: ChainRegistryProtocol { get }
     var connectionFactory: ConnectionFactoryProtocol { get }
-    var currentConnectingNode: ChainNodeModel? { get set }
-    var currentConnection: ChainConnection? { get set }
 }
 
 extension NetworkNodeConnectingTrait {
@@ -14,27 +12,25 @@ extension NetworkNodeConnectingTrait {
         replacing existingNode: ChainNodeModel?,
         chain: ChainNodeConnectable,
         urlPredicate: NSPredicate
-    ) throws {
+    ) throws -> ChainConnection {
         if let existingNode = findExistingNode(with: node.url, ignoring: existingNode) {
             throw NetworkNodeConnectingError.alreadyExists(
                 node: existingNode.node,
                 chain: existingNode.chain
             )
         }
-        
+
         guard urlPredicate.evaluate(with: node.url) else {
             throw NetworkNodeConnectingError.wrongFormat
         }
-        
-        currentConnectingNode = node
-        
-        currentConnection = try connectionFactory.createConnection(
+
+        return try connectionFactory.createConnection(
             for: node,
             chain: chain,
             delegate: self
         )
     }
-    
+
     func findExistingNode(
         with url: String,
         ignoring replacedNode: ChainNodeModel? = nil
@@ -42,14 +38,18 @@ extension NetworkNodeConnectingTrait {
         guard let chainIds = chainRegistry.availableChainIds else {
             return nil
         }
-        
+
+        let predicate: (ChainNodeModel) -> Bool = replacedNode == nil
+            ? { $0.url == url }
+            : { $0.url == url && $0.url != replacedNode?.url }
+
         return chainIds
             .compactMap { chainId -> (node: ChainNodeModel, chain: ChainModel)? in
                 guard
                     let chain = chainRegistry.getChain(for: chainId),
-                    let existingNode = chain.nodes.first(where: { $0.url == url && $0.url != replacedNode?.url })
+                    let existingNode = chain.nodes.first(where: predicate)
                 else { return nil }
-                
+
                 return (node: existingNode, chain: chain)
             }
             .first

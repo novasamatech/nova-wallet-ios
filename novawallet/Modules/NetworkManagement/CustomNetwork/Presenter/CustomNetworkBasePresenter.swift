@@ -5,14 +5,14 @@ class CustomNetworkBasePresenter {
     weak var view: CustomNetworkViewProtocol?
     let wireframe: CustomNetworkWireframeProtocol
     private let interactor: CustomNetworkBaseInteractorInputProtocol
-    
+
     var partialURL: String?
     var partialName: String?
     var partialCurrencySymbol: String?
     var partialChainId: String?
     var partialBlockExplorerURL: String?
     var partialCoingeckoURL: String?
-    
+
     var chainType: ChainType
     var knownChain: ChainModel?
 
@@ -29,31 +29,30 @@ class CustomNetworkBasePresenter {
         self.wireframe = wireframe
         self.localizationManager = localizationManager
     }
-    
+
     func actionConfirm() {
         fatalError("Must be overriden by subclass")
     }
-    
+
     func completeButtonTitle() -> String {
         fatalError("Must be overriden by subclass")
     }
-    
+
     func checkInfoCompleted() -> Bool {
         if
             let partialURL,
             let partialName,
-            let partialCurrencySymbol
-        {
+            let partialCurrencySymbol {
             !partialURL.isEmpty
-            && !partialName.isEmpty
-            && !partialCurrencySymbol.isEmpty
+                && !partialName.isEmpty
+                && !partialCurrencySymbol.isEmpty
         } else {
             false
         }
     }
-    
+
     // MARK: Provide view models
-    
+
     func provideViewModel() {
         provideTitle()
         provideNetworkTypeViewModel()
@@ -63,15 +62,15 @@ class CustomNetworkBasePresenter {
         provideBlockExplorerURLViewModel()
         provideCoingeckoURLViewModel()
         provideButtonViewModel(loading: false)
-        
+
         if chainType == .evm {
             provideChainIdViewModel()
         }
     }
-    
+
     func provideButtonViewModel(loading: Bool) {
         let completed = checkInfoCompleted()
-        
+
         let title: String = if completed {
             completeButtonTitle()
         } else {
@@ -79,16 +78,16 @@ class CustomNetworkBasePresenter {
                 preferredLanguages: selectedLocale.rLanguages
             )
         }
-        
+
         let viewModel = NetworkNodeViewLayout.LoadingButtonViewModel(
             title: title,
             enabled: completed,
             loading: loading
         )
-        
+
         view?.didReceiveButton(viewModel: viewModel)
     }
-    
+
     func provideURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialURL ?? "",
@@ -104,7 +103,7 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveName(viewModel: inputViewModel)
     }
-    
+
     func provideCurrencySymbolViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCurrencySymbol ?? "",
@@ -114,7 +113,7 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveCurrencySymbol(viewModel: inputViewModel)
     }
-    
+
     func provideChainIdViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialChainId ?? "",
@@ -122,7 +121,7 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveChainId(viewModel: inputViewModel)
     }
-    
+
     func provideBlockExplorerURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialBlockExplorerURL ?? "",
@@ -131,28 +130,25 @@ class CustomNetworkBasePresenter {
         )
         view?.didReceiveBlockExplorerUrl(viewModel: inputViewModel)
     }
-    
+
     func provideCoingeckoURLViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCoingeckoURL ?? "",
             required: false,
-            placeholder: Constants.coingeckoTemplate
+            placeholder: Constants.coingeckoUrlPlaceholder
         )
         view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
-    
+
     func provideNetworkTypeViewModel() {
         view?.didReceiveNetworkType(
             chainType,
             show: knownChain == nil
         )
     }
-    
-    // MARK: Setup
-    
-    func completeSetup() {
-        provideViewModel()
-        provideButtonViewModel(loading: false)
+
+    func handleUrl(_: String) {
+        fatalError("Must be overriden by subclass")
     }
 }
 
@@ -160,51 +156,62 @@ class CustomNetworkBasePresenter {
 
 extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
     func setup() {
-        completeSetup()
+        provideViewModel()
+        provideButtonViewModel(loading: false)
+
+        interactor.setup()
     }
-    
+
     func select(segment: ChainType?) {
         guard let segment else { return }
-        
+
         chainType = segment
-        
+
         cleanPartialValues()
         provideViewModel()
     }
 
+    func handle(url: String) {
+        handleUrl(url)
+    }
+
     func handlePartial(url: String) {
         partialURL = url
-        
+
         provideButtonViewModel(loading: false)
     }
 
     func handlePartial(name: String) {
         partialName = name
-        
+
         provideButtonViewModel(loading: false)
     }
-    
+
     func handlePartial(currencySymbol: String) {
         partialCurrencySymbol = currencySymbol
-        
+
         provideButtonViewModel(loading: false)
     }
-    
+
+    func handlePartial(chainId: String) {
+        partialChainId = chainId
+
+        provideButtonViewModel(loading: false)
+    }
+
     func handlePartial(blockExplorerURL: String) {
         partialBlockExplorerURL = blockExplorerURL
-        
-        provideButtonViewModel(loading: false)
     }
-    
+
     func handlePartial(coingeckoURL: String) {
         partialCoingeckoURL = coingeckoURL
-        
+
         provideButtonViewModel(loading: false)
     }
 
     func confirm() {
         provideButtonViewModel(loading: true)
-        
+
         actionConfirm()
     }
 }
@@ -212,14 +219,69 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
 // MARK: CustomNetworkBaseInteractorOutputProtocol
 
 extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol {
-    func didReceive(_ error: CustomNetworkBaseInteractorError) {
-        wireframe.present(
-            error: error,
+    func didFinishWorkWithNetwork() {
+        provideButtonViewModel(loading: false)
+
+        wireframe.showNetworksList(
             from: view,
             locale: selectedLocale
         )
-        
+    }
+
+    func didReceive(_ error: CustomNetworkBaseInteractorError) {
         provideButtonViewModel(loading: false)
+
+        switch error {
+        case let .alreadyExistCustom(node, chain):
+            wireframe.present(
+                viewModel: createAlreadyExistsViewModel(
+                    errorContent: error.toErrorContent(for: selectedLocale),
+                    existingChain: chain,
+                    existingNode: node
+                ),
+                style: .alert,
+                from: view
+            )
+        case let .wrongCurrencySymbol(_, actualSymbol):
+            wireframe.present(
+                viewModel: createInvalidSymbolViewModel(
+                    errorContent: error.toErrorContent(for: selectedLocale),
+                    actualSymbol: actualSymbol
+                ),
+                style: .alert,
+                from: view
+            )
+        case .invalidPriceUrl:
+            guard let view else { return }
+            wireframe.presentInvalidCoingeckoPriceUrl(
+                from: view,
+                locale: selectedLocale
+            )
+        default:
+            wireframe.present(
+                error: error,
+                from: view,
+                locale: selectedLocale
+            )
+        }
+    }
+
+    func didReceive(
+        knownChain: ChainModel,
+        selectedNode: ChainNodeModel
+    ) {
+        self.knownChain = knownChain
+
+        fillPartial(from: knownChain, selectedNode)
+        provideViewModel()
+    }
+
+    func didReceive(
+        chain: ChainModel,
+        selectedNode: ChainNodeModel
+    ) {
+        fillPartial(from: chain, selectedNode)
+        provideViewModel()
     }
 }
 
@@ -234,12 +296,119 @@ private extension CustomNetworkBasePresenter {
         partialBlockExplorerURL = nil
         partialCoingeckoURL = nil
     }
-    
+
     func provideTitle() {
         let title = R.string.localizable.networkAddTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
         view?.didReceiveTitle(text: title)
+    }
+
+    func blockExplorerUrl(from template: String?) -> String? {
+        guard let template else { return nil }
+
+        var urlComponents = URLComponents(
+            url: URL(string: template)!,
+            resolvingAgainstBaseURL: false
+        )
+        urlComponents?.path = ""
+        urlComponents?.queryItems = []
+
+        let trimmedUrlString = urlComponents?
+            .url?
+            .absoluteString
+            .trimmingCharacters(in: CharacterSet(charactersIn: "?"))
+
+        return trimmedUrlString ?? template
+    }
+
+    func fillPartial(
+        from chain: ChainModel,
+        _ selectedNode: ChainNodeModel
+    ) {
+        let mainAsset = chain.assets.first { $0.assetId == 0 }
+
+        partialURL = selectedNode.url
+        partialName = chain.name
+        partialCurrencySymbol = mainAsset?.symbol
+        partialChainId = "\(chain.addressPrefix)"
+        partialBlockExplorerURL = blockExplorerUrl(from: chain.explorers?.first?.extrinsic)
+        partialCoingeckoURL = if let priceId = mainAsset?.priceId {
+            [Constants.coingeckoUrl, "\(priceId)"].joined(with: .slash)
+        } else {
+            nil
+        }
+    }
+}
+
+// MARK: Alert View Models
+
+private extension CustomNetworkBasePresenter {
+    func createAlreadyExistsViewModel(
+        errorContent: ErrorContent,
+        existingChain: ChainModel,
+        existingNode: ChainNodeModel
+    ) -> AlertPresentableViewModel {
+        let viewModel = AlertPresentableViewModel(
+            title: errorContent.title,
+            message: errorContent.message,
+            actions: [
+                .init(
+                    title: R.string.localizable.commonModify(preferredLanguages: selectedLocale.rLanguages),
+                    style: .normal,
+                    handler: { [weak self] in
+                        guard let self else { return }
+
+                        provideButtonViewModel(loading: true)
+
+                        interactor.modify(
+                            with: .init(
+                                existingNetwork: existingChain,
+                                node: existingNode,
+                                url: partialURL ?? "",
+                                name: partialName ?? "",
+                                currencySymbol: partialCurrencySymbol ?? "",
+                                chainId: partialChainId,
+                                blockExplorerURL: partialBlockExplorerURL,
+                                coingeckoURL: partialCoingeckoURL
+                            )
+                        )
+                    }
+                ),
+            ],
+            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+        )
+
+        return viewModel
+    }
+
+    func createInvalidSymbolViewModel(
+        errorContent: ErrorContent,
+        actualSymbol: String
+    ) -> AlertPresentableViewModel {
+        let viewModel = AlertPresentableViewModel(
+            title: errorContent.title,
+            message: errorContent.message,
+            actions: [
+                .init(
+                    title: R.string.localizable.commonApply(preferredLanguages: selectedLocale.rLanguages),
+                    style: .normal,
+                    handler: { [weak self] in
+                        guard let self else { return }
+
+                        provideButtonViewModel(loading: true)
+
+                        partialCurrencySymbol = actualSymbol
+                        provideCurrencySymbolViewModel()
+
+                        confirm()
+                    }
+                ),
+            ],
+            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+        )
+
+        return viewModel
     }
 }
 
@@ -248,7 +417,7 @@ private extension CustomNetworkBasePresenter {
 extension CustomNetworkBasePresenter: Localizable {
     func applyLocalization() {
         guard let view, view.isSetup else { return }
-        
+
         provideViewModel()
     }
 }
@@ -258,8 +427,9 @@ extension CustomNetworkBasePresenter: Localizable {
 extension CustomNetworkBasePresenter {
     enum Constants {
         static let chainIdPlaceholder = "012345"
-        static let chainUrlPlaceholder = "wss://rpc.network.io"
+        static let chainUrlPlaceholder = "wss://"
         static let blockExplorerPlaceholder = "https://subscan.io"
-        static let coingeckoTemplate = "https://coingecko.com/coins/{coin_name}"
+        static let coingeckoUrl = "https://coingecko.com/coins"
+        static let coingeckoUrlPlaceholder = coingeckoUrl + "/tether"
     }
 }

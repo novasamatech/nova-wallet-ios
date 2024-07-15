@@ -156,6 +156,11 @@ extension UILabel.Style {
         font: .regularSubheadline
     )
 
+    static let regularSubhedlineAccent = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .regularSubheadline
+    )
+
     static let rowLink = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .p2Paragraph

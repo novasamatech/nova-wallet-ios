@@ -185,13 +185,13 @@ enum AssetOperationViewFactory {
         let purchaseProvider = PurchaseAggregator.defaultAggregator()
 
         let filter: ChainAssetsFilter = { chainAsset in
-            guard 
+            guard
                 chainAsset.chain.syncMode.enabled(),
                 let accountId = wallet.fetch(for: chainAsset.chain.accountRequest())?.accountId
             else {
                 return false
             }
-            
+
             let purchaseActions = purchaseProvider.buildPurchaseActions(
                 for: chainAsset,
                 accountId: accountId

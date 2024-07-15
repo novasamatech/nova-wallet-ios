@@ -8,7 +8,7 @@ enum ImageViewModelFactory {
             return StaticImageViewModel(image: R.image.iconDefaultToken()!)
         }
     }
-    
+
     static func createChainIconOrDefault(from url: URL?) -> ImageViewModelProtocol {
         if let chainIconUrl = url {
             return RemoteImageViewModel(url: chainIconUrl)
@@ -16,7 +16,7 @@ enum ImageViewModelFactory {
             return StaticImageViewModel(image: R.image.iconNetworkFallback()!)
         }
     }
-    
+
     static func createIdentifiableChainIcon(from url: URL?) -> IdentifiableImageViewModelProtocol? {
         if let chainIconUrl = url {
             return RemoteImageViewModel(url: chainIconUrl)

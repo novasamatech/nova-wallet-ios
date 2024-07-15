@@ -1,23 +1,22 @@
 import Foundation
 
 final class KnownNetworksListWireframe: KnownNetworksListWireframeProtocol {
+    let successAddPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)
+
+    init(successAddPresenting: (wireframe: ModalAlertPresenting, view: ControllerBackedProtocol)) {
+        self.successAddPresenting = successAddPresenting
+    }
+
     func showAddNetwork(
         from view: KnownNetworksListViewProtocol?,
-        with knownNetwork: ChainModel?
+        with _: ChainModel?
     ) {
-        let customNetworkView = if let knownNetwork, let node = knownNetwork.nodes.first {
-            CustomNetworkViewFactory.createNetworkEditView(
-                for: knownNetwork,
-                selectedNode: node
-            )
-        } else {
-            CustomNetworkViewFactory.createNetworkAddView()
+        guard let customNetworkView = CustomNetworkViewFactory.createNetworkAddView() else {
+            return
         }
-        
-        guard let customNetworkView else { return }
-        
+
         view?.controller.navigationController?.pushViewController(
-            customNetworkView.controller, 
+            customNetworkView.controller,
             animated: true
         )
     }
