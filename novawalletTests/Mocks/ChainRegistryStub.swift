@@ -37,8 +37,12 @@ extension MockChainRegistryProtocol {
                 queue.async {
                     let changes = chains.map { DataProviderChange.insert(newItem: $0) }
                     
-                    let filteredChanges = filterStrategy.filter(changes, using: availableChains)
-                    
+                    let filteredChanges = if let filterStrategy {
+                        filterStrategy.filter(changes, using: availableChains)
+                    } else {
+                        changes
+                    }
+
                     closure(filteredChanges)
                 }
             }

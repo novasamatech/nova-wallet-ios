@@ -35,8 +35,11 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
                 operationManager: OperationManager(operationQueue: operationQueue)) {
                 let settings = try settingsOperation.extractNoCancellableResultData().first
                 let chains = try chainOperation.extractNoCancellableResultData()
-                guard let chain = self.search(chainId: self.chainId, in: chains),
-                      let asset = self.mapHistoryAssetId(self.payload.assetId, chain: chain) else {
+                guard
+                    let chain = self.search(chainId: self.chainId, in: chains),
+                    chain.syncMode.enabled(),
+                    let asset = self.mapHistoryAssetId(self.payload.assetId, chain: chain)
+                else {
                     return nil
                 }
 

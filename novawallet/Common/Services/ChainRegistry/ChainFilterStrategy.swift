@@ -11,7 +11,6 @@ enum ChainFilterStrategy {
     case enabledChains
     case hasProxy
     case chainId(ChainModel.Id)
-    case noFilter
 
     private var filter: Filter {
         switch self {
@@ -35,7 +34,6 @@ enum ChainFilterStrategy {
             }
         case let .chainId(chainId): { $0.item?.chainId == chainId }
         case let .allSatisfies(strategies): { change in strategies.allSatisfy { $0.filter(change) } }
-        case .noFilter: { _ in true }
         }
     }
 
@@ -70,10 +68,6 @@ enum ChainFilterStrategy {
         _ changes: [DataProviderChange<ChainModel>],
         using chainsBeforeChanges: [ChainModel.Id: ChainModel]
     ) -> [DataProviderChange<ChainModel>] {
-        if case .noFilter = self {
-            return changes
-        }
-
         let mapped = if let transform {
             changes.map { transform($0, chainsBeforeChanges[$0.identifier]) }
         } else {

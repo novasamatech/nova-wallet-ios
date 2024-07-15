@@ -2,15 +2,14 @@ import Foundation
 import SoraFoundation
 
 struct TokensAddSelectNetworkViewFactory {
-    static func createView(for chains: [ChainModel.Id: ChainModel]) -> TokensAddSelectNetworkViewProtocol? {
+    static func createView() -> TokensAddSelectNetworkViewProtocol? {
         let interactor = TokensAddSelectNetworkInteractor(chainRegistry: ChainRegistryFacade.sharedRegistry)
         let wireframe = TokensAddSelectNetworkWireframe()
 
         let presenter = TokensAddSelectNetworkPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: NetworkViewModelFactory(),
-            chains: chains
+            viewModelFactory: NetworkViewModelFactory()
         )
 
         let view = TokensAddSelectNetworkViewController(
