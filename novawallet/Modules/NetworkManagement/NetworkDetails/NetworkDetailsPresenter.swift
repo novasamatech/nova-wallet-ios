@@ -57,10 +57,10 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
         guard let node = nodes[id] else {
             return
         }
-        
+
         interactor.selectNode(node)
     }
-    
+
     func manageNetwork() {
         openManageNetwork()
     }
@@ -99,7 +99,7 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         else {
             return
         }
-        
+
         if selected {
             selectedNode = node
         } else if selectedNode?.url == nodeURL {
@@ -115,11 +115,11 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
             break
         }
     }
-    
+
     func didDeleteNetwork() {
         wireframe.showNetworksList(from: view)
     }
-    
+
     func didReceive(_ error: any Error) {
         wireframe.present(
             error: error,
@@ -170,27 +170,27 @@ private extension NetworkDetailsPresenter {
 
     func indexNodes(_ sortedNodes: [ChainNodeModel]) {
         nodes = [:]
-        
+
         sortedNodes.forEach { node in
             if nodesIds[node.url] == nil {
                 nodesIds[node.url] = UUID()
             }
-            
+
             let id = nodesIds[node.url]!
-            
+
             nodes[id] = node
         }
     }
-    
+
     func editNode(with id: UUID) {
         guard let node = nodes[id] else { return }
-        
+
         wireframe.showManageNode(
             from: view,
             node: node,
             onNodeEdit: { [weak self] in
                 guard let self else { return }
-                
+
                 wireframe.showEditNode(
                     from: view,
                     node: node,
@@ -198,11 +198,11 @@ private extension NetworkDetailsPresenter {
                 )
             },
             onNodeDelete: { [weak self] in
-                self?.interactor.deleteNode(node)
+                self?.openDeleteNodeAlert(for: node)
             }
         )
     }
-    
+
     func openManageNetwork() {
         guard let view else {
             return
@@ -220,8 +220,43 @@ private extension NetworkDetailsPresenter {
             context: modalActionsContext.context
         )
     }
-    
-    func openDeleteAlert() {
+
+    func openDeleteNodeAlert(for node: ChainNodeModel) {
+        let alertViewModel = AlertPresentableViewModel(
+            title: R.string.localizable.networkNodeDeleteAlertTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            ),
+            message: R.string.localizable.networkNodeDeleteAlertDescription(
+                node.name,
+                preferredLanguages: selectedLocale.rLanguages
+            ),
+            actions: [
+                .init(
+                    title: R.string.localizable.commonCancel(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    style: .cancel
+                ),
+                .init(
+                    title: R.string.localizable.commonDelete(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    style: .destructive,
+                    handler: {
+                        [weak self] in self?.interactor.deleteNode(node)
+                    }
+                )
+            ],
+            closeAction: nil
+        )
+        wireframe.present(
+            viewModel: alertViewModel,
+            style: .alert,
+            from: view
+        )
+    }
+
+    func openDeleteNetworkAlert() {
         let alertViewModel = AlertPresentableViewModel(
             title: R.string.localizable.networkManageDeleteAlertTitle(
                 preferredLanguages: selectedLocale.rLanguages
@@ -254,7 +289,7 @@ private extension NetworkDetailsPresenter {
             from: view
         )
     }
-    
+
     func createModalActionsContext() -> ModalActionsContext {
         let actionViewModels: [LocalizableResource<ActionManageViewModel>] = [
             LocalizableResource { locale in
@@ -285,17 +320,17 @@ private extension NetworkDetailsPresenter {
             switch manageAction {
             case .edit:
                 guard let selectedNode else { return }
-                
+
                 wireframe.showEditNetwork(
                     from: view,
                     network: chain,
                     selectedNode: selectedNode
                 )
             case .delete:
-                openDeleteAlert()
+                openDeleteNetworkAlert()
             }
         }
-        
+
         return (actionViewModels, context)
     }
 }
@@ -307,7 +342,7 @@ extension NetworkDetailsPresenter: ModalPickerViewControllerDelegate {
         guard let context = context as? ModalPickerClosureContext else {
             return
         }
-        
+
         context.process(selectedIndex: index)
     }
 }
@@ -319,7 +354,7 @@ extension NetworkDetailsPresenter: Localizable {
         guard let view, view.isSetup else {
             return
         }
-        
+
         provideViewModel()
     }
 }

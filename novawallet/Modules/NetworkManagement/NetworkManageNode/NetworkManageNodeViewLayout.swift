@@ -2,7 +2,6 @@ import UIKit
 import SoraUI
 
 final class NetworkManageNodeViewLayout: UIView {
-
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.alignment = .fill
@@ -13,7 +12,7 @@ final class NetworkManageNodeViewLayout: UIView {
         view.apply(style: .semiboldBodyPrimary)
         view.textAlignment = .left
     }
-    
+
     let nodeNameLabel: UILabel = .create { view in
         view.apply(style: .footnoteSecondary)
         view.textAlignment = .left
@@ -60,14 +59,14 @@ final class NetworkManageNodeViewLayout: UIView {
             make.leading.equalToSuperview().offset(UIConstants.horizontalInset)
             make.top.bottom.equalToSuperview()
         }
-        
+
         let nodeNameContainer = UIView()
         nodeNameContainer.addSubview(nodeNameLabel)
         nodeNameLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(UIConstants.horizontalInset)
             make.top.bottom.equalToSuperview()
         }
-        
+
         containerView.stackView.addArrangedSubview(titleContainer)
         containerView.stackView.addArrangedSubview(nodeNameContainer)
         containerView.stackView.setCustomSpacing(
@@ -93,7 +92,7 @@ enum NetworkManageNodeMeasurement {
     static func measurePreferredHeight(for actionsCount: Int) -> CGFloat {
         let cellsHeight = cellHeight * CGFloat(actionsCount)
 
-        let calculatedHeight = titleHeight + nodeNameHeight  + titleSpacing + nodeNameSpacing + cellsHeight
+        let calculatedHeight = titleHeight + nodeNameHeight + titleSpacing + nodeNameSpacing + cellsHeight
 
         let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
 

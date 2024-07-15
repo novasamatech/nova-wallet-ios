@@ -26,13 +26,13 @@ enum ChainFilterStrategy {
                 }
             }
         case .hasProxy: { change in
-            #if F_RELEASE
-                return change.item?.hasProxy == true
-                    && change.item?.isTestnet == false
-            #else
-                return change.item?.hasProxy == true
-            #endif
-        }
+                #if F_RELEASE
+                    return change.item?.hasProxy == true
+                        && change.item?.isTestnet == false
+                #else
+                    return change.item?.hasProxy == true
+                #endif
+            }
         case let .chainId(chainId): { $0.item?.chainId == chainId }
         case let .allSatisfies(strategies): { change in strategies.allSatisfy { $0.filter(change) } }
         case .noFilter: { _ in true }

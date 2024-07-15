@@ -5,7 +5,7 @@ final class NetworkManageNodeViewController: UIViewController, ViewHolder {
     typealias RootViewType = NetworkManageNodeViewLayout
 
     let presenter: NetworkManageNodePresenterProtocol
-    
+
     private var actions: [NetworkManageNodeViewModel.Action] = []
     private var cells: [StackActionCell] = []
 
@@ -25,7 +25,7 @@ final class NetworkManageNodeViewController: UIViewController, ViewHolder {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         presenter.setup()
     }
 }
@@ -35,7 +35,7 @@ final class NetworkManageNodeViewController: UIViewController, ViewHolder {
 extension NetworkManageNodeViewController: NetworkManageNodeViewProtocol {
     func didReceive(viewModel: NetworkManageNodeViewModel) {
         actions = viewModel.actions
-        
+
         rootView.titleLabel.text = viewModel.title
         rootView.nodeNameLabel.text = viewModel.nodeName
 
@@ -61,12 +61,12 @@ private extension NetworkManageNodeViewController {
 
         updateCells()
     }
-    
+
     func updateCells() {
         zip(actions, cells).forEach { actionCell in
             let action = actionCell.0
             let cell = actionCell.1
-            
+
             let icon = action.negative
                 ? action.icon?.tinted(with: R.color.colorIconNegative()!)
                 : action.icon?.tinted(with: R.color.colorIconPrimary()!)
@@ -76,7 +76,7 @@ private extension NetworkManageNodeViewController {
                 icon: icon?.withRenderingMode(.alwaysOriginal),
                 details: nil
             )
-            
+
             if action.negative {
                 cell.titleLabel.textColor = R.color.colorTextNegative()!
             } else {
@@ -84,11 +84,11 @@ private extension NetworkManageNodeViewController {
             }
         }
     }
-    
+
     @objc func actionCell(_ sender: UIControl) {
         guard
             let cell = sender as? StackActionCell,
-            let index = cells.firstIndex(of: cell) 
+            let index = cells.firstIndex(of: cell)
         else {
             return
         }

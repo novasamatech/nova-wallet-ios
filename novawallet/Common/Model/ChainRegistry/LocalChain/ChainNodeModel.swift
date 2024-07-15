@@ -36,7 +36,7 @@ extension ChainNodeModel {
     var supportsTls12: Bool {
         !(features ?? []).contains(.noTls12)
     }
-    
+
     func updatingOrder(_ newOrder: Int16) -> ChainNodeModel {
         ChainNodeModel(
             url: url,
@@ -46,7 +46,7 @@ extension ChainNodeModel {
             source: source
         )
     }
-    
+
     func updating(
         _ url: String? = nil,
         _ name: String? = nil

@@ -2,15 +2,9 @@ import SubstrateSdk
 import Operation_iOS
 
 final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
-    weak var presenter: CustomNetworkEditInteractorOutputProtocol? {
-        didSet {
-            basePresenter = presenter
-        }
-    }
-    
     private let networkToEdit: ChainModel
     private let selectedNode: ChainNodeModel
-    
+
     init(
         networkToEdit: ChainModel,
         selectedNode: ChainNodeModel,
@@ -25,7 +19,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
     ) {
         self.networkToEdit = networkToEdit
         self.selectedNode = selectedNode
-        
+
         super.init(
             chainRegistry: chainRegistry,
             runtimeFetchOperationFactory: runtimeFetchOperationFactory,
@@ -37,29 +31,29 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
             operationQueue: operationQueue
         )
     }
-    
+
     override func handleSetupFinished(for network: ChainModel) {
         var readyNetwork = network
-        
+
         if network.chainId == networkToEdit.chainId {
             var nodesToAdd = networkToEdit.nodes
-            
+
             if !network.nodes.contains(where: { $0.url == selectedNode.url }) {
                 nodesToAdd.remove(selectedNode)
             }
-            
+
             readyNetwork = network.adding(nodes: nodesToAdd)
         }
-        
+
         let deleteIds = network.chainId != networkToEdit.chainId
             ? [networkToEdit.chainId]
             : []
-        
+
         let saveOperation = repository.saveOperation(
             { [readyNetwork] },
             { deleteIds }
         )
-        
+
         execute(
             operation: saveOperation,
             inOperationQueue: operationQueue,
@@ -67,7 +61,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didEditChain()
+                self?.presenter?.didFinishWorkWithNetwork()
             case .failure:
                 self?.presenter?.didReceive(
                     .common(innerError: .dataCorruption)
@@ -75,7 +69,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
             }
         }
     }
-    
+
     override func completeSetup() {
         presenter?.didReceive(
             chain: networkToEdit,
@@ -96,9 +90,10 @@ extension CustomNetworkEditInteractor: CustomNetworkEditInteractorInputProtocol 
         coingeckoURL: String?
     ) {
         connectToChain(
-            with: networkToEdit.isEthereumBased ? .evm : .substrate ,
+            with: networkToEdit.isEthereumBased ? .evm : .substrate,
             url: url,
             name: name,
+            iconUrl: networkToEdit.icon,
             currencySymbol: currencySymbol,
             chainId: chainId,
             blockExplorerURL: blockExplorerURL,
@@ -107,4 +102,3 @@ extension CustomNetworkEditInteractor: CustomNetworkEditInteractorInputProtocol 
         )
     }
 }
-

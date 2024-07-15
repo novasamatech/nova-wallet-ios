@@ -124,9 +124,9 @@ extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
             timeout: timeout
         )
     }
-    
+
     func createChainIdOperation() -> BaseOperation<HexCodable<BigUInt>> {
-        return JSONRPCOperation(
+        JSONRPCOperation(
             engine: connection,
             method: EthereumMethod.chainId.rawValue,
             parameters: JSON.arrayValue([]),

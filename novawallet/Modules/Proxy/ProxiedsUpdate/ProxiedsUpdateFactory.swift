@@ -28,12 +28,12 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
                     statuses.contains(proxy.status) else {
                     return nil
                 }
-                
+
                 let proxyWallet = wallets.first(where: { $0.info.has(
                     accountId: proxy.accountId,
                     chainId: chainAccount.chainId
                 ) })
-                
+
                 let optIcon = wallet.info.walletIdenticonData().flatMap {
                     try? iconGenerator.generateFromAccountId($0)
                 }
@@ -43,13 +43,13 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
                 let optSubtitleDetailsIcon = proxyWallet?.info.walletIdenticonData().flatMap {
                     try? iconGenerator.generateFromAccountId($0)
                 }
-                
+
                 let subtitleDetailsIconViewModel = proxyWallet.flatMap { proxy in
                     optSubtitleDetailsIcon.map {
                         IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: proxy.info.metaId)
                     }
                 }
-                
+
                 let chainModel = chains[chainAccount.chainId]
                 let chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
                 let proxyInfo = WalletView.ViewModel.ProxyInfo(
@@ -59,13 +59,13 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
                     proxyName: proxyWallet?.info.name,
                     isNew: false
                 )
-                
+
                 return WalletView.ViewModel(
                     wallet: .init(icon: iconViewModel, name: wallet.info.name),
                     type: .proxy(proxyInfo)
                 )
             }
-        
+
         return viewModels
     }
 }

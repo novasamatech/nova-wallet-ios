@@ -4,20 +4,20 @@ import Operation_iOS
 
 class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeCorrespondingTrait {
     weak var basePresenter: NetworkNodeBaseInteractorOutputProtocol?
-    
+
     let chainRegistry: ChainRegistryProtocol
     let connectionFactory: ConnectionFactoryProtocol
     let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
     let operationQueue: OperationQueue
-    
+
     let chainId: ChainModel.Id
-    
+
     let wssPredicate = NSPredicate.ws
-    
+
     var currentConnection: ChainConnection?
     var currentConnectingNode: ChainNodeModel?
-    
+
     init(
         chainRegistry: any ChainRegistryProtocol,
         connectionFactory: any ConnectionFactoryProtocol,
@@ -33,15 +33,15 @@ class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeCorrespo
         self.repository = repository
         self.operationQueue = operationQueue
     }
-    
+
     func completeSetup() {
         subscribeChainChanges()
     }
-    
+
     func setup() {
         completeSetup()
     }
-    
+
     func handleConnected() {
         fatalError("Must be overriden by subclass")
     }
@@ -58,7 +58,7 @@ extension NetworkNodeBaseInteractor: WebSocketEngineDelegate {
         to newState: WebSocketEngine.State
     ) {
         guard oldState != newState else { return }
-        
+
         DispatchQueue.main.async {
             guard
                 let node = self.currentConnectingNode,
@@ -108,7 +108,7 @@ private extension NetworkNodeBaseInteractor {
                 node: node,
                 chain: chain
             )
-        
+
         execute(
             wrapper: chainCorrespondingOperation,
             inOperationQueue: operationQueue,
@@ -124,7 +124,7 @@ private extension NetworkNodeBaseInteractor {
             }
         }
     }
-    
+
     func subscribeChainChanges() {
         chainRegistry.chainsSubscribe(
             self,
@@ -160,7 +160,7 @@ extension NetworkNodeBaseInteractorError: ErrorContentConvertible {
         case let .nodeValidation(innerError): innerError
         case let .common(innerError): innerError
         }
-        
+
         return error.toErrorContent(for: locale)
     }
 }

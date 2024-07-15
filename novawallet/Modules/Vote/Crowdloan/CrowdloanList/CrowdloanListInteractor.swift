@@ -65,7 +65,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
         self.currencyManager = currencyManager
-        
+
         self.eventCenter.add(observer: self)
     }
 
@@ -459,7 +459,7 @@ extension CrowdloanListInteractor {
 
         operationManager.enqueue(operations: crowdloanWrapper.allOperations, in: .transient)
     }
-    
+
     func setupState(onSuccess: @escaping (ChainModel?) -> Void) {
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             self?.crowdloanState.settings.setup(runningCompletionIn: .main) { result in
@@ -495,13 +495,13 @@ extension CrowdloanListInteractor: EventVisitorProtocol {
         guard
             let chain = crowdloanState.settings.value,
             chain.chainId == event.chainId
-        else  {
+        else {
             return
         }
-        
+
         setupState { [weak self] chain in
             guard let chain else { return }
-            
+
             self?.refresh(with: chain)
         }
     }

@@ -29,6 +29,22 @@ final class GradientBannerInfoView: UIView {
         }
     }
 
+    var textInsets: UIEdgeInsets = .zero {
+        didSet {
+            titleLabel.snp.updateConstraints { make in
+                make.top.equalToSuperview().inset(textInsets.top)
+                make.leading.equalToSuperview().inset(textInsets.left)
+                make.trailing.equalTo(imageView.snp.leading).inset(textInsets.right)
+            }
+
+            subtitleLabel.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().inset(textInsets.bottom)
+                make.leading.equalToSuperview().inset(textInsets.left)
+                make.trailing.equalTo(imageView.snp.leading).inset(textInsets.right)
+            }
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 

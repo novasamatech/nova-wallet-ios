@@ -34,7 +34,7 @@ struct NetworkDetailsViewFactory {
         )
 
         let interactor = NetworkDetailsInteractor(
-            chain: chain, 
+            chain: chain,
             eventCenter: EventCenter.shared,
             connectionFactory: connectionFactory,
             chainRegistry: chainRegistry,
@@ -54,7 +54,7 @@ struct NetworkDetailsViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
-            viewModelFactory: viewModelFactory, 
+            viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 

@@ -2,7 +2,7 @@ import UIKit
 
 final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
     let titleLabel: UILabel = .create { $0.apply(style: .boldTitle2Primary) }
-    
+
     let networkTypeSwitch: RoundedSegmentedControl = .create { view in
         view.backgroundView.fillColor = R.color.colorSegmentedBackgroundOnBlack()!
         view.selectionColor = R.color.colorSegmentedTabActive()!
@@ -10,7 +10,7 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
         view.selectedTitleColor = R.color.colorTextPrimary()!
         view.titleColor = R.color.colorTextSecondary()!
     }
-    
+
     let urlTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
     let urlInput: TextWithServiceInputView = .create { view in
         view.textField.returnKeyType = .done
@@ -22,25 +22,25 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
         view.textField.returnKeyType = .done
         view.textField.keyboardType = .asciiCapable
     }
-    
+
     var currencySymbolTitleLabel: UILabel { currencyChainView.fView.valueTop }
     var currencySymbolInput: TextInputView { currencyChainView.fView.valueBottom }
-    
+
     var chainIdTitleLabel: UILabel { currencyChainView.sView.valueTop }
     var chainIdInput: TextInputView { currencyChainView.sView.valueBottom }
-    
+
     let blockExplorerUrlTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
     let blockExplorerUrlInput: TextWithServiceInputView = .create { view in
         view.textField.returnKeyType = .done
         view.textField.keyboardType = .URL
     }
-    
+
     let coingeckoUrlTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
     let coingeckoUrlInput: TextWithServiceInputView = .create { view in
         view.textField.returnKeyType = .done
         view.textField.keyboardType = .URL
     }
-    
+
     let currencyChainView: GenericPairValueView<
         GenericMultiValueView<TextInputView>,
         GenericMultiValueView<TextInputView>
@@ -48,19 +48,19 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
         view.makeHorizontal()
         view.stackView.distribution = .fillEqually
         view.spacing = Constants.stackSpacing
-        
+
         view.fView.spacing = Constants.titleSpacing
         view.sView.spacing = Constants.titleSpacing
-        
+
         view.fView.valueTop.textAlignment = .left
         view.sView.valueTop.textAlignment = .left
-        
+
         view.fView.valueTop.apply(style: .footnoteSecondary)
         view.sView.valueTop.apply(style: .footnoteSecondary)
-        
+
         view.fView.valueBottom.textField.returnKeyType = .done
         view.fView.valueBottom.textField.keyboardType = .asciiCapable
-        
+
         view.sView.valueBottom.textField.returnKeyType = .done
         view.sView.valueBottom.textField.keyboardType = .numberPad
     }
@@ -91,15 +91,15 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
 
     override func setupLayout() {
         super.setupLayout()
-        
+
         stackView.spacing = Constants.stackSpacing
-        
+
         addArrangedSubview(titleLabel)
-        
+
         networkTypeSwitch.snp.makeConstraints { make in
             make.height.equalTo(Constants.segmentControlHeight)
         }
-        
+
         addArrangedSubview(networkTypeSwitch)
 
         addArrangedSubview(urlTitleLabel, spacingAfter: Constants.titleSpacing)
@@ -107,15 +107,15 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
 
         addArrangedSubview(nameTitleLabel, spacingAfter: Constants.titleSpacing)
         addArrangedSubview(nameInput)
-        
+
         addArrangedSubview(currencyChainView)
-        
+
         addArrangedSubview(blockExplorerUrlTitleLabel, spacingAfter: Constants.titleSpacing)
         addArrangedSubview(blockExplorerUrlInput)
-        
+
         addArrangedSubview(coingeckoUrlTitleLabel, spacingAfter: Constants.titleSpacing)
         addArrangedSubview(coingeckoUrlInput)
-        
+
         addSubview(actionLoadableView)
         actionLoadableView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -123,19 +123,19 @@ final class CustomNetworkViewLayout: ScrollableContainerLayoutView {
             make.height.equalTo(UIConstants.actionHeight)
         }
     }
-    
+
     func hideNetworkTypeSwitch() {
         networkTypeSwitch.isHidden = true
     }
-    
+
     func showNetworkTypeSwitch() {
         networkTypeSwitch.isHidden = false
     }
-    
+
     func hideChainId() {
         currencyChainView.sView.isHidden = true
     }
-    
+
     func showChainId() {
         currencyChainView.sView.isHidden = false
     }
