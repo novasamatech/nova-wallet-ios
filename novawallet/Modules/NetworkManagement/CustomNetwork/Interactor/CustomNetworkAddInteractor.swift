@@ -7,10 +7,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
     init(
         networkToAdd: ChainModel?,
         chainRegistry: ChainRegistryProtocol,
-        runtimeFetchOperationFactory: RuntimeFetchOperationFactoryProtocol,
-        runtimeTypeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
-        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
-        systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
+        customNetworkSetupFactory: CustomNetworkSetupFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         priceIdParser: PriceUrlParserProtocol,
@@ -20,37 +17,12 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
 
         super.init(
             chainRegistry: chainRegistry,
-            runtimeFetchOperationFactory: runtimeFetchOperationFactory,
-            runtimeTypeRegistryFactory: runtimeTypeRegistryFactory,
-            blockHashOperationFactory: blockHashOperationFactory,
-            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
+            customNetworkSetupFactory: customNetworkSetupFactory,
             connectionFactory: connectionFactory,
             repository: repository,
             priceIdParser: priceIdParser,
             operationQueue: operationQueue
         )
-    }
-
-    override func handleSetupFinished(for network: ChainModel) {
-        let saveOperation = repository.saveOperation(
-            { [network] },
-            { [] }
-        )
-
-        execute(
-            operation: saveOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.presenter?.didFinishWorkWithNetwork()
-            case .failure:
-                self?.presenter?.didReceive(
-                    .common(innerError: .dataCorruption)
-                )
-            }
-        }
     }
 
     override func completeSetup() {
@@ -59,7 +31,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
         }
 
         presenter?.didReceive(
-            chain: networkToAdd,
+            knownChain: networkToAdd,
             selectedNode: node
         )
     }
@@ -68,30 +40,39 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
 // MARK: CustomNetworkAddInteractorInputProtocol
 
 extension CustomNetworkAddInteractor: CustomNetworkAddInteractorInputProtocol {
-    func addNetwork(
-        networkType: ChainType,
-        url: String,
-        name: String,
-        currencySymbol: String,
-        chainId: String?,
-        blockExplorerURL: String?,
-        coingeckoURL: String?
-    ) {
+    func addNetwork(with request: CustomNetwork.AddRequest) {
+        setupFinishStrategy = CustomNetworkAddNewStrategy(
+            repository: repository,
+            operationQueue: operationQueue
+        )
+
         let type: ChainType = if let networkToAdd {
             networkToAdd.isEthereumBased ? .evm : .substrate
         } else {
-            networkType
+            request.networkType
         }
 
-        connectToChain(
-            with: type,
-            url: url,
-            name: name,
+        let setupRequest = CustomNetwork.SetupRequest(
+            from: request,
+            networkType: type,
             iconUrl: networkToAdd?.icon,
-            currencySymbol: currencySymbol,
-            chainId: chainId,
-            blockExplorerURL: blockExplorerURL,
-            coingeckoURL: coingeckoURL
+            networkSetupType: .full
         )
+
+        setupChain(with: setupRequest)
+    }
+
+    func fetchNetworkProperties(for url: String) {
+        setupFinishStrategy = CustomNetworkProvideStrategy()
+
+        let request = CustomNetwork.SetupRequest(
+            networkType: .substrate,
+            url: url,
+            name: "",
+            iconUrl: networkToAdd?.icon,
+            networkSetupType: .noRuntime
+        )
+
+        setupChain(with: request)
     }
 }

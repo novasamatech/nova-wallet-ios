@@ -135,7 +135,7 @@ class CustomNetworkBasePresenter {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCoingeckoURL ?? "",
             required: false,
-            placeholder: Constants.coingeckoUrl
+            placeholder: Constants.coingeckoUrlPlaceholder
         )
         view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
@@ -145,6 +145,10 @@ class CustomNetworkBasePresenter {
             chainType,
             show: knownChain == nil
         )
+    }
+
+    func handleUrl(_: String) {
+        fatalError("Must be overriden by subclass")
     }
 }
 
@@ -165,6 +169,10 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
 
         cleanPartialValues()
         provideViewModel()
+    }
+
+    func handle(url: String) {
+        handleUrl(url)
     }
 
     func handlePartial(url: String) {
@@ -259,24 +267,20 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
     }
 
     func didReceive(
+        knownChain: ChainModel,
+        selectedNode: ChainNodeModel
+    ) {
+        self.knownChain = knownChain
+
+        fillPartial(from: knownChain, selectedNode)
+        provideViewModel()
+    }
+
+    func didReceive(
         chain: ChainModel,
         selectedNode: ChainNodeModel
     ) {
-        knownChain = chain
-
-        let mainAsset = chain.assets.first { $0.assetId == 0 }
-
-        partialURL = selectedNode.url
-        partialName = chain.name
-        partialCurrencySymbol = mainAsset?.symbol
-        partialChainId = "\(chain.addressPrefix)"
-        partialBlockExplorerURL = blockExplorerUrl(from: chain.explorers?.first?.extrinsic)
-        partialCoingeckoURL = if let priceId = mainAsset?.priceId {
-            [Constants.coingeckoUrl, "{\(priceId)}"].joined(with: .slash)
-        } else {
-            nil
-        }
-
+        fillPartial(from: chain, selectedNode)
         provideViewModel()
     }
 }
@@ -317,6 +321,24 @@ private extension CustomNetworkBasePresenter {
 
         return trimmedUrlString ?? template
     }
+
+    func fillPartial(
+        from chain: ChainModel,
+        _ selectedNode: ChainNodeModel
+    ) {
+        let mainAsset = chain.assets.first { $0.assetId == 0 }
+
+        partialURL = selectedNode.url
+        partialName = chain.name
+        partialCurrencySymbol = mainAsset?.symbol
+        partialChainId = "\(chain.addressPrefix)"
+        partialBlockExplorerURL = blockExplorerUrl(from: chain.explorers?.first?.extrinsic)
+        partialCoingeckoURL = if let priceId = mainAsset?.priceId {
+            [Constants.coingeckoUrl, "\(priceId)"].joined(with: .slash)
+        } else {
+            nil
+        }
+    }
 }
 
 // MARK: Alert View Models
@@ -340,14 +362,16 @@ private extension CustomNetworkBasePresenter {
                         provideButtonViewModel(loading: true)
 
                         interactor.modify(
-                            existingChain,
-                            node: existingNode,
-                            url: partialURL ?? "",
-                            name: partialName ?? "",
-                            currencySymbol: partialCurrencySymbol ?? "",
-                            chainId: partialChainId,
-                            blockExplorerURL: partialBlockExplorerURL,
-                            coingeckoURL: partialCoingeckoURL
+                            with: .init(
+                                existingNetwork: existingChain,
+                                node: existingNode,
+                                url: partialURL ?? "",
+                                name: partialName ?? "",
+                                currencySymbol: partialCurrencySymbol ?? "",
+                                chainId: partialChainId,
+                                blockExplorerURL: partialBlockExplorerURL,
+                                coingeckoURL: partialCoingeckoURL
+                            )
                         )
                     }
                 ),
@@ -405,6 +429,7 @@ extension CustomNetworkBasePresenter {
         static let chainIdPlaceholder = "012345"
         static let chainUrlPlaceholder = "wss://"
         static let blockExplorerPlaceholder = "https://subscan.io"
-        static let coingeckoUrl = "https://coingecko.com/coins/tether"
+        static let coingeckoUrl = "https://coingecko.com/coins"
+        static let coingeckoUrlPlaceholder = coingeckoUrl + "/tether"
     }
 }

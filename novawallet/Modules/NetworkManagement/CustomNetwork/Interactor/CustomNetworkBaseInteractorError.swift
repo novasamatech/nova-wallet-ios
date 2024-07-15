@@ -9,9 +9,33 @@ enum CustomNetworkBaseInteractorError: Error {
     case invalidNetworkType(selectedType: ChainType)
     case connecting(innerError: NetworkNodeConnectingError)
     case common(innerError: CommonError)
+
+    init(from error: Error) {
+        self = switch error {
+        case let NetworkNodeConnectingError.alreadyExists(existingNode, existingChain)
+            where existingChain.source == .user:
+            .alreadyExistCustom(
+                node: existingNode,
+                chain: existingChain
+            )
+        case let NetworkNodeConnectingError.alreadyExists(existingNode, existingChain)
+            where existingChain.source == .remote:
+            .alreadyExistRemote(
+                node: existingNode,
+                chain: existingChain
+            )
+        case is NetworkNodeCorrespondingError:
+            .invalidChainId
+        case NetworkNodeConnectingError.wrongFormat:
+            .connecting(innerError: .wrongFormat)
+        default:
+            .common(innerError: .undefined)
+        }
+    }
 }
 
 extension CustomNetworkBaseInteractorError: ErrorContentConvertible {
+    // swiftlint:disable function_body_length
     func toErrorContent(for locale: Locale?) -> ErrorContent {
         switch self {
         case let .alreadyExistRemote(_, chain):

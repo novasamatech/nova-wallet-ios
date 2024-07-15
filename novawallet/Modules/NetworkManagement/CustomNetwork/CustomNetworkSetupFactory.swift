@@ -2,28 +2,59 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-protocol CustomNetworkSetupTrait: NetworkNodeCorrespondingTrait {
-    var operationQueue: OperationQueue { get }
+enum CustomNetworkSetupOperationType {
+    case full
+    case noRuntime
 }
 
-extension CustomNetworkSetupTrait {
-    func createSetupNetworkWrapper(
-        partialChain: PartialCustomChainModel,
+protocol CustomNetworkSetupFactoryProtocol {
+    func createOperation(
+        with partialChain: PartialCustomChainModel,
+        connection: ChainConnection,
+        node: ChainNodeModel,
+        type: CustomNetworkSetupOperationType
+    ) -> CompoundOperationWrapper<ChainModel>
+}
+
+class CustomNetworkSetupFactory: NetworkNodeCorrespondingTrait {
+    let blockHashOperationFactory: BlockHashOperationFactoryProtocol
+
+    private let rawRuntimeFetchFactory: RuntimeFetchOperationFactoryProtocol
+    private let systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol
+    private let chainNameOperationFactory: ChainNameOperationFactoryProtocol
+    private let typeRegistryFactory: RuntimeTypeRegistryFactoryProtocol
+
+    private let operationQueue: OperationQueue
+
+    init(
         rawRuntimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
+        chainNameOperationFactory: ChainNameOperationFactoryProtocol,
         typeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
+        self.rawRuntimeFetchFactory = rawRuntimeFetchFactory
+        self.blockHashOperationFactory = blockHashOperationFactory
+        self.systemPropertiesOperationFactory = systemPropertiesOperationFactory
+        self.chainNameOperationFactory = chainNameOperationFactory
+        self.typeRegistryFactory = typeRegistryFactory
+        self.operationQueue = operationQueue
+    }
+}
+
+extension CustomNetworkSetupFactory: CustomNetworkSetupFactoryProtocol {
+    func createOperation(
+        with partialChain: PartialCustomChainModel,
         connection: ChainConnection,
-        node: ChainNodeModel
+        node: ChainNodeModel,
+        type: CustomNetworkSetupOperationType
     ) -> CompoundOperationWrapper<ChainModel> {
         let fillPartialChainWrapper = createFillPartialChainWrapper(
             partialChain: partialChain,
-            rawRuntimeFetchFactory: rawRuntimeFetchFactory,
-            blockHashOperationFactory: blockHashOperationFactory,
-            systemPropertiesOperationFactory: systemPropertiesOperationFactory,
-            typeRegistryFactory: typeRegistryFactory,
             connection: connection,
-            node: node
+            node: node,
+            type: type
         )
 
         let finishSetupOperation = ClosureOperation<ChainModel> {
@@ -66,15 +97,12 @@ extension CustomNetworkSetupTrait {
     }
 }
 
-private extension CustomNetworkSetupTrait {
+private extension CustomNetworkSetupFactory {
     func createFillPartialChainWrapper(
         partialChain: PartialCustomChainModel,
-        rawRuntimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
-        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
-        systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
-        typeRegistryFactory: RuntimeTypeRegistryFactoryProtocol,
         connection: ChainConnection,
-        node: ChainNodeModel
+        node: ChainNodeModel,
+        type: CustomNetworkSetupOperationType
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let chainIdSetupWrapper = createChainIdSetupWrapper(
             chain: partialChain,
@@ -82,20 +110,31 @@ private extension CustomNetworkSetupTrait {
             connection: connection,
             node: node
         )
-        let typeSetupWrapper = createChainTypeOptionsWrapper(
-            partialChainWrapper: chainIdSetupWrapper,
-            rawRuntimeFetchFactory: rawRuntimeFetchFactory,
-            typeRegistryFactory: typeRegistryFactory,
-            connection: connection
-        )
+
+        let variableWrapper = switch type {
+        case .noRuntime:
+            createChainNameSetupWrapper(
+                partialChainWrapper: chainIdSetupWrapper,
+                chainNameOperationFactory: chainNameOperationFactory,
+                connection: connection
+            )
+        case .full:
+            createChainTypeOptionsWrapper(
+                partialChainWrapper: chainIdSetupWrapper,
+                rawRuntimeFetchFactory: rawRuntimeFetchFactory,
+                typeRegistryFactory: typeRegistryFactory,
+                connection: connection
+            )
+        }
+
         let chainAssetSetupWrapper = createChainAssetSetupWrapper(
-            partialChainWrapper: typeSetupWrapper,
+            partialChainWrapper: variableWrapper,
             systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connection: connection
         )
 
         return chainIdSetupWrapper
-            .insertingHead(operations: typeSetupWrapper.allOperations + chainAssetSetupWrapper.dependencies)
+            .insertingHead(operations: variableWrapper.allOperations + chainAssetSetupWrapper.dependencies)
             .insertingTail(operation: chainAssetSetupWrapper.targetOperation)
     }
 
@@ -106,21 +145,62 @@ private extension CustomNetworkSetupTrait {
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let assetSetupWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
+        ) { [weak self] in
             let partialChain = try partialChainWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
 
-            return createMainAssetSetupWrapper(
+            guard let resultWrapper = self?.createMainAssetSetupWrapper(
                 for: partialChain,
                 systemPropertiesOperationFactory: systemPropertiesOperationFactory,
                 connection: connection
-            )
+            ) else {
+                return .createWithResult(partialChain)
+            }
+
+            return resultWrapper
         }
 
         assetSetupWrapper.addDependency(wrapper: partialChainWrapper)
 
         return assetSetupWrapper
+    }
+
+    func createChainNameSetupWrapper(
+        partialChainWrapper: CompoundOperationWrapper<PartialCustomChainModel>,
+        chainNameOperationFactory: ChainNameOperationFactoryProtocol,
+        connection: ChainConnection
+    ) -> CompoundOperationWrapper<PartialCustomChainModel> {
+        let chainNameSetupWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let partialChain = try partialChainWrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+
+            guard !partialChain.isEthereumBased else {
+                return CompoundOperationWrapper.createWithResult(partialChain)
+            }
+
+            let chainNameOperation = chainNameOperationFactory.createChainNameOperation(connection: connection)
+
+            let chainSetupOperation = ClosureOperation<PartialCustomChainModel> {
+                let chainName = try chainNameOperation.extractNoCancellableResultData()
+
+                return partialChain.byChanging(name: chainName)
+            }
+
+            chainSetupOperation.addDependency(chainNameOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: chainSetupOperation,
+                dependencies: [chainNameOperation]
+            )
+        }
+
+        chainNameSetupWrapper.addDependency(wrapper: partialChainWrapper)
+
+        return chainNameSetupWrapper
     }
 
     func createChainTypeOptionsWrapper(
@@ -206,7 +286,7 @@ private extension CustomNetworkSetupTrait {
                     assetId: 0,
                     icon: nil,
                     name: chain.name,
-                    symbol: chain.currencySymbol,
+                    symbol: chain.currencySymbol ?? "ETH",
                     precision: defaultEVMAssetPrecision,
                     priceId: chain.mainAssetPriceId,
                     stakings: nil,
@@ -234,20 +314,24 @@ private extension CustomNetworkSetupTrait {
                 throw CustomNetworkSetupError.decimalsNotFound
             }
 
-            let networkMainAssetSymbol = properties.tokenSymbol.first ?? chain.currencySymbol
+            guard let networkMainAssetSymbol = properties.tokenSymbol.first else {
+                throw CommonError.noDataRetrieved
+            }
 
-            guard networkMainAssetSymbol == chain.currencySymbol else {
-                throw CustomNetworkSetupError.wrongCurrencySymbol(
-                    enteredSymbol: chain.currencySymbol,
-                    actualSymbol: networkMainAssetSymbol
-                )
+            if let enteredSymbol = chain.currencySymbol {
+                guard networkMainAssetSymbol == enteredSymbol else {
+                    throw CustomNetworkSetupError.wrongCurrencySymbol(
+                        enteredSymbol: enteredSymbol,
+                        actualSymbol: networkMainAssetSymbol
+                    )
+                }
             }
 
             let asset = AssetModel(
                 assetId: 0,
                 icon: nil,
                 name: chain.name,
-                symbol: chain.currencySymbol,
+                symbol: networkMainAssetSymbol,
                 precision: precision,
                 priceId: chain.mainAssetPriceId,
                 stakings: nil,

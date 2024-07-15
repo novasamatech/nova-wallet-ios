@@ -4,8 +4,6 @@ import SubstrateSdk
 protocol NetworkNodeConnectingTrait: AnyObject, WebSocketEngineDelegate {
     var chainRegistry: ChainRegistryProtocol { get }
     var connectionFactory: ConnectionFactoryProtocol { get }
-    var currentConnectingNode: ChainNodeModel? { get set }
-    var currentConnection: ChainConnection? { get set }
 }
 
 extension NetworkNodeConnectingTrait {
@@ -14,7 +12,7 @@ extension NetworkNodeConnectingTrait {
         replacing existingNode: ChainNodeModel?,
         chain: ChainNodeConnectable,
         urlPredicate: NSPredicate
-    ) throws {
+    ) throws -> ChainConnection {
         if let existingNode = findExistingNode(with: node.url, ignoring: existingNode) {
             throw NetworkNodeConnectingError.alreadyExists(
                 node: existingNode.node,
@@ -26,9 +24,7 @@ extension NetworkNodeConnectingTrait {
             throw NetworkNodeConnectingError.wrongFormat
         }
 
-        currentConnectingNode = node
-
-        currentConnection = try connectionFactory.createConnection(
+        return try connectionFactory.createConnection(
             for: node,
             chain: chain,
             delegate: self
