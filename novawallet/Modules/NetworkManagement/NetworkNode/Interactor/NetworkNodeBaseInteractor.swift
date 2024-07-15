@@ -44,13 +44,13 @@ class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeCorrespo
 
     func connect(
         to node: ChainNodeModel,
-        replacing _: ChainNodeModel?,
+        replacing existingNode: ChainNodeModel?,
         chain: ChainNodeConnectable
     ) {
         do {
             try connect(
                 to: node,
-                replacing: nil,
+                replacing: existingNode,
                 chain: chain,
                 urlPredicate: NSPredicate.ws
             )
