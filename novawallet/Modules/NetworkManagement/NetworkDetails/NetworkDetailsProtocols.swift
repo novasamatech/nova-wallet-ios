@@ -53,12 +53,12 @@ protocol NetworkDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, Ac
         onNodeEdit: @escaping () -> Void,
         onNodeDelete: @escaping () -> Void
     )
-    
+
     func showEditNetwork(
         from view: NetworkDetailsViewProtocol?,
         network: ChainModel,
         selectedNode: ChainNodeModel
     )
-    
+
     func showNetworksList(from view: NetworkDetailsViewProtocol?)
 }

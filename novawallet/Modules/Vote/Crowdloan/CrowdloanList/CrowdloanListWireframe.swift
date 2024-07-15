@@ -96,8 +96,8 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     ) {
         let assetFilter: (ChainAsset) -> Bool = { chainAsset in
             chainAsset.chain.syncMode.enabled()
-            && chainAsset.chain.hasCrowdloans
-            && chainAsset.asset.isUtility
+                && chainAsset.chain.hasCrowdloans
+                && chainAsset.asset.isUtility
         }
 
         guard let selectionView = AssetSelectionViewFactory.createView(

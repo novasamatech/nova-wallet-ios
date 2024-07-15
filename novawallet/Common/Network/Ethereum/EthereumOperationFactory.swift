@@ -26,7 +26,7 @@ protocol EthereumOperationFactoryProtocol {
     ) -> Operation_iOS.BaseOperation<EthereumReducedBlockObject>
 
     func createMaxPriorityPerGasOperation() -> BaseOperation<HexCodable<BigUInt>>
-    
+
     func createChainIdOperation() -> BaseOperation<HexCodable<BigUInt>>
 }
 

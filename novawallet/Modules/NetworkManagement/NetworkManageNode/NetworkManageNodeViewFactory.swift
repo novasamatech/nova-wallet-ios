@@ -17,7 +17,7 @@ struct NetworkManageNodeViewFactory {
         )
 
         let view = NetworkManageNodeViewController(presenter: presenter)
-        
+
         let preferredHeight = NetworkManageNodeMeasurement.measurePreferredHeight(
             for: [onNodeEdit, onNodeDelete].count
         )

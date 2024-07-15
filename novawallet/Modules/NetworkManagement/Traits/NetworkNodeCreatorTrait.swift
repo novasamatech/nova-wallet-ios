@@ -13,15 +13,15 @@ extension NetworkNodeCreatorTrait {
         for chain: ChainModel?
     ) -> ChainNodeModel {
         let currentLastIndex = chain?.nodes
-            .map { $0.order }
+            .map(\.order)
             .max()
-        
+
         let nodeIndex: Int16 = if let currentLastIndex {
             currentLastIndex + 1
         } else {
             0
         }
-        
+
         let node = ChainNodeModel(
             url: url,
             name: name,
@@ -29,7 +29,7 @@ extension NetworkNodeCreatorTrait {
             features: nil,
             source: .user
         )
-        
+
         return node
     }
 }

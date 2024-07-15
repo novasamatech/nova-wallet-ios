@@ -47,7 +47,7 @@ extension MetamaskChain {
         } else {
             []
         }
-        
+
         let iconUrls = (self.iconUrls ?? []) + newIconUrls
 
         return MetamaskChain(

@@ -37,6 +37,13 @@ final class NetworksListViewController: UIViewController, ViewHolder {
         setup()
         presenter.setup()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        rootView.tableView.reloadData()
+        setupActions()
+    }
 }
 
 // MARK: NetworksListViewProtocol
@@ -104,6 +111,14 @@ extension NetworksListViewController: UITableViewDataSource {
             )
         }
     }
+
+    func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
+        UIView()
+    }
+
+    func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        UIView()
+    }
 }
 
 // MARK: UITableViewDelegate
@@ -111,14 +126,14 @@ extension NetworksListViewController: UITableViewDataSource {
 extension NetworksListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        guard 
+
+        guard
             let section = viewModel?.sections[indexPath.section],
             case let .networks(rows) = section, case .network = rows[indexPath.row]
         else {
             return
         }
-        
+
         presenter.selectChain(at: indexPath.row)
     }
 
@@ -130,6 +145,18 @@ extension NetworksListViewController: UITableViewDelegate {
         } else {
             return UITableView.automaticDimension
         }
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        section == Constants.bannerSection
+            ? Constants.sectionSpacing
+            : .zero
+    }
+
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        section == Constants.bannerSection
+            ? Constants.sectionSpacing
+            : .zero
     }
 }
 
@@ -147,7 +174,7 @@ extension NetworksListViewController: IntegrateNetworksBannerDelegate {
     func didTapClose() {
         presenter.closeBanner()
     }
-    
+
     func didTapIntegrateNetwork() {
         presenter.integrateOwnNetwork()
     }
@@ -163,7 +190,6 @@ private extension NetworksListViewController {
         rootView.tableView.registerClassForCell(PlaceholderCell.self)
         rootView.tableView.registerClassForCell(BannerCell.self)
 
-        setupActions()
         setupNetworkSwitchTitles()
         setupNavigationBarTitle()
     }
@@ -297,6 +323,7 @@ extension NetworksListViewController: Localizable {
 private extension NetworksListViewController {
     enum Constants {
         static let cellHeight: CGFloat = 56
+        static let sectionSpacing: CGFloat = 16
         static let bannerSection: Int = 0
         static let networksSection: Int = 1
     }

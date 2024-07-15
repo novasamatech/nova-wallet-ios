@@ -48,7 +48,7 @@ final class ChainAccountViewModelFactory {
                 accountAddress = nil
                 icon = nil
             }
-            
+
             let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chainModel.icon)
 
             let viewModel = ChainAccountViewModelItem(
@@ -122,7 +122,7 @@ final class ChainAccountViewModelFactory {
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
                 hasAction = true
             }
-            
+
             let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chainModel.icon)
 
             return ChainAccountViewModelItem(
@@ -159,7 +159,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
 
         accountAddress = try? accountId.toAddress(using: chain.chainFormat)
         icon = try? iconGenerator.generateFromAccountId(accountId)
-        
+
         let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
 
         let viewModel = ChainAccountViewModelItem(

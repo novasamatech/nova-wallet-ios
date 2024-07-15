@@ -60,6 +60,12 @@ extension NetworkDetailsViewLayout {
             case unknown(String)
         }
 
+        enum Accessory: Equatable {
+            case edit(String)
+            case more
+            case none
+        }
+
         let id: UUID
         let name: String
         let url: String
@@ -67,8 +73,10 @@ extension NetworkDetailsViewLayout {
         let selected: Bool
         let dimmed: Bool
         let custom: Bool
-        
+        let accessory: Accessory
+
         let onTapMore: ((UUID) -> Void)?
+        let onTapEdit: ((UUID) -> Void)?
     }
 
     enum Row {

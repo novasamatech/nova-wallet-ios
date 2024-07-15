@@ -96,6 +96,8 @@ class TextInputView: BackgroundedContentControl {
             textField.placeholder = inputViewModel.placeholder
         }
 
+        textField.isEnabled = inputViewModel.inputHandler.enabled
+
         self.inputViewModel = inputViewModel
 
         updateControlsState()
@@ -223,7 +225,7 @@ class TextInputView: BackgroundedContentControl {
     }
 
     func applyControlsState() {
-        if shouldUseClearButton, hasText {
+        if shouldUseClearButton, hasText, textField.isEnabled {
             clearButton.isHidden = false
         } else {
             clearButton.isHidden = true

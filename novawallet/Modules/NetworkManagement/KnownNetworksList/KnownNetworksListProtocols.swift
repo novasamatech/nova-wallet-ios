@@ -3,7 +3,7 @@ protocol KnownNetworksListViewProtocol: ControllerBackedProtocol, LoadableViewPr
 }
 
 protocol KnownNetworksListPresenterProtocol: AnyObject {
-    func setup()
+    func becameActive()
     func selectChain(at index: Int)
     func search(by query: String)
     func addNetworkManually()

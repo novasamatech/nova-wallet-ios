@@ -31,7 +31,7 @@ final class ProxySyncService {
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let walletUpdateMediator: WalletUpdateMediating
     let eventCenter: EventCenterProtocol
-    
+
     let chainFilter: ChainFilterStrategy
     let chainWalletFilter: ProxySyncChainWalletFilter?
 

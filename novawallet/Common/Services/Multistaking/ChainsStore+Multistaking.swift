@@ -6,7 +6,7 @@ extension ChainsStoreProtocol {
             guard let chain = getChain(for: chainId) else {
                 return [ChainAsset]()
             }
-            
+
             if let filter, filter(chain) == false {
                 return [ChainAsset]()
             }

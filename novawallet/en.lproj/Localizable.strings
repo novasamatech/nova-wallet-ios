@@ -1693,7 +1693,7 @@
 "network.node.add.alert.wrong.network.message" = "The URL you entered is not corresponding to Node for %@.
 Please enter URL of the valid %@ node.";
 "network.node.add.alert.already.exists.title" = "This Node already exists";
-"network.node.add.alert.already.exists.message" = "The URL you entered already exists as the %@ Node.";
+"network.node.add.alert.already.exists.message" = "The URL you entered already exists as the \"%@\" Node.";
 "common.for" = "For";
 "network.manage.node.edit" = "Edit node";
 "network.manage.node.delete" = "Delete node";
@@ -1714,6 +1714,8 @@ Please enter URL of the valid %@ node.";
 "network.add.alert.invalid.chain.id.message" = "The entered Chain ID does not match the network in the RPC URL.";
 "network.add.alert.invalid.network.type.title" = "Invalid network type";
 "network.add.alert.invalid.network.type.message" = "It seems you want to add a different type of network. Please select the “%@” to continue.";
+"network.add.alert.invalid.symbol.title" = "Invalid Currency Symbol";
+"network.add.alert.invalid.symbol.message" = "The entered Currency Symbol (%@) does not match the network (%@). Do you want to use the correct currency symbol?";
 "network.manage.edit" = "Edit network";
 "network.manage.delete" = "Delete network";
 "network.manage.title" = "Manage added network";
@@ -1722,3 +1724,7 @@ Please enter URL of the valid %@ node.";
 "common.delete" = "Delete";
 "network.known.list.search.placeholder" = "Search by network name";
 "network.add.network.manually" = "Add network manually";
+"network.node.delete.alert.title" = "Delete node?";
+"network.node.delete.alert.description" = "%@ node will be deleted";
+"network.add.alert.success.title" = "Network added successfully";
+"common.modify" = "Modify";

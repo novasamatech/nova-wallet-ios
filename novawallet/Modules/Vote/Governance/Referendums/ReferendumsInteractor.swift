@@ -54,7 +54,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
         self.currencyManager = currencyManager
-        
+
         self.eventCenter.add(observer: self)
     }
 
@@ -356,7 +356,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         operationQueue.addOperations(votingWrapper.allOperations, waitUntilFinished: false)
     }
-    
+
     func setupState(onSuccess: @escaping (GovernanceSelectedOption?) -> Void) {
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             self?.governanceState.settings.setup(runningCompletionIn: .main) { result in
@@ -376,7 +376,7 @@ extension ReferendumsInteractor: EventVisitorProtocol {
         guard governanceState.settings.value.chain.chainId == event.chainId else {
             return
         }
-        
+
         setupState { [weak self] option in
             if let option {
                 self?.handleOptionChange(for: option)

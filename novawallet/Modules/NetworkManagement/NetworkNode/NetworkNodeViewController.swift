@@ -44,24 +44,24 @@ extension NetworkNodeViewController: NetworkNodeViewProtocol {
     func didReceiveName(viewModel: InputViewModelProtocol) {
         rootView.nameInput.bind(inputViewModel: viewModel)
     }
-    
+
     func didReceiveChain(viewModel: NetworkViewModel) {
         rootView.chainView.bind(viewModel: viewModel)
     }
-    
+
     func didReceiveButton(viewModel: NetworkNodeViewLayout.LoadingButtonViewModel) {
         viewModel.loading
             ? rootView.actionLoadableView.startLoading()
             : rootView.actionLoadableView.stopLoading()
-        
+
         viewModel.enabled
             ? rootView.actionButton.applyEnabledStyle()
             : rootView.actionButton.applyDisabledStyle()
-        
+
         rootView.actionButton.isUserInteractionEnabled = viewModel.enabled
         rootView.actionButton.imageWithTitleView?.title = viewModel.title
     }
-    
+
     func didReceiveTitle(text: String) {
         rootView.titleLabel.text = text
     }

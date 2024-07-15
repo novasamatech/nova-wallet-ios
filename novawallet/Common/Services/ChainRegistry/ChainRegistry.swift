@@ -60,7 +60,7 @@ final class ChainRegistry {
 
     private(set) var runtimeVersionSubscriptions: [ChainModel.Id: RuntimeSubscriptionInfo] = [:]
     private var availableChains: [ChainModel.Id: ChainModel] = [:]
-    
+
     private var chainsChangesObservers: [ChainsObserver] = []
 
     private let mutex = NSLock()
@@ -113,7 +113,7 @@ final class ChainRegistry {
 
     private func handle(changes: [DataProviderChange<ChainModel>]) {
         mutex.lock()
-        
+
         defer {
             mutex.unlock()
         }
@@ -121,7 +121,7 @@ final class ChainRegistry {
         guard !changes.isEmpty else {
             return
         }
-        
+
         let chainsBeforeChanges = availableChains
 
         changes.forEach { change in
@@ -144,7 +144,7 @@ final class ChainRegistry {
                 logger?.error("Unexpected error on handling chains update: \(error)")
             }
         }
-        
+
         chainsChangesObservers.forEach { $0.updateClosure(changes, chainsBeforeChanges) }
     }
 
@@ -320,11 +320,11 @@ extension ChainRegistry: ChainRegistryProtocol {
         updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void
     ) {
         mutex.lock()
-        
+
         defer {
             mutex.unlock()
         }
-        
+
         let closure: ([DataProviderChange<ChainModel>], [ChainModel.Id: ChainModel]) -> Void = { changes, currentChains in
             runningInQueue.async {
                 let filtered = if let filterStrategy {
@@ -339,18 +339,18 @@ extension ChainRegistry: ChainRegistryProtocol {
                 updateClosure(filtered)
             }
         }
-        
+
         guard !chainsChangesObservers.contains(where: { $0.target === target }) else {
             return
         }
-        
+
         chainsChangesObservers.append(
             ChainsObserver(
                 target: target,
                 updateClosure: closure
             )
         )
-        
+
         guard !availableChains.isEmpty else {
             return
         }

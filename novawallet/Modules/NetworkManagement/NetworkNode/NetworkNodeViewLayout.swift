@@ -3,9 +3,9 @@ import UIKit
 final class NetworkNodeViewLayout: ScrollableContainerLayoutView {
     let titleLabel: UILabel = .create { $0.apply(style: .boldTitle2Primary) }
     let titleLabelFor: UILabel = .create { $0.apply(style: .boldTitle2Primary) }
-    
+
     let chainView = AssetListChainView()
-    
+
     let urlTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
     let urlInput: TextWithServiceInputView = .create { view in
         view.textField.returnKeyType = .done
@@ -44,22 +44,22 @@ final class NetworkNodeViewLayout: ScrollableContainerLayoutView {
 
     override func setupLayout() {
         super.setupLayout()
-        
+
         addArrangedSubview(titleLabel, spacingAfter: 8)
-        
+
         let container = UIView()
         container.addSubview(titleLabelFor)
         container.addSubview(chainView)
-        
+
         titleLabelFor.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
         }
-        
+
         chainView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabelFor.snp.trailing).offset(10)
             make.bottom.top.equalToSuperview()
         }
-        
+
         addArrangedSubview(container, spacingAfter: 16)
 
         addArrangedSubview(urlTitleLabel, spacingAfter: 8)
@@ -67,7 +67,7 @@ final class NetworkNodeViewLayout: ScrollableContainerLayoutView {
 
         addArrangedSubview(nameTitleLabel, spacingAfter: 8)
         addArrangedSubview(nameInput)
-        
+
         addSubview(actionLoadableView)
         actionLoadableView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -92,7 +92,7 @@ extension NetworkNodeViewLayout {
 private extension NetworkNodeViewLayout {
     func applyLocalization() {
         titleLabelFor.text = R.string.localizable.commonFor(preferredLanguages: locale.rLanguages).lowercased()
-        
+
         nameTitleLabel.text = R.string.localizable.networkInfoNodeName(preferredLanguages: locale.rLanguages)
         urlTitleLabel.text = R.string.localizable.networkInfoNodeUrl(preferredLanguages: locale.rLanguages)
 

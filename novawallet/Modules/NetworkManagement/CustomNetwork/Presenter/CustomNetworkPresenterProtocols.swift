@@ -1,9 +1,11 @@
 protocol CustomNetworkPresenterProtocol: AnyObject {
     func setup()
     func select(segment: ChainType?)
+    func handle(url: String)
     func handlePartial(url: String)
     func handlePartial(name: String)
     func handlePartial(currencySymbol: String)
+    func handlePartial(chainId: String)
     func handlePartial(blockExplorerURL: String)
     func handlePartial(coingeckoURL: String)
     func confirm()
@@ -14,17 +16,14 @@ protocol CustomNetworkAddPresenterProtocol {
 }
 
 protocol CustomNetworkBaseInteractorOutputProtocol: AnyObject {
+    func didFinishWorkWithNetwork()
     func didReceive(_ error: CustomNetworkBaseInteractorError)
-}
-
-protocol CustomNetworkAddInteractorOutputProtocol: CustomNetworkBaseInteractorOutputProtocol {
-    func didAddChain()
-}
-
-protocol CustomNetworkEditInteractorOutputProtocol: CustomNetworkBaseInteractorOutputProtocol {
-    func didEditChain()
     func didReceive(
-        chain: ChainModel, 
+        knownChain: ChainModel,
+        selectedNode: ChainNodeModel
+    )
+    func didReceive(
+        chain: ChainModel,
         selectedNode: ChainNodeModel
     )
 }

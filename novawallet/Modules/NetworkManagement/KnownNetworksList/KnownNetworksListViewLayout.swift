@@ -6,7 +6,7 @@ final class KnownNetworksListViewLayout: UIView {
     var searchTextField: UITextField {
         searchView.searchBar.textField
     }
-    
+
     let tableView: UITableView = .create { view in
         view.backgroundColor = .clear
         view.separatorStyle = .none
@@ -35,17 +35,17 @@ private extension KnownNetworksListViewLayout {
             make.height.equalTo(52)
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
         }
-        
+
         searchView.blurBackgroundView.removeFromSuperview()
         searchView.layoutIfNeeded()
-        
+
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchView.snp.bottom).offset(8)
             make.leading.trailing.bottom.equalToSuperview()
         }
     }
-    
+
     func setupStyle() {
         searchView.backgroundColor = R.color.colorSecondaryScreenBackground()
         backgroundColor = R.color.colorSecondaryScreenBackground()
