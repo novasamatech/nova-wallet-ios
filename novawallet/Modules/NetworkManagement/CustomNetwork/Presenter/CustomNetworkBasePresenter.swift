@@ -126,7 +126,9 @@ class CustomNetworkBasePresenter {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialBlockExplorerURL ?? "",
             required: false,
-            placeholder: Constants.blockExplorerPlaceholder
+            placeholder: chainType == .substrate
+                ? Constants.substrateBlockExplorerPlaceholder
+                : Constants.evmBlockExplorerPlaceholder
         )
         view?.didReceiveBlockExplorerUrl(viewModel: inputViewModel)
     }
@@ -428,7 +430,8 @@ extension CustomNetworkBasePresenter {
     enum Constants {
         static let chainIdPlaceholder = "012345"
         static let chainUrlPlaceholder = "wss://"
-        static let blockExplorerPlaceholder = "https://subscan.io"
+        static let substrateBlockExplorerPlaceholder = "https://subscan.io"
+        static let evmBlockExplorerPlaceholder = "https://networkscan.io"
         static let coingeckoUrl = "https://coingecko.com/coins"
         static let coingeckoUrlPlaceholder = coingeckoUrl + "/tether"
     }
