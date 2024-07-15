@@ -236,7 +236,7 @@ private extension NetworkDetailsPresenter {
             from: view,
             actions: modalActionsContext.actions,
             title: LocalizableResource { locale in
-                R.string.localizable.commonManageBackup(preferredLanguages: locale.rLanguages)
+                R.string.localizable.networkManageTitle(preferredLanguages: locale.rLanguages)
             },
             delegate: self,
             context: modalActionsContext.context
@@ -316,9 +316,7 @@ private extension NetworkDetailsPresenter {
         let actionViewModels: [LocalizableResource<ActionManageViewModel>] = [
             LocalizableResource { locale in
                 ActionManageViewModel(
-                    icon: R.image.iconPencil()?
-                        .tinted(with: R.color.colorIconPrimary()!)?
-                        .withRenderingMode(.alwaysOriginal),
+                    icon: R.image.iconPencil(),
                     title: R.string.localizable.networkManageEdit(preferredLanguages: locale.rLanguages)
                 )
             },

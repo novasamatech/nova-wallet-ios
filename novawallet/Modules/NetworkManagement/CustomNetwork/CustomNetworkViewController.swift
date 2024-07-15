@@ -4,6 +4,8 @@ import SoraFoundation
 final class CustomNetworkViewController: UIViewController, ViewHolder {
     typealias RootViewType = CustomNetworkViewLayout
 
+    var keyboardHandler: KeyboardHandler?
+
     let presenter: CustomNetworkPresenterProtocol
 
     init(
@@ -32,6 +34,14 @@ final class CustomNetworkViewController: UIViewController, ViewHolder {
         setupNetworkSwitchTitles()
         setupHandlers()
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if keyboardHandler == nil {
+            setupKeyboardHandler()
+        }
     }
 }
 
@@ -103,6 +113,50 @@ extension CustomNetworkViewController: CustomNetworkViewProtocol {
 
         rootView.actionButton.isUserInteractionEnabled = viewModel.enabled
         rootView.actionButton.imageWithTitleView?.title = viewModel.title
+    }
+}
+
+// MARK: KeyboardAdoptable
+
+extension CustomNetworkViewController: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let localKeyboardFrame = view.convert(frame, from: nil)
+        let bottomInset = view.bounds.height - localKeyboardFrame.minY
+        let scrollView = rootView.containerView.scrollView
+        let scrollViewOffset = view.bounds.height - scrollView.frame.maxY
+
+        var contentInsets = scrollView.contentInset
+        contentInsets.bottom = max(0.0, bottomInset - scrollViewOffset)
+        scrollView.contentInset = contentInsets
+
+        if contentInsets.bottom > 0.0 {
+            let targetView: UIView?
+
+            if rootView.urlInput.textField.isFirstResponder {
+                targetView = rootView.urlInput
+            } else if rootView.nameInput.textField.isFirstResponder {
+                targetView = rootView.nameInput
+            } else if rootView.currencySymbolInput.textField.isFirstResponder {
+                targetView = rootView.currencySymbolInput
+            } else if rootView.currencySymbolInput.textField.isFirstResponder {
+                targetView = rootView.currencySymbolInput
+            } else if rootView.blockExplorerUrlInput.textField.isFirstResponder {
+                targetView = rootView.blockExplorerUrlInput
+            } else if rootView.coingeckoUrlInput.textField.isFirstResponder {
+                targetView = rootView.coingeckoUrlInput
+            } else {
+                targetView = nil
+            }
+
+            if let firstResponderView = targetView {
+                let fieldFrame = scrollView.convert(
+                    firstResponderView.frame,
+                    from: firstResponderView.superview
+                )
+
+                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+            }
+        }
     }
 }
 

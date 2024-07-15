@@ -32,7 +32,7 @@ final class NetworkManageNodePresenter {
                 title: R.string.localizable.networkManageNodeEdit(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
-                icon: R.image.iconPencilEdit()?.withRenderingMode(.alwaysTemplate).tinted(with: R.color.colorIconPrimary()!),
+                icon: R.image.iconPencil(),
                 negative: false,
                 onSelection: { [weak self] in
                     guard let self else { return }

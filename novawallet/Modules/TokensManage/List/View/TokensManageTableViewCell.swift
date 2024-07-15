@@ -13,7 +13,7 @@ final class TokensManageTableViewCell: UITableViewCell {
 
     let editButton: RoundedButton = .create { button in
         button.applyIconStyle()
-        button.imageWithTitleView?.iconImage = R.image.iconPencil()!
+        button.imageWithTitleView?.iconImage = R.image.iconPencil()?.tinted(with: R.color.colorIconSecondary()!)!
     }
 
     let switchView: UISwitch = .create { view in
