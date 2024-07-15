@@ -31,8 +31,6 @@ final class ConnectionFactory {
     let logger: SDKLoggerProtocol
     let operationQueue: OperationQueue
 
-    let tlsSupportProvider = ConnectionTLSSupportProvider()
-
     init(logger: SDKLoggerProtocol, operationQueue: OperationQueue) {
         self.logger = logger
         self.operationQueue = operationQueue
@@ -53,11 +51,9 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
             from: chain,
             schema: ConnectionNodeSchema.wss
         )
-        let urls = urlModels.map(\.url)
 
         return try createConnection(
             urlModels: urlModels,
-            urls: urls,
             for: chain,
             delegate: delegate
         )
@@ -74,7 +70,6 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
 
         return try createConnection(
             urlModels: [urlModel],
-            urls: [urlModel.url],
             for: chain,
             delegate: delegate
         )
@@ -83,8 +78,6 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     func updateConnection(_ connection: ChainConnection, chain: ChainNodeConnectable) {
         let newUrlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
         let newUrls = newUrlModels.map(\.url)
-
-        tlsSupportProvider.add(support: newUrlModels)
 
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
@@ -123,20 +116,19 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     private func createConnection(
-        urlModels: [ConnectionTLSSupport],
-        urls: [URL],
+        urlModels: [ConnectionCreationParams],
         for chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection {
-        tlsSupportProvider.add(support: urlModels)
-
         let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
+
+        let urls = urlModels.map(\.url)
 
         guard
             let connection = WebSocketEngine(
                 urls: urls,
-                connectionFactory: ConnectionTransportFactory(tlsSupportProvider: tlsSupportProvider),
+                connectionFactory: ConnectionTransportFactory(),
                 customNodeSwitcher: nodeSwitcher,
                 healthCheckMethod: healthCheckMethod,
                 name: chain.name,
@@ -149,7 +141,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         return connection
     }
 
-    private func nodeUrl(from node: ChainNodeModel) -> ConnectionTLSSupport? {
+    private func nodeUrl(from node: ChainNodeModel) -> ConnectionCreationParams? {
         let builder = URLBuilder(urlTemplate: node.url)
 
         guard let url = try? builder.buildBy(closure: { apiKeyType in
@@ -162,13 +154,13 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
             return nil
         }
 
-        return ConnectionTLSSupport(url: url, supportsTLS12: node.supportsTls12)
+        return ConnectionCreationParams(url: url)
     }
 
     private func extractNodeUrls(
         from chain: ChainNodeConnectable,
         schema: String
-    ) -> [ConnectionTLSSupport] {
+    ) -> [ConnectionCreationParams] {
         let filteredNodes = if case let .manual(selectedNode) = chain.connectionMode {
             selectedNode.url.hasPrefix(schema)
                 ? Set([selectedNode])

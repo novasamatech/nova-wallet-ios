@@ -215,7 +215,6 @@
 		0C3976B32C33BFB700998DD6 /* HydraPoolAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
-		0C41D2092BF6664C000950EE /* ConnectionTLSSupportProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2082BF6664C000950EE /* ConnectionTLSSupportProvider.swift */; };
 		0C41D20E2BF77F85000950EE /* CloudBackupSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D20D2BF77F85000950EE /* CloudBackupSyncTests.swift */; };
 		0C41D2102BF7814A000950EE /* MockCloudBackupServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D20F2BF7814A000950EE /* MockCloudBackupServiceFactory.swift */; };
 		0C41D2122BF78389000950EE /* MockCloudBackupFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2112BF78389000950EE /* MockCloudBackupFileManager.swift */; };
@@ -439,6 +438,7 @@
 		0CA50CB32AFE6F23005668CD /* GetTokenOptionsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */; };
 		0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */; };
 		0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */; };
+		0CA5BDF32C4476A3000A4CDD /* ConnectionCreationParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDF22C4476A3000A4CDD /* ConnectionCreationParams.swift */; };
 		0CA719792B768ABC000B086E /* JsonStringify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719782B768ABC000B086E /* JsonStringify.swift */; };
 		0CA7197B2B773172000B086E /* HydraStableswapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197A2B773172000B086E /* HydraStableswapTests.swift */; };
 		0CA7197D2B7737D5000B086E /* HydraQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */; };
@@ -5146,7 +5146,6 @@
 		0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraPoolAccountTests.swift; sourceTree = "<group>"; };
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
-		0C41D2082BF6664C000950EE /* ConnectionTLSSupportProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTLSSupportProvider.swift; sourceTree = "<group>"; };
 		0C41D20D2BF77F85000950EE /* CloudBackupSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncTests.swift; sourceTree = "<group>"; };
 		0C41D20F2BF7814A000950EE /* MockCloudBackupServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupServiceFactory.swift; sourceTree = "<group>"; };
 		0C41D2112BF78389000950EE /* MockCloudBackupFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupFileManager.swift; sourceTree = "<group>"; };
@@ -5372,6 +5371,7 @@
 		0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsPresenter.swift; sourceTree = "<group>"; };
 		0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsInteractor.swift; sourceTree = "<group>"; };
 		0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsViewFactory.swift; sourceTree = "<group>"; };
+		0CA5BDF22C4476A3000A4CDD /* ConnectionCreationParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionCreationParams.swift; sourceTree = "<group>"; };
 		0CA719782B768ABC000B086E /* JsonStringify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonStringify.swift; sourceTree = "<group>"; };
 		0CA7197A2B773172000B086E /* HydraStableswapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapTests.swift; sourceTree = "<group>"; };
 		0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraQuoteFactory.swift; sourceTree = "<group>"; };
@@ -13960,7 +13960,7 @@
 				84DBEA7629DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift */,
 				84DBEA7829DB09BB00A504A7 /* ConnectionNodeSchema.swift */,
 				0C63909C2BF34A970015D467 /* ConnectionTransportFactory.swift */,
-				0C41D2082BF6664C000950EE /* ConnectionTLSSupportProvider.swift */,
+				0CA5BDF22C4476A3000A4CDD /* ConnectionCreationParams.swift */,
 			);
 			path = ConnectionPool;
 			sourceTree = "<group>";
@@ -25897,7 +25897,6 @@
 				84355CEC28B5611F004E5C5E /* LedgerAccountStackCell.swift in Sources */,
 				848F5FE72989134A0058CD74 /* SubqueryDelegationsResponse.swift in Sources */,
 				84AEEE6A27A9204C005EBA77 /* AssetListSettingsCell.swift in Sources */,
-				0C41D2092BF6664C000950EE /* ConnectionTLSSupportProvider.swift in Sources */,
 				F466AA85273D0D4200D14021 /* SettingsSectionHeaderView.swift in Sources */,
 				842BDB25278C3ACB00AB4B5A /* DAppBrowserMetadataState.swift in Sources */,
 				77C976242AF3A5280049272C /* SwapViewModels.swift in Sources */,
@@ -26378,6 +26377,7 @@
 				88E5E2A5295D8F8E001B1D41 /* DAppGlobalSettingsViewModel.swift in Sources */,
 				841E553C282D44BA00C8438F /* ParachainStakingAccountSubscriptionService.swift in Sources */,
 				84C479C129309E58003DF82B /* BasePolkassemblyOperationFactory.swift in Sources */,
+				0CA5BDF32C4476A3000A4CDD /* ConnectionCreationParams.swift in Sources */,
 				770ABB8C2B85587200132465 /* PushNotificationTopicSettings.swift in Sources */,
 				0C846B892BE50BF2000EBFC2 /* VaraRewardEngine.swift in Sources */,
 				84300B2C26C10C9B00D64514 /* ConnectionStateReporting.swift in Sources */,
