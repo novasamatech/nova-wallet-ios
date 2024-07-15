@@ -32,6 +32,7 @@ struct CustomNetworkViewFactory {
             systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connectionFactory: connectionFactory,
             repository: repository,
+            priceIdParser: CoingeckoUrlParser(),
             operationQueue: operationQueue
         )
 
@@ -92,6 +93,7 @@ struct CustomNetworkViewFactory {
             systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connectionFactory: connectionFactory,
             repository: repository,
+            priceIdParser: CoingeckoUrlParser(),
             operationQueue: operationQueue
         )
 

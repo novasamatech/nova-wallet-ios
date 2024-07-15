@@ -1693,7 +1693,7 @@
 "network.node.add.alert.wrong.network.message" = "Введенный вами URL-адрес не соответствует ноде для %@.
 Пожалуйста, введите URL-адрес действующей ноды %@.";
 "network.node.add.alert.already.exists.title" = "Эта нода уже существует";
-"network.node.add.alert.already.exists.message" = "Введенный вами URL-адрес уже существует в качестве ноды %@.";
+"network.node.add.alert.already.exists.message" = "Введенный вами URL-адрес уже существует в качестве ноды \"%@\".";
 "common.for" = "Для";
 "network.manage.node.edit" = "Редактировать ноду";
 "network.manage.node.delete" = "Удалить ноду";

@@ -234,6 +234,15 @@ private extension CustomNetworkSetupTrait {
                 throw CustomNetworkSetupError.decimalsNotFound
             }
 
+            let networkMainAssetSymbol = properties.tokenSymbol.first ?? chain.currencySymbol
+
+            guard networkMainAssetSymbol == chain.currencySymbol else {
+                throw CustomNetworkSetupError.wrongCurrencySymbol(
+                    enteredSymbol: chain.currencySymbol,
+                    actualSymbol: networkMainAssetSymbol
+                )
+            }
+
             let asset = AssetModel(
                 assetId: 0,
                 icon: nil,
@@ -313,6 +322,7 @@ private extension CustomNetworkSetupTrait {
 
 // MARK: Errors
 
-enum CustomNetworkSetupError: Error {
+enum CustomNetworkSetupError: Error, Hashable {
     case decimalsNotFound
+    case wrongCurrencySymbol(enteredSymbol: String, actualSymbol: String)
 }

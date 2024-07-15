@@ -139,12 +139,22 @@ private extension NetworkDetailsPresenter {
             selectedNode: selectedNode,
             nodesIds: nodesIds,
             connectionStates: connectionStates,
-            onTapMore: editNode(with:)
+            onTapEdit: editNode(with:),
+            onTapMore: manageNode(with:)
         )
         view?.update(with: viewModel)
     }
 
     func provideNodeViewModel(for node: ChainNodeModel) {
+        let notSingleUserNode = chain.nodes
+            .filter { $0.source == .user }
+            .count > 1
+        let notEmptyRemoteModes = !chain.nodes
+            .filter { $0.source == .remote }
+            .isEmpty
+
+        let deletionAllowed = notSingleUserNode || notEmptyRemoteModes
+
         let viewModel = switch node.source {
         case .user:
             viewModelFactory.createAddNodeSection(
@@ -153,7 +163,9 @@ private extension NetworkDetailsPresenter {
                 chain: chain,
                 nodesIds: nodesIds,
                 connectionStates: connectionStates,
-                onTapMore: editNode(with:)
+                deletionAllowed: deletionAllowed,
+                onTapEdit: editNode(with:),
+                onTapMore: manageNode(with:)
             )
         case .remote:
             viewModelFactory.createNodesSection(
@@ -182,7 +194,7 @@ private extension NetworkDetailsPresenter {
         }
     }
 
-    func editNode(with id: UUID) {
+    func manageNode(with id: UUID) {
         guard let node = nodes[id] else { return }
 
         wireframe.showManageNode(
@@ -200,6 +212,16 @@ private extension NetworkDetailsPresenter {
             onNodeDelete: { [weak self] in
                 self?.openDeleteNodeAlert(for: node)
             }
+        )
+    }
+
+    func editNode(with id: UUID) {
+        guard let node = nodes[id] else { return }
+
+        wireframe.showEditNode(
+            from: view,
+            node: node,
+            chainId: chain.chainId
         )
     }
 

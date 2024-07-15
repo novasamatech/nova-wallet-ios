@@ -15,6 +15,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
+        priceIdParser: PriceUrlParserProtocol,
         operationQueue: OperationQueue
     ) {
         self.networkToEdit = networkToEdit
@@ -28,6 +29,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
             systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connectionFactory: connectionFactory,
             repository: repository,
+            priceIdParser: priceIdParser,
             operationQueue: operationQueue
         )
     }

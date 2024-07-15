@@ -57,6 +57,12 @@ extension CustomNetworkViewController: CustomNetworkViewProtocol {
 
     func didReceiveUrl(viewModel: InputViewModelProtocol) {
         rootView.urlInput.bind(inputViewModel: viewModel)
+
+        if viewModel.inputHandler.enabled {
+            rootView.urlInput.textField.textColor = R.color.colorTextPrimary()
+        } else {
+            rootView.urlInput.textField.textColor = R.color.colorTextSecondary()
+        }
     }
 
     func didReceiveName(viewModel: InputViewModelProtocol) {
@@ -187,7 +193,7 @@ private extension CustomNetworkViewController {
 
     @objc func actionChainIdChanged() {
         let partialChainId = rootView.chainIdInput.textField.text ?? ""
-        presenter.handlePartial(currencySymbol: partialChainId)
+        presenter.handlePartial(chainId: partialChainId)
     }
 
     @objc func actionBlockExplorerURLChanged() {

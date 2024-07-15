@@ -58,8 +58,11 @@ class TextWithServiceInputView: TextInputView {
     }
 
     override func applyControlsState() {
-        if hasText {
+        if hasText, textField.isEnabled {
             clearButton.isHidden = false
+            pasteButton.isHidden = true
+        } else if !textField.isEnabled {
+            clearButton.isHidden = true
             pasteButton.isHidden = true
         } else {
             clearButton.isHidden = true

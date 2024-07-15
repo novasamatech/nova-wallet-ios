@@ -13,6 +13,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
+        priceIdParser: PriceUrlParserProtocol,
         operationQueue: OperationQueue
     ) {
         self.networkToAdd = networkToAdd
@@ -25,6 +26,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
             systemPropertiesOperationFactory: systemPropertiesOperationFactory,
             connectionFactory: connectionFactory,
             repository: repository,
+            priceIdParser: priceIdParser,
             operationQueue: operationQueue
         )
     }

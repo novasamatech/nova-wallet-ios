@@ -13,6 +13,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     let systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol
     let connectionFactory: ConnectionFactoryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
+    let priceIdParser: PriceUrlParserProtocol
     let operationQueue: OperationQueue
 
     var currentConnectingNode: ChainNodeModel?
@@ -28,6 +29,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
+        priceIdParser: PriceUrlParserProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
@@ -37,6 +39,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         self.systemPropertiesOperationFactory = systemPropertiesOperationFactory
         self.connectionFactory = connectionFactory
         self.repository = repository
+        self.priceIdParser = priceIdParser
         self.operationQueue = operationQueue
     }
 
@@ -52,7 +55,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         currencySymbol: String,
         chainId: String?,
         blockExplorerURL: String?,
-        coingeckoURL _: String?
+        coingeckoURL: String?
     ) {
         let mainAsset = existingNetwork.assets.first(where: { $0.assetId == 0 })
 
@@ -60,6 +63,18 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
             UInt16(intChainId)
         } else {
             nil
+        }
+
+        var priceId: AssetModel.PriceId?
+
+        do {
+            priceId = try extractPriceId(from: coingeckoURL) ?? mainAsset?.priceId
+        } catch {
+            guard let parseError = error as? CustomNetworkBaseInteractorError else {
+                return
+            }
+
+            presenter?.didReceive(parseError)
         }
 
         let partialChain = PartialCustomChainModel(
@@ -75,7 +90,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
             addressPrefix: evmChainId ?? existingNetwork.addressPrefix,
             connectionMode: .autoBalanced,
             blockExplorer: createExplorer(from: blockExplorerURL) ?? existingNetwork.explorers?.first,
-            mainAssetPriceId: mainAsset?.priceId
+            mainAssetPriceId: priceId
         )
 
         self.partialChain = partialChain
@@ -112,10 +127,21 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         )
 
         let explorer = createExplorer(from: blockExplorerURL)
-        let mainAssetPriceId = extractPriceId(from: coingeckoURL)
         let options: [LocalChainOptions]? = networkType == .evm
             ? [.ethereumBased, .noSubstrateRuntime]
             : nil
+
+        var priceId: AssetModel.PriceId?
+
+        do {
+            priceId = try extractPriceId(from: coingeckoURL)
+        } catch {
+            guard let parseError = error as? CustomNetworkBaseInteractorError else {
+                return
+            }
+
+            presenter?.didReceive(parseError)
+        }
 
         let partialChain = PartialCustomChainModel(
             chainId: "",
@@ -130,7 +156,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
             addressPrefix: evmChainId ?? 0,
             connectionMode: .autoBalanced,
             blockExplorer: explorer,
-            mainAssetPriceId: mainAssetPriceId
+            mainAssetPriceId: priceId
         )
 
         self.partialChain = partialChain
@@ -279,8 +305,18 @@ private extension CustomNetworkBaseInteractor {
             switch result {
             case let .success(chain):
                 self?.handleSetupFinished(for: chain)
-            case let .failure(error as CustomNetworkSetupError) where error == .decimalsNotFound:
-                self?.presenter?.didReceive(.common(innerError: .noDataRetrieved))
+            case let .failure(error as CustomNetworkSetupError):
+                switch error {
+                case .decimalsNotFound:
+                    self?.presenter?.didReceive(.common(innerError: .noDataRetrieved))
+                case let .wrongCurrencySymbol(enteredSymbol, actualSymbol):
+                    self?.presenter?.didReceive(
+                        .wrongCurrencySymbol(
+                            enteredSymbol: enteredSymbol,
+                            actualSymbol: actualSymbol
+                        )
+                    )
+                }
             default:
                 self?.presenter?.didReceive(.common(innerError: .undefined))
             }
@@ -289,20 +325,20 @@ private extension CustomNetworkBaseInteractor {
 
     // MARK: Optional helpers
 
-    func extractPriceId(from coingeckoUrlTemplate: String?) -> AssetModel.PriceId? {
-        guard let coingeckoUrlTemplate else { return nil }
+    func extractPriceId(from priceUrl: String?) throws -> AssetModel.PriceId? {
+        var priceId: AssetModel.PriceId?
 
-        let regex = try? NSRegularExpression(pattern: Constants.priceIdSearchRegexPattern)
-        let range = NSRange(location: 0, length: coingeckoUrlTemplate.utf16.count)
+        if let priceUrl, !priceUrl.isEmpty {
+            let parsedPriceId = priceIdParser.parsePriceId(from: priceUrl)
 
-        guard
-            let match = regex?.firstMatch(in: coingeckoUrlTemplate, options: [], range: range),
-            let matchedRange = Range(match.range(at: 1), in: coingeckoUrlTemplate)
-        else {
-            return nil
+            guard let parsedPriceId else {
+                throw CustomNetworkBaseInteractorError.invalidPriceUrl
+            }
+
+            priceId = parsedPriceId
         }
 
-        return String(coingeckoUrlTemplate[matchedRange])
+        return priceId
     }
 
     func createExplorer(from url: String?) -> ChainModel.Explorer? {

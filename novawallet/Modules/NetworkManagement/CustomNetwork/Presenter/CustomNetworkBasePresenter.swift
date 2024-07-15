@@ -135,7 +135,7 @@ class CustomNetworkBasePresenter {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialCoingeckoURL ?? "",
             required: false,
-            placeholder: Constants.coingeckoTemplate
+            placeholder: Constants.coingeckoUrl
         )
         view?.didReceiveCoingeckoUrl(viewModel: inputViewModel)
     }
@@ -185,10 +185,14 @@ extension CustomNetworkBasePresenter: CustomNetworkPresenterProtocol {
         provideButtonViewModel(loading: false)
     }
 
-    func handlePartial(blockExplorerURL: String) {
-        partialBlockExplorerURL = blockExplorerURL
+    func handlePartial(chainId: String) {
+        partialChainId = chainId
 
         provideButtonViewModel(loading: false)
+    }
+
+    func handlePartial(blockExplorerURL: String) {
+        partialBlockExplorerURL = blockExplorerURL
     }
 
     func handlePartial(coingeckoURL: String) {
@@ -219,7 +223,8 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
     func didReceive(_ error: CustomNetworkBaseInteractorError) {
         provideButtonViewModel(loading: false)
 
-        if case let .alreadyExistCustom(node, chain) = error {
+        switch error {
+        case let .alreadyExistCustom(node, chain):
             wireframe.present(
                 viewModel: createAlreadyExistsViewModel(
                     errorContent: error.toErrorContent(for: selectedLocale),
@@ -229,7 +234,22 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
                 style: .alert,
                 from: view
             )
-        } else {
+        case let .wrongCurrencySymbol(_, actualSymbol):
+            wireframe.present(
+                viewModel: createInvalidSymbolViewModel(
+                    errorContent: error.toErrorContent(for: selectedLocale),
+                    actualSymbol: actualSymbol
+                ),
+                style: .alert,
+                from: view
+            )
+        case .invalidPriceUrl:
+            guard let view else { return }
+            wireframe.presentInvalidCoingeckoPriceUrl(
+                from: view,
+                locale: selectedLocale
+            )
+        default:
             wireframe.present(
                 error: error,
                 from: view,
@@ -262,6 +282,44 @@ extension CustomNetworkBasePresenter: CustomNetworkBaseInteractorOutputProtocol 
 }
 
 // MARK: Private
+
+private extension CustomNetworkBasePresenter {
+    func cleanPartialValues() {
+        partialURL = nil
+        partialName = nil
+        partialCurrencySymbol = nil
+        partialChainId = nil
+        partialBlockExplorerURL = nil
+        partialCoingeckoURL = nil
+    }
+
+    func provideTitle() {
+        let title = R.string.localizable.networkAddTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        view?.didReceiveTitle(text: title)
+    }
+
+    func blockExplorerUrl(from template: String?) -> String? {
+        guard let template else { return nil }
+
+        var urlComponents = URLComponents(
+            url: URL(string: template)!,
+            resolvingAgainstBaseURL: false
+        )
+        urlComponents?.path = ""
+        urlComponents?.queryItems = []
+
+        let trimmedUrlString = urlComponents?
+            .url?
+            .absoluteString
+            .trimmingCharacters(in: CharacterSet(charactersIn: "?"))
+
+        return trimmedUrlString ?? template
+    }
+}
+
+// MARK: Alert View Models
 
 private extension CustomNetworkBasePresenter {
     func createAlreadyExistsViewModel(
@@ -300,38 +358,33 @@ private extension CustomNetworkBasePresenter {
         return viewModel
     }
 
-    func cleanPartialValues() {
-        partialURL = nil
-        partialName = nil
-        partialCurrencySymbol = nil
-        partialChainId = nil
-        partialBlockExplorerURL = nil
-        partialCoingeckoURL = nil
-    }
+    func createInvalidSymbolViewModel(
+        errorContent: ErrorContent,
+        actualSymbol: String
+    ) -> AlertPresentableViewModel {
+        let viewModel = AlertPresentableViewModel(
+            title: errorContent.title,
+            message: errorContent.message,
+            actions: [
+                .init(
+                    title: R.string.localizable.commonApply(preferredLanguages: selectedLocale.rLanguages),
+                    style: .normal,
+                    handler: { [weak self] in
+                        guard let self else { return }
 
-    func provideTitle() {
-        let title = R.string.localizable.networkAddTitle(
-            preferredLanguages: selectedLocale.rLanguages
+                        provideButtonViewModel(loading: true)
+
+                        partialCurrencySymbol = actualSymbol
+                        provideCurrencySymbolViewModel()
+
+                        confirm()
+                    }
+                ),
+            ],
+            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
         )
-        view?.didReceiveTitle(text: title)
-    }
 
-    func blockExplorerUrl(from template: String?) -> String? {
-        guard let template else { return nil }
-
-        var urlComponents = URLComponents(
-            url: URL(string: template)!,
-            resolvingAgainstBaseURL: false
-        )
-        urlComponents?.path = ""
-        urlComponents?.queryItems = []
-
-        let trimmedUrlString = urlComponents?
-            .url?
-            .absoluteString
-            .trimmingCharacters(in: CharacterSet(charactersIn: "?"))
-
-        return trimmedUrlString ?? template
+        return viewModel
     }
 }
 
@@ -352,7 +405,6 @@ extension CustomNetworkBasePresenter {
         static let chainIdPlaceholder = "012345"
         static let chainUrlPlaceholder = "wss://"
         static let blockExplorerPlaceholder = "https://subscan.io"
-        static let coingeckoUrl = "https://coingecko.com/coins"
-        static let coingeckoTemplate = "\(coingeckoUrl)/{coin_name}"
+        static let coingeckoUrl = "https://coingecko.com/coins/tether"
     }
 }

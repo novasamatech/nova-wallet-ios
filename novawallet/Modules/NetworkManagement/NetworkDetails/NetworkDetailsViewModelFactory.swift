@@ -23,23 +23,29 @@ class NetworkDetailsViewModelFactory {
         selectedNode: ChainNodeModel?,
         nodesIds: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
+        onTapEdit: @escaping (UUID) -> Void,
         onTapMore: @escaping (UUID) -> Void
     ) -> Details {
+        let customNodes = nodes.filter { $0.source == .user }
+        let remoteNodes = nodes.filter { $0.source == .remote }
+
         var sections: [Section] = [
             createSwitchesSection(for: chain),
             createAddNodeSection(
-                with: nodes.filter { $0.source == .user },
+                with: customNodes,
                 selectedNode: selectedNode,
                 chain: chain,
                 nodesIds: nodesIds,
                 connectionStates: connectionStates,
+                deletionAllowed: customNodes.count > 1 || !remoteNodes.isEmpty,
+                onTapEdit: onTapEdit,
                 onTapMore: onTapMore
             )
         ]
 
         if chain.source == .remote {
             let defaultNodesSection = createNodesSection(
-                with: nodes.filter { $0.source == .remote },
+                with: remoteNodes,
                 selectedNode: selectedNode,
                 chain: chain,
                 nodesIds: nodesIds,
@@ -73,6 +79,8 @@ class NetworkDetailsViewModelFactory {
                 selectedNode: selectedNode,
                 ids: nodesIds,
                 connectionStates: connectionStates,
+                deletionAllowed: false,
+                onTapEdit: nil,
                 onTapMore: nil
             )
         )
@@ -84,6 +92,8 @@ class NetworkDetailsViewModelFactory {
         chain: ChainModel,
         nodesIds: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
+        deletionAllowed: Bool,
+        onTapEdit: @escaping (UUID) -> Void,
         onTapMore: @escaping (UUID) -> Void
     ) -> Section {
         var rows: [NetworkDetailsViewLayout.Row] = [
@@ -103,6 +113,8 @@ class NetworkDetailsViewModelFactory {
             selectedNode: selectedNode,
             ids: nodesIds,
             connectionStates: connectionStates,
+            deletionAllowed: deletionAllowed,
+            onTapEdit: onTapEdit,
             onTapMore: onTapMore
         )
 
@@ -158,6 +170,8 @@ private extension NetworkDetailsViewModelFactory {
         selectedNode: ChainNodeModel?,
         ids: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
+        deletionAllowed: Bool,
+        onTapEdit: ((UUID) -> Void)?,
         onTapMore: ((UUID) -> Void)?
     ) -> [NetworkDetailsViewLayout.Row] {
         nodes.map {
@@ -170,6 +184,8 @@ private extension NetworkDetailsViewModelFactory {
                     chain: chain,
                     ids: ids,
                     connectionStates: connectionStates,
+                    deletionAllowed: deletionAllowed,
+                    onTapEdit: onTapEdit,
                     onTapMore: onTapMore
                 )
             )
@@ -182,6 +198,8 @@ private extension NetworkDetailsViewModelFactory {
         chain: ChainModel,
         ids: [String: UUID],
         connectionStates: [String: NetworkDetailsPresenter.ConnectionState],
+        deletionAllowed: Bool,
+        onTapEdit: ((UUID) -> Void)?,
         onTapMore: ((UUID) -> Void)?
     ) -> Node {
         var connectionState: Node.ConnectionState = chain.syncMode.enabled()
@@ -213,6 +231,16 @@ private extension NetworkDetailsViewModelFactory {
             }
         }
 
+        let accessory: Node.Accessory = if node.source == .user, !deletionAllowed {
+            .edit(R.string.localizable.commonEdit(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages)
+            )
+        } else if node.source == .user, deletionAllowed {
+            .more
+        } else {
+            .none
+        }
+
         return Node(
             id: ids[node.url]!,
             name: node.name,
@@ -221,7 +249,9 @@ private extension NetworkDetailsViewModelFactory {
             selected: selected,
             dimmed: chain.connectionMode == .autoBalanced,
             custom: node.source == .user,
-            onTapMore: onTapMore
+            accessory: accessory,
+            onTapMore: onTapMore,
+            onTapEdit: onTapEdit
         )
     }
 

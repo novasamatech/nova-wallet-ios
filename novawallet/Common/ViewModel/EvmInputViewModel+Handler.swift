@@ -61,12 +61,14 @@ extension InputViewModel {
 
     static func createNotEmptyInputViewModel(
         for value: String,
+        enabled: Bool = true,
         required: Bool = true,
         placeholder: String? = nil
     ) -> InputViewModelProtocol {
         let inputHandling = InputHandler(
             value: value,
             required: required,
+            enabled: enabled,
             predicate: required ? NSPredicate.notEmpty : nil,
             processor: TrimmingCharacterProcessor(charset: .whitespaces)
         )
