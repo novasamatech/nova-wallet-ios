@@ -51,11 +51,9 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
             from: chain,
             schema: ConnectionNodeSchema.wss
         )
-        let urls = urlModels.map(\.url)
 
         return try createConnection(
             urlModels: urlModels,
-            urls: urls,
             for: chain,
             delegate: delegate
         )
@@ -72,7 +70,6 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
 
         return try createConnection(
             urlModels: [urlModel],
-            urls: [urlModel.url],
             for: chain,
             delegate: delegate
         )
@@ -119,13 +116,14 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     private func createConnection(
-        urlModels _: [ConnectionCreationParams],
-        urls: [URL],
+        urlModels: [ConnectionCreationParams],
         for chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection {
         let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
+
+        let urls = urlModels.map(\.url)
 
         guard
             let connection = WebSocketEngine(
