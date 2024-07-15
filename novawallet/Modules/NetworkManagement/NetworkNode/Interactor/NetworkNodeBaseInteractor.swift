@@ -48,7 +48,9 @@ class NetworkNodeBaseInteractor: NetworkNodeConnectingTrait, NetworkNodeCorrespo
         chain: ChainNodeConnectable
     ) {
         do {
-            try connect(
+            currentConnectingNode = node
+
+            currentConnection = try connect(
                 to: node,
                 replacing: existingNode,
                 chain: chain,

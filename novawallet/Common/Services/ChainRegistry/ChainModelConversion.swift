@@ -46,7 +46,7 @@ final class ChainModelConverter: ChainModelConversionProtocol {
         }
 
         let remoteNodes = remoteModel.nodes
-            .filter { customNodesUrlSet.contains($0.url) }
+            .filter { !customNodesUrlSet.contains($0.url) }
             .map { ChainNodeModel(remoteModel: $0, order: Int16(0)) }
 
         let orderedNodes = (remoteNodes + customNodes)
