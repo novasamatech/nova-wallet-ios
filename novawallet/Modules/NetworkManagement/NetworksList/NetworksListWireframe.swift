@@ -32,7 +32,7 @@ final class NetworksListWireframe: NetworksListWireframeProtocol {
     func showIntegrateOwnNetwork(from view: NetworksListViewProtocol?) {
         guard
             let view,
-            let addNetworkView = CustomNetworkViewFactory.createNetworkAddView(successPresenting: (self, view))
+            let addNetworkView = CustomNetworkViewFactory.createNetworkAddView()
         else {
             return
         }

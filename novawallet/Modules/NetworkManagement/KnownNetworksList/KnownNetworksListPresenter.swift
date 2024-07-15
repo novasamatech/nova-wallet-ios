@@ -26,7 +26,7 @@ final class KnownNetworksListPresenter {
 // MARK: KnownNetworksListPresenterProtocol
 
 extension KnownNetworksListPresenter: KnownNetworksListPresenterProtocol {
-    func setup() {
+    func becameActive() {
         view?.didStartLoading()
         provideViewModels()
 

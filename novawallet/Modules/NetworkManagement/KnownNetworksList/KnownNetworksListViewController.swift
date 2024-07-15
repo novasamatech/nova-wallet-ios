@@ -38,7 +38,7 @@ final class KnownNetworksListViewController: UIViewController, ViewHolder {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        presenter.setup()
+        presenter.becameActive()
     }
 }
 

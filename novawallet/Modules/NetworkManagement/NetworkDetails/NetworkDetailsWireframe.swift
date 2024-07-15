@@ -37,9 +37,18 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
         onNodeEdit: @escaping () -> Void,
         onNodeDelete: @escaping () -> Void
     ) {
+        let onDelete: () -> Void = {
+            if view?.controller.presentedViewController != nil {
+                view?.controller.dismiss(animated: true)
+            }
+
+            onNodeDelete()
+        }
+
         guard let manageNode = NetworkManageNodeViewFactory.createView(
-            node: node, onNodeEdit: onNodeEdit,
-            onNodeDelete: onNodeDelete
+            node: node,
+            onNodeEdit: onNodeEdit,
+            onNodeDelete: onDelete
         ) else { return }
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
