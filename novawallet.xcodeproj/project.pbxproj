@@ -440,6 +440,8 @@
 		0CA50CB32AFE6F23005668CD /* GetTokenOptionsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */; };
 		0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */; };
 		0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */; };
+		0CA5BDFB2C455790000A4CDD /* NominationPoolInteratorMigrating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDFA2C455790000A4CDD /* NominationPoolInteratorMigrating.swift */; };
+		0CA5BDFD2C455A73000A4CDD /* NominationPoolsMigrateCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDFC2C455A73000A4CDD /* NominationPoolsMigrateCall.swift */; };
 		0CA719792B768ABC000B086E /* JsonStringify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719782B768ABC000B086E /* JsonStringify.swift */; };
 		0CA7197B2B773172000B086E /* HydraStableswapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197A2B773172000B086E /* HydraStableswapTests.swift */; };
 		0CA7197D2B7737D5000B086E /* HydraQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */; };
@@ -5294,6 +5296,8 @@
 		0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsPresenter.swift; sourceTree = "<group>"; };
 		0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsInteractor.swift; sourceTree = "<group>"; };
 		0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsViewFactory.swift; sourceTree = "<group>"; };
+		0CA5BDFA2C455790000A4CDD /* NominationPoolInteratorMigrating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolInteratorMigrating.swift; sourceTree = "<group>"; };
+		0CA5BDFC2C455A73000A4CDD /* NominationPoolsMigrateCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsMigrateCall.swift; sourceTree = "<group>"; };
 		0CA719782B768ABC000B086E /* JsonStringify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonStringify.swift; sourceTree = "<group>"; };
 		0CA7197A2B773172000B086E /* HydraStableswapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapTests.swift; sourceTree = "<group>"; };
 		0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraQuoteFactory.swift; sourceTree = "<group>"; };
@@ -9998,6 +10002,7 @@
 				0CB261F22A9E182300287305 /* NominationPoolClaimRewards.swift */,
 				0CB261F42A9E188300287305 /* NominationPoolsBondExtraCall.swift */,
 				0C7E7FAA2A9F27FB00596628 /* NominationPoolsRedeemCall.swift */,
+				0CA5BDFC2C455A73000A4CDD /* NominationPoolsMigrateCall.swift */,
 			);
 			path = NominationPools;
 			sourceTree = "<group>";
@@ -10701,6 +10706,14 @@
 			path = GetTokenOptions;
 			sourceTree = "<group>";
 		};
+		0CA5BDF92C455727000A4CDD /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				0CA5BDFA2C455790000A4CDD /* NominationPoolInteratorMigrating.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		0CA719802B787D9E000B086E /* Omnipool */ = {
 			isa = PBXGroup;
 			children = (
@@ -10757,6 +10770,7 @@
 		0CB261D52A97A4D300287305 /* NominationPools */ = {
 			isa = PBXGroup;
 			children = (
+				0CA5BDF92C455727000A4CDD /* Shared */,
 				139168F2E6530E3946753501 /* Redeem */,
 				F4CFBAC4468FAD5728719A7D /* ClaimRewards */,
 				0CB261D62A9893BD00287305 /* Unstake */,
@@ -23586,6 +23600,7 @@
 				0CE629D92AA9B68C00E250BD /* AssetBalanceViewModel.swift in Sources */,
 				84452F9325D5EE7300F47EC5 /* DataOperationFactory.swift in Sources */,
 				841E5538282CF3F400C8438F /* StakingMainViewModelFactory.swift in Sources */,
+				0CA5BDFD2C455A73000A4CDD /* NominationPoolsMigrateCall.swift in Sources */,
 				8442003C28EAA2E400C49C4A /* ReferendumsWireframe.swift in Sources */,
 				844DBC6F274E702C009F8351 /* AccountImportBaseView.swift in Sources */,
 				8466781A27ECA021007935D3 /* PersistentExtrinsicService.swift in Sources */,
@@ -23879,6 +23894,7 @@
 				84644A30256722D2004EAA4B /* TriangularedBlurButton+Inspectable.swift in Sources */,
 				84CA407E2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift in Sources */,
 				844DBC60274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift in Sources */,
+				0CA5BDFB2C455790000A4CDD /* NominationPoolInteratorMigrating.swift in Sources */,
 				77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */,
 				849014B924AA87E3008F705E /* PinSetupViewController.swift in Sources */,
 				84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */,
