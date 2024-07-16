@@ -264,6 +264,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/governance/add-delegate-information")!
     }
 
+    var learnNetworkManagementURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/misc/developer-documentation/integrate-network")!
+    }
+
     // swiftlint:disable line_length
     var inAppUpdatesEntrypointURL: URL {
         #if F_RELEASE
