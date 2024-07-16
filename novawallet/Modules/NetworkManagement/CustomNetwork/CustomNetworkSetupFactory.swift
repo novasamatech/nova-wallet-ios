@@ -389,7 +389,7 @@ private extension CustomNetworkSetupFactory {
                 let chainId = try dependency
                     .targetOperation
                     .extractNoCancellableResultData()
-                    .withHexPrefix()
+                    .withoutHexPrefix()
 
                 return chain.byChanging(chainId: chainId)
             } catch {
