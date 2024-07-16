@@ -88,7 +88,7 @@ final class GovernanceUnlockSetupPresenter {
                     tickedTime = remainedTimeInSeconds
                 }
 
-                if let leftTime = tickedTime.localizedDaysOrTime(for: selectedLocale) {
+                if let leftTime = tickedTime.localizedDaysHoursOrTime(for: selectedLocale) {
                     let time = R.string.localizable.commonTimeLeftFormat(
                         leftTime,
                         preferredLanguages: selectedLocale.rLanguages

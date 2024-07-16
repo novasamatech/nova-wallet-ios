@@ -66,9 +66,10 @@ final class ReferendumStatusViewModelFactory {
         state: ReferendumStateLocal,
         locale: Locale
     ) -> ReferendumInfoView.Time? {
-        guard let localizedDaysHours = time.localizedDaysOrTime(for: locale) else {
+        guard let localizedDaysHours = time.localizedDaysHoursOrTime(for: locale) else {
             return nil
         }
+
         let timeString = timeStringProvider(localizedDaysHours, locale.rLanguages)
         let timeModel = isUrgent(state: state, time: time).map { isUrgent in
             ReferendumInfoView.Time(
