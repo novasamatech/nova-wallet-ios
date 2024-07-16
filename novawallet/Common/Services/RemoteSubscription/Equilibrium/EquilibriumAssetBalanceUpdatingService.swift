@@ -1,7 +1,7 @@
 import Foundation
 
 final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatingService {
-    private let remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol
+    private let remoteSubscriptionService: EquillibriumRemoteSubscriptionServiceProtocol
     private let eventCenter: EventCenterProtocol
     private let operationQueue: OperationQueue
     private let repositoryFactory: SubstrateRepositoryFactoryProtocol
@@ -12,7 +12,7 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
     init(
         selectedAccount: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
-        remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol,
+        remoteSubscriptionService: EquillibriumRemoteSubscriptionServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
         eventCenter: EventCenterProtocol,

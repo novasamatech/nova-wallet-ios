@@ -20,14 +20,14 @@ protocol WalletRemoteSubscriptionWrapperProtocol {
 
 final class WalletRemoteSubscriptionWrapper {
     let chainRegistry: ChainRegistryProtocol
-    let remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol
+    let remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
-        remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol,
+        remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         eventCenter: EventCenterProtocol,
@@ -41,94 +41,6 @@ final class WalletRemoteSubscriptionWrapper {
         self.operationQueue = operationQueue
         self.logger = logger
     }
-
-    func subscribeAssets(
-        using extras: StatemineAssetExtras,
-        accountId: AccountId,
-        chainAssetId: ChainAssetId,
-        completion: RemoteSubscriptionClosure?
-    ) -> UUID? {
-        let assetRepository = repositoryFactory.createAssetBalanceRepository()
-
-        let balanceUpdater = AssetsBalanceUpdater(
-            chainAssetId: chainAssetId,
-            accountId: accountId,
-            extras: extras,
-            chainRegistry: chainRegistry,
-            assetRepository: assetRepository,
-            transactionSubscription: nil,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            logger: logger
-        )
-
-        return remoteSubscriptionService.attachToAsset(
-            of: accountId,
-            extras: extras,
-            chainId: chainAssetId.chainId,
-            queue: .main,
-            closure: completion,
-            assetBalanceUpdater: balanceUpdater,
-            transactionSubscription: nil
-        )
-    }
-
-    func subscribeOrml(
-        using currencyId: Data,
-        accountId: AccountId,
-        chainAssetId: ChainAssetId,
-        completion: RemoteSubscriptionClosure?
-    ) -> UUID? {
-        let assetsRepository = repositoryFactory.createAssetBalanceRepository()
-        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
-        let subscriptionHandlingFactory = TokenSubscriptionFactory(
-            chainAssetId: chainAssetId,
-            accountId: accountId,
-            chainRegistry: chainRegistry,
-            assetRepository: assetsRepository,
-            locksRepository: locksRepository,
-            eventCenter: eventCenter,
-            transactionSubscription: nil
-        )
-
-        return remoteSubscriptionService.attachToOrmlToken(
-            of: accountId,
-            currencyId: currencyId,
-            chainId: chainAssetId.chainId,
-            queue: .main,
-            closure: completion,
-            subscriptionHandlingFactory: subscriptionHandlingFactory
-        )
-    }
-
-    func subscribeNative(
-        for accountId: AccountId,
-        chainAssetId: ChainAssetId,
-        chainFormat: ChainFormat,
-        completion: RemoteSubscriptionClosure?
-    ) -> UUID? {
-        let assetRepository = repositoryFactory.createAssetBalanceRepository()
-        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
-
-        let subscriptionHandlingFactory = TokenSubscriptionFactory(
-            chainAssetId: chainAssetId,
-            accountId: accountId,
-            chainRegistry: chainRegistry,
-            assetRepository: assetRepository,
-            locksRepository: locksRepository,
-            eventCenter: eventCenter,
-            transactionSubscription: nil
-        )
-
-        return remoteSubscriptionService.attachToAccountInfo(
-            of: accountId,
-            chainId: chainAssetId.chainId,
-            chainFormat: chainFormat,
-            queue: .main,
-            closure: completion,
-            subscriptionHandlingFactory: subscriptionHandlingFactory
-        )
-    }
 }
 
 extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtocol {
@@ -139,26 +51,12 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
         completion: RemoteSubscriptionClosure?
     ) -> UUID? {
         switch assetStorageInfo {
-        case .native:
-            return subscribeNative(
+        case .native, .statemine, .orml:
+            return remoteSubscriptionService.attachToAssetBalance(
                 for: accountId,
-                chainAssetId: chainAsset.chainAssetId,
-                chainFormat: chainAsset.chain.chainFormat,
-                completion: completion
-            )
-        case let .statemine(info):
-            return subscribeAssets(
-                using: .init(info: info),
-                accountId: accountId,
-                chainAssetId: chainAsset.chainAssetId,
-                completion: completion
-            )
-        case let .orml(info):
-            return subscribeOrml(
-                using: info.currencyData,
-                accountId: accountId,
-                chainAssetId: chainAsset.chainAssetId,
-                completion: completion
+                chainAsset: chainAsset,
+                queue: .main,
+                closure: completion
             )
         case .erc20, .evmNative, .equilibrium:
             // not supported
@@ -174,29 +72,11 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
         completion: RemoteSubscriptionClosure?
     ) {
         switch assetStorageInfo {
-        case .native:
-            remoteSubscriptionService.detachFromAccountInfo(
+        case .native, .statemine, .orml:
+            remoteSubscriptionService.detachFromAssetBalance(
                 for: subscriptionId,
                 accountId: accountId,
-                chainId: chainAssetId.chainId,
-                queue: .main,
-                closure: completion
-            )
-        case let .statemine(info):
-            remoteSubscriptionService.detachFromAsset(
-                for: subscriptionId,
-                accountId: accountId,
-                extras: .init(info: info),
-                chainId: chainAssetId.chainId,
-                queue: .main,
-                closure: completion
-            )
-        case let .orml(info):
-            remoteSubscriptionService.detachFromOrmlToken(
-                for: subscriptionId,
-                accountId: accountId,
-                currencyId: info.currencyData,
-                chainId: chainAssetId.chainId,
+                chainAssetId: chainAssetId,
                 queue: .main,
                 closure: completion
             )

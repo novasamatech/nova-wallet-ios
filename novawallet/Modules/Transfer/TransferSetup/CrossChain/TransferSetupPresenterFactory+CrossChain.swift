@@ -104,7 +104,7 @@ extension TransferSetupPresenterFactory {
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 
-        let walletRemoteSubscriptionService = WalletServiceFacade.sharedRemoteSubscriptionService
+        let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
             remoteSubscriptionService: walletRemoteSubscriptionService,
@@ -118,7 +118,9 @@ extension TransferSetupPresenterFactory {
         let senderResolutionFacade = ExtrinsicSenderResolutionFacade(userStorageFacade: UserDataStorageFacade.shared)
 
         let metadataHashOperationFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
+            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
+                storageFacade: SubstrateDataStorageFacade.shared
+            ),
             operationQueue: operationQueue
         )
 

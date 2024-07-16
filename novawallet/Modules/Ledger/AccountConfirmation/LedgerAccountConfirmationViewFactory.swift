@@ -9,7 +9,7 @@ struct LedgerAccountConfirmationViewFactory {
         wallet: MetaAccountModel,
         chain: ChainModel,
         device: LedgerDeviceProtocol,
-        application: LedgerApplication
+        application: LedgerAccountRetrievable
     ) -> LedgerAccountConfirmationViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -56,7 +56,7 @@ struct LedgerAccountConfirmationViewFactory {
     static func createNewWalletView(
         chain: ChainModel,
         device: LedgerDeviceProtocol,
-        application: LedgerApplication,
+        application: LedgerAccountRetrievable,
         accountsStore: LedgerAccountsStore
     ) -> LedgerAccountConfirmationViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry

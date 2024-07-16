@@ -11,6 +11,10 @@ struct TransactionSubscriptionResult {
     let txIndex: UInt16
 }
 
+protocol TransactionSubscribing {
+    func process(blockHash: Data)
+}
+
 final class TransactionSubscription {
     let chainRegistry: ChainRegistryProtocol
     let accountId: AccountId
@@ -20,6 +24,9 @@ final class TransactionSubscription {
     let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
+
+    private var lastProcessingBlock: Data?
+    private let mutex = NSLock()
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -41,94 +48,6 @@ final class TransactionSubscription {
         self.logger = logger
     }
 
-    func process(blockHash: Data) {
-        do {
-            logger.debug("Did start fetching block: \(blockHash.toHex(includePrefix: true))")
-
-            guard let connection = chainRegistry.getConnection(for: chainModel.chainId) else {
-                throw ChainRegistryError.connectionUnavailable
-            }
-
-            let fetchBlockOperation: JSONRPCOperation<[String], SignedBlock> =
-                JSONRPCOperation(
-                    engine: connection,
-                    method: RPCMethod.getChainBlock,
-                    parameters: [blockHash.toHex(includePrefix: true)]
-                )
-
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainModel.chainId) else {
-                throw ChainRegistryError.runtimeMetadaUnavailable
-            }
-
-            let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-            let eventsKey = try StorageKeyFactory().key(from: .events)
-            let eventsWrapper: CompoundOperationWrapper<[StorageResponse<[EventRecord]>]> =
-                storageRequestFactory.queryItems(
-                    engine: connection,
-                    keys: { [eventsKey] },
-                    factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-                    storagePath: .events,
-                    at: blockHash
-                )
-
-            eventsWrapper.allOperations.forEach { $0.addDependency(coderFactoryOperation) }
-
-            let parseOperation = createParseOperation(
-                for: accountId,
-                dependingOn: fetchBlockOperation,
-                eventsOperation: eventsWrapper.targetOperation,
-                coderOperation: coderFactoryOperation,
-                chain: chainModel
-            )
-
-            parseOperation.addDependency(fetchBlockOperation)
-            parseOperation.addDependency(eventsWrapper.targetOperation)
-
-            let txSaveOperation = createTxSaveOperation(
-                for: accountId,
-                chain: chainModel,
-                dependingOn: parseOperation,
-                codingFactoryOperation: coderFactoryOperation
-            )
-
-            txSaveOperation.addDependency(parseOperation)
-            txSaveOperation.addDependency(coderFactoryOperation)
-
-            txSaveOperation.completionBlock = {
-                switch parseOperation.result {
-                case let .success(items):
-                    self.logger.debug("Did complete block processing")
-                    if !items.isEmpty {
-                        DispatchQueue.main.async {
-                            self.eventCenter.notify(with: WalletTransactionListUpdated())
-                        }
-                    }
-                case let .failure(error):
-                    self.logger.error("Did fail block processing: \(error)")
-                case .none:
-                    self.logger.error("Block processing cancelled")
-                }
-            }
-
-            let operations: [Operation] = {
-                var array = [Operation]()
-                array.append(contentsOf: eventsWrapper.allOperations)
-                array.append(fetchBlockOperation)
-                array.append(coderFactoryOperation)
-                array.append(parseOperation)
-                array.append(txSaveOperation)
-                return array
-            }()
-
-            operationQueue.addOperations(operations, waitUntilFinished: false)
-        } catch {
-            logger.error("Block processing failed: \(error)")
-        }
-    }
-}
-
-extension TransactionSubscription {
     private func createTxSaveOperation(
         for accountId: AccountId,
         chain: ChainModel,
@@ -201,6 +120,126 @@ extension TransactionSubscription {
                     return nil
                 }
             }
+        }
+    }
+
+    private func createEventsWrapper(
+        dependingOn coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        connection: JSONRPCEngine,
+        blockHash: Data
+    ) throws -> CompoundOperationWrapper<[StorageResponse<[EventRecord]>]> {
+        let eventsKey = try StorageKeyFactory().key(from: .events)
+        return storageRequestFactory.queryItems(
+            engine: connection,
+            keys: { [eventsKey] },
+            factory: { try coderFactoryOperation.extractNoCancellableResultData() },
+            storagePath: .events,
+            at: blockHash
+        )
+    }
+
+    private func createBlockFetchOperation(
+        for blockHash: Data,
+        connection: JSONRPCEngine
+    ) -> JSONRPCOperation<[String], SignedBlock> {
+        JSONRPCOperation(
+            engine: connection,
+            method: RPCMethod.getChainBlock,
+            parameters: [blockHash.toHex(includePrefix: true)]
+        )
+    }
+
+    private func performProcessing(
+        blockHash: Data,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) throws {
+        let fetchBlockOperation = createBlockFetchOperation(for: blockHash, connection: connection)
+
+        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let eventsWrapper = try createEventsWrapper(
+            dependingOn: coderFactoryOperation,
+            connection: connection,
+            blockHash: blockHash
+        )
+
+        eventsWrapper.addDependency(operations: [coderFactoryOperation])
+
+        let parseOperation = createParseOperation(
+            for: accountId,
+            dependingOn: fetchBlockOperation,
+            eventsOperation: eventsWrapper.targetOperation,
+            coderOperation: coderFactoryOperation,
+            chain: chainModel
+        )
+
+        parseOperation.addDependency(fetchBlockOperation)
+        parseOperation.addDependency(eventsWrapper.targetOperation)
+
+        let txSaveOperation = createTxSaveOperation(
+            for: accountId,
+            chain: chainModel,
+            dependingOn: parseOperation,
+            codingFactoryOperation: coderFactoryOperation
+        )
+
+        txSaveOperation.addDependency(parseOperation)
+        txSaveOperation.addDependency(coderFactoryOperation)
+
+        let totalWrapper = eventsWrapper
+            .insertingTail(operation: fetchBlockOperation)
+            .insertingTail(operation: coderFactoryOperation)
+            .insertingTail(operation: parseOperation)
+            .insertingTail(operation: txSaveOperation)
+
+        execute(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { _ in
+            do {
+                self.logger.debug("Did complete block processing")
+                let items = try parseOperation.extractNoCancellableResultData()
+                if !items.isEmpty {
+                    self.eventCenter.notify(with: WalletTransactionListUpdated())
+                }
+            } catch {
+                self.logger.error("Did fail block processing: \(error)")
+            }
+        }
+    }
+}
+
+extension TransactionSubscription: TransactionSubscribing {
+    func process(blockHash: Data) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard lastProcessingBlock != blockHash else {
+            logger.debug("Block transactions already processed")
+            return
+        }
+
+        lastProcessingBlock = blockHash
+
+        do {
+            logger.debug("Did start fetching block: \(blockHash.toHex(includePrefix: true))")
+
+            guard let connection = chainRegistry.getConnection(for: chainModel.chainId) else {
+                throw ChainRegistryError.connectionUnavailable
+            }
+
+            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainModel.chainId) else {
+                throw ChainRegistryError.runtimeMetadaUnavailable
+            }
+
+            try performProcessing(blockHash: blockHash, connection: connection, runtimeService: runtimeService)
+        } catch {
+            logger.error("Block processing failed: \(error)")
         }
     }
 }
