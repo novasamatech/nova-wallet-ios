@@ -242,20 +242,8 @@ private extension CustomNetworkBaseInteractor {
                     for: chain,
                     presenter: self?.presenter
                 )
-            case let .failure(error as CustomNetworkSetupError):
-                switch error {
-                case .decimalsNotFound:
-                    self?.presenter?.didReceive(.common(innerError: .noDataRetrieved))
-                case let .wrongCurrencySymbol(enteredSymbol, actualSymbol):
-                    self?.presenter?.didReceive(
-                        .wrongCurrencySymbol(
-                            enteredSymbol: enteredSymbol,
-                            actualSymbol: actualSymbol
-                        )
-                    )
-                }
-            default:
-                self?.presenter?.didReceive(.common(innerError: .undefined))
+            case let .failure(error):
+                self?.presenter?.didReceive(.init(from: error))
             }
         }
     }
@@ -351,8 +339,6 @@ private extension CustomNetworkBaseInteractor {
         static let defaultCustomNodeName = "My custom node"
 
         static let defaultEVMAssetPrecision: UInt16 = 18
-
-        static let priceIdSearchRegexPattern = "\\{([^}]*)\\}"
     }
 }
 

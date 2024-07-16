@@ -28,6 +28,12 @@ enum CustomNetworkBaseInteractorError: Error {
             .invalidChainId
         case NetworkNodeConnectingError.wrongFormat:
             .connecting(innerError: .wrongFormat)
+        case let CustomNetworkSetupError.wrongCurrencySymbol(enteredSymbol, actualSymbol):
+            .wrongCurrencySymbol(enteredSymbol: enteredSymbol, actualSymbol: actualSymbol)
+        case let CustomNetworkSetupError.chainIdObtainFailed(ethereumBased):
+            .invalidNetworkType(selectedType: ethereumBased ? .evm : .substrate)
+        case CustomNetworkSetupError.decimalsNotFound:
+            .common(innerError: .noDataRetrieved)
         default:
             .common(innerError: .undefined)
         }
