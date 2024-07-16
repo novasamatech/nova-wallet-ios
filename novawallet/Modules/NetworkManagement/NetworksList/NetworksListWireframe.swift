@@ -18,7 +18,7 @@ final class NetworksListWireframe: NetworksListWireframeProtocol {
     func showAddNetwork(from view: NetworksListViewProtocol?) {
         guard
             let view,
-            let knownNetworksListView = KnownNetworksListViewFactory.createView(successAddPresenting: (self, view))
+            let knownNetworksListView = KnownNetworksListViewFactory.createView()
         else {
             return
         }
