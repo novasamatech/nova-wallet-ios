@@ -100,9 +100,9 @@ extension ConnectionPool: ConnectionPoolProtocol {
         }
 
         let optConnection = connections[chainId]?.target
-        connections[chainId] = nil
         oneShotConnections[chainId] = nil
-        stateSubscriptions[chainId] = nil
+
+        clearUnusedConnections()
 
         if let connection = optConnection as? ChainConnection {
             connection.disconnect(true)

@@ -8,7 +8,7 @@ final class OrmlAccountSubscription {
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
     let eventCenter: EventCenterProtocol
-    let transactionSubscription: TransactionSubscription?
+    let transactionSubscription: TransactionSubscribing?
     let logger: LoggerProtocol
     let operationManager: OperationManagerProtocol
 
@@ -21,7 +21,7 @@ final class OrmlAccountSubscription {
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol,
         eventCenter: EventCenterProtocol,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription: TransactionSubscribing?
     ) {
         self.chainAssetId = chainAssetId
         self.accountId = accountId

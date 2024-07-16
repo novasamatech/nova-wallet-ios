@@ -33,7 +33,8 @@ enum ChainModelGenerator {
                 url: "wss://node.io/\(chainId)",
                 name: chainId,
                 order: 0,
-                features: nil
+                features: nil, 
+                source: .remote
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -85,7 +86,9 @@ enum ChainModelGenerator {
                 explorers: explorers,
                 order: Int64(index),
                 additional: nil,
-                syncMode: .full
+                syncMode: .full,
+                source: .remote,
+                connectionMode: .autoBalanced
             )
         }
     }
@@ -217,7 +220,8 @@ enum ChainModelGenerator {
             url: urlString,
             name: UUID().uuidString,
             order: 0,
-            features: nil
+            features: nil,
+            source: .remote
         )
 
         var options: [LocalChainOptions] = []
@@ -260,7 +264,9 @@ enum ChainModelGenerator {
             explorers: explorers,
             order: 0,
             additional: nil,
-            syncMode: .full
+            syncMode: .full,
+            source: .remote,
+            connectionMode: .autoBalanced
         )
     }
 

@@ -23,7 +23,11 @@ final class GovernanceAssetSelectionViewFactory {
             repository: AnyDataProviderRepository(repository),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            assetFilter: { $0.chain.hasGovernance && $0.asset.isUtility },
+            assetFilter: {
+                $0.chain.syncMode.enabled()
+                    && $0.chain.hasGovernance
+                    && $0.asset.isUtility
+            },
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

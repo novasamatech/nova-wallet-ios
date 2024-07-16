@@ -41,8 +41,14 @@ extension MetamaskChain {
         )
     }
 
-    func appending(iconUrl: String) -> MetamaskChain {
-        let iconUrls = (self.iconUrls ?? []) + [iconUrl]
+    func appending(iconUrl: String?) -> MetamaskChain {
+        let newIconUrls: [String] = if let iconUrl {
+            [iconUrl]
+        } else {
+            []
+        }
+
+        let iconUrls = (self.iconUrls ?? []) + newIconUrls
 
         return MetamaskChain(
             chainId: chainId,

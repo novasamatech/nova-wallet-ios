@@ -35,11 +35,31 @@ final class ChainModelConverter: ChainModelConversionProtocol {
 
         let syncMode = determineSyncMode(basedOn: localModel, remoteModel: remoteModel)
 
+        var customNodes: [ChainNodeModel] = []
+        var customNodesUrlSet: Set<String> = []
+
+        localModel?.nodes.forEach { node in
+            guard node.source == .user else { return }
+
+            customNodes.append(node)
+            customNodesUrlSet.insert(node.url)
+        }
+
+        let remoteNodes = remoteModel.nodes
+            .filter { !customNodesUrlSet.contains($0.url) }
+            .map { ChainNodeModel(remoteModel: $0, order: Int16(0)) }
+
+        let orderedNodes = (remoteNodes + customNodes)
+            .enumerated()
+            .map { $0.element.updatingOrder(Int16($0.offset)) }
+
         let newChainModel = ChainModel(
             remoteModel: remoteModel,
             assets: newAssets,
+            nodes: Set(orderedNodes),
             syncMode: syncMode,
-            order: order
+            order: order,
+            connectionMode: localModel?.connectionMode ?? .autoBalanced
         )
 
         return newChainModel != localModel ? newChainModel : nil

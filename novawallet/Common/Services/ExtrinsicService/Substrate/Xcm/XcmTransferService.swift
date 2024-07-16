@@ -77,6 +77,7 @@ final class XcmTransferService {
             engine: connection,
             metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
+            blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
         )
     }

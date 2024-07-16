@@ -20,15 +20,8 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
     }
 
     func setup() {
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            self?.crowdloanState.settings.setup(runningCompletionIn: .main) { result in
-                switch result {
-                case .success:
-                    self?.continueSetup()
-                case let .failure(error):
-                    self?.presenter?.didReceiveSelectedChain(result: .failure(error))
-                }
-            }
+        setupState { [weak self] _ in
+            self?.continueSetup()
         }
     }
 

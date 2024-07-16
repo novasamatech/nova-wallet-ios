@@ -17,7 +17,7 @@ final class ChainBalanceViewModelFactory {
         let displayInfo = chainAsset.assetDisplayInfo
         let tokenFormatter = formatterFactory.createTokenFormatter(for: displayInfo)
 
-        let icon = RemoteImageViewModel(url: chainAsset.asset.icon ?? chainAsset.chain.icon)
+        let icon = ImageViewModelFactory.createAssetIconOrDefault(from: chainAsset.asset.icon ?? chainAsset.chain.icon)
 
         if
             let balanceInPlank = balanceInPlank,

@@ -41,7 +41,7 @@ extension UILabel.Style {
         font: .semiBoldSubheadline
     )
 
-    static let semiboldSubhedlineAccent = UILabel.Style(
+    static let semiboldSubheadlineAccent = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .semiBoldSubheadline
     )
@@ -121,6 +121,11 @@ extension UILabel.Style {
         font: .caption2
     )
 
+    static let semiboldCaps2Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldCaps2
+    )
+
     static let semiboldCaps1ChipText = UILabel.Style(
         textColor: R.color.colorChipText(),
         font: .semiBoldCaps1
@@ -128,6 +133,11 @@ extension UILabel.Style {
 
     static let semiboldCaps2Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
+        font: .semiBoldCaps2
+    )
+
+    static let semiboldCaps2Inactive = UILabel.Style(
+        textColor: R.color.colorButtonTextInactive(),
         font: .semiBoldCaps2
     )
 
@@ -143,6 +153,11 @@ extension UILabel.Style {
 
     static let regularSubhedlineSecondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
+        font: .regularSubheadline
+    )
+
+    static let regularSubhedlineAccent = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
         font: .regularSubheadline
     )
 

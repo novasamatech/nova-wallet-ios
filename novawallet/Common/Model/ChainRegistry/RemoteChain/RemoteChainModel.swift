@@ -11,7 +11,7 @@ struct RemoteChainModel: Equatable, Codable {
     let nodeSelectionStrategy: String?
     let addressPrefix: UInt16
     let types: ChainModel.TypesSettings?
-    let icon: URL
+    let icon: URL?
     let options: [String]?
     let externalApi: RemoteChainExternalApiSet?
     let explorers: [ChainModel.Explorer]?

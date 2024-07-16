@@ -6,7 +6,7 @@ final class AssetsBalanceUpdater {
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
-    let transactionSubscription: TransactionSubscription?
+    let transactionSubscription: TransactionSubscribing?
     let extras: StatemineAssetExtras
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
@@ -27,7 +27,7 @@ final class AssetsBalanceUpdater {
         extras: StatemineAssetExtras,
         chainRegistry: ChainRegistryProtocol,
         assetRepository: AnyDataProviderRepository<AssetBalance>,
-        transactionSubscription: TransactionSubscription?,
+        transactionSubscription: TransactionSubscribing?,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol

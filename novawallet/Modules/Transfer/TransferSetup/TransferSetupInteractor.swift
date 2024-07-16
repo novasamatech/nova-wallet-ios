@@ -68,7 +68,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     private func setupChainsStore() {
         chainsStore.delegate = self
 
-        chainsStore.setup()
+        chainsStore.setup(with: { $0.syncMode.enabled() })
     }
 
     private func provideAvailableTransfers() {

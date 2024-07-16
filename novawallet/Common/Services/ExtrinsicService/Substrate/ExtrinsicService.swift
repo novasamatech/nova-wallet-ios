@@ -115,6 +115,7 @@ final class ExtrinsicService {
             engine: engine,
             metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
+            blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: operationManager
         )
 

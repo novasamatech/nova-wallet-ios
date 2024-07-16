@@ -1,7 +1,12 @@
 import Foundation
 import Operation_iOS
 
-struct RuntimeMetadataItem: Codable & Equatable {
+protocol RuntimeContainerSourceProtocol {
+    var opaque: Bool { get }
+    var metadata: Data { get }
+}
+
+struct RuntimeMetadataItem: Codable & Equatable, RuntimeContainerSourceProtocol {
     enum CodingKeys: String, CodingKey {
         case chain
         case version
