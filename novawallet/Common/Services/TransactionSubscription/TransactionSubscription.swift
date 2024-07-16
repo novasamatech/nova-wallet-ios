@@ -124,7 +124,7 @@ final class TransactionSubscription {
     }
 
     private func createEventsWrapper(
-        depedingOn coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        dependingOn coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         connection: JSONRPCEngine,
         blockHash: Data
     ) throws -> CompoundOperationWrapper<[StorageResponse<[EventRecord]>]> {
@@ -159,7 +159,7 @@ final class TransactionSubscription {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let eventsWrapper = try createEventsWrapper(
-            depedingOn: coderFactoryOperation,
+            dependingOn: coderFactoryOperation,
             connection: connection,
             blockHash: blockHash
         )
