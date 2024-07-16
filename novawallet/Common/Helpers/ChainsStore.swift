@@ -60,16 +60,16 @@ extension ChainsStore: ChainsStoreProtocol {
         guard let availableChainIds = chainRegistry.availableChainIds else {
             return Set()
         }
-        
+
         guard let filter else {
             return availableChainIds
         }
-        
+
         let filteredIds = availableChainIds
             .compactMap { chainRegistry.getChain(for: $0) }
             .filter { filter($0) }
-            .map { $0.chainId }
-        
+            .map(\.chainId)
+
         return Set(filteredIds)
     }
 

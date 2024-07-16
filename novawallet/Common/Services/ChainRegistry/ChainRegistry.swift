@@ -335,7 +335,7 @@ extension ChainRegistry: ChainRegistryProtocol {
                 } else {
                     changes
                 }
-                
+
                 updateClosure(filtered)
             }
         }
