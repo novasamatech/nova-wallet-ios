@@ -440,14 +440,14 @@
 		0CA50CB32AFE6F23005668CD /* GetTokenOptionsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */; };
 		0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */; };
 		0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */; };
-		0CA5BDFB2C455790000A4CDD /* NominationPoolInteratorMigrating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDFA2C455790000A4CDD /* NominationPoolInteratorMigrating.swift */; };
-		0CA5BDFD2C455A73000A4CDD /* NominationPoolsMigrateCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDFC2C455A73000A4CDD /* NominationPoolsMigrateCall.swift */; };
-		0CA5BDF32C4476A3000A4CDD /* ConnectionCreationParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDF22C4476A3000A4CDD /* ConnectionCreationParams.swift */; };
 		0CA5BDE72C414574000A4CDD /* BalanceRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */; };
 		0CA5BDE92C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDE82C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift */; };
 		0CA5BDEB2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDEA2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift */; };
 		0CA5BDED2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDEC2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift */; };
 		0CA5BDF12C438A45000A4CDD /* TransactionSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDF02C438A45000A4CDD /* TransactionSubscriptionFactory.swift */; };
+		0CA5BDF32C4476A3000A4CDD /* ConnectionCreationParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDF22C4476A3000A4CDD /* ConnectionCreationParams.swift */; };
+		0CA5BDFB2C455790000A4CDD /* NominationPoolStakingMigrating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDFA2C455790000A4CDD /* NominationPoolStakingMigrating.swift */; };
+		0CA5BDFD2C455A73000A4CDD /* NominationPoolsMigrateCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA5BDFC2C455A73000A4CDD /* NominationPoolsMigrateCall.swift */; };
 		0CA719792B768ABC000B086E /* JsonStringify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA719782B768ABC000B086E /* JsonStringify.swift */; };
 		0CA7197B2B773172000B086E /* HydraStableswapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197A2B773172000B086E /* HydraStableswapTests.swift */; };
 		0CA7197D2B7737D5000B086E /* HydraQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */; };
@@ -467,6 +467,10 @@
 		0CA7821C2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift */; };
 		0CA957222B6A507A009AD757 /* HydraSwapParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */; };
 		0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957242B6A566B009AD757 /* HydraDx+Call.swift */; };
+		0CAB7D9F2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB7D9E2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift */; };
+		0CAB7DA12C4714CD0070CE4D /* StakingActivityProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB7DA02C4714CD0070CE4D /* StakingActivityProviding.swift */; };
+		0CAB7DA32C471AAE0070CE4D /* DirectStakingRecommendingValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB7DA22C471AAE0070CE4D /* DirectStakingRecommendingValidationFactory.swift */; };
+		0CAB7DA52C471D260070CE4D /* StakingActivityForValidating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB7DA42C471D260070CE4D /* StakingActivityForValidating.swift */; };
 		0CAC01552A52E0CC0069413E /* AssetListModelHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC01542A52E0CC0069413E /* AssetListModelHelpers.swift */; };
 		0CAC01572A52E1960069413E /* AssetListPresenterHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC01562A52E1960069413E /* AssetListPresenterHelpers.swift */; };
 		0CAC02F92B48534200DDEC3A /* ProxyUpdateStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAC02F82B48534200DDEC3A /* ProxyUpdateStyle.swift */; };
@@ -5380,14 +5384,14 @@
 		0CA50CB22AFE6F23005668CD /* GetTokenOptionsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsPresenter.swift; sourceTree = "<group>"; };
 		0CA50CB42AFE6F31005668CD /* GetTokenOptionsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsInteractor.swift; sourceTree = "<group>"; };
 		0CA50CB62AFE6F40005668CD /* GetTokenOptionsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsViewFactory.swift; sourceTree = "<group>"; };
-		0CA5BDFA2C455790000A4CDD /* NominationPoolInteratorMigrating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolInteratorMigrating.swift; sourceTree = "<group>"; };
-		0CA5BDFC2C455A73000A4CDD /* NominationPoolsMigrateCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsMigrateCall.swift; sourceTree = "<group>"; };
-		0CA5BDF22C4476A3000A4CDD /* ConnectionCreationParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionCreationParams.swift; sourceTree = "<group>"; };
 		0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionService.swift; sourceTree = "<group>"; };
 		0CA5BDE82C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		0CA5BDEA2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRemoteSubscriptionHandlingProxy.swift; sourceTree = "<group>"; };
 		0CA5BDEC2C41792A000A4CDD /* SubstrateAssetsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateAssetsUpdatingService.swift; sourceTree = "<group>"; };
 		0CA5BDF02C438A45000A4CDD /* TransactionSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSubscriptionFactory.swift; sourceTree = "<group>"; };
+		0CA5BDF22C4476A3000A4CDD /* ConnectionCreationParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionCreationParams.swift; sourceTree = "<group>"; };
+		0CA5BDFA2C455790000A4CDD /* NominationPoolStakingMigrating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolStakingMigrating.swift; sourceTree = "<group>"; };
+		0CA5BDFC2C455A73000A4CDD /* NominationPoolsMigrateCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsMigrateCall.swift; sourceTree = "<group>"; };
 		0CA719782B768ABC000B086E /* JsonStringify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonStringify.swift; sourceTree = "<group>"; };
 		0CA7197A2B773172000B086E /* HydraStableswapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapTests.swift; sourceTree = "<group>"; };
 		0CA7197C2B7737D5000B086E /* HydraQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraQuoteFactory.swift; sourceTree = "<group>"; };
@@ -5407,6 +5411,10 @@
 		0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+AssetHubSwapMatching.swift"; sourceTree = "<group>"; };
 		0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParamsService.swift; sourceTree = "<group>"; };
 		0CA957242B6A566B009AD757 /* HydraDx+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraDx+Call.swift"; sourceTree = "<group>"; };
+		0CAB7D9E2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolStakingRecommendingValidationFactory.swift; sourceTree = "<group>"; };
+		0CAB7DA02C4714CD0070CE4D /* StakingActivityProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingActivityProviding.swift; sourceTree = "<group>"; };
+		0CAB7DA22C471AAE0070CE4D /* DirectStakingRecommendingValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStakingRecommendingValidationFactory.swift; sourceTree = "<group>"; };
+		0CAB7DA42C471D260070CE4D /* StakingActivityForValidating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingActivityForValidating.swift; sourceTree = "<group>"; };
 		0CAC01542A52E0CC0069413E /* AssetListModelHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListModelHelpers.swift; sourceTree = "<group>"; };
 		0CAC01562A52E1960069413E /* AssetListPresenterHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListPresenterHelpers.swift; sourceTree = "<group>"; };
 		0CAC02F82B48534200DDEC3A /* ProxyUpdateStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyUpdateStyle.swift; sourceTree = "<group>"; };
@@ -10157,6 +10165,8 @@
 				0C13D3012A7D53C10054BB6F /* HybridStakingRecommendationMediator.swift */,
 				0C13D3032A7D56CC0054BB6F /* StakingRecommendationMediatorFactory.swift */,
 				0C13D3122A80D06B0054BB6F /* StakingRecommendationValidationFactory.swift */,
+				0CAB7D9E2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift */,
+				0CAB7DA22C471AAE0070CE4D /* DirectStakingRecommendingValidationFactory.swift */,
 			);
 			path = Recommendation;
 			sourceTree = "<group>";
@@ -10877,7 +10887,6 @@
 		0CA5BDF92C455727000A4CDD /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				0CA5BDFA2C455790000A4CDD /* NominationPoolInteratorMigrating.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -19070,6 +19079,8 @@
 				84350AD3284580F50031EF24 /* StakingTotalStakePresentable.swift */,
 				84350AD52845836C0031EF24 /* IdentityPresentable.swift */,
 				77171CA72A98BBA10032B387 /* NominationPoolErrorPresentable.swift */,
+				0CA5BDFA2C455790000A4CDD /* NominationPoolStakingMigrating.swift */,
+				0CAB7DA02C4714CD0070CE4D /* StakingActivityProviding.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -19576,6 +19587,7 @@
 				0C13D3102A80CA9A0054BB6F /* StakingDataValidatorFactory+Plank.swift */,
 				0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */,
 				772AD8E52AC5A87200B0C41A /* MinStakeCrossedParams.swift */,
+				0CAB7DA42C471D260070CE4D /* StakingActivityForValidating.swift */,
 			);
 			path = Validation;
 			sourceTree = "<group>";
@@ -23112,7 +23124,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift",
+				$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -24278,7 +24290,7 @@
 				84644A30256722D2004EAA4B /* TriangularedBlurButton+Inspectable.swift in Sources */,
 				84CA407E2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift in Sources */,
 				844DBC60274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift in Sources */,
-				0CA5BDFB2C455790000A4CDD /* NominationPoolInteratorMigrating.swift in Sources */,
+				0CA5BDFB2C455790000A4CDD /* NominationPoolStakingMigrating.swift in Sources */,
 				77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */,
 				849014B924AA87E3008F705E /* PinSetupViewController.swift in Sources */,
 				84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */,
@@ -24508,6 +24520,7 @@
 				84EDF66929C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift in Sources */,
 				84F4A9A42551A8F3000CF0A3 /* AccountExportPasswordError.swift in Sources */,
 				84B73ADE279D90BD0071AE16 /* AssetsTransfer.swift in Sources */,
+				0CAB7D9F2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift in Sources */,
 				84CFF1E726526FBC00DB7CF7 /* StakingBondMoreViewLayout.swift in Sources */,
 				84CA68DB26BEA33F003B9453 /* ChainRegistryFactory.swift in Sources */,
 				AE39839A272BFC2300BC8A85 /* ImportChainAccount.swift in Sources */,
@@ -25214,6 +25227,7 @@
 				840B3D70289A575A00DA1DA9 /* ParitySignerScanProtocols.swift in Sources */,
 				849067C8299BCB0100B2983E /* GovernanceRevokeDelegationConfirmPresenter+Protocol.swift in Sources */,
 				8452585327ABCA07004F9082 /* HideZeroBalancesChanged.swift in Sources */,
+				0CAB7DA12C4714CD0070CE4D /* StakingActivityProviding.swift in Sources */,
 				843E9B2D27C8AC57009C143A /* NftMediaViewModel.swift in Sources */,
 				84A5915C292B390800BCCF8F /* EvmTransactionBuilder.swift in Sources */,
 				7725EB442B2AC9BA007E1A8A /* ChainProxyChangesCalculator.swift in Sources */,
@@ -25989,6 +26003,7 @@
 				F4D551A12643DD240002363F /* AccountSelectionPresentable.swift in Sources */,
 				0C37AFBF2B56852500009ECA /* PayoutStakersCall.swift in Sources */,
 				84333BD92856840E00C76A4F /* SelectionValidatorGroups.swift in Sources */,
+				0CAB7DA32C471AAE0070CE4D /* DirectStakingRecommendingValidationFactory.swift in Sources */,
 				84002A9E2992444300A80672 /* GovernanceNewDelegation.swift in Sources */,
 				845B822126EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift in Sources */,
 				0C9C64302A8D6779004DC078 /* StakingNPoolsPresenter.swift in Sources */,
@@ -27354,6 +27369,7 @@
 				2CEFF4C2574F0AABE0E9BF89 /* ReferendumVoteSetupViewController.swift in Sources */,
 				0C59E8CF2AA5D744001E11F3 /* PooledBalanceUpdatingState.swift in Sources */,
 				0C85FF342B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift in Sources */,
+				0CAB7DA52C471D260070CE4D /* StakingActivityForValidating.swift in Sources */,
 				D1C4208A89633395AF2FDB74 /* ReferendumVoteSetupViewLayout.swift in Sources */,
 				84CE22D929A38AA600A03156 /* GovernanceDelegateInfoPresenter+Update.swift in Sources */,
 				811096BAAA6BD237DF2769EA /* ReferendumVoteSetupViewFactory.swift in Sources */,

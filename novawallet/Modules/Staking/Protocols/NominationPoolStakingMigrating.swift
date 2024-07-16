@@ -1,24 +1,25 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
-protocol NominationPoolInteratorMigrating {
-    func provideNeedsMigration(
+protocol NominationPoolStakingMigrating: StakingActivityProviding {
+    func needsPoolStakingMigration(
         for stakingDelegation: DelegatedStakingPallet.Delegation?,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping (Result<Bool, Error>) -> Void
     )
 }
 
-extension NominationPoolInteratorMigrating {
-    func provideNeedsMigration(
+extension NominationPoolStakingMigrating {
+    func needsPoolStakingMigration(
         for stakingDelegation: DelegatedStakingPallet.Delegation?,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         guard stakingDelegation == nil else {
-            completion(false)
+            completion(.success(false))
             return
         }
 
@@ -41,14 +42,8 @@ extension NominationPoolInteratorMigrating {
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { result in
-            switch result {
-            case let .success(needsMigration):
-                completion(needsMigration)
-            case .failure:
-                completion(false)
-            }
-        }
+            runningCallbackIn: .main,
+            callbackClosure: completion
+        )
     }
 }

@@ -16,7 +16,7 @@ protocol NominationPoolBondMoreConfirmPresenterProtocol: AnyObject {
 }
 
 protocol NominationPoolBondMoreConfirmInteractorInputProtocol: NominationPoolBondMoreBaseInteractorInputProtocol {
-    func submit(amount: BigUInt)
+    func submit(amount: BigUInt, needsMigration: Bool)
 }
 
 protocol NominationPoolBondMoreConfirmInteractorOutputProtocol: NominationPoolBondMoreBaseInteractorOutputProtocol {

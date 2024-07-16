@@ -12,6 +12,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     let logger: LoggerProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol
+    let stakingActivity: StakingActivityForValidating
 
     var assetBalance: AssetBalance?
     var poolMember: NominationPools.PoolMember?
@@ -20,6 +21,8 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     var fee: ExtrinsicFeeProtocol?
     var claimableRewards: BigUInt?
     var assetBalanceExistance: AssetBalanceExistence?
+    var needsMigration: Bool?
+    var hasDirectStaking: Bool?
 
     init(
         interactor: NominationPoolBondMoreBaseInteractorInputProtocol,
@@ -28,6 +31,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -38,6 +42,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         self.hintsViewModelFactory = hintsViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatorFactory = dataValidatorFactory
+        self.stakingActivity = stakingActivity
         self.localizationManager = localizationManager
     }
 
@@ -67,13 +72,17 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     }
 
     func refreshFee() {
+        guard let needsMigration else {
+            return
+        }
+
         let inputAmount = getInputAmountInPlank() ?? 0
 
         fee = nil
 
         provideFee()
 
-        baseInteractor.estimateFee(for: inputAmount)
+        baseInteractor.estimateFee(for: inputAmount, needsMigration: needsMigration)
     }
 
     func getValidations() -> [DataValidating] {
@@ -81,6 +90,11 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
             dataValidatorFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             },
+            dataValidatorFactory.canMigrateIfNeeded(
+                needsMigration: needsMigration,
+                stakingActivity: stakingActivity,
+                locale: selectedLocale
+            ),
             dataValidatorFactory.canSpendAmountInPlank(
                 balance: assetBalance?.transferable,
                 spendingAmount: getInputAmount(),
@@ -164,7 +178,21 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
             baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retryAssetExistance()
             }
+        case .migrationDataFetch:
+            baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
+                self?.baseInteractor.retryMigrationDataFetch()
+            }
         }
+    }
+
+    func didReceive(needsMigration: Bool) {
+        self.needsMigration = needsMigration
+
+        refreshFee()
+    }
+
+    func didReceive(hasDirectStaking: Bool) {
+        self.hasDirectStaking = hasDirectStaking
     }
 }
 

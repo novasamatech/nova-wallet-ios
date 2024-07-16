@@ -1,9 +1,10 @@
 import UIKit
 import Operation_iOS
 import BigInt
+import SubstrateSdk
 
 class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning,
-    NominationPoolsDataProviding {
+    NominationPoolsDataProviding, NominationPoolStakingMigrating {
     weak var basePresenter: NominationPoolBondMoreBaseInteractorOutputProtocol?
     let chainAsset: ChainAsset
     let selectedAccount: MetaChainAccountResponse
@@ -13,6 +14,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     let callFactory: SubstrateCallFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let npoolsOperationFactory: NominationPoolsOperationFactoryProtocol
+    let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
@@ -25,23 +27,25 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var poolMemberProvider: AnyDataProvider<DecodedPoolMember>?
     private var bondedPoolProvider: AnyDataProvider<DecodedBondedPool>?
+    private var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
 
     private var bondedAccountIdCancellable: CancellableCall?
     private var assetExistenceCancellable: CancellableCall?
 
-    private var accountId: AccountId { selectedAccount.chainAccount.accountId }
     private var currentPoolId: NominationPools.PoolId?
     private var currentPoolRewardCounter: BigUInt?
     private var currentMemberRewardCounter: BigUInt?
     private var poolAccountId: AccountId?
 
+    var accountId: AccountId { selectedAccount.chainAccount.accountId }
     var chainId: ChainModel.Id { chainAsset.chain.chainId }
 
     init(
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
+        connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -63,6 +67,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         self.operationQueue = operationQueue
         self.callFactory = callFactory
         self.npoolsOperationFactory = npoolsOperationFactory
+        self.connection = connection
         self.runtimeService = runtimeService
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
@@ -80,7 +85,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         clear(streamableProvider: &balanceProvider)
 
         balanceProvider = subscribeToAssetBalanceProvider(
-            for: selectedAccount.chainAccount.accountId,
+            for: accountId,
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
@@ -96,10 +101,33 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         }
     }
 
-    func createExtrinsicClosure(for points: BigUInt) -> ExtrinsicBuilderClosure {
+    func subscribeDelegatedStaking() {
+        clear(dataProvider: &delegatedStakingProvider)
+
+        delegatedStakingProvider = subscribeDelegatedStaking(
+            for: accountId,
+            chainId: chainId
+        )
+    }
+
+    func createExtrinsicClosure(
+        for points: BigUInt,
+        accountId: AccountId,
+        needsMigration: Bool
+    ) -> ExtrinsicBuilderClosure {
         { builder in
-            let call = NominationPools.BondExtraCall(extra: .freeBalance(points))
-            return try builder.adding(call: call.runtimeCall())
+            let currentBuilder = if needsMigration {
+                try builder.adding(
+                    call: NominationPools.MigrateCall(
+                        memberAccount: accountId
+                    ).runtimeCall()
+                )
+            } else {
+                builder
+            }
+
+            let bondExtraCall = NominationPools.BondExtraCall(extra: .freeBalance(points))
+            return try currentBuilder.adding(call: bondExtraCall.runtimeCall())
         }
     }
 
@@ -133,6 +161,37 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     func subscribePoolMember() {
         clear(dataProvider: &poolMemberProvider)
         poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
+    }
+
+    func provideHasDirectStaking() {
+        hasDirectStaking(
+            for: accountId,
+            connection: connection,
+            runtimeProvider: runtimeService,
+            operationQueue: operationQueue
+        ) { [weak self] result in
+            switch result {
+            case let .success(hasDirectStaking):
+                self?.basePresenter?.didReceive(hasDirectStaking: hasDirectStaking)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(error: .migrationDataFetch(error))
+            }
+        }
+    }
+
+    private func provideNeedsMigration(for delegation: DelegatedStakingPallet.Delegation?) {
+        needsPoolStakingMigration(
+            for: delegation,
+            runtimeProvider: runtimeService,
+            operationQueue: operationQueue
+        ) { [weak self] result in
+            switch result {
+            case let .success(needsMigration):
+                self?.basePresenter?.didReceive(needsMigration: needsMigration)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(error: .migrationDataFetch(error))
+            }
+        }
     }
 
     func provideAssetExistence() {
@@ -193,15 +252,21 @@ extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseIntera
         subscribeAccountBalance()
         subscribePoolMember()
         subscribePrice()
+        subscribeDelegatedStaking()
         provideAssetExistence()
+        provideHasDirectStaking()
     }
 
-    func estimateFee(for amount: BigUInt) {
+    func estimateFee(for amount: BigUInt, needsMigration: Bool) {
         let reuseIdentifier = String(amount)
         feeProxy.estimateFee(
             using: extrinsicService,
             reuseIdentifier: reuseIdentifier,
-            setupBy: createExtrinsicClosure(for: amount)
+            setupBy: createExtrinsicClosure(
+                for: amount,
+                accountId: accountId,
+                needsMigration: needsMigration
+            )
         )
     }
 
@@ -217,6 +282,11 @@ extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseIntera
 
     func retryAssetExistance() {
         provideAssetExistence()
+    }
+
+    func retryMigrationDataFetch() {
+        subscribeDelegatedStaking()
+        provideHasDirectStaking()
     }
 }
 
@@ -279,6 +349,19 @@ extension NominationPoolBondMoreBaseInteractor: SelectedCurrencyDepending {
 }
 
 extension NominationPoolBondMoreBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubscriptionHandler {
+    func handleDelegatedStaking(
+        result: Result<DelegatedStakingPallet.Delegation?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(delegation):
+            provideNeedsMigration(for: delegation)
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "Delegated staking failed"))
+        }
+    }
+
     func handlePoolMember(
         result: Result<NominationPools.PoolMember?, Error>,
         accountId _: AccountId, chainId _: ChainModel.Id

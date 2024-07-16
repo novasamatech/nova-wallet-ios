@@ -1,5 +1,6 @@
 import UIKit
 import BigInt
+import SubstrateSdk
 
 final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseInteractor {
     weak var presenter: NominationPoolBondMoreConfirmInteractorOutputProtocol? {
@@ -11,6 +12,7 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
     init(
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
+        connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -29,6 +31,7 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
         super.init(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            connection: connection,
             runtimeService: runtimeService,
             feeProxy: feeProxy,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
@@ -46,9 +49,9 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
 }
 
 extension NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreConfirmInteractorInputProtocol {
-    func submit(amount: BigUInt) {
+    func submit(amount: BigUInt, needsMigration: Bool) {
         extrinsicService.submit(
-            createExtrinsicClosure(for: amount),
+            createExtrinsicClosure(for: amount, accountId: accountId, needsMigration: needsMigration),
             signer: signingWrapper,
             runningIn: .main
         ) { [weak self] result in

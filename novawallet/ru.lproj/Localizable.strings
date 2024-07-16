@@ -1726,3 +1726,7 @@
 "network.node.delete.alert.description" = "Нода %@ будет удалена";
 "network.add.alert.success.title" = "Сеть успешно добавлена";
 "common.modify" = "Изменить";
+"nomination.pools.conflict.title" = "Операции в пуле недоступны";
+"nomination.pools.conflict.message" = "Больше нельзя стейкать одновременно через Direct и Pool стейкинг. Для управления Вашим Pool стейкингом необходимо забрать токены из Direct стейкинга.";
+"staking.setup.conflict.title" = "Стейкинг уже активен";
+"staking.setup.conflict.message" = "Нельзя стейкать одновременно через Direct и Pool стейкинг.";

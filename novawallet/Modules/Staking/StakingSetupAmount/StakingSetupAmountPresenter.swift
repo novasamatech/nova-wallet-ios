@@ -14,6 +14,7 @@ final class StakingSetupAmountPresenter {
     let balanceDerivationFactory: StakingTypeBalanceFactoryProtocol
     let recommendsMultipleStakings: Bool
     let chainAsset: ChainAsset
+    let accountId: AccountId
     let logger: LoggerProtocol
 
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
@@ -48,6 +49,7 @@ final class StakingSetupAmountPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         dataValidatingFactory: RelaychainStakingValidatorFacadeProtocol,
+        accountId: AccountId,
         chainAsset: ChainAsset,
         recommendsMultipleStakings: Bool,
         localizationManager: LocalizationManagerProtocol,
@@ -61,6 +63,7 @@ final class StakingSetupAmountPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.balanceDerivationFactory = balanceDerivationFactory
         self.dataValidatingFactory = dataValidatingFactory
+        self.accountId = accountId
         self.chainAsset = chainAsset
         self.recommendsMultipleStakings = recommendsMultipleStakings
         self.logger = logger
@@ -357,6 +360,7 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
 
         let recommendedValidations = setupMethod.recommendation?.validationFactory?.createValidations(
             for: .init(
+                accountId: accountId,
                 stakingAmount: currentInputAmount,
                 assetBalance: assetBalance,
                 assetLocks: assetLocks,

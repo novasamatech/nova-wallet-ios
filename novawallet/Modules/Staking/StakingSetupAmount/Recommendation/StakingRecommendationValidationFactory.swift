@@ -2,6 +2,7 @@ import Foundation
 import BigInt
 
 struct StakingRecommendationValidationParams {
+    let accountId: AccountId
     let stakingAmount: Decimal?
     let assetBalance: AssetBalance?
     let assetLocks: AssetLocks?

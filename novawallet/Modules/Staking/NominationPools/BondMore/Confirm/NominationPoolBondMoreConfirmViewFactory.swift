@@ -9,7 +9,13 @@ struct NominationPoolBondMoreConfirmViewFactory {
         guard let interactor = createInteractor(state: state),
               let currencyManager = CurrencyManager.shared,
               let wallet = SelectedWalletSettings.shared.value,
-              let selectedAccount = wallet.fetchMetaChainAccount(for: state.chainAsset.chain.accountRequest()) else {
+              let selectedAccount = wallet.fetchMetaChainAccount(for: state.chainAsset.chain.accountRequest()),
+              let stakingActivity = StakingActivityForValidation(
+                  wallet: SelectedWalletSettings.shared.value,
+                  chain: state.chainAsset.chain,
+                  chainRegistry: ChainRegistryFacade.sharedRegistry,
+                  operationQueue: OperationManagerFacade.sharedDefaultQueue
+              ) else {
             return nil
         }
         let wireframe = NominationPoolBondMoreConfirmWireframe()
@@ -37,6 +43,7 @@ struct NominationPoolBondMoreConfirmViewFactory {
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatorFactory,
+            stakingActivity: stakingActivity,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -85,6 +92,7 @@ struct NominationPoolBondMoreConfirmViewFactory {
         return .init(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            connection: connection,
             runtimeService: runtimeRegistry,
             feeProxy: ExtrinsicFeeProxy(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

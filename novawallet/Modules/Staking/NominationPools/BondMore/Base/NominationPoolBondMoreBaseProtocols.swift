@@ -6,10 +6,11 @@ protocol NominationPoolBondMoreBaseViewProtocol: ControllerBackedProtocol {
 
 protocol NominationPoolBondMoreBaseInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateFee(for amount: BigUInt)
+    func estimateFee(for amount: BigUInt, needsMigration: Bool)
     func retrySubscriptions()
     func retryClaimableRewards()
     func retryAssetExistance()
+    func retryMigrationDataFetch()
 }
 
 protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
@@ -21,6 +22,8 @@ protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
     func didReceive(bondedPool: NominationPools.BondedPool?)
     func didReceive(claimableRewards: BigUInt?)
     func didReceive(assetBalanceExistance: AssetBalanceExistence?)
+    func didReceive(needsMigration: Bool)
+    func didReceive(hasDirectStaking: Bool)
 }
 
 protocol NominationPoolBondMoreBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable,
@@ -31,4 +34,5 @@ enum NominationPoolBondMoreError: Error {
     case subscription(Error, String)
     case claimableRewards(Error)
     case assetExistance(Error)
+    case migrationDataFetch(Error)
 }
