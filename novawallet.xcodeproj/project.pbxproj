@@ -891,6 +891,7 @@
 		2D7E4A152C4028E300455509 /* CustomNetworkSetupFinishStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7E4A142C4028E300455509 /* CustomNetworkSetupFinishStrategy.swift */; };
 		2D7E4A172C403E1800455509 /* ChainNameOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7E4A162C403E1800455509 /* ChainNameOperationFactory.swift */; };
 		2D7E4A192C406FED00455509 /* CustomNetworkDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7E4A182C406FED00455509 /* CustomNetworkDTO.swift */; };
+		2D8463662C488416007E2986 /* ChainFilterStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8463652C488416007E2986 /* ChainFilterStrategyTests.swift */; };
 		2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */; };
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
@@ -5838,6 +5839,7 @@
 		2D7E4A142C4028E300455509 /* CustomNetworkSetupFinishStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkSetupFinishStrategy.swift; sourceTree = "<group>"; };
 		2D7E4A162C403E1800455509 /* ChainNameOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainNameOperationFactory.swift; sourceTree = "<group>"; };
 		2D7E4A182C406FED00455509 /* CustomNetworkDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkDTO.swift; sourceTree = "<group>"; };
+		2D8463652C488416007E2986 /* ChainFilterStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategyTests.swift; sourceTree = "<group>"; };
 		2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPresenter.swift; sourceTree = "<group>"; };
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
@@ -20032,6 +20034,7 @@
 				84452F5C25D5CB3B00F47EC5 /* FileManagerTests.swift */,
 				84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */,
 				847F2D5627AB08D200AFD476 /* GradientColorFactoryTests.swift */,
+				2D8463652C488416007E2986 /* ChainFilterStrategyTests.swift */,
 				842B2FCC2947239B002829B6 /* CoinGeckoUrlParserTests.swift */,
 				840D627029CB3FD900D5E894 /* URLBuilderTests.swift */,
 			);
@@ -28111,6 +28114,7 @@
 				84B7C745289BFA79001A3566 /* AssetsManageTests.swift in Sources */,
 				84B7C728289BFA79001A3566 /* YourValidatorListTests.swift in Sources */,
 				84B7C72F289BFA79001A3566 /* CustomValidatorListComposerTests.swift in Sources */,
+				2D8463662C488416007E2986 /* ChainFilterStrategyTests.swift in Sources */,
 				84B7C717289BFA79001A3566 /* DAppAuthConfirmTests.swift in Sources */,
 				84F4387F25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift in Sources */,
 				84B7C730289BFA79001A3566 /* CustomValidatorListTests.swift in Sources */,

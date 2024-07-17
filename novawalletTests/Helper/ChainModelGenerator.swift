@@ -182,7 +182,9 @@ enum ChainModelGenerator {
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasSubstrateRuntime: Bool = true
+        hasSubstrateRuntime: Bool = true,
+        hasProxy: Bool = true,
+        enabled: Bool = true
     ) -> ChainModel {
         let assets = (0..<count).map { index in
             generateAssetWithId(
@@ -199,7 +201,9 @@ enum ChainModelGenerator {
             assetPresicion: assetPresicion,
             hasStaking: hasStaking,
             hasCrowdloans: hasCrowdloans,
-            hasSubstrateRuntime: hasSubstrateRuntime
+            hasSubstrateRuntime: hasSubstrateRuntime,
+            hasProxy: hasProxy,
+            enabled: enabled
         )
     }
 
@@ -210,7 +214,9 @@ enum ChainModelGenerator {
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasSubstrateRuntime: Bool = true
+        hasSubstrateRuntime: Bool = true,
+        hasProxy: Bool = true,
+        enabled: Bool = true
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
 
@@ -232,6 +238,10 @@ enum ChainModelGenerator {
 
         if !hasSubstrateRuntime {
             options.append(.noSubstrateRuntime)
+        }
+        
+        if hasProxy {
+            options.append(.proxy)
         }
 
         let externalApis = generateExternaApis(
@@ -264,7 +274,7 @@ enum ChainModelGenerator {
             explorers: explorers,
             order: 0,
             additional: nil,
-            syncMode: .full,
+            syncMode: enabled ? .full : .disabled,
             source: .remote,
             connectionMode: .autoBalanced
         )
