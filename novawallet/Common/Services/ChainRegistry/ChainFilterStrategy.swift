@@ -90,13 +90,13 @@ enum ChainFilterStrategy {
         case let .chainId(chainId): { change, currentChain in
                 guard let changedChain = change.item else { return change }
 
-                let currentChainIdEquals = currentChain?.chainId == change.item?.chainId
-                let updatedSyncChainIdEquals = changedChain.chainId == change.item?.chainId
+                let currentChainIdEquals = currentChain?.chainId == chainId
+                let updatedChainIdEquals = changedChain.chainId == chainId
 
                 return transform(
                     change,
                     for: currentChainIdEquals,
-                    updatedSyncChainIdEquals
+                    updatedChainIdEquals
                 )
             }
         case let .allSatisfies(strategies): { change, currentChain in
