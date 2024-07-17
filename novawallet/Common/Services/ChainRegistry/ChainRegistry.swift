@@ -362,7 +362,13 @@ extension ChainRegistry: ChainRegistryProtocol {
     }
 
     func chainsUnsubscribe(_ target: AnyObject) {
-        chainProvider.removeObserver(target)
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        chainsChangesObservers = chainsChangesObservers.filter { $0.target !== target }
     }
 
     func subscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id) {
