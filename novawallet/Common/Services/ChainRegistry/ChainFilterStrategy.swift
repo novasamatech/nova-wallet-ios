@@ -66,8 +66,8 @@ enum ChainFilterStrategy {
 
                 var currentHasProxy: Bool {
                     #if F_RELEASE
-                        currentChain.hasProxy == true
-                            && currentChain.isTestnet == false
+                        currentChain?.hasProxy == true
+                            && currentChain?.isTestnet == false
                     #else
                         currentChain?.hasProxy == true
                     #endif
