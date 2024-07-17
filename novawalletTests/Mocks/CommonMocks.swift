@@ -3616,6 +3616,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func didSwitchURL(_ connection: ChainConnection, newURL: URL, for chainId: ChainModel.Id)  {
+        
+    return cuckoo_manager.call("didSwitchURL(_: ChainConnection, newURL: URL, for: ChainModel.Id)",
+            parameters: (connection, newURL, chainId),
+            escapingParameters: (connection, newURL, chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didSwitchURL(connection, newURL: newURL, for: chainId))
+        
+    }
+    
 
 	 struct __StubbingProxy_ConnectionStateSubscription: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -3628,6 +3643,11 @@ import SubstrateSdk
 	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(state: M1, for chainId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(WebSocketEngine.State, ChainModel.Id)> where M1.MatchedType == WebSocketEngine.State, M2.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(WebSocketEngine.State, ChainModel.Id)>] = [wrap(matchable: state) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionStateSubscription.self, method: "didReceive(state: WebSocketEngine.State, for: ChainModel.Id)", parameterMatchers: matchers))
+	    }
+	    
+	    func didSwitchURL<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(_ connection: M1, newURL: M2, for chainId: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainConnection, URL, ChainModel.Id)> where M1.MatchedType == ChainConnection, M2.MatchedType == URL, M3.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, URL, ChainModel.Id)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: newURL) { $0.1 }, wrap(matchable: chainId) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionStateSubscription.self, method: "didSwitchURL(_: ChainConnection, newURL: URL, for: ChainModel.Id)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -3652,6 +3672,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("didReceive(state: WebSocketEngine.State, for: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didSwitchURL<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(_ connection: M1, newURL: M2, for chainId: M3) -> Cuckoo.__DoNotUse<(ChainConnection, URL, ChainModel.Id), Void> where M1.MatchedType == ChainConnection, M2.MatchedType == URL, M3.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, URL, ChainModel.Id)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: newURL) { $0.1 }, wrap(matchable: chainId) { $0.2 }]
+	        return cuckoo_manager.verify("didSwitchURL(_: ChainConnection, newURL: URL, for: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -3664,6 +3690,12 @@ import SubstrateSdk
     
     
      func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didSwitchURL(_ connection: ChainConnection, newURL: URL, for chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
