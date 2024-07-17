@@ -122,7 +122,6 @@
 "common.copied" = "Скопировано в буфер обмена";
 "connections.add.connection" = "Добавить соединение";
 "connection.management.default.title" = "По умолчанию";
-"connection.management.custom.title" = "Добавленные";
 "wallet.delete.confirmation.title" = "Забыть кошелек?";
 "account.delete.confirmation.description" = "Прежде чем продолжить, убедитесь, что вы создали резервную копию своего кошелька.";
 "wallet.delete.confirmation.description" = "Перед продолжением убедитесь, что вы создали резервную копию своего кошелька.";
@@ -132,9 +131,14 @@
 "common.proceed" = "Продолжить";
 "wallet.asset.receive" = "Получить";
 "wallet.assets.total.title" = "Стоимость активов";
+<<<<<<< Updated upstream
 "network.info.title" = "Информация ноды";
 "network.info.name" = "Имя ноды";
 "network.info.address" = "Адрес ноды";
+=======
+"network.info.node.title" = "Информация ноды";
+"network.info.node.address" = "Адрес ноды";
+>>>>>>> Stashed changes
 "common.add" = "Добавить";
 "common.update" = "Обновить";
 "connection.add.invalid.error" = "Не удается установить соединение с узлом. Пожалуйста, попробуйте другой узел.";
@@ -1086,6 +1090,7 @@
 "common.token.symbol" = "Символ";
 "add.token.price.title" = "Ссылка Coingecko для курса валют (необязательно)";
 "add.token.network.selection.title" = "Выберите сеть для добавления ERC-20 токена";
+"common.disabled" = "Отключен";
 "tokens.manage.title" = "Управление токенами";
 "tokens.manage.all.selected" = "Все сети";
 "common.more.format" = "%@ (и еще %@)";
@@ -1660,4 +1665,68 @@
 "common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot приложение)";
 "generic.ledger.instructions.step1.highlighted" = "Polkadot приложение установлено";
 "generic.ledger.instructions.step2.highlighted" = "Откройте Polkadot приложение";
+<<<<<<< Updated upstream
 "ledger.instructions.step4" = "%@ для добавления в кошелёк";
+=======
+"ledger.instructions.step4" = "%@ для добавления в кошелёк";
+"networks.list.add.network.button.title" = "Добавить сеть";
+"connection.management.custom.title" = "Добавлено";
+"common.testnet" = "Тестнет";
+"integrate.network.banner.button.link" = "Интегрировать вашу сеть";
+"integrate.network.banner.message" = "Интегрируйте все функции сети, которую вы создаете, в Nova Wallet, чтобы сделать ее доступной для всех.";
+"integrate.network.banner.title" = "Создаете для Polkadot?";
+"network.details.default.nodes.section.title" = "ноды по умолчанию";
+"network.details.custom.nodes.section.title" = "пользовательские ноды";
+"network.details.add.custom.node" = "Добавить пользовательскую ноду";
+"network.details.ping.milliseconds" = "%li мс";
+"network.node.add.button.add" = "Добавить ноду";
+"network.node.add.button.enter.details" = "Введите данные";
+"common.name" = "Имя";
+"network.info.node.name" = "Имя ноды";
+"network.info.node.url" = "URL ноды";
+"network.node.add.alert.node.error.message.wss" = "Введенный вами URL Узла либо не отвечает, либо имеет неверный формат. Формат URL должен начинаться с \"wss://\".";
+"network.node.add.alert.node.error.title" = "Ошибка ноды";
+"network.node.add.alert.wrong.network.title" = "Неверная сеть";
+"network.node.add.alert.already.exists.title" = "Этот Узел уже существует";
+"network.add.network.manually" = "Добавить сеть вручную";
+"network.known.list.search.placeholder" = "Поиск по имени сети";
+"network.add.rpc.url" = "RPC URL";
+"network.add.name" = "Имя сети";
+"common.token" = "TOKEN";
+"network.add.currencySymbol" = "Символ валюты";
+"network.add.chainId" = "Chain ID";
+"network.add.blockExplorerUrl" = "URL block explorer (необязательно)";
+"common.modify" = "Изменить";
+"network.add.alert.invalid.chain.id.message" = "Введенный Chain ID не совпадает с сетью в RPC URL.";
+"network.add.alert.invalid.chain.id.title" = "Неверный Chain ID";
+"network.add.title" = "Введите данные сети";
+"common.delete" = "Удалить";
+"network.manage.title" = "Управление добавленной сетью";
+"network.manage.delete" = "Удалить сеть";
+"network.manage.edit" = "Редактировать сеть";
+"network.manage.delete.alert.description" = "Вы не сможете видеть свои балансы токенов в этой сети на экране активов";
+"network.manage.delete.alert.title" = "Удалить сеть?";
+"network.manage.node.delete" = "Удалить ноду";
+"network.manage.node.edit" = "Редактировать ноду";
+"network.node.delete.alert.title" = "Удалить ноду?";
+"network.manage.node.manage.added.node" = "Управление добавленной нодой";
+"network.add.alert.invalid.symbol.title" = "Неверный символ валюты";
+"network.info.node.title" = "Информация о ноде";
+"networks.list.placeholder.messsage" = "Добавленные пользовательские сети появятся здесь";
+"network.details.enable.connection" = "Включить подключение";
+"network.details.auto.balance" = "Автоматическая балансировка нод";
+"network.node.add.title" = "Добавить ноду";
+"network.node.add.alert.wrong.network.message" = "Введенный вами URL не соответствует ноде для %@.\nПожалуйста, введите URL валидной ноды %@.";
+"network.node.add.alert.already.exists.message" = "Введенный вами URL уже существует как \"%@\" нода.";
+"common.for" = "Для";
+"network.node.edit.title" = "Редактировать ноду";
+"network.add.coingeckoUrl" = "Ссылка Coingecko для информации о цене (необязательно)";
+"network.add.alert.already.exists.title" = "Эта сеть уже существует";
+"network.add.alert.already.exists.remote.message" = "Введенный RPC URL присутствует в Nova как %@.";
+"network.add.alert.already.exists.custom.message" = "Введенный RPC URL присутствует в Nova как %@. Вы уверены, что хотите изменить его?";
+"network.add.alert.invalid.network.type.title" = "Неверный тип сети";
+"network.add.alert.invalid.network.type.message" = "Похоже, вы хотите добавить другой тип сети. Пожалуйста, выберите \\u201c%@\\u201d, чтобы продолжить.";
+"network.add.alert.invalid.symbol.message" = "Введенный символ валюты (%@) не совпадает с сетью (%@). Вы хотите использовать правильный символ валюты?";
+"network.node.delete.alert.description" = "нода %@ будет удалена";
+"network.add.alert.success.title" = "Сеть успешно добавлена";
+>>>>>>> Stashed changes
