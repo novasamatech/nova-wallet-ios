@@ -37,12 +37,12 @@ enum ChainFilterStrategy {
                 #endif
             }
         case let .chainId(chainId): { change in
-            if case .delete = change {
-                return true
+                if case .delete = change {
+                    return true
+                }
+
+                return change.item?.chainId == chainId
             }
-            
-            return change.item?.chainId == chainId
-        }
         case let .allSatisfies(strategies): { change in strategies.allSatisfy { $0.filter(change) } }
         }
     }
@@ -54,7 +54,7 @@ enum ChainFilterStrategy {
 
                 let currentSyncModeEnabled = currentChain?.syncMode.enabled() == true
                 let updatedSyncModeEnabled = changedChain.syncMode.enabled() == true
-                
+
                 return transform(
                     change,
                     for: currentSyncModeEnabled,
@@ -89,10 +89,10 @@ enum ChainFilterStrategy {
             }
         case let .chainId(chainId): { change, currentChain in
                 guard let changedChain = change.item else { return change }
-            
+
                 let currentChainIdEquals = currentChain?.chainId == change.item?.chainId
                 let updatedSyncChainIdEquals = changedChain.chainId == change.item?.chainId
-                
+
                 return transform(
                     change,
                     for: currentChainIdEquals,
@@ -121,7 +121,7 @@ enum ChainFilterStrategy {
 
         return mapped.filter(filter)
     }
-    
+
     func transform(
         _ change: DataProviderChange<ChainModel>,
         for currentChainCondition: Bool,
