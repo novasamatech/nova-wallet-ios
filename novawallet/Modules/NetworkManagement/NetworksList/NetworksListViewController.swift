@@ -12,6 +12,17 @@ final class NetworksListViewController: UIViewController, ViewHolder {
 
     private var viewModel: ViewModel?
     private var networkViewModels: [RootViewType.NetworkWithConnectionModel] = []
+    private var networkSectionIndex: Int? {
+        viewModel?.sections.firstIndex(
+            where: { section in
+                if case .networks = section {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        )
+    }
 
     init(
         presenter: NetworksListPresenterProtocol,
@@ -58,12 +69,11 @@ extension NetworksListViewController: NetworksListViewProtocol {
     }
 
     func updateNetworks(with viewModel: NetworksListViewLayout.Model) {
+        guard let networkSectionIndex else { return }
+
         viewModel.sections
-            .enumerated()
-            .forEach { sectionIndex, section in
-                guard case let .networks(rows) = section else {
-                    return
-                }
+            .forEach { section in
+                guard case let .networks(rows) = section else { return }
 
                 rows.forEach { row in
                     guard case let .network(networkModel) = row else {
@@ -72,10 +82,10 @@ extension NetworksListViewController: NetworksListViewProtocol {
 
                     let indexPath = IndexPath(
                         row: networkModel.index,
-                        section: sectionIndex
+                        section: networkSectionIndex
                     )
 
-                    let cell = rootView.tableView.cellForRow(at: indexPath) as? NetworksListTableViewCell
+                    let cell = rootView.tableView.cellForRow(at: indexPath) as? ChainCell
                     cell?.contentDisplayView.bind(with: networkModel)
                     networkViewModels[indexPath.row] = networkModel
                 }
@@ -148,15 +158,11 @@ extension NetworksListViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        section == Constants.bannerSection
-            ? Constants.sectionSpacing
-            : .zero
+        spacing(for: section)
     }
 
     func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        section == Constants.bannerSection
-            ? Constants.sectionSpacing
-            : .zero
+        spacing(for: section)
     }
 }
 
@@ -306,6 +312,15 @@ private extension NetworksListViewController {
             }
             .flatMap { $0 }
     }
+
+    func spacing(for sectionIndex: Int) -> CGFloat {
+        guard
+            let viewModel, viewModel.sections.count > sectionIndex,
+            case .banner = viewModel.sections[sectionIndex]
+        else { return .zero }
+
+        return Constants.sectionSpacing
+    }
 }
 
 // MARK: Localizable
@@ -325,6 +340,5 @@ private extension NetworksListViewController {
         static let cellHeight: CGFloat = 56
         static let sectionSpacing: CGFloat = 16
         static let bannerSection: Int = 0
-        static let networksSection: Int = 1
     }
 }
