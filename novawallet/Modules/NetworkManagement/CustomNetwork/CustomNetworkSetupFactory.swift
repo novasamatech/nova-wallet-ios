@@ -290,7 +290,7 @@ private extension CustomNetworkSetupFactory {
                     precision: defaultEVMAssetPrecision,
                     priceId: chain.mainAssetPriceId,
                     stakings: nil,
-                    type: nil,
+                    type: AssetType.evmNative.rawValue,
                     typeExtras: nil,
                     buyProviders: nil,
                     enabled: true,
