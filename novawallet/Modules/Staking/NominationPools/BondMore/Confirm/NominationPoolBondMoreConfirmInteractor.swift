@@ -12,7 +12,6 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
     init(
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
-        connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -21,7 +20,6 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
-        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
@@ -31,7 +29,6 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
         super.init(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
-            connection: connection,
             runtimeService: runtimeService,
             feeProxy: feeProxy,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
@@ -40,7 +37,6 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
             extrinsicServiceFactory: extrinsicServiceFactory,
             npoolsOperationFactory: npoolsOperationFactory,
             npoolsLocalSubscriptionFactory: npoolsLocalSubscriptionFactory,
-            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             assetStorageInfoFactory: assetStorageInfoFactory,
             operationQueue: operationQueue,
             currencyManager: currencyManager

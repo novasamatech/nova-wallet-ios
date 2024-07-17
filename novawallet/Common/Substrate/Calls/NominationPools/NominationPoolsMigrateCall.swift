@@ -7,7 +7,7 @@ extension NominationPools {
             case memberAccount = "member_account"
         }
 
-        @BytesCodable var memberAccount: AccountId
+        let memberAccount: MultiAddress
 
         static var codingPath: CallCodingPath {
             .init(moduleName: NominationPools.module, callName: "migrate_delegation")

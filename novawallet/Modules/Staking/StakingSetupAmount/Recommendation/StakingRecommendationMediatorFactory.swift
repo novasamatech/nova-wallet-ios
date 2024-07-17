@@ -105,7 +105,7 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
             return nil
         }
 
-        let validationFactory = PoolStakingRecommendingValidationFactory(
+        let validationFactory = DirectStakingRecommendingValidationFactory(
             connection: connection,
             runtimeProvider: runtimeService,
             operationQueue: operationQueue

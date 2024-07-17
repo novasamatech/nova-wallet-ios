@@ -83,7 +83,6 @@ struct NominationPoolBondMoreSetupViewFactory {
         return .init(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
-            connection: connection,
             runtimeService: runtimeRegistry,
             feeProxy: ExtrinsicFeeProxy(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
@@ -92,7 +91,6 @@ struct NominationPoolBondMoreSetupViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             npoolsOperationFactory: NominationPoolsOperationFactory(operationQueue: operationQueue),
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
-            stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
             assetStorageInfoFactory: AssetStorageInfoOperationFactory(),
             operationQueue: operationQueue,
             currencyManager: currencyManager

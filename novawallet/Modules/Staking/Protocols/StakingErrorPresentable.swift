@@ -303,11 +303,11 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         from view: ControllerBackedProtocol?,
         locale: Locale?
     ) {
-        let message = R.string.localizable.stakingSetupConflictTitle(
+        let message = R.string.localizable.stakingSetupConflictMessage(
             preferredLanguages: locale?.rLanguages
         )
 
-        let title = R.string.localizable.stakingSetupConflictMessage(
+        let title = R.string.localizable.stakingSetupConflictTitle(
             preferredLanguages: locale?.rLanguages
         )
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)

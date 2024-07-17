@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol NominationPoolStakingMigrating: StakingActivityProviding {
+protocol NominationPoolStakingMigrating {
     func needsPoolStakingMigration(
         for stakingDelegation: DelegatedStakingPallet.Delegation?,
         runtimeProvider: RuntimeCodingServiceProtocol,

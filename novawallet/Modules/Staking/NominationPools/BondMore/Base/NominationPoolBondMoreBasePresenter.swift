@@ -22,7 +22,6 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     var claimableRewards: BigUInt?
     var assetBalanceExistance: AssetBalanceExistence?
     var needsMigration: Bool?
-    var hasDirectStaking: Bool?
 
     init(
         interactor: NominationPoolBondMoreBaseInteractorInputProtocol,
@@ -159,7 +158,7 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     }
 
     func didReceive(error: NominationPoolBondMoreError) {
-        logger.error(error.localizedDescription)
+        logger.error("Error: \(error)")
 
         switch error {
         case .fetchFeeFailed:
@@ -178,10 +177,6 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
             baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.baseInteractor.retryAssetExistance()
             }
-        case .migrationDataFetch:
-            baseWireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
-                self?.baseInteractor.retryMigrationDataFetch()
-            }
         }
     }
 
@@ -189,10 +184,6 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
         self.needsMigration = needsMigration
 
         refreshFee()
-    }
-
-    func didReceive(hasDirectStaking: Bool) {
-        self.hasDirectStaking = hasDirectStaking
     }
 }
 

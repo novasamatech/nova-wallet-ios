@@ -14,10 +14,8 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     let callFactory: SubstrateCallFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let npoolsOperationFactory: NominationPoolsOperationFactoryProtocol
-    let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
-    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol
 
     private var operationQueue: OperationQueue
@@ -45,7 +43,6 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     init(
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
-        connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -54,7 +51,6 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
-        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
@@ -67,10 +63,8 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         self.operationQueue = operationQueue
         self.callFactory = callFactory
         self.npoolsOperationFactory = npoolsOperationFactory
-        self.connection = connection
         self.runtimeService = runtimeService
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
-        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.assetStorageInfoFactory = assetStorageInfoFactory
 
         extrinsicService = extrinsicServiceFactory.createService(
@@ -116,15 +110,11 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         needsMigration: Bool
     ) -> ExtrinsicBuilderClosure {
         { builder in
-            let currentBuilder = if needsMigration {
-                try builder.adding(
-                    call: NominationPools.MigrateCall(
-                        memberAccount: accountId
-                    ).runtimeCall()
-                )
-            } else {
-                builder
-            }
+            let currentBuilder = try NominationPools.migrateIfNeeded(
+                needsMigration,
+                accountId: accountId,
+                builder: builder
+            )
 
             let bondExtraCall = NominationPools.BondExtraCall(extra: .freeBalance(points))
             return try currentBuilder.adding(call: bondExtraCall.runtimeCall())
@@ -163,22 +153,6 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
         poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
     }
 
-    func provideHasDirectStaking() {
-        hasDirectStaking(
-            for: accountId,
-            connection: connection,
-            runtimeProvider: runtimeService,
-            operationQueue: operationQueue
-        ) { [weak self] result in
-            switch result {
-            case let .success(hasDirectStaking):
-                self?.basePresenter?.didReceive(hasDirectStaking: hasDirectStaking)
-            case let .failure(error):
-                self?.basePresenter?.didReceive(error: .migrationDataFetch(error))
-            }
-        }
-    }
-
     private func provideNeedsMigration(for delegation: DelegatedStakingPallet.Delegation?) {
         needsPoolStakingMigration(
             for: delegation,
@@ -189,7 +163,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
             case let .success(needsMigration):
                 self?.basePresenter?.didReceive(needsMigration: needsMigration)
             case let .failure(error):
-                self?.basePresenter?.didReceive(error: .migrationDataFetch(error))
+                self?.basePresenter?.didReceive(error: .subscription(error, "Unexpected delegated staking error"))
             }
         }
     }
@@ -254,7 +228,6 @@ extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseIntera
         subscribePrice()
         subscribeDelegatedStaking()
         provideAssetExistence()
-        provideHasDirectStaking()
     }
 
     func estimateFee(for amount: BigUInt, needsMigration: Bool) {
@@ -274,6 +247,7 @@ extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseIntera
         subscribeAccountBalance()
         subscribePoolMember()
         subscribePrice()
+        subscribeDelegatedStaking()
     }
 
     func retryClaimableRewards() {
@@ -282,11 +256,6 @@ extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseIntera
 
     func retryAssetExistance() {
         provideAssetExistence()
-    }
-
-    func retryMigrationDataFetch() {
-        subscribeDelegatedStaking()
-        provideHasDirectStaking()
     }
 }
 
