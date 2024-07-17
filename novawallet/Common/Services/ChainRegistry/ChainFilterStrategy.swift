@@ -37,7 +37,7 @@ enum ChainFilterStrategy {
                 #endif
             }
         case let .chainId(chainId): { change in
-                if case .delete = change {
+                if case let .delete(deleteId) = change, deleteId == chainId {
                     return true
                 }
 
