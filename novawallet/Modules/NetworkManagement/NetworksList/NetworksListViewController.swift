@@ -339,6 +339,5 @@ private extension NetworksListViewController {
     enum Constants {
         static let cellHeight: CGFloat = 56
         static let sectionSpacing: CGFloat = 16
-        static let bannerSection: Int = 0
     }
 }
