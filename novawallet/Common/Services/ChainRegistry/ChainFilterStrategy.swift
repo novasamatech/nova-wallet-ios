@@ -25,6 +25,10 @@ enum ChainFilterStrategy {
                 }
             }
         case .hasProxy: { change in
+                if case .delete = change {
+                    return true
+                }
+
                 #if F_RELEASE
                     return change.item?.hasProxy == true
                         && change.item?.isTestnet == false
@@ -32,7 +36,13 @@ enum ChainFilterStrategy {
                     return change.item?.hasProxy == true
                 #endif
             }
-        case let .chainId(chainId): { $0.item?.chainId == chainId }
+        case let .chainId(chainId): { change in
+            if case .delete = change {
+                return true
+            }
+            
+            change.item?.chainId == chainId
+        }
         case let .allSatisfies(strategies): { change in strategies.allSatisfy { $0.filter(change) } }
         }
     }
@@ -49,6 +59,51 @@ enum ChainFilterStrategy {
                 return if needsTransform, updatedSyncModeEnabled {
                     DataProviderChange<ChainModel>.insert(newItem: changedChain)
                 } else if needsTransform, !updatedSyncModeEnabled {
+                    DataProviderChange<ChainModel>.delete(deletedIdentifier: changedChain.chainId)
+                } else {
+                    change
+                }
+            }
+        case .hasProxy: { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                var currentHasProxy: Bool {
+                    #if F_RELEASE
+                        currentChain.hasProxy == true
+                            && currentChain.isTestnet == false
+                    #else
+                        currentChain?.hasProxy == true
+                    #endif
+                }
+
+                var updatedHasProxy: Bool {
+                    #if F_RELEASE
+                        changedChain.hasProxy == true
+                            && changedChain.isTestnet == false
+                    #else
+                        changedChain.hasProxy == true
+                    #endif
+                }
+                let needsTransform = updatedHasProxy != currentHasProxy
+
+                return if needsTransform, updatedHasProxy {
+                    DataProviderChange<ChainModel>.insert(newItem: changedChain)
+                } else if needsTransform, !updatedHasProxy {
+                    DataProviderChange<ChainModel>.delete(deletedIdentifier: changedChain.chainId)
+                } else {
+                    change
+                }
+            }
+        case let .chainId(chainId): { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                let currentChainIdEquals = currentChain?.chainId == change.item?.chainId
+                let updatedSyncChainIdEquals = changedChain.chainId == change.item?.chainId
+                let needsTransform = updatedSyncChainIdEquals != currentChainIdEquals
+
+                return if needsTransform, updatedSyncChainIdEquals {
+                    DataProviderChange<ChainModel>.insert(newItem: changedChain)
+                } else if needsTransform, !updatedSyncChainIdEquals {
                     DataProviderChange<ChainModel>.delete(deletedIdentifier: changedChain.chainId)
                 } else {
                     change

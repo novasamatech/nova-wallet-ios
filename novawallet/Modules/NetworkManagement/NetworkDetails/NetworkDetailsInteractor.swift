@@ -180,14 +180,6 @@ extension NetworkDetailsInteractor: WebSocketEngineDelegate {
 // MARK: ConnectionStateSubscription
 
 extension NetworkDetailsInteractor: ConnectionStateSubscription {
-    func didSwitchURL(
-        _: ChainConnection,
-        newURL: URL,
-        for _: ChainModel.Id
-    ) {
-        updateCurrentSelectedNode(with: newURL)
-    }
-
     func didReceive(
         state: WebSocketEngine.State,
         for chainId: ChainModel.Id
