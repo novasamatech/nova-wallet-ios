@@ -49,7 +49,6 @@ struct CustomNetworkViewFactory {
 
         let presenter = CustomNetworkAddPresenter(
             chainType: .substrate,
-            knownChain: nil,
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager
@@ -116,8 +115,7 @@ struct CustomNetworkViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let presenter = CustomNetworkEditPresenter(
-            chainType: .substrate,
-            knownChain: nil,
+            chainType: network.isEthereumBased ? .evm : .substrate,
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager

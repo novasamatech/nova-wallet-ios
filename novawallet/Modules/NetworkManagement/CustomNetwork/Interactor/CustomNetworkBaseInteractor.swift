@@ -312,7 +312,7 @@ private extension CustomNetworkBaseInteractor {
 
         let range = NSRange(location: 0, length: urlString.utf16.count)
         if let match = regex?.firstMatch(in: urlString, options: [], range: range) {
-            return match.range.length == urlString.utf16.count
+            return true
         } else {
             return false
         }
@@ -333,7 +333,7 @@ private extension CustomNetworkBaseInteractor {
         static let statescanEventPath = "#/events/{event}"
 
         static let etherscan = "Etherscan"
-        static let etherscanAccountURL = "https: // etherscan.io/tx/{hash}"
+        static let etherscanAccountURL = "https://etherscan.io/address/{address}"
         static let etherscanExtrinsicURL = "https://etherscan.io/tx/{hash}"
 
         static let defaultCustomNodeName = "My custom node"

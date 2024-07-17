@@ -63,32 +63,17 @@ extension InputViewModel {
         for value: String,
         enabled: Bool = true,
         required: Bool = true,
-        placeholder: String? = nil
+        placeholder: String? = nil,
+        spacesAllowed: Bool = false
     ) -> InputViewModelProtocol {
         let inputHandling = InputHandler(
             value: value,
             required: required,
             enabled: enabled,
             predicate: required ? NSPredicate.notEmpty : nil,
-            processor: TrimmingCharacterProcessor(charset: .whitespaces)
-        )
-
-        return InputViewModel(
-            inputHandler: inputHandling,
-            placeholder: placeholder ?? ""
-        )
-    }
-
-    static func createSubstrateNodeNameInputViewModel(
-        for value: String,
-        required: Bool = true,
-        placeholder: String? = nil
-    ) -> InputViewModelProtocol {
-        let inputHandling = InputHandler(
-            value: value,
-            required: required,
-            predicate: required ? NSPredicate.notEmpty : nil,
-            processor: TrimmingCharacterProcessor(charset: .whitespaces)
+            processor: spacesAllowed
+                ? nil
+                : TrimmingCharacterProcessor(charset: .whitespaces)
         )
 
         return InputViewModel(
