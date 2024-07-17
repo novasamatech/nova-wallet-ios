@@ -6,7 +6,6 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
 
     init(
         chainType: ChainType,
-        knownChain: ChainModel?,
         interactor: CustomNetworkAddInteractorInputProtocol,
         wireframe: CustomNetworkWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -15,7 +14,6 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
 
         super.init(
             chainType: chainType,
-            knownChain: knownChain,
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager

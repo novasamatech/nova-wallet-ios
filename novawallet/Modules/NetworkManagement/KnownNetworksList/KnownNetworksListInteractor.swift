@@ -70,11 +70,13 @@ extension KnownNetworksListInteractor: KnownNetworksListInteractorInputProtocol 
     }
 
     func searchChain(by query: String) {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespaces)
+        let trimmedLowercasedQuery = query
+            .trimmingCharacters(in: .whitespaces)
+            .lowercased()
 
-        let chains = trimmedQuery.isEmpty
+        let chains = trimmedLowercasedQuery.isEmpty
             ? lightChains
-            : lightChains.filter { $0.name.contains(substring: trimmedQuery) }
+            : lightChains.filter { $0.name.lowercased().contains(substring: trimmedLowercasedQuery) }
 
         presenter?.didReceive(chains)
     }

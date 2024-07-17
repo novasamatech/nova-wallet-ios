@@ -93,7 +93,6 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         selected: Bool
     ) {
         guard
-            connectionState != connectionStates[nodeURL],
             let nodeId = nodesIds[nodeURL],
             let node = nodes[nodeId]
         else {
@@ -101,7 +100,12 @@ extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
         }
 
         if selected {
+            let oldSelectedNode = selectedNode
             selectedNode = node
+
+            if let oldSelectedNode {
+                provideNodeViewModel(for: oldSelectedNode)
+            }
         } else if selectedNode?.url == nodeURL {
             selectedNode = nil
         }

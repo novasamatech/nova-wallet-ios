@@ -28,7 +28,7 @@ extension NodePingOperationFactory: NodePingOperationFactoryProtocol {
         for chain: ChainModel,
         connection: ChainConnection
     ) -> BaseOperation<Int> {
-        if chain.isEthereumBased {
+        if chain.isEthereumBased, chain.noSubstrateRuntime {
             createPingMeasureOperation(
                 with: createEVMQueryOperation(with: connection),
                 queue: operationQueue

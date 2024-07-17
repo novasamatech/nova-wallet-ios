@@ -25,6 +25,10 @@ enum ChainFilterStrategy {
                 }
             }
         case .hasProxy: { change in
+                if case .delete = change {
+                    return true
+                }
+
                 #if F_RELEASE
                     return change.item?.hasProxy == true
                         && change.item?.isTestnet == false
@@ -32,7 +36,13 @@ enum ChainFilterStrategy {
                     return change.item?.hasProxy == true
                 #endif
             }
-        case let .chainId(chainId): { $0.item?.chainId == chainId }
+        case let .chainId(chainId): { change in
+                if case let .delete(deleteId) = change, deleteId == chainId {
+                    return true
+                }
+
+                return change.item?.chainId == chainId
+            }
         case let .allSatisfies(strategies): { change in strategies.allSatisfy { $0.filter(change) } }
         }
     }
@@ -42,17 +52,52 @@ enum ChainFilterStrategy {
         case .enabledChains: { change, currentChain in
                 guard let changedChain = change.item else { return change }
 
-                let currentSyncModeEnabled = currentChain?.syncMode.enabled()
-                let updatedSyncModeEnabled = changedChain.syncMode.enabled()
-                let needsTransform = updatedSyncModeEnabled != currentSyncModeEnabled
+                let currentSyncModeEnabled = currentChain?.syncMode.enabled() == true
+                let updatedSyncModeEnabled = changedChain.syncMode.enabled() == true
 
-                return if needsTransform, updatedSyncModeEnabled {
-                    DataProviderChange<ChainModel>.insert(newItem: changedChain)
-                } else if needsTransform, !updatedSyncModeEnabled {
-                    DataProviderChange<ChainModel>.delete(deletedIdentifier: changedChain.chainId)
-                } else {
-                    change
+                return transform(
+                    change,
+                    for: currentSyncModeEnabled,
+                    updatedSyncModeEnabled
+                )
+            }
+        case .hasProxy: { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                var currentHasProxy: Bool {
+                    #if F_RELEASE
+                        currentChain.hasProxy == true
+                            && currentChain.isTestnet == false
+                    #else
+                        currentChain?.hasProxy == true
+                    #endif
                 }
+
+                var updatedHasProxy: Bool {
+                    #if F_RELEASE
+                        changedChain.hasProxy == true
+                            && changedChain.isTestnet == false
+                    #else
+                        changedChain.hasProxy == true
+                    #endif
+                }
+                return transform(
+                    change,
+                    for: currentHasProxy,
+                    updatedHasProxy
+                )
+            }
+        case let .chainId(chainId): { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                let currentChainIdEquals = currentChain?.chainId == chainId
+                let updatedChainIdEquals = changedChain.chainId == chainId
+
+                return transform(
+                    change,
+                    for: currentChainIdEquals,
+                    updatedChainIdEquals
+                )
             }
         case let .allSatisfies(strategies): { change, currentChain in
                 strategies
@@ -75,5 +120,23 @@ enum ChainFilterStrategy {
         }
 
         return mapped.filter(filter)
+    }
+
+    func transform(
+        _ change: DataProviderChange<ChainModel>,
+        for currentChainCondition: Bool,
+        _ changedChainCondition: Bool
+    ) -> DataProviderChange<ChainModel> {
+        guard let changedChain = change.item else { return change }
+
+        let needsTransform = changedChainCondition != currentChainCondition
+
+        return if needsTransform, changedChainCondition {
+            DataProviderChange<ChainModel>.insert(newItem: changedChain)
+        } else if needsTransform, !changedChainCondition {
+            DataProviderChange<ChainModel>.delete(deletedIdentifier: changedChain.chainId)
+        } else {
+            change
+        }
     }
 }
