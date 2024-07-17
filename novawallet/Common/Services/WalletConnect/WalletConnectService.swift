@@ -414,7 +414,7 @@ private protocol WebSocketEngineFactoryProtocol {
 private final class DefaultEngineFactory: WebSocketEngineFactoryProtocol {
     func createEngine() -> Engine {
         WSEngine(
-            transport: TCPTransport(),
+            transport: FoundationTransport(),
             certPinner: FoundationSecurity(),
             compressionHandler: nil
         )
