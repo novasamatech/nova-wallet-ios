@@ -368,7 +368,7 @@ extension ChainRegistry: ChainRegistryProtocol {
             mutex.unlock()
         }
 
-        chainsChangesObservers = chainsChangesObservers.filter { $0.target === target }
+        chainsChangesObservers = chainsChangesObservers.filter { $0.target !== target }
     }
 
     func subscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id) {
