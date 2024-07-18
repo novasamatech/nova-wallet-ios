@@ -60,6 +60,10 @@ class ConnectionPoolTests: XCTestCase {
 
                     stub.urls.get.thenReturn(urls)
                 }
+                
+                stub(mockConnection.stateReporting) { stub in
+                    stub.state.get.thenReturn(.notConnected(url: nil))
+                }
 
                 return mockConnection
             }
