@@ -99,6 +99,11 @@ extension ConnectionPool: ConnectionPoolProtocol {
 
         if let connection = connections[chain.chainId]?.target as? ChainConnection {
             connectionFactory.updateConnection(connection, chain: chain)
+
+            if case .notConnected = connection.state {
+                connection.connect()
+            }
+
             return connection
         }
 
