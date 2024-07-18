@@ -70,9 +70,10 @@ class NetworkNodeBasePresenter {
     }
 
     func provideNameViewModel() {
-        let inputViewModel = InputViewModel.createSubstrateNodeNameInputViewModel(
+        let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialName ?? "",
-            placeholder: R.string.localizable.commonName(preferredLanguages: selectedLocale.rLanguages)
+            placeholder: R.string.localizable.commonName(preferredLanguages: selectedLocale.rLanguages),
+            spacesAllowed: true
         )
         view?.didReceiveName(viewModel: inputViewModel)
     }

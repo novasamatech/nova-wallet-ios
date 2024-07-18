@@ -64,7 +64,10 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
                 nodeSwitchStrategy: request.existingNetwork.nodeSwitchStrategy,
                 addressPrefix: evmChainId ?? request.existingNetwork.addressPrefix,
                 connectionMode: .autoBalanced,
-                blockExplorer: createExplorer(from: request.blockExplorerURL) ?? request.existingNetwork.explorers?.first,
+                blockExplorer: createExplorer(
+                    from: request.blockExplorerURL,
+                    chainName: request.name
+                ) ?? request.existingNetwork.explorers?.first,
                 mainAssetPriceId: priceId
             )
 
@@ -98,7 +101,11 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
             for: nil
         )
 
-        let explorer = createExplorer(from: request.blockExplorerURL)
+        let explorer = createExplorer(
+            from: request.blockExplorerURL,
+            chainName: request.name
+        )
+
         let options: [LocalChainOptions]? = request.networkType == .evm
             ? [.ethereumBased, .noSubstrateRuntime]
             : nil
@@ -242,20 +249,8 @@ private extension CustomNetworkBaseInteractor {
                     for: chain,
                     presenter: self?.presenter
                 )
-            case let .failure(error as CustomNetworkSetupError):
-                switch error {
-                case .decimalsNotFound:
-                    self?.presenter?.didReceive(.common(innerError: .noDataRetrieved))
-                case let .wrongCurrencySymbol(enteredSymbol, actualSymbol):
-                    self?.presenter?.didReceive(
-                        .wrongCurrencySymbol(
-                            enteredSymbol: enteredSymbol,
-                            actualSymbol: actualSymbol
-                        )
-                    )
-                }
-            default:
-                self?.presenter?.didReceive(.common(innerError: .undefined))
+            case let .failure(error):
+                self?.presenter?.didReceive(.init(from: error))
             }
         }
     }
@@ -278,36 +273,40 @@ private extension CustomNetworkBaseInteractor {
         return priceId
     }
 
-    func createExplorer(from url: String?) -> ChainModel.Explorer? {
-        guard let url = url?.trimmingCharacters(
-            in: CharacterSet(charactersIn: "/").union(CharacterSet.whitespaces)
-        ) else {
+    func createExplorer(
+        from url: String?,
+        chainName: String
+    ) -> ChainModel.Explorer? {
+        guard
+            let url,
+            NSPredicate.urlPredicate.evaluate(with: url)
+        else {
             return nil
         }
 
-        let explorer: ChainModel.Explorer? = if checkExplorer(urlString: url, with: .subscan) {
+        let trimmedUrl = trimUrlPath(urlString: url)
+
+        let explorer: ChainModel.Explorer? = if checkExplorer(urlString: trimmedUrl, with: .subscan) {
             ChainModel.Explorer(
                 name: Constants.subscan,
-                account: [url, Constants.subscanAccountPath].joined(with: .slash),
-                extrinsic: [url, Constants.subscanExtrinsicPath].joined(with: .slash),
+                account: [trimmedUrl, Constants.subscanAccountPath].joined(with: .slash),
+                extrinsic: [trimmedUrl, Constants.subscanExtrinsicPath].joined(with: .slash),
                 event: nil
             )
-        } else if checkExplorer(urlString: url, with: .statescan) {
+        } else if checkExplorer(urlString: trimmedUrl, with: .statescan) {
             ChainModel.Explorer(
                 name: Constants.statescan,
-                account: [url, Constants.statescanAccountPath].joined(with: .slash),
-                extrinsic: [url, Constants.statescanExtrinsicPath].joined(with: .slash),
-                event: [url, Constants.statescanEventPath].joined(with: .slash)
-            )
-        } else if checkExplorer(urlString: url, with: .etherscan) {
-            ChainModel.Explorer(
-                name: Constants.etherscan,
-                account: Constants.etherscanAccountURL,
-                extrinsic: Constants.etherscanExtrinsicURL,
-                event: nil
+                account: [trimmedUrl, Constants.statescanAccountPath].joined(with: .slash),
+                extrinsic: [trimmedUrl, Constants.statescanExtrinsicPath].joined(with: .slash),
+                event: [trimmedUrl, Constants.statescanEventPath].joined(with: .slash)
             )
         } else {
-            nil
+            ChainModel.Explorer(
+                name: [chainName, Constants.defaultExplorer].joined(with: .space),
+                account: [trimmedUrl, Constants.etherscanAccountURL].joined(with: .slash),
+                extrinsic: [trimmedUrl, Constants.etherscanExtrinsicURL].joined(with: .slash),
+                event: nil
+            )
         }
 
         return explorer
@@ -324,10 +323,27 @@ private extension CustomNetworkBaseInteractor {
 
         let range = NSRange(location: 0, length: urlString.utf16.count)
         if let match = regex?.firstMatch(in: urlString, options: [], range: range) {
-            return match.range.length == urlString.utf16.count
+            return true
         } else {
             return false
         }
+    }
+
+    func trimUrlPath(urlString: String) -> String {
+        var urlComponents = URLComponents(
+            url: URL(string: urlString)!,
+            resolvingAgainstBaseURL: false
+        )
+        urlComponents?.path = ""
+        urlComponents?.queryItems = []
+        urlComponents?.fragment = nil
+
+        let trimmedUrlString = urlComponents?
+            .url?
+            .absoluteString
+            .trimmingCharacters(in: CharacterSet(charactersIn: "?/").union(CharacterSet.whitespaces))
+
+        return trimmedUrlString ?? urlString
     }
 }
 
@@ -344,15 +360,13 @@ private extension CustomNetworkBaseInteractor {
         static let statescanExtrinsicPath = "#/extrinsic/{hash}"
         static let statescanEventPath = "#/events/{event}"
 
-        static let etherscan = "Etherscan"
-        static let etherscanAccountURL = "https: // etherscan.io/tx/{hash}"
-        static let etherscanExtrinsicURL = "https://etherscan.io/tx/{hash}"
+        static let defaultExplorer = "Default Explorer"
+        static let etherscanAccountURL = "address/{address}"
+        static let etherscanExtrinsicURL = "tx/{hash}"
 
         static let defaultCustomNodeName = "My custom node"
 
         static let defaultEVMAssetPrecision: UInt16 = 18
-
-        static let priceIdSearchRegexPattern = "\\{([^}]*)\\}"
     }
 }
 

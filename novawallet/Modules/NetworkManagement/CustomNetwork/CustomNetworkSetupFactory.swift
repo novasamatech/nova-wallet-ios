@@ -290,7 +290,7 @@ private extension CustomNetworkSetupFactory {
                     precision: defaultEVMAssetPrecision,
                     priceId: chain.mainAssetPriceId,
                     stakings: nil,
-                    type: nil,
+                    type: AssetType.evmNative.rawValue,
                     typeExtras: nil,
                     buyProviders: nil,
                     enabled: true,
@@ -385,12 +385,20 @@ private extension CustomNetworkSetupFactory {
         }
 
         let chainSetupOperation = ClosureOperation<PartialCustomChainModel> {
-            let chainId = try dependency
-                .targetOperation
-                .extractNoCancellableResultData()
-                .withoutHexPrefix()
+            do {
+                let chainId = try dependency
+                    .targetOperation
+                    .extractNoCancellableResultData()
+                    .withoutHexPrefix()
 
-            return chain.byChanging(chainId: chainId)
+                return chain.byChanging(chainId: chainId)
+            } catch {
+                if error is NetworkNodeCorrespondingError {
+                    throw (error)
+                } else {
+                    throw (CustomNetworkSetupError.chainIdObtainFailed(ethereumBased: chain.isEthereumBased))
+                }
+            }
         }
 
         dependency.dependencies.forEach { operation in
@@ -409,4 +417,5 @@ private extension CustomNetworkSetupFactory {
 enum CustomNetworkSetupError: Error, Hashable {
     case decimalsNotFound
     case wrongCurrencySymbol(enteredSymbol: String, actualSymbol: String)
+    case chainIdObtainFailed(ethereumBased: Bool)
 }

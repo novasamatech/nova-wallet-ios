@@ -12,7 +12,10 @@ protocol CustomNetworkViewProtocol: ControllerBackedProtocol {
     func didReceiveButton(viewModel: NetworkNodeViewLayout.LoadingButtonViewModel)
 }
 
-protocol CustomNetworkWireframeProtocol: AlertPresentable, ErrorPresentable, ModalAlertPresenting, TokenAddErrorPresentable {
+protocol CustomNetworkWireframeProtocol: AlertPresentable,
+    ErrorPresentable,
+    ModalAlertPresenting,
+    TokenAddErrorPresentable {
     func showNetworksList(
         from view: CustomNetworkViewProtocol?,
         locale: Locale

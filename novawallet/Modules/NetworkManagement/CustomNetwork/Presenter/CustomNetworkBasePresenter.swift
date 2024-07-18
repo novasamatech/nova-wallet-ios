@@ -18,13 +18,11 @@ class CustomNetworkBasePresenter {
 
     init(
         chainType: ChainType,
-        knownChain: ChainModel?,
         interactor: CustomNetworkBaseInteractorInputProtocol,
         wireframe: CustomNetworkWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.chainType = chainType
-        self.knownChain = knownChain
         self.interactor = interactor
         self.wireframe = wireframe
         self.localizationManager = localizationManager
@@ -99,7 +97,8 @@ class CustomNetworkBasePresenter {
     func provideNameViewModel() {
         let inputViewModel = InputViewModel.createNotEmptyInputViewModel(
             for: partialName ?? "",
-            placeholder: R.string.localizable.commonName(preferredLanguages: selectedLocale.rLanguages)
+            placeholder: R.string.localizable.commonName(preferredLanguages: selectedLocale.rLanguages),
+            spacesAllowed: true
         )
         view?.didReceiveName(viewModel: inputViewModel)
     }
@@ -376,7 +375,7 @@ private extension CustomNetworkBasePresenter {
                             )
                         )
                     }
-                ),
+                )
             ],
             closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
         )
@@ -405,7 +404,7 @@ private extension CustomNetworkBasePresenter {
 
                         confirm()
                     }
-                ),
+                )
             ],
             closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
         )

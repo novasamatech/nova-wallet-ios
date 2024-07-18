@@ -18,7 +18,7 @@ final class NetworksListWireframe: NetworksListWireframeProtocol {
     func showAddNetwork(from view: NetworksListViewProtocol?) {
         guard
             let view,
-            let knownNetworksListView = KnownNetworksListViewFactory.createView(successAddPresenting: (self, view))
+            let knownNetworksListView = KnownNetworksListViewFactory.createView()
         else {
             return
         }
@@ -30,16 +30,14 @@ final class NetworksListWireframe: NetworksListWireframeProtocol {
     }
 
     func showIntegrateOwnNetwork(from view: NetworksListViewProtocol?) {
-        guard
-            let view,
-            let addNetworkView = CustomNetworkViewFactory.createNetworkAddView()
-        else {
+        guard let view else {
             return
         }
 
-        view.controller.navigationController?.pushViewController(
-            addNetworkView.controller,
-            animated: true
+        showWeb(
+            url: ApplicationConfig.shared.learnNetworkManagementURL,
+            from: view,
+            style: .automatic
         )
     }
 }

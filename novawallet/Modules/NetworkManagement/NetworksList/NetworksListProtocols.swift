@@ -27,7 +27,7 @@ protocol NetworksListInteractorOutputProtocol: AnyObject {
     )
 }
 
-protocol NetworksListWireframeProtocol: ModalAlertPresenting {
+protocol NetworksListWireframeProtocol: ModalAlertPresenting, WebPresentable {
     func showNetworkDetails(
         from view: NetworksListViewProtocol?,
         with chain: ChainModel
