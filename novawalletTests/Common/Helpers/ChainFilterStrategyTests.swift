@@ -58,7 +58,7 @@ class ChainFilterStrategyTests: XCTestCase {
         // given
         let filterStrategy = ChainFilterStrategy.hasProxy
         
-        var currentChains = [
+        let currentChains = [
             ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: false),
             ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: false)
         ].reduceToDict()
@@ -87,11 +87,11 @@ class ChainFilterStrategyTests: XCTestCase {
     // MARK: enabledChains
     
     func testEnabledChainsFilterDelete() {
-        hasProxyFilterDeletes { updatedChains in
+        enabledChainsFilterDeletes { updatedChains in
             updatedChains.map { DataProviderChange<ChainModel>.update(newItem: $0) }
         }
         
-        hasProxyFilterDeletes { updatedChains in
+        enabledChainsFilterDeletes { updatedChains in
             updatedChains.map { DataProviderChange<ChainModel>.insert(newItem: $0) }
         }
     }
@@ -138,7 +138,7 @@ class ChainFilterStrategyTests: XCTestCase {
         // given
         let filterStrategy = ChainFilterStrategy.enabledChains
         
-        var currentChains = [
+        let currentChains = [
             ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, enabled: false),
             ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, enabled: false)
         ].reduceToDict()
@@ -178,7 +178,7 @@ class ChainFilterStrategyTests: XCTestCase {
         
         let filterStrategy = ChainFilterStrategy.chainId(chainId)
         
-        var currentChains = [
+        let currentChains = [
             ChainModelGenerator.generateChain(assets: [], defaultChainId: chainId, addressPrefix: 0),
             ChainModelGenerator.generateChain(assets: [], addressPrefix: 0),
             ChainModelGenerator.generateChain(assets: [], addressPrefix: 0),
@@ -190,7 +190,7 @@ class ChainFilterStrategyTests: XCTestCase {
         
         let updatedChains = currentChains.values.map { _ in
             ChainModelGenerator.generateChain(
-                defaultChainId: generateChainId(notMatching: chainId),
+                defaultChainId: Data.random(of: 32)!.toHex(),
                 generatingAssets: 0,
                 addressPrefix: 0
             )
@@ -239,12 +239,12 @@ class ChainFilterStrategyTests: XCTestCase {
         let newChains = [
             ChainModelGenerator.generateChain(
                 assets: [],
-                defaultChainId: generateChainId(notMatching: chainId),
+                defaultChainId: Data.random(of: 32)!.toHex(),
                 addressPrefix: 0
             ),
             ChainModelGenerator.generateChain(
                 assets: [],
-                defaultChainId: generateChainId(notMatching: chainId),
+                defaultChainId: Data.random(of: 32)!.toHex(),
                 addressPrefix: 0
             )
         ]
@@ -265,16 +265,6 @@ class ChainFilterStrategyTests: XCTestCase {
         XCTAssert(resultChains[chainId] != nil && resultChains.count == targetChainIdChains.count)
     }
     
-    func generateChainId(notMatching chainId: String) -> String {
-        let newChainId = Data.random(of: 32)!.toHex()
-        
-        guard newChainId != chainId else {
-            return generateChainId(notMatching: chainId)
-        }
-        
-        return newChainId
-    }
-    
     // MARK: allSatisfies
     
     func testAllSatisfiesFilterDelete() {
@@ -288,8 +278,6 @@ class ChainFilterStrategyTests: XCTestCase {
     }
     
     func allSatisfiesDeletes(changes: ([ChainModel]) -> [DataProviderChange<ChainModel>]) {
-        let chainId = Data.random(of: 32)!.toHex()
-        
         // given
         let filterStrategy = ChainFilterStrategy.allSatisfies(
             [.hasProxy, .enabledChains]
@@ -336,7 +324,7 @@ class ChainFilterStrategyTests: XCTestCase {
             [.hasProxy, .enabledChains]
         )
         
-        var currentChains = [
+        let currentChains = [
             ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: true, enabled: false),
             ChainModelGenerator.generateChain(assets: [], addressPrefix: 0, hasProxy: false, enabled: true)
         ].reduceToDict()
