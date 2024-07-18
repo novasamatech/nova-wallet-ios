@@ -375,7 +375,7 @@ private extension CustomNetworkBasePresenter {
                             )
                         )
                     }
-                ),
+                )
             ],
             closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
         )
@@ -404,7 +404,7 @@ private extension CustomNetworkBasePresenter {
 
                         confirm()
                     }
-                ),
+                )
             ],
             closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
         )

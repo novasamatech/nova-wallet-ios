@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 
-// swiftlint:disable switch_case_alignment
 enum ChainFilterStrategy {
     typealias Filter = (DataProviderChange<ChainModel>) -> Bool
     typealias Transform = (DataProviderChange<ChainModel>, ChainModel?) -> DataProviderChange<ChainModel>
@@ -104,8 +103,6 @@ enum ChainFilterStrategy {
                     .compactMap(\.transform)
                     .reduce(change) { $1($0, currentChain) }
             }
-        default:
-            nil
         }
     }
 
