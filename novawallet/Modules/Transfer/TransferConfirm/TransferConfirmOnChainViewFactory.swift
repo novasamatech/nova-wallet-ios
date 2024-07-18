@@ -199,7 +199,7 @@ struct TransferConfirmOnChainViewFactory {
 
         let repositoryFactory = SubstrateRepositoryFactory()
 
-        let walletRemoteSubscriptionService = WalletServiceFacade.sharedRemoteSubscriptionService
+        let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
             remoteSubscriptionService: walletRemoteSubscriptionService,

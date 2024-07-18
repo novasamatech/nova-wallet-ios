@@ -6,5 +6,6 @@ extension ChainNodeModel {
         name = remoteModel.name
         self.order = order
         features = remoteModel.features.flatMap { Set($0.compactMap { Feature(rawValue: $0) }) }
+        source = .remote
     }
 }

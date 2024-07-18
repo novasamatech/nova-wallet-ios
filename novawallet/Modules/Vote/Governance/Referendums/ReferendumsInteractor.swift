@@ -6,6 +6,7 @@ import SoraFoundation
 final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: ReferendumsInteractorOutputProtocol?
 
+    let eventCenter: EventCenterProtocol
     let selectedMetaAccount: MetaAccountModel
     let governanceState: GovernanceSharedState
     let chainRegistry: ChainRegistryProtocol
@@ -32,6 +33,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     var offchainVotingCancellable: CancellableCall?
 
     init(
+        eventCenter: EventCenterProtocol,
         selectedMetaAccount: MetaAccountModel,
         governanceState: GovernanceSharedState,
         chainRegistry: ChainRegistryProtocol,
@@ -42,6 +44,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
+        self.eventCenter = eventCenter
         self.selectedMetaAccount = selectedMetaAccount
         self.governanceState = governanceState
         self.chainRegistry = chainRegistry
@@ -51,6 +54,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
         self.currencyManager = currencyManager
+
+        self.eventCenter.add(observer: self)
     }
 
     deinit {
@@ -350,5 +355,32 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         offchainVotingCancellable = votingWrapper
 
         operationQueue.addOperations(votingWrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func setupState(onSuccess: @escaping (GovernanceSelectedOption?) -> Void) {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            self?.governanceState.settings.setup(runningCompletionIn: .main) { result in
+                switch result {
+                case let .success(option):
+                    onSuccess(option)
+                case .failure:
+                    self?.presenter?.didReceiveError(.settingsLoadFailed)
+                }
+            }
+        }
+    }
+}
+
+extension ReferendumsInteractor: EventVisitorProtocol {
+    func processNetworkEnableChanged(event: NetworkEnabledChanged) {
+        guard governanceState.settings.value.chain.chainId == event.chainId else {
+            return
+        }
+
+        setupState { [weak self] option in
+            if let option {
+                self?.handleOptionChange(for: option)
+            }
+        }
     }
 }

@@ -26,7 +26,8 @@ extension ConnectionTransportFactory: WebSocketConnectionFactoryProtocol {
     ) -> WebSocketConnectionProtocol {
         let request = URLRequest(url: url, timeoutInterval: connectionTimeout)
 
-        let transport = tlsSupportProvider.supportTls12(for: url) ? createFoundationTranport() : createTCPTransport()
+        let transport = tlsSupportProvider.supportTls12(for: url) ? createFoundationTranport() :
+            createTCPTransport()
 
         let engine = WSEngine(
             transport: transport,

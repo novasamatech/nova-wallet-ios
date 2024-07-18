@@ -352,9 +352,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
             case .reconnectSuggested:
                 self?.protectedRestart()
             case let .viabilityChanged(isViable):
-                if isViable {
-                    self?.protectedRestart()
-                } else {
+                if !isViable {
                     self?.markDisconnectedAndNotify(error: nil)
                 }
             case let .error(error):

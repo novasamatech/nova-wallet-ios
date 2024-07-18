@@ -6,6 +6,46 @@ struct GradientBannerModel {
 }
 
 extension GradientBannerModel {
+    static func networkIntegration() -> GradientBannerModel {
+        let color = UIColor(
+            red: 102.0 / 255.0,
+            green: 29.0 / 255.0,
+            blue: 120.0 / 255.0,
+            alpha: 1.0
+        )
+
+        let finalColor = UIColor(
+            red: 0.0 / 255.0,
+            green: 7.0 / 255.0,
+            blue: 46.0 / 255.0,
+            alpha: 1.0
+        )
+
+        let locations: [Float] = [0.4, 1.0]
+
+        let left = GradientModel(
+            startPoint: CGPoint(x: 1.0, y: 0.0),
+            endPoint: CGPoint(x: 0.0, y: 0.0),
+            colors: [
+                color,
+                finalColor
+            ],
+            locations: locations
+        )
+
+        let right = GradientModel(
+            startPoint: CGPoint(x: 0.0, y: 0.0),
+            endPoint: CGPoint(x: 1.0, y: 0.0),
+            colors: [
+                finalColor,
+                color
+            ],
+            locations: locations
+        )
+
+        return GradientBannerModel(left: left, right: right)
+    }
+
     static func governanceDelegations() -> GradientBannerModel {
         let color = UIColor(
             red: 35.0 / 255.0,

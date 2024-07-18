@@ -1,6 +1,10 @@
 import Foundation
 import Operation_iOS
 
+protocol AssetBalanceUpdatingServiceProtocol: ApplicationServiceProtocol {
+    func update(selectedMetaAccount: MetaAccountModel)
+}
+
 class AssetBalanceBatchBaseUpdatingService {
     struct SubscriptionInfo {
         let subscriptionId: UUID
@@ -44,6 +48,14 @@ class AssetBalanceBatchBaseUpdatingService {
 
     func removeSubscription(for _: ChainModel.Id) {
         fatalError("Must be implemented in child class")
+    }
+
+    func performSetup() {
+        subscribeToChains()
+    }
+
+    func performThrottle() {
+        unsubscribeFromChains()
     }
 
     private func removeAllSubscriptions() {
@@ -92,13 +104,13 @@ class AssetBalanceBatchBaseUpdatingService {
     }
 }
 
-extension AssetBalanceBatchBaseUpdatingService: AssetsUpdatingServiceProtocol {
+extension AssetBalanceBatchBaseUpdatingService: AssetBalanceUpdatingServiceProtocol {
     func setup() {
-        subscribeToChains()
+        performSetup()
     }
 
     func throttle() {
-        unsubscribeFromChains()
+        performThrottle()
     }
 
     func update(selectedMetaAccount: MetaAccountModel) {

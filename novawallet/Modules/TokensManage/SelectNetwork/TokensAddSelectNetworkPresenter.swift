@@ -13,13 +13,11 @@ final class TokensAddSelectNetworkPresenter {
     init(
         interactor: TokensAddSelectNetworkInteractorInputProtocol,
         wireframe: TokensAddSelectNetworkWireframeProtocol,
-        viewModelFactory: NetworkViewModelFactoryProtocol,
-        chains: [ChainModel.Id: ChainModel]
+        viewModelFactory: NetworkViewModelFactoryProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.chains = chains
     }
 
     func updateView() {
@@ -36,9 +34,6 @@ final class TokensAddSelectNetworkPresenter {
 
 extension TokensAddSelectNetworkPresenter: TokensAddSelectNetworkPresenterProtocol {
     func setup() {
-        updateTargetChains()
-        updateView()
-
         interactor.setup()
     }
 

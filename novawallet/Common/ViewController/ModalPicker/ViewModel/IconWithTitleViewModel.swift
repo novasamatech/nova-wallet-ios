@@ -1,6 +1,6 @@
 import UIKit
 
-struct IconWithTitleViewModel {
+struct IconWithTitleViewModel: Hashable {
     let icon: UIImage?
     let title: String
 }

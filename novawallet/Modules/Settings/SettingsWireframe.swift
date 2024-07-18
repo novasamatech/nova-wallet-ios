@@ -114,6 +114,17 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         )
     }
 
+    func showNetworks(from view: ControllerBackedProtocol?) {
+        guard let networksView = NetworksListViewFactory.createView() else {
+            return
+        }
+        networksView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(
+            networksView.controller,
+            animated: true
+        )
+    }
+
     func showBackup(from view: ControllerBackedProtocol?) {
         guard let backupView = CloudBackupSettingsViewFactory.createView() else {
             return

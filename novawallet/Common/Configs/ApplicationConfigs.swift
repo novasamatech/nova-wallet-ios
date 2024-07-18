@@ -139,6 +139,22 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
+    var preConfiguredLightChainListURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains_dev.json")!
+        #endif
+    }
+
+    var preConfiguredChainDirectoryURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/details")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/detailsDev")!
+        #endif
+    }
+
     var evmAssetsURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v2/assets.json")!
@@ -246,6 +262,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var learnGovernanceDelegateMetadata: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/governance/add-delegate-information")!
+    }
+
+    var learnNetworkManagementURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/misc/developer-documentation/integrate-network")!
     }
 
     // swiftlint:disable line_length
