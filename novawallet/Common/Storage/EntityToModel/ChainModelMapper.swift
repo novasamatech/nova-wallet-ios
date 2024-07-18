@@ -359,7 +359,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             return try createChainNode(from: node)
         } ?? []
 
-        let selectedNode: ChainNodeModel? = if let entitySelectedNode = entity.selectedNode as? CDChainNodeItem {
+        let selectedNode: ChainNodeModel? = if let entitySelectedNode = entity.selectedNode {
             try createChainNode(from: entitySelectedNode)
         } else {
             nil

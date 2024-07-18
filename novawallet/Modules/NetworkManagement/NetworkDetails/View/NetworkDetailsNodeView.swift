@@ -155,39 +155,7 @@ final class NetworkDetailsNodeView: UIView {
             selectionImageView.stopShimmeringOpacity()
         }
 
-        switch viewModel.connectionState {
-        case let .connecting(string):
-            networkStatusLabel.text = string
-            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
-
-            networkStatusLabel.applyShimmer(style: .semiboldCaps2Secondary)
-            networkStatusLabel.startShimmering()
-        case let .pinged(ping):
-            networkStatusLabel.stopShimmering()
-
-            switch ping {
-            case let .low(text):
-                networkStatusLabel.text = text
-                networkStatusLabel.textColor = R.color.colorTextPositive()
-                networkStatusIcon.image = R.image.iconConnectionStatusPerfect()
-            case let .medium(text):
-                networkStatusLabel.text = text
-                networkStatusLabel.textColor = R.color.colorTextWarning()
-                networkStatusIcon.image = R.image.iconConnectionStatusGood()
-            case let .high(text):
-                networkStatusLabel.text = text
-                networkStatusLabel.textColor = R.color.colorTextNegative()
-                networkStatusIcon.image = R.image.iconConnectionStatusBad()
-            }
-        case .disconnected:
-            networkStatusLabel.text = nil
-            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
-        case let .unknown(string):
-            networkStatusLabel.stopShimmering()
-            networkStatusLabel.apply(style: .semiboldCaps2Secondary)
-            networkStatusLabel.text = string
-            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
-        }
+        updateNetworkStatus(with: viewModel)
     }
 }
 
@@ -260,6 +228,42 @@ private extension NetworkDetailsNodeView {
 
         accessoryIcon.addGestureRecognizer(moreTapGesture)
         accessoryIcon.isUserInteractionEnabled = true
+    }
+
+    func updateNetworkStatus(with viewModel: NetworkDetailsViewLayout.NodeModel) {
+        switch viewModel.connectionState {
+        case let .connecting(string):
+            networkStatusLabel.text = string
+            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
+
+            networkStatusLabel.applyShimmer(style: .semiboldCaps2Secondary)
+            networkStatusLabel.startShimmering()
+        case let .pinged(ping):
+            networkStatusLabel.stopShimmering()
+
+            switch ping {
+            case let .low(text):
+                networkStatusLabel.text = text
+                networkStatusLabel.textColor = R.color.colorTextPositive()
+                networkStatusIcon.image = R.image.iconConnectionStatusPerfect()
+            case let .medium(text):
+                networkStatusLabel.text = text
+                networkStatusLabel.textColor = R.color.colorTextWarning()
+                networkStatusIcon.image = R.image.iconConnectionStatusGood()
+            case let .high(text):
+                networkStatusLabel.text = text
+                networkStatusLabel.textColor = R.color.colorTextNegative()
+                networkStatusIcon.image = R.image.iconConnectionStatusBad()
+            }
+        case .disconnected:
+            networkStatusLabel.text = nil
+            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
+        case let .unknown(string):
+            networkStatusLabel.stopShimmering()
+            networkStatusLabel.apply(style: .semiboldCaps2Secondary)
+            networkStatusLabel.text = string
+            networkStatusIcon.image = R.image.iconConnectionStatusConnecting()
+        }
     }
 
     @objc func actionMore() {

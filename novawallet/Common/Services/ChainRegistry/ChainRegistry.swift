@@ -325,7 +325,10 @@ extension ChainRegistry: ChainRegistryProtocol {
             mutex.unlock()
         }
 
-        let closure: ([DataProviderChange<ChainModel>], [ChainModel.Id: ChainModel]) -> Void = { changes, currentChains in
+        let closure: (
+            [DataProviderChange<ChainModel>],
+            [ChainModel.Id: ChainModel]
+        ) -> Void = { changes, currentChains in
             runningInQueue.async {
                 let filtered = if let filterStrategy {
                     filterStrategy.filter(

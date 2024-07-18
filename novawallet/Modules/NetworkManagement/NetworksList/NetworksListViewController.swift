@@ -261,7 +261,7 @@ private extension NetworksListViewController {
         let cell: UITableViewCell
 
         switch viewModel {
-        case let .banner:
+        case .banner:
             let bannerCell = tableView.dequeueReusableCellWithType(
                 BannerCell.self,
                 forIndexPath: indexPath
