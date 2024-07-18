@@ -35,10 +35,14 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
             }
             switch result {
             case let .success(chains):
-                guard let chain = self.search(chainId: self.chainId, in: chains) else {
+                guard
+                    let chain = self.search(chainId: self.chainId, in: chains),
+                    chain.syncMode.enabled()
+                else {
                     completion(nil)
                     return
                 }
+
                 let content = self.content(from: chain)
                 completion(content)
             case .failure:

@@ -1,14 +1,9 @@
 import Foundation
 
-struct ConnectionTLSSupport {
-    let url: URL
-    let supportsTLS12: Bool
-}
-
 protocol ConnectionTLSSupportProviding: AnyObject {
     func supportTls12(for url: URL) -> Bool
 
-    func add(support: [ConnectionTLSSupport])
+    func add(support: [ConnectionCreationParams])
 }
 
 final class ConnectionTLSSupportProvider {
@@ -20,7 +15,7 @@ extension ConnectionTLSSupportProvider: ConnectionTLSSupportProviding {
         !noTls12Support.contains(url)
     }
 
-    func add(support: [ConnectionTLSSupport]) {
+    func add(support: [ConnectionCreationParams]) {
         let newUrls = Set(support.compactMap { $0.supportsTLS12 ? nil : $0.url })
         noTls12Support.formUnion(newUrls)
     }

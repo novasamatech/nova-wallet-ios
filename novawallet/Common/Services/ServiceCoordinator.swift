@@ -190,13 +190,7 @@ extension ServiceCoordinator {
             proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: metaAccountsRepository,
             walletUpdateMediator: walletUpdateMediator,
-            chainFilter: { chain in
-                #if F_RELEASE
-                    return chain.hasProxy && !chain.isTestnet
-                #else
-                    return chain.hasProxy
-                #endif
-            },
+            chainFilter: .allSatisfies([.enabledChains, .hasProxy]),
             chainWalletFilter: { _, wallet in
                 #if F_RELEASE
                     return wallet.type != .watchOnly

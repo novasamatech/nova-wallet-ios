@@ -5,6 +5,7 @@ import SoraFoundation
 final class CrowdloanListInteractor: RuntimeConstantFetching {
     weak var presenter: CrowdloanListInteractorOutputProtocol?
 
+    let eventCenter: EventCenterProtocol
     let selectedMetaAccount: MetaAccountModel
     let crowdloanState: CrowdloanSharedState
     let crowdloanOperationFactory: CrowdloanOperationFactoryProtocol
@@ -37,6 +38,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     }
 
     init(
+        eventCenter: EventCenterProtocol,
         selectedMetaAccount: MetaAccountModel,
         crowdloanState: CrowdloanSharedState,
         chainRegistry: ChainRegistryProtocol,
@@ -50,6 +52,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
+        self.eventCenter = eventCenter
         self.selectedMetaAccount = selectedMetaAccount
         self.crowdloanState = crowdloanState
         self.crowdloanOperationFactory = crowdloanOperationFactory
@@ -62,6 +65,8 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
         self.currencyManager = currencyManager
+
+        self.eventCenter.add(observer: self)
     }
 
     private func clearOnchainContributionRequest(_ shouldCancel: Bool) {
@@ -454,6 +459,19 @@ extension CrowdloanListInteractor {
 
         operationManager.enqueue(operations: crowdloanWrapper.allOperations, in: .transient)
     }
+
+    func setupState(onSuccess: @escaping (ChainModel?) -> Void) {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            self?.crowdloanState.settings.setup(runningCompletionIn: .main) { result in
+                switch result {
+                case let .success(chain):
+                    onSuccess(chain)
+                case let .failure(error):
+                    self?.presenter?.didReceiveSelectedChain(result: .failure(error))
+                }
+            }
+        }
+    }
 }
 
 extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
@@ -468,6 +486,23 @@ extension CrowdloanListInteractor: SelectedCurrencyDepending {
            let chain = crowdloanState.settings.value,
            let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
+    }
+}
+
+extension CrowdloanListInteractor: EventVisitorProtocol {
+    func processNetworkEnableChanged(event: NetworkEnabledChanged) {
+        guard
+            let chain = crowdloanState.settings.value,
+            chain.chainId == event.chainId
+        else {
+            return
+        }
+
+        setupState { [weak self] chain in
+            guard let chain else { return }
+
+            self?.refresh(with: chain)
         }
     }
 }

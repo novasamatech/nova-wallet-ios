@@ -2,8 +2,8 @@ import Foundation
 import SoraUI
 
 final class TokensManageWireframe: TokensManageWireframeProtocol {
-    func showAddToken(from view: TokensManageViewProtocol?, allChains: [ChainModel.Id: ChainModel]) {
-        guard let networkSelectionView = TokensAddSelectNetworkViewFactory.createView(for: allChains) else {
+    func showAddToken(from view: TokensManageViewProtocol?) {
+        guard let networkSelectionView = TokensAddSelectNetworkViewFactory.createView() else {
             return
         }
 

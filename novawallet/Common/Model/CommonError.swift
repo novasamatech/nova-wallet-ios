@@ -4,6 +4,7 @@ enum CommonError: Error {
     case undefined
     case databaseSubscription
     case dataCorruption
+    case noDataRetrieved
 }
 
 extension CommonError: ErrorContentConvertible {
@@ -25,6 +26,11 @@ extension CommonError: ErrorContentConvertible {
         case .databaseSubscription:
             title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
             message = R.string.localizable.commonDbSubscriptionError(
+                preferredLanguages: locale?.rLanguages
+            )
+        case .noDataRetrieved:
+            title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
+            message = R.string.localizable.commonErrorNoDataRetrieved(
                 preferredLanguages: locale?.rLanguages
             )
         }

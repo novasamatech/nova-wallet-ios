@@ -35,7 +35,7 @@ final class AssetSelectionPresenter: AssetSelectionBasePresenter {
             let chain = chainAsset.chain
             let asset = chainAsset.asset
 
-            let icon = RemoteImageViewModel(url: asset.icon ?? chain.icon)
+            let icon = ImageViewModelFactory.createAssetIconOrDefault(from: asset.icon ?? chain.icon)
             let title = asset.name ?? chain.name
             let isSelected = selectedChainAssetId?.assetId == asset.assetId &&
                 selectedChainAssetId?.chainId == chain.chainId

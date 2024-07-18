@@ -59,7 +59,7 @@ class ExportRowView: GenericPairValueView<
     }
 
     func setupButtonStyle() {
-        mainContentLabel.apply(style: .semiboldSubhedlineAccent)
+        mainContentLabel.apply(style: .semiboldSubheadlineAccent)
         mainContentLabel.numberOfLines = 1
         mainContentLabel.textAlignment = .center
         secondaryContentLabel.isHidden = true

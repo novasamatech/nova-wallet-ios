@@ -26,6 +26,8 @@ protocol EthereumOperationFactoryProtocol {
     ) -> Operation_iOS.BaseOperation<EthereumReducedBlockObject>
 
     func createMaxPriorityPerGasOperation() -> BaseOperation<HexCodable<BigUInt>>
+
+    func createChainIdOperation() -> BaseOperation<HexCodable<BigUInt>>
 }
 
 enum EthereumBlock: String {
@@ -42,4 +44,5 @@ enum EthereumMethod: String {
     case transactionReceipt = "eth_getTransactionReceipt"
     case blockByNumber = "eth_getBlockByNumber"
     case maxPriorityFeePerGas = "eth_maxPriorityFeePerGas"
+    case chainId = "eth_chainId"
 }
