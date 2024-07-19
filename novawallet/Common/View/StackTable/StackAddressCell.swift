@@ -16,6 +16,7 @@ final class StackAddressCell: RowView<LoadableIconDetailsView> {
         super.init(frame: frame)
 
         backgroundColor = .clear
+        isUserInteractionEnabled = true
 
         configure()
     }
