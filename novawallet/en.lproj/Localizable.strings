@@ -1728,3 +1728,5 @@ Please enter URL of the valid %@ node.";
 "network.node.delete.alert.description" = "%@ node will be deleted";
 "network.add.alert.success.title" = "Network added successfully";
 "common.modify" = "Modify";
+"dapp.unknown.warning.title" = "Warning! DApp is unknown";
+"dapp.unknown.warning.message" = "DApps can withdraw all your funds if they are malicious. Be careful with DApps you visit.\n\nIf someone is telling you to visit this DApp it is very likely that this person is trying to scam you.\n\nIf you are in doubt, please contact Nova Wallet support: support@novawallet.io.";

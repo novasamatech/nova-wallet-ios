@@ -1720,3 +1720,7 @@
 "network.add.alert.invalid.symbol.message" = "Введенный символ валюты (%@) не совпадает с сетью (%@). Вы хотите использовать правильный символ валюты?";
 "network.node.delete.alert.description" = "нода %@ будет удалена";
 "network.add.alert.success.title" = "Сеть успешно добавлена";
+"common.modify" = "Изменить";
+"dapp.unknown.warning.title" = "Внимание! DApp неизвестен";
+"dapp.unknown.warning.message" = "DApps могут вывести все ваши средства, если они вредоносные. Будьте осторожны с посещаемыми DApps.\n\nЕсли кто-то говорит вам посетить этот DApp, вероятно, этот человек пытается вас обмануть.\n\nЕсли у вас есть сомнения, пожалуйста, свяжитесь с поддержкой Nova Wallet: support@novawallet.io.";
+
