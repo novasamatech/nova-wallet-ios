@@ -28,6 +28,7 @@ final class NPoolsUnstakeConfirmPresenter: NPoolsUnstakeBasePresenter {
         hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -41,6 +42,7 @@ final class NPoolsUnstakeConfirmPresenter: NPoolsUnstakeBasePresenter {
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatorFactory,
+            stakingActivity: stakingActivity,
             localizationManager: localizationManager,
             logger: logger
         )
@@ -140,12 +142,14 @@ extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmPresenterProtocol {
         DataValidationRunner(
             validators: validators
         ).runValidation { [weak self] in
-            guard let unstakingPoints = self?.getUnstakingPoints() else {
+            guard
+                let unstakingPoints = self?.getUnstakingPoints(),
+                let needsMigration = self?.needsMigration else {
                 return
             }
 
             self?.view?.didStartLoading()
-            self?.interactor?.submit(unstakingPoints: unstakingPoints)
+            self?.interactor?.submit(unstakingPoints: unstakingPoints, needsMigration: needsMigration)
         }
     }
 

@@ -11,7 +11,13 @@ struct NPoolsUnstakeConfirmViewFactory {
             let interactor = createInteractor(for: state),
             let currencyManager = CurrencyManager.shared,
             let wallet = SelectedWalletSettings.shared.value,
-            let selectedAccount = wallet.fetchMetaChainAccount(for: state.chainAsset.chain.accountRequest()) else {
+            let selectedAccount = wallet.fetchMetaChainAccount(for: state.chainAsset.chain.accountRequest()),
+            let stakingActivity = StakingActivityForValidation(
+                wallet: SelectedWalletSettings.shared.value,
+                chain: state.chainAsset.chain,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ) else {
             return nil
         }
 
@@ -41,6 +47,7 @@ struct NPoolsUnstakeConfirmViewFactory {
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatingFactory,
+            stakingActivity: stakingActivity,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

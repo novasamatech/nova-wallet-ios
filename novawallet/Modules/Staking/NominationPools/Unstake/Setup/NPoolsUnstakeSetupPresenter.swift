@@ -22,6 +22,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
         hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -32,6 +33,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatorFactory,
+            stakingActivity: stakingActivity,
             localizationManager: localizationManager,
             logger: logger
         )

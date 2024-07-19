@@ -3,7 +3,8 @@ import Operation_iOS
 import BigInt
 import SubstrateSdk
 
-class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataProviding, RuntimeConstantFetching {
+class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataProviding, RuntimeConstantFetching,
+    NominationPoolStakingMigrating, AnyProviderAutoCleaning {
     weak var basePresenter: NPoolsUnstakeBaseInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
@@ -37,6 +38,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
     private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
+    var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
 
     private var bondedAccountIdCancellable: CancellableCall?
     private var eraCountdownCancellable: CancellableCall?
@@ -181,6 +183,10 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         balanceProvider = subscribeToAssetBalanceProvider(for: accountId, chainId: chainId, assetId: assetId)
         minStakeProvider = subscribeMinJoinBond(for: chainId)
 
+        clear(dataProvider: &delegatedStakingProvider)
+
+        delegatedStakingProvider = subscribeDelegatedStaking(for: accountId, chainId: chainId)
+
         setupCurrencyProvider()
     }
 
@@ -271,13 +277,23 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    func createExtrinsicClosure(for points: BigUInt, accountId: AccountId) -> ExtrinsicBuilderClosure {
+    func createExtrinsicClosure(
+        for points: BigUInt,
+        accountId: AccountId,
+        needsMigration: Bool
+    ) -> ExtrinsicBuilderClosure {
         { builder in
+            var currentBuilder = try NominationPools.migrateIfNeeded(
+                needsMigration,
+                accountId: accountId,
+                builder: builder
+            )
+
             let call = NominationPools.UnbondCall(
                 memberAccount: .accoundId(accountId),
                 unbondingPoints: points
             )
-            return try builder.adding(call: call.runtimeCall())
+            return try currentBuilder.adding(call: call.runtimeCall())
         }
     }
 
@@ -333,13 +349,17 @@ extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol 
         provideExistentialDeposit()
     }
 
-    func estimateFee(for points: BigUInt) {
+    func estimateFee(for points: BigUInt, needsMigration: Bool) {
         let identifier = String(points)
 
         feeProxy.estimateFee(
             using: extrinsicService,
             reuseIdentifier: identifier,
-            setupBy: createExtrinsicClosure(for: points, accountId: accountId)
+            setupBy: createExtrinsicClosure(
+                for: points,
+                accountId: accountId,
+                needsMigration: needsMigration
+            )
         )
     }
 }
@@ -430,6 +450,30 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
             basePresenter?.didReceive(minStake: minStake)
         case let .failure(error):
             basePresenter?.didReceive(error: .subscription(error, "min stake"))
+        }
+    }
+
+    func handleDelegatedStaking(
+        result: Result<DelegatedStakingPallet.Delegation?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(delegation):
+            needsPoolStakingMigration(
+                for: delegation,
+                runtimeProvider: runtimeService,
+                operationQueue: operationQueue
+            ) { [weak self] result in
+                switch result {
+                case let .success(needsMigration):
+                    self?.basePresenter?.didReceive(needsMigration: needsMigration)
+                case let .failure(error):
+                    self?.basePresenter?.didReceive(error: .subscription(error, "Needs Migration"))
+                }
+            }
+        case let .failure(error):
+            basePresenter?.didReceive(error: .subscription(error, "Delegated Staking"))
         }
     }
 }

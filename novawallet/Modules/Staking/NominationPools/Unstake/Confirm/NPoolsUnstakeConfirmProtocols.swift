@@ -15,7 +15,7 @@ protocol NPoolsUnstakeConfirmPresenterProtocol: AnyObject {
 }
 
 protocol NPoolsUnstakeConfirmInteractorInputProtocol: NPoolsUnstakeBaseInteractorInputProtocol {
-    func submit(unstakingPoints: BigUInt)
+    func submit(unstakingPoints: BigUInt, needsMigration: Bool)
 }
 
 protocol NPoolsUnstakeConfirmInteractorOutputProtocol: NPoolsUnstakeBaseInteractorOutputProtocol {
