@@ -68,6 +68,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     override func resetWallet() {
         clearNftSubscription()
         clearLocksSubscription()
+        clearHoldsSubscription()
 
         providerWalletInfo()
         provideWalletConnectSessionsCount()
@@ -94,6 +95,12 @@ final class AssetListInteractor: AssetListBaseInteractor {
         assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
         assetLocksSubscriptions = [:]
         locks = [:]
+    }
+
+    private func clearHoldsSubscription() {
+        assetHoldsSubscriptions.values.forEach { $0.removeObserver(self) }
+        assetHoldsSubscriptions = [:]
+        holds = [:]
     }
 
     private func providerWalletInfo() {
