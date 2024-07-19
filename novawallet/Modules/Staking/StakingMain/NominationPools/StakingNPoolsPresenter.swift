@@ -159,21 +159,6 @@ extension StakingNPoolsPresenter: StakingMainChildPresenterProtocol {
         wireframe.showClaimRewards(from: view)
     }
 
-    func performSelectedEntityAction() {
-        guard
-            let address = try? poolBondedAccountId?.toAddress(using: chainAsset.chain.chainFormat),
-            let view = view else {
-            return
-        }
-
-        wireframe.presentAccountOptions(
-            from: view,
-            address: address,
-            chain: chainAsset.chain,
-            locale: view.selectedLocale
-        )
-    }
-
     func performManageAction(_ action: StakingManageOption) {
         switch action {
         case .stakeMore:

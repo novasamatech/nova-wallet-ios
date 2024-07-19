@@ -1,9 +1,8 @@
 import Foundation
 import SoraUI
 
-final class StackAddressCell: RowView<GenericTitleValueView<LoadableIconDetailsView, UIImageView>> {
-    var titleView: LoadableIconDetailsView { rowContentView.titleView }
-    var indicatorView: UIImageView { rowContentView.valueView }
+final class StackAddressCell: RowView<LoadableIconDetailsView> {
+    var titleView: LoadableIconDetailsView { rowContentView }
 
     var skeletonView: SkrullableView?
 
@@ -55,8 +54,6 @@ final class StackAddressCell: RowView<GenericTitleValueView<LoadableIconDetailsV
         titleView.iconWidth = 24
         titleView.imageView.contentMode = .scaleAspectFit
         titleView.detailsLabel.numberOfLines = 1
-
-        indicatorView.image = R.image.iconInfoFilled()
     }
 }
 
@@ -68,7 +65,7 @@ extension StackAddressCell: SkeletonableView {
     }
 
     var hidingViews: [UIView] {
-        [titleView, indicatorView]
+        [titleView]
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
