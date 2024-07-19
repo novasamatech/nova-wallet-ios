@@ -21,7 +21,7 @@ protocol WalletLocalSubscriptionFactoryProtocol {
     ) throws -> StreamableProvider<AssetLock>
 
     func getHoldsProvider(for accountId: AccountId) throws -> StreamableProvider<AssetHold>
-    
+
     func getHoldsProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id,
@@ -264,7 +264,7 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             serialQueue: processingQueue
         )
     }
-    
+
     func getHoldsProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id,

@@ -31,7 +31,7 @@ protocol WalletLocalStorageSubscriber: LocalStorageProviderObserving where Self:
     func subscribeToAllHoldsProvider(
         for accountId: AccountId
     ) -> StreamableProvider<AssetHold>?
-    
+
     func subscribeToHoldsProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id,
@@ -290,13 +290,42 @@ extension WalletLocalStorageSubscriber {
 
         return holdsProvider
     }
-    
+
     func subscribeToHoldsProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) -> StreamableProvider<AssetHold>? {
-        
+        guard
+            let holdsProvider = try? walletLocalSubscriptionFactory.getHoldsProvider(
+                for: accountId,
+                chainId: chainId,
+                assetId: assetId
+            ) else {
+            return nil
+        }
+
+        addStreamableProviderObserver(
+            for: holdsProvider,
+            updateClosure: { [weak self] changes in
+                self?.walletLocalSubscriptionHandler.handleAccountHolds(
+                    result: .success(changes),
+                    accountId: accountId,
+                    chainId: chainId,
+                    assetId: assetId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.walletLocalSubscriptionHandler.handleAccountHolds(
+                    result: .failure(error),
+                    accountId: accountId,
+                    chainId: chainId,
+                    assetId: assetId
+                )
+            }
+        )
+
+        return holdsProvider
     }
 }
 

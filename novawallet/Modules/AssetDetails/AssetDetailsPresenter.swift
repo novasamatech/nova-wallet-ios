@@ -214,6 +214,11 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
+    func didReceive(holdsChanges: [DataProviderChange<AssetHold>]) {
+        holds = holds.applying(changes: holdsChanges)
+        updateView()
+    }
+
     func didReceive(price: PriceData?) {
         priceData = price
         updateView()

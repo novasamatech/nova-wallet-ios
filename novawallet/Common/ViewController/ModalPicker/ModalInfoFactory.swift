@@ -202,7 +202,7 @@ struct ModalInfoFactory {
             precision: precision
         )
 
-        return (balanceLockKnownModels + balanceLockUnknownModels + externalBalances + reserved)
+        return (balanceLockKnownModels + balanceLockUnknownModels + balanceHolds + externalBalances + reserved)
             .sorted { viewModel1, viewModel2 in
                 viewModel1.value >= viewModel2.value
             }.map(\.viewModel)
@@ -262,24 +262,16 @@ struct ModalInfoFactory {
                 precision: precision
             ) ?? 0.0
 
-            let price = holdAmount * balanceContext.price
-
-            let viewModel = LocalizableResource<StakingAmountViewModel> { locale in
-                let formatter = priceFormatter.value(for: locale)
-                let amountFormatter = amountFormatter.value(for: locale)
-
-                let title: String = hold.reason
-
-                let priceString = balanceContext.price == 0.0 ? nil : formatter.stringFromDecimal(price)
-                let amountString = amountFormatter.stringFromDecimal(holdAmount) ?? ""
-
-                let balance = BalanceViewModel(amount: amountString, price: priceString)
-
-                return StakingAmountViewModel(title: title, balance: balance)
-            }
-
-            return (price, viewModel)
-        }
+            return createLockFieldViewModel(
+                amount: holdAmount,
+                price: balanceContext.price,
+                localizedTitle: LocalizableResource { _ in
+                    hold.reason
+                },
+                amountFormatter: amountFormatter,
+                priceFormatter: priceFormatter
+            )
+        }.flatMap { $0 }
     }
 
     private static func createExternalBalancesViewModel(
@@ -317,7 +309,7 @@ struct ModalInfoFactory {
             R.string.localizable.walletBalanceReserved(preferredLanguages: locale.rLanguages)
         }
 
-        let totalHolds = balanceContext.balanceHolds.reduce(into: BigUInt(0)) { $0 + $1.amount }
+        let totalHolds = balanceContext.balanceHolds.reduce(BigUInt(0)) { $0 + $1.amount }
         let totalHoldsDecimal = Decimal.fromSubstrateAmount(
             totalHolds,
             precision: precision

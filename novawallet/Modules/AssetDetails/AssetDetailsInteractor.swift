@@ -126,22 +126,26 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
         guard let accountId = accountId else {
             return
         }
-        
+
         subscribePrice()
-        
+
         assetBalanceSubscription = subscribeToAssetBalanceProvider(
             for: accountId,
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
-        
+
         assetLocksSubscription = subscribeToLocksProvider(
             for: accountId,
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
-        
-        assetHoldsSubscription = nil
+
+        assetHoldsSubscription = subscribeToHoldsProvider(
+            for: accountId,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
+        )
 
         if chainAsset.chain.chainAssetIdsWithExternalBalances().contains(chainAsset.chainAssetId) {
             externalBalanceSubscription = subscribeToExternalAssetBalancesProvider(
@@ -201,6 +205,26 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
             presenter?.didReceive(error: .locks(error))
         case let .success(changes):
             presenter?.didReceive(lockChanges: changes)
+        }
+    }
+
+    func handleAccountHolds(
+        result: Result<[DataProviderChange<AssetHold>], Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) {
+        guard chainId == chainAsset.chain.chainId,
+              assetId == chainAsset.asset.assetId,
+              accountId == self.accountId else {
+            return
+        }
+
+        switch result {
+        case let .failure(error):
+            presenter?.didReceive(error: .holds(error))
+        case let .success(changes):
+            presenter?.didReceive(holdsChanges: changes)
         }
     }
 }
