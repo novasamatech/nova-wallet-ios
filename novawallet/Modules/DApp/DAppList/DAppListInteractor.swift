@@ -14,8 +14,6 @@ final class DAppListInteractor {
     let logger: LoggerProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
 
-    var dAppList: DAppList?
-
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
 
     init(
@@ -55,7 +53,6 @@ final class DAppListInteractor {
     private func subscribeDApps() {
         let updateClosure: ([DataProviderChange<DAppList>]) -> Void = { [weak self] changes in
             if let result = changes.reduceToLastChange() {
-                self?.dAppList = result
                 self?.presenter?.didReceive(dAppsResult: .success(result))
             } else {
                 self?.presenter?.didReceive(dAppsResult: nil)
@@ -118,18 +115,6 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
 
     func refresh() {
         dAppProvider.refresh()
-    }
-
-    func validateURLToOpen(_ url: URL) {
-        guard let dAppList else { return }
-
-        let allowedUrlSet = Set(dAppList.dApps.map(\.url))
-
-        if allowedUrlSet.contains(url) {
-            presenter?.didReceiveURLValidationSuccess(for: url)
-        } else {
-            presenter?.didReceiveURLValidationWarning(for: url)
-        }
     }
 }
 

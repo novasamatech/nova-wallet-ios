@@ -31,7 +31,6 @@ protocol DAppListInteractorInputProtocol: AnyObject {
     func refresh()
     func addToFavorites(dApp: DApp)
     func removeFromFavorites(dAppIdentifier: String)
-    func validateURLToOpen(_ url: URL)
 }
 
 protocol DAppListInteractorOutputProtocol: AnyObject {
@@ -39,8 +38,6 @@ protocol DAppListInteractorOutputProtocol: AnyObject {
     func didReceive(dAppsResult: Result<DAppList, Error>?)
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])
     func didReceiveWalletsState(hasUpdates: Bool)
-    func didReceiveURLValidationSuccess(for url: URL)
-    func didReceiveURLValidationWarning(for url: URL)
 }
 
 protocol DAppListWireframeProtocol: DAppAlertPresentable, ErrorPresentable, WebPresentable, WalletSwitchPresentable {
