@@ -363,11 +363,35 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
         hasWalletsListUpdates = hasUpdates
         provideWalletSwitchViewModel()
     }
+
+    func didReceiveURLValidationSuccess(for url: URL) {
+        wireframe.showBrowser(
+            from: view,
+            for: .query(string: url.absoluteString)
+        )
+    }
+
+    func didReceiveURLValidationWarning(for url: URL) {
+        wireframe.showUnknownDappWarning(
+            from: view,
+            locale: selectedLocale,
+            handler: { [weak self] in
+                self?.wireframe.showBrowser(
+                    from: self?.view,
+                    for: .query(string: url.absoluteString)
+                )
+            }
+        )
+    }
 }
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        wireframe.showBrowser(from: view, for: result)
+        if case let .query(text) = result, let url = URL(string: text) {
+            interactor.validateURLToOpen(url)
+        } else {
+            wireframe.showBrowser(from: view, for: result)
+        }
     }
 }
 

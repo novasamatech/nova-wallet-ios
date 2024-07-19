@@ -15,6 +15,12 @@ protocol DAppAlertPresentable: AlertPresentable {
         locale: Locale,
         handler: @escaping () -> Void
     )
+
+    func showUnknownDappWarning(
+        from view: ControllerBackedProtocol?,
+        locale: Locale,
+        handler: @escaping () -> Void
+    )
 }
 
 extension DAppAlertPresentable {
@@ -46,6 +52,30 @@ extension DAppAlertPresentable {
         )
 
         showRemoval(from: view, title: title, message: message, locale: locale, handler: handler)
+    }
+
+    func showUnknownDappWarning(
+        from view: ControllerBackedProtocol?,
+        locale: Locale,
+        handler: @escaping () -> Void
+    ) {
+        let action = AlertPresentableAction(
+            title: R.string.localizable.commonProceed(preferredLanguages: locale.rLanguages),
+            style: .destructive,
+            handler: handler
+        )
+        let viewModel = AlertPresentableViewModel(
+            title: R.string.localizable.dappUnknownWarningTitle(preferredLanguages: locale.rLanguages),
+            message: R.string.localizable.dappUnknownWarningMessage(preferredLanguages: locale.rLanguages),
+            actions: [action],
+            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+        )
+
+        present(
+            viewModel: viewModel,
+            style: .alert,
+            from: view
+        )
     }
 
     private func showRemoval(

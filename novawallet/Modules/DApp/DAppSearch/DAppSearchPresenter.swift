@@ -80,8 +80,8 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
     }
 
     func selectSearchQuery() {
-        delegate?.didCompleteDAppSearchResult(.query(string: query ?? ""))
         wireframe.close(from: view)
+        delegate?.didCompleteDAppSearchResult(.query(string: query ?? ""))
     }
 
     func cancel() {
