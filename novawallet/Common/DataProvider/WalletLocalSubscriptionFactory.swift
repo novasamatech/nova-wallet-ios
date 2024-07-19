@@ -19,6 +19,8 @@ protocol WalletLocalSubscriptionFactoryProtocol {
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) throws -> StreamableProvider<AssetLock>
+
+    func getHoldsProvider(for accountId: AccountId) throws -> StreamableProvider<AssetHold>
 }
 
 final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -224,6 +226,64 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         let source = EmptyStreamableSource<AssetLock>()
 
         let mapper = AssetLockMapper()
+
+        let repository = storageFacade.createRepository(
+            filter: repositoryFilter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        let processingQueue = createStreamableProcessingQueue()
+
+        let observable = CoreDataContextObservable(
+            service: storageFacade.databaseService,
+            mapper: AnyCoreDataMapper(mapper),
+            predicate: { entity in
+                observingFilter(entity)
+            },
+            processingQueue: processingQueue
+        )
+
+        observable.start { [weak self] error in
+            if let error = error {
+                self?.logger.error("Did receive error: \(error)")
+            }
+        }
+
+        return StreamableProvider(
+            source: AnyStreamableSource(source),
+            repository: AnyDataProviderRepository(repository),
+            observable: AnyDataProviderRepositoryObservable(observable),
+            operationManager: operationManager,
+            serialQueue: processingQueue
+        )
+    }
+
+    func getHoldsProvider(for accountId: AccountId) throws -> StreamableProvider<AssetHold> {
+        let cacheKey = "holds-\(accountId.toHex())"
+
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<AssetHold> {
+            return provider
+        }
+
+        let filter = NSPredicate.assetHold(for: accountId)
+
+        let provider = createAssetHoldsProvider(for: filter) { entity in
+            accountId.toHex() == entity.chainAccountId
+        }
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
+    }
+
+    private func createAssetHoldsProvider(
+        for repositoryFilter: NSPredicate,
+        observingFilter: @escaping (CDAssetHold) -> Bool
+    ) -> StreamableProvider<AssetHold> {
+        let source = EmptyStreamableSource<AssetHold>()
+
+        let mapper = AssetHoldMapper()
 
         let repository = storageFacade.createRepository(
             filter: repositoryFilter,

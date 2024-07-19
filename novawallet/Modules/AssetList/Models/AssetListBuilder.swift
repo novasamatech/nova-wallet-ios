@@ -6,6 +6,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
 
     private(set) var nftList: ListDifferenceCalculator<NftModel>
     private(set) var locksResult: Result<[AssetLock], Error>?
+    private(set) var holdsResult: Result<[AssetHold], Error>?
 
     private var currentModel: AssetListBuilderResult.Model = .init()
 
@@ -34,7 +35,8 @@ final class AssetListBuilder: AssetListBaseBuilder {
             balances: balances,
             externalBalanceResult: externalBalancesResult,
             nfts: nftList.allItems,
-            locksResult: locksResult
+            locksResult: locksResult,
+            holdsResult: holdsResult
         )
 
         currentModel = model
@@ -94,6 +96,14 @@ extension AssetListBuilder {
     func applyLocks(_ result: Result<[AssetLock], Error>) {
         workingQueue.async { [weak self] in
             self?.locksResult = result
+
+            self?.scheduleRebuildModel()
+        }
+    }
+
+    func applyHolds(_ result: Result<[AssetHold], Error>) {
+        workingQueue.async { [weak self] in
+            self?.holdsResult = result
 
             self?.scheduleRebuildModel()
         }

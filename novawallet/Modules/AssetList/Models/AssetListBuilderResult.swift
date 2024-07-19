@@ -12,6 +12,7 @@ struct AssetListBuilderResult {
         let externalBalanceResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
         let nfts: [NftModel]
         let locksResult: Result<[AssetLock], Error>?
+        let holdsResult: Result<[AssetHold], Error>?
 
         init(
             groups: [AssetListGroupModel] = [],
@@ -22,7 +23,8 @@ struct AssetListBuilderResult {
             balances: [ChainAssetId: Result<AssetBalance, Error>] = [:],
             externalBalanceResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>? = nil,
             nfts: [NftModel] = [],
-            locksResult: Result<[AssetLock], Error>? = nil
+            locksResult: Result<[AssetLock], Error>? = nil,
+            holdsResult: Result<[AssetHold], Error>? = nil
         ) {
             self.groups = groups
             self.groupLists = groupLists
@@ -33,6 +35,7 @@ struct AssetListBuilderResult {
             self.externalBalanceResult = externalBalanceResult
             self.nfts = nfts
             self.locksResult = locksResult
+            self.holdsResult = holdsResult
         }
 
         func replacing(nfts: [NftModel]) -> Model {

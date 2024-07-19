@@ -27,6 +27,11 @@ protocol WalletLocalSubscriptionHandler {
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     )
+
+    func handleAccountHolds(
+        result: Result<[DataProviderChange<AssetHold>], Error>,
+        accountId: AccountId
+    )
 }
 
 extension WalletLocalSubscriptionHandler {
@@ -54,5 +59,10 @@ extension WalletLocalSubscriptionHandler {
         accountId _: AccountId,
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
+    ) {}
+
+    func handleAccountHolds(
+        result _: Result<[DataProviderChange<AssetHold>], Error>,
+        accountId _: AccountId
     ) {}
 }
