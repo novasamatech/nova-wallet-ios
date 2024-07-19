@@ -148,10 +148,6 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         // not needed action for parachain staking
     }
 
-    func performSelectedEntityAction() {
-        // no support for selected entity
-    }
-
     func performRebondAction() {
         guard
             let delegator = stateMachine.viewState(
