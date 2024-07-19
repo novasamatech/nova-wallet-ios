@@ -1,6 +1,7 @@
 import UIKit
 import SoraFoundation
 import SoraUI
+import BigInt
 
 struct ModalInfoFactory {
     static let rowHeight: CGFloat = 50.0
@@ -167,7 +168,8 @@ struct ModalInfoFactory {
         let reserved: LocksSortingViewModel = createReservedViewModel(
             balanceContext: balanceContext,
             amountFormatter: amountFormatter,
-            priceFormatter: priceFormatter
+            priceFormatter: priceFormatter,
+            precision: precision
         )
 
         let externalBalances = createExternalBalancesViewModel(
@@ -186,6 +188,14 @@ struct ModalInfoFactory {
 
         let balanceLockUnknownModels: LocksSortingViewModel = createLockViewModel(
             from: balanceContext.balanceLocks.auxLocks(),
+            balanceContext: balanceContext,
+            amountFormatter: amountFormatter,
+            priceFormatter: priceFormatter,
+            precision: precision
+        )
+
+        let balanceHolds = createHoldsViewModel(
+            from: balanceContext.balanceHolds,
             balanceContext: balanceContext,
             amountFormatter: amountFormatter,
             priceFormatter: priceFormatter,
@@ -239,6 +249,39 @@ struct ModalInfoFactory {
         }
     }
 
+    private static func createHoldsViewModel(
+        from holds: [AssetHold],
+        balanceContext: BalanceContext,
+        amountFormatter: LocalizableResource<TokenFormatter>,
+        priceFormatter: LocalizableResource<TokenFormatter>,
+        precision: Int16
+    ) -> LocksSortingViewModel {
+        holds.map { hold in
+            let holdAmount = Decimal.fromSubstrateAmount(
+                hold.amount,
+                precision: precision
+            ) ?? 0.0
+
+            let price = holdAmount * balanceContext.price
+
+            let viewModel = LocalizableResource<StakingAmountViewModel> { locale in
+                let formatter = priceFormatter.value(for: locale)
+                let amountFormatter = amountFormatter.value(for: locale)
+
+                let title: String = hold.reason
+
+                let priceString = balanceContext.price == 0.0 ? nil : formatter.stringFromDecimal(price)
+                let amountString = amountFormatter.stringFromDecimal(holdAmount) ?? ""
+
+                let balance = BalanceViewModel(amount: amountString, price: priceString)
+
+                return StakingAmountViewModel(title: title, balance: balance)
+            }
+
+            return (price, viewModel)
+        }
+    }
+
     private static func createExternalBalancesViewModel(
         balanceContext: BalanceContext,
         amountFormatter: LocalizableResource<TokenFormatter>,
@@ -267,14 +310,21 @@ struct ModalInfoFactory {
     private static func createReservedViewModel(
         balanceContext: BalanceContext,
         amountFormatter: LocalizableResource<TokenFormatter>,
-        priceFormatter: LocalizableResource<TokenFormatter>
+        priceFormatter: LocalizableResource<TokenFormatter>,
+        precision: Int16
     ) -> LocksSortingViewModel {
         let title = LocalizableResource { locale in
             R.string.localizable.walletBalanceReserved(preferredLanguages: locale.rLanguages)
         }
 
+        let totalHolds = balanceContext.balanceHolds.reduce(into: BigUInt(0)) { $0 + $1.amount }
+        let totalHoldsDecimal = Decimal.fromSubstrateAmount(
+            totalHolds,
+            precision: precision
+        ) ?? 0.0
+
         return createLockFieldViewModel(
-            amount: balanceContext.reserved,
+            amount: max(balanceContext.reserved - totalHoldsDecimal, 0),
             price: balanceContext.price,
             localizedTitle: title,
             amountFormatter: amountFormatter,

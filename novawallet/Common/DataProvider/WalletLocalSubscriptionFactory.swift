@@ -21,6 +21,12 @@ protocol WalletLocalSubscriptionFactoryProtocol {
     ) throws -> StreamableProvider<AssetLock>
 
     func getHoldsProvider(for accountId: AccountId) throws -> StreamableProvider<AssetHold>
+    
+    func getHoldsProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) throws -> StreamableProvider<AssetHold>
 }
 
 final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -257,6 +263,33 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             operationManager: operationManager,
             serialQueue: processingQueue
         )
+    }
+    
+    func getHoldsProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) throws -> StreamableProvider<AssetHold> {
+        let cacheKey = "holds-\(accountId.toHex())-\(chainId)-\(assetId)"
+
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<AssetHold> {
+            return provider
+        }
+
+        let filter = NSPredicate.assetHold(
+            for: accountId,
+            chainAssetId: ChainAssetId(chainId: chainId, assetId: assetId)
+        )
+
+        let provider = createAssetHoldsProvider(for: filter) { entity in
+            accountId.toHex() == entity.chainAccountId &&
+                chainId == entity.chainId &&
+                assetId == entity.assetId
+        }
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
     }
 
     func getHoldsProvider(for accountId: AccountId) throws -> StreamableProvider<AssetHold> {

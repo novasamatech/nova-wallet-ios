@@ -17,6 +17,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     private var priceSubscription: StreamableProvider<PriceData>?
     private var assetBalanceSubscription: StreamableProvider<AssetBalance>?
     private var externalBalanceSubscription: StreamableProvider<ExternalAssetBalance>?
+    private var assetHoldsSubscription: StreamableProvider<AssetHold>?
     private var swapsCall = CancellableCallStore()
 
     private var accountId: AccountId? {
@@ -125,17 +126,22 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
         guard let accountId = accountId else {
             return
         }
+        
         subscribePrice()
+        
         assetBalanceSubscription = subscribeToAssetBalanceProvider(
             for: accountId,
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
+        
         assetLocksSubscription = subscribeToLocksProvider(
             for: accountId,
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
+        
+        assetHoldsSubscription = nil
 
         if chainAsset.chain.chainAssetIdsWithExternalBalances().contains(chainAsset.chainAssetId) {
             externalBalanceSubscription = subscribeToExternalAssetBalancesProvider(

@@ -31,6 +31,12 @@ protocol WalletLocalStorageSubscriber: LocalStorageProviderObserving where Self:
     func subscribeToAllHoldsProvider(
         for accountId: AccountId
     ) -> StreamableProvider<AssetHold>?
+    
+    func subscribeToHoldsProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> StreamableProvider<AssetHold>?
 }
 
 extension WalletLocalStorageSubscriber {
@@ -283,6 +289,14 @@ extension WalletLocalStorageSubscriber {
         )
 
         return holdsProvider
+    }
+    
+    func subscribeToHoldsProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> StreamableProvider<AssetHold>? {
+        
     }
 }
 

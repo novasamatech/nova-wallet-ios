@@ -15,6 +15,7 @@ final class AssetDetailsPresenter: PurchaseFlowManaging {
     private var priceData: PriceData?
     private var balance: AssetBalance?
     private var locks: [AssetLock] = []
+    private var holds: [AssetHold] = []
     private var externalAssetBalances: [ExternalAssetBalance] = []
     private var purchaseActions: [PurchaseAction] = []
     private var availableOperations: AssetDetailsOperation = []
@@ -185,7 +186,8 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
             price: priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0,
             priceChange: priceData?.dayChange ?? 0,
             priceId: priceData?.currencyId,
-            balanceLocks: locks
+            balanceLocks: locks,
+            balanceHolds: holds
         )
         let model = AssetDetailsLocksViewModel(
             balanceContext: balanceContext,
