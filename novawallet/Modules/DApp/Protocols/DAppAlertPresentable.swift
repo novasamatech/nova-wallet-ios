@@ -60,7 +60,7 @@ extension DAppAlertPresentable {
         handler: @escaping () -> Void
     ) {
         let action = AlertPresentableAction(
-            title: R.string.localizable.commonProceed(preferredLanguages: locale.rLanguages),
+            title: R.string.localizable.dappUnknownWarningOpen(preferredLanguages: locale.rLanguages),
             style: .destructive,
             handler: handler
         )

@@ -156,7 +156,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
 
             selectedEntityView = entityView
         }
-        
+
         entityView.clear()
 
         entityView.contentInsets = UIEdgeInsets(top: 4.0, left: 16.0, bottom: 8.0, right: 16.0)
