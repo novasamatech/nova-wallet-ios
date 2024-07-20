@@ -17,8 +17,8 @@ protocol NPoolsRedeemInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
     func retryExistentialDeposit()
-    func estimateFee()
-    func submit()
+    func estimateFee(needsMigration: Bool)
+    func submit(needsMigration: Bool)
 }
 
 protocol NPoolsRedeemInteractorOutputProtocol: AnyObject {
@@ -30,6 +30,7 @@ protocol NPoolsRedeemInteractorOutputProtocol: AnyObject {
     func didReceive(existentialDeposit: BigUInt?)
     func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(submissionResult: Result<String, Error>)
+    func didReceive(needsMigration: Bool)
     func didReceive(error: NPoolsRedeemError)
 }
 

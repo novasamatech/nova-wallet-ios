@@ -3,7 +3,8 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching {
+final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning,
+    NominationPoolStakingMigrating {
     weak var presenter: NPoolsClaimRewardsInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
@@ -28,6 +29,7 @@ final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching {
     private var priceProvider: StreamableProvider<PriceData>?
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
+    private var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
 
     private var currentPoolId: NominationPools.PoolId?
     private var currentPoolRewardCounter: BigUInt?
@@ -101,20 +103,31 @@ final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching {
         poolMemberProvider = subscribePoolMember(for: accountId, chainId: chainId)
         balanceProvider = subscribeToAssetBalanceProvider(for: accountId, chainId: chainId, assetId: assetId)
 
+        clear(dataProvider: &delegatedStakingProvider)
+        delegatedStakingProvider = subscribeDelegatedStaking(for: accountId, chainId: chainId)
+
         setupCurrencyProvider()
     }
 
     func createExtrinsicBuilderClosure(
-        for strategy: NominationPools.ClaimRewardsStrategy
+        for strategy: NominationPools.ClaimRewardsStrategy,
+        accountId: AccountId,
+        needsMigration: Bool
     ) -> ExtrinsicBuilderClosure {
         { builder in
+            let currentBuilder = try NominationPools.migrateIfNeeded(
+                needsMigration,
+                accountId: accountId,
+                builder: builder
+            )
+
             switch strategy {
             case .restake:
                 let bondExtra = NominationPools.BondExtraCall(extra: .rewards)
-                return try builder.adding(call: bondExtra.runtimeCall())
+                return try currentBuilder.adding(call: bondExtra.runtimeCall())
             case .freeBalance:
                 let claimRewards = NominationPools.ClaimRewardsCall()
-                return try builder.adding(call: claimRewards.runtimeCall())
+                return try currentBuilder.adding(call: claimRewards.runtimeCall())
             }
         }
     }
@@ -151,17 +164,25 @@ extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtoco
         provideExistentialDeposit()
     }
 
-    func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy) {
+    func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool) {
         feeProxy.estimateFee(
             using: extrinsicService,
             reuseIdentifier: strategy.rawValue,
-            setupBy: createExtrinsicBuilderClosure(for: strategy)
+            setupBy: createExtrinsicBuilderClosure(
+                for: strategy,
+                accountId: accountId,
+                needsMigration: needsMigration
+            )
         )
     }
 
-    func submit(for strategy: NominationPools.ClaimRewardsStrategy) {
+    func submit(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool) {
         extrinsicService.submit(
-            createExtrinsicBuilderClosure(for: strategy),
+            createExtrinsicBuilderClosure(
+                for: strategy,
+                accountId: accountId,
+                needsMigration: needsMigration
+            ),
             signer: signingWrapper,
             runningIn: .main
         ) { [weak self] result in
@@ -231,6 +252,30 @@ extension NPoolsClaimRewardsInteractor: NPoolsLocalStorageSubscriber, NPoolsLoca
             self.currentPoolRewardCounter = rewardPool?.lastRecordedRewardCounter
 
             claimableRewardProvider?.refresh()
+        }
+    }
+
+    func handleDelegatedStaking(
+        result: Result<DelegatedStakingPallet.Delegation?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(delegation):
+            needsPoolStakingMigration(
+                for: delegation,
+                runtimeProvider: runtimeService,
+                operationQueue: operationQueue
+            ) { [weak self] result in
+                switch result {
+                case let .success(needsMigration):
+                    self?.presenter?.didReceive(needsMigration: needsMigration)
+                case let .failure(error):
+                    self?.presenter?.didReceive(error: .subscription(error, "Needs Migration"))
+                }
+            }
+        case let .failure(error):
+            presenter?.didReceive(error: .subscription(error, "Delegated Staking"))
         }
     }
 }

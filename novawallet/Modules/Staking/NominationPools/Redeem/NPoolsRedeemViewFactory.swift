@@ -9,7 +9,13 @@ struct NPoolsRedeemViewFactory {
             let interactor = createInteractor(for: state),
             let wallet = SelectedWalletSettings.shared.value,
             let selectedAccount = wallet.fetchMetaChainAccount(for: state.chainAsset.chain.accountRequest()),
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let stakingActivity = StakingActivityForValidation(
+                wallet: SelectedWalletSettings.shared.value,
+                chain: state.chainAsset.chain,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ) else {
             return nil
         }
 
@@ -32,6 +38,7 @@ struct NPoolsRedeemViewFactory {
             chainAsset: state.chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatingFactory,
+            stakingActivity: stakingActivity,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

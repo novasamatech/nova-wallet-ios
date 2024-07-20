@@ -38,7 +38,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
     private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
-    var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
+    private var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
 
     private var bondedAccountIdCancellable: CancellableCall?
     private var eraCountdownCancellable: CancellableCall?
@@ -283,7 +283,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
         needsMigration: Bool
     ) -> ExtrinsicBuilderClosure {
         { builder in
-            var currentBuilder = try NominationPools.migrateIfNeeded(
+            let currentBuilder = try NominationPools.migrateIfNeeded(
                 needsMigration,
                 accountId: accountId,
                 builder: builder

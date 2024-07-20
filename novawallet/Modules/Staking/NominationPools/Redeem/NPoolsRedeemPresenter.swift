@@ -8,6 +8,8 @@ final class NPoolsRedeemPresenter {
     let interactor: NPoolsRedeemInteractorInputProtocol
     let chainAsset: ChainAsset
     let dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol
+    let stakingActivity: StakingActivityForValidating
+
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let selectedAccount: MetaChainAccountResponse
     let logger: LoggerProtocol
@@ -22,6 +24,7 @@ final class NPoolsRedeemPresenter {
     var existentialDeposit: BigUInt?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
+    var needsMigration: Bool?
 
     init(
         interactor: NPoolsRedeemInteractorInputProtocol,
@@ -30,6 +33,7 @@ final class NPoolsRedeemPresenter {
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -39,6 +43,7 @@ final class NPoolsRedeemPresenter {
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatorFactory = dataValidatorFactory
+        self.stakingActivity = stakingActivity
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -103,6 +108,14 @@ final class NPoolsRedeemPresenter {
         view?.didReceiveFee(viewModel: viewModel)
     }
 
+    private func refreshFee() {
+        guard let needsMigration else {
+            return
+        }
+
+        interactor.estimateFee(needsMigration: needsMigration)
+    }
+
     func updateView() {
         provideAmountViewModel()
         provideWalletViewModel()
@@ -124,8 +137,13 @@ extension NPoolsRedeemPresenter: NPoolsRedeemPresenterProtocol {
                 fee: fee,
                 locale: selectedLocale
             ) { [weak self] in
-                self?.interactor.estimateFee()
+                self?.refreshFee()
             },
+            dataValidatorFactory.canMigrateIfNeeded(
+                needsMigration: needsMigration,
+                stakingActivity: stakingActivity,
+                locale: selectedLocale
+            ),
             dataValidatorFactory.canPayFeeInPlank(
                 balance: assetBalance?.transferable,
                 fee: fee,
@@ -140,8 +158,12 @@ extension NPoolsRedeemPresenter: NPoolsRedeemPresenterProtocol {
                 locale: selectedLocale
             )
         ]).runValidation { [weak self] in
+            guard let needsMigration = self?.needsMigration else {
+                return
+            }
+
             self?.view?.didStartLoading()
-            self?.interactor.submit()
+            self?.interactor.submit(needsMigration: needsMigration)
         }
     }
 
@@ -240,6 +262,12 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
         }
     }
 
+    func didReceive(needsMigration: Bool) {
+        self.needsMigration = needsMigration
+
+        refreshFee()
+    }
+
     func didReceive(error: NPoolsRedeemError) {
         logger.error("Error: \(error)")
 
@@ -250,7 +278,7 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
             }
         case .fee:
             wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.estimateFee()
+                self?.refreshFee()
             }
         case .existentialDeposit:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
