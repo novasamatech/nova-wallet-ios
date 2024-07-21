@@ -35,21 +35,42 @@ extension StakingActivityProviding {
     ) {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
+        let checkWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
-        )
+        ) {
+            let coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<JSON>]> = requestFactory.queryItems(
-            engine: connection,
-            keyParams: { [params.accountId] },
-            factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-            storagePath: params.storagePath
-        )
+            guard coderFactory.hasStorage(for: params.storagePath) else {
+                return CompoundOperationWrapper.createWithResult(false)
+            }
 
-        wrapper.addDependency(operations: [coderFactoryOperation])
+            let requestFactory = StorageRequestFactory(
+                remoteFactory: StorageKeyFactory(),
+                operationManager: OperationManager(operationQueue: operationQueue)
+            )
 
-        let totalWrapper = wrapper.insertingHead(operations: [coderFactoryOperation])
+            let fetchWrapper: CompoundOperationWrapper<[StorageResponse<JSON>]> = requestFactory.queryItems(
+                engine: connection,
+                keyParams: { [params.accountId] },
+                factory: { coderFactory },
+                storagePath: params.storagePath
+            )
+
+            let mapOperation = ClosureOperation<Bool> {
+                let response = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+                let hasValue = response.first?.value != nil
+
+                return hasValue
+            }
+
+            mapOperation.addDependency(fetchWrapper.targetOperation)
+
+            return fetchWrapper.insertingTail(operation: mapOperation)
+        }
+
+        checkWrapper.addDependency(operations: [coderFactoryOperation])
+
+        let totalWrapper = checkWrapper.insertingHead(operations: [coderFactoryOperation])
 
         execute(
             wrapper: totalWrapper,
@@ -57,8 +78,7 @@ extension StakingActivityProviding {
             runningCallbackIn: .main
         ) { result in
             switch result {
-            case let .success(response):
-                let hasValue = response.first?.value != nil
+            case let .success(hasValue):
                 completion(.success(hasValue))
             case let .failure(error):
                 completion(.failure(error))
