@@ -18,6 +18,7 @@ protocol DAppAlertPresentable: AlertPresentable {
 
     func showUnknownDappWarning(
         from view: ControllerBackedProtocol?,
+        email: String,
         locale: Locale,
         handler: @escaping () -> Void
     )
@@ -56,6 +57,7 @@ extension DAppAlertPresentable {
 
     func showUnknownDappWarning(
         from view: ControllerBackedProtocol?,
+        email: String,
         locale: Locale,
         handler: @escaping () -> Void
     ) {
@@ -66,7 +68,10 @@ extension DAppAlertPresentable {
         )
         let viewModel = AlertPresentableViewModel(
             title: R.string.localizable.dappUnknownWarningTitle(preferredLanguages: locale.rLanguages),
-            message: R.string.localizable.dappUnknownWarningMessage(preferredLanguages: locale.rLanguages),
+            message: R.string.localizable.dappUnknownWarningMessage(
+                email,
+                preferredLanguages: locale.rLanguages
+            ),
             actions: [action],
             closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
         )

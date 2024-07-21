@@ -25,6 +25,7 @@ struct DAppSearchViewFactory {
             viewModelFactory: DAppListViewModelFactory(),
             initialQuery: initialQuery,
             delegate: delegate,
+            applicationConfig: ApplicationConfig.shared,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

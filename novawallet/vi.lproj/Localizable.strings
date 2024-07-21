@@ -1720,3 +1720,10 @@
 "network.add.alert.invalid.symbol.message" = "Ký hiệu tiền tệ (%@) bạn nhập vào không khớp với mạng (%@). Bạn có muốn sử dụng ký hiệu tiền tệ đúng không?";
 "network.node.delete.alert.description" = "Node %@ sẽ bị xóa";
 "network.add.alert.success.title" = "Mạng đã được thêm thành công";
+"dapp.unknown.warning.title" = "Cảnh báo! DApp chưa biết";
+"dapp.unknown.warning.message" = "Các DApp độc hại có thể rút hết các khoản tiền của bạn. Luôn luôn tự nghiên cứu trước khi sử dụng một DApp, cấp quyền hoặc gửi tiền.\n\nNếu ai đó thúc giục bạn truy cập DApp này, rất có thể đó là một trò lừa đảo. Khi nghi ngờ, vui lòng liên hệ với bộ phận hỗ trợ của Nova Wallet: %@.";
+"dapp.unknown.warning.open" = "Mở dù sao đi nữa";
+"staking.setup.conflict.title" = "Đã staking";
+"staking.setup.conflict.message" = "Bạn không thể Stake với Direct Staking và Nomination Pools cùng một lúc";
+"nomination.pools.conflict.title" = "Các thao tác trong Pool không khả dụng";
+"nomination.pools.conflict.message" = "Bạn không thể sử dụng cả Staking trực tiếp và Pool Staking từ cùng một tài khoản. Để quản lý Pool Staking bạn trước tiên cần unstake token của mình từ Staking trực tiếp.";

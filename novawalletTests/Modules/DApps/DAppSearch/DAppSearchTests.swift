@@ -34,6 +34,7 @@ class DAppSearchTests: XCTestCase {
             viewModelFactory: DAppListViewModelFactory(),
             initialQuery: "",
             delegate: delegate,
+            applicationConfig: ApplicationConfig.shared,
             localizationManager: LocalizationManager.shared
         )
 
