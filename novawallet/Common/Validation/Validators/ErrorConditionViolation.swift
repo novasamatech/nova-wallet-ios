@@ -52,12 +52,14 @@ final class AsyncErrorConditionViolation: DataValidating {
         onProgress?.willStart?()
 
         preservesCondition { [weak self] result in
-            self?.onProgress?.didComplete?(result)
+            DispatchQueue.main.async {
+                self?.onProgress?.didComplete?(result)
 
-            if result {
-                delegate.didCompleteAsyncHandling()
-            } else {
-                self?.onError()
+                if result {
+                    delegate.didCompleteAsyncHandling()
+                } else {
+                    self?.onError()
+                }
             }
         }
 

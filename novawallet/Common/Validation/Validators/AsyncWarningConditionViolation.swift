@@ -14,10 +14,12 @@ final class AsyncWarningConditionViolation: DataValidating {
 
     func validate(notifying delegate: DataValidatingDelegate) -> DataValidationProblem? {
         preservesCondition { [weak self] result in
-            if result {
-                delegate.didCompleteAsyncHandling()
-            } else {
-                self?.onWarning(delegate)
+            DispatchQueue.main.async {
+                if result {
+                    delegate.didCompleteAsyncHandling()
+                } else {
+                    self?.onWarning(delegate)
+                }
             }
         }
 
