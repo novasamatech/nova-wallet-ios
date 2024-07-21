@@ -9,6 +9,7 @@ struct StakingRecommendationValidationParams {
     let fee: ExtrinsicFeeProtocol?
     let existentialDeposit: BigUInt?
     let stakeUpdateClosure: (Decimal) -> Void
+    let onAsyncProgress: AsyncValidationOnProgress?
 }
 
 protocol StakingRecommendationValidationFactoryProtocol: AnyObject {

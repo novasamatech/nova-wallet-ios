@@ -28,6 +28,7 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     private var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
+    private var cancellableNeedsMigration = CancellableCallStore()
 
     private var bondedAccountIdCancellable: CancellableCall?
     private var assetExistenceCancellable: CancellableCall?
@@ -154,9 +155,12 @@ class NominationPoolBondMoreBaseInteractor: AnyProviderAutoCleaning, AnyCancella
     }
 
     private func provideNeedsMigration(for delegation: DelegatedStakingPallet.Delegation?) {
+        cancellableNeedsMigration.cancel()
+
         needsPoolStakingMigration(
             for: delegation,
             runtimeProvider: runtimeService,
+            cancellableStore: cancellableNeedsMigration,
             operationQueue: operationQueue
         ) { [weak self] result in
             switch result {
@@ -231,7 +235,7 @@ extension NominationPoolBondMoreBaseInteractor: NominationPoolBondMoreBaseIntera
     }
 
     func estimateFee(for amount: BigUInt, needsMigration: Bool) {
-        let reuseIdentifier = String(amount)
+        let reuseIdentifier = String(amount) + "-" + "\(needsMigration)"
         feeProxy.estimateFee(
             using: extrinsicService,
             reuseIdentifier: reuseIdentifier,

@@ -23,29 +23,36 @@ final class ErrorConditionViolation: DataValidating {
     }
 }
 
+final class AsyncValidationOnProgress {
+    let willStart: (() -> Void)?
+    let didComplete: ((Bool) -> Void)?
+
+    init(willStart: (() -> Void)?, didComplete: ((Bool) -> Void)?) {
+        self.willStart = willStart
+        self.didComplete = didComplete
+    }
+}
+
 final class AsyncErrorConditionViolation: DataValidating {
     let preservesCondition: (@escaping (Bool) -> Void) -> Void
     let onError: () -> Void
-    let willStart: (() -> Void)?
-    let didComplete: ((Bool) -> Void)?
+    let onProgress: AsyncValidationOnProgress?
 
     init(
         onError: @escaping () -> Void,
         preservesCondition: @escaping (@escaping (Bool) -> Void) -> Void,
-        willStart: (() -> Void)? = nil,
-        didComplete: ((Bool) -> Void)? = nil
+        onProgress: AsyncValidationOnProgress? = nil
     ) {
         self.preservesCondition = preservesCondition
         self.onError = onError
-        self.willStart = willStart
-        self.didComplete = didComplete
+        self.onProgress = onProgress
     }
 
     func validate(notifying delegate: DataValidatingDelegate) -> DataValidationProblem? {
-        willStart?()
+        onProgress?.willStart?()
 
         preservesCondition { [weak self] result in
-            self?.didComplete?(result)
+            self?.onProgress?.didComplete?(result)
 
             if result {
                 delegate.didCompleteAsyncHandling()

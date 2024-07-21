@@ -30,6 +30,7 @@ final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching, AnyProviderAu
     private var rewardPoolProvider: AnyDataProvider<DecodedRewardPool>?
     private var claimableRewardProvider: AnySingleValueProvider<String>?
     private var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
+    private var cancellableNeedsMigration = CancellableCallStore()
 
     private var currentPoolId: NominationPools.PoolId?
     private var currentPoolRewardCounter: BigUInt?
@@ -165,9 +166,11 @@ extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtoco
     }
 
     func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool) {
+        let identifier = strategy.rawValue + "-" + "\(needsMigration)"
+
         feeProxy.estimateFee(
             using: extrinsicService,
-            reuseIdentifier: strategy.rawValue,
+            reuseIdentifier: identifier,
             setupBy: createExtrinsicBuilderClosure(
                 for: strategy,
                 accountId: accountId,
@@ -262,9 +265,12 @@ extension NPoolsClaimRewardsInteractor: NPoolsLocalStorageSubscriber, NPoolsLoca
     ) {
         switch result {
         case let .success(delegation):
+            cancellableNeedsMigration.cancel()
+
             needsPoolStakingMigration(
                 for: delegation,
                 runtimeProvider: runtimeService,
+                cancellableStore: cancellableNeedsMigration,
                 operationQueue: operationQueue
             ) { [weak self] result in
                 switch result {

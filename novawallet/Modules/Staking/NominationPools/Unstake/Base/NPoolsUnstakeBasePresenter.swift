@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 
 class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
-    weak var baseView: ControllerBackedProtocol?
+    weak var baseView: NPoolsUnstakeBaseViewProtocol?
 
     let baseWireframe: NPoolsUnstakeBaseWireframeProtocol
     let baseInteractor: NPoolsUnstakeBaseInteractorInputProtocol
@@ -98,6 +98,14 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
             dataValidatorFactory.canMigrateIfNeeded(
                 needsMigration: needsMigration,
                 stakingActivity: stakingActivity,
+                onProgress: .init(
+                    willStart: { [weak self] in
+                        self?.baseView?.didStartLoading()
+                    },
+                    didComplete: { [weak self] _ in
+                        self?.baseView?.didStopLoading()
+                    }
+                ),
                 locale: selectedLocale
             ),
             dataValidatorFactory.canUnstake(
@@ -264,6 +272,8 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     }
 
     func didReceive(needsMigration: Bool) {
+        logger.debug("Needs migration: \(needsMigration)")
+
         self.needsMigration = needsMigration
         refreshFee()
     }

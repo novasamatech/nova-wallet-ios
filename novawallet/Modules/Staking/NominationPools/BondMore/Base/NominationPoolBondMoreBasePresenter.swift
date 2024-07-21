@@ -92,6 +92,14 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
             dataValidatorFactory.canMigrateIfNeeded(
                 needsMigration: needsMigration,
                 stakingActivity: stakingActivity,
+                onProgress: .init(
+                    willStart: { [weak self] in
+                        self?.baseView?.didStartLoading()
+                    },
+                    didComplete: { [weak self] _ in
+                        self?.baseView?.didStopLoading()
+                    }
+                ),
                 locale: selectedLocale
             ),
             dataValidatorFactory.canSpendAmountInPlank(
@@ -181,6 +189,8 @@ class NominationPoolBondMoreBasePresenter: NominationPoolBondMoreBaseInteractorO
     }
 
     func didReceive(needsMigration: Bool) {
+        logger.debug("Needs migration: \(needsMigration)")
+
         self.needsMigration = needsMigration
 
         refreshFee()

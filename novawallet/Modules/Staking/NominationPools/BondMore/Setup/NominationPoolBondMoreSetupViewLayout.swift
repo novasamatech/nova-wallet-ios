@@ -1,6 +1,6 @@
 import UIKit
 
-final class NominationPoolBondMoreSetupViewLayout: SCSingleActionLayoutView {
+final class NominationPoolBondMoreSetupViewLayout: SCLoadableActionLayoutView {
     let amountView = TitleHorizontalMultiValueView()
 
     let amountInputView = NewAmountInputView()
@@ -10,6 +10,10 @@ final class NominationPoolBondMoreSetupViewLayout: SCSingleActionLayoutView {
     let hintListView = HintListView()
 
     var actionButton: TriangularedButton {
+        genericActionView.actionButton
+    }
+
+    var loadingView: LoadableActionView {
         genericActionView
     }
 

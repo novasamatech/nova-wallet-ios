@@ -39,6 +39,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     private var claimableRewardProvider: AnySingleValueProvider<String>?
     private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
     private var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
+    private var cancellableNeedsMigration = CancellableCallStore()
 
     private var bondedAccountIdCancellable: CancellableCall?
     private var eraCountdownCancellable: CancellableCall?
@@ -350,7 +351,7 @@ extension NPoolsUnstakeBaseInteractor: NPoolsUnstakeBaseInteractorInputProtocol 
     }
 
     func estimateFee(for points: BigUInt, needsMigration: Bool) {
-        let identifier = String(points)
+        let identifier = String(points) + "-" + "\(needsMigration)"
 
         feeProxy.estimateFee(
             using: extrinsicService,
@@ -460,9 +461,12 @@ extension NPoolsUnstakeBaseInteractor: NPoolsLocalStorageSubscriber, NPoolsLocal
     ) {
         switch result {
         case let .success(delegation):
+            cancellableNeedsMigration.cancel()
+
             needsPoolStakingMigration(
                 for: delegation,
                 runtimeProvider: runtimeService,
+                cancellableStore: cancellableNeedsMigration,
                 operationQueue: operationQueue
             ) { [weak self] result in
                 switch result {

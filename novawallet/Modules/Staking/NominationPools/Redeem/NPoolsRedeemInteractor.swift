@@ -4,7 +4,7 @@ import SubstrateSdk
 import BigInt
 
 final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStakingMigrating,
-    AnyProviderAutoCleaning {
+    AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: NPoolsRedeemInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
@@ -34,6 +34,7 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
     private var priceProvider: StreamableProvider<PriceData>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
     private var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
+    private var cancellableNeedsMigration = CancellableCallStore()
 
     private var currentPoolId: NominationPools.PoolId?
 
@@ -165,9 +166,11 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStaki
     }
 
     func estimateFee(for numOfSlashingSpans: UInt32, needsMigration: Bool) {
+        let identifier = "\(numOfSlashingSpans)" + "-" + "\(needsMigration)"
+
         feeProxy.estimateFee(
             using: extrinsicService,
-            reuseIdentifier: TransactionFeeId(numOfSlashingSpans),
+            reuseIdentifier: identifier,
             setupBy: createExtrinsicBuilderClosure(
                 for: accountId,
                 numOfSlashingSpans: numOfSlashingSpans,
@@ -310,9 +313,12 @@ extension NPoolsRedeemInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubsc
     ) {
         switch result {
         case let .success(delegation):
+            cancellableNeedsMigration.cancel()
+
             needsPoolStakingMigration(
                 for: delegation,
                 runtimeProvider: runtimeService,
+                cancellableStore: cancellableNeedsMigration,
                 operationQueue: operationQueue
             ) { [weak self] result in
                 switch result {

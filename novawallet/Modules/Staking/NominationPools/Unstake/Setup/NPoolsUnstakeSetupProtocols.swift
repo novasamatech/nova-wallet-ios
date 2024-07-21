@@ -1,6 +1,6 @@
 import Foundation
 
-protocol NPoolsUnstakeSetupViewProtocol: ControllerBackedProtocol {
+protocol NPoolsUnstakeSetupViewProtocol: NPoolsUnstakeBaseViewProtocol {
     func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
     func didReceiveInput(viewModel: AmountInputViewModelProtocol)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)

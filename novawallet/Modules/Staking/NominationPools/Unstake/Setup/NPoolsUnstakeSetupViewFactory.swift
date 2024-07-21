@@ -50,7 +50,7 @@ struct NPoolsUnstakeSetupViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        presenter.view = view
+        presenter.baseView = view
         interactor.presenter = presenter
         dataValidatingFactory.view = view
 

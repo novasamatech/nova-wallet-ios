@@ -6,6 +6,7 @@ protocol NominationPoolStakingMigrating {
     func needsPoolStakingMigration(
         for stakingDelegation: DelegatedStakingPallet.Delegation?,
         runtimeProvider: RuntimeCodingServiceProtocol,
+        cancellableStore: CancellableCallStore,
         operationQueue: OperationQueue,
         completion: @escaping (Result<Bool, Error>) -> Void
     )
@@ -15,6 +16,7 @@ extension NominationPoolStakingMigrating {
     func needsPoolStakingMigration(
         for stakingDelegation: DelegatedStakingPallet.Delegation?,
         runtimeProvider: RuntimeCodingServiceProtocol,
+        cancellableStore: CancellableCallStore,
         operationQueue: OperationQueue,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -39,9 +41,10 @@ extension NominationPoolStakingMigrating {
             dependencies: [codingFactoryOperation]
         )
 
-        execute(
+        executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: cancellableStore,
             runningCallbackIn: .main,
             callbackClosure: completion
         )

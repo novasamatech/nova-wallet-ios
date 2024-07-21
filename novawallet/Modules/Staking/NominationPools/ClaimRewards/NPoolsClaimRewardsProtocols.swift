@@ -1,6 +1,6 @@
 import BigInt
 
-protocol NPoolsClaimRewardsViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+protocol NPoolsClaimRewardsViewProtocol: SCLoadableControllerProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol)
     func didReceiveWallet(viewModel: DisplayWalletViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)

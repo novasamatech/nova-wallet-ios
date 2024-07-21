@@ -1,6 +1,6 @@
 import BigInt
 
-protocol NominationPoolBondMoreBaseViewProtocol: ControllerBackedProtocol {
+protocol NominationPoolBondMoreBaseViewProtocol: SCLoadableControllerProtocol {
     func didReceiveHints(viewModel: [String])
 }
 

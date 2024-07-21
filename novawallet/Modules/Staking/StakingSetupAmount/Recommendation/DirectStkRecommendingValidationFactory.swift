@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 
-final class DirectStakingRecommendingValidationFactory: StakingActivityProviding {
+final class DirectStkRecommendingValidationFactory: StakingActivityProviding {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
@@ -38,11 +38,11 @@ final class DirectStakingRecommendingValidationFactory: StakingActivityProviding
                     completion(false)
                 }
             }
-        })
+        }, onProgress: params.onAsyncProgress)
     }
 }
 
-extension DirectStakingRecommendingValidationFactory: StakingRecommendationValidationFactoryProtocol {
+extension DirectStkRecommendingValidationFactory: StakingRecommendationValidationFactoryProtocol {
     func createValidations(
         for params: StakingRecommendationValidationParams,
         controller: ControllerBackedProtocol?,

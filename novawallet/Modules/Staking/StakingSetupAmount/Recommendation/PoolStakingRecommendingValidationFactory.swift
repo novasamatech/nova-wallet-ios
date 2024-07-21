@@ -38,7 +38,7 @@ final class PoolStakingRecommendingValidationFactory: StakingActivityProviding {
                     completion(false)
                 }
             }
-        })
+        }, onProgress: params.onAsyncProgress)
     }
 }
 

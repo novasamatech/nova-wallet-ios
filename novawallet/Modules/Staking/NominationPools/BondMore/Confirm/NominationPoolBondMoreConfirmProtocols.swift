@@ -5,8 +5,6 @@ protocol NominationPoolBondMoreConfirmViewProtocol: NominationPoolBondMoreBaseVi
     func didReceiveWallet(viewModel: DisplayWalletViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didStartLoading()
-    func didStopLoading()
 }
 
 protocol NominationPoolBondMoreConfirmPresenterProtocol: AnyObject {

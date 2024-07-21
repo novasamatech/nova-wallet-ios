@@ -3,7 +3,9 @@ import SoraFoundation
 import BigInt
 
 final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
-    weak var view: NPoolsUnstakeSetupViewProtocol?
+    var view: NPoolsUnstakeSetupViewProtocol? {
+        baseView as? NPoolsUnstakeSetupViewProtocol
+    }
 
     var wireframe: NPoolsUnstakeSetupWireframeProtocol? {
         baseWireframe as? NPoolsUnstakeSetupWireframeProtocol

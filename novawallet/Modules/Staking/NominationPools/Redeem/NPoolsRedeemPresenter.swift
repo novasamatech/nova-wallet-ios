@@ -142,6 +142,14 @@ extension NPoolsRedeemPresenter: NPoolsRedeemPresenterProtocol {
             dataValidatorFactory.canMigrateIfNeeded(
                 needsMigration: needsMigration,
                 stakingActivity: stakingActivity,
+                onProgress: .init(
+                    willStart: { [weak self] in
+                        self?.view?.didStartLoading()
+                    },
+                    didComplete: { [weak self] _ in
+                        self?.view?.didStopLoading()
+                    }
+                ),
                 locale: selectedLocale
             ),
             dataValidatorFactory.canPayFeeInPlank(
@@ -263,6 +271,8 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
     }
 
     func didReceive(needsMigration: Bool) {
+        logger.debug("Needs migration: \(needsMigration)")
+
         self.needsMigration = needsMigration
 
         refreshFee()

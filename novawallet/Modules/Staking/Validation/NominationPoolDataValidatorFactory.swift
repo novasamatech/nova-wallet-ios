@@ -57,6 +57,7 @@ protocol NominationPoolDataValidatorFactoryProtocol: StakingBaseDataValidatingFa
     func canMigrateIfNeeded(
         needsMigration: Bool?,
         stakingActivity: StakingActivityForValidating,
+        onProgress: AsyncValidationOnProgress?,
         locale: Locale
     ) -> DataValidating
 
@@ -317,6 +318,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
     func canMigrateIfNeeded(
         needsMigration: Bool?,
         stakingActivity: StakingActivityForValidating,
+        onProgress: AsyncValidationOnProgress?,
         locale: Locale
     ) -> DataValidating {
         AsyncErrorConditionViolation(onError: { [weak self] in
@@ -348,7 +350,7 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
                     completion(false)
                 }
             }
-        })
+        }, onProgress: onProgress)
     }
 
     // swiftlint:disable:next function_body_length

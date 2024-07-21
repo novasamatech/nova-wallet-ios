@@ -368,7 +368,15 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
                 existentialDeposit: existentialDeposit,
                 stakeUpdateClosure: { newStake in
                     currentInputAmount = newStake
-                }
+                },
+                onAsyncProgress: .init(
+                    willStart: { [weak self] in
+                        self?.view?.didStartLoading()
+                    },
+                    didComplete: { [weak self] _ in
+                        self?.view?.didStopLoading()
+                    }
+                )
             ),
             controller: view,
             balanceViewModelFactory: balanceViewModelFactory,

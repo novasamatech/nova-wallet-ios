@@ -1,5 +1,7 @@
 import BigInt
 
+protocol NPoolsUnstakeBaseViewProtocol: SCLoadableControllerProtocol {}
+
 protocol NPoolsUnstakeBaseInteractorInputProtocol: AnyObject {
     func setup()
     func retrySubscriptions()
