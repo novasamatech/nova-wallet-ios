@@ -131,6 +131,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://polkadot.js.org/phishing/all.json")!
     }
 
+    var phishingDAppsTopLevelSet: Set<String> {
+        ["top"]
+    }
+
     var chainListURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains.json")!

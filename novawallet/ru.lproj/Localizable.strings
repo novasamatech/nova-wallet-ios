@@ -1724,3 +1724,7 @@
 "nomination.pools.conflict.message" = "Больше нельзя стейкать одновременно через Direct и Pool стейкинг. Для управления Вашим Pool стейкингом необходимо забрать токены из Direct стейкинга.";
 "staking.setup.conflict.title" = "Стейкинг уже активен";
 "staking.setup.conflict.message" = "Нельзя стейкать одновременно через Direct и Pool стейкинг.";
+"common.modify" = "Изменить";
+"dapp.unknown.warning.title" = "Внимание! DApp неизвестен";
+"dapp.unknown.warning.message" = "Вредоносные DApps могут вывести все ваши средства. Всегда проводите собственное исследование перед использованием DApp, предоставлением разрешения или отправкой средств.\n\nЕсли кто-то настаивает на посещении этого DApp, это, вероятно, мошенничество. Если у вас есть сомнения, пожалуйста, свяжитесь с поддержкой Nova Wallet: support@novawallet.io.";
+"dapp.unknown.warning.open" = "Все равно открыть";
