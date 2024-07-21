@@ -265,8 +265,8 @@ struct ModalInfoFactory {
             return createLockFieldViewModel(
                 amount: holdAmount,
                 price: balanceContext.price,
-                localizedTitle: LocalizableResource { _ in
-                    hold.reason
+                localizedTitle: LocalizableResource { locale in
+                    hold.displayTitle(for: locale)
                 },
                 amountFormatter: amountFormatter,
                 priceFormatter: priceFormatter
@@ -315,8 +315,14 @@ struct ModalInfoFactory {
             precision: precision
         ) ?? 0.0
 
+        let totalAmount = max(balanceContext.reserved - totalHoldsDecimal, 0)
+
+        guard totalAmount > 0 else {
+            return []
+        }
+
         return createLockFieldViewModel(
-            amount: max(balanceContext.reserved - totalHoldsDecimal, 0),
+            amount: totalAmount,
             price: balanceContext.price,
             localizedTitle: title,
             amountFormatter: amountFormatter,

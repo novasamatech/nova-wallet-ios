@@ -122,7 +122,7 @@ final class LocksPresenter {
                 .filter { $0.chainAssetId == balance.chainAssetId }
                 .reduce(BigUInt(0)) { $0 + $1.amount }
 
-            let reservesNotInHolds = balance.reservedInPlank > totalHolds ? balance.reservedInPlank - totalHolds : 0
+            let reservesNotInHolds = balance.reservedInPlank.subtractOrZero(totalHolds)
 
             return createCell(
                 amountInPlank: reservesNotInHolds,
@@ -140,7 +140,7 @@ final class LocksPresenter {
             createCell(
                 amountInPlank: hold.amount,
                 chainAssetId: hold.chainAssetId,
-                title: hold.reason,
+                title: hold.displayTitle(for: selectedLocale),
                 identifier: hold.identifier
             )
         }
