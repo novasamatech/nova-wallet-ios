@@ -12,7 +12,7 @@ extension NominationPools {
                 call: NominationPools.MigrateCall(
                     memberAccount: .accoundId(accountId)
                 ).runtimeCall()
-            )
+            ).with(batchType: .ignoreFails)
         } else {
             return builder
         }
