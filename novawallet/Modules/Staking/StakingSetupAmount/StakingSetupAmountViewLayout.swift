@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
+final class StakingSetupAmountViewLayout: SCLoadableActionLayoutView {
     let amountView: TitleHorizontalMultiValueView = .create {
         $0.titleView.apply(style: .footnoteSecondary)
         $0.detailsTitleLabel.apply(style: .footnoteSecondary)
@@ -17,8 +17,8 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
 
     var stakingTypeView: BackgroundedContentControl = StakingTypeAccountView(frame: .zero)
 
-    let actionButton: TriangularedButton = .create {
-        $0.applyDefaultStyle()
+    var actionButton: TriangularedButton {
+        genericActionView.actionButton
     }
 
     override init(frame: CGRect) {
@@ -37,13 +37,6 @@ final class StakingSetupAmountViewLayout: ScrollableContainerLayoutView {
         super.setupLayout()
 
         stackView.layoutMargins = Constants.contentInsets
-
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
 
         addArrangedSubview(amountView, spacingAfter: 8)
         amountView.snp.makeConstraints {

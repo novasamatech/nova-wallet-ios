@@ -210,6 +210,52 @@ extension NSPredicate {
         ])
     }
 
+    static func assetHold(chainId: ChainModel.Id, assetId: AssetModel.Id) -> NSPredicate {
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetHold.chainId),
+            chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetHold.assetId),
+            assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainIdPredicate, assetIdPredicate
+        ])
+    }
+
+    static func assetHold(for accountId: AccountId) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetHold.chainAccountId),
+            accountId.toHex()
+        )
+    }
+
+    static func assetHold(for accountId: AccountId, chainAssetId: ChainAssetId) -> NSPredicate {
+        let accountPredicate = assetHold(for: accountId)
+
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetHold.chainId),
+            chainAssetId.chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetHold.assetId),
+            chainAssetId.assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            accountPredicate, chainIdPredicate, assetIdPredicate
+        ])
+    }
+
     static func nfts(for chainId: ChainModel.Id, ownerId: AccountId) -> NSPredicate {
         let chainPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.chainId), chainId)
         let ownerPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.ownerId), ownerId.toHex())

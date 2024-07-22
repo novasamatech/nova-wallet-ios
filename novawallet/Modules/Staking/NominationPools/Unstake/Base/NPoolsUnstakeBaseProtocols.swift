@@ -1,5 +1,7 @@
 import BigInt
 
+protocol NPoolsUnstakeBaseViewProtocol: SCLoadableControllerProtocol {}
+
 protocol NPoolsUnstakeBaseInteractorInputProtocol: AnyObject {
     func setup()
     func retrySubscriptions()
@@ -8,7 +10,7 @@ protocol NPoolsUnstakeBaseInteractorInputProtocol: AnyObject {
     func retryClaimableRewards()
     func retryUnstakeLimits()
     func retryExistentialDeposit()
-    func estimateFee(for points: BigUInt)
+    func estimateFee(for points: BigUInt, needsMigration: Bool)
 }
 
 protocol NPoolsUnstakeBaseInteractorOutputProtocol: AnyObject {
@@ -25,6 +27,7 @@ protocol NPoolsUnstakeBaseInteractorOutputProtocol: AnyObject {
     func didReceive(unstakingLimits: NominationPools.UnstakeLimits)
     func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(error: NPoolsUnstakeBaseError)
+    func didReceive(needsMigration: Bool)
 }
 
 protocol NPoolsUnstakeBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable, FeeRetryable,

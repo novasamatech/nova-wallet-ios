@@ -26,6 +26,11 @@ protocol SubstrateRepositoryFactoryProtocol {
 
     func createAssetLocksRepository(chainAssetIds: Set<ChainAssetId>) -> AnyDataProviderRepository<AssetLock>
 
+    func createAssetHoldsRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetHold>
+
     func createChainAddressTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id
@@ -228,6 +233,13 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         createAssetLocksRepository(.assetLock(chainAssetIds: chainAssetIds))
     }
 
+    func createAssetHoldsRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetHold> {
+        createAssetHoldsRepository(.assetHold(for: accountId, chainAssetId: chainAssetId))
+    }
+
     private func createAssetLocksRepository(_ filter: NSPredicate) -> AnyDataProviderRepository<AssetLock> {
         let mapper = AssetLockMapper()
         let repository = storageFacade.createRepository(
@@ -235,6 +247,17 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(mapper)
         )
+        return AnyDataProviderRepository(repository)
+    }
+
+    private func createAssetHoldsRepository(_ filter: NSPredicate) -> AnyDataProviderRepository<AssetHold> {
+        let mapper = AssetHoldMapper()
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
         return AnyDataProviderRepository(repository)
     }
 
