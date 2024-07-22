@@ -198,7 +198,7 @@ enum ReferendumStateLocal {
         let confirmationUntil: BlockNumber?
         let deposit: BigUInt?
 
-        var rejectedAt: BlockNumber {
+        var endedAt: BlockNumber {
             since + period
         }
 

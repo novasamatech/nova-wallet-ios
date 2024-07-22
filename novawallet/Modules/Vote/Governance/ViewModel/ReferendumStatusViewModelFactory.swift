@@ -133,10 +133,11 @@ extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProt
                 )
             }
         case let .deciding(model):
-            if model.isPassing(for: currentBlock), let confirmationUntil = model.confirmationUntil {
+            let passing = model.isPassing(for: currentBlock)
+            if passing {
                 return createTimeViewModel(
                     state: referendum.state,
-                    atBlock: confirmationUntil,
+                    atBlock: model.confirmationUntil ?? model.endedAt,
                     currentBlock: currentBlock,
                     blockDuration: blockDuration,
                     timeStringProvider: strings.governanceReferendumsTimeApprove,
@@ -145,7 +146,7 @@ extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProt
             } else {
                 return createTimeViewModel(
                     state: referendum.state,
-                    atBlock: model.rejectedAt,
+                    atBlock: model.endedAt,
                     currentBlock: currentBlock,
                     blockDuration: blockDuration,
                     timeStringProvider: strings.governanceReferendumsTimeReject,
