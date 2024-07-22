@@ -5,6 +5,29 @@ import SubstrateSdk
 typealias ReferendumIdLocal = UInt
 typealias TrackIdLocal = UInt
 
+protocol ProjectedPassingChecking {
+    func isProjectedPassing(
+        with approvalFunction: ReferendumDecidingFunctionProtocol,
+        fraction: Decimal
+    ) -> Bool
+}
+
+extension ProjectedPassingChecking {
+    func isProjectedPassing(
+        with approvalFunction: ReferendumDecidingFunctionProtocol,
+        fraction: Decimal
+    ) -> Bool {
+        guard
+            let delay = approvalFunction.delay(for: fraction),
+            let threshold = approvalFunction.calculateThreshold(for: delay)
+        else {
+            return false
+        }
+
+        return fraction >= threshold
+    }
+}
+
 struct ReferendumLocal {
     let index: ReferendumIdLocal
     let state: ReferendumStateLocal
@@ -65,7 +88,7 @@ struct ReferendumLocal {
     }
 }
 
-struct SupportAndVotesLocal {
+struct SupportAndVotesLocal: ProjectedPassingChecking {
     let ayes: BigUInt
     let nays: BigUInt
     let support: BigUInt
@@ -99,13 +122,23 @@ struct SupportAndVotesLocal {
 
     func isPassing(at block: BlockNumber) -> Bool {
         guard
-            let approvalThreshold = approvalFunction?.calculateThreshold(for: block),
-            let supportThreshold = supportFunction?.calculateThreshold(for: block),
-            let approvalFraction = approvalFraction else {
+            let approvalFunction,
+            let supportFunction,
+            let approvalFraction,
+            let approvalThreshold = approvalFunction.calculateThreshold(for: block),
+            let supportThreshold = supportFunction.calculateThreshold(for: block)
+        else {
             return false
         }
 
-        return approvalFraction >= approvalThreshold && supportFraction >= supportThreshold
+        let passing = approvalFraction >= approvalThreshold && supportFraction >= supportThreshold
+
+        return passing
+            ? passing
+            : isProjectedPassing(
+                with: approvalFunction,
+                fraction: approvalFraction
+            )
     }
 }
 
@@ -138,11 +171,14 @@ struct VotingThresholdLocal {
     }
 
     func isPassing() -> Bool {
-        if let threshold = calculateThreshold(), let approvalFraction = approvalFraction {
-            return approvalFraction > threshold
-        } else {
+        guard
+            let threshold = calculateThreshold(),
+            let approvalFraction = approvalFraction
+        else {
             return false
         }
+
+        return approvalFraction > threshold
     }
 }
 
