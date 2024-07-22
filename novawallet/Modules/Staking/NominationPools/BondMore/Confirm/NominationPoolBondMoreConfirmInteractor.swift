@@ -1,5 +1,6 @@
 import UIKit
 import BigInt
+import SubstrateSdk
 
 final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseInteractor {
     weak var presenter: NominationPoolBondMoreConfirmInteractorOutputProtocol? {
@@ -19,7 +20,6 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         npoolsOperationFactory: NominationPoolsOperationFactoryProtocol,
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
-        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         assetStorageInfoFactory: AssetStorageInfoOperationFactoryProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
@@ -37,7 +37,6 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
             extrinsicServiceFactory: extrinsicServiceFactory,
             npoolsOperationFactory: npoolsOperationFactory,
             npoolsLocalSubscriptionFactory: npoolsLocalSubscriptionFactory,
-            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             assetStorageInfoFactory: assetStorageInfoFactory,
             operationQueue: operationQueue,
             currencyManager: currencyManager
@@ -46,9 +45,9 @@ final class NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreBaseI
 }
 
 extension NominationPoolBondMoreConfirmInteractor: NominationPoolBondMoreConfirmInteractorInputProtocol {
-    func submit(amount: BigUInt) {
+    func submit(amount: BigUInt, needsMigration: Bool) {
         extrinsicService.submit(
-            createExtrinsicClosure(for: amount),
+            createExtrinsicClosure(for: amount, accountId: accountId, needsMigration: needsMigration),
             signer: signingWrapper,
             runningIn: .main
         ) { [weak self] result in

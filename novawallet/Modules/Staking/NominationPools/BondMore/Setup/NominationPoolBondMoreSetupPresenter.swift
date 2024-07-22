@@ -16,29 +16,6 @@ final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePres
 
     private var inputResult: AmountInputResult?
 
-    init(
-        interactor: NominationPoolBondMoreSetupInteractorInputProtocol,
-        wireframe: NominationPoolBondMoreSetupWireframeProtocol,
-        chainAsset: ChainAsset,
-        hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
-
-    ) {
-        super.init(
-            interactor: interactor,
-            wireframe: wireframe,
-            chainAsset: chainAsset,
-            hintsViewModelFactory: hintsViewModelFactory,
-            balanceViewModelFactory: balanceViewModelFactory,
-            dataValidatorFactory: dataValidatorFactory,
-            localizationManager: localizationManager,
-            logger: logger
-        )
-    }
-
     func provideTransferrableBalance() {
         guard let balance = assetBalance?.transferable.decimal(precision: chainAsset.asset.precision) else {
             view?.didReceiveTransferable(viewModel: nil)

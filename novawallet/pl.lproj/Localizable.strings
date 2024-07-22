@@ -1720,3 +1720,10 @@
 "network.add.alert.invalid.symbol.message" = "Wprowadzony symbol waluty (%@) nie pasuje do sieci (%@). Czy chcesz użyć poprawnego symbolu waluty?";
 "network.node.delete.alert.description" = "Węzeł %@ zostanie usunięty";
 "network.add.alert.success.title" = "Sieć dodana pomyślnie";
+"dapp.unknown.warning.title" = "Ostrzeżenie! DApp jest nieznany";
+"dapp.unknown.warning.message" = "Złośliwe DApps mogą wypłacić wszystkie Twoje środki. Zawsze prowadź własne badania przed użyciem DApp, nadaniem uprawnień lub wysłaniem środków.\n\nJeśli ktoś nalega, abyś odwiedził ten DApp, prawdopodobnie jest to oszustwo. W razie wątpliwości, skontaktuj się z pomocą techniczną Nova Wallet: %@.";
+"dapp.unknown.warning.open" = "Otwórz mimo to";
+"staking.setup.conflict.title" = "Już staking";
+"staking.setup.conflict.message" = "Nie możesz stake z Direct Staking i Nomination Pools jednocześnie";
+"nomination.pools.conflict.title" = "Operacje Pool są niedostępne";
+"nomination.pools.conflict.message" = "Nie możesz już używać zarówno Direct Staking, jak i Pool Staking z tego samego konta. Aby zarządzać swoim Pool Staking, najpierw musisz unstake swoje tokeny z Direct Staking.";

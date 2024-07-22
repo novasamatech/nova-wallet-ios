@@ -1,12 +1,5 @@
 import Foundation
 
-struct NPoolsEDViolationErrorParams {
-    let availableBalance: String
-    let minimumBalance: String
-    let fee: String
-    let maxStake: String
-}
-
 protocol StakingErrorPresentable: StakingBaseErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?)
 
@@ -72,6 +65,11 @@ protocol StakingErrorPresentable: StakingBaseErrorPresentable {
         from view: ControllerBackedProtocol?,
         networkName: String,
         onClose: @escaping () -> Void,
+        locale: Locale?
+    )
+
+    func presentDirectAndPoolStakingConflict(
+        from view: ControllerBackedProtocol?,
         locale: Locale?
     )
 }
@@ -299,5 +297,21 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentDirectAndPoolStakingConflict(
+        from view: ControllerBackedProtocol?,
+        locale: Locale?
+    ) {
+        let message = R.string.localizable.stakingSetupConflictMessage(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let title = R.string.localizable.stakingSetupConflictTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
     }
 }

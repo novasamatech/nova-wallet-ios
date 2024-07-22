@@ -27,50 +27,19 @@ enum AvailSignedExtension {
     }
 }
 
-extension AvailSignedExtension {
-    final class Factory {
-        private func getBaseSignedExtensions() -> [ExtrinsicSignedExtending] {
-            []
+enum AvailSignedExtensionCoders {
+    static func getCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
+        let extensionId = AvailSignedExtension.checkAppId
+
+        guard let extraType = metadata.getSignedExtensionType(for: extensionId) else {
+            return []
         }
 
-        private func getMainSignedExtensions() -> [ExtrinsicSignedExtending] {
-            [
-                CheckAppId(appId: 0)
-            ]
-        }
-
-        private func getBaseCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
-            DefaultSignedExtensionCoders.createDefaultCoders(for: metadata)
-        }
-
-        private func getMainCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
-            let extensionId = AvailSignedExtension.checkAppId
-
-            guard let extraType = metadata.getSignedExtensionType(for: extensionId) else {
-                return []
-            }
-
-            return [
-                DefaultExtrinsicSignedExtensionCoder(
-                    signedExtensionId: extensionId,
-                    extraType: extraType
-                )
-            ]
-        }
-    }
-}
-
-extension AvailSignedExtension.Factory: ExtrinsicSignedExtensionFactoryProtocol {
-    func createExtensions() -> [ExtrinsicSignedExtending] {
-        getBaseSignedExtensions() + getMainSignedExtensions()
-    }
-
-    func createExtensions(payingFeeIn _: AssetConversionPallet.AssetId) -> [ExtrinsicSignedExtending] {
-        // Avail doesn't support fee customization via signed extensions - ignore parameter
-        createExtensions()
-    }
-
-    func createCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
-        getBaseCoders(for: metadata) + getMainCoders(for: metadata)
+        return [
+            DefaultExtrinsicSignedExtensionCoder(
+                signedExtensionId: extensionId,
+                extraType: extraType
+            )
+        ]
     }
 }

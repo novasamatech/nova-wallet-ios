@@ -369,6 +369,8 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     }
 
     func handleAccountLocks(result _: Result<[DataProviderChange<AssetLock>], Error>, accountId _: AccountId) {}
+
+    func handleAccountHolds(result _: Result<[DataProviderChange<AssetHold>], Error>, accountId _: AccountId) {}
 }
 
 extension AssetListBaseInteractor {

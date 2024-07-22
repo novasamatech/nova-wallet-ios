@@ -60,9 +60,9 @@ final class NPoolsUnstakeConfirmInteractor: NPoolsUnstakeBaseInteractor {
 }
 
 extension NPoolsUnstakeConfirmInteractor: NPoolsUnstakeConfirmInteractorInputProtocol {
-    func submit(unstakingPoints: BigUInt) {
+    func submit(unstakingPoints: BigUInt, needsMigration: Bool) {
         extrinsicService.submit(
-            createExtrinsicClosure(for: unstakingPoints, accountId: accountId),
+            createExtrinsicClosure(for: unstakingPoints, accountId: accountId, needsMigration: needsMigration),
             signer: signingWrapper,
             runningIn: .main
         ) { [weak self] result in

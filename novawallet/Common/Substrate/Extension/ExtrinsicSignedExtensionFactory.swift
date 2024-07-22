@@ -19,7 +19,8 @@ final class ExtrinsicSignedExtensionFactory {}
 extension ExtrinsicSignedExtensionFactory: ExtrinsicSignedExtensionFactoryProtocol {
     func createExtensions() -> [ExtrinsicSignedExtending] {
         [
-            ExtrinsicSignedExtension.ChargeAssetTxPayment()
+            ExtrinsicSignedExtension.ChargeAssetTxPayment(),
+            AvailSignedExtension.CheckAppId(appId: 0)
         ]
     }
 
@@ -30,7 +31,10 @@ extension ExtrinsicSignedExtensionFactory: ExtrinsicSignedExtensionFactoryProtoc
     }
 
     func createCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
-        DefaultSignedExtensionCoders.createDefaultCoders(for: metadata)
+        let baseCoders = DefaultSignedExtensionCoders.createDefaultCoders(for: metadata)
+        let availCoders = AvailSignedExtensionCoders.getCoders(for: metadata)
+
+        return baseCoders + availCoders
     }
 }
 
