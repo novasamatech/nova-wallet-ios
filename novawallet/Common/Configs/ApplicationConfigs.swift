@@ -195,9 +195,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var preferredValidatorsURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/nova_validators.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/validators/v1/nova_validators.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/nova_validators.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/validators/v1/nova_validators_dev.json")!
         #endif
     }
 

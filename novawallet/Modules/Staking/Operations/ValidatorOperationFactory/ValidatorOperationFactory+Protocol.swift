@@ -319,9 +319,11 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
     }
 
     func allPreferred(
-        for preferredAccountIds: [AccountId]
+        for preferrence: PreferredValidatorsProviderModel?
     ) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
         let allElectedWrapper = allElectedOperation()
+
+        let preferredAccountIds = preferrence?.preferred ?? []
         let wannabeWrapper = !preferredAccountIds.isEmpty ?
             wannabeValidatorsOperation(for: preferredAccountIds) : nil
 
@@ -329,8 +331,23 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
             let electedValidators = try allElectedWrapper.targetOperation.extractNoCancellableResultData()
             let prefValidators = try wannabeWrapper?.targetOperation.extractNoCancellableResultData()
 
+            let notExcludedElectedValidators: [ElectedValidatorInfo]
+
+            if let excluded = preferrence?.excluded, !excluded.isEmpty {
+                notExcludedElectedValidators = electedValidators.filter { validator in
+                    guard let accountId = try? validator.address.toAccountId() else {
+                        return false
+                    }
+
+                    return !excluded.contains(accountId)
+                }
+            } else {
+                notExcludedElectedValidators = electedValidators
+            }
+
             return ElectedAndPrefValidators(
-                electedValidators: electedValidators,
+                allElectedValidators: electedValidators,
+                notExcludedElectedValidators: notExcludedElectedValidators,
                 preferredValidators: prefValidators ?? []
             )
         }

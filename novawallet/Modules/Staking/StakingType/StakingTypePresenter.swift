@@ -206,7 +206,7 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
         }
 
         let fullValidatorList = CustomValidatorsFullList(
-            allValidators: validators.electedAndPrefValidators.electedToSelectedValidators(),
+            allValidators: validators.electedAndPrefValidators.allElectedToSelectedValidators(),
             preferredValidators: validators.electedAndPrefValidators.preferredValidators
         )
 
