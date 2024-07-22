@@ -1,6 +1,6 @@
 import BigInt
 
-protocol NPoolsUnstakeConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+protocol NPoolsUnstakeConfirmViewProtocol: NPoolsUnstakeBaseViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol)
     func didReceiveWallet(viewModel: DisplayWalletViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
@@ -15,7 +15,7 @@ protocol NPoolsUnstakeConfirmPresenterProtocol: AnyObject {
 }
 
 protocol NPoolsUnstakeConfirmInteractorInputProtocol: NPoolsUnstakeBaseInteractorInputProtocol {
-    func submit(unstakingPoints: BigUInt)
+    func submit(unstakingPoints: BigUInt, needsMigration: Bool)
 }
 
 protocol NPoolsUnstakeConfirmInteractorOutputProtocol: NPoolsUnstakeBaseInteractorOutputProtocol {

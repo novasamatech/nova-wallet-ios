@@ -1,5 +1,12 @@
 import Foundation
 
+struct NPoolsEDViolationErrorParams {
+    let availableBalance: String
+    let minimumBalance: String
+    let fee: String
+    let maxStake: String
+}
+
 protocol NominationPoolErrorPresentable: StakingBaseErrorPresentable {
     func presentNominationPoolHasNoApy(
         from view: ControllerBackedProtocol,
@@ -43,6 +50,11 @@ protocol NominationPoolErrorPresentable: StakingBaseErrorPresentable {
         from view: ControllerBackedProtocol,
         params: NPoolsEDViolationErrorParams,
         action: (() -> Void)?,
+        locale: Locale
+    )
+
+    func presentDirectStakingNotAllowedForMigration(
+        from view: ControllerBackedProtocol,
         locale: Locale
     )
 }
@@ -207,5 +219,20 @@ extension NominationPoolErrorPresentable where Self: AlertPresentable & ErrorPre
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentDirectStakingNotAllowedForMigration(
+        from view: ControllerBackedProtocol,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.nominationPoolsConflictTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.nominationPoolsConflictMessage(preferredLanguages: locale.rLanguages)
+
+        present(
+            message: message,
+            title: title,
+            closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+            from: view
+        )
     }
 }

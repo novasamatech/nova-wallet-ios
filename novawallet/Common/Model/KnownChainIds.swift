@@ -28,7 +28,7 @@ enum KnowChainId {
     static let westmint = "67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
     static let hydra = "afdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d"
     static let polimec = "7eb9354488318e7549c722669dcbdcdc526f1fef1420e7944667212f3601fdbd"
-    static let avail = "128ea318539862c0a06b745981300d527c1041c6f3388a8c49565559e3ea3d10"
+    static let avail = "b91746b45e0346cc2f815a520b9c6cb4d5c0902af848db0a80f85932d2e8276a"
     static let availTuringTestnet = "d3d2f3a3495dc597434a99d7d449ebad6616db45e4e4f178f31cc6fa14378b70"
     static let vara = "fe1b4c55fd4d668101126434206571a7838a8b6b93a6d1b95d607e78e6c53763"
     static let mythos = "f6ee56e9c5277df5b4ce6ae9983ee88f3cbed27d31beeb98f9f84f997a1ab0b9"

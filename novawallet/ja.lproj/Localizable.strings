@@ -1720,3 +1720,10 @@
 "network.add.alert.invalid.symbol.message" = "入力された通貨シンボル（%@）がネットワーク（%@）と一致しません。正しい通貨シンボルを使用しますか？";
 "network.node.delete.alert.description" = "%@ノードは削除されます";
 "network.add.alert.success.title" = "ネットワークが正常に追加されました";
+"dapp.unknown.warning.title" = "警告! DAppは未知です";
+"dapp.unknown.warning.message" = "悪意のあるDAppsはすべての資金を引き出す可能性があります。DAppを使用する前に、許可を与えたり、資金を送金したりする前に、必ず自分で調査してください。\n\n誰かがこのDAppを訪問するよう促している場合、それは詐欺である可能性が高いです。疑わしい場合は、Nova Walletサポートに連絡してください: %@。";
+"dapp.unknown.warning.open" = "それでも開く";
+"staking.setup.conflict.title" = "すでにステーキング中";
+"staking.setup.conflict.message" = "Direct StakingとNomination Poolsを同時にステークすることはできません";
+"nomination.pools.conflict.title" = "プール操作は利用できません";
+"nomination.pools.conflict.message" = "同じアカウントでDirect StakingとPool Stakingの両方を使用することはできなくなりました。Pool Stakingを管理するには、まずDirect Stakingからトークンをアンステークする必要があります。";

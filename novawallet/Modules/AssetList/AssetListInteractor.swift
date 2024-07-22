@@ -30,6 +30,9 @@ final class AssetListInteractor: AssetListBaseInteractor {
     private var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
     private var locks: [ChainAssetId: [AssetLock]] = [:]
 
+    private var assetHoldsSubscriptions: [AccountId: StreamableProvider<AssetHold>] = [:]
+    private var holds: [ChainAssetId: [AssetHold]] = [:]
+
     init(
         selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
@@ -65,6 +68,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     override func resetWallet() {
         clearNftSubscription()
         clearLocksSubscription()
+        clearHoldsSubscription()
 
         providerWalletInfo()
         provideWalletConnectSessionsCount()
@@ -80,6 +84,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: enabledChainChanges)
+        updateHoldsSubscription(from: enabledChainChanges)
     }
 
     private func providePolkadotStakingPromotion() {
@@ -90,6 +95,12 @@ final class AssetListInteractor: AssetListBaseInteractor {
         assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
         assetLocksSubscriptions = [:]
         locks = [:]
+    }
+
+    private func clearHoldsSubscription() {
+        assetHoldsSubscriptions.values.forEach { $0.removeObserver(self) }
+        assetHoldsSubscriptions = [:]
+        holds = [:]
     }
 
     private func providerWalletInfo() {
@@ -127,6 +138,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: enabledChainChanges)
+        updateHoldsSubscription(from: enabledChainChanges)
     }
 
     private func setupNftSubscription(from allChains: [ChainModel]) {
@@ -188,12 +200,34 @@ final class AssetListInteractor: AssetListBaseInteractor {
         }
     }
 
+    private func updateHoldsSubscription(from changes: [DataProviderChange<ChainModel>]) {
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+
+        assetHoldsSubscriptions = changes.reduce(
+            intitial: assetHoldsSubscriptions,
+            selectedMetaAccount: selectedMetaAccount
+        ) { [weak self] in
+            self?.subscribeToAllHoldsProvider(for: $0)
+        }
+    }
+
     override func handleAccountLocks(result: Result<[DataProviderChange<AssetLock>], Error>, accountId: AccountId) {
         switch result {
         case let .success(changes):
             handleAccountLocksChanges(changes, accountId: accountId)
         case let .failure(error):
             modelBuilder?.applyLocks(.failure(error))
+        }
+    }
+
+    override func handleAccountHolds(result: Result<[DataProviderChange<AssetHold>], Error>, accountId: AccountId) {
+        switch result {
+        case let .success(changes):
+            handleAccountHoldsChanges(changes, accountId: accountId)
+        case let .failure(error):
+            modelBuilder?.applyHolds(.failure(error))
         }
     }
 
@@ -302,6 +336,43 @@ extension AssetListInteractor {
         }
 
         modelBuilder?.applyLocks(.success(Array(locks.values.flatMap { $0 })))
+    }
+
+    private func handleAccountHoldsChanges(
+        _ changes: [DataProviderChange<AssetHold>],
+        accountId: AccountId
+    ) {
+        holds = changes.reduce(
+            into: holds
+        ) { accum, change in
+            switch change {
+            case let .insert(hold), let .update(hold):
+                let groupIdentifier = AssetBalance.createIdentifier(
+                    for: hold.chainAssetId,
+                    accountId: hold.accountId
+                )
+                guard
+                    let assetBalanceId = assetBalanceIdMapping[groupIdentifier],
+                    assetBalanceId.accountId == accountId else {
+                    return
+                }
+
+                let chainAssetId = ChainAssetId(
+                    chainId: assetBalanceId.chainId,
+                    assetId: assetBalanceId.assetId
+                )
+
+                var items = accum[chainAssetId] ?? []
+                items.addOrReplaceSingle(hold)
+                accum[chainAssetId] = items
+            case let .delete(deletedIdentifier):
+                for chainHolds in accum {
+                    accum[chainHolds.key] = chainHolds.value.filter { $0.identifier != deletedIdentifier }
+                }
+            }
+        }
+
+        modelBuilder?.applyHolds(.success(Array(holds.values.flatMap { $0 })))
     }
 }
 

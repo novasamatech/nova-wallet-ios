@@ -4,7 +4,13 @@ import SoraFoundation
 struct NominationPoolBondMoreSetupViewFactory {
     static func createView(state: NPoolsStakingSharedStateProtocol) -> NominationPoolBondMoreSetupViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
-              let interactor = createInteractor(state: state) else {
+              let interactor = createInteractor(state: state),
+              let stakingActivity = StakingActivityForValidation(
+                  wallet: SelectedWalletSettings.shared.value,
+                  chain: state.chainAsset.chain,
+                  chainRegistry: ChainRegistryFacade.sharedRegistry,
+                  operationQueue: OperationManagerFacade.sharedDefaultQueue
+              ) else {
             return nil
         }
         let wireframe = NominationPoolBondMoreSetupWireframe(state: state)
@@ -30,6 +36,7 @@ struct NominationPoolBondMoreSetupViewFactory {
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatorFactory,
+            stakingActivity: stakingActivity,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -84,7 +91,6 @@ struct NominationPoolBondMoreSetupViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             npoolsOperationFactory: NominationPoolsOperationFactory(operationQueue: operationQueue),
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
-            stakingLocalSubscriptionFactory: state.relaychainLocalSubscriptionFactory,
             assetStorageInfoFactory: AssetStorageInfoOperationFactory(),
             operationQueue: operationQueue,
             currencyManager: currencyManager

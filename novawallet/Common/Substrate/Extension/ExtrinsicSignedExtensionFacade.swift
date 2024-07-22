@@ -7,12 +7,7 @@ protocol ExtrinsicSignedExtensionFacadeProtocol {
 final class ExtrinsicSignedExtensionFacade {}
 
 extension ExtrinsicSignedExtensionFacade: ExtrinsicSignedExtensionFacadeProtocol {
-    func createFactory(for chainId: ChainModel.Id) -> ExtrinsicSignedExtensionFactoryProtocol {
-        switch chainId {
-        case KnowChainId.avail, KnowChainId.availTuringTestnet:
-            AvailSignedExtension.Factory()
-        default:
-            ExtrinsicSignedExtensionFactory()
-        }
+    func createFactory(for _: ChainModel.Id) -> ExtrinsicSignedExtensionFactoryProtocol {
+        ExtrinsicSignedExtensionFactory()
     }
 }

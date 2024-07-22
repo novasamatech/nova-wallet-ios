@@ -32,7 +32,7 @@ protocol StakingNPoolsInteractorOutputProtocol: AnyObject {
     func didReceive(error: StakingNPoolsError)
 }
 
-protocol StakingNPoolsWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable,
+protocol StakingNPoolsWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable {
     func showStakeMore(from view: StakingMainViewProtocol?)
     func showUnstake(from view: StakingMainViewProtocol?)

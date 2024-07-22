@@ -3,7 +3,8 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-final class NPoolsRedeemInteractor: RuntimeConstantFetching {
+final class NPoolsRedeemInteractor: RuntimeConstantFetching, NominationPoolStakingMigrating,
+    AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: NPoolsRedeemInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
@@ -32,6 +33,8 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching {
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
+    private var delegatedStakingProvider: AnyDataProvider<DecodedDelegatedStakingDelegator>?
+    private var cancellableNeedsMigration = CancellableCallStore()
 
     private var currentPoolId: NominationPools.PoolId?
 
@@ -93,6 +96,9 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching {
         balanceProvider = subscribeToAssetBalanceProvider(for: accountId, chainId: chainId, assetId: assetId)
         activeEraProvider = subscribeActiveEra(for: chainId)
 
+        clear(dataProvider: &delegatedStakingProvider)
+        delegatedStakingProvider = subscribeDelegatedStaking(for: accountId, chainId: chainId)
+
         setupCurrencyProvider()
     }
 
@@ -140,29 +146,46 @@ final class NPoolsRedeemInteractor: RuntimeConstantFetching {
 
     func createExtrinsicBuilderClosure(
         for accountId: AccountId,
-        numOfSlashingSpans: UInt32
+        numOfSlashingSpans: UInt32,
+        needsMigration: Bool
     ) -> ExtrinsicBuilderClosure {
         { builder in
+            let currentBuilder = try NominationPools.migrateIfNeeded(
+                needsMigration,
+                accountId: accountId,
+                builder: builder
+            )
+
             let redeemCall = NominationPools.RedeemCall(
                 memberAccount: .accoundId(accountId),
                 numberOfSlashingSpans: numOfSlashingSpans
             )
 
-            return try builder.adding(call: redeemCall.runtimeCall())
+            return try currentBuilder.adding(call: redeemCall.runtimeCall())
         }
     }
 
-    func estimateFee(for numOfSlashingSpans: UInt32) {
+    func estimateFee(for numOfSlashingSpans: UInt32, needsMigration: Bool) {
+        let identifier = "\(numOfSlashingSpans)" + "-" + "\(needsMigration)"
+
         feeProxy.estimateFee(
             using: extrinsicService,
-            reuseIdentifier: TransactionFeeId(numOfSlashingSpans),
-            setupBy: createExtrinsicBuilderClosure(for: accountId, numOfSlashingSpans: numOfSlashingSpans)
+            reuseIdentifier: identifier,
+            setupBy: createExtrinsicBuilderClosure(
+                for: accountId,
+                numOfSlashingSpans: numOfSlashingSpans,
+                needsMigration: needsMigration
+            )
         )
     }
 
-    func submit(for numberOfSlashingSpans: UInt32) {
+    func submit(for numberOfSlashingSpans: UInt32, needsMigration: Bool) {
         extrinsicService.submit(
-            createExtrinsicBuilderClosure(for: accountId, numOfSlashingSpans: numberOfSlashingSpans),
+            createExtrinsicBuilderClosure(
+                for: accountId,
+                numOfSlashingSpans: numberOfSlashingSpans,
+                needsMigration: needsMigration
+            ),
             signer: signingWrapper,
             runningIn: .main
         ) { [weak self] result in
@@ -202,7 +225,7 @@ extension NPoolsRedeemInteractor: NPoolsRedeemInteractorInputProtocol {
         provideExistentialDeposit()
     }
 
-    func estimateFee() {
+    func estimateFee(needsMigration: Bool) {
         guard let poolId = currentPoolId else {
             return
         }
@@ -210,14 +233,17 @@ extension NPoolsRedeemInteractor: NPoolsRedeemInteractorInputProtocol {
         fetchSlashingSpansForStash(poolId: poolId) { [weak self] result in
             switch result {
             case let .success(optSlashingSpans):
-                self?.estimateFee(for: optSlashingSpans?.numOfSlashingSpans ?? 0)
+                self?.estimateFee(
+                    for: optSlashingSpans?.numOfSlashingSpans ?? 0,
+                    needsMigration: needsMigration
+                )
             case let .failure(error):
                 self?.presenter?.didReceive(error: .fee(error))
             }
         }
     }
 
-    func submit() {
+    func submit(needsMigration: Bool) {
         guard let poolId = currentPoolId else {
             presenter?.didReceive(submissionResult: .failure(CommonError.dataCorruption))
             return
@@ -226,7 +252,10 @@ extension NPoolsRedeemInteractor: NPoolsRedeemInteractorInputProtocol {
         fetchSlashingSpansForStash(poolId: poolId) { [weak self] result in
             switch result {
             case let .success(optSlashingSpans):
-                self?.submit(for: optSlashingSpans?.numOfSlashingSpans ?? 0)
+                self?.submit(
+                    for: optSlashingSpans?.numOfSlashingSpans ?? 0,
+                    needsMigration: needsMigration
+                )
             case let .failure(error):
                 self?.presenter?.didReceive(submissionResult: .failure(error))
             }
@@ -256,8 +285,6 @@ extension NPoolsRedeemInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubsc
                 currentPoolId = optPoolMember?.poolId
 
                 setupPoolProviders()
-
-                estimateFee()
             }
 
             presenter?.didReceive(poolMember: optPoolMember)
@@ -276,6 +303,33 @@ extension NPoolsRedeemInteractor: NPoolsLocalStorageSubscriber, NPoolsLocalSubsc
             presenter?.didReceive(subPools: subPools)
         case let .failure(error):
             presenter?.didReceive(error: .subscription(error, "sub pools"))
+        }
+    }
+
+    func handleDelegatedStaking(
+        result: Result<DelegatedStakingPallet.Delegation?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(delegation):
+            cancellableNeedsMigration.cancel()
+
+            needsPoolStakingMigration(
+                for: delegation,
+                runtimeProvider: runtimeService,
+                cancellableStore: cancellableNeedsMigration,
+                operationQueue: operationQueue
+            ) { [weak self] result in
+                switch result {
+                case let .success(needsMigration):
+                    self?.presenter?.didReceive(needsMigration: needsMigration)
+                case let .failure(error):
+                    self?.presenter?.didReceive(error: .subscription(error, "Needs Migration"))
+                }
+            }
+        case let .failure(error):
+            presenter?.didReceive(error: .subscription(error, "Delegated Staking"))
         }
     }
 }

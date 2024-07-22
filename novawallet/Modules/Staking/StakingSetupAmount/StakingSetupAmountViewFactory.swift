@@ -6,9 +6,12 @@ struct StakingSetupAmountViewFactory {
     static func createView(
         for state: RelaychainStartStakingStateProtocol
     ) -> StakingSetupAmountViewProtocol? {
+        let accountRequest = state.chainAsset.chain.accountRequest()
+
         guard
             let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(for: state) else {
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: accountRequest),
+            let interactor = createInteractor(for: state, selectedAccount: selectedAccount) else {
             return nil
         }
 
@@ -41,18 +44,17 @@ struct StakingSetupAmountViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             balanceDerivationFactory: balanceDerivationFactory,
             dataValidatingFactory: dataValidatingFactory,
+            accountId: selectedAccount.accountId,
             chainAsset: state.chainAsset,
             recommendsMultipleStakings: state.recommendsMultipleStakings,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
+        let keyboardStrategy = EventDrivenKeyboardStrategy(events: [.viewDidAppear], triggersOnes: true)
         let view = StakingSetupAmountViewController(
             presenter: presenter,
-            keyboardAppearanceStrategy: EventDrivenKeyboardStrategy(
-                events: [.viewDidAppear],
-                triggersOnes: true
-            ),
+            keyboardAppearanceStrategy: keyboardStrategy,
             localizationManager: LocalizationManager.shared
         )
 
@@ -64,14 +66,10 @@ struct StakingSetupAmountViewFactory {
     }
 
     private static func createInteractor(
-        for state: RelaychainStartStakingStateProtocol
+        for state: RelaychainStartStakingStateProtocol,
+        selectedAccount: ChainAccountResponse
     ) -> StakingSetupAmountInteractor? {
-        let request = state.chainAsset.chain.accountRequest()
         let chainId = state.chainAsset.chain.chainId
-
-        guard let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: request) else {
-            return nil
-        }
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 

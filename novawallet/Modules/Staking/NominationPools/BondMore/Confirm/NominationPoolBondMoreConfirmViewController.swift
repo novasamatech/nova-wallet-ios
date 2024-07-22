@@ -96,14 +96,6 @@ extension NominationPoolBondMoreConfirmViewController: NominationPoolBondMoreCon
     func didReceiveHints(viewModel: [String]) {
         rootView.hintListView.bind(texts: viewModel)
     }
-
-    func didStartLoading() {
-        rootView.loadingView.startLoading()
-    }
-
-    func didStopLoading() {
-        rootView.loadingView.stopLoading()
-    }
 }
 
 extension NominationPoolBondMoreConfirmViewController: Localizable {

@@ -1720,3 +1720,10 @@
 "network.add.alert.invalid.symbol.message" = "Simbol Mata Uang yang dimasukkan (%@) tidak cocok dengan jaringan (%@). Apakah Anda ingin menggunakan simbol mata uang yang benar?";
 "network.node.delete.alert.description" = "Node %@ akan dihapus";
 "network.add.alert.success.title" = "Jaringan berhasil ditambahkan";
+"dapp.unknown.warning.title" = "Peringatan! Aplikasi desentralisasi tidak dikenal";
+"dapp.unknown.warning.message" = "Aplikasi desentralisasi yang berbahaya dapat menarik semua dana Anda. Selalu lakukan penelitian sendiri sebelum menggunakan aplikasi desentralisasi, memberikan izin, atau mengirim dana keluar.\n\nJika seseorang mendesak Anda untuk mengunjungi aplikasi desentralisasi ini, kemungkinan besar itu adalah penipuan. Jika ragu, harap hubungi dukungan Nova Wallet: %@.";
+"dapp.unknown.warning.open" = "Buka saja";
+"staking.setup.conflict.title" = "Sudah melakukan staking";
+"staking.setup.conflict.message" = "Anda tidak dapat melakukan staking dengan Staking Langsung dan Pool Nominasi pada saat yang sama";
+"nomination.pools.conflict.title" = "Operasi pool tidak tersedia";
+"nomination.pools.conflict.message" = "Anda tidak dapat lagi menggunakan Staking Langsung dan Staking Pool dari akun yang sama. Untuk mengelola Staking Pool Anda, pertama-tama Anda perlu melepaskan token Anda dari Staking Langsung.";
