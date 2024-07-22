@@ -9,6 +9,7 @@ struct StakingConstants {
         KnowChainId.polkadot: 54,
         KnowChainId.kusama: 160,
         KnowChainId.alephZero: 74,
-        KnowChainId.vara: 65
+        KnowChainId.vara: 65,
+        KnowChainId.avail: 3
     ]
 }
