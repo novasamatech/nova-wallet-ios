@@ -9,6 +9,7 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
 
     let chainAsset: ChainAsset
     let npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
+    let validationFactory: StakingRecommendationValidationFactoryProtocol
 
     var restrictions: RelaychainStakingRestrictions?
 
@@ -20,12 +21,14 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
         npoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol,
         restrictionsBuilder: RelaychainStakingRestrictionsBuilding,
         operationFactory: NominationPoolRecommendationFactoryProtocol,
+        validationFactory: StakingRecommendationValidationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.chainAsset = chainAsset
         self.restrictionsBuilder = restrictionsBuilder
         self.npoolsLocalSubscriptionFactory = npoolsLocalSubscriptionFactory
+        self.validationFactory = validationFactory
         self.operationFactory = operationFactory
         self.operationQueue = operationQueue
 
@@ -44,7 +47,7 @@ final class PoolStakingRecommendationMediator: BaseStakingRecommendationMediator
         let recommendation = RelaychainStakingRecommendation(
             staking: .pool(pool),
             restrictions: restrictions,
-            validationFactory: nil
+            validationFactory: validationFactory
         )
 
         didReceive(recommendation: recommendation, for: amount)

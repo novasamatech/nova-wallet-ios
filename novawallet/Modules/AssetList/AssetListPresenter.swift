@@ -412,6 +412,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             let priceResult = model.priceResult,
             let prices = try? priceResult.get(),
             let locks = try? model.locksResult?.get(),
+            let holds = try? model.holdsResult?.get(),
             let externalBalances = try? model.externalBalanceResult?.get() else {
             return
         }
@@ -421,6 +422,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             balances: model.balances.values.compactMap { try? $0.get() },
             chains: model.allChains,
             locks: locks,
+            holds: holds,
             externalBalances: externalBalances
         )
 

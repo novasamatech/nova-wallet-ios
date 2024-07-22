@@ -1,12 +1,12 @@
 import BigInt
 
-protocol NominationPoolBondMoreBaseViewProtocol: ControllerBackedProtocol {
+protocol NominationPoolBondMoreBaseViewProtocol: SCLoadableControllerProtocol {
     func didReceiveHints(viewModel: [String])
 }
 
 protocol NominationPoolBondMoreBaseInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateFee(for amount: BigUInt)
+    func estimateFee(for amount: BigUInt, needsMigration: Bool)
     func retrySubscriptions()
     func retryClaimableRewards()
     func retryAssetExistance()
@@ -21,6 +21,7 @@ protocol NominationPoolBondMoreBaseInteractorOutputProtocol: AnyObject {
     func didReceive(bondedPool: NominationPools.BondedPool?)
     func didReceive(claimableRewards: BigUInt?)
     func didReceive(assetBalanceExistance: AssetBalanceExistence?)
+    func didReceive(needsMigration: Bool)
 }
 
 protocol NominationPoolBondMoreBaseWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable,

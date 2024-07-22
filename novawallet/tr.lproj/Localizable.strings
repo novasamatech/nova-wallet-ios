@@ -1720,3 +1720,10 @@
 "network.add.alert.invalid.symbol.message" = "Girilen Para Birimi Sembolü (%@) ağ (%@) ile eşleşmiyor. Doğru para birimi sembolünü kullanmak istiyor musunuz?";
 "network.node.delete.alert.description" = "%@ düğümü silinecek";
 "network.add.alert.success.title" = "Ağ başarıyla eklendi";
+"dapp.unknown.warning.title" = "Uyarı! DApp bilinmiyor";
+"dapp.unknown.warning.message" = "Kötü niyetli DApp'ler tüm varlıklarınızı çekebilir. Bir DApp'i kullanmadan, izin vermeden veya para göndermeden önce her zaman kendi araştırmanızı yapın.\n\nBirisi sizi bu DApp'e girmeye zorluyorsa, muhtemelen bir dolandırıcılıktır. Şüphe duyduğunuzda, lütfen Nova Wallet desteği ile iletişime geçin: %@.";
+"dapp.unknown.warning.open" = "Her neyse aç";
+"staking.setup.conflict.title" = "Zaten stake edilmekte";
+"staking.setup.conflict.message" = "Aynı anda hem Doğrudan Stake hem de Nomination Havuzlarını kullanarak stake yapamazsınız";
+"nomination.pools.conflict.title" = "Havuz işlemleri kullanılamıyor";
+"nomination.pools.conflict.message" = "Artık aynı hesaptan hem Doğrudan Stake hem de Havuz Stake kullanamazsınız. Havuz Stake'inizi yönetmek için öncelikle token'larınızı Doğrudan Stake'ten çözmeniz gerekmektedir.";

@@ -2,7 +2,13 @@ import Foundation
 import Operation_iOS
 
 enum BalanceRemoteSubscriptionHandlingParams {
-    struct Common {
+    struct BalancesPallet {
+        let accountLocalStorageKey: String
+        let locksLocalStorageKey: String
+        let holdsLocalStorageKey: String
+    }
+
+    struct OrmlPallet {
         let accountLocalStorageKey: String
         let locksLocalStorageKey: String
     }
@@ -18,14 +24,14 @@ protocol BalanceRemoteSubscriptionHandlingFactoryProtocol {
     func createNative(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        params: BalanceRemoteSubscriptionHandlingParams.Common,
+        params: BalanceRemoteSubscriptionHandlingParams.BalancesPallet,
         transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol
 
     func createOrml(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        params: BalanceRemoteSubscriptionHandlingParams.Common,
+        params: BalanceRemoteSubscriptionHandlingParams.OrmlPallet,
         transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol
 
@@ -64,15 +70,12 @@ final class BalanceRemoteSubscriptionHandlingFactory {
         transactionSubscription: TransactionSubscribing?
     ) -> TokenSubscriptionFactory {
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorageFacade)
-        let assetRepository = repositoryFactory.createAssetBalanceRepository()
-        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
 
         return TokenSubscriptionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
-            assetRepository: assetRepository,
-            locksRepository: locksRepository,
+            repositoryFactory: repositoryFactory,
             eventCenter: eventCenter,
             transactionSubscription: transactionSubscription
         )
@@ -83,7 +86,7 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
     func createNative(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        params: BalanceRemoteSubscriptionHandlingParams.Common,
+        params: BalanceRemoteSubscriptionHandlingParams.BalancesPallet,
         transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol {
         let innerFactory = createTokensSubscriptionFactory(
@@ -95,6 +98,7 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
         return AccountInfoSubscriptionHandlingFactory(
             accountLocalStorageKey: params.accountLocalStorageKey,
             locksLocalStorageKey: params.locksLocalStorageKey,
+            holdsLocalStorageKey: params.holdsLocalStorageKey,
             factory: innerFactory
         )
     }
@@ -102,7 +106,7 @@ extension BalanceRemoteSubscriptionHandlingFactory: BalanceRemoteSubscriptionHan
     func createOrml(
         for accountId: AccountId,
         chainAssetId: ChainAssetId,
-        params: BalanceRemoteSubscriptionHandlingParams.Common,
+        params: BalanceRemoteSubscriptionHandlingParams.OrmlPallet,
         transactionSubscription: TransactionSubscribing?
     ) -> RemoteSubscriptionHandlingFactoryProtocol {
         let innerFactory = createTokensSubscriptionFactory(

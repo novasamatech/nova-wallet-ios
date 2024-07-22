@@ -54,6 +54,13 @@ protocol NominationPoolDataValidatorFactoryProtocol: StakingBaseDataValidatingFa
         locale: Locale
     ) -> DataValidating
 
+    func canMigrateIfNeeded(
+        needsMigration: Bool?,
+        stakingActivity: StakingActivityForValidating,
+        onProgress: AsyncValidationOnProgress?,
+        locale: Locale
+    ) -> DataValidating
+
     func poolStakingNotViolatingExistentialDeposit(
         for params: ExistentialDepositValidationParams,
         chainAsset: ChainAsset,
@@ -306,6 +313,44 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
 
             return rewards > fee
         })
+    }
+
+    func canMigrateIfNeeded(
+        needsMigration: Bool?,
+        stakingActivity: StakingActivityForValidating,
+        onProgress: AsyncValidationOnProgress?,
+        locale: Locale
+    ) -> DataValidating {
+        AsyncErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentDirectStakingNotAllowedForMigration(
+                from: view,
+                locale: locale
+            )
+
+        }, preservesCondition: { completion in
+            guard let needsMigration else {
+                completion(false)
+                return
+            }
+
+            guard needsMigration else {
+                completion(true)
+                return
+            }
+
+            stakingActivity.hasDirectStaking { result in
+                switch result {
+                case let .success(hasDirectStaking):
+                    completion(!hasDirectStaking)
+                case .failure:
+                    completion(false)
+                }
+            }
+        }, onProgress: onProgress)
     }
 
     // swiftlint:disable:next function_body_length

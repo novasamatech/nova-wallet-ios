@@ -1720,3 +1720,10 @@
 "network.add.alert.invalid.symbol.message" = "输入的货币符号 (%@) 与网络 (%@) 不匹配。要使用正确的货币符号吗？";
 "network.node.delete.alert.description" = "%@ 节点将被删除";
 "network.add.alert.success.title" = "网络添加成功";
+"dapp.unknown.warning.title" = "警告！DApp 未知";
+"dapp.unknown.warning.message" = "恶意的 DApps 可以提取你所有的资金。使用 DApp、授予权限或转出资金前请务必自行研究。\n\n如果有人迫使你访问这个 DApp，很可能是骗局。如有疑问，请联系 Nova Wallet 支持：%@。";
+"dapp.unknown.warning.open" = "仍然打开";
+"staking.setup.conflict.title" = "已质押";
+"staking.setup.conflict.message" = "不能同时使用直接质押和提名池进行质押";
+"nomination.pools.conflict.title" = "池操作不可用";
+"nomination.pools.conflict.message" = "你不能再同时使用同一个账号进行直接质押和池质押。要管理你的池质押，首先需要从直接质押中取消质押你的代币。";

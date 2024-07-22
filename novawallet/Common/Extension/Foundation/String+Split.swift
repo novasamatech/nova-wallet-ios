@@ -5,6 +5,7 @@ extension String {
         case hashtag = "#"
         case space = " "
         case comma = ","
+        case dot = "."
     }
 
     enum CompoundSeparator: String {

@@ -30,6 +30,7 @@ final class NominationPoolBondMoreConfirmPresenter: NominationPoolBondMoreBasePr
         hintsViewModelFactory: NominationPoolsBondMoreHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -42,6 +43,7 @@ final class NominationPoolBondMoreConfirmPresenter: NominationPoolBondMoreBasePr
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatorFactory,
+            stakingActivity: stakingActivity,
             localizationManager: localizationManager,
             logger: logger
         )
@@ -129,12 +131,12 @@ extension NominationPoolBondMoreConfirmPresenter: NominationPoolBondMoreConfirmP
         DataValidationRunner(
             validators: validators
         ).runValidation { [weak self] in
-            guard let amount = self?.getInputAmountInPlank() else {
+            guard let amount = self?.getInputAmountInPlank(), let needsMigration = self?.needsMigration else {
                 return
             }
 
             self?.view?.didStartLoading()
-            self?.interactor?.submit(amount: amount)
+            self?.interactor?.submit(amount: amount, needsMigration: needsMigration)
         }
     }
 

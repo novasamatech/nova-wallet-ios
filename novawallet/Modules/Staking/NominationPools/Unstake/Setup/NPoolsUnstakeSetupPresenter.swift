@@ -3,7 +3,9 @@ import SoraFoundation
 import BigInt
 
 final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
-    weak var view: NPoolsUnstakeSetupViewProtocol?
+    var view: NPoolsUnstakeSetupViewProtocol? {
+        baseView as? NPoolsUnstakeSetupViewProtocol
+    }
 
     var wireframe: NPoolsUnstakeSetupWireframeProtocol? {
         baseWireframe as? NPoolsUnstakeSetupWireframeProtocol
@@ -22,6 +24,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
         hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -32,6 +35,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatorFactory,
+            stakingActivity: stakingActivity,
             localizationManager: localizationManager,
             logger: logger
         )

@@ -1,5 +1,6 @@
 import XCTest
 @testable import novawallet
+import SoraFoundation
 import Cuckoo
 
 class DAppSearchTests: XCTestCase {
@@ -32,7 +33,9 @@ class DAppSearchTests: XCTestCase {
             wireframe: wireframe,
             viewModelFactory: DAppListViewModelFactory(),
             initialQuery: "",
-            delegate: delegate
+            delegate: delegate,
+            applicationConfig: ApplicationConfig.shared,
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -110,30 +113,5 @@ class DAppSearchTests: XCTestCase {
         // then (dApp selection test)
 
         wait(for: [dAppSelectionExpectation, dAppSelectionCloseExpectation], timeout: 10.0)
-
-        // when (query selection test)
-
-        let querySelectionExpectation = XCTestExpectation()
-        let querySelectionCloseExpectation = XCTestExpectation()
-
-        stub(delegate) { stub in
-            when(stub).didCompleteDAppSearchResult(any()).then { result in
-                if case .query = result {
-                    querySelectionExpectation.fulfill()
-                }
-            }
-        }
-
-        stub(wireframe) { stub in
-            when(stub).close(from: any()).then { _ in
-                querySelectionCloseExpectation.fulfill()
-            }
-        }
-
-        presenter.selectSearchQuery()
-
-        // then (dApp selection test)
-
-        wait(for: [querySelectionExpectation, querySelectionCloseExpectation], timeout: 10.0)
     }
 }

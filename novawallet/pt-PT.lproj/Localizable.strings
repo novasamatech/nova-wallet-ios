@@ -1720,3 +1720,10 @@
 "network.add.alert.invalid.symbol.message" = "O Símbolo da Moeda inserido (%@) não corresponde à rede (%@). Deseja usar o símbolo correto da moeda?";
 "network.node.delete.alert.description" = "O nodo %@ será excluído";
 "network.add.alert.success.title" = "Rede adicionada com sucesso";
+"dapp.unknown.warning.title" = "Aviso! DApp desconhecido";
+"dapp.unknown.warning.message" = "DApps maliciosos podem retirar todos os seus fundos. Sempre faça sua própria pesquisa antes de usar um DApp, conceder permissão ou enviar fundos.\n\nSe alguém estiver insistindo para você visitar este DApp, provavelmente é um golpe. Em caso de dúvida, por favor, entre em contato com o suporte da Nova Wallet: %@.";
+"dapp.unknown.warning.open" = "Abrir de qualquer forma";
+"staking.setup.conflict.title" = "Já está em staking";
+"staking.setup.conflict.message" = "Você não pode fazer staking com Staking Direto e Pools de Nomeação ao mesmo tempo";
+"nomination.pools.conflict.title" = "Operações de Pool não disponíveis";
+"nomination.pools.conflict.message" = "Você não pode mais usar Staking Direto e Staking em Pool a partir da mesma conta. Para gerenciar seu Staking em Pool, você primeiro precisa retirar seus tokens do Staking Direto.";

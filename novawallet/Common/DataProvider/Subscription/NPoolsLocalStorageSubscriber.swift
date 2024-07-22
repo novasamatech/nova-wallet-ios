@@ -14,6 +14,11 @@ protocol NPoolsLocalStorageSubscriber: LocalStorageProviderObserving where Self:
         callbackQueue: DispatchQueue
     ) -> AnyDataProvider<DecodedPoolMember>?
 
+    func subscribeDelegatedStaking(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedDelegatedStakingDelegator>?
+
     func subscribeBondedPool(
         for poolId: NominationPools.PoolId,
         chainId: ChainModel.Id
@@ -106,6 +111,39 @@ extension NPoolsLocalStorageSubscriber where Self: NPoolsLocalSubscriptionHandle
             },
             callbackQueue: callbackQueue,
             options: .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+        )
+
+        return provider
+    }
+
+    func subscribeDelegatedStaking(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedDelegatedStakingDelegator>? {
+        guard
+            let provider = try? npoolsLocalSubscriptionFactory.getDelegatedStakingDelegatorProvider(
+                for: accountId,
+                chainId: chainId
+            ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] value in
+                self?.npoolsLocalSubscriptionHandler.handleDelegatedStaking(
+                    result: .success(value),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.npoolsLocalSubscriptionHandler.handleDelegatedStaking(
+                    result: .failure(error),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            }
         )
 
         return provider

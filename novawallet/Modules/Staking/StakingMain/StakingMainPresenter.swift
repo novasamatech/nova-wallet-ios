@@ -83,10 +83,6 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         childPresenter?.performAlertAction(alert)
     }
 
-    func performSelectedEntityAction() {
-        childPresenter?.performSelectedEntityAction()
-    }
-
     func selectPeriod() {
         wireframe.showPeriodSelection(
             from: view,
