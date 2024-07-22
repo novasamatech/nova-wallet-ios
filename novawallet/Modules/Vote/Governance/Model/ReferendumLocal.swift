@@ -5,29 +5,6 @@ import SubstrateSdk
 typealias ReferendumIdLocal = UInt
 typealias TrackIdLocal = UInt
 
-protocol ProjectedPassingChecking {
-    func isProjectedPassing(
-        with approvalFunction: ReferendumDecidingFunctionProtocol,
-        fraction: Decimal
-    ) -> Bool
-}
-
-extension ProjectedPassingChecking {
-    func isProjectedPassing(
-        with approvalFunction: ReferendumDecidingFunctionProtocol,
-        fraction: Decimal
-    ) -> Bool {
-        guard
-            let delay = approvalFunction.delay(for: fraction),
-            let threshold = approvalFunction.calculateThreshold(for: delay)
-        else {
-            return false
-        }
-
-        return fraction >= threshold
-    }
-}
-
 struct ReferendumLocal {
     let index: ReferendumIdLocal
     let state: ReferendumStateLocal
@@ -88,7 +65,7 @@ struct ReferendumLocal {
     }
 }
 
-struct SupportAndVotesLocal: ProjectedPassingChecking {
+struct SupportAndVotesLocal {
     let ayes: BigUInt
     let nays: BigUInt
     let support: BigUInt
@@ -139,6 +116,20 @@ struct SupportAndVotesLocal: ProjectedPassingChecking {
                 with: approvalFunction,
                 fraction: approvalFraction
             )
+    }
+
+    private func isProjectedPassing(
+        with approvalFunction: ReferendumDecidingFunctionProtocol,
+        fraction: Decimal
+    ) -> Bool {
+        guard
+            let delay = approvalFunction.delay(for: fraction),
+            let threshold = approvalFunction.calculateThreshold(for: delay)
+        else {
+            return false
+        }
+
+        return fraction >= threshold
     }
 }
 
