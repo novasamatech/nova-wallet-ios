@@ -21,6 +21,6 @@ protocol ValidatorOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]>
 
     func allPreferred(
-        for preferredAccountIds: [AccountId]
+        for preferrence: PreferredValidatorsProviderModel?
     ) -> CompoundOperationWrapper<ElectedAndPrefValidators>
 }

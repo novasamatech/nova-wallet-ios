@@ -55,7 +55,7 @@ final class StakingSetupAmountWireframe: StakingSetupAmountWireframeProtocol {
         delegate: StakingSetupTypeEntityFacade
     ) {
         let fullValidatorList = CustomValidatorsFullList(
-            allValidators: selectedValidators.electedAndPrefValidators.electedToSelectedValidators(),
+            allValidators: selectedValidators.electedAndPrefValidators.allElectedToSelectedValidators(),
             preferredValidators: selectedValidators.electedAndPrefValidators.preferredValidators
         )
 

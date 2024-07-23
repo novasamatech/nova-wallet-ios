@@ -45,8 +45,8 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(collators):
-                self?.presenter?.didReceivePreferredCollators(collators)
+            case let .success(prefs):
+                self?.presenter?.didReceiveCollatorsPref(prefs)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.allCollatorsFailed(error))
             }

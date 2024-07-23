@@ -82,7 +82,13 @@ class SelectValidatorsStartTests: XCTestCase {
 
         stub(operationFactory) { stub in
             when(stub).allPreferred(for: any()).then { _ in
-                CompoundOperationWrapper.createWithResult(.init(electedValidators: allValidators, preferredValidators: []))
+                CompoundOperationWrapper.createWithResult(
+                    .init(
+                        allElectedValidators: allValidators,
+                        notExcludedElectedValidators: allValidators,
+                        preferredValidators: []
+                    )
+                )
             }
         }
 

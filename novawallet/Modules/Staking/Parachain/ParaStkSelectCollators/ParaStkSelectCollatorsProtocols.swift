@@ -20,7 +20,7 @@ protocol ParaStkSelectCollatorsInteractorInputProtocol: AnyObject {
 
 protocol ParaStkSelectCollatorsInteractorOutputProtocol: AnyObject {
     func didReceiveAllCollators(_ collators: [CollatorSelectionInfo])
-    func didReceivePreferredCollators(_ collators: [AccountId])
+    func didReceiveCollatorsPref(_ collatorsPref: PreferredValidatorsProviderModel?)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveError(_ error: ParaStkSelectCollatorsInteractorError)
 }
