@@ -267,6 +267,7 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
+            convictionUpdateClosure: {},
             feeErrorClosure: { [weak self] in
                 self?.refreshFee()
             }, successClosure: { [weak self] in

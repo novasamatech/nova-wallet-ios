@@ -242,10 +242,6 @@ final class ReferendumVoteSetupPresenter {
             return nil
         }
 
-        let conviction: ConvictionVoting.Conviction = selectedAction != .abstain
-            ? self.conviction
-            : .none
-
         let model = ReferendumVoteActionModel(
             amount: amountInPlank,
             conviction: conviction
@@ -317,6 +313,12 @@ final class ReferendumVoteSetupPresenter {
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
+            convictionUpdateClosure: { [weak self] in
+                self?.selectConvictionValue(0)
+                self?.provideConviction()
+
+                completionBlock()
+            },
             feeErrorClosure: { [weak self] in
                 self?.refreshFee()
             }, successClosure: completionBlock
@@ -337,13 +339,11 @@ final class ReferendumVoteSetupPresenter {
                 lockDiff: self?.lockDiff
             )
 
-            self?.routeWithCheckingConviction(for: newVote) {
-                self?.wireframe.showConfirmation(
-                    from: self?.view,
-                    vote: newVote,
-                    initData: initData
-                )
-            }
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                vote: newVote,
+                initData: initData
+            )
         }
     }
 
@@ -353,48 +353,6 @@ final class ReferendumVoteSetupPresenter {
 
         updateVotesView()
         updateAmountPriceView()
-    }
-
-    private func routeWithCheckingConviction(
-        for vote: ReferendumNewVote,
-        routingClosure: @escaping () -> Void
-    ) {
-        if case .abstain = vote.voteAction, conviction != .none {
-            wireframe.present(
-                viewModel: createConvictionUpdateAlertModel(action: routingClosure),
-                style: .alert,
-                from: view
-            )
-        } else {
-            routingClosure()
-        }
-    }
-
-    private func createConvictionUpdateAlertModel(action: @escaping () -> Void) -> AlertPresentableViewModel {
-        let languages = selectedLocale.rLanguages
-        let actions = [
-            AlertPresentableAction(
-                title: R.string.localizable.commonCancel(preferredLanguages: languages),
-                style: .destructive,
-                handler: {}
-            ),
-            AlertPresentableAction(
-                title: R.string.localizable.commonContinue(preferredLanguages: languages),
-                style: .normal,
-                handler: { [weak self] in
-                    self?.selectConvictionValue(0)
-                    self?.provideConviction()
-                    action()
-                }
-            )
-        ]
-
-        return AlertPresentableViewModel(
-            title: R.string.localizable.govVoteConvictionAlertTitle(preferredLanguages: languages),
-            message: R.string.localizable.govVoteConvictionAlertMessage(preferredLanguages: languages),
-            actions: actions,
-            closeAction: nil
-        )
     }
 }
 

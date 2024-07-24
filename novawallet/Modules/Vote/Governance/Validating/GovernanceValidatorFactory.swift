@@ -53,6 +53,12 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         delegateId: AccountId?,
         locale: Locale?
     ) -> DataValidating
+
+    func dontNeedConvictionUpdate(
+        for newVote: ReferendumNewVote?,
+        convictionUpdateClosure: @escaping () -> Void,
+        locale: Locale?
+    ) -> DataValidating
 }
 
 final class GovernanceValidatorFactory {
@@ -298,6 +304,33 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
             let delegatingTracks = voting.delegatings.filter { $0.value.target == delegateId }.map(\.key)
 
             return !tracks.isEmpty && tracks.isSubset(of: delegatingTracks)
+        })
+    }
+
+    func dontNeedConvictionUpdate(
+        for newVote: ReferendumNewVote?,
+        convictionUpdateClosure: @escaping () -> Void,
+        locale: Locale?
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentConvictionUpdateRequired(
+                from: view,
+                action: convictionUpdateClosure,
+                locale: locale
+            )
+        }, preservesCondition: {
+            guard let newVote else {
+                return false
+            }
+            if case .abstain = newVote.voteAction {
+                return newVote.voteAction.conviction() == .none
+            } else {
+                return true
+            }
         })
     }
 }

@@ -5,6 +5,7 @@ extension DataValidationRunner {
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceVoteValidatingParams,
         selectedLocale: Locale,
+        convictionUpdateClosure: @escaping () -> Void,
         feeErrorClosure: @escaping () -> Void,
         successClosure: @escaping DataValidationRunnerCompletion
     ) {
@@ -36,6 +37,11 @@ extension DataValidationRunner {
             factory.maxVotesNotReached(
                 params.votes,
                 track: params.referendum?.trackId,
+                locale: selectedLocale
+            ),
+            factory.dontNeedConvictionUpdate(
+                for: params.newVote,
+                convictionUpdateClosure: convictionUpdateClosure,
                 locale: selectedLocale
             )
         ])
