@@ -114,7 +114,8 @@ struct SupportAndVotesLocal {
     func projectPassing(
         currentBlock: BlockNumber,
         since: BlockNumber,
-        period: Moment
+        period: Moment,
+        confirmPeriod: Moment?
     ) -> VoteProjectionResult {
         guard
             currentBlock < (since + period),
@@ -143,13 +144,31 @@ struct SupportAndVotesLocal {
             return .notPassing
         }
 
-        let confirmingBlock = UInt32(confirmingBlockDecimal.intValue)
+        var confirmingBlock = BlockNumber(confirmingBlockDecimal.intValue)
 
-        let projectionResult: VoteProjectionResult = confirmingBlock >= currentBlock && confirmingBlock < (since + period)
+        if let confirmPeriod {
+            confirmingBlock += confirmPeriod
+        }
+
+        let passing = passing(
+            confirmingBlock: confirmingBlock,
+            with: currentBlock,
+            since + period
+        )
+
+        let projectionResult: VoteProjectionResult = passing
             ? .passing(confirmingBlock: confirmingBlock)
             : .notPassing
 
         return projectionResult
+    }
+
+    private func passing(
+        confirmingBlock: BlockNumber,
+        with currentBlock: BlockNumber,
+        _ rejectedAt: BlockNumber
+    ) -> Bool {
+        confirmingBlock >= currentBlock && confirmingBlock < rejectedAt
     }
 }
 
@@ -206,6 +225,7 @@ enum ReferendumStateLocal {
         let submitted: BlockNumber
         let since: BlockNumber
         let period: Moment
+        let confirmPeriod: Moment?
         let confirmationUntil: BlockNumber?
         let deposit: BigUInt?
 
@@ -228,7 +248,8 @@ enum ReferendumStateLocal {
                 model.projectPassing(
                     currentBlock: currentBlock,
                     since: since,
-                    period: period
+                    period: period,
+                    confirmPeriod: confirmPeriod
                 )
             case let .threshold(model):
                 if let confirmationUntil, model.isPassing() {

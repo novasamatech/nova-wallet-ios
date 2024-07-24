@@ -61,7 +61,7 @@ final class ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryPr
                 locale: locale
             )
         case .rejected, .cancelled, .timedOut, .killed, .executed:
-            return nil
+            nil
         }
     }
 }
@@ -77,7 +77,7 @@ private extension ReferendumStatusViewModelFactory {
         locale: Locale
     ) -> StatusTimeViewModel? {
         let strings = R.string.localizable.self
-        
+
         if model.deposit == nil || currentBlock >= model.preparingEnd {
             return createTimeViewModel(
                 state: referendumState,
@@ -98,16 +98,16 @@ private extension ReferendumStatusViewModelFactory {
             )
         }
     }
-    
+
     func createDecidingTimeModel(
-        with model: ReferendumStateLocal.Preparing,
+        with model: ReferendumStateLocal.Deciding,
         for referendumState: ReferendumStateLocal,
         currentBlock: BlockNumber,
         blockDuration: UInt64,
         locale: Locale
     ) -> StatusTimeViewModel? {
         let strings = R.string.localizable.self
-        
+
         if model.isPassing(for: currentBlock), let confirmationUntil = model.confirmationUntil {
             return createTimeViewModel(
                 state: referendumState,
@@ -140,16 +140,16 @@ private extension ReferendumStatusViewModelFactory {
             }
         }
     }
-    
+
     func createApprovedTimeModel(
-        with model: ReferendumStateLocal.Preparing,
+        with model: ReferendumStateLocal.Approved,
         for referendumState: ReferendumStateLocal,
         currentBlock: BlockNumber,
         blockDuration: UInt64,
         locale: Locale
     ) -> StatusTimeViewModel? {
         let strings = R.string.localizable.self
-        
+
         guard let whenEnactment = model.whenEnactment else {
             return nil
         }
@@ -163,7 +163,7 @@ private extension ReferendumStatusViewModelFactory {
             locale: locale
         )
     }
-    
+
     // swiftlint:disable:next function_parameter_count
     func createTimeViewModel(
         state: ReferendumStateLocal,

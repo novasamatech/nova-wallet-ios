@@ -37,7 +37,7 @@ extension Decimal {
 
         return rounded
     }
-    
+
     func divideToIntegralValue(by divisor: Decimal) -> Decimal {
         (self / divisor).floor()
     }
