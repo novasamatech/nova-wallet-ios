@@ -94,6 +94,13 @@ extension ConvictionVoting.AccountVoteStandard {
 
         self.init(vote: vote, balance: balance)
     }
+
+    init(voteAction: ReferendumVoteAction) {
+        self.init(
+            vote: .init(voteAction: voteAction),
+            balance: voteAction.balance()
+        )
+    }
 }
 
 extension ConvictionVoting.AccountVoteSplit {

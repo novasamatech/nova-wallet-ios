@@ -8,10 +8,7 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         let accountVote = ConvictionVoting.AccountVote.standard(
-            .init(
-                vote: .init(aye: action.isAye, conviction: action.conviction),
-                balance: action.amount
-            )
+            .init(voteAction: action)
         )
 
         let voteCall = ConvictionVoting.VoteCall(

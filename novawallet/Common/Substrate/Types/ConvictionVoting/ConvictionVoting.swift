@@ -155,6 +155,17 @@ enum ConvictionVoting {
         let aye: Bool
         let conviction: Conviction
 
+        init(voteAction: ReferendumVoteAction) {
+            switch voteAction {
+            case let .aye(model):
+                aye = true
+                conviction = model.conviction
+            case let .nay(model), let .abstain(model):
+                aye = false
+                conviction = model.conviction
+            }
+        }
+
         init(aye: Bool, conviction: Conviction) {
             self.aye = aye
             self.conviction = conviction

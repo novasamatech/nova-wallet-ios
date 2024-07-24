@@ -74,7 +74,7 @@ final class ReferendumVoteConfirmPresenter {
         guard
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
             let decimalAmount = Decimal.fromSubstrateAmount(
-                vote.voteAction.amount,
+                vote.voteAction.balance(),
                 precision: precision
             ) else {
             return
@@ -127,14 +127,14 @@ final class ReferendumVoteConfirmPresenter {
 
     private func provideYourVoteViewModel() {
         let votesString = referendumStringsViewModelFactory.createVotes(
-            from: vote.voteAction.conviction.votes(for: vote.voteAction.amount) ?? 0,
+            from: vote.voteAction.conviction().votes(for: vote.voteAction.balance()) ?? 0,
             chain: chain,
             locale: selectedLocale
         )
 
         let convictionString = referendumStringsViewModelFactory.createVotesDetails(
-            from: vote.voteAction.amount,
-            conviction: vote.voteAction.conviction.decimalValue,
+            from: vote.voteAction.balance(),
+            conviction: vote.voteAction.conviction().decimalValue,
             chain: chain,
             locale: selectedLocale
         )
@@ -142,12 +142,16 @@ final class ReferendumVoteConfirmPresenter {
         let voteSideString: String
         let voteSideStyle: YourVoteView.Style
 
-        if vote.voteAction.isAye {
+        switch vote.voteAction {
+        case .aye:
             voteSideString = R.string.localizable.governanceAye(preferredLanguages: selectedLocale.rLanguages)
             voteSideStyle = .ayeInverse
-        } else {
+        case .nay:
             voteSideString = R.string.localizable.governanceNay(preferredLanguages: selectedLocale.rLanguages)
             voteSideStyle = .nayInverse
+        case .abstain:
+            voteSideString = R.string.localizable.governanceAbstain(preferredLanguages: selectedLocale.rLanguages)
+            voteSideStyle = .abstainInverse
         }
 
         let voteDescription = R.string.localizable.govYourVote(preferredLanguages: selectedLocale.rLanguages)

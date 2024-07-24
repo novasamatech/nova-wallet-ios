@@ -55,6 +55,12 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
+        rootView.abstainButton.addTarget(
+            self,
+            action: #selector(actionVoteAbstain),
+            for: .touchUpInside
+        )
+
         rootView.convictionView.slider.addTarget(
             self,
             action: #selector(actionConvictionChanged),
@@ -79,11 +85,12 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
+        rootView.convictionHintView.iconDetailsView.detailsLabel.text = R.string.localizable.govVoteConvictionHintTitle(
+            preferredLanguages: languages
+        )
+
         rootView.lockAmountTitleLabel.text = R.string.localizable.commonGovLock(preferredLanguages: languages)
         rootView.lockPeriodTitleLabel.text = R.string.localizable.commonLockingPeriod(preferredLanguages: languages)
-
-        rootView.nayButton.imageWithTitleView?.title = R.string.localizable.governanceNay(preferredLanguages: languages)
-        rootView.ayeButton.imageWithTitleView?.title = R.string.localizable.governanceAye(preferredLanguages: languages)
 
         setupAmountInputAccessoryView(for: selectedLocale)
     }
@@ -112,6 +119,10 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
 
     @objc private func actionVoteAye() {
         presenter.proceedAye()
+    }
+
+    @objc private func actionVoteAbstain() {
+        presenter.proceedAbstain()
     }
 
     @objc private func actionConvictionChanged() {

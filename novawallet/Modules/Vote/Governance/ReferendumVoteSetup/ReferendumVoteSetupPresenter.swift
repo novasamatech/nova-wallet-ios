@@ -181,7 +181,7 @@ final class ReferendumVoteSetupPresenter {
             return
         }
 
-        let voteValue = vote.voteAction.conviction.votes(for: vote.voteAction.amount) ?? 0
+        let voteValue = vote.voteAction.conviction().votes(for: vote.voteAction.balance()) ?? 0
 
         let voteString = referendumStringsViewModelFactory.createVotes(
             from: voteValue,
@@ -233,7 +233,7 @@ final class ReferendumVoteSetupPresenter {
         provideReuseLocksViewModel()
     }
 
-    private func deriveNewVote(isAye: Bool = true) -> ReferendumNewVote? {
+    private func deriveNewVote(_ selectedAction: VoteAction = .aye) -> ReferendumNewVote? {
         let amount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
 
         guard
@@ -242,11 +242,20 @@ final class ReferendumVoteSetupPresenter {
             return nil
         }
 
-        let voteAction = ReferendumVoteAction(
+        let conviction: ConvictionVoting.Conviction = selectedAction != .abstain
+            ? self.conviction
+            : .none
+
+        let model = ReferendumVoteActionModel(
             amount: amountInPlank,
-            conviction: conviction,
-            isAye: isAye
+            conviction: conviction
         )
+
+        let voteAction: ReferendumVoteAction = switch selectedAction {
+        case .aye: .aye(model)
+        case .nay: .nay(model)
+        case .abstain: .abstain(model)
+        }
 
         return ReferendumNewVote(index: referendumIndex, voteAction: voteAction)
     }
@@ -286,14 +295,14 @@ final class ReferendumVoteSetupPresenter {
     }
 
     private func performValidation(
-        for isAye: Bool,
+        for voteAction: VoteAction,
         notifying completionBlock: @escaping DataValidationRunnerCompletion
     ) {
         guard let assetInfo = chain.utilityAssetDisplayInfo() else {
             return
         }
 
-        let newVote = deriveNewVote(isAye: isAye)
+        let newVote = deriveNewVote(voteAction)
 
         let params = GovernanceVoteValidatingParams(
             assetBalance: assetBalance,
@@ -314,9 +323,9 @@ final class ReferendumVoteSetupPresenter {
         )
     }
 
-    private func proceed(isAye: Bool) {
-        performValidation(for: isAye) { [weak self] in
-            guard let newVote = self?.deriveNewVote(isAye: isAye) else {
+    private func proceed(with voteAction: VoteAction) {
+        performValidation(for: voteAction) { [weak self] in
+            guard let newVote = self?.deriveNewVote(voteAction) else {
                 return
             }
 
@@ -328,7 +337,13 @@ final class ReferendumVoteSetupPresenter {
                 lockDiff: self?.lockDiff
             )
 
-            self?.wireframe.showConfirmation(from: self?.view, vote: newVote, initData: initData)
+            self?.routeWithCheckingConviction(for: newVote) {
+                self?.wireframe.showConfirmation(
+                    from: self?.view,
+                    vote: newVote,
+                    initData: initData
+                )
+            }
         }
     }
 
@@ -338,6 +353,48 @@ final class ReferendumVoteSetupPresenter {
 
         updateVotesView()
         updateAmountPriceView()
+    }
+
+    private func routeWithCheckingConviction(
+        for vote: ReferendumNewVote,
+        routingClosure: @escaping () -> Void
+    ) {
+        if case .abstain = vote.voteAction, conviction != .none {
+            wireframe.present(
+                viewModel: createConvictionUpdateAlertModel(action: routingClosure),
+                style: .alert,
+                from: view
+            )
+        } else {
+            routingClosure()
+        }
+    }
+
+    private func createConvictionUpdateAlertModel(action: @escaping () -> Void) -> AlertPresentableViewModel {
+        let languages = selectedLocale.rLanguages
+        let actions = [
+            AlertPresentableAction(
+                title: R.string.localizable.commonCancel(preferredLanguages: languages),
+                style: .destructive,
+                handler: {}
+            ),
+            AlertPresentableAction(
+                title: R.string.localizable.commonContinue(preferredLanguages: languages),
+                style: .normal,
+                handler: { [weak self] in
+                    self?.selectConvictionValue(0)
+                    self?.provideConviction()
+                    action()
+                }
+            )
+        ]
+
+        return AlertPresentableViewModel(
+            title: R.string.localizable.govVoteConvictionAlertTitle(preferredLanguages: languages),
+            message: R.string.localizable.govVoteConvictionAlertMessage(preferredLanguages: languages),
+            actions: actions,
+            closeAction: nil
+        )
     }
 }
 
@@ -400,11 +457,15 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
     }
 
     func proceedNay() {
-        proceed(isAye: false)
+        proceed(with: .nay)
     }
 
     func proceedAye() {
-        proceed(isAye: true)
+        proceed(with: .aye)
+    }
+
+    func proceedAbstain() {
+        proceed(with: .abstain)
     }
 }
 
@@ -491,6 +552,14 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
                 self?.refreshLockDiff()
             }
         }
+    }
+}
+
+extension ReferendumVoteSetupPresenter {
+    enum VoteAction {
+        case aye
+        case nay
+        case abstain
     }
 }
 

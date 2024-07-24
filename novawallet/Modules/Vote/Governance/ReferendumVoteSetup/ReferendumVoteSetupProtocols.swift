@@ -22,6 +22,7 @@ protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
     func reuseAllLock()
     func proceedNay()
     func proceedAye()
+    func proceedAbstain()
 }
 
 protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {}
