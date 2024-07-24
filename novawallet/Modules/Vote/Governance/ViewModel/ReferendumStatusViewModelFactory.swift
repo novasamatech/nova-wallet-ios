@@ -131,7 +131,7 @@ private extension ReferendumStatusViewModelFactory {
             case .notPassing:
                 createTimeViewModel(
                     state: referendumState,
-                    atBlock: model.endedAt,
+                    atBlock: model.rejectedAt,
                     currentBlock: currentBlock,
                     blockDuration: blockDuration,
                     timeStringProvider: strings.governanceReferendumsTimeReject,

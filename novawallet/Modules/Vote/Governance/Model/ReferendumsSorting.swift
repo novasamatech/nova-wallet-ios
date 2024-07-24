@@ -17,7 +17,7 @@ final class ReferendumsTimeSortingProvider {
             if let confirmation = model.confirmationUntil {
                 return confirmation
             } else {
-                return model.endedAt
+                return model.rejectedAt
             }
         default:
             return UInt32.max
