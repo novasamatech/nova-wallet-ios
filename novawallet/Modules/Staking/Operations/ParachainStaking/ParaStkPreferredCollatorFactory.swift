@@ -78,16 +78,16 @@ extension ParaStkPreferredCollatorFactory: ParaStkPreferredCollatorFactoryProtoc
         let mergeOperation = ClosureOperation<AccountId?> {
             let collators = try collatorsOperation.extractNoCancellableResultData().collators
             let rewardsCalculator = try rewardOperation.extractNoCancellableResultData()
-            let preferredCollators = try preferredCollatorsWrapper.targetOperation.extractNoCancellableResultData()
+            let preferredModel = try preferredCollatorsWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard !preferredCollators.isEmpty else {
+            let preferredCollatorsSet = Set(preferredModel?.preferred ?? [])
+
+            guard !preferredCollatorsSet.isEmpty else {
                 return nil
             }
 
-            let collatorsSet = Set(preferredCollators)
-
             let optCollator = collators
-                .filter { collatorsSet.contains($0.accountId) }
+                .filter { preferredCollatorsSet.contains($0.accountId) }
                 .sorted { col1, col2 in
                     let optApr1 = try? rewardsCalculator.calculateAPR(for: col1.accountId)
                     let optApr2 = try? rewardsCalculator.calculateAPR(for: col2.accountId)

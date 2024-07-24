@@ -10,7 +10,7 @@ final class ParaStkSelectCollatorsPresenter {
     let interactor: ParaStkSelectCollatorsInteractorInputProtocol
 
     private var allCollators: [CollatorSelectionInfo]?
-    private var preferredCollators: Set<AccountId>?
+    private var collatorsPref: PreferredValidatorsProviderModel?
     private var price: PriceData?
 
     private var sorting: CollatorsSortType = .rewards
@@ -204,7 +204,8 @@ final class ParaStkSelectCollatorsPresenter {
     }
 
     private func applySortingAndSaveResult(_ result: [CollatorSelectionInfo]) {
-        allCollators = result.sortedByType(sorting, preferredCollators: preferredCollators ?? [])
+        let preferredCollators = collatorsPref?.preferred ?? []
+        allCollators = result.sortedByType(sorting, preferredCollators: Set(preferredCollators))
     }
 }
 
@@ -217,7 +218,7 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
 
     func refresh() {
         allCollators = nil
-        preferredCollators = nil
+        collatorsPref = nil
 
         provideState()
 
@@ -274,10 +275,10 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsInteractorOutpu
         provideState()
     }
 
-    func didReceivePreferredCollators(_ collators: [AccountId]) {
-        logger.debug("Preferred collators: \(collators)")
+    func didReceiveCollatorsPref(_ collatorsPref: PreferredValidatorsProviderModel?) {
+        logger.debug("Preferred collators: \(String(describing: collatorsPref))")
 
-        preferredCollators = Set(collators)
+        self.collatorsPref = collatorsPref
 
         if let allCollators {
             applySortingAndSaveResult(allCollators)
