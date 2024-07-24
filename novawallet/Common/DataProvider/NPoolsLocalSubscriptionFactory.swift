@@ -16,6 +16,11 @@ protocol NPoolsLocalSubscriptionFactoryProtocol {
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedPoolMember>
 
+    func getDelegatedStakingDelegatorProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedDelegatedStakingDelegator>
+
     func getBondedPoolProvider(
         for poolId: NominationPools.PoolId,
         chainId: ChainModel.Id
@@ -86,6 +91,17 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     ) throws -> AnyDataProvider<DecodedPoolMember> {
         try getNoFallbackAccountProvider(
             for: NominationPools.poolMembersPath,
+            accountId: accountId,
+            chainId: chainId
+        )
+    }
+
+    func getDelegatedStakingDelegatorProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedDelegatedStakingDelegator> {
+        try getNoFallbackAccountProvider(
+            for: DelegatedStakingPallet.delegatorsPath,
             accountId: accountId,
             chainId: chainId
         )

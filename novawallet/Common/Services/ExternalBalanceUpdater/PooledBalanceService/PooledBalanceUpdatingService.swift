@@ -3,6 +3,11 @@ import SubstrateSdk
 import Operation_iOS
 
 final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetching {
+    struct StateParams {
+        let palletId: Data
+        let supportsDelegatedStaking: Bool
+    }
+
     let accountId: AccountId
     let chainAsset: ChainAsset
     let connection: JSONRPCEngine
@@ -103,10 +108,11 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
                     poolMember: poolMember,
                     ledger: nil,
                     bondedPool: nil,
-                    subPools: nil
+                    subPools: nil,
+                    stakingDelegation: nil
                 )
 
-                resolvePalletIdAndSubscribeState(for: poolMember, accountId: accountId)
+                resolveStateParamsAndSubscribeState(for: poolMember, accountId: accountId)
             } else {
                 state = nil
 
@@ -117,16 +123,51 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
         }
     }
 
-    private func resolvePalletIdAndSubscribeState(for poolMember: NominationPools.PoolMember, accountId _: AccountId) {
+    private func createStateParamsWrapper() -> CompoundOperationWrapper<StateParams> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let palletIdOperation = StorageConstantOperation<BytesCodable>(
+            path: NominationPools.palletIdPath,
+            fallbackValue: nil
+        )
+
+        palletIdOperation.configurationBlock = {
+            do {
+                palletIdOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                palletIdOperation.result = .failure(error)
+            }
+        }
+
+        palletIdOperation.addDependency(codingFactoryOperation)
+
+        let mergeOperation = ClosureOperation<StateParams> {
+            let palletId = try palletIdOperation.extractNoCancellableResultData().wrappedValue
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let supportsDelegatedStaking = codingFactory.hasStorage(for: DelegatedStakingPallet.delegatorsPath)
+
+            return StateParams(palletId: palletId, supportsDelegatedStaking: supportsDelegatedStaking)
+        }
+
+        mergeOperation.addDependency(palletIdOperation)
+        mergeOperation.addDependency(codingFactoryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mergeOperation,
+            dependencies: [codingFactoryOperation, palletIdOperation]
+        )
+    }
+
+    private func resolveStateParamsAndSubscribeState(for poolMember: NominationPools.PoolMember, accountId: AccountId) {
         let currentPoolSubscription = poolMemberSubscription
 
-        fetchCompoundConstant(
-            for: NominationPools.palletIdPath,
-            runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            fallbackValue: nil,
-            callbackQueue: workingQueue
-        ) { [weak self] (result: Result<BytesCodable, Error>) in
+        let wrapper = createStateParamsWrapper()
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: workingQueue
+        ) { [weak self] result in
             self?.mutex.lock()
 
             defer {
@@ -139,30 +180,38 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
             }
 
             switch result {
-            case let .success(palletId):
+            case let .success(stateParams):
                 if
                     let poolAccountId = try? NominationPools.derivedAccount(
                         for: poolMember.poolId,
                         accountType: .bonded,
-                        palletId: palletId.wrappedValue
+                        palletId: stateParams.palletId
                     ) {
                     self?.logger.debug("Derived pool account id: \(poolAccountId.toHex())")
 
-                    self?.subscribeState(for: poolAccountId, poolId: poolMember.poolId)
+                    self?.subscribeState(
+                        for: poolAccountId,
+                        poolId: poolMember.poolId,
+                        delegatorAccountId: accountId,
+                        supportsDelegatedStaking: stateParams.supportsDelegatedStaking
+                    )
                 } else {
                     self?.logger.error("Can't derive pool account id")
                     self?.completeImmediate(CommonError.dataCorruption)
                 }
             case let .failure(error):
-                self?.logger.error("Can't get pallet id \(error)")
+                self?.logger.error("Can't get state params \(error)")
                 self?.completeImmediate(error)
             }
         }
     }
 
-    private func subscribeState(for poolAccountId: AccountId, poolId: NominationPools.PoolId) {
-        clearStateSubscription()
-
+    private func prepareStateRequests(
+        for poolAccountId: AccountId,
+        poolId: NominationPools.PoolId,
+        delegatorAccountId: AccountId,
+        supportsDelegatedStaking: Bool
+    ) -> [BatchStorageSubscriptionRequest] {
         let ledgerRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
                 storagePath: Staking.stakingLedger,
@@ -196,8 +245,41 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
             mappingKey: PooledBalanceStateChange.Key.bonded.rawValue
         )
 
+        if supportsDelegatedStaking {
+            let delegatedStakingRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: DelegatedStakingPallet.delegatorsPath,
+                    localKey: .empty,
+                    keyParamClosure: {
+                        BytesCodable(wrappedValue: delegatorAccountId)
+                    }
+                ),
+                mappingKey: PooledBalanceStateChange.Key.stakingDelegation.rawValue
+            )
+
+            return [ledgerRequest, bondedPoolRequest, subPoolsRequest, delegatedStakingRequest]
+        } else {
+            return [ledgerRequest, bondedPoolRequest, subPoolsRequest]
+        }
+    }
+
+    private func subscribeState(
+        for poolAccountId: AccountId,
+        poolId: NominationPools.PoolId,
+        delegatorAccountId: AccountId,
+        supportsDelegatedStaking: Bool
+    ) {
+        clearStateSubscription()
+
+        let requests = prepareStateRequests(
+            for: poolAccountId,
+            poolId: poolId,
+            delegatorAccountId: delegatorAccountId,
+            supportsDelegatedStaking: supportsDelegatedStaking
+        )
+
         stateSubscription = CallbackBatchStorageSubscription(
-            requests: [ledgerRequest, bondedPoolRequest, subPoolsRequest],
+            requests: requests,
             connection: connection,
             runtimeService: runtimeService,
             repository: nil,
@@ -238,11 +320,15 @@ final class PooledBalanceUpdatingService: BaseSyncService, RuntimeConstantFetchi
         let optItem: PooledAssetBalance?
         let removeIdentifier: String?
 
-        if let poolId = state?.poolId, let totalStake = state?.totalStake {
+        if let poolId = state?.poolId {
+            guard let stake = state?.stakeNotIncludedIntoDelegatedStaking else {
+                return
+            }
+
             optItem = PooledAssetBalance(
                 chainAssetId: chainAsset.chainAssetId,
                 accountId: accountId,
-                amount: totalStake,
+                amount: stake,
                 poolId: poolId
             )
 

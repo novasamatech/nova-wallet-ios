@@ -1720,3 +1720,10 @@
 "network.add.alert.invalid.symbol.message" = "입력된 통화 기호 (%@)가 네트워크 (%@)와 일치하지 않습니다. 올바른 통화 기호를 사용하시겠습니까?";
 "network.node.delete.alert.description" = "%@ 노드가 삭제됩니다";
 "network.add.alert.success.title" = "네트워크가 성공적으로 추가되었습니다";
+"dapp.unknown.warning.title" = "경고! DApp이 알 수 없습니다";
+"dapp.unknown.warning.message" = "악성 DApp은 모든 자금을 인출할 수 있습니다. DApp을 사용하기 전, 권한을 부여하기 전 또는 자금을 송금하기 전에 항상 철저한 조사를 하십시오.\n\n누군가 이 DApp을 방문하라고 재촉할 경우, 그것은 사기일 가능성이 큽니다. 의심스러울 경우, 노바 월렛 지원팀에 연락하십시오: %@.";
+"dapp.unknown.warning.open" = "어쨌든 열기";
+"staking.setup.conflict.title" = "이미 Staking 중";
+"staking.setup.conflict.message" = "직접 Staking과 Nomination Pools를 동시에 사용할 수 없습니다";
+"nomination.pools.conflict.title" = "Pool 작업을 사용할 수 없습니다";
+"nomination.pools.conflict.message" = "더 이상 동일한 계정에서 직접 Staking과 Pool Staking을 동시에 사용할 수 없습니다. Pool Staking을 관리하려면 먼저 직접 Staking에서 토큰을 Unstake해야 합니다.";

@@ -16,6 +16,7 @@ typealias DecodedAccountInfo = ChainStorageDecodedItem<AccountInfo>
 typealias DecodedCrowdloanFunds = ChainStorageDecodedItem<CrowdloanFunds>
 typealias DecodedBagListNode = ChainStorageDecodedItem<BagList.Node>
 typealias DecodedPoolMember = ChainStorageDecodedItem<NominationPools.PoolMember>
+typealias DecodedDelegatedStakingDelegator = ChainStorageDecodedItem<DelegatedStakingPallet.Delegation>
 typealias DecodedBondedPool = ChainStorageDecodedItem<NominationPools.BondedPool>
 typealias DecodedRewardPool = ChainStorageDecodedItem<NominationPools.RewardPool>
 typealias DecodedSubPools = ChainStorageDecodedItem<NominationPools.SubPools>

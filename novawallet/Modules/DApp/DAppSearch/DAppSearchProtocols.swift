@@ -22,7 +22,7 @@ protocol DAppSearchInteractorOutputProtocol: AnyObject {
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
 }
 
-protocol DAppSearchWireframeProtocol: AnyObject {
+protocol DAppSearchWireframeProtocol: DAppAlertPresentable {
     func close(from view: DAppSearchViewProtocol?)
 }
 

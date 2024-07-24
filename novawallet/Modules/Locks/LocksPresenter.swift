@@ -93,16 +93,9 @@ final class LocksPresenter {
             )
         }
 
-        let reservedCells: [LocksViewSectionModel.CellViewModel] = input.balances.compactMap {
-            createCell(
-                amountInPlank: $0.reservedInPlank,
-                chainAssetId: $0.chainAssetId,
-                title: R.string.localizable.walletBalanceReserved(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                identifier: $0.identifier
-            )
-        }
+        let holdsCells = createHoldReserves()
+
+        let reservedCells = createNonHoldReserves()
 
         let groupedExternalBalances = input.externalBalances
             .values.flatMap { $0.filter { $0.amount > 0 } }
@@ -120,7 +113,37 @@ final class LocksPresenter {
             )
         }
 
-        return locksCells + reservedCells + externalBalanceCells
+        return locksCells + holdsCells + reservedCells + externalBalanceCells
+    }
+
+    private func createNonHoldReserves() -> [LocksViewSectionModel.CellViewModel] {
+        input.balances.compactMap { balance in
+            let totalHolds = input.holds
+                .filter { $0.chainAssetId == balance.chainAssetId }
+                .reduce(BigUInt(0)) { $0 + $1.amount }
+
+            let reservesNotInHolds = balance.reservedInPlank.subtractOrZero(totalHolds)
+
+            return createCell(
+                amountInPlank: reservesNotInHolds,
+                chainAssetId: balance.chainAssetId,
+                title: R.string.localizable.walletBalanceReserved(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                identifier: balance.identifier
+            )
+        }
+    }
+
+    private func createHoldReserves() -> [LocksViewSectionModel.CellViewModel] {
+        input.holds.compactMap { hold in
+            createCell(
+                amountInPlank: hold.amount,
+                chainAssetId: hold.chainAssetId,
+                title: hold.displayTitle(for: selectedLocale),
+                identifier: hold.identifier
+            )
+        }
     }
 
     private func createCell(

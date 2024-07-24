@@ -1,10 +1,12 @@
 import Foundation
+import SoraFoundation
 import Operation_iOS
 
 final class DAppSearchPresenter {
     weak var view: DAppSearchViewProtocol?
     let wireframe: DAppSearchWireframeProtocol
     let interactor: DAppSearchInteractorInputProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     private var dAppList: DAppList?
     private var favorites: [String: DAppFavorite]?
@@ -14,6 +16,7 @@ final class DAppSearchPresenter {
     weak var delegate: DAppSearchDelegate?
 
     let viewModelFactory: DAppListViewModelFactoryProtocol
+    let applicationConfig: ApplicationConfigProtocol
 
     let logger: LoggerProtocol?
 
@@ -23,6 +26,8 @@ final class DAppSearchPresenter {
         viewModelFactory: DAppListViewModelFactoryProtocol,
         initialQuery: String?,
         delegate: DAppSearchDelegate,
+        applicationConfig: ApplicationConfigProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -30,6 +35,8 @@ final class DAppSearchPresenter {
         self.viewModelFactory = viewModelFactory
         query = initialQuery
         self.delegate = delegate
+        self.applicationConfig = applicationConfig
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -80,8 +87,17 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
     }
 
     func selectSearchQuery() {
-        delegate?.didCompleteDAppSearchResult(.query(string: query ?? ""))
-        wireframe.close(from: view)
+        wireframe.showUnknownDappWarning(
+            from: view,
+            email: applicationConfig.supportEmail,
+            locale: localizationManager.selectedLocale,
+            handler: { [weak self] in
+                self?.delegate?.didCompleteDAppSearchResult(
+                    .query(string: self?.query ?? "")
+                )
+                self?.wireframe.close(from: self?.view)
+            }
+        )
     }
 
     func cancel() {

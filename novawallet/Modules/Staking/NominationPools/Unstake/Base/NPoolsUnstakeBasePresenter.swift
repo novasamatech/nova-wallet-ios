@@ -3,13 +3,14 @@ import BigInt
 import SoraFoundation
 
 class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
-    weak var baseView: ControllerBackedProtocol?
+    weak var baseView: NPoolsUnstakeBaseViewProtocol?
 
     let baseWireframe: NPoolsUnstakeBaseWireframeProtocol
     let baseInteractor: NPoolsUnstakeBaseInteractorInputProtocol
     let chainAsset: ChainAsset
     let hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol
     let dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol
+    let stakingActivity: StakingActivityForValidating
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let logger: LoggerProtocol
 
@@ -26,6 +27,8 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     var unstakingLimits: NominationPools.UnstakeLimits?
     var fee: ExtrinsicFeeProtocol?
 
+    var needsMigration: Bool?
+
     init(
         baseInteractor: NPoolsUnstakeBaseInteractorInputProtocol,
         baseWireframe: NPoolsUnstakeBaseWireframeProtocol,
@@ -33,6 +36,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         hintsViewModelFactory: NPoolsUnstakeHintsFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -42,6 +46,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         self.hintsViewModelFactory = hintsViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatorFactory = dataValidatorFactory
+        self.stakingActivity = stakingActivity
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -90,6 +95,19 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
             dataValidatorFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             },
+            dataValidatorFactory.canMigrateIfNeeded(
+                needsMigration: needsMigration,
+                stakingActivity: stakingActivity,
+                onProgress: .init(
+                    willStart: { [weak self] in
+                        self?.baseView?.didStartLoading()
+                    },
+                    didComplete: { [weak self] _ in
+                        self?.baseView?.didStopLoading()
+                    }
+                ),
+                locale: selectedLocale
+            ),
             dataValidatorFactory.canUnstake(
                 for: getInputAmount() ?? 0,
                 stakedAmountInPlank: getStakedAmountInPlank(),
@@ -143,7 +161,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     }
 
     func refreshFee() {
-        guard let unstakingPoints = getUnstakingPoints() else {
+        guard let unstakingPoints = getUnstakingPoints(), let needsMigration else {
             return
         }
 
@@ -151,7 +169,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
 
         provideFee()
 
-        baseInteractor.estimateFee(for: unstakingPoints)
+        baseInteractor.estimateFee(for: unstakingPoints, needsMigration: needsMigration)
     }
 
     // MARK: Unstake Base Interactor Output
@@ -251,6 +269,13 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         self.fee = fee
 
         provideFee()
+    }
+
+    func didReceive(needsMigration: Bool) {
+        logger.debug("Needs migration: \(needsMigration)")
+
+        self.needsMigration = needsMigration
+        refreshFee()
     }
 
     func didReceive(error: NPoolsUnstakeBaseError) {

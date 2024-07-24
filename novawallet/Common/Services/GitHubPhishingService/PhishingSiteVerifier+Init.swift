@@ -8,6 +8,10 @@ extension PhishingSiteVerifier {
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = 1
 
-        return PhishingSiteVerifier(repositoryFactory: factory, operationQueue: operationQueue)
+        return PhishingSiteVerifier(
+            forbiddenTopLevelDomains: ApplicationConfig.shared.phishingDAppsTopLevelSet,
+            repositoryFactory: factory,
+            operationQueue: operationQueue
+        )
     }
 }

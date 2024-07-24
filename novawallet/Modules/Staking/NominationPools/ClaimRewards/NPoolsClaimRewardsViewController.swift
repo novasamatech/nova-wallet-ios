@@ -113,14 +113,6 @@ extension NPoolsClaimRewardsViewController: NPoolsClaimRewardsViewProtocol {
         let shouldRestake = viewModel == .restake
         rootView.restakeCell.switchControl.setOn(shouldRestake, animated: false)
     }
-
-    func didStartLoading() {
-        rootView.loadingView.startLoading()
-    }
-
-    func didStopLoading() {
-        rootView.loadingView.stopLoading()
-    }
 }
 
 extension NPoolsClaimRewardsViewController: Localizable {

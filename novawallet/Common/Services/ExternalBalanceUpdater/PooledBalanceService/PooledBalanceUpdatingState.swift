@@ -7,11 +7,13 @@ struct PooledBalanceStateChange: BatchStorageSubscriptionResult {
         case ledger
         case bonded
         case subpools
+        case stakingDelegation
     }
 
     let ledger: UncertainStorage<StakingLedger?>
     let bondedPool: UncertainStorage<NominationPools.BondedPool?>
     let subPools: UncertainStorage<NominationPools.SubPools?>
+    let stakingDelegation: UncertainStorage<DelegatedStakingPallet.Delegation?>
 
     init(
         values: [BatchStorageSubscriptionResultValue],
@@ -35,6 +37,12 @@ struct PooledBalanceStateChange: BatchStorageSubscriptionResult {
             mappingKey: Key.subpools.rawValue,
             context: context
         )
+
+        stakingDelegation = try UncertainStorage(
+            values: values,
+            mappingKey: Key.stakingDelegation.rawValue,
+            context: context
+        )
     }
 }
 
@@ -43,6 +51,7 @@ struct PooledBalanceState {
     let ledger: StakingLedger?
     let bondedPool: NominationPools.BondedPool?
     let subPools: NominationPools.SubPools?
+    let stakingDelegation: DelegatedStakingPallet.Delegation?
 
     var poolId: NominationPools.PoolId {
         poolMember.poolId
@@ -64,16 +73,30 @@ struct PooledBalanceState {
         return activeStake + unbondingStake
     }
 
+    var stakeNotIncludedIntoDelegatedStaking: BigUInt? {
+        guard let total = totalStake else {
+            return nil
+        }
+
+        guard let stakingDelegation = stakingDelegation else {
+            return total
+        }
+
+        return total.subtractOrZero(stakingDelegation.amount)
+    }
+
     func applying(change: PooledBalanceStateChange) -> PooledBalanceState {
         let newLedger = change.ledger.valueWhenDefined(else: ledger)
         let newBondedPool = change.bondedPool.valueWhenDefined(else: bondedPool)
         let newSubPools = change.subPools.valueWhenDefined(else: subPools)
+        let newStakingDelegation = change.stakingDelegation.valueWhenDefined(else: stakingDelegation)
 
         return .init(
             poolMember: poolMember,
             ledger: newLedger,
             bondedPool: newBondedPool,
-            subPools: newSubPools
+            subPools: newSubPools,
+            stakingDelegation: newStakingDelegation
         )
     }
 
@@ -82,7 +105,8 @@ struct PooledBalanceState {
             poolMember: newPoolMember,
             ledger: ledger,
             bondedPool: bondedPool,
-            subPools: subPools
+            subPools: subPools,
+            stakingDelegation: stakingDelegation
         )
     }
 }

@@ -8,6 +8,7 @@ final class NPoolsClaimRewardsPresenter {
     let interactor: NPoolsClaimRewardsInteractorInputProtocol
     let chainAsset: ChainAsset
     let dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol
+    let stakingActivity: StakingActivityForValidating
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let selectedAccount: MetaChainAccountResponse
     let logger: LoggerProtocol
@@ -22,6 +23,7 @@ final class NPoolsClaimRewardsPresenter {
     var price: PriceData?
     var existentialDeposit: BigUInt?
     var fee: ExtrinsicFeeProtocol?
+    var needsMigration: Bool?
 
     init(
         interactor: NPoolsClaimRewardsInteractorInputProtocol,
@@ -30,6 +32,7 @@ final class NPoolsClaimRewardsPresenter {
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
+        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -39,6 +42,7 @@ final class NPoolsClaimRewardsPresenter {
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatorFactory = dataValidatorFactory
+        self.stakingActivity = stakingActivity
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -105,10 +109,14 @@ final class NPoolsClaimRewardsPresenter {
     }
 
     private func refreshFee() {
+        guard let needsMigration else {
+            return
+        }
+
         fee = nil
         provideFee()
 
-        interactor.estimateFee(for: claimRewardsStrategy)
+        interactor.estimateFee(for: claimRewardsStrategy, needsMigration: needsMigration)
     }
 }
 
@@ -126,6 +134,19 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsPresenterProtocol {
             dataValidatorFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             },
+            dataValidatorFactory.canMigrateIfNeeded(
+                needsMigration: needsMigration,
+                stakingActivity: stakingActivity,
+                onProgress: .init(
+                    willStart: { [weak self] in
+                        self?.view?.didStartLoading()
+                    },
+                    didComplete: { [weak self] _ in
+                        self?.view?.didStopLoading()
+                    }
+                ),
+                locale: selectedLocale
+            ),
             dataValidatorFactory.canPayFeeInPlank(
                 balance: assetBalance?.transferable,
                 fee: fee,
@@ -146,13 +167,15 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsPresenterProtocol {
                 locale: selectedLocale
             )
         ]).runValidation { [weak self] in
-            guard let claimRewardsStrategy = self?.claimRewardsStrategy else {
+            guard
+                let claimRewardsStrategy = self?.claimRewardsStrategy,
+                let needsMigration = self?.needsMigration else {
                 return
             }
 
             self?.view?.didStartLoading()
 
-            self?.interactor.submit(for: claimRewardsStrategy)
+            self?.interactor.submit(for: claimRewardsStrategy, needsMigration: needsMigration)
         }
     }
 
@@ -240,6 +263,14 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
                 completionClosure: nil
             )
         }
+    }
+
+    func didReceive(needsMigration: Bool) {
+        logger.debug("Needs migration: \(needsMigration)")
+
+        self.needsMigration = needsMigration
+
+        refreshFee()
     }
 
     func didReceive(error: NPoolsClaimRewardsError) {

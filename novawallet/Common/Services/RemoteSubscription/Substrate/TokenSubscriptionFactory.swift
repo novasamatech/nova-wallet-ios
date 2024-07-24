@@ -32,6 +32,12 @@ protocol NativeTokenSubscriptionFactoryProtocol {
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing
+
+    func createBalanceHoldsSubscription(
+        remoteStorageKey: Data,
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol
+    ) -> StorageChildSubscribing
 }
 
 // MARK: - OrmlTokenSubscriptionFactoryProtocol
@@ -40,27 +46,36 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
     let chainAssetId: ChainAssetId
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
-    let assetRepository: AnyDataProviderRepository<AssetBalance>
     let eventCenter: EventCenterProtocol
     let transactionSubscription: TransactionSubscribing?
-    let locksRepository: AnyDataProviderRepository<AssetLock>
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
 
     init(
         chainAssetId: ChainAssetId,
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
-        assetRepository: AnyDataProviderRepository<AssetBalance>,
-        locksRepository: AnyDataProviderRepository<AssetLock>,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
         eventCenter: EventCenterProtocol,
         transactionSubscription: TransactionSubscribing?
     ) {
         self.chainAssetId = chainAssetId
         self.accountId = accountId
         self.chainRegistry = chainRegistry
-        self.assetRepository = assetRepository
-        self.locksRepository = locksRepository
+        self.repositoryFactory = repositoryFactory
         self.eventCenter = eventCenter
         self.transactionSubscription = transactionSubscription
+    }
+
+    private func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance> {
+        repositoryFactory.createAssetBalanceRepository()
+    }
+
+    private func createAssetLocksRepository() -> AnyDataProviderRepository<AssetLock> {
+        repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
+    }
+
+    private func createAssetHoldsRepository() -> AnyDataProviderRepository<AssetHold> {
+        repositoryFactory.createAssetHoldsRepository(for: accountId, chainAssetId: chainAssetId)
     }
 
     func createOrmlAccountSubscription(
@@ -74,7 +89,7 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
-            assetRepository: assetRepository,
+            assetRepository: createAssetBalanceRepository(),
             remoteStorageKey: remoteStorageKey,
             operationManager: operationManager,
             logger: logger,
@@ -93,7 +108,7 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
-            repository: locksRepository,
+            repository: createAssetLocksRepository(),
             operationManager: operationManager,
             logger: logger
         )
@@ -114,7 +129,7 @@ extension TokenSubscriptionFactory: NativeTokenSubscriptionFactoryProtocol {
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
-            assetRepository: assetRepository,
+            assetRepository: createAssetBalanceRepository(),
             transactionSubscription: transactionSubscription,
             remoteStorageKey: remoteStorageKey,
             operationManager: operationManager,
@@ -133,7 +148,24 @@ extension TokenSubscriptionFactory: NativeTokenSubscriptionFactoryProtocol {
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
-            repository: locksRepository,
+            repository: createAssetLocksRepository(),
+            operationManager: operationManager,
+            logger: logger
+        )
+    }
+
+    func createBalanceHoldsSubscription(
+        remoteStorageKey: Data,
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol
+    ) -> StorageChildSubscribing {
+        HoldsSubscription(
+            storageCodingPath: BalancesPallet.holdsPath,
+            remoteStorageKey: remoteStorageKey,
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            repository: createAssetHoldsRepository(),
             operationManager: operationManager,
             logger: logger
         )

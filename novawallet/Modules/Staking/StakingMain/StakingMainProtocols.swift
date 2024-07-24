@@ -21,7 +21,6 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
     func performAlertAction(_ alert: StakingAlert)
-    func performSelectedEntityAction()
     func selectPeriod()
 }
 
@@ -53,6 +52,5 @@ protocol StakingMainChildPresenterProtocol: AnyObject {
     func performClaimRewards()
     func performManageAction(_ action: StakingManageOption)
     func performAlertAction(_ alert: StakingAlert)
-    func performSelectedEntityAction()
     func selectPeriod(_ period: StakingRewardFiltersPeriod)
 }
