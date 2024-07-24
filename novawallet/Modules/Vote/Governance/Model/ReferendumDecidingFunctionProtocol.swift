@@ -35,7 +35,7 @@ extension ReferendumDecidingFunctionProtocol {
         return if yVal < floor {
             Decimal(1)
         } else if yVal > ceil {
-            Decimal(0)
+            .zero
         } else {
             (ceil - yVal) / (ceil - floor) * length
         }
@@ -57,7 +57,7 @@ extension ReferendumDecidingFunctionProtocol {
         if yVal < end {
             return Decimal(1)
         } else {
-            let steps = (begin - yVal) / step
+            let steps = (begin - min(yVal, begin) + step.lessEpsilon()).divideToIntegralValue(by: step)
             return period * steps
         }
     }
@@ -66,16 +66,33 @@ extension ReferendumDecidingFunctionProtocol {
         for yVal: Decimal,
         with params: Referenda.ReciprocalCurve
     ) -> Decimal? {
-        let factor = Decimal.fromFixedI64(value: params.factor)
+        let factor = Decimal.fromFixedI64(value: params.factor) as NSDecimalNumber
         let xOffset = Decimal.fromFixedI64(value: params.xOffset)
         let yOffset = Decimal.fromFixedI64(value: params.yOffset)
 
         let yTerm = yVal - yOffset
-        if yTerm > 0 {
-            let term = factor / yTerm
-            return max(Decimal(0), term - xOffset)
+
+        guard yTerm > 0 else {
+            return Decimal(1)
         }
-        return Decimal(1)
+
+        let roundingHandler = NSDecimalNumberHandler(
+            roundingMode: .up,
+            scale: 16,
+            raiseOnExactness: false,
+            raiseOnOverflow: false,
+            raiseOnUnderflow: false,
+            raiseOnDivideByZero: false
+        )
+
+        let term = factor.dividing(
+            by: yTerm as NSDecimalNumber,
+            withBehavior: roundingHandler
+        )
+
+        let result = max(0, min(term.decimalValue - xOffset, 1))
+
+        return result
     }
 }
 
@@ -107,7 +124,9 @@ struct Gov2LocalDecidingFunction: ReferendumDecidingFunctionProtocol {
             return nil
         }
 
-        return factor / xAdd + yOffset
+        let result = factor / xAdd + yOffset
+
+        return max(0, min(result, 1))
     }
 
     private func calculateSteppedDecreasing(

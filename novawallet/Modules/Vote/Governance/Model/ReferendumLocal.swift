@@ -108,28 +108,48 @@ struct SupportAndVotesLocal {
             return false
         }
 
-        let passing = approvalFraction >= approvalThreshold && supportFraction >= supportThreshold
-
-        return passing
-            ? passing
-            : isProjectedPassing(
-                with: approvalFunction,
-                fraction: approvalFraction
-            )
+        return approvalFraction >= approvalThreshold && supportFraction >= supportThreshold
     }
 
-    private func isProjectedPassing(
-        with approvalFunction: ReferendumDecidingFunctionProtocol,
-        fraction: Decimal
-    ) -> Bool {
+    func projectPassing(
+        currentBlock: BlockNumber,
+        since: BlockNumber,
+        period: Moment
+    ) -> VoteProjectionResult {
         guard
-            let delay = approvalFunction.delay(for: fraction),
-            let threshold = approvalFunction.calculateThreshold(for: delay)
+            currentBlock < (since + period),
+            let approvalFunction,
+            let supportFunction,
+            let approvalFraction,
+            let approvalDelay = approvalFunction.delay(for: approvalFraction),
+            let supportDelay = supportFunction.delay(for: supportFraction),
+            let approvalDelayedThreshold = approvalFunction.calculateThreshold(for: approvalDelay),
+            let supportDelayedThreshold = supportFunction.calculateThreshold(for: supportDelay),
+            approvalFraction >= approvalDelayedThreshold,
+            supportFraction >= supportDelayedThreshold
         else {
-            return false
+            return .notPassing
         }
 
-        return fraction >= threshold
+        let confirmingDelay = max(approvalDelay, supportDelay)
+
+        var confirmingBlockDecimal = (
+            Decimal(since)
+                + confirmingDelay
+                * Decimal(period)
+        ).ceil() as NSDecimalNumber
+
+        guard confirmingBlockDecimal.intValue > 0 else {
+            return .notPassing
+        }
+
+        let confirmingBlock = UInt32(confirmingBlockDecimal.intValue)
+
+        let projectionResult: VoteProjectionResult = confirmingBlock >= currentBlock && confirmingBlock < (since + period)
+            ? .passing(confirmingBlock: confirmingBlock)
+            : .notPassing
+
+        return projectionResult
     }
 }
 
@@ -199,6 +219,23 @@ enum ReferendumStateLocal {
                 return model.isPassing(at: currentBlock)
             case let .threshold(model):
                 return model.isPassing()
+            }
+        }
+
+        func projectPassing(for currentBlock: BlockNumber) -> VoteProjectionResult {
+            switch voting {
+            case let .supportAndVotes(model):
+                model.projectPassing(
+                    currentBlock: currentBlock,
+                    since: since,
+                    period: period
+                )
+            case let .threshold(model):
+                if let confirmationUntil, model.isPassing() {
+                    .passing(confirmingBlock: confirmationUntil)
+                } else {
+                    .notPassing
+                }
             }
         }
     }
@@ -278,4 +315,9 @@ struct GovernanceTrackLocal {
 struct GovernanceTrackInfoLocal {
     let trackId: TrackIdLocal
     let name: String
+}
+
+enum VoteProjectionResult {
+    case passing(confirmingBlock: BlockNumber)
+    case notPassing
 }
