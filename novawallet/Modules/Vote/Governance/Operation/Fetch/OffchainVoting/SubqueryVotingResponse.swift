@@ -163,7 +163,7 @@ extension SubqueryVotingResponse {
         let splitVote: SplitVote?
         let splitAbstainVote: SplitAbstainVote?
         let voter: String
-        let delegatorVotes: DelegatorVotesReponse
+        let delegatorVotes: DelegatorVotesReponse?
     }
 
     struct ReferendumCastingVoting: Decodable {
@@ -193,7 +193,7 @@ extension ReferendumVoterLocal {
 
         self.vote = vote
         self.accountId = accountId
-        delegators = castingVote.delegatorVotes.nodes.compactMap(Self.createDelegator)
+        delegators = castingVote.delegatorVotes?.nodes.compactMap(Self.createDelegator) ?? []
     }
 
     private static func createVoteLocal(

@@ -91,6 +91,25 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
         """
     }
 
+    private func prepareSplitAbstainVotesQuery(referendumId: ReferendumIdLocal) -> String {
+        """
+        {
+            castingVotings(
+                filter: {
+                    referendumId: { equalTo: "\(referendumId)" },
+                    splitAbstainVote: { isNull: false }
+                }
+            ) {
+                nodes {
+                    voter
+                    referendumId
+                    splitAbstainVote
+                }
+            }
+        }
+        """
+    }
+
     private func prepareVotingActivityQuery(
         for address: AccountAddress,
         from block: BlockNumber?
@@ -149,10 +168,16 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
 
     func createReferendumVotesFetchOperation(
         referendumId: ReferendumIdLocal,
-        isAye: Bool
-    ) ->
-        CompoundOperationWrapper<[ReferendumVoterLocal]> {
-        let query = prepareReferendumVotersQuery(referendumId: referendumId, isAye: isAye)
+        votersType: ReferendumVotersType
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
+        let query = switch votersType {
+        case .ayes:
+            prepareReferendumVotersQuery(referendumId: referendumId, isAye: true)
+        case .nays:
+            prepareReferendumVotersQuery(referendumId: referendumId, isAye: false)
+        case .abstains:
+            prepareSplitAbstainVotesQuery(referendumId: referendumId)
+        }
 
         let operation = createOperation(
             for: query

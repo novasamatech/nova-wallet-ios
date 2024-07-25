@@ -20,6 +20,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
+    let votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol?
     let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
     let operationQueue: OperationQueue
 
@@ -30,6 +31,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private var identitiesCancellable: CancellableCall?
     private var actionDetailsCancellable: CancellableCall?
     private var blockTimeCancellable: CancellableCall?
+    private var abstainsFetchCancellable: CancellableCall?
 
     var chain: ChainModel {
         option.chain
@@ -49,6 +51,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
+        votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol?,
         dAppsProvider: AnySingleValueProvider<GovernanceDAppList>,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -66,6 +69,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.blockTimeFactory = blockTimeFactory
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
+        self.votersLocalWrapperFactory = votersLocalWrapperFactory
         self.dAppsProvider = dAppsProvider
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -291,12 +295,44 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             metadataProvider?.refresh()
         }
     }
+
+    private func provideAbstains() {
+        guard let votersLocalWrapperFactory else {
+            return
+        }
+
+        let wrapper = votersLocalWrapperFactory.createWrapper(
+            for: .init(referendumId: referendum.index, votersType: .abstains)
+        )
+
+        abstainsFetchCancellable = wrapper
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self, abstainsFetchCancellable === wrapper else {
+                return
+            }
+
+            clear(cancellable: &abstainsFetchCancellable)
+
+            switch result {
+            case let .success(voters):
+                presenter?.didReceiveAbstains(voters)
+            case let .failure(error):
+                presenter?.didReceiveError(.accountVotesFailed(error))
+            }
+        }
+    }
 }
 
 extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol {
     func setup() {
         makeSubscriptions()
         updateActionDetails()
+        provideAbstains()
         subscribeDApps()
     }
 

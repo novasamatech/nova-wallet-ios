@@ -154,6 +154,19 @@ struct ReferendumDetailsViewFactory {
         let dAppsProvider: AnySingleValueProvider<GovernanceDAppList> =
             JsonDataProviderFactory.shared.getJson(for: dAppsUrl)
 
+        let delegationApi = chain.externalApis?.governanceDelegations()?.first
+
+        let votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol? = if let delegationApi {
+            ReferendumVotersLocalWrapperFactory(
+                chain: chain,
+                operationFactory: SubqueryVotingOperationFactory(url: delegationApi.url),
+                identityProxyFactory: identityProxyFactory,
+                metadataOperationFactory: GovernanceDelegateMetadataFactory()
+            )
+        } else {
+            nil
+        }
+
         return ReferendumDetailsInteractor(
             referendum: referendum,
             selectedAccount: selectedAccount,
@@ -168,6 +181,7 @@ struct ReferendumDetailsViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
+            votersLocalWrapperFactory: votersLocalWrapperFactory,
             dAppsProvider: dAppsProvider,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue

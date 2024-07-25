@@ -18,6 +18,13 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
         ))
     }
 
+    let abstainVotesView: VoteRowView = .create {
+        $0.apply(style: .init(
+            color: R.color.colorIconSecondary()!,
+            accessoryImage: R.image.iconInfoFilled()!
+        ))
+    }
+
     let voteButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
     }
@@ -39,7 +46,8 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
         let votesContainerView = UIView.vStack(
             [
                 ayeVotesView,
-                nayVotesView
+                nayVotesView,
+                abstainVotesView
             ]
         )
 
@@ -87,6 +95,7 @@ extension ReferendumVotingStatusDetailsView: BindableView {
         let votingProgress: VotingProgressView.Model?
         let aye: VoteRowView.Model?
         let nay: VoteRowView.Model?
+        let abstain: VoteRowView.Model?
         let buttonText: String?
     }
 
@@ -95,6 +104,7 @@ extension ReferendumVotingStatusDetailsView: BindableView {
         votingProgressView.bindOrHide(viewModel: viewModel.votingProgress)
         ayeVotesView.bindOrHide(viewModel: viewModel.aye)
         nayVotesView.bindOrHide(viewModel: viewModel.nay)
+        abstainVotesView.bindOrHide(viewModel: viewModel.abstain)
         if let buttonText = viewModel.buttonText {
             voteButton.isHidden = false
             voteButton.imageWithTitleView?.title = buttonText
