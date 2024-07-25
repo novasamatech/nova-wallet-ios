@@ -144,21 +144,15 @@ struct SupportAndVotesLocal {
 
         var confirmingBlock = BlockNumber(confirmingBlockDecimal.intValue)
 
-        if let confirmPeriod {
-            confirmingBlock += confirmPeriod
-        }
-
-        let passing = passing(
+        if passing(
             confirmingBlock: confirmingBlock,
             with: currentBlock,
             since + period
-        )
-
-        let projectionResult: VoteProjectionResult = passing
-            ? .passing(confirmingBlock: confirmingBlock)
-            : .notPassing
-
-        return projectionResult
+        ) {
+            return .passing(approvalBlock: confirmingBlock + (confirmPeriod ?? 0))
+        } else {
+            return .notPassing
+        }
     }
 
     private func passing(
@@ -251,7 +245,7 @@ enum ReferendumStateLocal {
                 )
             case let .threshold(model):
                 if let confirmationUntil, model.isPassing() {
-                    .passing(confirmingBlock: confirmationUntil)
+                    .passing(approvalBlock: confirmationUntil)
                 } else {
                     .notPassing
                 }
@@ -337,6 +331,6 @@ struct GovernanceTrackInfoLocal {
 }
 
 enum VoteProjectionResult {
-    case passing(confirmingBlock: BlockNumber)
+    case passing(approvalBlock: BlockNumber)
     case notPassing
 }

@@ -119,10 +119,10 @@ private extension ReferendumStatusViewModelFactory {
             )
         } else {
             return switch model.projectPassing(for: currentBlock) {
-            case let .passing(confirmingBlock):
+            case let .passing(approvalBlock):
                 createTimeViewModel(
                     state: referendumState,
-                    atBlock: confirmingBlock,
+                    atBlock: approvalBlock,
                     currentBlock: currentBlock,
                     blockDuration: blockDuration,
                     timeStringProvider: strings.governanceReferendumsTimeApprove,

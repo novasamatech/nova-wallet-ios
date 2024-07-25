@@ -78,7 +78,7 @@ extension ReferendumDecidingFunctionProtocol {
 
         let roundingHandler = NSDecimalNumberHandler(
             roundingMode: .up,
-            scale: 16,
+            scale: Int16(truncatingIfNeeded: NSDecimalMaxSize),
             raiseOnExactness: false,
             raiseOnOverflow: false,
             raiseOnUnderflow: false,
@@ -163,28 +163,23 @@ extension Gov2LocalDecidingFunction {
             xPoint = Decimal(block - startBlock) / Decimal(period)
         }
 
-        switch curve {
-        case let .linearDecreasing(params):
-            return calculateLinearDecreasing(from: xPoint, params: params)
-        case let .reciprocal(params):
-            return calculateReciprocal(from: xPoint, params: params)
-        case let .steppedDecreasing(params):
-            return calculateSteppedDecreasing(from: xPoint, params: params)
-        case .unknown:
-            return nil
-        }
+        return threshold(for: xPoint)
     }
 
     func calculateThreshold(for delay: Decimal) -> Decimal? {
+        threshold(for: delay)
+    }
+
+    private func threshold(for xPoint: Decimal) -> Decimal? {
         switch curve {
         case let .linearDecreasing(params):
-            return calculateLinearDecreasing(from: delay, params: params)
+            calculateLinearDecreasing(from: xPoint, params: params)
         case let .reciprocal(params):
-            return calculateReciprocal(from: delay, params: params)
+            calculateReciprocal(from: xPoint, params: params)
         case let .steppedDecreasing(params):
-            return calculateSteppedDecreasing(from: delay, params: params)
+            calculateSteppedDecreasing(from: xPoint, params: params)
         case .unknown:
-            return nil
+            nil
         }
     }
 }
