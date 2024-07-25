@@ -317,7 +317,10 @@ final class ReferendumVoteSetupPresenter {
                 self?.selectConvictionValue(0)
                 self?.provideConviction()
 
-                completionBlock()
+                self?.performValidation(
+                    for: voteAction,
+                    notifying: completionBlock
+                )
             },
             feeErrorClosure: { [weak self] in
                 self?.refreshFee()
