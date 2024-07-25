@@ -181,7 +181,7 @@ final class ReferendumVoteSetupPresenter {
             return
         }
 
-        let voteValue = vote.voteAction.conviction().votes(for: vote.voteAction.balance()) ?? 0
+        let voteValue = vote.voteAction.conviction().votes(for: vote.voteAction.amount()) ?? 0
 
         let voteString = referendumStringsViewModelFactory.createVotes(
             from: voteValue,

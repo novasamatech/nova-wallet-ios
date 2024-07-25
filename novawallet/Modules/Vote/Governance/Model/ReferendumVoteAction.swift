@@ -6,7 +6,7 @@ enum ReferendumVoteAction: Hashable {
     case nay(ReferendumVoteActionModel)
     case abstain(ReferendumVoteActionModel)
 
-    func balance() -> BigUInt {
+    func amount() -> BigUInt {
         switch self {
         case let .abstain(model),
              let .aye(model),

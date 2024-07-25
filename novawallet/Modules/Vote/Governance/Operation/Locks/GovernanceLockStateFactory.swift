@@ -105,7 +105,7 @@ class GovernanceLockStateFactory {
             let newState: GovernanceLockState?
 
             if let newVote = newVote {
-                let newAmount = max(oldAmount, newVote.voteAction.balance())
+                let newAmount = max(oldAmount, newVote.voteAction.amount())
 
                 // as we replacing the vote we can immediately claim previos one so don't take into account
                 let filteredReferendums = referendums.filter { $0.key != newVote.index }

@@ -12,7 +12,7 @@ extension DataValidationRunner {
         let runner = DataValidationRunner(validators: [
             factory.enoughTokensForVoting(
                 params.assetBalance,
-                votingAmount: params.newVote?.voteAction.balance(),
+                votingAmount: params.newVote?.voteAction.amount(),
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             ),
@@ -23,7 +23,7 @@ extension DataValidationRunner {
             ),
             factory.enoughTokensForVotingAndFee(
                 params.assetBalance,
-                votingAmount: params.newVote?.voteAction.balance(),
+                votingAmount: params.newVote?.voteAction.amount(),
                 fee: params.fee,
                 assetInfo: params.assetInfo,
                 locale: selectedLocale

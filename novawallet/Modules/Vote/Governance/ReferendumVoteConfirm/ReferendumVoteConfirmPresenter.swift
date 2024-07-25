@@ -74,7 +74,7 @@ final class ReferendumVoteConfirmPresenter {
         guard
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
             let decimalAmount = Decimal.fromSubstrateAmount(
-                vote.voteAction.balance(),
+                vote.voteAction.amount(),
                 precision: precision
             ) else {
             return
@@ -127,13 +127,13 @@ final class ReferendumVoteConfirmPresenter {
 
     private func provideYourVoteViewModel() {
         let votesString = referendumStringsViewModelFactory.createVotes(
-            from: vote.voteAction.conviction().votes(for: vote.voteAction.balance()) ?? 0,
+            from: vote.voteAction.conviction().votes(for: vote.voteAction.amount()) ?? 0,
             chain: chain,
             locale: selectedLocale
         )
 
         let convictionString = referendumStringsViewModelFactory.createVotesDetails(
-            from: vote.voteAction.balance(),
+            from: vote.voteAction.amount(),
             conviction: vote.voteAction.conviction().decimalValue,
             chain: chain,
             locale: selectedLocale

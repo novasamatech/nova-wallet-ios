@@ -41,13 +41,13 @@ final class ReferendumVoteSetupViewLayout: UIView {
     }()
 
     let convictionHintView: BorderedIconLabelView = .create { view in
-        view.iconDetailsView.spacing = 12
+        view.iconDetailsView.spacing = Constants.convictionHintContentSpacing
         view.iconDetailsView.imageView.image = R.image.iconInfoAccent()
         view.iconDetailsView.detailsLabel.apply(style: .caption1Primary)
 
-        view.backgroundView.cornerRadius = 10
+        view.backgroundView.cornerRadius = Constants.convictionHintCornerRadius
         view.backgroundView.fillColor = R.color.colorIndividualChipBackground()!
-        view.contentInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+        view.contentInsets = Constants.convictionHintContentInsets
     }
 
     let titleLabel: UILabel = .create { view in
@@ -256,5 +256,13 @@ extension ReferendumVoteSetupViewLayout {
         static let bigButtonSize: CGFloat = 64
         static let smallButtonSize: CGFloat = 56
         static let buttonsBottomInset: CGFloat = 20
+        static let convictionHintContentSpacing: CGFloat = 12
+        static let convictionHintCornerRadius: CGFloat = 10
+        static let convictionHintContentInsets = UIEdgeInsets(
+            top: 10,
+            left: 12,
+            bottom: 10,
+            right: 12
+        )
     }
 }
