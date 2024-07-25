@@ -46,7 +46,7 @@ extension Decimal {
         if self == .zero {
             return self
         } else {
-            let epsilon = self / pow(Decimal(10), -exponent)
+            let epsilon = 1 / pow(Decimal(10), -exponent)
             return self - epsilon
         }
     }
