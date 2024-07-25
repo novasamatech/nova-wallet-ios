@@ -132,7 +132,7 @@ struct SupportAndVotesLocal {
 
         let confirmingDelay = max(approvalDelay, supportDelay)
 
-        var confirmingBlockDecimal = (
+        let confirmingBlockDecimal = (
             Decimal(since)
                 + confirmingDelay
                 * Decimal(period)
@@ -142,7 +142,7 @@ struct SupportAndVotesLocal {
             return .notPassing
         }
 
-        var confirmingBlock = BlockNumber(confirmingBlockDecimal.intValue)
+        let confirmingBlock = BlockNumber(confirmingBlockDecimal.intValue)
 
         if passing(
             confirmingBlock: confirmingBlock,
