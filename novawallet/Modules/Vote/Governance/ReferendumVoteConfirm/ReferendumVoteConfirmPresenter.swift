@@ -258,27 +258,32 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol
             assetBalance: assetBalance,
             referendum: referendum,
             newVote: vote,
+            selectedConviction: vote.voteAction.conviction(),
             fee: fee,
             votes: votesResult?.value?.votes,
             assetInfo: assetInfo
+        )
+
+        let handlers = GovernanceVoteValidatingHandlers(
+            convictionUpdateClosure: {},
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            },
+            successClosure: { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                view?.didStartLoading()
+                interactor.submit(vote: vote.voteAction)
+            }
         )
 
         DataValidationRunner.validateVote(
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
-            convictionUpdateClosure: {},
-            feeErrorClosure: { [weak self] in
-                self?.refreshFee()
-            }, successClosure: { [weak self] in
-                guard let strongSelf = self else {
-                    return
-                }
-
-                strongSelf.view?.didStartLoading()
-
-                strongSelf.interactor.submit(vote: strongSelf.vote.voteAction)
-            }
+            handlers: handlers
         )
     }
 

@@ -15,7 +15,7 @@ final class GovernanceSharedState {
     private(set) var referendumsOperationFactory: ReferendumsOperationFactoryProtocol?
     private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
-    
+
     var supportsAbstainVoting: Bool {
         settings.settings.governanceType == .governanceV2
     }

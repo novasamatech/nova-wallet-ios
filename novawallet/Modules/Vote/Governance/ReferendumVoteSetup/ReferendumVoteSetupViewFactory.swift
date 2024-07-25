@@ -90,6 +90,7 @@ struct ReferendumVoteSetupViewFactory {
             chain: chain,
             referendumIndex: referendum,
             initData: initData,
+            supportsAbstainVoting: state.supportsAbstainVoting,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: NumberFormatter.index.localizableResource(),

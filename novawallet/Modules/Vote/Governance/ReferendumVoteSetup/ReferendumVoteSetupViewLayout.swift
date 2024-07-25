@@ -150,6 +150,76 @@ final class ReferendumVoteSetupViewLayout: UIView {
         lockReuseContainerView.setNeedsLayout()
     }
 
+    func showAbstain() {
+        convictionHintView.isHidden = false
+        showAbstainButton()
+    }
+
+    func hideAbstain() {
+        convictionHintView.isHidden = true
+        hideAbstainButton()
+    }
+}
+
+// MARK: Private
+
+extension ReferendumVoteSetupViewLayout {
+    private func showAbstainButton() {
+        guard abstainButton.isHidden else {
+            return
+        }
+
+        abstainButton.isHidden = false
+
+        nayButton.snp.remakeConstraints { make in
+            make.size.equalTo(Constants.bigButtonSize)
+            make.leading.greaterThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(abstainButton.snp.leading).offset(-40)
+            make.centerY.equalTo(abstainButton.snp.centerY)
+        }
+
+        ayeButton.snp.remakeConstraints { make in
+            make.size.equalTo(Constants.bigButtonSize)
+            make.leading.equalTo(abstainButton.snp.trailing).offset(40)
+            make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalTo(abstainButton.snp.centerY)
+        }
+
+        abstainButton.snp.remakeConstraints { make in
+            make.size.equalTo(Constants.smallButtonSize)
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
+        }
+
+        nayButton.roundedBackgroundView?.cornerRadius = Constants.bigButtonSize / 2
+        ayeButton.roundedBackgroundView?.cornerRadius = Constants.bigButtonSize / 2
+    }
+
+    private func hideAbstainButton() {
+        guard !abstainButton.isHidden else {
+            return
+        }
+
+        abstainButton.isHidden = true
+
+        nayButton.snp.remakeConstraints { make in
+            make.height.equalTo(52)
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(snp.centerX).offset(-8)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
+        }
+
+        ayeButton.snp.remakeConstraints { make in
+            make.height.equalTo(52)
+            make.leading.equalTo(snp.centerX).offset(8)
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
+        }
+
+        nayButton.roundedBackgroundView?.cornerRadius = 12
+        ayeButton.roundedBackgroundView?.cornerRadius = 12
+    }
+
     private func createReuseLockButton() -> TriangularedButton {
         let button = TriangularedButton()
         button.applySecondaryDefaultStyle()

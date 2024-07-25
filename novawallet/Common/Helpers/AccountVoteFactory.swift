@@ -10,12 +10,12 @@ final class AccountVoteFactory {
                     balance: model.amount
                 )
             )
-        case let .abstain(model):
+        case let .abstain(amount):
             .splitAbstain(
                 .init(
                     aye: 0,
                     nay: 0,
-                    abstain: model.amount
+                    abstain: amount
                 )
             )
         }
@@ -30,12 +30,12 @@ final class AccountVoteFactory {
                     balance: model.amount
                 )
             )
-        case let .abstain(model):
+        case let .abstain(amount):
             .splitAbstain(
                 .init(
                     aye: 0,
                     nay: 0,
-                    abstain: model.amount
+                    abstain: amount
                 )
             )
         }

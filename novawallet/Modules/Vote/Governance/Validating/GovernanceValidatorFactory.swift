@@ -54,8 +54,9 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale?
     ) -> DataValidating
 
-    func dontNeedConvictionUpdate(
-        for newVote: ReferendumNewVote?,
+    func voteMatchesConviction(
+        with newVote: ReferendumNewVote?,
+        selectedConviction: ConvictionVoting.Conviction?,
         convictionUpdateClosure: @escaping () -> Void,
         locale: Locale?
     ) -> DataValidating
@@ -307,8 +308,9 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
         })
     }
 
-    func dontNeedConvictionUpdate(
-        for newVote: ReferendumNewVote?,
+    func voteMatchesConviction(
+        with newVote: ReferendumNewVote?,
+        selectedConviction: ConvictionVoting.Conviction?,
         convictionUpdateClosure: @escaping () -> Void,
         locale: Locale?
     ) -> DataValidating {
@@ -323,11 +325,11 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
                 locale: locale
             )
         }, preservesCondition: {
-            guard let newVote else {
+            guard let newVote, let selectedConviction else {
                 return false
             }
             if case .abstain = newVote.voteAction {
-                return newVote.voteAction.conviction() == .none
+                return selectedConviction == .none
             } else {
                 return true
             }
