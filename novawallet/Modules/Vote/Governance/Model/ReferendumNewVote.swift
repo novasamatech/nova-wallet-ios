@@ -5,6 +5,6 @@ struct ReferendumNewVote {
     let voteAction: ReferendumVoteAction
 
     func toAccountVote() -> ReferendumAccountVoteLocal {
-        .standard(.init(voteAction: voteAction))
+        AccountVoteFactory.accountVoteLocal(from: voteAction)
     }
 }
