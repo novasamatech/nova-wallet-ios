@@ -2,6 +2,7 @@ import Foundation
 import WalletConnectSwiftV2
 import Starscream
 import Combine
+import CryptoSwift
 
 protocol WalletConnectServiceDelegate: AnyObject {
     func walletConnect(service: WalletConnectServiceProtocol, proposal: Session.Proposal)
@@ -26,6 +27,7 @@ final class WalletConnectService {
     private var networking: NetworkingInteractor?
     @Atomic(defaultValue: nil) private var pairing: PairingClient?
     private var client: SignClient?
+    private var eventsClient: EventsClient?
 
     @Atomic(defaultValue: nil) private var proposalCancellable: AnyCancellable?
     @Atomic(defaultValue: nil) private var sessionCancellable: AnyCancellable?
@@ -50,12 +52,12 @@ final class WalletConnectService {
     private func setupSubscription() {
         proposalCancellable = client?.sessionProposalPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] proposal in
+            .sink { [weak self] proposalAndContext in
                 guard let self = self else {
                     return
                 }
 
-                self.delegate?.walletConnect(service: self, proposal: proposal)
+                self.delegate?.walletConnect(service: self, proposal: proposalAndContext.proposal)
             }
 
         sessionCancellable = client?.sessionsPublisher
@@ -70,16 +72,16 @@ final class WalletConnectService {
 
         requestCancellable = client?.sessionRequestPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] request in
+            .sink { [weak self] requestAndContext in
                 guard let self = self else {
                     return
                 }
 
-                let session = self.client?.getSessions().first { $0.topic == request.topic }
+                let session = self.client?.getSessions().first { $0.topic == requestAndContext.request.topic }
 
                 self.delegate?.walletConnect(
                     service: self,
-                    request: request,
+                    request: requestAndContext.request,
                     session: session
                 )
             }
@@ -97,26 +99,40 @@ final class WalletConnectService {
     }
 
     private func setupClient() {
-        guard client == nil, let pairing = pairing, let networking = networking else {
+        guard
+            client == nil,
+            let pairing,
+            let networking,
+            let eventsClient else {
             return
         }
 
-        let metadata = AppMetadata(
-            name: metadata.name,
-            description: metadata.description,
-            url: metadata.website,
-            icons: [metadata.icon],
-            redirect: .init(
+        do {
+            let redirect = try AppMetadata.Redirect(
                 native: metadata.redirect.native,
                 universal: metadata.redirect.universal
             )
-        )
 
-        client = SignClientFactory.create(
-            metadata: metadata,
-            pairingClient: pairing,
-            networkingClient: networking
-        )
+            let wcMetadata = AppMetadata(
+                name: metadata.name,
+                description: metadata.description,
+                url: metadata.website,
+                icons: [metadata.icon],
+                redirect: redirect
+            )
+
+            client = SignClientFactory.create(
+                metadata: wcMetadata,
+                pairingClient: pairing,
+                projectId: metadata.projectId,
+                crypto: DefaultCryptoProvider(),
+                networkingClient: networking,
+                groupIdentifier: SharedContainerGroup.name,
+                eventsClient: eventsClient
+            )
+        } catch {
+            logger.error("Unexpected setup error: \(error)")
+        }
     }
 
     private func clearClient() {
@@ -124,15 +140,33 @@ final class WalletConnectService {
     }
 
     private func setupPairing() {
-        guard pairing == nil, let networking = networking else {
+        guard
+            pairing == nil,
+            let networking,
+            let eventsClient else {
             return
         }
 
-        pairing = PairingClientFactory.create(networkingClient: networking)
+        pairing = PairingClientFactory.create(
+            networkingClient: networking,
+            eventsClient: eventsClient,
+            groupIdentifier: SharedContainerGroup.name
+        )
     }
 
     private func clearPairing() {
         pairing = nil
+    }
+
+    private func setupEventsClient() {
+        eventsClient = EventsClientFactory.createWithDefaultStorage(
+            projectId: metadata.projectId,
+            sdkVersion: EnvironmentInfo.sdkName
+        )
+    }
+
+    private func clearEventsClient() {
+        eventsClient = nil
     }
 
     private func setupNetworking() {
@@ -141,8 +175,25 @@ final class WalletConnectService {
         }
 
         let socketFactory = DefaultSocketFactory(logger: logger)
-        let relayClient = RelayClient(relayHost: relayHost, projectId: metadata.projectId, socketFactory: socketFactory)
-        networking = NetworkingClientFactory.create(relayClient: relayClient)
+
+        Networking.configure(
+            groupIdentifier: SharedContainerGroup.name,
+            projectId: metadata.projectId,
+            socketFactory: socketFactory
+        )
+
+        let relayClient = RelayClientFactory.create(
+            relayHost: relayHost,
+            projectId: metadata.projectId,
+            socketFactory: socketFactory,
+            groupIdentifier: SharedContainerGroup.name,
+            socketConnectionType: .automatic
+        )
+
+        networking = NetworkingClientFactory.create(
+            relayClient: relayClient,
+            groupIdentifier: SharedContainerGroup.name
+        )
     }
 
     private func clearNetworking() {
@@ -164,13 +215,14 @@ final class WalletConnectService {
 
 extension WalletConnectService: WalletConnectServiceProtocol {
     func connect(uri: String, completion: @escaping (Error?) -> Void) {
-        guard let pairingUri = WalletConnectURI(string: uri), let pairing = pairing else {
+        guard let pairing = pairing else {
             notify(completion: completion, error: CommonError.dataCorruption)
             return
         }
 
         Task { [weak self] in
             do {
+                let pairingUri = try WalletConnectURI(uriString: uri)
                 try await pairing.pair(uri: pairingUri)
                 self?.logger.debug("Pairing submitted: \(uri)")
                 self?.notify(completion: completion, error: nil)
@@ -193,7 +245,7 @@ extension WalletConnectService: WalletConnectServiceProtocol {
                 case let .approve(proposal, namespaces):
                     try await client.approve(proposalId: proposal.id, namespaces: namespaces)
                 case let .reject(proposal):
-                    try await client.reject(proposalId: proposal.id, reason: .userRejected)
+                    try await client.rejectSession(proposalId: proposal.id, reason: .userRejected)
                 }
 
                 self?.notify(completion: completion, error: nil)
@@ -236,6 +288,7 @@ extension WalletConnectService: WalletConnectServiceProtocol {
 
     func setup() {
         setupNetworking()
+        setupEventsClient()
         setupPairing()
         setupClient()
         setupSubscription()
@@ -245,6 +298,7 @@ extension WalletConnectService: WalletConnectServiceProtocol {
         clearNetworking()
         clearPairing()
         clearClient()
+        clearEventsClient()
         clearSubscriptions()
     }
 
@@ -265,6 +319,12 @@ extension WalletConnectService: WalletConnectServiceProtocol {
 }
 
 private final class DefaultWebSocket: WebSocketConnecting {
+    enum ConnectionState: Equatable {
+        case notConnected
+        case connecting
+        case connected
+    }
+
     public var isConnected: Bool {
         mutex.lock()
 
@@ -272,10 +332,10 @@ private final class DefaultWebSocket: WebSocketConnecting {
             mutex.unlock()
         }
 
-        return connected
+        return connectionState == .connected
     }
 
-    private var connected: Bool = false
+    private var connectionState: ConnectionState = .notConnected
 
     public var onConnect: (() -> Void)?
 
@@ -303,7 +363,14 @@ private final class DefaultWebSocket: WebSocketConnecting {
             mutex.unlock()
         }
 
+        guard connectionState != .connecting else {
+            logger.warning("Already connecting. Skipped...")
+            return
+        }
+
         logger.debug("Will connect")
+
+        connectionState = .connecting
 
         stopWebsocket()
         startWebsocket()
@@ -316,7 +383,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
             mutex.unlock()
         }
 
-        connected = false
+        connectionState = .notConnected
 
         logger.debug("Will disconnect")
 
@@ -387,7 +454,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
     private func markConnectedAndNotify() {
         mutex.lock()
 
-        connected = true
+        connectionState = .connected
 
         mutex.unlock()
 
@@ -397,7 +464,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
     private func markDisconnectedAndNotify(error: Error?) {
         mutex.lock()
 
-        connected = false
+        connectionState = .notConnected
 
         stopWebsocket()
 
@@ -435,5 +502,17 @@ private final class DefaultSocketFactory: WebSocketFactory {
         urlRequest.addValue("allowed.domain.com", forHTTPHeaderField: "Origin")
 
         return DefaultWebSocket(request: urlRequest, engineFactory: DefaultEngineFactory(), logger: logger)
+    }
+}
+
+private struct DefaultCryptoProvider: CryptoProvider {
+    public func recoverPubKey(signature _: WalletConnectSwiftV2.EthereumSignature, message _: Data) throws -> Data {
+        throw CommonError.undefined
+    }
+
+    public func keccak256(_ data: Data) -> Data {
+        let digest = SHA3(variant: .keccak256)
+        let hash = digest.calculate(for: [UInt8](data))
+        return Data(hash)
     }
 }
