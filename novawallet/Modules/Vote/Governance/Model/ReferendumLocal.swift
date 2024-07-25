@@ -119,13 +119,11 @@ struct SupportAndVotesLocal {
     ) -> VoteProjectionResult {
         guard
             currentBlock < (since + period),
-            let approvalFunction,
-            let supportFunction,
             let approvalFraction,
-            let approvalDelay = approvalFunction.delay(for: approvalFraction),
-            let supportDelay = supportFunction.delay(for: supportFraction),
-            let approvalDelayedThreshold = approvalFunction.calculateThreshold(for: approvalDelay),
-            let supportDelayedThreshold = supportFunction.calculateThreshold(for: supportDelay),
+            let approvalDelay = approvalFunction?.delay(for: approvalFraction),
+            let supportDelay = supportFunction?.delay(for: supportFraction),
+            let approvalDelayedThreshold = approvalFunction?.calculateThreshold(for: approvalDelay),
+            let supportDelayedThreshold = supportFunction?.calculateThreshold(for: supportDelay),
             approvalFraction >= approvalDelayedThreshold,
             supportFraction >= supportDelayedThreshold
         else {
