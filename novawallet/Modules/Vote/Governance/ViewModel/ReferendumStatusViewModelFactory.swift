@@ -28,7 +28,6 @@ extension ReferendumStatusViewModelFactoryProtocol {
 }
 
 final class ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProtocol {
-    // swiftlint:disable:next function_body_length
     func createTimeViewModel(
         for referendum: ReferendumLocal,
         currentBlock: BlockNumber,

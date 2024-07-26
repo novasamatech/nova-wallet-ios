@@ -144,23 +144,11 @@ struct SupportAndVotesLocal {
 
         let confirmingBlock = BlockNumber(confirmingBlockDecimal.intValue)
 
-        if passing(
-            confirmingBlock: confirmingBlock,
-            with: currentBlock,
-            since + period
-        ) {
+        if confirmingBlock < (since + period) {
             return .passing(approvalBlock: confirmingBlock + (confirmPeriod ?? 0))
         } else {
             return .notPassing
         }
-    }
-
-    private func passing(
-        confirmingBlock: BlockNumber,
-        with currentBlock: BlockNumber,
-        _ rejectedAt: BlockNumber
-    ) -> Bool {
-        confirmingBlock >= currentBlock && confirmingBlock < rejectedAt
     }
 }
 
