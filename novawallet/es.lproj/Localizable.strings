@@ -1727,3 +1727,7 @@
 "staking.setup.conflict.message" = "No puedes hacer stake con Staking Directo y Pools de Nominación al mismo tiempo";
 "nomination.pools.conflict.title" = "Las operaciones de Pool no están disponibles";
 "nomination.pools.conflict.message" = "Ya no puedes usar tanto Staking Directo como Pool Staking desde la misma cuenta. Para gestionar tu Pool Staking, primero necesitas unstakear tus tokens del Staking Directo.";
+"gov.voters.abstain" = "Votos de Abstención";
+"gov.vote.conviction.alert.title" = "Actualización de la convicción";
+"gov.vote.conviction.alert.message" = "Los votos de Abstención solo se pueden realizar con una convicción de 0.1x. ¿Votar con una convicción de 0.1x?";
+"gov.vote.conviction.hint.title" = "La convicción se establecerá en 0.1x cuando se Abstenga";

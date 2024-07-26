@@ -1727,3 +1727,7 @@
 "staking.setup.conflict.message" = "Anda tidak dapat melakukan staking dengan Staking Langsung dan Pool Nominasi pada saat yang sama";
 "nomination.pools.conflict.title" = "Operasi pool tidak tersedia";
 "nomination.pools.conflict.message" = "Anda tidak dapat lagi menggunakan Staking Langsung dan Staking Pool dari akun yang sama. Untuk mengelola Staking Pool Anda, pertama-tama Anda perlu melepaskan token Anda dari Staking Langsung.";
+"gov.voters.abstain" = "Suara abstain";
+"gov.vote.conviction.alert.title" = "Pembaruan keyakinan";
+"gov.vote.conviction.alert.message" = "Suara Abstain hanya dapat dilakukan dengan keyakinan 0,1x. Pilih dengan keyakinan 0,1x?";
+"gov.vote.conviction.hint.title" = "Keyakinan akan diatur ke 0,1x ketika Abstain";

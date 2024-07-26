@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "Your balance";
 "common.max" = "max";
 "crowdloan.custom.contrib.format" = "%@ (via %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "View in %@";
 "import.json.unsupported.ethereum.crypto.message" = "Cannot import account with Substrate secret into the network with Ethereum encryption";
 "import.json.unsupported.substrate.crypto.message" = "Cannot import account with Ethereum secret into the network with Substrate encryption";

@@ -1727,3 +1727,7 @@
 "staking.setup.conflict.message" = "Bạn không thể Stake với Direct Staking và Nomination Pools cùng một lúc";
 "nomination.pools.conflict.title" = "Các thao tác trong Pool không khả dụng";
 "nomination.pools.conflict.message" = "Bạn không thể sử dụng cả Staking trực tiếp và Pool Staking từ cùng một tài khoản. Để quản lý Pool Staking bạn trước tiên cần unstake token của mình từ Staking trực tiếp.";
+"gov.voters.abstain" = "Bỏ phiếu Abstain";
+"gov.vote.conviction.alert.title" = "Cập nhật độ xác tín";
+"gov.vote.conviction.alert.message" = "Bỏ phiếu Abstain chỉ có thể thực hiện với độ xác tín 0.1x. Bỏ phiếu với độ xác tín 0.1x?";
+"gov.vote.conviction.hint.title" = "Độ xác tín sẽ được đặt là 0.1x khi <font>bỏ phiếu Abstain</font>";

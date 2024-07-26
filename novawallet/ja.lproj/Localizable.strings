@@ -1727,3 +1727,7 @@
 "staking.setup.conflict.message" = "Direct StakingとNomination Poolsを同時にステークすることはできません";
 "nomination.pools.conflict.title" = "プール操作は利用できません";
 "nomination.pools.conflict.message" = "同じアカウントでDirect StakingとPool Stakingの両方を使用することはできなくなりました。Pool Stakingを管理するには、まずDirect Stakingからトークンをアンステークする必要があります。";
+"gov.voters.abstain" = "棄権票";
+"gov.vote.conviction.alert.title" = "信念の更新";
+"gov.vote.conviction.alert.message" = "棄権票は0.1xの信念でのみ行うことができます。0.1xの信念で投票しますか？";
+"gov.vote.conviction.hint.title" = "棄権時には信念が0.1xに設定されます";
