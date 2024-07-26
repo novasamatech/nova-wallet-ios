@@ -104,6 +104,12 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
                     voter
                     referendumId
                     splitAbstainVote
+                    delegatorVotes {
+                        nodes {
+                            delegator
+                            vote
+                        }
+                    }
                 }
             }
         }

@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class ReferendumDetailsInteractor: AnyCancellableCleaning {
+final class ReferendumDetailsInteractor {
     weak var presenter: ReferendumDetailsInteractorOutputProtocol?
 
     private(set) var referendum: ReferendumLocal
@@ -28,10 +28,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 
-    private var identitiesCancellable: CancellableCall?
-    private var actionDetailsCancellable: CancellableCall?
-    private var blockTimeCancellable: CancellableCall?
-    private var abstainsFetchCancellable: CancellableCall?
+    private var identitiesCancellable = CancellableCallStore()
+    private var actionDetailsCancellable = CancellableCallStore()
+    private var blockTimeCancellable = CancellableCallStore()
+    private var abstainsFetchCancellable = CancellableCallStore()
 
     var chain: ChainModel {
         option.chain
@@ -76,9 +76,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     deinit {
-        clear(cancellable: &identitiesCancellable)
-        clear(cancellable: &actionDetailsCancellable)
-        clear(cancellable: &blockTimeCancellable)
+        identitiesCancellable.clear()
+        actionDetailsCancellable.clear()
+        blockTimeCancellable.clear()
+        abstainsFetchCancellable.clear()
 
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
 
@@ -98,6 +99,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             case let .success(referendumResult):
                 if let referendum = referendumResult.value {
                     self?.referendum = referendum
+                    self?.provideAbstains()
                     self?.presenter?.didReceiveReferendum(referendum)
                 }
             case let .failure(error):
@@ -172,7 +174,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     private func provideIdentities(for accountIds: Set<AccountId>) {
-        clear(cancellable: &identitiesCancellable)
+        identitiesCancellable.clear()
 
         guard !accountIds.isEmpty else {
             presenter?.didReceiveIdentities([:])
@@ -183,30 +185,33 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
         let wrapper = identityProxyFactory.createIdentityWrapper(for: accountIdsClosure)
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.identitiesCancellable else {
-                    return
-                }
+        identitiesCancellable.store(call: wrapper)
 
-                self?.identitiesCancellable = nil
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard
+                let self,
+                identitiesCancellable.matches(call: wrapper)
+            else {
+                return
+            }
 
-                do {
-                    let identities = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveIdentities(identities)
-                } catch {
-                    self?.presenter?.didReceiveError(.identitiesFailed(error))
-                }
+            identitiesCancellable.clear()
+
+            switch result {
+            case let .success(identities):
+                presenter?.didReceiveIdentities(identities)
+            case let .failure(error):
+                presenter?.didReceiveError(.identitiesFailed(error))
             }
         }
-
-        identitiesCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func provideBlockTime() {
-        guard blockTimeCancellable == nil else {
+        guard !blockTimeCancellable.hasCall else {
             return
         }
 
@@ -215,30 +220,33 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             blockTimeEstimationService: blockTimeService
         )
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.blockTimeCancellable else {
-                    return
-                }
+        blockTimeCancellable.store(call: wrapper)
 
-                self?.blockTimeCancellable = nil
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard
+                let self,
+                blockTimeCancellable.matches(call: wrapper)
+            else {
+                return
+            }
 
-                do {
-                    let blockTimeModel = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveBlockTime(blockTimeModel)
-                } catch {
-                    self?.presenter?.didReceiveError(.blockTimeFailed(error))
-                }
+            blockTimeCancellable.clear()
+
+            switch result {
+            case let .success(blockTimeModel):
+                presenter?.didReceiveBlockTime(blockTimeModel)
+            case let .failure(error):
+                presenter?.didReceiveError(.blockTimeFailed(error))
             }
         }
-
-        blockTimeCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func updateActionDetails() {
-        guard actionDetailsCancellable == nil else {
+        guard !actionDetailsCancellable.hasCall else {
             return
         }
 
@@ -248,28 +256,29 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             runtimeProvider: runtimeProvider
         )
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.actionDetailsCancellable else {
-                    return
-                }
+        actionDetailsCancellable.store(call: wrapper)
 
-                self?.actionDetailsCancellable = nil
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard
+                let self,
+                actionDetailsCancellable.matches(call: wrapper)
+            else {
+                return
+            }
 
-                do {
-                    let actionDetails = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.actionDetails = actionDetails
+            actionDetailsCancellable.clear()
 
-                    self?.presenter?.didReceiveActionDetails(actionDetails)
-                } catch {
-                    self?.presenter?.didReceiveError(.actionDetailsFailed(error))
-                }
+            switch result {
+            case let .success(actionDetails):
+                presenter?.didReceiveActionDetails(actionDetails)
+            case let .failure(error):
+                presenter?.didReceiveError(.actionDetailsFailed(error))
             }
         }
-
-        actionDetailsCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func makeAccountBasedSubscriptions() {
@@ -297,7 +306,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     private func provideAbstains() {
-        guard let votersLocalWrapperFactory else {
+        guard
+            !abstainsFetchCancellable.hasCall,
+            let votersLocalWrapperFactory
+        else {
             return
         }
 
@@ -305,18 +317,18 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             for: .init(referendumId: referendum.index, votersType: .abstains)
         )
 
-        abstainsFetchCancellable = wrapper
+        abstainsFetchCancellable.store(call: wrapper)
 
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard let self, abstainsFetchCancellable === wrapper else {
+            guard let self, abstainsFetchCancellable.matches(call: wrapper) else {
                 return
             }
 
-            clear(cancellable: &abstainsFetchCancellable)
+            abstainsFetchCancellable.clear()
 
             switch result {
             case let .success(voters):
@@ -332,7 +344,6 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
     func setup() {
         makeSubscriptions()
         updateActionDetails()
-        provideAbstains()
         subscribeDApps()
     }
 

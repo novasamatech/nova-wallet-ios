@@ -441,6 +441,10 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         wireframe.showVoters(from: view, referendum: referendum, type: .nays)
     }
 
+    func showAbstainVoters() {
+        wireframe.showVoters(from: view, referendum: referendum, type: .abstains)
+    }
+
     func opeDApp(at index: Int) {
         guard
             let dApp = dApps?[index],
