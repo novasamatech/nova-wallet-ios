@@ -18,6 +18,7 @@ extension ReferendumDisplayStringFactoryProtocol {
     func createReferendumVotes(
         from referendum: ReferendumLocal,
         abstains: ReferendumVoterLocals?,
+        abstainVotingAvailable: Bool,
         chain: ChainModel,
         locale: Locale
     ) -> ReferendumVotesViewModel? {
@@ -40,7 +41,7 @@ extension ReferendumDisplayStringFactoryProtocol {
         let abstainsCapital: BigUInt = abstains?
             .model
             .reduce(into: BigUInt(0)) { acc, voter in
-                acc += voter.vote.abstainBalance
+                acc += voter.vote.abstains
             } ?? 0
 
         let abstainString = createVotes(from: abstainsCapital, chain: chain, locale: locale)
@@ -59,11 +60,15 @@ extension ReferendumDisplayStringFactoryProtocol {
             )
         }
 
-        let abstain: VoteRowView.Model? = abstainString.map {
-            .init(
-                title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
-                votes: $0
-            )
+        var abstain: VoteRowView.Model? = if abstainVotingAvailable {
+            abstainString.map {
+                .init(
+                    title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
+                    votes: $0
+                )
+            }
+        } else {
+            nil
         }
 
         return ReferendumVotesViewModel(

@@ -21,6 +21,10 @@ final class ReferendumDetailsPresenter {
     let governanceType: GovernanceType
     let logger: LoggerProtocol
 
+    private var abstainVotingAvailable: Bool {
+        governanceType == .governanceV2
+    }
+
     private var referendum: ReferendumLocal
     private var abstainLocals: ReferendumVoterLocals?
     private var actionDetails: ReferendumActionLocal?
@@ -238,6 +242,7 @@ final class ReferendumDetailsPresenter {
         let votes = referendumStringsFactory.createReferendumVotes(
             from: referendum,
             abstains: abstainLocals,
+            abstainVotingAvailable: abstainVotingAvailable,
             chain: chain,
             locale: selectedLocale
         )

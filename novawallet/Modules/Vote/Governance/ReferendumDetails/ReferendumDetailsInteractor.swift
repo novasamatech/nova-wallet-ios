@@ -99,8 +99,11 @@ final class ReferendumDetailsInteractor {
             case let .success(referendumResult):
                 if let referendum = referendumResult.value {
                     self?.referendum = referendum
-                    self?.provideAbstains()
                     self?.presenter?.didReceiveReferendum(referendum)
+
+                    guard self?.option.type == .governanceV2 else { return }
+
+                    self?.provideAbstains()
                 }
             case let .failure(error):
                 self?.presenter?.didReceiveError(.referendumFailed(error))
