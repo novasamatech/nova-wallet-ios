@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "귀하의 잔액";
 "common.max" = "최대";
 "crowdloan.custom.contrib.format" = "%@ (via %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "%@에서 보기";
 "import.json.unsupported.ethereum.crypto.message" = "Ethereum 암호화 네트워크에 Substrate 비밀이 있는 계정을 가져올 수 없습니다";
 "import.json.unsupported.substrate.crypto.message" = "Substrate 암호화 네트워크에 Ethereum 비밀이 있는 계정을 가져올 수 없습니다";

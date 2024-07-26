@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "Ваш баланс";
 "common.max" = "макс.";
 "crowdloan.custom.contrib.format" = "%@ (через %@)";
-"username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
-"username.setup.title" = "Создать аккаунт";
 "commmon.view.in.format" = "Открыть в %@";
 "import.json.unsupported.ethereum.crypto.message" = "Не поддерживается импорт аккаунта с Substrate секретом в сеть с Ethereum шифрованием";
 "import.json.unsupported.substrate.crypto.message" = "Не поддерживается импорт аккаунта с Ethereum секретом в сеть с Substrate шифрованием";

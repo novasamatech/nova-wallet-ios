@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "Saldo Anda";
 "common.max" = "maks.";
 "crowdloan.custom.contrib.format" = "%@ (via %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "Lihat di %@";
 "import.json.unsupported.ethereum.crypto.message" = "Tidak bisa mengimpor akun dengan rahasia Substrate ke jaringan dengan enkripsi Ethereum.";
 "import.json.unsupported.substrate.crypto.message" = "Tidak bisa mengimpor akun dengan rahasia Ethereum ke jaringan dengan enkripsi Substrate.";

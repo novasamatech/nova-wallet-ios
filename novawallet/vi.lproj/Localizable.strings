@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "Số dư của bạn";
 "common.max" = "tối đa";
 "crowdloan.custom.contrib.format" = "%@ (thông qua %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "Xem trong %@";
 "import.json.unsupported.ethereum.crypto.message" = "Không thể nhập tài khoản với Substrate secret vào mạng với mã hóa Ethereum";
 "import.json.unsupported.substrate.crypto.message" = "Không thể nhập tài khoản với Ethereum secret vào mạng với mã hóa Substrate";

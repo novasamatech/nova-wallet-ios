@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "あなたのバランス";
 "common.max" = "最大";
 "crowdloan.custom.contrib.format" = "%@ (経由 %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "%@で表示";
 "import.json.unsupported.ethereum.crypto.message" = "Ethereum暗号化のネットワークにSubstrateシークレットを持つアカウントをインポートできません";
 "import.json.unsupported.substrate.crypto.message" = "Substrate暗号化のネットワークにEthereumシークレットを持つアカウントをインポートできません";

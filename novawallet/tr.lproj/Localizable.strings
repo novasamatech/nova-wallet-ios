@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "Bakiyeniz";
 "common.max" = "maks";
 "crowdloan.custom.contrib.format" = "%@ (%@ aracılığıyla)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "%@'de Görüntüle";
 "import.json.unsupported.ethereum.crypto.message" = "Substrate gizli anahtarı olan bir hesabın Ethereum şifrelemesi olan ağa aktarımı yapılamaz";
 "import.json.unsupported.substrate.crypto.message" = "Ethereum gizli anahtarı olan bir hesabın Substrate şifrelemesi olan ağa aktarımı yapılamaz";

@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "Twoje saldo";
 "common.max" = "maks.";
 "crowdloan.custom.contrib.format" = "%@ (przez %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "Zobacz w %@";
 "import.json.unsupported.ethereum.crypto.message" = "Nie można zaimportować konta z sekretem Substrate do sieci z szyfrowaniem Ethereum";
 "import.json.unsupported.substrate.crypto.message" = "Nie można zaimportować konta z sekretem Ethereum do sieci z szyfrowaniem Substrate";
