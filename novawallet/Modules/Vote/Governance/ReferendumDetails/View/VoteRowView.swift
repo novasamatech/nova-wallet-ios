@@ -45,6 +45,7 @@ final class VoteRowView: RowView<
         rowContentView.valueView.mode = .detailsIcon
 
         indicatorView.cornerRadius = 2.0
+        indicatorView.shadowOpacity = 0.0
 
         rowContentView.valueView.iconWidth = 16.0
 
