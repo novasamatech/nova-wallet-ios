@@ -229,6 +229,35 @@ extension ReferendumVoteSetupViewLayout {
     }
 
     private func setupLayout() {
+        setupVoteButtonsLayout()
+
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(ayeButton.snp.top).offset(-8.0)
+        }
+
+        containerView.stackView.addArrangedSubview(titleLabel)
+        containerView.stackView.setCustomSpacing(12.0, after: titleLabel)
+
+        setupAmountViewsLayout()
+
+        setupLockReuseContainerLayout()
+
+        containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
+
+        containerView.stackView.addArrangedSubview(convictionView)
+        containerView.stackView.setCustomSpacing(16.0, after: convictionView)
+
+        containerView.stackView.addArrangedSubview(convictionHintView)
+        containerView.stackView.setCustomSpacing(16, after: convictionHintView)
+
+        setupLockedViewsLayout()
+
+        setupContentWidth()
+    }
+
+    private func setupVoteButtonsLayout() {
         addSubview(abstainButton)
         abstainButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.smallButtonSize)
@@ -251,17 +280,9 @@ extension ReferendumVoteSetupViewLayout {
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalTo(abstainButton.snp.centerY)
         }
+    }
 
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(ayeButton.snp.top).offset(-8.0)
-        }
-
-        containerView.stackView.addArrangedSubview(titleLabel)
-
-        containerView.stackView.setCustomSpacing(12.0, after: titleLabel)
-
+    private func setupAmountViewsLayout() {
         containerView.stackView.addArrangedSubview(amountView)
         containerView.stackView.addArrangedSubview(amountInputView)
 
@@ -272,27 +293,10 @@ extension ReferendumVoteSetupViewLayout {
         amountInputView.snp.makeConstraints { make in
             make.height.equalTo(64)
         }
+    }
 
-        containerView.stackView.addArrangedSubview(lockReuseContainerView)
-        lockReuseContainerView.snp.makeConstraints { make in
-            make.height.equalTo(32.0)
-            make.width.equalTo(self)
-        }
-
-        containerView.stackView.setCustomSpacing(16.0, after: lockReuseContainerView)
-
-        containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
-
-        containerView.stackView.addArrangedSubview(convictionView)
-
-        containerView.stackView.setCustomSpacing(16.0, after: convictionView)
-
-        containerView.stackView.addArrangedSubview(convictionHintView)
-
-        containerView.stackView.setCustomSpacing(16, after: convictionHintView)
-
+    private func setupLockedViewsLayout() {
         containerView.stackView.addArrangedSubview(lockedAmountView)
-
         containerView.stackView.setCustomSpacing(10.0, after: lockedAmountView)
 
         lockedAmountView.snp.makeConstraints { make in
@@ -304,8 +308,17 @@ extension ReferendumVoteSetupViewLayout {
         lockedPeriodView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
         }
+    }
 
-        setupContentWidth()
+    private func setupLockReuseContainerLayout() {
+        containerView.stackView.addArrangedSubview(lockReuseContainerView)
+
+        lockReuseContainerView.snp.makeConstraints { make in
+            make.height.equalTo(32.0)
+            make.width.equalTo(self)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: lockReuseContainerView)
     }
 
     private func setupContentWidth() {

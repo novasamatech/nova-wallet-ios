@@ -51,6 +51,7 @@ struct ReferendumVoteSetupViewFactory {
         return view
     }
 
+    // swiftlint:disable:next function_parameter_count
     private static func createPresenter(
         from interactor: ReferendumVoteSetupInteractor,
         wireframe: ReferendumVoteSetupWireframeProtocol,
@@ -104,6 +105,7 @@ struct ReferendumVoteSetupViewFactory {
         )
     }
 
+    // swiftlint:disable function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
         referendum: ReferendumIdLocal,

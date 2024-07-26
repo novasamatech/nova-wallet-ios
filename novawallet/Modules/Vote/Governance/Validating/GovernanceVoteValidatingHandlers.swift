@@ -1,5 +1,12 @@
 struct GovernanceVoteValidatingHandlers {
-    let convictionUpdateClosure: () -> Void
+    let convictionUpdateClosure: (() -> Void)?
     let feeErrorClosure: () -> Void
-    let successClosure: DataValidationRunnerCompletion
+
+    init(
+        convictionUpdateClosure: (() -> Void)? = nil,
+        feeErrorClosure: @escaping () -> Void
+    ) {
+        self.convictionUpdateClosure = convictionUpdateClosure
+        self.feeErrorClosure = feeErrorClosure
+    }
 }

@@ -57,7 +57,7 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func voteMatchesConviction(
         with newVote: ReferendumNewVote?,
         selectedConviction: ConvictionVoting.Conviction?,
-        convictionUpdateClosure: @escaping () -> Void,
+        convictionUpdateClosure: (() -> Void)?,
         locale: Locale?
     ) -> DataValidating
 }
@@ -311,17 +311,20 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
     func voteMatchesConviction(
         with newVote: ReferendumNewVote?,
         selectedConviction: ConvictionVoting.Conviction?,
-        convictionUpdateClosure: @escaping () -> Void,
+        convictionUpdateClosure: (() -> Void)?,
         locale: Locale?
     ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
+        WarningConditionViolation(onWarning: { [weak self] delegate in
             guard let view = self?.view else {
                 return
             }
 
             self?.presentable.presentConvictionUpdateRequired(
                 from: view,
-                action: convictionUpdateClosure,
+                action: {
+                    convictionUpdateClosure?()
+                    delegate.didCompleteWarningHandling()
+                },
                 locale: locale
             )
         }, preservesCondition: {

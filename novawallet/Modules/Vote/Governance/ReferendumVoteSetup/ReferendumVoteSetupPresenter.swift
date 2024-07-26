@@ -67,7 +67,11 @@ final class ReferendumVoteSetupPresenter {
 
         self.localizationManager = localizationManager
     }
+}
 
+// MARK: Private
+
+extension ReferendumVoteSetupPresenter {
     private func balanceMinusFee() -> Decimal {
         let balanceValue = assetBalance?.freeInPlank ?? 0
         let feeValue = fee?.amountForCurrentAccount ?? 0
@@ -322,23 +326,18 @@ final class ReferendumVoteSetupPresenter {
             convictionUpdateClosure: { [weak self] in
                 self?.selectConvictionValue(0)
                 self?.provideConviction()
-
-                self?.performValidation(
-                    for: voteAction,
-                    notifying: completionBlock
-                )
             },
             feeErrorClosure: { [weak self] in
                 self?.refreshFee()
-            },
-            successClosure: completionBlock
+            }
         )
 
         DataValidationRunner.validateVote(
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
-            handlers: handlers
+            handlers: handlers,
+            successClosure: completionBlock
         )
     }
 

@@ -5,7 +5,8 @@ extension DataValidationRunner {
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceVoteValidatingParams,
         selectedLocale: Locale,
-        handlers: GovernanceVoteValidatingHandlers
+        handlers: GovernanceVoteValidatingHandlers,
+        successClosure: @escaping DataValidationRunnerCompletion
     ) {
         let runner = DataValidationRunner(validators: [
             factory.enoughTokensForVoting(
@@ -45,7 +46,7 @@ extension DataValidationRunner {
             )
         ])
 
-        runner.runValidation(notifyingOnSuccess: handlers.successClosure)
+        runner.runValidation(notifyingOnSuccess: successClosure)
     }
 
     static func validateDelegate(
