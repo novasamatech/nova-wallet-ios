@@ -2,6 +2,7 @@ import Foundation
 import BigInt
 import SoraFoundation
 
+// swiftlint:disable file_length
 final class ReferendumVoteConfirmPresenter {
     weak var view: ReferendumVoteConfirmViewProtocol?
     let wireframe: ReferendumVoteConfirmWireframeProtocol
@@ -258,26 +259,30 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol
             assetBalance: assetBalance,
             referendum: referendum,
             newVote: vote,
+            selectedConviction: vote.voteAction.conviction(),
             fee: fee,
             votes: votesResult?.value?.votes,
             assetInfo: assetInfo
+        )
+
+        let handlers = GovernanceVoteValidatingHandlers(
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            }
         )
 
         DataValidationRunner.validateVote(
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
-            convictionUpdateClosure: {},
-            feeErrorClosure: { [weak self] in
-                self?.refreshFee()
-            }, successClosure: { [weak self] in
-                guard let strongSelf = self else {
+            handlers: handlers,
+            successClosure: { [weak self] in
+                guard let self else {
                     return
                 }
 
-                strongSelf.view?.didStartLoading()
-
-                strongSelf.interactor.submit(vote: strongSelf.vote.voteAction)
+                view?.didStartLoading()
+                interactor.submit(vote: vote.voteAction)
             }
         )
     }

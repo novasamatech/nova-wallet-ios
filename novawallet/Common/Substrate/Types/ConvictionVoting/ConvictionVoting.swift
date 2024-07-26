@@ -160,9 +160,9 @@ enum ConvictionVoting {
             case let .aye(model):
                 aye = true
                 conviction = model.conviction
-            case let .nay(model), let .abstain(model):
+            case .nay, .abstain:
                 aye = false
-                conviction = model.conviction
+                conviction = voteAction.conviction()
             }
         }
 

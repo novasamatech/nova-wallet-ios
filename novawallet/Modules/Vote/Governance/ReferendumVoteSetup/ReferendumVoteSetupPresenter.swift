@@ -9,6 +9,7 @@ final class ReferendumVoteSetupPresenter {
 
     let chain: ChainModel
     let referendumIndex: ReferendumIdLocal
+    let supportsAbstainVoting: Bool
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
@@ -34,6 +35,7 @@ final class ReferendumVoteSetupPresenter {
         chain: ChainModel,
         referendumIndex: ReferendumIdLocal,
         initData: ReferendumVotingInitData,
+        supportsAbstainVoting: Bool,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
@@ -52,6 +54,7 @@ final class ReferendumVoteSetupPresenter {
         referendum = initData.referendum
         lockDiff = initData.lockDiff
         self.referendumIndex = referendumIndex
+        self.supportsAbstainVoting = supportsAbstainVoting
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
@@ -64,7 +67,11 @@ final class ReferendumVoteSetupPresenter {
 
         self.localizationManager = localizationManager
     }
+}
 
+// MARK: Private
+
+extension ReferendumVoteSetupPresenter {
     private func balanceMinusFee() -> Decimal {
         let balanceValue = assetBalance?.freeInPlank ?? 0
         let feeValue = fee?.amountForCurrentAccount ?? 0
@@ -126,6 +133,10 @@ final class ReferendumVoteSetupPresenter {
     private func provideReferendumIndex() {
         let referendumString = referendumFormatter.value(for: selectedLocale).string(from: referendumIndex as NSNumber)
         view?.didReceive(referendumNumber: referendumString ?? "")
+    }
+
+    private func provideAbstainAvailable() {
+        view?.didReceive(abstainAvailable: supportsAbstainVoting)
     }
 
     private func provideAmountInputViewModelIfRate() {
@@ -222,6 +233,7 @@ final class ReferendumVoteSetupPresenter {
     }
 
     private func updateView() {
+        provideAbstainAvailable()
         provideReferendumIndex()
         updateAvailableBalanceView()
         provideAmountInputViewModel()
@@ -250,7 +262,7 @@ final class ReferendumVoteSetupPresenter {
         let voteAction: ReferendumVoteAction = switch selectedAction {
         case .aye: .aye(model)
         case .nay: .nay(model)
-        case .abstain: .abstain(model)
+        case .abstain: .abstain(amount: model.amount)
         }
 
         return ReferendumNewVote(index: referendumIndex, voteAction: voteAction)
@@ -304,27 +316,28 @@ final class ReferendumVoteSetupPresenter {
             assetBalance: assetBalance,
             referendum: referendum,
             newVote: newVote,
+            selectedConviction: conviction,
             fee: fee,
             votes: votesResult?.value?.votes,
             assetInfo: assetInfo
+        )
+
+        let handlers = GovernanceVoteValidatingHandlers(
+            convictionUpdateClosure: { [weak self] in
+                self?.selectConvictionValue(0)
+                self?.provideConviction()
+            },
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            }
         )
 
         DataValidationRunner.validateVote(
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
-            convictionUpdateClosure: { [weak self] in
-                self?.selectConvictionValue(0)
-                self?.provideConviction()
-
-                self?.performValidation(
-                    for: voteAction,
-                    notifying: completionBlock
-                )
-            },
-            feeErrorClosure: { [weak self] in
-                self?.refreshFee()
-            }, successClosure: completionBlock
+            handlers: handlers,
+            successClosure: completionBlock
         )
     }
 

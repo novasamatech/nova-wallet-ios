@@ -199,6 +199,12 @@ extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
             for: .touchUpInside
         )
     }
+
+    func didReceive(abstainAvailable: Bool) {
+        abstainAvailable
+            ? rootView.showAbstain()
+            : rootView.hideAbstain()
+    }
 }
 
 extension ReferendumVoteSetupViewController: AmountInputAccessoryViewDelegate {

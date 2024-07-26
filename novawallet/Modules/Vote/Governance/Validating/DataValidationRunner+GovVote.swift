@@ -5,8 +5,7 @@ extension DataValidationRunner {
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceVoteValidatingParams,
         selectedLocale: Locale,
-        convictionUpdateClosure: @escaping () -> Void,
-        feeErrorClosure: @escaping () -> Void,
+        handlers: GovernanceVoteValidatingHandlers,
         successClosure: @escaping DataValidationRunnerCompletion
     ) {
         let runner = DataValidationRunner(validators: [
@@ -19,7 +18,7 @@ extension DataValidationRunner {
             factory.has(
                 fee: params.fee,
                 locale: selectedLocale,
-                onError: feeErrorClosure
+                onError: handlers.feeErrorClosure
             ),
             factory.enoughTokensForVotingAndFee(
                 params.assetBalance,
@@ -39,9 +38,10 @@ extension DataValidationRunner {
                 track: params.referendum?.trackId,
                 locale: selectedLocale
             ),
-            factory.dontNeedConvictionUpdate(
-                for: params.newVote,
-                convictionUpdateClosure: convictionUpdateClosure,
+            factory.voteMatchesConviction(
+                with: params.newVote,
+                selectedConviction: params.selectedConviction,
+                convictionUpdateClosure: handlers.convictionUpdateClosure,
                 locale: selectedLocale
             )
         ])

@@ -16,6 +16,10 @@ final class GovernanceSharedState {
     private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
 
+    var supportsAbstainVoting: Bool {
+        settings.settings.governanceType == .governanceV2
+    }
+
     init(
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
