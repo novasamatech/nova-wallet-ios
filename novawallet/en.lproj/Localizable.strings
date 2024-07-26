@@ -970,6 +970,7 @@
 "gov.referendum.description.fallback" = "Only the proposer can edit this description and the title. If you own proposer\'s account, visit Polkassembly and fill in information about your proposal";
 "gov.voters.nay" = "Nay votes";
 "gov.voters.aye" = "Aye votes";
+"gov.voters.abstain" = "Abstain votes";
 "gov.support.curve" = "Support curve";
 "gov.approve.curve" = "Approve curve";
 "gov.call.hash" = "Call hash";
