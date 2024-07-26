@@ -44,6 +44,7 @@ final class Gov2LocalMappingFactory {
             submitted: status.submitted,
             since: deciding.since,
             period: track.decisionPeriod,
+            confirmPeriod: track.confirmPeriod,
             confirmationUntil: deciding.confirming,
             deposit: deposit
         )
