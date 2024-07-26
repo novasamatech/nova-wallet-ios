@@ -69,8 +69,9 @@ final class ReferendumVotersInteractor {
 
     private func createAbstainsFetchWrapper() -> CompoundOperationWrapper<ReferendumVotersModel> {
         guard let votersLocalWrapperFactory else {
-            return .createWithError(NSError())
+            return .createWithResult(.init(voters: [], identites: []))
         }
+
         let voterWrapper = votersLocalWrapperFactory.createWrapper(
             for: .init(referendumId: referendumIndex, votersType: .abstains)
         )
