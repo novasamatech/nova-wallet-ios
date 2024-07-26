@@ -119,7 +119,7 @@ extension TimeInterval {
             return optDaysString ?? ""
         }
     }
-    
+
     func localizedDaysHoursOrTime(for locale: Locale) -> String? {
         let days = daysFromSeconds
 
