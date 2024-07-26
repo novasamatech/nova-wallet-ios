@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "귀하의 잔액";
 "common.max" = "최대";
 "crowdloan.custom.contrib.format" = "%@ (via %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "%@에서 보기";
 "import.json.unsupported.ethereum.crypto.message" = "Ethereum 암호화 네트워크에 Substrate 비밀이 있는 계정을 가져올 수 없습니다";
 "import.json.unsupported.substrate.crypto.message" = "Substrate 암호화 네트워크에 Ethereum 비밀이 있는 계정을 가져올 수 없습니다";
@@ -1727,3 +1725,7 @@
 "staking.setup.conflict.message" = "직접 Staking과 Nomination Pools를 동시에 사용할 수 없습니다";
 "nomination.pools.conflict.title" = "Pool 작업을 사용할 수 없습니다";
 "nomination.pools.conflict.message" = "더 이상 동일한 계정에서 직접 Staking과 Pool Staking을 동시에 사용할 수 없습니다. Pool Staking을 관리하려면 먼저 직접 Staking에서 토큰을 Unstake해야 합니다.";
+"gov.voters.abstain" = "기권 투표";
+"gov.vote.conviction.alert.title" = "확신도 업데이트";
+"gov.vote.conviction.alert.message" = "기권 투표는 0.1x 확신도로만 가능합니다. 0.1x 확신도로 투표하시겠습니까?";
+"gov.vote.conviction.hint.title" = "<font>기권</font> 시 확신도가 0.1x로 설정됩니다";
