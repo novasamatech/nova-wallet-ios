@@ -3,6 +3,7 @@ import WalletConnectSwiftV2
 import Starscream
 import Combine
 import CryptoSwift
+import Core
 
 protocol WalletConnectServiceDelegate: AnyObject {
     func walletConnect(service: WalletConnectServiceProtocol, proposal: Session.Proposal)
@@ -176,12 +177,6 @@ final class WalletConnectService {
 
         let socketFactory = DefaultSocketFactory(logger: logger)
 
-        Networking.configure(
-            groupIdentifier: SharedContainerGroup.name,
-            projectId: metadata.projectId,
-            socketFactory: socketFactory
-        )
-
         let relayClient = RelayClientFactory.create(
             relayHost: relayHost,
             projectId: metadata.projectId,
@@ -243,7 +238,7 @@ extension WalletConnectService: WalletConnectServiceProtocol {
             do {
                 switch proposalDecision {
                 case let .approve(proposal, namespaces):
-                    try await client.approve(proposalId: proposal.id, namespaces: namespaces)
+                    _ = try await client.approve(proposalId: proposal.id, namespaces: namespaces)
                 case let .reject(proposal):
                     try await client.rejectSession(proposalId: proposal.id, reason: .userRejected)
                 }
@@ -506,8 +501,20 @@ private final class DefaultSocketFactory: WebSocketFactory {
 }
 
 private struct DefaultCryptoProvider: CryptoProvider {
-    public func recoverPubKey(signature _: WalletConnectSwiftV2.EthereumSignature, message _: Data) throws -> Data {
-        throw CommonError.undefined
+    enum InternalError: Error {
+        case invalidSignatureOrMessage
+    }
+
+    public func recoverPubKey(signature: WalletConnectSwiftV2.EthereumSignature, message: Data) throws -> Data {
+        guard
+            let publicKey = SECP256K1.recoverPublicKey(
+                hash: message,
+                signature: signature.serialized
+            ) else {
+            throw InternalError.invalidSignatureOrMessage
+        }
+
+        return publicKey
     }
 
     public func keccak256(_ data: Data) -> Data {
