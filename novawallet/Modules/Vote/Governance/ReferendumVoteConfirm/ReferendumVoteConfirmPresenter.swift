@@ -2,6 +2,7 @@ import Foundation
 import BigInt
 import SoraFoundation
 
+// swiftlint:disable file_length
 final class ReferendumVoteConfirmPresenter {
     weak var view: ReferendumVoteConfirmViewProtocol?
     let wireframe: ReferendumVoteConfirmWireframeProtocol
@@ -74,7 +75,7 @@ final class ReferendumVoteConfirmPresenter {
         guard
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
             let decimalAmount = Decimal.fromSubstrateAmount(
-                vote.voteAction.amount,
+                vote.voteAction.amount(),
                 precision: precision
             ) else {
             return
@@ -127,14 +128,14 @@ final class ReferendumVoteConfirmPresenter {
 
     private func provideYourVoteViewModel() {
         let votesString = referendumStringsViewModelFactory.createVotes(
-            from: vote.voteAction.conviction.votes(for: vote.voteAction.amount) ?? 0,
+            from: vote.voteAction.conviction().votes(for: vote.voteAction.amount()) ?? 0,
             chain: chain,
             locale: selectedLocale
         )
 
         let convictionString = referendumStringsViewModelFactory.createVotesDetails(
-            from: vote.voteAction.amount,
-            conviction: vote.voteAction.conviction.decimalValue,
+            from: vote.voteAction.amount(),
+            conviction: vote.voteAction.conviction().decimalValue,
             chain: chain,
             locale: selectedLocale
         )
@@ -142,12 +143,16 @@ final class ReferendumVoteConfirmPresenter {
         let voteSideString: String
         let voteSideStyle: YourVoteView.Style
 
-        if vote.voteAction.isAye {
+        switch vote.voteAction {
+        case .aye:
             voteSideString = R.string.localizable.governanceAye(preferredLanguages: selectedLocale.rLanguages)
             voteSideStyle = .ayeInverse
-        } else {
+        case .nay:
             voteSideString = R.string.localizable.governanceNay(preferredLanguages: selectedLocale.rLanguages)
             voteSideStyle = .nayInverse
+        case .abstain:
+            voteSideString = R.string.localizable.governanceAbstain(preferredLanguages: selectedLocale.rLanguages)
+            voteSideStyle = .abstainInverse
         }
 
         let voteDescription = R.string.localizable.govYourVote(preferredLanguages: selectedLocale.rLanguages)
@@ -254,25 +259,30 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol
             assetBalance: assetBalance,
             referendum: referendum,
             newVote: vote,
+            selectedConviction: vote.voteAction.conviction(),
             fee: fee,
             votes: votesResult?.value?.votes,
             assetInfo: assetInfo
+        )
+
+        let handlers = GovernanceVoteValidatingHandlers(
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            }
         )
 
         DataValidationRunner.validateVote(
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
-            feeErrorClosure: { [weak self] in
-                self?.refreshFee()
-            }, successClosure: { [weak self] in
-                guard let strongSelf = self else {
+            handlers: handlers,
+            successClosure: { [weak self] in
+                guard let self else {
                     return
                 }
 
-                strongSelf.view?.didStartLoading()
-
-                strongSelf.interactor.submit(vote: strongSelf.vote.voteAction)
+                view?.didStartLoading()
+                interactor.submit(vote: vote.voteAction)
             }
         )
     }
