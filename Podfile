@@ -22,7 +22,7 @@ abstract_target 'novawalletAll' do
   pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.10'
   pod 'CDMarkdownKit', :git => 'https://github.com/nova-wallet/CDMarkdownKit.git', :tag => '2.5.2'
   pod 'web3swift', :git => 'https://github.com/web3swift-team/web3swift.git', :tag => '3.0.6'
-  pod 'WalletConnectSwiftV2', :git => 'https://github.com/WalletConnect/WalletConnectSwiftV2.git', :tag => '1.5.14'
+  pod 'WalletConnectSwiftV2', :git => 'https://github.com/novasamatech/WalletConnectSwiftV2.git', :tag => 'rc1.9.6'
   pod 'EthereumSignTypedDataUtil', :git => 'https://github.com/ERussel/EthereumSignTypedDataUtil.git', :tag => '0.1.3'
   pod 'SwiftAlgorithms', '~> 1.0.0'
   pod 'ZMarkupParser', '= 1.6.1'

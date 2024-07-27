@@ -7,4 +7,5 @@ enum WalletConnectMethod: String {
     case ethSendTransaction = "eth_sendTransaction"
     case ethPersonalSign = "personal_sign"
     case ethSignTypeData = "eth_signTypedData"
+    case ethSignTypeDataV4 = "eth_signTypedData_v4"
 }

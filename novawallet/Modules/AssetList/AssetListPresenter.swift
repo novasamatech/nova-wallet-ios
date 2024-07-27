@@ -531,8 +531,8 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
     func didReceiveWalletConnect(error: WalletConnectSessionsError) {
         switch error {
-        case .connectionFailed:
-            wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        case let .connectionFailed(internalError):
+            wireframe.presentWCConnectionError(from: view, error: internalError, locale: selectedLocale)
         case .sessionsFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryFetchWalletConnectSessionsCount()

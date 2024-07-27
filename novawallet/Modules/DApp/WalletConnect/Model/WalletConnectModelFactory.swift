@@ -70,8 +70,8 @@ enum WalletConnectModelFactory {
             let blockchains = accounts?.map(\.blockchain)
 
             let sessionNamespace = SessionNamespace(
-                chains: blockchains.map { Set($0) },
-                accounts: Set(accounts ?? []),
+                chains: blockchains,
+                accounts: accounts ?? [],
                 methods: proposalNamespace.methods,
                 events: proposalNamespace.events
             )
@@ -81,7 +81,7 @@ enum WalletConnectModelFactory {
     }
 
     private static func resolveChains(
-        from blockchains: Set<Blockchain>,
+        from blockchains: [Blockchain],
         chainsStore: ChainsStoreProtocol
     ) -> WalletConnectChainsResolution {
         let knownChainIds = chainsStore.availableChainIds()
@@ -135,14 +135,14 @@ extension WalletConnectModelFactory {
             let blockchains: Set<Blockchain>?
 
             if namespace1.chains != nil || namespace2.chains != nil {
-                blockchains = (namespace1.chains ?? []).union(namespace2.chains ?? [])
+                blockchains = Set(namespace1.chains ?? []).union(Set(namespace2.chains ?? []))
             } else {
                 blockchains = nil
             }
 
             return SessionNamespace(
-                chains: blockchains,
-                accounts: namespace1.accounts.union(namespace2.accounts),
+                chains: blockchains.map { Array($0) },
+                accounts: Array(Set(namespace1.accounts).union(Set(namespace2.accounts))),
                 methods: namespace1.methods.union(namespace2.methods),
                 events: namespace1.events.union(namespace2.events)
             )
