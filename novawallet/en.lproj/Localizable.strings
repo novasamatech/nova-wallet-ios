@@ -1726,6 +1726,6 @@
 "staking.setup.conflict.message" = "You cannot stake with Direct Staking and Nomination Pools at the same time";
 "nomination.pools.conflict.title" = "Pool operations are not available";
 "nomination.pools.conflict.message" = "You can no longer use both Direct Staking and Pool Staking from the same account. To manage your Pool  Staking you first need to unstake your tokens from Direct Staking.";
-"gov.vote.conviction.hint.title" = "Conviction will be set to 0.1x when Abstain";
+"gov.vote.conviction.hint.title" = "Conviction will be set to 0.1x when you vote Abstain";
 "gov.vote.conviction.alert.title" = "Conviction update";
 "gov.vote.conviction.alert.message" = "Abstain votes can only be done with 0.1x conviction. Vote with 0.1x conviction?";
