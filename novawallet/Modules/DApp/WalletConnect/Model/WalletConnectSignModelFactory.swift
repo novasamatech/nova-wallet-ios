@@ -240,7 +240,7 @@ extension WalletConnectSignModelFactory {
                 chain: chain,
                 params: params
             )
-        case .ethSignTypeData:
+        case .ethSignTypeData, .ethSignTypeDataV4:
             return try createSignTypedDataMessage(
                 for: wallet,
                 chain: chain,
@@ -263,7 +263,7 @@ extension WalletConnectSignModelFactory {
             return .ethereumSendTransaction(chain: .left(chain))
         case .ethSignTransaction:
             return .ethereumSignTransaction(chain: .left(chain))
-        case .ethPersonalSign, .ethSignTypeData:
+        case .ethPersonalSign, .ethSignTypeData, .ethSignTypeDataV4:
             return .ethereumBytes(chain: .left(chain))
         }
     }
@@ -278,7 +278,7 @@ extension WalletConnectSignModelFactory {
             )
 
             return AnyCodable(result)
-        case .ethSignTransaction, .ethSendTransaction, .ethPersonalSign, .ethSignTypeData:
+        case .ethSignTransaction, .ethSendTransaction, .ethPersonalSign, .ethSignTypeData, .ethSignTypeDataV4:
             let result = signature.toHex(includePrefix: true)
             return AnyCodable(result)
         }
