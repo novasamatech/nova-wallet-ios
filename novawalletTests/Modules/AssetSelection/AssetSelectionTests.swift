@@ -14,7 +14,7 @@ class AssetSelectionTests: XCTestCase {
         let chains = (0..<10).map { index in
             ChainModelGenerator.generateChain(
                 generatingAssets: assetsPerChain,
-                addressPrefix: UInt16(index),
+                addressPrefix: ChainModel.AddressPrefix(index),
                 hasStaking: true
             )
         }
