@@ -76,7 +76,7 @@ final class MetadataHashOperationFactory {
                 specVersion: runtimeVersion.specVersion,
                 specName: runtimeVersion.specName,
                 decimals: decimals,
-                base58Prefix: chain.addressPrefix,
+                base58Prefix: chain.addressPrefix.toSubstrateFormat(),
                 tokenSymbol: utilityAsset.symbol
             )
 

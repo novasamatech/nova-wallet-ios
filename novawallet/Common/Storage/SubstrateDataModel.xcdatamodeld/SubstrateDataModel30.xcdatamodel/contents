@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23D60" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CDAsset" representedClassName="CDAsset" syncable="YES" codeGenerationType="class">
         <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="buyProviders" optional="YES" attributeType="Binary"/>
@@ -46,7 +46,7 @@
     </entity>
     <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
         <attribute name="additional" optional="YES" attributeType="Binary"/>
-        <attribute name="addressPrefix" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="addressPrefix" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="connectionMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>

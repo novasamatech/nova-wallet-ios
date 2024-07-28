@@ -342,8 +342,16 @@ private extension CustomNetworkSetupFactory {
                 source: .user
             )
 
+            let addressPrefix: UInt64? = if let ss58Format = properties.ss58Format {
+                UInt64(ss58Format)
+            } else if let SS58Prefix = properties.SS58Prefix {
+                UInt64(SS58Prefix)
+            } else {
+                nil
+            }
+
             return chain
-                .byChanging(addressPrefix: properties.ss58Format ?? properties.SS58Prefix)
+                .byChanging(addressPrefix: addressPrefix)
                 .adding(asset)
         }
 
