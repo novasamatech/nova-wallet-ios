@@ -181,9 +181,10 @@ private extension NetworksListPresenter {
 
         chainIndexes = [:]
 
-        let chainsToIndex = if selectedNetworksType == .default {
+        let chainsToIndex = switch selectedNetworksType {
+        case .default:
             searched(from: sortedChains.defaultChains)
-        } else {
+        case .added:
             searched(from: sortedChains.addedChains)
         }
 
