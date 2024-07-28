@@ -22,22 +22,26 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
 
     func handle(
         callbackQueue: DispatchQueue?,
-        completion: @escaping (NotificationContentResult?) -> Void
+        completion: @escaping (PushNotificationHandleResult) -> Void
     ) {
         let settingsOperation = settingsRepository.fetchAllOperation(with: .init())
         let chainOperation = chainsRepository.fetchAllOperation(with: .init())
 
-        let contentWrapper: CompoundOperationWrapper<NotificationContentResult?> =
-            OperationCombiningService.compoundWrapper(
+        let contentWrapper: CompoundOperationWrapper<NotificationContentResult> =
+            OperationCombiningService.compoundNonOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)) {
                 let settings = try settingsOperation.extractNoCancellableResultData().first
                 let chains = try chainOperation.extractNoCancellableResultData()
+
                 guard
                     let chain = self.search(chainId: self.chainId, in: chains),
-                    chain.syncMode.enabled(),
                     let asset = chain.utilityAsset()
                 else {
-                    return nil
+                    throw PushNotificationsHandlerErrors.commonError
+                }
+
+                guard chain.syncMode.enabled() else {
+                    throw PushNotificationsHandlerErrors.chainDisabled
                 }
 
                 let priceOperation: BaseOperation<[PriceData]>
@@ -79,9 +83,11 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
         ) { result in
             switch result {
             case let .success(content):
-                completion(content)
-            case .failure:
-                completion(nil)
+                completion(.success(content))
+            case let .failure(error as PushNotificationsHandlerErrors) where error == .chainDisabled:
+                completion(.failure(.chainDisabled))
+            default:
+                completion(.failure(.commonError))
             }
         }
     }

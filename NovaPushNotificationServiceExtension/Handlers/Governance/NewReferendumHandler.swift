@@ -22,7 +22,7 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
 
     func handle(
         callbackQueue: DispatchQueue?,
-        completion: @escaping (NotificationContentResult?) -> Void
+        completion: @escaping (PushNotificationHandleResult) -> Void
     ) {
         let chainOperation = chainsRepository.fetchAllOperation(with: .init())
 
@@ -41,10 +41,14 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                     let chain = self.search(
                         chainId: self.chainId,
                         in: chains
-                    ),
-                    chain.syncMode.enabled()
+                    )
                 else {
-                    completion(nil)
+                    completion(.failure(.commonError))
+                    return
+                }
+
+                guard chain.syncMode.enabled() else {
+                    completion(.failure(.chainDisabled))
                     return
                 }
 
@@ -57,9 +61,14 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                     self.payload.referendumNumber,
                     preferredLanguages: self.locale.rLanguages
                 )
-                completion(.init(title: title, subtitle: subtitle))
+
+                let notificationContentResult: NotificationContentResult = .init(
+                    title: title,
+                    subtitle: subtitle
+                )
+                completion(.success(notificationContentResult))
             case .failure:
-                completion(nil)
+                completion(.failure(.commonError))
             }
         }
     }

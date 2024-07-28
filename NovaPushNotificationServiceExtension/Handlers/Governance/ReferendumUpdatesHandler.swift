@@ -21,7 +21,7 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
 
     func handle(
         callbackQueue: DispatchQueue?,
-        completion: @escaping (NotificationContentResult?) -> Void
+        completion: @escaping (PushNotificationHandleResult) -> Void
     ) {
         let chainOperation = chainsRepository.fetchAllOperation(with: .init())
 
@@ -36,17 +36,21 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
             switch result {
             case let .success(chains):
                 guard
-                    let chain = self.search(chainId: self.chainId, in: chains),
-                    chain.syncMode.enabled()
+                    let chain = self.search(chainId: self.chainId, in: chains)
                 else {
-                    completion(nil)
+                    completion(.failure(.commonError))
+                    return
+                }
+
+                guard chain.syncMode.enabled() else {
+                    completion(.failure(.chainDisabled))
                     return
                 }
 
                 let content = self.content(from: chain)
-                completion(content)
+                completion(.success(content))
             case .failure:
-                completion(nil)
+                completion(.failure(.commonError))
             }
         }
     }

@@ -1,10 +1,12 @@
 import Foundation
 import SoraFoundation
 
+typealias PushNotificationHandleResult = Result<NotificationContentResult, PushNotificationsHandlerErrors>
+
 protocol PushNotificationHandler {
     func handle(
         callbackQueue: DispatchQueue?,
-        completion: @escaping (NotificationContentResult?) -> Void
+        completion: @escaping (PushNotificationHandleResult) -> Void
     )
 }
 
@@ -51,4 +53,11 @@ final class PushNotificationHandlersFactory: PushNotificationHandlersFactoryProt
             )
         }
     }
+}
+
+// MARK: Errors
+
+enum PushNotificationsHandlerErrors: Error {
+    case chainDisabled
+    case commonError
 }

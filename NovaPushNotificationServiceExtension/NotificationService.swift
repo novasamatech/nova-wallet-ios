@@ -33,10 +33,13 @@ final class NotificationService: UNNotificationServiceExtension {
         let factory = PushNotificationHandlersFactory()
         handler = factory.createHandler(message: message)
 
-        handler?.handle(callbackQueue: nil) { notification in
-            if let notification = notification {
+        handler?.handle(callbackQueue: nil) { result in
+            switch result {
+            case let .success(notification):
                 contentHandler(notification.toUserNotificationContent(with: bestAttemptContent))
-            } else {
+            case let .failure(error) where error == .chainDisabled:
+                return
+            default:
                 let unsupported = NotificationContentResult.createUnsupportedResult(
                     for: LocalizationManager.shared.selectedLocale
                 )
