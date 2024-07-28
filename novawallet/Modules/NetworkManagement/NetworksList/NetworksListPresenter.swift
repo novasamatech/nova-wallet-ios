@@ -11,6 +11,7 @@ final class NetworksListPresenter {
     private var connectionStates: [ChainModel.Id: ConnectionState] = [:]
     private var chainIndexes: [ChainModel.Id: Int] = [:]
 
+    private var searchQuery: String?
     private var selectedNetworksType: NetworksType = .default
     private var sortedChains: SortedChains?
 
@@ -37,9 +38,9 @@ extension NetworksListPresenter: NetworksListPresenterProtocol {
 
         let chainModel = switch selectedNetworksType {
         case .added:
-            sortedChains.addedChains[index]
+            searched(from: sortedChains.addedChains)[index]
         case .default:
-            sortedChains.defaultChains[index]
+            searched(from: sortedChains.defaultChains)[index]
         }
 
         wireframe.showNetworkDetails(from: view, with: chainModel)
@@ -52,7 +53,14 @@ extension NetworksListPresenter: NetworksListPresenterProtocol {
 
         selectedNetworksType = segment
         indexChains()
-        provideViewModels(animated: false)
+        provideViewModels()
+    }
+
+    func search(with query: String?) {
+        searchQuery = query
+
+        indexChains()
+        provideViewModels()
     }
 
     func setup() {
@@ -97,19 +105,19 @@ extension NetworksListPresenter: NetworksListInteractorOutputProtocol {
 // MARK: Private
 
 private extension NetworksListPresenter {
-    func provideViewModels(animated _: Bool = true) {
+    func provideViewModels() {
         guard let sortedChains else { return }
 
         let viewModel = switch selectedNetworksType {
         case .default:
             viewModelFactory.createDefaultViewModel(
-                for: sortedChains.defaultChains,
+                for: searched(from: sortedChains.defaultChains),
                 indexes: chainIndexes,
                 with: connectionStates
             )
         case .added:
             viewModelFactory.createAddedViewModel(
-                for: sortedChains.addedChains,
+                for: searched(from: sortedChains.addedChains),
                 indexes: chainIndexes,
                 with: connectionStates
             )
@@ -133,6 +141,16 @@ private extension NetworksListPresenter {
         )
 
         view?.updateNetworks(with: viewModel)
+    }
+
+    func searched(from chains: [ChainModel]) -> [ChainModel] {
+        let searchedChains: [ChainModel] = if let searchQuery, !searchQuery.isEmpty {
+            chains.filter { $0.name.lowercased().contains(substring: searchQuery.lowercased()) }
+        } else {
+            chains
+        }
+
+        return searchedChains
     }
 
     func sorted(chains: [ChainModel.Id: ChainModel]) -> SortedChains {
@@ -164,9 +182,9 @@ private extension NetworksListPresenter {
         chainIndexes = [:]
 
         let chainsToIndex = if selectedNetworksType == .default {
-            sortedChains.defaultChains
+            searched(from: sortedChains.defaultChains)
         } else {
-            sortedChains.addedChains
+            searched(from: sortedChains.addedChains)
         }
 
         chainsToIndex.enumerated().forEach { index, chain in
