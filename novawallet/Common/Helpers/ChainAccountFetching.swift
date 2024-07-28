@@ -2,7 +2,7 @@ import Foundation
 
 struct ChainAccountRequest {
     let chainId: ChainModel.Id
-    let addressPrefix: UInt64
+    let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let supportsGenericLedger: Bool
 }
@@ -14,7 +14,7 @@ struct ChainAccountResponse {
     let publicKey: Data
     let name: String
     let cryptoType: MultiassetCryptoType
-    let addressPrefix: UInt64
+    let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let isChainAccount: Bool
     let type: MetaAccountModelType
