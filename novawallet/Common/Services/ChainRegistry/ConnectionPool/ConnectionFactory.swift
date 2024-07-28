@@ -31,8 +31,6 @@ final class ConnectionFactory {
     let logger: SDKLoggerProtocol
     let operationQueue: OperationQueue
 
-    let tlsSupportProvider = ConnectionTLSSupportProvider()
-
     init(logger: SDKLoggerProtocol, operationQueue: OperationQueue) {
         self.logger = logger
         self.operationQueue = operationQueue
@@ -81,8 +79,6 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         let newUrlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
         let newUrls = newUrlModels.map(\.url)
 
-        tlsSupportProvider.add(support: newUrlModels)
-
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
         }
@@ -124,8 +120,6 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         for chain: ChainNodeConnectable,
         delegate: WebSocketEngineDelegate?
     ) throws -> ChainConnection {
-        tlsSupportProvider.add(support: urlModels)
-
         let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
 
@@ -134,7 +128,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         guard
             let connection = WebSocketEngine(
                 urls: urls,
-                connectionFactory: ConnectionTransportFactory(tlsSupportProvider: tlsSupportProvider),
+                connectionFactory: ConnectionTransportFactory(),
                 customNodeSwitcher: nodeSwitcher,
                 healthCheckMethod: healthCheckMethod,
                 name: chain.name,
@@ -160,7 +154,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
             return nil
         }
 
-        return ConnectionCreationParams(url: url, supportsTLS12: node.supportsTls12)
+        return ConnectionCreationParams(url: url)
     }
 
     private func extractNodeUrls(
