@@ -4487,7 +4487,6 @@
 		B8FD43D2A80BD41D5F6FE14E /* GovernanceDelegateSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 123EC3706DD70AC132ECEACB /* GovernanceDelegateSetupProtocols.swift */; };
 		B9023C7F525D1A43372850CC /* GovernanceNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D210D083060D19AFEB10F9 /* GovernanceNotificationsViewController.swift */; };
 		B959E423181234E82B0695DF /* NPoolsRedeemInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A084C41472C2E504575C709B /* NPoolsRedeemInteractor.swift */; };
-		B9C18D7AA1BF2B1F78C7FD4D /* GenericLedgerAccountSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640954A2D715DCBC94DE609 /* GenericLedgerAccountSelectionTests.swift */; };
 		BA7AEE82627CFC0AFD69B299 /* RecommendedValidatorListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2580363AC3E4A9CD40256E /* RecommendedValidatorListPresenter.swift */; };
 		BAEBD54874957F0C78D01BE6 /* StakingDashboardInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879470FAF62A152E52DF4845 /* StakingDashboardInteractor.swift */; };
 		BAF044619C83E31EEEDA0BCB /* GovernanceRevokeDelegationConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92381CBE193B3317F477D377 /* GovernanceRevokeDelegationConfirmViewController.swift */; };
@@ -6166,7 +6165,6 @@
 		6606F6FCB40D5EDA2CDFA84F /* GovernanceRemoveVotesConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRemoveVotesConfirmViewController.swift; sourceTree = "<group>"; };
 		661356CFE77B978610397907 /* OperationDetailsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OperationDetailsInteractor.swift; sourceTree = "<group>"; };
 		663DD0E9F1F758C06E7EC829 /* StakingTypeInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingTypeInteractor.swift; sourceTree = "<group>"; };
-		6640954A2D715DCBC94DE609 /* GenericLedgerAccountSelectionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountSelectionTests.swift; sourceTree = "<group>"; };
 		6654DEA68D7ED47AE8E52206 /* StakingSelectPoolWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolWireframe.swift; sourceTree = "<group>"; };
 		667D74094E813EA3C53EE897 /* AssetDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetDetailsPresenter.swift; sourceTree = "<group>"; };
 		6708EF7D7F70868969EFADA9 /* StakingSetupAmountViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSetupAmountViewController.swift; sourceTree = "<group>"; };
@@ -18301,7 +18299,6 @@
 				84B7C705289BFA79001A3566 /* AccountManagement */,
 				84B7C708289BFA79001A3566 /* WalletList */,
 				84B7C70A289BFA79001A3566 /* ControllerAccount */,
-				FE53087AAC124FBCCA954870 /* GenericLedgerAccountSelection */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -22921,14 +22918,6 @@
 				95E4AF529B896F7E58671A74 /* GovernanceUnlockSetupViewFactory.swift */,
 			);
 			path = GovernanceUnlockSetup;
-			sourceTree = "<group>";
-		};
-		FE53087AAC124FBCCA954870 /* GenericLedgerAccountSelection */ = {
-			isa = PBXGroup;
-			children = (
-				6640954A2D715DCBC94DE609 /* GenericLedgerAccountSelectionTests.swift */,
-			);
-			path = GenericLedgerAccountSelection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -28346,7 +28335,6 @@
 				84B7C748289BFA79001A3566 /* WalletListTests.swift in Sources */,
 				84B7C720289BFA79001A3566 /* ReferralCrowdloanTests.swift in Sources */,
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
-				B9C18D7AA1BF2B1F78C7FD4D /* GenericLedgerAccountSelectionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
