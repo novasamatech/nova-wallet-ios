@@ -317,7 +317,11 @@ final class ReferendumDetailsInteractor {
         }
 
         let wrapper = votersLocalWrapperFactory.createWrapper(
-            for: .init(referendumId: referendum.index, votersType: .abstains)
+            for: .init(
+                referendumId: referendum.index,
+                votersType: .abstains,
+                includeDelegators: false
+            )
         )
 
         abstainsFetchCancellable.store(call: wrapper)

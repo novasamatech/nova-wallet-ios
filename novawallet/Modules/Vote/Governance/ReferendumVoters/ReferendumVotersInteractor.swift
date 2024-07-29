@@ -73,7 +73,11 @@ final class ReferendumVotersInteractor {
         }
 
         let voterWrapper = votersLocalWrapperFactory.createWrapper(
-            for: .init(referendumId: referendumIndex, votersType: .abstains)
+            for: .init(
+                referendumId: referendumIndex,
+                votersType: .abstains,
+                includeDelegators: false
+            )
         )
 
         let mappingOperation = ClosureOperation<ReferendumVotersModel> { [weak self] in

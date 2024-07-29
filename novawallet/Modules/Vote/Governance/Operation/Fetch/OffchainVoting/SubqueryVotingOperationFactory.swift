@@ -62,7 +62,7 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
         """
     }
 
-    private func prepareReferendumVotersQuery(referendumId: ReferendumIdLocal, isAye: Bool) -> String {
+    private func prepareReferendumVotersWithDelegatorsQuery(referendumId: ReferendumIdLocal, isAye: Bool) -> String {
         """
         {
             castingVotings (filter: {
@@ -91,7 +91,33 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
         """
     }
 
-    private func prepareSplitAbstainVotesQuery(referendumId: ReferendumIdLocal) -> String {
+    private func prepareReferendumVotersQuery(
+        referendumId: ReferendumIdLocal,
+        isAye: Bool
+    ) -> String {
+        """
+        {
+            castingVotings (filter: {
+                referendumId: {equalTo: "\(referendumId)"},
+                or: [
+                      {splitVote: { isNull: false }},
+                      {splitAbstainVote: {isNull: false}},
+                      {standardVote: { contains: { aye: \(isAye)}}}
+                    ]
+            }) {
+                nodes {
+                  referendumId
+                  standardVote
+                  splitVote
+                  splitAbstainVote
+                  voter
+                }
+            }
+        }
+        """
+    }
+
+    private func prepareSplitAbstainVotesWithDelegatorsQuery(referendumId: ReferendumIdLocal) -> String {
         """
         {
             castingVotings(
@@ -110,6 +136,25 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
                             vote
                         }
                     }
+                }
+            }
+        }
+        """
+    }
+
+    private func prepareSplitAbstainVotesQuery(referendumId: ReferendumIdLocal) -> String {
+        """
+        {
+            castingVotings(
+                filter: {
+                    referendumId: { equalTo: "\(referendumId)" },
+                    splitAbstainVote: { isNull: false }
+                }
+            ) {
+                nodes {
+                    voter
+                    referendumId
+                    splitAbstainVote
                 }
             }
         }
@@ -174,6 +219,50 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
 
     func createReferendumVotesFetchOperation(
         referendumId: ReferendumIdLocal,
+        votersType: ReferendumVotersType,
+        includeDelegators: Bool
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
+        let operation = if includeDelegators {
+            createVotesWithDelegatorsFetchOperation(
+                referendumId: referendumId,
+                votersType: votersType
+            )
+        } else {
+            createVotesFetchOperation(
+                referendumId: referendumId,
+                votersType: votersType
+            )
+        }
+
+        return operation
+    }
+
+    private func createVotesWithDelegatorsFetchOperation(
+        referendumId: ReferendumIdLocal,
+        votersType: ReferendumVotersType
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
+        let query = switch votersType {
+        case .ayes:
+            prepareReferendumVotersWithDelegatorsQuery(referendumId: referendumId, isAye: true)
+        case .nays:
+            prepareReferendumVotersWithDelegatorsQuery(referendumId: referendumId, isAye: false)
+        case .abstains:
+            prepareSplitAbstainVotesWithDelegatorsQuery(referendumId: referendumId)
+        }
+
+        let operation = createOperation(
+            for: query
+        ) { (response: SubqueryVotingResponse.ReferendumVotesResponse) -> [ReferendumVoterLocal] in
+            response.castingVotings.nodes.compactMap { node in
+                ReferendumVoterLocal(from: node)
+            }
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    private func createVotesFetchOperation(
+        referendumId: ReferendumIdLocal,
         votersType: ReferendumVotersType
     ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
         let query = switch votersType {
@@ -187,7 +276,7 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
 
         let operation = createOperation(
             for: query
-        ) { (response: SubqueryVotingResponse.ReferendumVotesResponse) -> [ReferendumVoterLocal] in
+        ) { (response: SubqueryVotingResponse.CastingResponse) -> [ReferendumVoterLocal] in
             response.castingVotings.nodes.compactMap { node in
                 ReferendumVoterLocal(from: node)
             }

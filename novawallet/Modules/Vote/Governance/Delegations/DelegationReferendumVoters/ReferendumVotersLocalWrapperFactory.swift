@@ -7,6 +7,7 @@ typealias ReferendumVoterLocals = GovernanceDelegationAdditions<[ReferendumVoter
 struct ReferendumVotersFactoryParams {
     let referendumId: ReferendumIdLocal
     let votersType: ReferendumVotersType
+    let includeDelegators: Bool
 }
 
 protocol ReferendumVotersLocalWrapperFactoryProtocol {
@@ -56,7 +57,8 @@ final class ReferendumVotersLocalWrapperFactory: GovOffchainModelWrapperFactory<
     ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
         operationFactory.createReferendumVotesFetchOperation(
             referendumId: params.referendumId,
-            votersType: params.votersType
+            votersType: params.votersType,
+            includeDelegators: params.includeDelegators
         )
     }
 }

@@ -15,6 +15,7 @@ protocol GovernanceOffchainVotingFactoryProtocol {
 
     func createReferendumVotesFetchOperation(
         referendumId: ReferendumIdLocal,
-        votersType: ReferendumVotersType
+        votersType: ReferendumVotersType,
+        includeDelegators: Bool
     ) -> CompoundOperationWrapper<[ReferendumVoterLocal]>
 }
