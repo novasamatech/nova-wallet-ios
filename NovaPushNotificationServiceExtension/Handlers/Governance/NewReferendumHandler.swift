@@ -32,23 +32,24 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
             backingCallIn: callStore,
             runningCallbackIn: callbackQueue
         ) { [weak self] result in
-            guard let self = self else {
+            guard let self else {
                 return
             }
+
             switch result {
             case let .success(chains):
                 guard
-                    let chain = self.search(
-                        chainId: self.chainId,
+                    let chain = search(
+                        chainId: chainId,
                         in: chains
                     )
                 else {
-                    completion(.failure(.commonError))
+                    completion(.original(.chainNotFound(chainId: chainId)))
                     return
                 }
 
                 guard chain.syncMode.enabled() else {
-                    completion(.failure(.chainDisabled))
+                    completion(.filteredOut)
                     return
                 }
 
@@ -66,9 +67,9 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                     title: title,
                     subtitle: subtitle
                 )
-                completion(.success(notificationContentResult))
-            case .failure:
-                completion(.failure(.commonError))
+                completion(.modified(notificationContentResult))
+            case let .failure(error):
+                completion(.original(.internalError(error: error)))
             }
         }
     }

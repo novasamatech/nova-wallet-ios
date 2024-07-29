@@ -29,15 +29,21 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
 
         let contentWrapper: CompoundOperationWrapper<NotificationContentResult> =
             OperationCombiningService.compoundNonOptionalWrapper(
-                operationManager: OperationManager(operationQueue: operationQueue)) {
+                operationManager: OperationManager(operationQueue: operationQueue)
+            ) { [weak self] in
+                guard let self else {
+                    throw PushNotificationsHandlerErrors.undefined
+                }
+
                 let settings = try settingsOperation.extractNoCancellableResultData().first
                 let chains = try chainOperation.extractNoCancellableResultData()
 
-                guard
-                    let chain = self.search(chainId: self.chainId, in: chains),
-                    let asset = chain.utilityAsset()
-                else {
-                    throw PushNotificationsHandlerErrors.commonError
+                guard let chain = self.search(chainId: chainId, in: chains) else {
+                    throw PushNotificationsHandlerErrors.chainNotFound(chainId: chainId)
+                }
+
+                guard let asset = chain.utilityAsset() else {
+                    throw PushNotificationsHandlerErrors.assetNotFound(assetId: chainId)
                 }
 
                 guard chain.syncMode.enabled() else {
@@ -45,9 +51,10 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
                 }
 
                 let priceOperation: BaseOperation<[PriceData]>
-                if let priceId = asset.priceId,
-                   let currency = self.currencyManager(operationQueue: self.operationQueue)?.selectedCurrency {
-                    priceOperation = self.priceRepository(for: priceId, currencyId: currency.id).fetchAllOperation(with: .init())
+                if
+                    let priceId = asset.priceId,
+                    let currency = currencyManager(operationQueue: self.operationQueue)?.selectedCurrency {
+                    priceOperation = priceRepository(for: priceId, currencyId: currency.id).fetchAllOperation(with: .init())
                 } else {
                     priceOperation = .createWithResult([])
                 }
@@ -57,6 +64,7 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
                 let mapOperaion = ClosureOperation {
                     let price = try priceOperation.extractNoCancellableResultData().first
                     let metaAccounts = try fetchMetaAccountsOperation.extractNoCancellableResultData()
+
                     return self.updatingContent(
                         wallets: settings?.wallets ?? [],
                         metaAccounts: metaAccounts,
@@ -83,11 +91,13 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
         ) { result in
             switch result {
             case let .success(content):
-                completion(.success(content))
+                completion(.modified(content))
             case let .failure(error as PushNotificationsHandlerErrors) where error == .chainDisabled:
-                completion(.failure(.chainDisabled))
-            default:
-                completion(.failure(.commonError))
+                completion(.filteredOut)
+            case let .failure(error as PushNotificationsHandlerErrors):
+                completion(.original(error))
+            case let .failure(error):
+                completion(.original(.internalError(error: error)))
             }
         }
     }

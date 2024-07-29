@@ -30,27 +30,25 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
             inOperationQueue: operationQueue,
             runningCallbackIn: callbackQueue
         ) { [weak self] result in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             switch result {
             case let .success(chains):
-                guard
-                    let chain = self.search(chainId: self.chainId, in: chains)
-                else {
-                    completion(.failure(.commonError))
+                guard let chain = search(chainId: chainId, in: chains) else {
+                    completion(.original(.chainNotFound(chainId: chainId)))
                     return
                 }
 
                 guard chain.syncMode.enabled() else {
-                    completion(.failure(.chainDisabled))
+                    completion(.filteredOut)
                     return
                 }
 
                 let content = self.content(from: chain)
-                completion(.success(content))
-            case .failure:
-                completion(.failure(.commonError))
+                completion(.modified(content))
+            case let .failure(error):
+                completion(.original(.internalError(error: error)))
             }
         }
     }

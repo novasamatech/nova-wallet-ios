@@ -36,7 +36,7 @@ final class NewReleaseHandler: PushNotificationHandler {
                 subtitle: subtitle
             )
 
-            completion(.success(notificationConentResult))
+            completion(.modified(notificationConentResult))
         }
     }
 }

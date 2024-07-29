@@ -63,6 +63,7 @@ abstract_target 'novawalletAll' do
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
     pod 'Sourcery', '~> 1.4'
     pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.2.1'
+    pod 'SwiftyBeaver'
   end
 
 
