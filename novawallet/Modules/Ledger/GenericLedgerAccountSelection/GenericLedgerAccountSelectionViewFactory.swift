@@ -1,16 +1,27 @@
 import Foundation
 import SubstrateSdk
+import SoraFoundation
 
 struct GenericLedgerAccountSelectionViewFactory {
     static func createView(
         application: GenericLedgerSubstrateApplicationProtocol,
         device: LedgerDeviceProtocol,
-        flow _: WalletCreationFlow
+        flow: WalletCreationFlow
     ) -> GenericLedgerAccountSelectionViewProtocol? {
         let interactor = createInteractor(application: application, device: device)
-        let wireframe = GenericLedgerAccountSelectionWireframe()
+        let wireframe = GenericLedgerAccountSelectionWireframe(
+            flow: flow,
+            application: application,
+            device: device
+        )
 
-        let presenter = GenericLedgerAccountSelectionPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = GenericLedgerAccountSelectionPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            assetTokenFormatter: AssetBalanceFormatterFactory(),
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
 
         let view = GenericLedgerAccountSelectionController(presenter: presenter)
 

@@ -11,7 +11,10 @@ final class GenericLedgerAccountSelectionViewLayout: ScrollableContainerLayoutVi
 
     let loadMoreView: LoadableActionView = .create { view in
         view.actionButton.applySecondaryDefaultStyle()
+        view.actionLoadingView.applyDisableButtonStyle()
     }
+
+    var loadMoreButton: TriangularedButton { loadMoreView.actionButton }
 
     func clearCells() {
         cells.forEach { $0.removeFromSuperview() }
@@ -20,6 +23,7 @@ final class GenericLedgerAccountSelectionViewLayout: ScrollableContainerLayoutVi
 
     func addCell() -> LedgerAccountStackCell {
         let cell = LedgerAccountStackCell()
+        cell.contentInsets = UIEdgeInsets(top: 5.0, left: 0, bottom: 5.0, right: 0)
 
         if let lastCell = cells.last {
             containerView.stackView.setCustomSpacing(0.0, after: lastCell)

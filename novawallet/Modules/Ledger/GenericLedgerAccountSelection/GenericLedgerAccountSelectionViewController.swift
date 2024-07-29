@@ -9,8 +9,8 @@ final class GenericLedgerAccountSelectionController: UIViewController, ViewHolde
     init(presenter: GenericLedgerAccountSelectionPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
-        
-        self.localizationManager = localizationManager
+
+        localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -25,17 +25,65 @@ final class GenericLedgerAccountSelectionController: UIViewController, ViewHolde
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
-        
+
         presenter.setup()
     }
-    
+
+    private func setupHandlers() {
+        rootView.loadMoreButton.addTarget(self, action: #selector(actionLoadNext), for: .touchUpInside)
+    }
+
     private func setupLocalization() {
-        
+        rootView.titleLabel.text = R.string.localizable.ledgerAccountConfirmTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.loadMoreButton.setTitle(
+            R.string.localizable.commonLoadMoreAccounts(preferredLanguages: selectedLocale.rLanguages)
+        )
+    }
+
+    @objc private func actionLoadNext() {
+        presenter.loadNext()
+    }
+
+    @objc private func actionCell(_ cell: UIControl) {
+        guard
+            let accountCell = cell as? LedgerAccountStackCell,
+            let index = rootView.cells.firstIndex(of: accountCell) else {
+            return
+        }
+
+        presenter.selectAccount(at: index)
     }
 }
 
-extension GenericLedgerAccountSelectionController: GenericLedgerAccountSelectionViewProtocol {}
+extension GenericLedgerAccountSelectionController: GenericLedgerAccountSelectionViewProtocol {
+    func didClearAccounts() {
+        rootView.clearCells()
+    }
+
+    func didAddAccount(viewModel: LedgerAccountViewModel) {
+        let cell = rootView.addCell()
+        cell.bind(viewModel: viewModel)
+
+        cell.addTarget(self, action: #selector(actionCell(_:)), for: .touchUpInside)
+    }
+
+    func didReceive(networkViewModel: NetworkViewModel) {
+        rootView.selectableNetworkView.bind(viewModel: networkViewModel)
+    }
+
+    func didStartLoading() {
+        rootView.loadMoreView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.loadMoreView.stopLoading()
+    }
+}
 
 extension GenericLedgerAccountSelectionController: Localizable {
     func applyLocalization() {

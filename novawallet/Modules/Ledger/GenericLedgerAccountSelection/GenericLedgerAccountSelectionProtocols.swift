@@ -1,9 +1,17 @@
 import Operation_iOS
 
-protocol GenericLedgerAccountSelectionViewProtocol: AnyObject {}
+protocol GenericLedgerAccountSelectionViewProtocol: ControllerBackedProtocol {
+    func didClearAccounts()
+    func didAddAccount(viewModel: LedgerAccountViewModel)
+    func didReceive(networkViewModel: NetworkViewModel)
+    func didStartLoading()
+    func didStopLoading()
+}
 
 protocol GenericLedgerAccountSelectionPresenterProtocol: AnyObject {
     func setup()
+    func selectAccount(at index: Int)
+    func loadNext()
 }
 
 protocol GenericLedgerAccountSelectionInteractorInputProtocol: AnyObject {
@@ -14,11 +22,13 @@ protocol GenericLedgerAccountSelectionInteractorInputProtocol: AnyObject {
 protocol GenericLedgerAccountSelectionInteractorOutputProtocol: AnyObject {
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>])
     func didReceive(accountBalance: LedgerAccountAmount, at index: UInt32)
-    func didReceive(error: GenericLedgerAccountSelectionInteractorError)
+    func didReceive(error: GenericLedgerAccountInteractorError)
 }
 
-protocol GenericLedgerAccountSelectionWireframeProtocol: AnyObject {}
+protocol GenericLedgerAccountSelectionWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+    func showWalletCreate(from view: GenericLedgerAccountSelectionViewProtocol?, index: UInt32)
+}
 
-enum GenericLedgerAccountSelectionInteractorError: Error {
+enum GenericLedgerAccountInteractorError: Error {
     case accountBalanceFetch(Error)
 }
