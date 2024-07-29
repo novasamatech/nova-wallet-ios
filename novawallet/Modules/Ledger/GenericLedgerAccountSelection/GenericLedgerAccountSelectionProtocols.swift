@@ -3,7 +3,6 @@ import Operation_iOS
 protocol GenericLedgerAccountSelectionViewProtocol: ControllerBackedProtocol {
     func didClearAccounts()
     func didAddAccount(viewModel: LedgerAccountViewModel)
-    func didReceive(networkViewModel: NetworkViewModel)
     func didStartLoading()
     func didStopLoading()
 }

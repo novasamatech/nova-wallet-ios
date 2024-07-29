@@ -2,10 +2,9 @@ import UIKit
 
 final class GenericLedgerAccountSelectionViewLayout: ScrollableContainerLayoutView {
     let titleLabel: UILabel = .create { label in
+        label.numberOfLines = 0
         label.apply(style: .boldTitle3Primary)
     }
-
-    let selectableNetworkView = AssetListChainControlView()
 
     private(set) var cells: [LedgerAccountStackCell] = []
 
@@ -40,14 +39,6 @@ final class GenericLedgerAccountSelectionViewLayout: ScrollableContainerLayoutVi
         super.setupLayout()
 
         addArrangedSubview(titleLabel, spacingAfter: 16)
-
-        let chainContainerView = UIView.hStack([selectableNetworkView, UIView.spacer()])
-
-        addArrangedSubview(chainContainerView, spacingAfter: 16)
-
-        chainContainerView.snp.makeConstraints { make in
-            make.height.equalTo(24)
-        }
 
         addArrangedSubview(loadMoreView)
         loadMoreView.snp.makeConstraints { make in

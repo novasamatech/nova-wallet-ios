@@ -47,8 +47,6 @@ final class GenericLedgerAccountSelectionInteractor {
         runtimeProvider: RuntimeProviderProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<LedgerAccountAmount> {
-        let chain = chainAsset.chain
-
         let queryFactory = WalletRemoteQueryWrapperFactory(
             requestFactory: requestFactory,
             assetInfoOperationFactory: AssetStorageInfoOperationFactory(
@@ -63,7 +61,7 @@ final class GenericLedgerAccountSelectionInteractor {
         let accountFetchWrapper = ledgerApplication.getAccountWrapper(
             for: deviceId,
             index: index,
-            addressPrefix: chain.addressPrefix,
+            addressPrefix: SubstrateConstants.genericAddressPrefix,
             displayVerificationDialog: false
         )
 
@@ -72,7 +70,7 @@ final class GenericLedgerAccountSelectionInteractor {
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             let response = try accountFetchWrapper.targetOperation.extractNoCancellableResultData()
-            let accountId = try response.account.address.toAccountId(using: chain.chainFormat)
+            let accountId = try response.account.address.toAccountId()
 
             return queryFactory.queryBalance(for: accountId, chainAsset: chainAsset)
         }

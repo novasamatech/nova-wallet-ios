@@ -17,7 +17,6 @@ final class GenericLedgerAccountSelectionPresenter {
     private var accounts: [LedgerAccountAmount] = []
 
     private lazy var iconGenerator = PolkadotIconGenerator()
-    private lazy var networkViewModelFactory = NetworkViewModelFactory()
 
     init(
         interactor: GenericLedgerAccountSelectionInteractorInputProtocol,
@@ -68,15 +67,6 @@ final class GenericLedgerAccountSelectionPresenter {
         view?.didAddAccount(viewModel: viewModel)
     }
 
-    private func provideNetworkViewModel() {
-        guard let selectedChainAsset else {
-            return
-        }
-
-        let networkViewModel = networkViewModelFactory.createViewModel(from: selectedChainAsset.chain)
-        view?.didReceive(networkViewModel: networkViewModel)
-    }
-
     private func shouldSwitchSelectedAsset() -> Bool {
         guard let selectedChainAsset, let chain = chains[selectedChainAsset.chain.chainId] else {
             return true
@@ -114,8 +104,6 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionI
 
             selectedChainAsset = availableChainAssets.first
             accounts = []
-
-            provideNetworkViewModel()
 
             performLoadNext()
         }

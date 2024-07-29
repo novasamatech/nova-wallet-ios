@@ -72,10 +72,6 @@ extension GenericLedgerAccountSelectionController: GenericLedgerAccountSelection
         cell.addTarget(self, action: #selector(actionCell(_:)), for: .touchUpInside)
     }
 
-    func didReceive(networkViewModel: NetworkViewModel) {
-        rootView.selectableNetworkView.bind(viewModel: networkViewModel)
-    }
-
     func didStartLoading() {
         rootView.loadMoreView.startLoading()
     }
