@@ -75,8 +75,7 @@ final class ReferendumVotersInteractor {
         let voterWrapper = votersLocalWrapperFactory.createWrapper(
             for: .init(
                 referendumId: referendumIndex,
-                votersType: .abstains,
-                includeDelegators: false
+                votersType: .abstains
             )
         )
 

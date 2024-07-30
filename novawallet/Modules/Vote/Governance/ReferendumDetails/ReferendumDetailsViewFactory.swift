@@ -156,13 +156,8 @@ struct ReferendumDetailsViewFactory {
 
         let delegationApi = chain.externalApis?.governanceDelegations()?.first
 
-        let votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol? = if let delegationApi {
-            ReferendumVotersLocalWrapperFactory(
-                chain: chain,
-                operationFactory: SubqueryVotingOperationFactory(url: delegationApi.url),
-                identityProxyFactory: identityProxyFactory,
-                metadataOperationFactory: GovernanceDelegateMetadataFactory()
-            )
+        let totalAbstainVotesFactory: GovernanceSplitAbstainTotalVotesFactoryProtocol? = if let delegationApi {
+            GovernanceSplitAbstainTotalVotesFactory(url: delegationApi.url)
         } else {
             nil
         }
@@ -181,7 +176,7 @@ struct ReferendumDetailsViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
-            votersLocalWrapperFactory: votersLocalWrapperFactory,
+            totalAbstainVotesFactory: totalAbstainVotesFactory,
             dAppsProvider: dAppsProvider,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue

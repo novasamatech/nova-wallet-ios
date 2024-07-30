@@ -20,7 +20,7 @@ final class ReferendumDetailsInteractor {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
-    let votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol?
+    let totalAbstainVotesFactory: GovernanceSplitAbstainTotalVotesFactoryProtocol?
     let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
     let operationQueue: OperationQueue
 
@@ -51,7 +51,7 @@ final class ReferendumDetailsInteractor {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
-        votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol?,
+        totalAbstainVotesFactory: GovernanceSplitAbstainTotalVotesFactoryProtocol?,
         dAppsProvider: AnySingleValueProvider<GovernanceDAppList>,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -69,7 +69,7 @@ final class ReferendumDetailsInteractor {
         self.blockTimeFactory = blockTimeFactory
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
-        self.votersLocalWrapperFactory = votersLocalWrapperFactory
+        self.totalAbstainVotesFactory = totalAbstainVotesFactory
         self.dAppsProvider = dAppsProvider
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -311,35 +311,29 @@ final class ReferendumDetailsInteractor {
     private func provideAbstains() {
         guard
             !abstainsFetchCancellable.hasCall,
-            let votersLocalWrapperFactory
+            let totalAbstainVotesFactory
         else {
             return
         }
 
-        let wrapper = votersLocalWrapperFactory.createWrapper(
-            for: .init(
-                referendumId: referendum.index,
-                votersType: .abstains,
-                includeDelegators: false
-            )
-        )
+        let operation = totalAbstainVotesFactory.createOperation(referendumId: referendum.index)
 
-        abstainsFetchCancellable.store(call: wrapper)
+        abstainsFetchCancellable.store(call: operation)
 
         execute(
-            wrapper: wrapper,
+            operation: operation,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard let self, abstainsFetchCancellable.matches(call: wrapper) else {
+            guard let self, abstainsFetchCancellable.matches(call: operation) else {
                 return
             }
 
             abstainsFetchCancellable.clear()
 
             switch result {
-            case let .success(voters):
-                presenter?.didReceiveAbstains(voters)
+            case let .success(amount):
+                presenter?.didReceiveAbstainsTotalAmount(amount)
             case let .failure(error):
                 presenter?.didReceiveError(.accountVotesFailed(error))
             }

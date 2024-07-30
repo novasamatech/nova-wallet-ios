@@ -28,8 +28,7 @@ final class DelegationReferendumVotersInteractor {
         let wrapper = votersLocalWrapperFactory.createWrapper(
             for: .init(
                 referendumId: referendumId,
-                votersType: votersType,
-                includeDelegators: true
+                votersType: votersType
             )
         )
 

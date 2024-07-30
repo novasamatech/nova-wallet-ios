@@ -26,7 +26,7 @@ final class ReferendumDetailsPresenter {
     }
 
     private var referendum: ReferendumLocal
-    private var abstainLocals: ReferendumVoterLocals?
+    private var abstainAmount: ReferendumVotingAmount?
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
     private var offchainVoting: GovernanceOffchainVotesLocal.Single?
@@ -241,7 +241,7 @@ final class ReferendumDetailsPresenter {
 
         let votes = referendumStringsFactory.createReferendumVotes(
             from: referendum,
-            abstains: abstainLocals,
+            abstainAmount: abstainAmount,
             abstainVotingAvailable: abstainVotingAvailable,
             chain: chain,
             locale: selectedLocale
@@ -505,8 +505,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         refreshIdentities()
     }
 
-    func didReceiveAbstains(_ voters: ReferendumVoterLocals) {
-        abstainLocals = voters
+    func didReceiveAbstainsTotalAmount(_ amount: ReferendumVotingAmount) {
+        abstainAmount = amount
 
         provideVotingDetails()
     }
