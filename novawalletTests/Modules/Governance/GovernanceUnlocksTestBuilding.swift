@@ -178,17 +178,33 @@ enum TrackTestBuilding {
                 var accountVoting = accum.votes
 
                 for vote in voting.votes {
-                    accountVoting = accountVoting
-                        .addingReferendum(vote.referendum, track: voting.trackId)
-                        .addingVote(
-                            .standard(
-                                .init(
-                                    vote: .init(aye: vote.isAye, conviction: vote.conviction),
-                                    balance: vote.amount
-                                )
-                            ),
-                            referendumId: vote.referendum
-                        )
+                    switch vote.type {
+                    case .standard(let amount, let conviction, let isAye):
+                        accountVoting = accountVoting
+                            .addingReferendum(vote.referendum, track: voting.trackId)
+                            .addingVote(
+                                .standard(
+                                    .init(
+                                        vote: .init(aye: isAye, conviction: conviction),
+                                        balance: amount
+                                    )
+                                ),
+                                referendumId: vote.referendum
+                            )
+                    case .abstain(let amount):
+                        accountVoting = accountVoting
+                            .addingReferendum(vote.referendum, track: voting.trackId)
+                            .addingVote(
+                                .splitAbstain(
+                                    .init(
+                                        aye: 0,
+                                        nay: 0,
+                                        abstain: amount
+                                    )
+                                ),
+                                referendumId: vote.referendum
+                            )
+                    }
                 }
 
                 if voting.prior.exists {
@@ -229,26 +245,37 @@ enum TrackTestBuilding {
     }
 
     typealias Locked = BigUInt
+    
+    enum VoteType {
+        case standard(amount: BigUInt, conviction: ConvictionVoting.Conviction, isAye: Bool)
+        case abstain(amount: BigUInt)
+    }
 
     struct Vote {
         let referendum: ReferendumIdLocal
-        let amount: BigUInt
-        let conviction: ConvictionVoting.Conviction
         let unlockAt: BlockNumber
-        let isAye: Bool
-
-        init(
+        let type: VoteType
+        
+        static func standard(
             referendum: ReferendumIdLocal,
             amount: BigUInt,
             unlockAt: BlockNumber,
             conviction: ConvictionVoting.Conviction = .locked1x,
             isAye: Bool = true
-        ) {
-            self.referendum = referendum
-            self.amount = amount
-            self.unlockAt = unlockAt
-            self.conviction = conviction
-            self.isAye = isAye
+        ) -> Vote {
+            Vote(
+                referendum: referendum,
+                unlockAt: unlockAt,
+                type: .standard(amount: amount, conviction: conviction, isAye: isAye)
+            )
+        }
+        
+        static func abstain(
+            referendum: ReferendumIdLocal,
+            amount: BigUInt,
+            unlockAt: BlockNumber
+        ) -> Vote {
+            Vote(referendum: referendum, unlockAt: unlockAt, type: .abstain(amount: amount))
         }
     }
 
