@@ -18,6 +18,7 @@ protocol ReferendumDetailsPresenterProtocol: AnyObject {
     func readFullDescription()
     func showAyeVoters()
     func showNayVoters()
+    func showAbstainVoters()
     func opeDApp(at index: Int)
     func openFullDetails()
     func vote()
@@ -35,6 +36,7 @@ protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
 
 protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendum(_ referendum: ReferendumLocal)
+    func didReceiveAbstainsTotalAmount(_ amount: ReferendumVotingAmount)
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal)
     func didReceiveAccountVotes(
         _ votes: ReferendumAccountVoteLocal?,

@@ -17,6 +17,8 @@ protocol ReferendumDisplayStringFactoryProtocol {
 extension ReferendumDisplayStringFactoryProtocol {
     func createReferendumVotes(
         from referendum: ReferendumLocal,
+        abstainAmount: ReferendumVotingAmount?,
+        abstainVotingAvailable: Bool,
         chain: ChainModel,
         locale: Locale
     ) -> ReferendumVotesViewModel? {
@@ -36,6 +38,12 @@ extension ReferendumDisplayStringFactoryProtocol {
             naysString = createVotes(from: model.nays, chain: chain, locale: locale)
         }
 
+        let abstainString = createVotes(
+            from: abstainAmount ?? 0,
+            chain: chain,
+            locale: locale
+        )
+
         let aye: VoteRowView.Model? = ayesString.map {
             .init(
                 title: R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages),
@@ -50,7 +58,22 @@ extension ReferendumDisplayStringFactoryProtocol {
             )
         }
 
-        return ReferendumVotesViewModel(ayes: aye, nays: nay)
+        var abstain: VoteRowView.Model? = if abstainVotingAvailable {
+            abstainString.map {
+                .init(
+                    title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
+                    votes: $0
+                )
+            }
+        } else {
+            nil
+        }
+
+        return ReferendumVotesViewModel(
+            ayes: aye,
+            nays: nay,
+            abstains: abstain
+        )
     }
 
     func createDirectVotesViewModel(

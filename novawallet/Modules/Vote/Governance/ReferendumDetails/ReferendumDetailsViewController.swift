@@ -68,6 +68,12 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
+        rootView.votingDetailsRow.abstainVotesView.addTarget(
+            self,
+            action: #selector(actionAbstainVotes),
+            for: .touchUpInside
+        )
+
         rootView.fullDetailsView.addTarget(
             self,
             action: #selector(actionFullDetails),
@@ -95,6 +101,10 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
 
     @objc private func actionNayVotes() {
         presenter.showNayVoters()
+    }
+
+    @objc private func actionAbstainVotes() {
+        presenter.showAbstainVoters()
     }
 
     @objc private func actionDApp(_ sender: UIControl) {
