@@ -76,10 +76,10 @@ final class ReferendumDetailsInteractor {
     }
 
     deinit {
-        identitiesCancellable.clear()
-        actionDetailsCancellable.clear()
-        blockTimeCancellable.clear()
-        abstainsFetchCancellable.clear()
+        identitiesCancellable.cancel()
+        actionDetailsCancellable.cancel()
+        blockTimeCancellable.cancel()
+        abstainsFetchCancellable.cancel()
 
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
 
@@ -100,8 +100,6 @@ final class ReferendumDetailsInteractor {
                 if let referendum = referendumResult.value {
                     self?.referendum = referendum
                     self?.presenter?.didReceiveReferendum(referendum)
-
-                    guard self?.option.type == .governanceV2 else { return }
 
                     self?.provideAbstains()
                 }
@@ -177,7 +175,7 @@ final class ReferendumDetailsInteractor {
     }
 
     private func provideIdentities(for accountIds: Set<AccountId>) {
-        identitiesCancellable.clear()
+        identitiesCancellable.cancel()
 
         guard !accountIds.isEmpty else {
             presenter?.didReceiveIdentities([:])
@@ -188,27 +186,17 @@ final class ReferendumDetailsInteractor {
 
         let wrapper = identityProxyFactory.createIdentityWrapper(for: accountIdsClosure)
 
-        identitiesCancellable.store(call: wrapper)
-
-        execute(
+        executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: identitiesCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard
-                let self,
-                identitiesCancellable.matches(call: wrapper)
-            else {
-                return
-            }
-
-            identitiesCancellable.clear()
-
             switch result {
             case let .success(identities):
-                presenter?.didReceiveIdentities(identities)
+                self?.presenter?.didReceiveIdentities(identities)
             case let .failure(error):
-                presenter?.didReceiveError(.identitiesFailed(error))
+                self?.presenter?.didReceiveError(.identitiesFailed(error))
             }
         }
     }
@@ -223,27 +211,17 @@ final class ReferendumDetailsInteractor {
             blockTimeEstimationService: blockTimeService
         )
 
-        blockTimeCancellable.store(call: wrapper)
-
-        execute(
+        executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: blockTimeCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard
-                let self,
-                blockTimeCancellable.matches(call: wrapper)
-            else {
-                return
-            }
-
-            blockTimeCancellable.clear()
-
             switch result {
             case let .success(blockTimeModel):
-                presenter?.didReceiveBlockTime(blockTimeModel)
+                self?.presenter?.didReceiveBlockTime(blockTimeModel)
             case let .failure(error):
-                presenter?.didReceiveError(.blockTimeFailed(error))
+                self?.presenter?.didReceiveError(.blockTimeFailed(error))
             }
         }
     }
@@ -259,27 +237,17 @@ final class ReferendumDetailsInteractor {
             runtimeProvider: runtimeProvider
         )
 
-        actionDetailsCancellable.store(call: wrapper)
-
-        execute(
+        executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: actionDetailsCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard
-                let self,
-                actionDetailsCancellable.matches(call: wrapper)
-            else {
-                return
-            }
-
-            actionDetailsCancellable.clear()
-
             switch result {
             case let .success(actionDetails):
-                presenter?.didReceiveActionDetails(actionDetails)
+                self?.presenter?.didReceiveActionDetails(actionDetails)
             case let .failure(error):
-                presenter?.didReceiveError(.actionDetailsFailed(error))
+                self?.presenter?.didReceiveError(.actionDetailsFailed(error))
             }
         }
     }
@@ -318,24 +286,17 @@ final class ReferendumDetailsInteractor {
 
         let operation = totalAbstainVotesFactory.createOperation(referendumId: referendum.index)
 
-        abstainsFetchCancellable.store(call: operation)
-
         execute(
             operation: operation,
             inOperationQueue: operationQueue,
+            backingCallIn: abstainsFetchCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard let self, abstainsFetchCancellable.matches(call: operation) else {
-                return
-            }
-
-            abstainsFetchCancellable.clear()
-
             switch result {
             case let .success(amount):
-                presenter?.didReceiveAbstainsTotalAmount(amount)
+                self?.presenter?.didReceiveAbstainsTotalAmount(amount)
             case let .failure(error):
-                presenter?.didReceiveError(.accountVotesFailed(error))
+                self?.presenter?.didReceiveError(.accountVotesFailed(error))
             }
         }
     }
