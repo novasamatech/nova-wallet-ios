@@ -479,4 +479,54 @@ class Gov2UnlockScheduleTests: XCTestCase {
             }
         }
     }
+    
+    func testShouldNotDuplicateUnlockWhenClaimingMultipleChunks() {
+        GovernanceUnlocksTestBuilding.run(atBlock: 1100) {
+            GovernanceUnlocksTestBuilding.given {
+                TrackTestBuilding.track(1) {
+                    TrackTestBuilding.VotingParams.locked(10)
+                    TrackTestBuilding.VotingParams.votes {
+                        TrackTestBuilding.Vote.standard(referendum: 2, amount: 5, unlockAt: 1002)
+                        TrackTestBuilding.Vote.standard(referendum: 1, amount: 10, unlockAt: 1001)
+                    }
+                }
+            }
+            
+            GovernanceUnlocksTestBuilding.expect {
+                UnlockScheduleTestBuilding.ScheduleResult.availableItem(amount: 10) {
+                    GovernanceUnlockSchedule.Action.unvote(track: 1, index: 1)
+                    GovernanceUnlockSchedule.Action.unvote(track: 1, index: 2)
+                    GovernanceUnlockSchedule.Action.unlock(track: 1)
+                }
+            }
+        }
+    }
+    
+    func testAbstainVotesMustBeAccounted() {
+        GovernanceUnlocksTestBuilding.run(atBlock: 1100) {
+            GovernanceUnlocksTestBuilding.given(
+                tracksDef: [
+                    .init(trackId: 1, decisionPeriod: 200)
+                ],
+                referendumsDef: [
+                    .init(index: 1, trackId: 1, type: .ongoing(since: 1000))
+                ]
+            ) {
+                TrackTestBuilding.track(1) {
+                    TrackTestBuilding.VotingParams.votes {
+                        TrackTestBuilding.Vote.abstain(referendum: 1, amount: 2, unlockAt: 1200)
+                    }
+                }
+            }
+            
+            GovernanceUnlocksTestBuilding.expect {
+                UnlockScheduleTestBuilding.ScheduleResult.remainingItems {
+                    UnlockScheduleTestBuilding.unlock(amount: 2, atBlock: 1200) {
+                        GovernanceUnlockSchedule.Action.unvote(track: 1, index: 1)
+                        GovernanceUnlockSchedule.Action.unlock(track: 1)
+                    }
+                }
+            }
+        }
+    }
 }
