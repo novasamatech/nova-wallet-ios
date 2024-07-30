@@ -5891,6 +5891,7 @@
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
+		2DCC87582C57DE260028C3CA /* SubstrateDataModel31.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel31.xcdatamodel; sourceTree = "<group>"; };
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
@@ -29195,6 +29196,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2DCC87582C57DE260028C3CA /* SubstrateDataModel31.xcdatamodel */,
 				0C1998DE2C496B15000EBFB8 /* SubstrateDataModel30.xcdatamodel */,
 				2DAF539C2C198E690076B4B6 /* SubstrateDataModel29.xcdatamodel */,
 				2D5A61C52C09D34E006D58E3 /* SubstrateDataModel28.xcdatamodel */,
@@ -29226,7 +29228,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 0C1998DE2C496B15000EBFB8 /* SubstrateDataModel30.xcdatamodel */;
+			currentVersion = 2DCC87582C57DE260028C3CA /* SubstrateDataModel31.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

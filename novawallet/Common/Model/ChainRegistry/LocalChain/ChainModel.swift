@@ -7,6 +7,8 @@ struct ChainModel: Equatable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = String
 
+    typealias AddressPrefix = UInt64
+
     struct TypesSettings: Codable, Hashable {
         let url: URL?
         let overridesCommon: Bool
@@ -68,7 +70,7 @@ struct ChainModel: Equatable, Hashable {
     let name: String
     let assets: Set<AssetModel>
     let nodes: Set<ChainNodeModel>
-    let addressPrefix: UInt16
+    let addressPrefix: AddressPrefix
     let types: TypesSettings?
     let icon: URL?
     let options: [LocalChainOptions]?
@@ -88,7 +90,7 @@ struct ChainModel: Equatable, Hashable {
         assets: Set<AssetModel>,
         nodes: Set<ChainNodeModel>,
         nodeSwitchStrategy: NodeSwitchStrategy,
-        addressPrefix: UInt16,
+        addressPrefix: AddressPrefix,
         types: TypesSettings?,
         icon: URL?,
         options: [LocalChainOptions]?,
@@ -568,6 +570,14 @@ extension ChainModel {
     }
 }
 
+extension ChainModel.AddressPrefix {
+    func toSubstrateFormat() -> UInt16 {
+        // The assumption is that we don't map values overflowing UInt16
+        // in the ChainModel for substrate networks.
+        UInt16(self)
+    }
+}
+
 // MARK: ChainNodeConnectable
 
 protocol ChainNodeConnectable {
@@ -576,7 +586,7 @@ protocol ChainNodeConnectable {
     var nodes: Set<ChainNodeModel> { get }
     var options: [LocalChainOptions]? { get }
     var nodeSwitchStrategy: ChainModel.NodeSwitchStrategy { get }
-    var addressPrefix: UInt16 { get }
+    var addressPrefix: ChainModel.AddressPrefix { get }
     var connectionMode: ChainModel.ConnectionMode { get }
 }
 

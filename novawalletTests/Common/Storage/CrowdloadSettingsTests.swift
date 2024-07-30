@@ -104,7 +104,7 @@ class CrowdloadSettingsTests: XCTestCase {
         let chains: [ChainModel] = (0..<10).map { index in
             ChainModelGenerator.generateChain(
                 generatingAssets: 2,
-                addressPrefix: UInt16(index),
+                addressPrefix: ChainModel.AddressPrefix(index),
                 hasCrowdloans: true
             )
         }

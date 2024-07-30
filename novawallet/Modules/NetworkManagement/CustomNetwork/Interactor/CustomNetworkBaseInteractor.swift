@@ -43,8 +43,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     func modify(with request: CustomNetwork.ModifyRequest) {
         let mainAsset = request.existingNetwork.assets.first(where: { $0.assetId == 0 })
 
-        let evmChainId: UInt16? = if let chainId = request.chainId, let intChainId = Int(chainId) {
-            UInt16(intChainId)
+        let evmChainId: UInt64? = if let chainId = request.chainId, let intChainId = Int(chainId) {
+            UInt64(intChainId)
         } else {
             nil
         }
@@ -89,8 +89,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     }
 
     func setupChain(with request: CustomNetwork.SetupRequest) {
-        let evmChainId: UInt16? = if let chainId = request.chainId, let intChainId = Int(chainId) {
-            UInt16(intChainId)
+        let evmChainId: UInt64? = if let chainId = request.chainId, let intChainId = Int(chainId) {
+            UInt64(intChainId)
         } else {
             nil
         }

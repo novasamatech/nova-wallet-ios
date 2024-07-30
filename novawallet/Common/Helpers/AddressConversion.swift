@@ -10,9 +10,12 @@ extension AccountId {
     func toAddress(using conversion: ChainFormat) throws -> AccountAddress {
         switch conversion {
         case .ethereum:
-            return toHex(includePrefix: true)
+            toHex(includePrefix: true)
         case let .substrate(prefix):
-            return try SS58AddressFactory().address(fromAccountId: self, type: prefix)
+            try SS58AddressFactory().address(
+                fromAccountId: self,
+                type: prefix
+            )
         }
     }
 }
@@ -36,9 +39,12 @@ extension AccountAddress {
     func toAccountId(using conversion: ChainFormat) throws -> AccountId {
         switch conversion {
         case .ethereum:
-            return try extractEthereumAccountId()
+            try extractEthereumAccountId()
         case let .substrate(prefix):
-            return try SS58AddressFactory().accountId(fromAddress: self, type: prefix)
+            try SS58AddressFactory().accountId(
+                fromAddress: self,
+                type: prefix
+            )
         }
     }
 
@@ -80,7 +86,7 @@ extension ChainModel {
         if isEthereumBased {
             return .ethereum
         } else {
-            return .substrate(addressPrefix)
+            return .substrate(addressPrefix.toSubstrateFormat())
         }
     }
 }
