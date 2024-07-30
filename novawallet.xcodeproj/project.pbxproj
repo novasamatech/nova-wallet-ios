@@ -926,6 +926,15 @@
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
+		2DCC87602C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */; };
+		2DCC87622C596C800028C3CA /* CloudBackupCreatePasswordPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87612C596C800028C3CA /* CloudBackupCreatePasswordPresenter.swift */; };
+		2DCC87642C596D180028C3CA /* CloudBackupConfirmPasswordPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87632C596D180028C3CA /* CloudBackupConfirmPasswordPresenter.swift */; };
+		2DCC87672C5989CC0028C3CA /* CloudBackupCreateViewFactory+NewBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87662C5989CC0028C3CA /* CloudBackupCreateViewFactory+NewBackup.swift */; };
+		2DCC87692C598A530028C3CA /* CloudBackupCreateViewFactory+EnableBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87682C598A530028C3CA /* CloudBackupCreateViewFactory+EnableBackup.swift */; };
+		2DCC876B2C598AA80028C3CA /* CloudBackupCreateViewFactory+UpdatePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC876A2C598AA80028C3CA /* CloudBackupCreateViewFactory+UpdatePassword.swift */; };
+		2DCC876E2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */; };
+		2DCC87712C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */; };
+		2DCC87742C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DE302ED2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */; };
@@ -1166,7 +1175,6 @@
 		60B66AA63089FC2A3A701CF2 /* GovernanceSelectTracksViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A61CD43EDD8791F6DA9581 /* GovernanceSelectTracksViewFactory.swift */; };
 		60DBAD14156415802730C7D7 /* TokensManageViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36D2D8238F708E5D7D141A37 /* TokensManageViewFactory.swift */; };
 		60FFEE5B386E82D70333BE80 /* CreateWatchOnlyPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3749525FED4CA4CD0DCDF5 /* CreateWatchOnlyPresenter.swift */; };
-		615BF9E510959C17FDC795E3 /* CloudBackupCreatePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D0323C9CAE2D3068B1B599B /* CloudBackupCreatePresenter.swift */; };
 		61E0DC83C1D60D677274D7CE /* AccountExportPasswordViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11575D8B4F64C2E805372A5 /* AccountExportPasswordViewFactory.swift */; };
 		621E843DCEA85A00B419926F /* StakingSelectPoolViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F38FDB907F69A26B93B4E6 /* StakingSelectPoolViewController.swift */; };
 		623474C49445578F030291B0 /* ParaStkStakeSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B2C32E11E2F7F3D4A1D3AB /* ParaStkStakeSetupWireframe.swift */; };
@@ -5900,6 +5908,15 @@
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
+		2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCloudBackupCreatePresenter.swift; sourceTree = "<group>"; };
+		2DCC87612C596C800028C3CA /* CloudBackupCreatePasswordPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreatePasswordPresenter.swift; sourceTree = "<group>"; };
+		2DCC87632C596D180028C3CA /* CloudBackupConfirmPasswordPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupConfirmPasswordPresenter.swift; sourceTree = "<group>"; };
+		2DCC87662C5989CC0028C3CA /* CloudBackupCreateViewFactory+NewBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupCreateViewFactory+NewBackup.swift"; sourceTree = "<group>"; };
+		2DCC87682C598A530028C3CA /* CloudBackupCreateViewFactory+EnableBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupCreateViewFactory+EnableBackup.swift"; sourceTree = "<group>"; };
+		2DCC876A2C598AA80028C3CA /* CloudBackupCreateViewFactory+UpdatePassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupCreateViewFactory+UpdatePassword.swift"; sourceTree = "<group>"; };
+		2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateConfirmWireframe.swift; sourceTree = "<group>"; };
+		2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdatePasswordConfirmWireframe.swift; sourceTree = "<group>"; };
+		2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnablePasswordConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
@@ -6581,7 +6598,6 @@
 		7C70EBF83B2547452417E588 /* StakingRewardDetailsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsViewController.swift; sourceTree = "<group>"; };
 		7CBA1296E4C6E04EC9C5CA98 /* ParaStkUnstakePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakePresenter.swift; sourceTree = "<group>"; };
 		7CD1FBC9C063951E2520265D /* SwapConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmWireframe.swift; sourceTree = "<group>"; };
-		7D0323C9CAE2D3068B1B599B /* CloudBackupCreatePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupCreatePresenter.swift; sourceTree = "<group>"; };
 		7D5965CCC8CE8EF1519128CF /* Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig"; sourceTree = "<group>"; };
 		7D8A9948F319AD0D154D1EC4 /* DelegationListViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegationListViewFactory.swift; sourceTree = "<group>"; };
 		7DDDB2B35CD3299F50613141 /* ReferralCrowdloanViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferralCrowdloanViewController.swift; sourceTree = "<group>"; };
@@ -11116,13 +11132,12 @@
 		0CB3136F2C0F452300353724 /* NewBackup */ = {
 			isa = PBXGroup;
 			children = (
+				2DCC875E2C596C380028C3CA /* CloudBackupCreatePresenter */,
+				2DCC876C2C598D510028C3CA /* CloudBackupCreateWireframe */,
 				15886E1D406F61B333A44A2E /* CloudBackupCreateProtocols.swift */,
-				5E1571F44EF81EF0A450E767 /* CloudBackupCreateWireframe.swift */,
-				7D0323C9CAE2D3068B1B599B /* CloudBackupCreatePresenter.swift */,
 				CF104A5157BC9A9CA4588965 /* CloudBackupCreateInteractor.swift */,
 				710F0BA5EC0F5D434217E5AA /* CloudBackupCreateViewController.swift */,
 				22CA3357C25A248302093251 /* CloudBackupCreateViewLayout.swift */,
-				AD26E02E5EA85D22062142CD /* CloudBackupCreateViewFactory.swift */,
 			);
 			path = NewBackup;
 			sourceTree = "<group>";
@@ -11130,8 +11145,8 @@
 		0CB313702C0F453B00353724 /* UpdatePassword */ = {
 			isa = PBXGroup;
 			children = (
+				2DCC876F2C598DDB0028C3CA /* CloudBackupUpdatePasswordWireframe */,
 				0CB313712C0F459900353724 /* CloudBackupUpdatePasswordInteractor.swift */,
-				0CB313732C0F45E300353724 /* CloudBackupUpdatePasswordWireframe.swift */,
 			);
 			path = UpdatePassword;
 			sourceTree = "<group>";
@@ -11139,6 +11154,7 @@
 		0CB313752C0F46B300353724 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */,
 				0CB313762C0F46DB00353724 /* BaseCloudBackupUpdatePasswordWireframe.swift */,
 			);
 			path = Base;
@@ -11147,8 +11163,8 @@
 		0CB313842C12BB9A00353724 /* EnableBackup */ = {
 			isa = PBXGroup;
 			children = (
+				2DCC87722C598E230028C3CA /* CloudBackupEnablePasswordWireframe */,
 				0CB313852C12BBBD00353724 /* CloudBackupEnablePasswordInteractor.swift */,
-				0CB313872C12C0FC00353724 /* CloudBackupEnablePasswordWireframe.swift */,
 			);
 			path = EnableBackup;
 			sourceTree = "<group>";
@@ -12079,6 +12095,53 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2DCC875E2C596C380028C3CA /* CloudBackupCreatePresenter */ = {
+			isa = PBXGroup;
+			children = (
+				2DCC87612C596C800028C3CA /* CloudBackupCreatePasswordPresenter.swift */,
+				2DCC87632C596D180028C3CA /* CloudBackupConfirmPasswordPresenter.swift */,
+			);
+			path = CloudBackupCreatePresenter;
+			sourceTree = "<group>";
+		};
+		2DCC87652C59899B0028C3CA /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				AD26E02E5EA85D22062142CD /* CloudBackupCreateViewFactory.swift */,
+				2DCC87662C5989CC0028C3CA /* CloudBackupCreateViewFactory+NewBackup.swift */,
+				2DCC87682C598A530028C3CA /* CloudBackupCreateViewFactory+EnableBackup.swift */,
+				2DCC876A2C598AA80028C3CA /* CloudBackupCreateViewFactory+UpdatePassword.swift */,
+			);
+			path = Factory;
+			sourceTree = "<group>";
+		};
+		2DCC876C2C598D510028C3CA /* CloudBackupCreateWireframe */ = {
+			isa = PBXGroup;
+			children = (
+				5E1571F44EF81EF0A450E767 /* CloudBackupCreateWireframe.swift */,
+				2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */,
+			);
+			path = CloudBackupCreateWireframe;
+			sourceTree = "<group>";
+		};
+		2DCC876F2C598DDB0028C3CA /* CloudBackupUpdatePasswordWireframe */ = {
+			isa = PBXGroup;
+			children = (
+				0CB313732C0F45E300353724 /* CloudBackupUpdatePasswordWireframe.swift */,
+				2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */,
+			);
+			path = CloudBackupUpdatePasswordWireframe;
+			sourceTree = "<group>";
+		};
+		2DCC87722C598E230028C3CA /* CloudBackupEnablePasswordWireframe */ = {
+			isa = PBXGroup;
+			children = (
+				0CB313872C12C0FC00353724 /* CloudBackupEnablePasswordWireframe.swift */,
+				2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */,
+			);
+			path = CloudBackupEnablePasswordWireframe;
+			sourceTree = "<group>";
+		};
 		2DD0909F2C2F507300632A5F /* NetworkManagement */ = {
 			isa = PBXGroup;
 			children = (
@@ -12370,10 +12433,11 @@
 		47A0D9585B152172BA52336C /* CloudBackupCreate */ = {
 			isa = PBXGroup;
 			children = (
-				0CB313842C12BB9A00353724 /* EnableBackup */,
 				0CB313752C0F46B300353724 /* Base */,
+				0CB313842C12BB9A00353724 /* EnableBackup */,
 				0CB313702C0F453B00353724 /* UpdatePassword */,
 				0CB3136F2C0F452300353724 /* NewBackup */,
+				2DCC87652C59899B0028C3CA /* Factory */,
 				0C4394D52BD7617200578761 /* Model */,
 			);
 			path = CloudBackupCreate;
@@ -23681,6 +23745,7 @@
 				84C41F3828EDB80700DB1CD3 /* ReferendaCurve.swift in Sources */,
 				8490141524A92F6D008F705E /* OnboardingMainPresenter.swift in Sources */,
 				0C626D1B2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift in Sources */,
+				2DCC87622C596C800028C3CA /* CloudBackupCreatePasswordPresenter.swift in Sources */,
 				846449FF2567090B004EAA4B /* TriangularedView+Inspectable.swift in Sources */,
 				8460E11D2542011200826F55 /* DetailsTriangularedView.swift in Sources */,
 				0C1CCC432B6017E100A6EA17 /* XcmDeliveryFee.swift in Sources */,
@@ -23791,6 +23856,7 @@
 				8445F41628C8CFEC009E61C4 /* ParaStkYieldBoostSelectionViewModel.swift in Sources */,
 				84C1706F299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift in Sources */,
 				84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */,
+				2DCC87642C596D180028C3CA /* CloudBackupConfirmPasswordPresenter.swift in Sources */,
 				84A1742428ED3CF70096F943 /* ReferendumLocal.swift in Sources */,
 				0C5FA9A72B8313950077934C /* String+Search.swift in Sources */,
 				841AB7922993D01A00A362E8 /* GovernanceDelegateConfirmInteractorError.swift in Sources */,
@@ -23978,6 +24044,7 @@
 				0CB313722C0F459900353724 /* CloudBackupUpdatePasswordInteractor.swift in Sources */,
 				84C7DA5425EE2DF000F8C318 /* StakingErrorPresentable.swift in Sources */,
 				8490141724A92F6D008F705E /* OnboardingMainWireframe.swift in Sources */,
+				2DCC87602C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift in Sources */,
 				84953F72293630080033F47D /* AssetHistoryServiceType.swift in Sources */,
 				848841C128D1229000D750E9 /* ParaStkYieldBoostStopError.swift in Sources */,
 				844C3E672A0763D500C4305F /* WalletTotalAmountView.swift in Sources */,
@@ -24591,6 +24658,7 @@
 				84A2C90C24E192F50020D3B7 /* ShakeAnimator.swift in Sources */,
 				AEE0C43E272A8C16009F9AD5 /* AddChainAccount+AccountConfirmInteractor.swift in Sources */,
 				8407716028CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift in Sources */,
+				2DCC876B2C598AA80028C3CA /* CloudBackupCreateViewFactory+UpdatePassword.swift in Sources */,
 				8456C08427CFA4A7001282DE /* ImagePlaceholderView.swift in Sources */,
 				84EDF66929C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift in Sources */,
 				84F4A9A42551A8F3000CF0A3 /* AccountExportPasswordError.swift in Sources */,
@@ -24753,6 +24821,7 @@
 				84F4B2352A30D73900113DDD /* StakingDashboardSection.swift in Sources */,
 				0CB313772C0F46DB00353724 /* BaseCloudBackupUpdatePasswordWireframe.swift in Sources */,
 				845C40792702571200BFA50B /* StakingRemoteSubscriptionService.swift in Sources */,
+				2DCC876E2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift in Sources */,
 				8468B86A24F63CBA00B76BC6 /* AddAccount+AccountImportInteractor.swift in Sources */,
 				0CD846302BDE61310026B5CA /* WalletImportOptionsWireframe.swift in Sources */,
 				0C9ECB5A2A4A9AB400BDCA73 /* AssetListAccountCell.swift in Sources */,
@@ -25359,6 +25428,7 @@
 				88CD321028E2137300542F0D /* ExternalBalanceContribution.swift in Sources */,
 				84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */,
 				88D841D429436572008A5A0C /* RoundedButton+Styles.swift in Sources */,
+				2DCC87692C598A530028C3CA /* CloudBackupCreateViewFactory+EnableBackup.swift in Sources */,
 				84E25BF627E9A51D00290BF1 /* LeaseParam.swift in Sources */,
 				843939902636F88F0087658D /* YourValidatorsModel.swift in Sources */,
 				8473F4B6282BE488007CC55A /* StakingRelaychainProtocols.swift in Sources */,
@@ -25933,6 +26003,7 @@
 				84C34204283124C600156569 /* StakingParachainWireframe.swift in Sources */,
 				0C59E8D12AA5FAC5001E11F3 /* PooledAssetBalance.swift in Sources */,
 				84953F70293615D20033F47D /* AssetHistoryFactoryFacade.swift in Sources */,
+				2DCC87712C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift in Sources */,
 				84F13F1C26F2B8C2006725FF /* JSONRPCError+Presentable.swift in Sources */,
 				0C6390952BF1FD4F0015D467 /* CloudBackupSyncService.swift in Sources */,
 				84BAFCD226AF5EE700871E86 /* IconDetailsView.swift in Sources */,
@@ -26552,6 +26623,7 @@
 				A090FF206B56A0E465C62072 /* CrowdloanListPresenter.swift in Sources */,
 				846CA7802709A41E0011124C /* StakingAnalyticsLocalSubscriptionHandler.swift in Sources */,
 				849DF02D26C40B7900B702F4 /* RuntimeFilesOperationFactory.swift in Sources */,
+				2DCC87672C5989CC0028C3CA /* CloudBackupCreateViewFactory+NewBackup.swift in Sources */,
 				84592F512987B2E80001BB56 /* SubqueryVotingResponse.swift in Sources */,
 				0B2B9C6E2BA2E924D6A54F4B /* CrowdloanListInteractor.swift in Sources */,
 				849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */,
@@ -27935,6 +28007,7 @@
 				C28A0BFC483095E132705C83 /* SwapConfirmViewLayout.swift in Sources */,
 				C61286217D7D54EC70E3F1AA /* SwapConfirmViewFactory.swift in Sources */,
 				94A6747402550FB39D2E2BE7 /* SwapSlippageProtocols.swift in Sources */,
+				2DCC87742C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift in Sources */,
 				2451E27286A176CDA2DC040D /* SwapSlippageWireframe.swift in Sources */,
 				0C39766D2C3261A000998DD6 /* HydraXYK+Storages.swift in Sources */,
 				07D1F0F4FAE24BED8A1CF257 /* SwapSlippagePresenter.swift in Sources */,
@@ -28030,7 +28103,6 @@
 				4AA446B2764D922E91641C03 /* OnboardingWalletReadyViewFactory.swift in Sources */,
 				DA46697F2BA60F98B01AE6FA /* CloudBackupCreateProtocols.swift in Sources */,
 				2F817BEA33B48EDDCBA8CB53 /* CloudBackupCreateWireframe.swift in Sources */,
-				615BF9E510959C17FDC795E3 /* CloudBackupCreatePresenter.swift in Sources */,
 				A10BC98A621E20E2DF59D747 /* CloudBackupCreateInteractor.swift in Sources */,
 				979B8AFDD578C8B589BE6AC8 /* CloudBackupCreateViewController.swift in Sources */,
 				DB099FF1914E6A197E5F1D95 /* CloudBackupCreateViewLayout.swift in Sources */,

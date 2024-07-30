@@ -10,14 +10,8 @@ final class CloudBackupCreateViewLayout: SCLoadableActionLayoutView {
         view.spacing = 8
     }
 
-    let enterPasswordView: PasswordInputView = .create { view in
-        view.textField.returnKeyType = .next
-        view.textField.textContentType = .newPassword
-    }
-
-    let confirmPasswordView: PasswordInputView = .create { view in
+    let passwordView: PasswordInputView = .create { view in
         view.textField.returnKeyType = .done
-        view.textField.textContentType = .newPassword
     }
 
     let hintView: HintListView = .create { view in
@@ -26,6 +20,14 @@ final class CloudBackupCreateViewLayout: SCLoadableActionLayoutView {
             iconWidth: 16,
             iconContentMode: .scaleAspectFit
         )
+    }
+
+    func setupAddPassword() {
+        passwordView.textField.textContentType = .newPassword
+    }
+
+    func setupConfirmation() {
+        passwordView.textField.textContentType = .password
     }
 
     override func setupStyle() {
@@ -38,8 +40,7 @@ final class CloudBackupCreateViewLayout: SCLoadableActionLayoutView {
         super.setupLayout()
 
         addArrangedSubview(titleView, spacingAfter: 24)
-        addArrangedSubview(enterPasswordView, spacingAfter: 16)
-        addArrangedSubview(confirmPasswordView, spacingAfter: 16)
+        addArrangedSubview(passwordView, spacingAfter: 16)
         addArrangedSubview(hintView)
     }
 }

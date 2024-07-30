@@ -32,6 +32,7 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupView()
         setupHandlers()
         setupLocalization()
         presenter.setup()
@@ -50,20 +51,22 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.enterPasswordView.delegate = self
-        rootView.confirmPasswordView.delegate = self
+        rootView.passwordView.delegate = self
 
-        rootView.enterPasswordView.addTarget(
+        rootView.passwordView.addTarget(
             self,
             action: #selector(actionEnterPasswordChanged),
             for: .editingChanged
         )
+    }
 
-        rootView.confirmPasswordView.addTarget(
-            self,
-            action: #selector(actionConfirmPasswordChanged),
-            for: .editingChanged
-        )
+    private func setupView() {
+        switch flow {
+        case .newBackup, .changePassword:
+            rootView.setupAddPassword()
+        case .confirmPassword:
+            rootView.setupConfirmation()
+        }
     }
 
     private func setupLocalization() {
@@ -72,17 +75,26 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
             rootView.titleView.valueTop.text = R.string.localizable.cloudBackupCreateTitle(
                 preferredLanguages: selectedLocale.rLanguages
             )
+            rootView.titleView.valueBottom.text = R.string.localizable.cloudBackupCreateDetails(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .confirmPassword:
+            rootView.titleView.valueTop.text = R.string.localizable.cloudBackupPasswordConfirmTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            rootView.titleView.valueBottom.text = R.string.localizable.cloudBackupPasswordConfirmDetails(
+                preferredLanguages: selectedLocale.rLanguages
+            )
         case .changePassword:
             rootView.titleView.valueTop.text = R.string.localizable.cloudBackupUpdatePasswordTitle(
                 preferredLanguages: selectedLocale.rLanguages
             )
+            rootView.titleView.valueBottom.text = R.string.localizable.cloudBackupCreateDetails(
+                preferredLanguages: selectedLocale.rLanguages
+            )
         }
 
-        rootView.titleView.valueBottom.text = R.string.localizable.cloudBackupCreateDetails(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        let enterPasswordPlaceholder = NSAttributedString(
+        let passwordPlaceholder = NSAttributedString(
             string: R.string.localizable.commonBackupPassword(preferredLanguages: selectedLocale.rLanguages),
             attributes: [
                 .foregroundColor: R.color.colorHintText()!,
@@ -90,17 +102,7 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
             ]
         )
 
-        rootView.enterPasswordView.textField.attributedPlaceholder = enterPasswordPlaceholder
-
-        let confirmPasswordPlaceholder = NSAttributedString(
-            string: R.string.localizable.commonConfirmPassword(preferredLanguages: selectedLocale.rLanguages),
-            attributes: [
-                .foregroundColor: R.color.colorHintText()!,
-                .font: UIFont.regularSubheadline
-            ]
-        )
-
-        rootView.confirmPasswordView.textField.attributedPlaceholder = confirmPasswordPlaceholder
+        rootView.passwordView.textField.attributedPlaceholder = passwordPlaceholder
     }
 
     @objc func actionContinue() {
@@ -110,22 +112,13 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
     @objc func actionEnterPasswordChanged() {
         presenter.applyEnterPasswordChange()
     }
-
-    @objc func actionConfirmPasswordChanged() {
-        presenter.applyConfirmPasswordChange()
-    }
 }
 
 extension CloudBackupCreateViewController: PasswordInputViewDelegate {
     func passwordInputViewWillStartEditing(_: PasswordInputView) {}
 
-    func passwordInputViewShouldReturn(_ inputView: PasswordInputView) -> Bool {
-        if inputView === rootView.enterPasswordView {
-            rootView.enterPasswordView.textField.resignFirstResponder()
-            rootView.confirmPasswordView.textField.becomeFirstResponder()
-        } else {
-            rootView.confirmPasswordView.textField.resignFirstResponder()
-        }
+    func passwordInputViewShouldReturn(_: PasswordInputView) -> Bool {
+        rootView.passwordView.textField.resignFirstResponder()
 
         return false
     }
@@ -133,11 +126,7 @@ extension CloudBackupCreateViewController: PasswordInputViewDelegate {
 
 extension CloudBackupCreateViewController: CloudBackupCreateViewProtocol {
     func didReceive(passwordViewModel: InputViewModelProtocol) {
-        rootView.enterPasswordView.bind(inputViewModel: passwordViewModel)
-    }
-
-    func didReceive(confirmViewModel: InputViewModelProtocol) {
-        rootView.confirmPasswordView.bind(inputViewModel: confirmViewModel)
+        rootView.passwordView.bind(inputViewModel: passwordViewModel)
     }
 
     func didRecieve(hints: [HintListView.ViewModel]) {

@@ -1727,3 +1727,5 @@
 "staking.setup.conflict.message" = "You cannot stake with Direct Staking and Nomination Pools at the same time";
 "nomination.pools.conflict.title" = "Pool operations are not available";
 "nomination.pools.conflict.message" = "You can no longer use both Direct Staking and Pool Staking from the same account. To manage your Pool  Staking you first need to unstake your tokens from Direct Staking.";
+"cloud.backup.password.confirm.title" = "Confirm backup password";
+"cloud.backup.password.confirm.details" = "Please enter the password you created on the previous screen";
