@@ -1,3 +1,5 @@
+disabled_rules:
+   - switch_case_alignment
 excluded:
   - Pods
   - PrivatePods

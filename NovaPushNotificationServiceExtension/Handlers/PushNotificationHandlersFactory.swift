@@ -1,10 +1,16 @@
 import Foundation
 import SoraFoundation
 
+enum PushNotificationHandleResult {
+    case modified(NotificationContentResult)
+    case filteredOut
+    case original(PushNotificationsHandlerErrors)
+}
+
 protocol PushNotificationHandler {
     func handle(
         callbackQueue: DispatchQueue?,
-        completion: @escaping (NotificationContentResult?) -> Void
+        completion: @escaping (PushNotificationHandleResult) -> Void
     )
 }
 
@@ -51,4 +57,50 @@ final class PushNotificationHandlersFactory: PushNotificationHandlersFactoryProt
             )
         }
     }
+}
+
+// MARK: Errors
+
+enum PushNotificationsHandlerErrors: Error, Hashable {
+    static func == (
+        lhs: PushNotificationsHandlerErrors,
+        rhs: PushNotificationsHandlerErrors
+    ) -> Bool {
+        switch (lhs, rhs) {
+        case (.chainDisabled, .chainDisabled):
+            return true
+        case let (.chainNotFound(lhsChainId), .chainNotFound(rhsChainId)):
+            return lhsChainId == rhsChainId
+        case let (.assetNotFound(lhsAssetId), .assetNotFound(rhsAssetId)):
+            return lhsAssetId == rhsAssetId
+        case let (.internalError(lhsError), .internalError(rhsError)):
+            return lhsError.localizedDescription == rhsError.localizedDescription
+        default:
+            return false
+        }
+    }
+
+    func hash(into hasher: inout Hasher) {
+        switch self {
+        case .chainDisabled:
+            hasher.combine(0)
+        case let .chainNotFound(chainId):
+            hasher.combine(1)
+            hasher.combine(chainId)
+        case let .assetNotFound(assetId):
+            hasher.combine(2)
+            hasher.combine(assetId)
+        case let .internalError(error):
+            hasher.combine(3)
+            hasher.combine(error.localizedDescription)
+        case .undefined:
+            hasher.combine(4)
+        }
+    }
+
+    case chainDisabled
+    case chainNotFound(chainId: ChainModel.Id)
+    case assetNotFound(assetId: String?)
+    case internalError(error: Error)
+    case undefined
 }
