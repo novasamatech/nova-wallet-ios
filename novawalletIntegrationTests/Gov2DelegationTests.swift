@@ -290,8 +290,7 @@ final class Gov2DelegationTests: XCTestCase {
 
         let wrapper = operationFactory.createReferendumVotesFetchOperation(
             referendumId: referendumId,
-            votersType: .ayes,
-            includeDelegators: true
+            votersType: .ayes
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
