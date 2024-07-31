@@ -25,34 +25,44 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
 
     func handle(
         callbackQueue: DispatchQueue?,
-        completion: @escaping (NotificationContentResult?) -> Void
+        completion: @escaping (PushNotificationHandleResult) -> Void
     ) {
         let settingsOperation = settingsRepository.fetchAllOperation(with: .init())
         let chainOperation = chainsRepository.fetchAllOperation(with: .init())
 
-        let contentWrapper: CompoundOperationWrapper<NotificationContentResult?> =
-            OperationCombiningService.compoundWrapper(
-                operationManager: OperationManager(operationQueue: operationQueue)) {
+        let contentWrapper: CompoundOperationWrapper<NotificationContentResult> =
+            OperationCombiningService.compoundNonOptionalWrapper(
+                operationManager: OperationManager(operationQueue: operationQueue)
+            ) { [weak self] in
+                guard let self else {
+                    return .createWithError(PushNotificationsHandlerErrors.undefined)
+                }
+
                 let settings = try settingsOperation.extractNoCancellableResultData().first
                 let chains = try chainOperation.extractNoCancellableResultData()
-                guard
-                    let chain = self.search(chainId: self.chainId, in: chains),
-                    chain.syncMode.enabled(),
-                    let asset = self.mapHistoryAssetId(self.payload.assetId, chain: chain)
-                else {
-                    return nil
+
+                guard let chain = search(chainId: chainId, in: chains) else {
+                    throw PushNotificationsHandlerErrors.chainNotFound(chainId: chainId)
+                }
+
+                guard let asset = mapHistoryAssetId(payload.assetId, chain: chain) else {
+                    throw PushNotificationsHandlerErrors.assetNotFound(assetId: chainId)
+                }
+
+                guard chain.syncMode.enabled() else {
+                    throw PushNotificationsHandlerErrors.chainDisabled
                 }
 
                 let priceOperation: BaseOperation<[PriceData]>
                 if let priceId = asset.priceId,
-                   let currency = self.currencyManager(operationQueue: self.operationQueue)?.selectedCurrency {
-                    priceOperation = self.priceRepository(for: priceId, currencyId: currency.id)
+                   let currency = currencyManager(operationQueue: operationQueue)?.selectedCurrency {
+                    priceOperation = priceRepository(for: priceId, currencyId: currency.id)
                         .fetchAllOperation(with: .init())
                 } else {
                     priceOperation = .createWithResult([])
                 }
                 priceOperation.addDependency(chainOperation)
-                let fetchMetaAccountsOperation = self.walletsRepository().fetchAllOperation(with: .init())
+                let fetchMetaAccountsOperation = walletsRepository().fetchAllOperation(with: .init())
 
                 let mapOperaion = ClosureOperation {
                     let price = try priceOperation.extractNoCancellableResultData().first
@@ -83,9 +93,13 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
         ) { result in
             switch result {
             case let .success(content):
-                completion(content)
-            case .failure:
-                completion(nil)
+                completion(.modified(content))
+            case let .failure(error as PushNotificationsHandlerErrors) where error == .chainDisabled:
+                completion(.filteredOut)
+            case let .failure(error as PushNotificationsHandlerErrors):
+                completion(.original(error))
+            case let .failure(error):
+                completion(.original(.internalError(error: error)))
             }
         }
     }

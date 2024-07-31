@@ -8,6 +8,7 @@ protocol NetworksListViewProtocol: ControllerBackedProtocol {
 protocol NetworksListPresenterProtocol: AnyObject {
     func setup()
     func select(segment: NetworksListPresenter.NetworksType?)
+    func search(with query: String?)
     func selectChain(at index: Int)
     func addNetwork()
     func integrateOwnNetwork()
