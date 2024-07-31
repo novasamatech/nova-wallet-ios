@@ -1,8 +1,8 @@
 import Foundation
 
 protocol WalletConnectErrorPresentable {
-    func presentWCConnectionError(from view: ControllerBackedProtocol?, locale: Locale?)
-    func presentWCDisconnectionError(from view: ControllerBackedProtocol?, locale: Locale?)
+    func presentWCConnectionError(from view: ControllerBackedProtocol?, error: Error, locale: Locale?)
+    func presentWCDisconnectionError(from view: ControllerBackedProtocol?, error: Error, locale: Locale?)
     func presentWCSignatureSubmissionError(from view: ControllerBackedProtocol?, locale: Locale?)
     func presentWCAuthSubmissionError(from view: ControllerBackedProtocol?, locale: Locale?)
 }
@@ -21,16 +21,16 @@ extension WalletConnectErrorPresentable where Self: AlertPresentable {
         )
     }
 
-    func presentWCConnectionError(from view: ControllerBackedProtocol?, locale: Locale?) {
+    func presentWCConnectionError(from view: ControllerBackedProtocol?, error: Error, locale: Locale?) {
         let message = R.string.localizable.walletConnectPairingError(preferredLanguages: locale?.rLanguages)
 
-        presentWCError(from: view, message: message, locale: locale)
+        presentWCError(from: view, message: message + " " + "(\(error))", locale: locale)
     }
 
-    func presentWCDisconnectionError(from view: ControllerBackedProtocol?, locale: Locale?) {
+    func presentWCDisconnectionError(from view: ControllerBackedProtocol?, error: Error, locale: Locale?) {
         let message = R.string.localizable.walletConnectDisconnectError(preferredLanguages: locale?.rLanguages)
 
-        presentWCError(from: view, message: message, locale: locale)
+        presentWCError(from: view, message: message + " " + "(\(error))", locale: locale)
     }
 
     func presentWCSignatureSubmissionError(from view: ControllerBackedProtocol?, locale: Locale?) {

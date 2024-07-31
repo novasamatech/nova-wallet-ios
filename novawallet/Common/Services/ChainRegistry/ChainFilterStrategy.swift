@@ -10,6 +10,7 @@ enum ChainFilterStrategy {
     case enabledChains
     case hasProxy
     case chainId(ChainModel.Id)
+    case genericLedger
 
     private var filter: Filter {
         switch self {
@@ -43,6 +44,16 @@ enum ChainFilterStrategy {
                 return change.item?.chainId == chainId
             }
         case let .allSatisfies(strategies): { change in strategies.allSatisfy { $0.filter(change) } }
+        case .genericLedger: { change in
+                switch change {
+                case .update where change.item?.supportsGenericLedgerApp == true,
+                     .insert where change.item?.supportsGenericLedgerApp == true,
+                     .delete:
+                    true
+                default:
+                    false
+                }
+            }
         }
     }
 
@@ -102,6 +113,18 @@ enum ChainFilterStrategy {
                 strategies
                     .compactMap(\.transform)
                     .reduce(change) { $1($0, currentChain) }
+            }
+        case .genericLedger: { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                let currentSupport = currentChain?.supportsGenericLedgerApp == true
+                let updatedSupport = changedChain.supportsGenericLedgerApp == true
+
+                return transform(
+                    change,
+                    for: currentSupport,
+                    updatedSupport
+                )
             }
         }
     }

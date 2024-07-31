@@ -25200,16 +25200,16 @@ import Operation_iOS
     
     
     
-     func allPreferred(for preferredAccountIds: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
+     func allPreferred(for preferrence: PreferredValidatorsProviderModel?) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
         
-    return cuckoo_manager.call("allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>",
-            parameters: (preferredAccountIds),
-            escapingParameters: (preferredAccountIds),
+    return cuckoo_manager.call("allPreferred(for: PreferredValidatorsProviderModel?) -> CompoundOperationWrapper<ElectedAndPrefValidators>",
+            parameters: (preferrence),
+            escapingParameters: (preferrence),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.allPreferred(for: preferredAccountIds))
+            defaultCall: __defaultImplStub!.allPreferred(for: preferrence))
         
     }
     
@@ -25247,9 +25247,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorOperationFactoryProtocol.self, method: "wannabeValidatorsOperation(for: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>", parameterMatchers: matchers))
 	    }
 	    
-	    func allPreferred<M1: Cuckoo.Matchable>(for preferredAccountIds: M1) -> Cuckoo.ProtocolStubFunction<([AccountId]), CompoundOperationWrapper<ElectedAndPrefValidators>> where M1.MatchedType == [AccountId] {
-	        let matchers: [Cuckoo.ParameterMatcher<([AccountId])>] = [wrap(matchable: preferredAccountIds) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorOperationFactoryProtocol.self, method: "allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>", parameterMatchers: matchers))
+	    func allPreferred<M1: Cuckoo.OptionalMatchable>(for preferrence: M1) -> Cuckoo.ProtocolStubFunction<(PreferredValidatorsProviderModel?), CompoundOperationWrapper<ElectedAndPrefValidators>> where M1.OptionalMatchedType == PreferredValidatorsProviderModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(PreferredValidatorsProviderModel?)>] = [wrap(matchable: preferrence) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorOperationFactoryProtocol.self, method: "allPreferred(for: PreferredValidatorsProviderModel?) -> CompoundOperationWrapper<ElectedAndPrefValidators>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -25299,9 +25299,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func allPreferred<M1: Cuckoo.Matchable>(for preferredAccountIds: M1) -> Cuckoo.__DoNotUse<([AccountId]), CompoundOperationWrapper<ElectedAndPrefValidators>> where M1.MatchedType == [AccountId] {
-	        let matchers: [Cuckoo.ParameterMatcher<([AccountId])>] = [wrap(matchable: preferredAccountIds) { $0 }]
-	        return cuckoo_manager.verify("allPreferred(for: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func allPreferred<M1: Cuckoo.OptionalMatchable>(for preferrence: M1) -> Cuckoo.__DoNotUse<(PreferredValidatorsProviderModel?), CompoundOperationWrapper<ElectedAndPrefValidators>> where M1.OptionalMatchedType == PreferredValidatorsProviderModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(PreferredValidatorsProviderModel?)>] = [wrap(matchable: preferrence) { $0 }]
+	        return cuckoo_manager.verify("allPreferred(for: PreferredValidatorsProviderModel?) -> CompoundOperationWrapper<ElectedAndPrefValidators>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -25345,7 +25345,7 @@ import Operation_iOS
     
     
     
-     func allPreferred(for preferredAccountIds: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators>  {
+     func allPreferred(for preferrence: PreferredValidatorsProviderModel?) -> CompoundOperationWrapper<ElectedAndPrefValidators>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<ElectedAndPrefValidators>).self)
     }
     

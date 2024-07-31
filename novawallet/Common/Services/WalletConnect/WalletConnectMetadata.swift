@@ -2,7 +2,7 @@ import Foundation
 
 struct WalletConnectMetadata {
     struct Redirect {
-        let native: String?
+        let native: String
         let universal: String?
     }
 

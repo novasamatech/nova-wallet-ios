@@ -3,21 +3,17 @@ import Foundation
 import Operation_iOS
 
 final class MockPreferredValidatorsProvider {
-    let store: PreferredValidatorsProvider.Store
+    let model: PreferredValidatorsProviderModel?
     
-    init(store: PreferredValidatorsProvider.Store = [:]) {
-        self.store = store
+    init(model: PreferredValidatorsProviderModel? = nil) {
+        self.model = model
     }
 }
 
 extension MockPreferredValidatorsProvider: PreferredValidatorsProviding {
-    func createPreferredValidatorsWrapper(for chain: ChainModel) -> CompoundOperationWrapper<[AccountId]> {
-        do {
-            let accountIds = try store[chain.chainId]?.compactMap { try $0.toAccountId(using: chain.chainFormat) }
-            
-            return CompoundOperationWrapper.createWithResult(accountIds ?? [])
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
-        }
+    func createPreferredValidatorsWrapper(
+        for chain: ChainModel
+    ) -> CompoundOperationWrapper<PreferredValidatorsProviderModel?> {
+        CompoundOperationWrapper.createWithResult(model)
     }
 }

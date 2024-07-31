@@ -7,17 +7,20 @@ final class GenericLedgerWalletInteractor {
     let chainRegistry: ChainRegistryProtocol
     let deviceId: UUID
     let ledgerApplication: GenericLedgerSubstrateApplicationProtocol
+    let index: UInt32
     let operationQueue: OperationQueue
 
     init(
         ledgerApplication: GenericLedgerSubstrateApplicationProtocol,
         deviceId: UUID,
+        index: UInt32,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.deviceId = deviceId
         self.ledgerApplication = ledgerApplication
+        self.index = index
         self.operationQueue = operationQueue
     }
 
@@ -68,7 +71,7 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func fetchAccount() {
-        let wrapper = ledgerApplication.getUniversalAccountWrapper(for: deviceId)
+        let wrapper = ledgerApplication.getUniversalAccountWrapper(for: deviceId, index: index)
 
         execute(
             wrapper: wrapper,
@@ -87,6 +90,7 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     func confirmAccount() {
         let wrapper = ledgerApplication.getUniversalAccountWrapper(
             for: deviceId,
+            index: index,
             displayVerificationDialog: true
         )
 

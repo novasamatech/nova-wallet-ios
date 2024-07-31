@@ -6,9 +6,10 @@ struct GenericLedgerWalletViewFactory {
     static func createView(
         for application: GenericLedgerSubstrateApplicationProtocol,
         device: LedgerDeviceProtocol,
+        index: UInt32,
         flow: WalletCreationFlow
     ) -> HardwareWalletAddressesViewProtocol? {
-        let interactor = createInteractor(for: application, deviсe: device)
+        let interactor = createInteractor(for: application, deviсe: device, index: index)
         let wireframe = GenericLedgerWalletWireframe(flow: flow)
 
         let presenter = GenericLedgerWalletPresenter(
@@ -34,11 +35,13 @@ struct GenericLedgerWalletViewFactory {
 
     private static func createInteractor(
         for application: GenericLedgerSubstrateApplicationProtocol,
-        deviсe: LedgerDeviceProtocol
+        deviсe: LedgerDeviceProtocol,
+        index: UInt32
     ) -> GenericLedgerWalletInteractor {
         GenericLedgerWalletInteractor(
             ledgerApplication: application,
             deviceId: deviсe.identifier,
+            index: index,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
