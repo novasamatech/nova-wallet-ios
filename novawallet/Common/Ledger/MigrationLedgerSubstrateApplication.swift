@@ -36,7 +36,7 @@ extension MigrationLedgerSubstrateApplication: LedgerAccountRetrievable {
             for: deviceId,
             coin: application.coin,
             index: index,
-            addressPrefix: chain.addressPrefix,
+            addressPrefix: chain.addressPrefix.toSubstrateFormat(),
             displayVerificationDialog: displayVerificationDialog
         )
     }

@@ -81,7 +81,9 @@ final class KeystoreExportWrapper {
             throw ChainAccountFetchingError.accountNotExists
         }
 
-        let address = try accountId.toAddress(using: .substrate(SubstrateConstants.genericAddressPrefix))
+        let address = try accountId.toAddress(
+            using: .substrate(SubstrateConstants.genericAddressPrefix)
+        )
 
         let tag = KeystoreTagV2.substrateSecretKeyTagForMetaId(metaAccount.metaId)
 
