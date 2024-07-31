@@ -29,6 +29,8 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
                 return voter.vote.hasAyeVotes
             case .nays:
                 return voter.vote.hasNayVotes
+            case .abstains:
+                return voter.vote.hasAbstainVotes
             }
         }
         .sorted {
@@ -39,6 +41,8 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
                 return $0.vote.ayes + lhsDelegatorsVotes > $1.vote.ayes + rhsDelegatorsVotes
             case .nays:
                 return $0.vote.nays + lhsDelegatorsVotes > $1.vote.nays + rhsDelegatorsVotes
+            case .abstains:
+                return $0.vote.abstains + lhsDelegatorsVotes > $1.vote.abstains + rhsDelegatorsVotes
             }
         }.compactMap {
             self.createSection(
@@ -143,6 +147,9 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         case .nays:
             votes = voter.vote.nays
             amountInPlank = voter.vote.nayBalance
+        case .abstains:
+            votes = voter.vote.abstains
+            amountInPlank = voter.vote.abstainBalance
         }
 
         let totalVotes = votes + voter.delegatorsVotes
@@ -231,6 +238,9 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         case .nays:
             amountInPlank = voter.vote.nayBalance
             votes = voter.vote.nays
+        case .abstains:
+            amountInPlank = voter.vote.abstainBalance
+            votes = voter.vote.abstains
         }
 
         let votesString = stringFactory.createVotes(from: votes, chain: chain, locale: locale)

@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "您的余额";
 "common.max" = "最大";
 "crowdloan.custom.contrib.format" = "%@ (通过 %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "在%@中查看";
 "import.json.unsupported.ethereum.crypto.message" = "不能将含有Substrate秘密的账户导入到以太坊加密网络";
 "import.json.unsupported.substrate.crypto.message" = "不能将含有以太坊秘密的账户导入到Substrate加密网络";
@@ -1727,3 +1725,7 @@
 "staking.setup.conflict.message" = "不能同时使用直接质押和提名池进行质押";
 "nomination.pools.conflict.title" = "池操作不可用";
 "nomination.pools.conflict.message" = "你不能再同时使用同一个账号进行直接质押和池质押。要管理你的池质押，首先需要从直接质押中取消质押你的代币。";
+"gov.voters.abstain" = "弃权投票";
+"gov.vote.conviction.alert.title" = "更新决心";
+"gov.vote.conviction.alert.message" = "弃权票只能通过 0.1x 决心投票。是否以 0.1x 决心投票？";
+"gov.vote.conviction.hint.title" = "弃权时将把决心设置为 0.1x";

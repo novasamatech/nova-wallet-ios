@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "Bakiyeniz";
 "common.max" = "maks";
 "crowdloan.custom.contrib.format" = "%@ (%@ aracılığıyla)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "%@'de Görüntüle";
 "import.json.unsupported.ethereum.crypto.message" = "Substrate gizli anahtarı olan bir hesabın Ethereum şifrelemesi olan ağa aktarımı yapılamaz";
 "import.json.unsupported.substrate.crypto.message" = "Ethereum gizli anahtarı olan bir hesabın Substrate şifrelemesi olan ağa aktarımı yapılamaz";
@@ -1727,3 +1725,7 @@
 "staking.setup.conflict.message" = "Aynı anda hem Doğrudan Stake hem de Nomination Havuzlarını kullanarak stake yapamazsınız";
 "nomination.pools.conflict.title" = "Havuz işlemleri kullanılamıyor";
 "nomination.pools.conflict.message" = "Artık aynı hesaptan hem Doğrudan Stake hem de Havuz Stake kullanamazsınız. Havuz Stake'inizi yönetmek için öncelikle token'larınızı Doğrudan Stake'ten çözmeniz gerekmektedir.";
+"gov.voters.abstain" = "Çekimser Oylar";
+"gov.vote.conviction.alert.title" = "İnanç Güncellemesi";
+"gov.vote.conviction.alert.message" = "Çekimser oylar yalnızca 0.1x inançla yapılabilir. 0.1x inançla oy kullanmak ister misiniz?";
+"gov.vote.conviction.hint.title" = "Çekinmelerde 0.1x olarak Ayarlanacak";

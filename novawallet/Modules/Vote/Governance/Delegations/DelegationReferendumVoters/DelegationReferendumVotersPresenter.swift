@@ -56,6 +56,10 @@ final class DelegationReferendumVotersPresenter {
             return LocalizableResource { locale in
                 R.string.localizable.govVotersNay(preferredLanguages: locale.rLanguages)
             }
+        case .abstains:
+            return LocalizableResource { locale in
+                R.string.localizable.govVotersAbstain(preferredLanguages: locale.rLanguages)
+            }
         }
     }
 }

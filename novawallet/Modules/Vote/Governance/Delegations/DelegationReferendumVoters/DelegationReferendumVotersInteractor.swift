@@ -26,7 +26,10 @@ final class DelegationReferendumVotersInteractor {
 
     private func fetchVoters() {
         let wrapper = votersLocalWrapperFactory.createWrapper(
-            for: .init(referendumId: referendumId, isAye: votersType == .ayes)
+            for: .init(
+                referendumId: referendumId,
+                votersType: votersType
+            )
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
