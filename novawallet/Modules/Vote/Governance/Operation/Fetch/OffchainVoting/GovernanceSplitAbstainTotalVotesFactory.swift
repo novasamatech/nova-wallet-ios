@@ -2,13 +2,20 @@ import Foundation
 import Operation_iOS
 import BigInt
 
-typealias ReferendumVotingAmount = BigUInt
-
-protocol GovernanceSplitAbstainTotalVotesFactoryProtocol {
-    func createOperation(referendumId: ReferendumIdLocal) -> BaseOperation<ReferendumVotingAmount>
+struct ReferendumVotingAmount {
+    let aye: BigUInt
+    let nay: BigUInt
+    let abstain: BigUInt
 }
 
-final class GovernanceSplitAbstainTotalVotesFactory: SubqueryBaseOperationFactory {
+protocol GovernanceTotalVotesFactoryProtocol {
+    func createOperation(
+        referendumId: ReferendumIdLocal,
+        votersType: ReferendumVotersType?
+    ) -> BaseOperation<ReferendumVotingAmount>
+}
+
+final class GovernanceTotalVotesFactory: SubqueryBaseOperationFactory {
     private func prepareSplitAbstainVotesQuery(referendumId: ReferendumIdLocal) -> String {
         """
         {
@@ -27,18 +34,59 @@ final class GovernanceSplitAbstainTotalVotesFactory: SubqueryBaseOperationFactor
         }
         """
     }
+
+    private func prepareAllVotesQuery(referendumId: ReferendumIdLocal) -> String {
+        """
+        {
+            castingVotings(
+                filter: {
+                    referendumId: { equalTo: "\(referendumId)" },
+                    or: [
+                            {splitVote: { isNull: false }},
+                            {splitAbstainVote: {isNull: false}},
+                            {standardVote: {isNull: false}}
+                        ]
+                }
+            ) {
+                nodes {
+                    referendumId
+                    voter
+                    splitVote
+                    splitAbstainVote
+                    standardVote
+                }
+            }
+        }
+        """
+    }
 }
 
-extension GovernanceSplitAbstainTotalVotesFactory: GovernanceSplitAbstainTotalVotesFactoryProtocol {
-    func createOperation(referendumId: ReferendumIdLocal) -> BaseOperation<ReferendumVotingAmount> {
-        let query = prepareSplitAbstainVotesQuery(referendumId: referendumId)
+extension GovernanceTotalVotesFactory: GovernanceTotalVotesFactoryProtocol {
+    func createOperation(referendumId: ReferendumIdLocal, votersType: ReferendumVotersType?) -> BaseOperation<ReferendumVotingAmount> {
+        let query = if let votersType {
+            prepareSplitAbstainVotesQuery(referendumId: referendumId)
+        } else {
+            prepareAllVotesQuery(referendumId: referendumId)
+        }
 
         let operation = createOperation(
             for: query
-        ) { (response: SubqueryVotingResponse.CastingResponse) -> BigUInt in
+        ) { (response: SubqueryVotingResponse.CastingResponse) -> ReferendumVotingAmount in
             response.castingVotings.nodes
                 .compactMap { ReferendumVoterLocal(from: $0) }
-                .reduce(into: 0) { $0 += $1.vote.abstains }
+                .reduce(
+                    ReferendumVotingAmount(
+                        aye: 0,
+                        nay: 0,
+                        abstain: 0
+                    )
+                ) { acc, voter in
+                    ReferendumVotingAmount(
+                        aye: acc.aye + voter.vote.ayes,
+                        nay: acc.nay + voter.vote.nays,
+                        abstain: acc.abstain + voter.vote.abstains
+                    )
+                }
         }
 
         return operation

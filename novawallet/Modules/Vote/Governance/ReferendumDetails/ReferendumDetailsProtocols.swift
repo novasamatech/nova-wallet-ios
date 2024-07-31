@@ -36,7 +36,7 @@ protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
 
 protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendum(_ referendum: ReferendumLocal)
-    func didReceiveAbstainsTotalAmount(_ amount: ReferendumVotingAmount)
+    func didReceiveVotingAmount(_ amount: ReferendumVotingAmount)
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal)
     func didReceiveAccountVotes(
         _ votes: ReferendumAccountVoteLocal?,
