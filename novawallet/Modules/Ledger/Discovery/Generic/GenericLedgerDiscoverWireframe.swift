@@ -10,8 +10,8 @@ final class GenericLedgerDiscoverWireframe: LedgerDiscoverWireframeProtocol {
     }
 
     func showAccountSelection(from view: ControllerBackedProtocol?, device: LedgerDeviceProtocol) {
-        guard let accountsView = GenericLedgerWalletViewFactory.createView(
-            for: application,
+        guard let accountsView = GenericLedgerAccountSelectionViewFactory.createView(
+            application: application,
             device: device,
             flow: flow
         ) else {

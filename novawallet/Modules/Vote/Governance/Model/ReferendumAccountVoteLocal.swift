@@ -122,7 +122,7 @@ enum ReferendumAccountVoteLocal: Equatable {
     }
 
     var totalBalance: BigUInt {
-        ayeBalance + nayBalance
+        ayeBalance + nayBalance + abstainBalance
     }
 
     var conviction: Decimal? {

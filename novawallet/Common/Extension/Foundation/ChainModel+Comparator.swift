@@ -35,3 +35,9 @@ enum ChainModelCompator {
         }
     }
 }
+
+extension Array where Element == ChainModel {
+    func sortedUsingDefaultComparator() -> [ChainModel] {
+        sorted { ChainModelCompator.defaultComparator(chain1: $0, chain2: $1) }
+    }
+}
