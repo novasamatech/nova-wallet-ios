@@ -76,7 +76,7 @@ extension VoteRowView: SkeletonableView {
             - rowContentView.valueView.iconWidth
             - rowContentView.valueView.spacing
             - UIConstants.horizontalInset
-        
+
         let yOffset = spaceSize.height / 2.0 - size.height / 2.0
 
         let offset = CGPoint(

@@ -872,6 +872,7 @@
 		2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */; };
 		2D039DEA2BFCAB9000A928E5 /* ExportViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE92BFCAB9000A928E5 /* ExportViewModelFactory.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
+		2D141FDC2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */; };
 		2D1A5F552C358E280073773D /* CustomNetworkSetupFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */; };
 		2D1A5F572C35A8720073773D /* PartialCustomChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */; };
 		2D1A5F5A2C35A8A30073773D /* ChainType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F592C35A8A30073773D /* ChainType.swift */; };
@@ -5847,6 +5848,7 @@
 		2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
 		2D039DE92BFCAB9000A928E5 /* ExportViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewModelFactory.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
+		2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndedReferendumProgressViewModelFactory.swift; sourceTree = "<group>"; };
 		2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkSetupFactory.swift; sourceTree = "<group>"; };
 		2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialCustomChainModel.swift; sourceTree = "<group>"; };
 		2D1A5F592C35A8A30073773D /* ChainType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainType.swift; sourceTree = "<group>"; };
@@ -15234,6 +15236,7 @@
 				84F1D66E29066F740050F4E3 /* ReferendumVotesViewModel.swift */,
 				848701092907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift */,
 				8487010B2907AA9B00F2C0C3 /* ReferendumMetadataViewModelFactory.swift */,
+				2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */,
 				84033054290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift */,
 				88D42CF32977AA9600DDE01E /* ReferendumsDelegationViewModel.swift */,
 				8463781E2979DACB0034162B /* ReferendumsActivityViewModelFactory.swift */,
@@ -26015,6 +26018,7 @@
 				8430AAF12602306A005B1066 /* BondedState.swift in Sources */,
 				848F8B1D2863616E00204BC4 /* ChainsStore.swift in Sources */,
 				886A278829E93D2A003B269F /* CommonOperationWrapper.swift in Sources */,
+				2D141FDC2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift in Sources */,
 				0C8AF7B22B36A88100005AC9 /* Pdc20Nft.swift in Sources */,
 				84333BD7285682EC00C76A4F /* ValidatorsSelectionParams.swift in Sources */,
 				84C3F77B2601F08B00D47501 /* NominationViewModel.swift in Sources */,

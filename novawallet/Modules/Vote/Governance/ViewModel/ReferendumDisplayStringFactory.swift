@@ -17,14 +17,14 @@ protocol ReferendumDisplayStringFactoryProtocol {
 extension ReferendumDisplayStringFactoryProtocol {
     func createReferendumVotes(
         from referendum: ReferendumLocal,
-        votingAmount: ReferendumVotingAmount?,
+        offchainVotingAmount: ReferendumVotingAmount?,
         abstainVotingAvailable: Bool,
         chain: ChainModel,
         locale: Locale
     ) -> ReferendumVotesViewModel {
         var ayes: BigUInt?
         var nays: BigUInt?
-        var abstains: BigUInt? = votingAmount?.abstain
+        var abstains: BigUInt? = offchainVotingAmount?.abstain
 
         if let voting = referendum.voting {
             switch voting {
@@ -35,9 +35,9 @@ extension ReferendumDisplayStringFactoryProtocol {
                 ayes = model.ayes
                 nays = model.nays
             }
-        } else if let votingAmount {
-            ayes = votingAmount.aye
-            nays = votingAmount.nay
+        } else if let offchainVotingAmount {
+            ayes = offchainVotingAmount.aye
+            nays = offchainVotingAmount.nay
         }
 
         let aye = createViewModel(

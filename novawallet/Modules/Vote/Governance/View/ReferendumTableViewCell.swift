@@ -124,6 +124,7 @@ extension VotingProgressView {
     func createSkeletons(
         on view: UIView,
         contentInsets externalInsets: UIEdgeInsets,
+        showsThreshold: Bool = true,
         spaceSize: CGSize
     ) -> [SingleSkeleton] {
         let contentInsets = UIEdgeInsets(
@@ -132,11 +133,13 @@ extension VotingProgressView {
             bottom: externalInsets.bottom + Constants.contentInsets.bottom,
             right: externalInsets.right + Constants.contentInsets.right
         )
-        let tresholdSkeletonSize = CGSize(width: 121, height: 8)
+        let tresholdSkeletonSize = showsThreshold ? CGSize(width: 121, height: 8) : .zero
         let progressSkeletonHeight: CGFloat = 5
         let votingSkeletonSize = CGSize(width: 60, height: 8)
 
-        let thresholdViewHeight = max(thresholdView.iconWidth, thresholdView.detailsLabel.font.lineHeight)
+        let thresholdViewHeight = showsThreshold
+            ? max(thresholdView.iconWidth, thresholdView.detailsLabel.font.lineHeight)
+            : .zero
         let thresholdSkeletonOffsetY = contentInsets.top + thresholdViewHeight / 2 - tresholdSkeletonSize.height / 2
         let thresholdSkeletonOffset = CGPoint(
             x: contentInsets.left,

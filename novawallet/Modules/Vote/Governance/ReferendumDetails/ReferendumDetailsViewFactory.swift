@@ -85,6 +85,9 @@ struct ReferendumDetailsViewFactory {
         )
 
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
+        let endedReferendumProgressViewModelFactory = EndedReferendumProgressViewModelFactory(
+            localizedPercentFormatter: NumberFormatter.referendumPercent.localizableResource()
+        )
 
         return ReferendumDetailsPresenter(
             chain: chain,
@@ -100,6 +103,7 @@ struct ReferendumDetailsViewFactory {
             referendumStringsFactory: referendumStringFactory,
             referendumTimelineViewModelFactory: timelineViewModelFactory,
             referendumMetadataViewModelFactory: metadataViewModelFactory,
+            endedReferendumProgressViewModelFactory: endedReferendumProgressViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: LocalizationManager.shared,
