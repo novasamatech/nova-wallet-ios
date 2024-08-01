@@ -18,6 +18,14 @@ struct GovernanceDelegateInfoViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
+            for: state.settings.value.type
+        )
+
+        let governanceDelegateInfoViewModelFactory = GovernanceDelegateInfoViewModelFactory(
+            stringDisplayFactory: referendumDisplayStringFactory
+        )
+
         let presenter = GovernanceDelegateInfoPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -25,10 +33,10 @@ struct GovernanceDelegateInfoViewFactory {
             accountManagementFilter: AccountManagementFilter(),
             wallet: wallet,
             initDelegate: delegate,
-            infoViewModelFactory: GovernanceDelegateInfoViewModelFactory(),
+            infoViewModelFactory: governanceDelegateInfoViewModelFactory,
             identityViewModelFactory: IdentityViewModelFactory(),
             tracksViewModelFactory: GovernanceTrackViewModelFactory(),
-            votesViewModelFactory: ReferendumDisplayStringFactory(),
+            votesViewModelFactory: referendumDisplayStringFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

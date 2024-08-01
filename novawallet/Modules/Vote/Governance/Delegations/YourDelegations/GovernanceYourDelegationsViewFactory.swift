@@ -9,8 +9,12 @@ struct GovernanceYourDelegationsViewFactory {
 
         let wireframe = GovernanceYourDelegationsWireframe(state: state)
 
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
+            for: state.settings.value.type
+        )
+
         let viewModelFactory = GovYourDelegationsViewModelFactory(
-            votesDisplayFactory: ReferendumDisplayStringFactory(),
+            votesDisplayFactory: referendumDisplayStringFactory,
             addressViewModelFactory: DisplayAddressViewModelFactory(),
             tracksViewModelFactory: GovernanceTrackViewModelFactory(),
             quantityFormatter: NumberFormatter.quantity.localizableResource(),

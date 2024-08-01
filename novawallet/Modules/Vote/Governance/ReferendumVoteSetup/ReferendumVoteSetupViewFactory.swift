@@ -85,7 +85,9 @@ struct ReferendumVoteSetupViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
+            for: option.type
+        )
 
         return ReferendumVoteSetupPresenter(
             chain: chain,
@@ -96,7 +98,7 @@ struct ReferendumVoteSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: NumberFormatter.index.localizableResource(),
             chainAssetViewModelFactory: chainAssetViewModelFactory,
-            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             interactor: interactor,
             wireframe: wireframe,

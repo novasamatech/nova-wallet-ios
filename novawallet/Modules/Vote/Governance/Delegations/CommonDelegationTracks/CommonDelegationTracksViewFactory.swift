@@ -13,14 +13,16 @@ struct CommonDelegationTracksViewFactory {
         }
 
         let viewModelFactory = GovernanceTrackViewModelFactory()
-        let stringFactory = ReferendumDisplayStringFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
+            for: state.settings.value.type
+        )
 
         let presenter = CommonDelegationTracksPresenter(
             tracks: tracks,
             delegations: delegations,
             chain: chain,
             viewModelFactory: viewModelFactory,
-            stringFactory: stringFactory,
+            stringFactory: referendumDisplayStringFactory,
             localizationManager: LocalizationManager.shared
         )
 

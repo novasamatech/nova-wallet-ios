@@ -49,11 +49,12 @@ struct DelegationReferendumVotersViewFactory {
             operationQueue: OperationQueue()
         )
         let wireframe = DelegationReferendumVotersWireframe()
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactory(
-            formatterFactory: AssetBalanceFormatterFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
+            for: state.settings.value.type
         )
-
-        let viewModelFactory = DelegationReferendumVotersViewModelFactory(stringFactory: referendumDisplayStringFactory)
+        let viewModelFactory = DelegationReferendumVotersViewModelFactory(
+            stringFactory: referendumDisplayStringFactory
+        )
         let presenter = DelegationReferendumVotersPresenter(
             interactor: interactor,
             wireframe: wireframe,

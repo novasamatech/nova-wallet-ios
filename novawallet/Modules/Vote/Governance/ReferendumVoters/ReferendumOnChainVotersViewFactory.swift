@@ -24,8 +24,8 @@ struct ReferendumOnChainVotersViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let stringViewModelFactory = ReferendumDisplayStringFactory(
-            formatterFactory: AssetBalanceFormatterFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
+            for: state.settings.value.type
         )
 
         let presenter = ReferendumVotersPresenter(
@@ -34,7 +34,7 @@ struct ReferendumOnChainVotersViewFactory {
             type: type,
             referendum: referendum,
             chain: chain,
-            stringFactory: stringViewModelFactory,
+            stringFactory: referendumDisplayStringFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

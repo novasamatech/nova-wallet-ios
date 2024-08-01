@@ -141,7 +141,7 @@ extension ReferendumVotingStatusDetailsView: SkeletonableView {
 extension ReferendumVotingStatusDetailsView: BindableView {
     struct Model {
         let status: ReferendumVotingStatusView.Model
-        let votingProgress: LoadableViewModelState<VotingProgressView.Model>
+        let votingProgress: LoadableViewModelState<VotingProgressView.Model?>
         let aye: VoteRowView.Model?
         let nay: VoteRowView.Model?
         let abstain: VoteRowView.Model?
@@ -158,7 +158,7 @@ extension ReferendumVotingStatusDetailsView: BindableView {
         case let .cached(value), let .loaded(value):
             isLoading = false
             stopLoadingIfNeeded()
-            votingProgressView.bind(viewModel: value)
+            votingProgressView.bindOrHide(viewModel: value)
         case .loading:
             isLoading = true
             startLoadingIfNeeded()

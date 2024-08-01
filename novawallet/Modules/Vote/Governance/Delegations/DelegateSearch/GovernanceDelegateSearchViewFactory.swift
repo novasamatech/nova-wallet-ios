@@ -14,7 +14,9 @@ struct GovernanceDelegateSearchViewFactory {
             return nil
         }
 
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
+            for: state.settings.value.type
+        )
         let addressViewModelFactory = DisplayAddressViewModelFactory()
         let quantityFormatter = NumberFormatter.quantity.localizableResource()
 

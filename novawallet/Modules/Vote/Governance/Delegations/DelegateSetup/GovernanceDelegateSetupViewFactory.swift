@@ -85,7 +85,9 @@ struct GovernanceDelegateSetupViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
+            for: option.type
+        )
 
         let localizationManager = LocalizationManager.shared
 
@@ -101,7 +103,7 @@ struct GovernanceDelegateSetupViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
-            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             localizationManager: localizationManager,
             logger: Logger.shared

@@ -12,13 +12,135 @@ protocol ReferendumDisplayStringFactoryProtocol {
         chain: ChainModel,
         locale: Locale
     ) -> String?
-}
 
-extension ReferendumDisplayStringFactoryProtocol {
     func createReferendumVotes(
         from referendum: ReferendumLocal,
         offchainVotingAmount: ReferendumVotingAmount?,
-        abstainVotingAvailable: Bool,
+        chain: ChainModel,
+        locale: Locale
+    ) -> ReferendumVotesViewModel
+
+    func createDirectVotesViewModel(
+        from vote: ReferendumAccountVoteLocal,
+        chain: ChainModel,
+        locale: Locale
+    ) -> [YourVoteRow.Model]
+
+    func createDelegatorVotesViaDelegateViewModel(
+        from vote: GovernanceOffchainVoting.DelegateVote,
+        delegateName: String?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> [YourVoteRow.Model]
+}
+
+private typealias ReferendumDisplayStringFactory = ReferendumDisplayStringFactoryProtocol & BaseReferendumDisplayStringFactory
+
+enum ReferendumDisplayStringFactoryProvider {
+    static func factory(
+        for govType: GovernanceType,
+        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+    ) -> ReferendumDisplayStringFactoryProtocol {
+        if govType == .governanceV2 {
+            OpenGovReferendumDisplayStringFactory(formatterFactory: formatterFactory)
+        } else {
+            Gov1ReferendumDisplayStringFactory(formatterFactory: formatterFactory)
+        }
+    }
+}
+
+// MARK: OpenGov Factory
+
+final class OpenGovReferendumDisplayStringFactory: ReferendumDisplayStringFactory {
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol
+
+    init(formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()) {
+        self.formatterFactory = formatterFactory
+    }
+
+    func createViewModel(
+        title: String,
+        value: BigUInt?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> VoteRowView.Model? {
+        let loadableValueString: LoadableViewModelState<String>
+
+        if
+            let value,
+            let valueString = createVotes(
+                from: value,
+                chain: chain,
+                locale: locale
+            ) {
+            loadableValueString = .loaded(value: valueString)
+        } else {
+            loadableValueString = .loading
+        }
+
+        let viewModel = VoteRowView.Model(
+            title: title,
+            votes: loadableValueString
+        )
+
+        return viewModel
+    }
+}
+
+// MARK: Gov1 Factory
+
+final class Gov1ReferendumDisplayStringFactory: ReferendumDisplayStringFactory {
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol
+
+    init(formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()) {
+        self.formatterFactory = formatterFactory
+    }
+
+    func createViewModel(
+        title: String,
+        value: BigUInt?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> VoteRowView.Model? {
+        guard
+            let value,
+            let valueString = createVotes(
+                from: value,
+                chain: chain,
+                locale: locale
+            )
+        else {
+            return nil
+        }
+
+        let loadableValueString: LoadableViewModelState<String> = .loaded(value: valueString)
+
+        let viewModel = VoteRowView.Model(
+            title: title,
+            votes: loadableValueString
+        )
+
+        return viewModel
+    }
+}
+
+// MARK: BaseReferendumDisplayStringFactory
+
+protocol BaseReferendumDisplayStringFactory {
+    var formatterFactory: AssetBalanceFormatterFactoryProtocol { get }
+
+    func createViewModel(
+        title: String,
+        value: BigUInt?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> VoteRowView.Model?
+}
+
+extension BaseReferendumDisplayStringFactory {
+    func createReferendumVotes(
+        from referendum: ReferendumLocal,
+        offchainVotingAmount: ReferendumVotingAmount?,
         chain: ChainModel,
         locale: Locale
     ) -> ReferendumVotesViewModel {
@@ -52,16 +174,12 @@ extension ReferendumDisplayStringFactoryProtocol {
             chain: chain,
             locale: locale
         )
-        var abstain: VoteRowView.Model?
-
-        if abstainVotingAvailable {
-            abstain = createViewModel(
-                title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
-                value: abstains,
-                chain: chain,
-                locale: locale
-            )
-        }
+        var abstain = createViewModel(
+            title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
+            value: abstains,
+            chain: chain,
+            locale: locale
+        )
 
         return ReferendumVotesViewModel(
             ayes: aye,
@@ -70,32 +188,18 @@ extension ReferendumDisplayStringFactoryProtocol {
         )
     }
 
-    private func createViewModel(
-        title: String,
-        value: BigUInt?,
-        chain: ChainModel,
-        locale: Locale
-    ) -> VoteRowView.Model? {
-        let loadableValueString: LoadableViewModelState<String>
-
-        if
-            let value,
-            let valueString = createVotes(
-                from: value,
-                chain: chain,
-                locale: locale
-            ) {
-            loadableValueString = .loaded(value: valueString)
-        } else {
-            loadableValueString = .loading
+    func createVotesValue(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
+        guard let asset = chain.utilityAsset() else {
+            return nil
         }
 
-        let viewModel = VoteRowView.Model(
-            title: title,
-            votes: loadableValueString
-        )
+        let displayInfo = ChainAsset(chain: chain, asset: asset).assetDisplayInfo
 
-        return viewModel
+        let votesDecimal = Decimal.fromSubstrateAmount(votes, precision: displayInfo.assetPrecision) ?? 0
+
+        let displayFormatter = formatterFactory.createDisplayFormatter(for: displayInfo).value(for: locale)
+
+        return displayFormatter.stringFromDecimal(votesDecimal)
     }
 
     func createDirectVotesViewModel(
@@ -211,35 +315,12 @@ extension ReferendumDisplayStringFactoryProtocol {
             amount: .init(topValue: votesString ?? "", bottomValue: convictionString)
         )
     }
-}
-
-final class ReferendumDisplayStringFactory: ReferendumDisplayStringFactoryProtocol {
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
-
-    init(formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()) {
-        self.formatterFactory = formatterFactory
-    }
-
-    func createVotesValue(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
-        guard let asset = chain.utilityAsset() else {
-            return nil
-        }
-
-        let displayInfo = ChainAsset(chain: chain, asset: asset).assetDisplayInfo
-
-        let votesDecimal = Decimal.fromSubstrateAmount(votes, precision: displayInfo.assetPrecision) ?? 0
-
-        let displayFormatter = formatterFactory.createDisplayFormatter(for: displayInfo).value(for: locale)
-
-        return displayFormatter.stringFromDecimal(votesDecimal)
-    }
 
     func createVotes(
         from votes: BigUInt,
         chain: ChainModel,
         locale: Locale
-    )
-        -> String? {
+    ) -> String? {
         guard let votesValueString = createVotesValue(
             from: votes,
             chain: chain,
