@@ -316,7 +316,7 @@ extension ReferendumDetailsPresenter {
         let shouldHide = actionDetails == nil || referendum.state.completed
         view?.didReceive(shouldHideFullDetails: shouldHide)
     }
-    
+
     private func provideVotingDetails() {
         guard let blockNumber = blockNumber, let blockTime = blockTime else {
             return
@@ -358,7 +358,7 @@ extension ReferendumDetailsPresenter {
 
         view?.didReceive(votingDetails: viewModel)
     }
-    
+
     private func loadableProgressViewModel(
         from referendumViewModel: ReferendumView.Model
     ) -> LoadableViewModelState<VotingProgressView.Model> {
@@ -373,10 +373,10 @@ extension ReferendumDetailsPresenter {
         } else {
             .loading
         }
-        
+
         return loadableVotingProgress
     }
-    
+
     private func statusViewModel(for referendumViewModel: ReferendumView.Model) -> ReferendumVotingStatusView.Model {
         .init(
             status: .init(
@@ -387,7 +387,7 @@ extension ReferendumDetailsPresenter {
             title: R.string.localizable.govDetailsVotingStatus(preferredLanguages: selectedLocale.rLanguages)
         )
     }
-    
+
     private func buttonText() -> String? {
         let button: String?
 
@@ -400,7 +400,7 @@ extension ReferendumDetailsPresenter {
         } else {
             button = nil
         }
-        
+
         return button
     }
 }

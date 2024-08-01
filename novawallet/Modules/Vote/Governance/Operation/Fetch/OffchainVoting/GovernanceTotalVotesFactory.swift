@@ -40,12 +40,7 @@ final class GovernanceTotalVotesFactory: SubqueryBaseOperationFactory {
         {
             castingVotings(
                 filter: {
-                    referendumId: { equalTo: "\(referendumId)" },
-                    or: [
-                            {splitVote: { isNull: false }},
-                            {splitAbstainVote: {isNull: false}},
-                            {standardVote: {isNull: false}}
-                        ]
+                    referendumId: { equalTo: "\(referendumId)" }
                 }
             ) {
                 nodes {
