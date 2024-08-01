@@ -128,31 +128,26 @@ extension GovernanceTotalVotesFactory: GovernanceTotalVotesFactoryProtocol {
         _ amount: ReferendumVotingAmount,
         with voter: ReferendumVoterLocal
     ) -> ReferendumVotingAmount {
+        var accAye = amount.aye
+        var accNay = amount.nay
+        var accAbstain = amount.abstain
+
         switch voter.vote {
         case .split:
-            .init(
-                aye: amount.aye + voter.vote.ayes,
-                nay: amount.nay + voter.vote.nays,
-                abstain: amount.abstain
-            )
+            accAye += voter.vote.ayes
+            accNay += voter.vote.nays
         case .splitAbstain:
-            .init(
-                aye: amount.aye,
-                nay: amount.nay,
-                abstain: amount.abstain + voter.vote.abstains
-            )
+            accAbstain += voter.vote.abstains
         case let .standard(model) where model.vote.aye:
-            .init(
-                aye: amount.aye + voter.vote.ayes + voter.delegatorsVotes,
-                nay: amount.nay,
-                abstain: amount.abstain
-            )
+            accAye += (voter.vote.ayes + voter.delegatorsVotes)
         case let .standard(model):
-            .init(
-                aye: amount.aye,
-                nay: amount.nay + voter.vote.nays + voter.delegatorsVotes,
-                abstain: amount.abstain
-            )
+            accNay += (voter.vote.nays + voter.delegatorsVotes)
         }
+
+        return ReferendumVotingAmount(
+            aye: accAye,
+            nay: accNay,
+            abstain: accAbstain
+        )
     }
 }
