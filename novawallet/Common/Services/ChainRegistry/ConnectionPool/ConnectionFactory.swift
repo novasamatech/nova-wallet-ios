@@ -49,7 +49,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     ) throws -> ChainConnection {
         let urlModels = extractNodeUrls(
             from: chain,
-            schema: ConnectionNodeSchema.wss
+            schemaPredicate: .ws
         )
 
         return try createConnection(
@@ -76,7 +76,10 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     func updateConnection(_ connection: ChainConnection, chain: ChainNodeConnectable) {
-        let newUrlModels = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
+        let newUrlModels = extractNodeUrls(
+            from: chain,
+            schemaPredicate: .ws
+        )
         let newUrls = newUrlModels.map(\.url)
 
         if Set(connection.urls) != Set(newUrls) {
@@ -85,7 +88,10 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     func createOneShotConnection(for chain: ChainNodeConnectable) throws -> OneShotConnection {
-        let urls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https).map(\.url)
+        let urls = extractNodeUrls(
+            from: chain,
+            schemaPredicate: .urlPredicate
+        ).map(\.url)
 
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
 
@@ -108,7 +114,10 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         _ connection: OneShotConnection,
         chain: ChainNodeConnectable
     ) {
-        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https).map(\.url)
+        let newUrls = extractNodeUrls(
+            from: chain,
+            schemaPredicate: .urlPredicate
+        ).map(\.url)
 
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
@@ -159,14 +168,14 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
 
     private func extractNodeUrls(
         from chain: ChainNodeConnectable,
-        schema: String
+        schemaPredicate: NSPredicate
     ) -> [ConnectionCreationParams] {
         let filteredNodes = if case let .manual(selectedNode) = chain.connectionMode {
-            selectedNode.url.hasPrefix(schema)
+            schemaPredicate.evaluate(with: selectedNode.url)
                 ? Set([selectedNode])
                 : Set()
         } else {
-            chain.nodes.filter { $0.url.hasPrefix(schema) }
+            chain.nodes.filter { schemaPredicate.evaluate(with: $0.url) }
         }
 
         let nodes: [ChainNodeModel]
