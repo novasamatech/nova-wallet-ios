@@ -51,7 +51,13 @@ final class GovernanceTotalVotesFactory: SubqueryBaseOperationFactory {
                     standardVote
                     splitVote
                     splitAbstainVote
-                    voter
+                    voters
+                    delegatorVotes {
+                        nodes {
+                            delegator
+                            vote
+                        }
+                    }
                 }
             }
         }
@@ -72,6 +78,12 @@ final class GovernanceTotalVotesFactory: SubqueryBaseOperationFactory {
                     splitVote
                     splitAbstainVote
                     standardVote
+                    delegatorVotes {
+                        nodes {
+                            delegator
+                            vote
+                        }
+                    }
                 }
             }
         }
@@ -97,7 +109,7 @@ extension GovernanceTotalVotesFactory: GovernanceTotalVotesFactoryProtocol {
 
         let operation = createOperation(
             for: query
-        ) { (response: SubqueryVotingResponse.CastingResponse) -> ReferendumVotingAmount in
+        ) { [weak self] (response: SubqueryVotingResponse.ReferendumVotesResponse) -> ReferendumVotingAmount in
             response.castingVotings.nodes
                 .compactMap { ReferendumVoterLocal(from: $0) }
                 .reduce(
@@ -106,15 +118,41 @@ extension GovernanceTotalVotesFactory: GovernanceTotalVotesFactoryProtocol {
                         nay: 0,
                         abstain: 0
                     )
-                ) { acc, voter in
-                    ReferendumVotingAmount(
-                        aye: acc.aye + voter.vote.ayes,
-                        nay: acc.nay + voter.vote.nays,
-                        abstain: acc.abstain + voter.vote.abstains
-                    )
-                }
+                ) { self?.sum($0, with: $1) ?? $0 }
         }
 
         return operation
+    }
+
+    private func sum(
+        _ amount: ReferendumVotingAmount,
+        with voter: ReferendumVoterLocal
+    ) -> ReferendumVotingAmount {
+        switch voter.vote {
+        case .split:
+            .init(
+                aye: amount.aye + voter.vote.ayes,
+                nay: amount.nay + voter.vote.nays,
+                abstain: amount.abstain
+            )
+        case .splitAbstain:
+            .init(
+                aye: amount.aye,
+                nay: amount.nay,
+                abstain: amount.abstain + voter.vote.abstains
+            )
+        case let .standard(model) where model.vote.aye:
+            .init(
+                aye: amount.aye + voter.vote.ayes + voter.delegatorsVotes,
+                nay: amount.nay,
+                abstain: amount.abstain
+            )
+        case let .standard(model):
+            .init(
+                aye: amount.aye,
+                nay: amount.nay + voter.vote.nays + voter.delegatorsVotes,
+                abstain: amount.abstain
+            )
+        }
     }
 }
