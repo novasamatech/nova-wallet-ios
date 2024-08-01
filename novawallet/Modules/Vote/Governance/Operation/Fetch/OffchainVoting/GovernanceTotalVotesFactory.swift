@@ -35,6 +35,29 @@ final class GovernanceTotalVotesFactory: SubqueryBaseOperationFactory {
         """
     }
 
+    private func prepareStandardVotesQuery(referendumId: ReferendumIdLocal, isAye: Bool) -> String {
+        """
+        {
+            castingVotings (filter: {
+                referendumId: {equalTo: "\(referendumId)"},
+                or: [
+                        {splitVote: { isNull: false }},
+                        {splitAbstainVote: {isNull: false}},
+                        {standardVote: { contains: { aye: \(isAye)}}}
+                    ]
+            }) {
+                nodes {
+                    referendumId
+                    standardVote
+                    splitVote
+                    splitAbstainVote
+                    voter
+                }
+            }
+        }
+        """
+    }
+
     private func prepareAllVotesQuery(referendumId: ReferendumIdLocal) -> String {
         """
         {
@@ -59,7 +82,15 @@ final class GovernanceTotalVotesFactory: SubqueryBaseOperationFactory {
 extension GovernanceTotalVotesFactory: GovernanceTotalVotesFactoryProtocol {
     func createOperation(referendumId: ReferendumIdLocal, votersType: ReferendumVotersType?) -> BaseOperation<ReferendumVotingAmount> {
         let query = if let votersType {
-            prepareSplitAbstainVotesQuery(referendumId: referendumId)
+            switch votersType {
+            case .ayes:
+                prepareStandardVotesQuery(referendumId: referendumId, isAye: true)
+            case .nays:
+                prepareStandardVotesQuery(referendumId: referendumId, isAye: false)
+            case .abstains:
+                prepareSplitAbstainVotesQuery(referendumId: referendumId)
+            }
+
         } else {
             prepareAllVotesQuery(referendumId: referendumId)
         }
