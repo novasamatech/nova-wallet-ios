@@ -2,7 +2,7 @@ import Foundation
 
 struct ChainAccountRequest {
     let chainId: ChainModel.Id
-    let addressPrefix: UInt16
+    let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let supportsGenericLedger: Bool
 }
@@ -14,7 +14,7 @@ struct ChainAccountResponse {
     let publicKey: Data
     let name: String
     let cryptoType: MultiassetCryptoType
-    let addressPrefix: UInt16
+    let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let isChainAccount: Bool
     let type: MetaAccountModelType
@@ -55,18 +55,24 @@ extension MetaChainAccountResponse {
 
 extension ChainAccountResponse {
     var chainFormat: ChainFormat {
-        isEthereumBased ? .ethereum : .substrate(addressPrefix)
+        isEthereumBased
+            ? .ethereum
+            : .substrate(addressPrefix.toSubstrateFormat())
     }
 
     func toDisplayAddress() throws -> DisplayAddress {
-        let chainFormat: ChainFormat = isEthereumBased ? .ethereum : .substrate(addressPrefix)
+        let chainFormat: ChainFormat = isEthereumBased
+            ? .ethereum
+            : .substrate(addressPrefix.toSubstrateFormat())
         let address = try accountId.toAddress(using: chainFormat)
 
         return DisplayAddress(address: address, username: name)
     }
 
     func toAddress() -> AccountAddress? {
-        let chainFormat: ChainFormat = isEthereumBased ? .ethereum : .substrate(addressPrefix)
+        let chainFormat: ChainFormat = isEthereumBased
+            ? .ethereum
+            : .substrate(addressPrefix.toSubstrateFormat())
         return try? accountId.toAddress(using: chainFormat)
     }
 

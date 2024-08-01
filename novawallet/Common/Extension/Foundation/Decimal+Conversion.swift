@@ -29,6 +29,28 @@ extension Decimal {
         return rounded
     }
 
+    func ceil() -> Decimal {
+        var originValue = self
+        var rounded = Decimal()
+
+        NSDecimalRound(&rounded, &originValue, 0, .up)
+
+        return rounded
+    }
+
+    func divideToIntegralValue(by divisor: Decimal) -> Decimal {
+        (self / divisor).floor()
+    }
+
+    func lessEpsilon() -> Decimal {
+        if self == .zero {
+            return self
+        } else {
+            let epsilon = 1 / pow(Decimal(10), -exponent)
+            return self - epsilon
+        }
+    }
+
     static func rateFromSubstrate(
         amount1: BigUInt,
         amount2: BigUInt,

@@ -186,6 +186,15 @@ extension NetworksListViewController: IntegrateNetworksBannerDelegate {
     }
 }
 
+// MARK: UITextFieldDelegate
+
+extension NetworksListViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
+    }
+}
+
 // MARK: Private
 
 private extension NetworksListViewController {
@@ -196,11 +205,18 @@ private extension NetworksListViewController {
         rootView.tableView.registerClassForCell(PlaceholderCell.self)
         rootView.tableView.registerClassForCell(BannerCell.self)
 
-        setupNetworkSwitchTitles()
-        setupNavigationBarTitle()
+        setupLocalization()
     }
 
     func setupActions() {
+        rootView.searchTextField.addTarget(
+            self,
+            action: #selector(actionSearchEditingChanged),
+            for: .editingChanged
+        )
+
+        rootView.searchTextField.delegate = self
+
         rootView.networkTypeSwitch.addTarget(
             self,
             action: #selector(actionSegmentChanged),
@@ -217,7 +233,6 @@ private extension NetworksListViewController {
         )
 
         rightBarButtonItem.setupDefaultTitleStyle(with: .regularSubheadline)
-
         navigationItem.rightBarButtonItem = rightBarButtonItem
     }
 
@@ -238,6 +253,12 @@ private extension NetworksListViewController {
         )
     }
 
+    func setupTextFieldPlaceholder() {
+        rootView.searchTextField.placeholder = R.string.localizable.networkKnownListSearchPlaceholder(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+
     @objc private func actionSegmentChanged() {
         presenter.select(
             segment: .init(rawValue: rootView.networkTypeSwitch.selectedSegmentIndex)
@@ -248,9 +269,16 @@ private extension NetworksListViewController {
         presenter.addNetwork()
     }
 
+    @objc private func actionSearchEditingChanged() {
+        let query = rootView.searchTextField.text ?? ""
+
+        presenter.search(with: query)
+    }
+
     func setupLocalization() {
         setupNetworkSwitchTitles()
         setupNavigationBarTitle()
+        setupTextFieldPlaceholder()
     }
 
     func cellFor(

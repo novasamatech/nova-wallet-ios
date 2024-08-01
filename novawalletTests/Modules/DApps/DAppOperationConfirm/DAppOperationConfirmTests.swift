@@ -62,7 +62,7 @@ class DAppOperationConfirmTests: XCTestCase {
         let chain = ChainModelGenerator.generateChain(
             defaultChainId: chainId,
             generatingAssets: 1,
-            addressPrefix: addressPrefix.uint16Value,
+            addressPrefix: addressPrefix.uint64Value,
             assetPresicion: 12,
             hasStaking: false,
             hasCrowdloans: false
@@ -213,7 +213,7 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let chain = ChainModelGenerator.generateChain(
             generatingAssets: 1,
-            addressPrefix: addressPrefix.uint16Value,
+            addressPrefix: addressPrefix.uint64Value,
             assetPresicion: 12,
             hasStaking: false,
             hasCrowdloans: false

@@ -21,7 +21,12 @@ final class ReferendumDetailsPresenter {
     let governanceType: GovernanceType
     let logger: LoggerProtocol
 
+    private var abstainVotingAvailable: Bool {
+        governanceType == .governanceV2
+    }
+
     private var referendum: ReferendumLocal
+    private var abstainAmount: ReferendumVotingAmount?
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
     private var offchainVoting: GovernanceOffchainVotesLocal.Single?
@@ -236,6 +241,8 @@ final class ReferendumDetailsPresenter {
 
         let votes = referendumStringsFactory.createReferendumVotes(
             from: referendum,
+            abstainAmount: abstainAmount,
+            abstainVotingAvailable: abstainVotingAvailable,
             chain: chain,
             locale: selectedLocale
         )
@@ -245,6 +252,7 @@ final class ReferendumDetailsPresenter {
             votingProgress: votingProgress,
             aye: votes?.ayes,
             nay: votes?.nays,
+            abstain: votes?.abstains,
             buttonText: button
         )
 
@@ -438,6 +446,10 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         wireframe.showVoters(from: view, referendum: referendum, type: .nays)
     }
 
+    func showAbstainVoters() {
+        wireframe.showVoters(from: view, referendum: referendum, type: .abstains)
+    }
+
     func opeDApp(at index: Int) {
         guard
             let dApp = dApps?[index],
@@ -491,6 +503,12 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         updateTimerIfNeeded()
 
         refreshIdentities()
+    }
+
+    func didReceiveAbstainsTotalAmount(_ amount: ReferendumVotingAmount) {
+        abstainAmount = amount
+
+        provideVotingDetails()
     }
 
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal) {

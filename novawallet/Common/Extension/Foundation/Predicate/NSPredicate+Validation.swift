@@ -125,6 +125,7 @@ extension NSPredicate {
     }
 
     private enum WebsocketScheme: String {
+        // swiftlint:disable:next identifier_name
         case ws
         case wss
     }

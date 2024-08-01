@@ -193,6 +193,12 @@ private extension CustomNetworkViewController {
             for: .touchUpInside
         )
 
+        rootView.urlInput.pasteButton.addTarget(
+            self,
+            action: #selector(actionURLFieldPaste),
+            for: .touchUpInside
+        )
+
         rootView.urlInput.textField.addTarget(
             self,
             action: #selector(actionURLEndEditing),
@@ -228,6 +234,12 @@ private extension CustomNetworkViewController {
 
     @objc func actionURLEndEditing() {
         guard let text = rootView.urlInput.textField.text else { return }
+
+        presenter.handle(url: text)
+    }
+
+    @objc func actionURLFieldPaste() {
+        guard let text = rootView.urlInput.pasteboardService.pasteboard.string else { return }
 
         presenter.handle(url: text)
     }

@@ -1,6 +1,12 @@
 import UIKit
 
 final class NetworksListViewLayout: UIView {
+    let searchView = TopCustomSearchView()
+
+    var searchTextField: UITextField {
+        searchView.searchBar.textField
+    }
+
     let networkTypeSwitch: RoundedSegmentedControl = .create { view in
         view.backgroundView.fillColor = R.color.colorSegmentedBackgroundOnBlack()!
         view.selectionColor = R.color.colorSegmentedTabActive()!
@@ -18,8 +24,7 @@ final class NetworksListViewLayout: UIView {
         super.init(frame: frame)
 
         setupLayout()
-
-        backgroundColor = R.color.colorSecondaryScreenBackground()
+        setupStyle()
     }
 
     @available(*, unavailable)
@@ -28,9 +33,19 @@ final class NetworksListViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(searchView)
+        searchView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(Constants.searchBarHeight)
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+        }
+
+        searchView.blurBackgroundView.removeFromSuperview()
+        searchView.layoutIfNeeded()
+
         addSubview(networkTypeSwitch)
         networkTypeSwitch.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).offset(8)
+            make.top.equalTo(searchView.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(Constants.segmentControlHeight)
         }
@@ -40,6 +55,12 @@ final class NetworksListViewLayout: UIView {
             make.top.equalTo(networkTypeSwitch.snp.bottom).offset(8)
             make.leading.trailing.bottom.equalToSuperview()
         }
+    }
+
+    func setupStyle() {
+        searchView.searchBar.textFieldBackgroundView.cornerRadius = 10
+        searchView.backgroundColor = R.color.colorSecondaryScreenBackground()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
     }
 }
 
@@ -103,5 +124,6 @@ extension NetworksListViewLayout {
 extension NetworksListViewLayout {
     enum Constants {
         static let segmentControlHeight: CGFloat = 40
+        static let searchBarHeight: CGFloat = 52
     }
 }

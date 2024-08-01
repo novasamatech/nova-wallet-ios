@@ -9,6 +9,7 @@ final class ReferendumVoteSetupPresenter {
 
     let chain: ChainModel
     let referendumIndex: ReferendumIdLocal
+    let supportsAbstainVoting: Bool
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
@@ -34,6 +35,7 @@ final class ReferendumVoteSetupPresenter {
         chain: ChainModel,
         referendumIndex: ReferendumIdLocal,
         initData: ReferendumVotingInitData,
+        supportsAbstainVoting: Bool,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
@@ -52,6 +54,7 @@ final class ReferendumVoteSetupPresenter {
         referendum = initData.referendum
         lockDiff = initData.lockDiff
         self.referendumIndex = referendumIndex
+        self.supportsAbstainVoting = supportsAbstainVoting
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
@@ -64,7 +67,11 @@ final class ReferendumVoteSetupPresenter {
 
         self.localizationManager = localizationManager
     }
+}
 
+// MARK: Private
+
+extension ReferendumVoteSetupPresenter {
     private func balanceMinusFee() -> Decimal {
         let balanceValue = assetBalance?.freeInPlank ?? 0
         let feeValue = fee?.amountForCurrentAccount ?? 0
@@ -128,6 +135,10 @@ final class ReferendumVoteSetupPresenter {
         view?.didReceive(referendumNumber: referendumString ?? "")
     }
 
+    private func provideAbstainAvailable() {
+        view?.didReceive(abstainAvailable: supportsAbstainVoting)
+    }
+
     private func provideAmountInputViewModelIfRate() {
         guard case .rate = inputResult else {
             return
@@ -181,7 +192,7 @@ final class ReferendumVoteSetupPresenter {
             return
         }
 
-        let voteValue = vote.voteAction.conviction.votes(for: vote.voteAction.amount) ?? 0
+        let voteValue = vote.voteAction.conviction().votes(for: vote.voteAction.amount()) ?? 0
 
         let voteString = referendumStringsViewModelFactory.createVotes(
             from: voteValue,
@@ -222,6 +233,7 @@ final class ReferendumVoteSetupPresenter {
     }
 
     private func updateView() {
+        provideAbstainAvailable()
         provideReferendumIndex()
         updateAvailableBalanceView()
         provideAmountInputViewModel()
@@ -233,7 +245,7 @@ final class ReferendumVoteSetupPresenter {
         provideReuseLocksViewModel()
     }
 
-    private func deriveNewVote(isAye: Bool = true) -> ReferendumNewVote? {
+    private func deriveNewVote(_ selectedAction: VoteAction = .aye) -> ReferendumNewVote? {
         let amount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
 
         guard
@@ -242,11 +254,16 @@ final class ReferendumVoteSetupPresenter {
             return nil
         }
 
-        let voteAction = ReferendumVoteAction(
+        let model = ReferendumVoteActionModel(
             amount: amountInPlank,
-            conviction: conviction,
-            isAye: isAye
+            conviction: conviction
         )
+
+        let voteAction: ReferendumVoteAction = switch selectedAction {
+        case .aye: .aye(model)
+        case .nay: .nay(model)
+        case .abstain: .abstain(amount: model.amount)
+        }
 
         return ReferendumNewVote(index: referendumIndex, voteAction: voteAction)
     }
@@ -286,37 +303,47 @@ final class ReferendumVoteSetupPresenter {
     }
 
     private func performValidation(
-        for isAye: Bool,
+        for voteAction: VoteAction,
         notifying completionBlock: @escaping DataValidationRunnerCompletion
     ) {
         guard let assetInfo = chain.utilityAssetDisplayInfo() else {
             return
         }
 
-        let newVote = deriveNewVote(isAye: isAye)
+        let newVote = deriveNewVote(voteAction)
 
         let params = GovernanceVoteValidatingParams(
             assetBalance: assetBalance,
             referendum: referendum,
             newVote: newVote,
+            selectedConviction: conviction,
             fee: fee,
             votes: votesResult?.value?.votes,
             assetInfo: assetInfo
+        )
+
+        let handlers = GovernanceVoteValidatingHandlers(
+            convictionUpdateClosure: { [weak self] in
+                self?.selectConvictionValue(0)
+                self?.provideConviction()
+            },
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            }
         )
 
         DataValidationRunner.validateVote(
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
-            feeErrorClosure: { [weak self] in
-                self?.refreshFee()
-            }, successClosure: completionBlock
+            handlers: handlers,
+            successClosure: completionBlock
         )
     }
 
-    private func proceed(isAye: Bool) {
-        performValidation(for: isAye) { [weak self] in
-            guard let newVote = self?.deriveNewVote(isAye: isAye) else {
+    private func proceed(with voteAction: VoteAction) {
+        performValidation(for: voteAction) { [weak self] in
+            guard let newVote = self?.deriveNewVote(voteAction) else {
                 return
             }
 
@@ -328,7 +355,11 @@ final class ReferendumVoteSetupPresenter {
                 lockDiff: self?.lockDiff
             )
 
-            self?.wireframe.showConfirmation(from: self?.view, vote: newVote, initData: initData)
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                vote: newVote,
+                initData: initData
+            )
         }
     }
 
@@ -400,11 +431,15 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
     }
 
     func proceedNay() {
-        proceed(isAye: false)
+        proceed(with: .nay)
     }
 
     func proceedAye() {
-        proceed(isAye: true)
+        proceed(with: .aye)
+    }
+
+    func proceedAbstain() {
+        proceed(with: .abstain)
     }
 }
 
@@ -491,6 +526,14 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
                 self?.refreshLockDiff()
             }
         }
+    }
+}
+
+extension ReferendumVoteSetupPresenter {
+    enum VoteAction {
+        case aye
+        case nay
+        case abstain
     }
 }
 

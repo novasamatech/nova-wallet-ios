@@ -3,7 +3,6 @@ import Foundation
 struct ChainNodeModel: Equatable, Codable, Hashable {
     enum Feature: String, Codable, Hashable {
         case alchemyApi
-        case noTls12
     }
 
     enum Source: String, Codable, Hashable {
@@ -33,10 +32,6 @@ struct ChainNodeModel: Equatable, Codable, Hashable {
 }
 
 extension ChainNodeModel {
-    var supportsTls12: Bool {
-        !(features ?? []).contains(.noTls12)
-    }
-
     func updatingOrder(_ newOrder: Int16) -> ChainNodeModel {
         ChainNodeModel(
             url: url,
