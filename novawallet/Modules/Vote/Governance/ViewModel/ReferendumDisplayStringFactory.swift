@@ -17,56 +17,50 @@ protocol ReferendumDisplayStringFactoryProtocol {
 extension ReferendumDisplayStringFactoryProtocol {
     func createReferendumVotes(
         from referendum: ReferendumLocal,
-        abstainAmount: ReferendumVotingAmount?,
+        offchainVotingAmount: ReferendumVotingAmount?,
         abstainVotingAvailable: Bool,
         chain: ChainModel,
         locale: Locale
-    ) -> ReferendumVotesViewModel? {
-        guard let voting = referendum.voting else {
-            return nil
+    ) -> ReferendumVotesViewModel {
+        var ayes: BigUInt?
+        var nays: BigUInt?
+        var abstains: BigUInt? = offchainVotingAmount?.abstain
+
+        if let voting = referendum.voting {
+            switch voting {
+            case let .supportAndVotes(model):
+                ayes = model.ayes
+                nays = model.nays
+            case let .threshold(model):
+                ayes = model.ayes
+                nays = model.nays
+            }
+        } else if let offchainVotingAmount {
+            ayes = offchainVotingAmount.aye
+            nays = offchainVotingAmount.nay
         }
 
-        let ayesString: String?
-        let naysString: String?
-
-        switch voting {
-        case let .supportAndVotes(model):
-            ayesString = createVotes(from: model.ayes, chain: chain, locale: locale)
-            naysString = createVotes(from: model.nays, chain: chain, locale: locale)
-        case let .threshold(model):
-            ayesString = createVotes(from: model.ayes, chain: chain, locale: locale)
-            naysString = createVotes(from: model.nays, chain: chain, locale: locale)
-        }
-
-        let abstainString = createVotes(
-            from: abstainAmount ?? 0,
+        let aye = createViewModel(
+            title: R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages),
+            value: ayes,
             chain: chain,
             locale: locale
         )
+        let nay = createViewModel(
+            title: R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages),
+            value: nays,
+            chain: chain,
+            locale: locale
+        )
+        var abstain: VoteRowView.Model?
 
-        let aye: VoteRowView.Model? = ayesString.map {
-            .init(
-                title: R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages),
-                votes: $0
+        if abstainVotingAvailable {
+            abstain = createViewModel(
+                title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
+                value: abstains,
+                chain: chain,
+                locale: locale
             )
-        }
-
-        let nay: VoteRowView.Model? = naysString.map {
-            .init(
-                title: R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages),
-                votes: $0
-            )
-        }
-
-        var abstain: VoteRowView.Model? = if abstainVotingAvailable {
-            abstainString.map {
-                .init(
-                    title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
-                    votes: $0
-                )
-            }
-        } else {
-            nil
         }
 
         return ReferendumVotesViewModel(
@@ -74,6 +68,34 @@ extension ReferendumDisplayStringFactoryProtocol {
             nays: nay,
             abstains: abstain
         )
+    }
+
+    private func createViewModel(
+        title: String,
+        value: BigUInt?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> VoteRowView.Model? {
+        let loadableValueString: LoadableViewModelState<String>
+
+        if
+            let value,
+            let valueString = createVotes(
+                from: value,
+                chain: chain,
+                locale: locale
+            ) {
+            loadableValueString = .loaded(value: valueString)
+        } else {
+            loadableValueString = .loading
+        }
+
+        let viewModel = VoteRowView.Model(
+            title: title,
+            votes: loadableValueString
+        )
+
+        return viewModel
     }
 
     func createDirectVotesViewModel(
@@ -212,8 +234,17 @@ final class ReferendumDisplayStringFactory: ReferendumDisplayStringFactoryProtoc
         return displayFormatter.stringFromDecimal(votesDecimal)
     }
 
-    func createVotes(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
-        guard let votesValueString = createVotesValue(from: votes, chain: chain, locale: locale) else {
+    func createVotes(
+        from votes: BigUInt,
+        chain: ChainModel,
+        locale: Locale
+    )
+        -> String? {
+        guard let votesValueString = createVotesValue(
+            from: votes,
+            chain: chain,
+            locale: locale
+        ) else {
             return nil
         }
 

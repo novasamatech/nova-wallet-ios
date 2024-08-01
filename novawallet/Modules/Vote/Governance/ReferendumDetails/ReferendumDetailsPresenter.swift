@@ -12,6 +12,7 @@ final class ReferendumDetailsPresenter {
     let referendumStringsFactory: ReferendumDisplayStringFactoryProtocol
     let referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
+    let endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
@@ -26,7 +27,7 @@ final class ReferendumDetailsPresenter {
     }
 
     private var referendum: ReferendumLocal
-    private var abstainAmount: ReferendumVotingAmount?
+    private var offchainVotingAmount: ReferendumVotingAmount?
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
     private var offchainVoting: GovernanceOffchainVotesLocal.Single?
@@ -58,6 +59,7 @@ final class ReferendumDetailsPresenter {
         referendumStringsFactory: ReferendumDisplayStringFactoryProtocol,
         referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol,
         referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
+        endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -74,6 +76,7 @@ final class ReferendumDetailsPresenter {
         self.referendumFormatter = referendumFormatter
         self.referendumTimelineViewModelFactory = referendumTimelineViewModelFactory
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
+        self.endedReferendumProgressViewModelFactory = endedReferendumProgressViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         referendum = initData.referendum
@@ -92,6 +95,84 @@ final class ReferendumDetailsPresenter {
         invalidateTimer()
     }
 
+    private func updateView() {
+        provideReferendumInfoViewModel()
+        provideTitleViewModel()
+        provideRequestedAmount()
+        provideYourVote()
+        provideVotingDetails()
+        provideDAppViewModel()
+        provideTimelineViewModel()
+        provideFullDetailsViewModel()
+    }
+
+    private func invalidateTimer() {
+        countdownTimer?.delegate = nil
+        countdownTimer?.stop()
+        countdownTimer = nil
+    }
+
+    private func updateTimerIfNeeded() {
+        guard
+            let blockTime = blockTime,
+            let blockNumber = blockNumber else {
+            return
+        }
+
+        let activeTimeModel = statusViewModelFactory.createTimeViewModel(
+            for: referendum,
+            currentBlock: blockNumber,
+            blockDuration: blockTime,
+            locale: selectedLocale
+        )
+
+        guard let timeInterval = activeTimeModel?.timeInterval else {
+            invalidateTimer()
+            view?.didReceive(activeTimeViewModel: activeTimeModel?.viewModel)
+            return
+        }
+
+        maxStatusTimeInterval = timeInterval
+        statusViewModel = activeTimeModel
+
+        countdownTimer = CountdownTimer()
+        countdownTimer?.delegate = self
+        countdownTimer?.start(with: timeInterval)
+    }
+
+    private func updateTimerDisplay() {
+        guard
+            let remainedTimeInterval = countdownTimer?.remainedInterval,
+            let statusViewModel = statusViewModel,
+            let updatedViewModel = statusViewModel.updateModelClosure(remainedTimeInterval) else {
+            return
+        }
+
+        view?.didReceive(activeTimeViewModel: updatedViewModel)
+    }
+
+    private func refreshIdentities() {
+        var accountIds: Set<AccountId> = []
+
+        if let proposer = referendum.proposer {
+            accountIds.insert(proposer)
+        }
+
+        if let beneficiary = actionDetails?.beneficiary?.accountId {
+            accountIds.insert(beneficiary)
+        }
+
+        if let proposer = referendumMetadata?.proposerAccountId(for: chain.chainFormat) {
+            accountIds.insert(proposer)
+        }
+
+        interactor.refreshIdentities(for: accountIds)
+    }
+}
+
+// MARK: Provide View Models
+
+extension ReferendumDetailsPresenter {
     private func provideReferendumInfoViewModel() {
         let referendumIndex = referendumFormatter.value(for: selectedLocale).string(
             from: referendum.index as NSNumber
@@ -195,70 +276,6 @@ final class ReferendumDetailsPresenter {
         view?.didReceive(yourVoteModel: viewModel)
     }
 
-    private func provideVotingDetails() {
-        guard let blockNumber = blockNumber, let blockTime = blockTime else {
-            return
-        }
-
-        let chainInfo = ReferendumsModelFactoryInput.ChainInformation(
-            chain: chain,
-            currentBlock: blockNumber,
-            blockDuration: blockTime
-        )
-
-        let referendumViewModel = referendumViewModelFactory.createViewModel(
-            input: .init(
-                referendum: referendum,
-                metadata: referendumMetadata,
-                onchainVotes: accountVotes,
-                offchainVotes: nil,
-                chainInfo: chainInfo,
-                selectedLocale: selectedLocale
-            )
-        )
-
-        let votingProgress = referendumViewModel.progress
-        let status: ReferendumVotingStatusView.Model = .init(
-            status: .init(
-                name: referendumViewModel.referendumInfo.status.name,
-                kind: .init(infoKind: referendumViewModel.referendumInfo.status.kind)
-            ),
-            time: referendumViewModel.referendumInfo.time.map { .init(titleIcon: $0.titleIcon, isUrgent: $0.isUrgent) },
-            title: R.string.localizable.govDetailsVotingStatus(preferredLanguages: selectedLocale.rLanguages)
-        )
-
-        let button: String?
-
-        if referendum.canVote, votingAvailable {
-            if accountVotes != nil {
-                button = R.string.localizable.govRevote(preferredLanguages: selectedLocale.rLanguages)
-            } else {
-                button = R.string.localizable.govVote(preferredLanguages: selectedLocale.rLanguages)
-            }
-        } else {
-            button = nil
-        }
-
-        let votes = referendumStringsFactory.createReferendumVotes(
-            from: referendum,
-            abstainAmount: abstainAmount,
-            abstainVotingAvailable: abstainVotingAvailable,
-            chain: chain,
-            locale: selectedLocale
-        )
-
-        let viewModel = ReferendumVotingStatusDetailsView.Model(
-            status: status,
-            votingProgress: votingProgress,
-            aye: votes?.ayes,
-            nay: votes?.nays,
-            abstain: votes?.abstains,
-            buttonText: button
-        )
-
-        view?.didReceive(votingDetails: viewModel)
-    }
-
     private func provideDAppViewModel() {
         guard let dApps = dApps else {
             view?.didReceive(dAppModels: nil)
@@ -300,80 +317,95 @@ final class ReferendumDetailsPresenter {
         view?.didReceive(shouldHideFullDetails: shouldHide)
     }
 
-    private func updateView() {
-        provideReferendumInfoViewModel()
-        provideTitleViewModel()
-        provideRequestedAmount()
-        provideYourVote()
-        provideVotingDetails()
-        provideDAppViewModel()
-        provideTimelineViewModel()
-        provideFullDetailsViewModel()
-    }
-
-    private func invalidateTimer() {
-        countdownTimer?.delegate = nil
-        countdownTimer?.stop()
-        countdownTimer = nil
-    }
-
-    private func updateTimerIfNeeded() {
-        guard
-            let blockTime = blockTime,
-            let blockNumber = blockNumber else {
+    private func provideVotingDetails() {
+        guard let blockNumber = blockNumber, let blockTime = blockTime else {
             return
         }
 
-        let activeTimeModel = statusViewModelFactory.createTimeViewModel(
-            for: referendum,
+        let chainInfo = ReferendumsModelFactoryInput.ChainInformation(
+            chain: chain,
             currentBlock: blockNumber,
-            blockDuration: blockTime,
+            blockDuration: blockTime
+        )
+
+        let referendumViewModel = referendumViewModelFactory.createViewModel(
+            input: .init(
+                referendum: referendum,
+                metadata: referendumMetadata,
+                onchainVotes: accountVotes,
+                offchainVotes: nil,
+                chainInfo: chainInfo,
+                selectedLocale: selectedLocale
+            )
+        )
+
+        let votes = referendumStringsFactory.createReferendumVotes(
+            from: referendum,
+            offchainVotingAmount: offchainVotingAmount,
+            abstainVotingAvailable: abstainVotingAvailable,
+            chain: chain,
             locale: selectedLocale
         )
 
-        guard let timeInterval = activeTimeModel?.timeInterval else {
-            invalidateTimer()
-            view?.didReceive(activeTimeViewModel: activeTimeModel?.viewModel)
-            return
-        }
+        let viewModel = ReferendumVotingStatusDetailsView.Model(
+            status: statusViewModel(for: referendumViewModel),
+            votingProgress: loadableProgressViewModel(from: referendumViewModel),
+            aye: votes.ayes,
+            nay: votes.nays,
+            abstain: votes.abstains,
+            buttonText: buttonText()
+        )
 
-        maxStatusTimeInterval = timeInterval
-        statusViewModel = activeTimeModel
-
-        countdownTimer = CountdownTimer()
-        countdownTimer?.delegate = self
-        countdownTimer?.start(with: timeInterval)
+        view?.didReceive(votingDetails: viewModel)
     }
 
-    private func updateTimerDisplay() {
-        guard
-            let remainedTimeInterval = countdownTimer?.remainedInterval,
-            let statusViewModel = statusViewModel,
-            let updatedViewModel = statusViewModel.updateModelClosure(remainedTimeInterval) else {
-            return
+    private func loadableProgressViewModel(
+        from referendumViewModel: ReferendumView.Model
+    ) -> LoadableViewModelState<VotingProgressView.Model> {
+        let votingProgress = referendumViewModel.progress
+            ?? endedReferendumProgressViewModelFactory.createProgressViewModel(
+                votingAmount: offchainVotingAmount,
+                locale: selectedLocale
+            )
+
+        let loadableVotingProgress: LoadableViewModelState<VotingProgressView.Model> = if let votingProgress {
+            .loaded(value: votingProgress)
+        } else {
+            .loading
         }
 
-        view?.didReceive(activeTimeViewModel: updatedViewModel)
+        return loadableVotingProgress
     }
 
-    private func refreshIdentities() {
-        var accountIds: Set<AccountId> = []
+    private func statusViewModel(for referendumViewModel: ReferendumView.Model) -> ReferendumVotingStatusView.Model {
+        .init(
+            status: .init(
+                name: referendumViewModel.referendumInfo.status.name,
+                kind: .init(infoKind: referendumViewModel.referendumInfo.status.kind)
+            ),
+            time: referendumViewModel.referendumInfo.time.map { .init(titleIcon: $0.titleIcon, isUrgent: $0.isUrgent) },
+            title: R.string.localizable.govDetailsVotingStatus(preferredLanguages: selectedLocale.rLanguages)
+        )
+    }
 
-        if let proposer = referendum.proposer {
-            accountIds.insert(proposer)
+    private func buttonText() -> String? {
+        let button: String?
+
+        if referendum.canVote, votingAvailable {
+            if accountVotes != nil {
+                button = R.string.localizable.govRevote(preferredLanguages: selectedLocale.rLanguages)
+            } else {
+                button = R.string.localizable.govVote(preferredLanguages: selectedLocale.rLanguages)
+            }
+        } else {
+            button = nil
         }
 
-        if let beneficiary = actionDetails?.beneficiary?.accountId {
-            accountIds.insert(beneficiary)
-        }
-
-        if let proposer = referendumMetadata?.proposerAccountId(for: chain.chainFormat) {
-            accountIds.insert(proposer)
-        }
-
-        interactor.refreshIdentities(for: accountIds)
+        return button
     }
 }
+
+// MARK: ReferendumDetailsPresenterProtocol
 
 extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func setup() {
@@ -493,6 +525,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 }
 
+// MARK: ReferendumDetailsInteractorOutputProtocol
+
 extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol {
     func didReceiveReferendum(_ referendum: ReferendumLocal) {
         self.referendum = referendum
@@ -505,8 +539,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         refreshIdentities()
     }
 
-    func didReceiveAbstainsTotalAmount(_ amount: ReferendumVotingAmount) {
-        abstainAmount = amount
+    func didReceiveVotingAmount(_ amount: ReferendumVotingAmount) {
+        offchainVotingAmount = amount
 
         provideVotingDetails()
     }
@@ -603,6 +637,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
     }
 }
 
+// MARK: CountdownTimerDelegate
+
 extension ReferendumDetailsPresenter: CountdownTimerDelegate {
     func didStart(with _: TimeInterval) {
         updateTimerDisplay()
@@ -616,6 +652,8 @@ extension ReferendumDetailsPresenter: CountdownTimerDelegate {
         updateTimerDisplay()
     }
 }
+
+// MARK: Localizable
 
 extension ReferendumDetailsPresenter: Localizable {
     func applyLocalization() {

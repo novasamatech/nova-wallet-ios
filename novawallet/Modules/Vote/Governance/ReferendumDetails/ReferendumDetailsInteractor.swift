@@ -20,7 +20,7 @@ final class ReferendumDetailsInteractor {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
-    let totalAbstainVotesFactory: GovernanceSplitAbstainTotalVotesFactoryProtocol?
+    let totalVotesFactory: GovernanceTotalVotesFactoryProtocol?
     let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
     let operationQueue: OperationQueue
 
@@ -32,6 +32,7 @@ final class ReferendumDetailsInteractor {
     private var actionDetailsCancellable = CancellableCallStore()
     private var blockTimeCancellable = CancellableCallStore()
     private var abstainsFetchCancellable = CancellableCallStore()
+    private var allVotesFetchCancellable = CancellableCallStore()
 
     var chain: ChainModel {
         option.chain
@@ -51,7 +52,7 @@ final class ReferendumDetailsInteractor {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
-        totalAbstainVotesFactory: GovernanceSplitAbstainTotalVotesFactoryProtocol?,
+        totalVotesFactory: GovernanceTotalVotesFactoryProtocol?,
         dAppsProvider: AnySingleValueProvider<GovernanceDAppList>,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -69,7 +70,7 @@ final class ReferendumDetailsInteractor {
         self.blockTimeFactory = blockTimeFactory
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
-        self.totalAbstainVotesFactory = totalAbstainVotesFactory
+        self.totalVotesFactory = totalVotesFactory
         self.dAppsProvider = dAppsProvider
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -80,6 +81,7 @@ final class ReferendumDetailsInteractor {
         actionDetailsCancellable.cancel()
         blockTimeCancellable.cancel()
         abstainsFetchCancellable.cancel()
+        allVotesFetchCancellable.cancel()
 
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
 
@@ -101,7 +103,11 @@ final class ReferendumDetailsInteractor {
                     self?.referendum = referendum
                     self?.presenter?.didReceiveReferendum(referendum)
 
-                    self?.provideAbstains()
+                    if referendum.state.completed {
+                        self?.provideAllVotes()
+                    } else {
+                        self?.provideAbstains()
+                    }
                 }
             case let .failure(error):
                 self?.presenter?.didReceiveError(.referendumFailed(error))
@@ -279,12 +285,15 @@ final class ReferendumDetailsInteractor {
     private func provideAbstains() {
         guard
             !abstainsFetchCancellable.hasCall,
-            let totalAbstainVotesFactory
+            let totalVotesFactory
         else {
             return
         }
 
-        let operation = totalAbstainVotesFactory.createOperation(referendumId: referendum.index)
+        let operation = totalVotesFactory.createOperation(
+            referendumId: referendum.index,
+            votersType: .abstains
+        )
 
         execute(
             operation: operation,
@@ -294,7 +303,35 @@ final class ReferendumDetailsInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(amount):
-                self?.presenter?.didReceiveAbstainsTotalAmount(amount)
+                self?.presenter?.didReceiveVotingAmount(amount)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.accountVotesFailed(error))
+            }
+        }
+    }
+
+    private func provideAllVotes() {
+        guard
+            !allVotesFetchCancellable.hasCall,
+            let totalVotesFactory
+        else {
+            return
+        }
+
+        let operation = totalVotesFactory.createOperation(
+            referendumId: referendum.index,
+            votersType: nil
+        )
+
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            backingCallIn: allVotesFetchCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(amount):
+                self?.presenter?.didReceiveVotingAmount(amount)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.accountVotesFailed(error))
             }

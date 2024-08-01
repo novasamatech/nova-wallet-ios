@@ -85,6 +85,9 @@ struct ReferendumDetailsViewFactory {
         )
 
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
+        let endedReferendumProgressViewModelFactory = EndedReferendumProgressViewModelFactory(
+            localizedPercentFormatter: NumberFormatter.referendumPercent.localizableResource()
+        )
 
         return ReferendumDetailsPresenter(
             chain: chain,
@@ -100,6 +103,7 @@ struct ReferendumDetailsViewFactory {
             referendumStringsFactory: referendumStringFactory,
             referendumTimelineViewModelFactory: timelineViewModelFactory,
             referendumMetadataViewModelFactory: metadataViewModelFactory,
+            endedReferendumProgressViewModelFactory: endedReferendumProgressViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: LocalizationManager.shared,
@@ -156,8 +160,8 @@ struct ReferendumDetailsViewFactory {
 
         let delegationApi = chain.externalApis?.governanceDelegations()?.first
 
-        let totalAbstainVotesFactory: GovernanceSplitAbstainTotalVotesFactoryProtocol? = if let delegationApi {
-            GovernanceSplitAbstainTotalVotesFactory(url: delegationApi.url)
+        let totalVotesFactory: GovernanceTotalVotesFactoryProtocol? = if let delegationApi {
+            GovernanceTotalVotesFactory(url: delegationApi.url)
         } else {
             nil
         }
@@ -176,7 +180,7 @@ struct ReferendumDetailsViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
-            totalAbstainVotesFactory: totalAbstainVotesFactory,
+            totalVotesFactory: totalVotesFactory,
             dAppsProvider: dAppsProvider,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
