@@ -43,7 +43,7 @@ enum SubqueryVotingResponse {
         let standardVote: StandardVote?
         let splitVote: SplitVote?
         let splitAbstainVote: SplitAbstainVote?
-        var voter: String
+        var voter: String?
     }
 
     struct CastingVotings: Decodable {
@@ -163,7 +163,7 @@ extension SubqueryVotingResponse {
         let standardVote: StandardVote?
         let splitVote: SplitVote?
         let splitAbstainVote: SplitAbstainVote?
-        let voter: String
+        let voter: String?
         let delegatorVotes: DelegatorVotesReponse
     }
 
@@ -190,7 +190,7 @@ protocol CastingVotingProtocol {
     var standardVote: SubqueryVotingResponse.StandardVote? { get }
     var splitVote: SubqueryVotingResponse.SplitVote? { get }
     var splitAbstainVote: SubqueryVotingResponse.SplitAbstainVote? { get }
-    var voter: String { get }
+    var voter: String? { get }
 }
 
 protocol CastingWithDelegatorVotingProtocol: CastingVotingProtocol {
@@ -200,7 +200,8 @@ protocol CastingWithDelegatorVotingProtocol: CastingVotingProtocol {
 extension ReferendumVoterLocal {
     init?(from castingVote: SubqueryVotingResponse.CastingVoting) {
         guard let vote = Self.createVoteLocal(from: castingVote),
-              let accountId = try? AccountAddress(castingVote.voter).toAccountId() else {
+              let voter = castingVote.voter,
+              let accountId = try? AccountAddress(voter).toAccountId() else {
             return nil
         }
 
@@ -211,7 +212,8 @@ extension ReferendumVoterLocal {
 
     init?(from castingVote: SubqueryVotingResponse.CastingAndDelegationsVoting) {
         guard let vote = Self.createVoteLocal(from: castingVote),
-              let accountId = try? AccountAddress(castingVote.voter).toAccountId() else {
+              let voter = castingVote.voter,
+              let accountId = try? AccountAddress(voter).toAccountId() else {
             return nil
         }
 
