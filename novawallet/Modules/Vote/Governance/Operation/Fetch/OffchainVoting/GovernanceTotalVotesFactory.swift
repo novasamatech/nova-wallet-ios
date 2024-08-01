@@ -107,21 +107,35 @@ extension GovernanceTotalVotesFactory: GovernanceTotalVotesFactoryProtocol {
             prepareAllVotesQuery(referendumId: referendumId)
         }
 
-        let operation = createOperation(
-            for: query
-        ) { [weak self] (response: SubqueryVotingResponse.ReferendumVotesResponse) -> ReferendumVotingAmount in
-            response.castingVotings.nodes
-                .compactMap { ReferendumVoterLocal(from: $0) }
-                .reduce(
-                    ReferendumVotingAmount(
-                        aye: 0,
-                        nay: 0,
-                        abstain: 0
-                    )
-                ) { self?.sum($0, with: $1) ?? $0 }
+        let operation = if votersType == .abstains {
+            createOperation(for: query, resultHandler: mapAbstainVotingResponse)
+        } else {
+            createOperation(for: query, resultHandler: mapVotingResponse)
         }
 
         return operation
+    }
+
+    private func mapAbstainVotingResponse(_ response: SubqueryVotingResponse.CastingResponse) -> ReferendumVotingAmount {
+        mapAmount(
+            from: response.castingVotings.nodes.compactMap { ReferendumVoterLocal(from: $0) }
+        )
+    }
+
+    private func mapVotingResponse(_ response: SubqueryVotingResponse.ReferendumVotesResponse) -> ReferendumVotingAmount {
+        mapAmount(
+            from: response.castingVotings.nodes.compactMap { ReferendumVoterLocal(from: $0) }
+        )
+    }
+
+    private func mapAmount(from voters: [ReferendumVoterLocal]) -> ReferendumVotingAmount {
+        voters.reduce(
+            ReferendumVotingAmount(
+                aye: 0,
+                nay: 0,
+                abstain: 0
+            )
+        ) { sum($0, with: $1) }
     }
 
     private func sum(
