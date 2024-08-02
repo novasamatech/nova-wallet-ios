@@ -41,9 +41,7 @@ struct GovRevokeDelegationConfirmViewFactory {
 
         let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
 
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: option.type
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
 

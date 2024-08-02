@@ -179,15 +179,13 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
 
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: state.settings.settings.governanceType ?? .governanceV2
-        )
+        let stringDisplayViewModelFactory = ReferendumDisplayStringFactory()
 
         let viewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
-            stringDisplayViewModelFactory: referendumDisplayStringFactory,
+            stringDisplayViewModelFactory: stringDisplayViewModelFactory,
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource()

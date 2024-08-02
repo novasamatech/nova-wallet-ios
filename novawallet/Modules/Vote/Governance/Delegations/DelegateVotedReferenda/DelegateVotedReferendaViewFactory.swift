@@ -46,9 +46,7 @@ struct DelegateVotedReferendaViewFactory {
         let wireframe = DelegateVotedReferendaWireframe(state: state)
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
         let indexFormatter = NumberFormatter.index.localizableResource()
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: state.settings.value.type
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
         let quantityFormatter = NumberFormatter.quantity.localizableResource()
 
         let referendumViewModelFactory = ReferendumsModelFactory(

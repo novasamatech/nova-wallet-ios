@@ -67,9 +67,8 @@ struct ReferendumDetailsViewFactory {
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
 
         let indexFormatter = NumberFormatter.index.localizableResource()
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: stateOption.type
-        )
+
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let referendumViewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
@@ -96,6 +95,11 @@ struct ReferendumDetailsViewFactory {
             )
         }
 
+        let referendumVotesFactory = ReferendumVotesViewModelFactoryProvider.factory(
+            for: stateOption.type,
+            stringFactory: referendumDisplayStringFactory
+        )
+
         return ReferendumDetailsPresenter(
             chain: chain,
             governanceType: stateOption.type,
@@ -107,7 +111,7 @@ struct ReferendumDetailsViewFactory {
             referendumViewModelFactory: referendumViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: indexFormatter,
-            referendumStringsFactory: referendumDisplayStringFactory,
+            referendumVotesFactory: referendumVotesFactory,
             referendumTimelineViewModelFactory: timelineViewModelFactory,
             referendumMetadataViewModelFactory: metadataViewModelFactory,
             endedReferendumProgressViewModelFactory: endedReferendumProgressViewModelFactory,

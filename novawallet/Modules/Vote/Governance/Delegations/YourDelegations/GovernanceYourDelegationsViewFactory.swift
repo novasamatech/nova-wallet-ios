@@ -9,9 +9,7 @@ struct GovernanceYourDelegationsViewFactory {
 
         let wireframe = GovernanceYourDelegationsWireframe(state: state)
 
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: state.settings.value.type
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let viewModelFactory = GovYourDelegationsViewModelFactory(
             votesDisplayFactory: referendumDisplayStringFactory,

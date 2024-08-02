@@ -16,9 +16,7 @@ struct AddDelegationViewFactory {
 
         let wireframe = AddDelegationWireframe(state: state)
 
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: state.settings.value.type
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let addressViewModelFactory = DisplayAddressViewModelFactory()
         let quantityFormatter = NumberFormatter.quantity.localizableResource()

@@ -13,9 +13,7 @@ struct CommonDelegationTracksViewFactory {
         }
 
         let viewModelFactory = GovernanceTrackViewModelFactory()
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: state.settings.value.type
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let presenter = CommonDelegationTracksPresenter(
             tracks: tracks,

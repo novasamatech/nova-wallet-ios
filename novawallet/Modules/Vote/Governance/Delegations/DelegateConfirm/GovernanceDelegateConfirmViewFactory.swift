@@ -76,9 +76,7 @@ struct GovernanceDelegateConfirmViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: state.settings.value.type
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
 

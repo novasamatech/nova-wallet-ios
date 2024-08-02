@@ -47,9 +47,7 @@ struct ReferendumVoteConfirmViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactoryProvider.factory(
-            for: option.type
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let dataValidatingFactory = GovernanceValidatorFactory(
             presentable: wireframe,
