@@ -187,8 +187,7 @@ extension SubqueryVotingResponse {
 extension ReferendumVoterLocal {
     init?(from castingVote: SubqueryVotingResponse.CastingAndDelegationsVoting) {
         guard let vote = Self.createVoteLocal(from: castingVote),
-              let voter = castingVote.voter,
-              let accountId = try? AccountAddress(voter).toAccountId() else {
+              let accountId = try? AccountAddress(castingVote.voter).toAccountId() else {
             return nil
         }
 
