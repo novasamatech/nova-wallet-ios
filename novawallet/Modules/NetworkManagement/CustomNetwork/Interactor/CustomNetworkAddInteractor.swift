@@ -11,6 +11,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         priceIdParser: PriceUrlParserProtocol,
+        setupFinishStrategyFactory: CustomNetworkSetupFinishStrategyFactory,
         operationQueue: OperationQueue
     ) {
         self.networkToAdd = networkToAdd
@@ -21,6 +22,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
             connectionFactory: connectionFactory,
             repository: repository,
             priceIdParser: priceIdParser,
+            setupFinishStrategyFactory: setupFinishStrategyFactory,
             operationQueue: operationQueue
         )
     }
@@ -41,10 +43,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
 
 extension CustomNetworkAddInteractor: CustomNetworkAddInteractorInputProtocol {
     func addNetwork(with request: CustomNetwork.AddRequest) {
-        setupFinishStrategy = CustomNetworkAddNewStrategy(
-            repository: repository,
-            operationQueue: operationQueue
-        )
+        setupFinishStrategy = setupFinishStrategyFactory.createAddNewStrategy()
 
         let type: ChainType = if let networkToAdd {
             networkToAdd.isEthereumBased ? .evm : .substrate
@@ -63,7 +62,7 @@ extension CustomNetworkAddInteractor: CustomNetworkAddInteractorInputProtocol {
     }
 
     func fetchNetworkProperties(for url: String) {
-        setupFinishStrategy = CustomNetworkProvideStrategy()
+        setupFinishStrategy = setupFinishStrategyFactory.createProvideStrategy()
 
         let request = CustomNetwork.SetupRequest(
             networkType: .substrate,

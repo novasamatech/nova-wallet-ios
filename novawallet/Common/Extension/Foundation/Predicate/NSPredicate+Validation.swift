@@ -110,7 +110,7 @@ extension NSPredicate {
             "[a-z0-9\\u00a1-\\uffff]" +
             "[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
             ")?" +
-            "[a-z0-9\\u00a1-\\uffff]\\." +
+            "[a-z0-9\\u00a1-\\uffff_-]\\." +
             ")+" +
             // TLD identifier name, may end with dot
             "(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
