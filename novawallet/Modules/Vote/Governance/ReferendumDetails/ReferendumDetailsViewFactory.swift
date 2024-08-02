@@ -67,13 +67,14 @@ struct ReferendumDetailsViewFactory {
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
 
         let indexFormatter = NumberFormatter.index.localizableResource()
-        let referendumStringFactory = ReferendumDisplayStringFactory()
+
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let referendumViewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            stringDisplayViewModelFactory: referendumStringFactory,
+            stringDisplayViewModelFactory: referendumDisplayStringFactory,
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: indexFormatter,
             quantityFormatter: NumberFormatter.quantity.localizableResource()
@@ -85,8 +86,18 @@ struct ReferendumDetailsViewFactory {
         )
 
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
-        let endedReferendumProgressViewModelFactory = EndedReferendumProgressViewModelFactory(
-            localizedPercentFormatter: NumberFormatter.referendumPercent.localizableResource()
+
+        var endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactory?
+
+        if stateOption.type == .governanceV2 {
+            endedReferendumProgressViewModelFactory = EndedReferendumProgressViewModelFactory(
+                localizedPercentFormatter: NumberFormatter.referendumPercent.localizableResource()
+            )
+        }
+
+        let referendumVotesFactory = ReferendumVotesViewModelFactoryProvider.factory(
+            for: stateOption.type,
+            stringFactory: referendumDisplayStringFactory
         )
 
         return ReferendumDetailsPresenter(
@@ -100,7 +111,7 @@ struct ReferendumDetailsViewFactory {
             referendumViewModelFactory: referendumViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: indexFormatter,
-            referendumStringsFactory: referendumStringFactory,
+            referendumVotesFactory: referendumVotesFactory,
             referendumTimelineViewModelFactory: timelineViewModelFactory,
             referendumMetadataViewModelFactory: metadataViewModelFactory,
             endedReferendumProgressViewModelFactory: endedReferendumProgressViewModelFactory,

@@ -46,14 +46,14 @@ struct DelegateVotedReferendaViewFactory {
         let wireframe = DelegateVotedReferendaWireframe(state: state)
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
         let indexFormatter = NumberFormatter.index.localizableResource()
-        let referendumStringFactory = ReferendumDisplayStringFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
         let quantityFormatter = NumberFormatter.quantity.localizableResource()
 
         let referendumViewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            stringDisplayViewModelFactory: referendumStringFactory,
+            stringDisplayViewModelFactory: referendumDisplayStringFactory,
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: indexFormatter,
             quantityFormatter: quantityFormatter

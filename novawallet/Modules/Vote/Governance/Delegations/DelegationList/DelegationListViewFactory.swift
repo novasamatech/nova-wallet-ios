@@ -20,11 +20,10 @@ struct DelegationListViewFactory {
 
         let wireframe = DelegationListWireframe()
         let localizationManager = LocalizationManager.shared
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactory(
-            formatterFactory: AssetBalanceFormatterFactory()
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
         let stringViewModelFactory = DelegationsDisplayStringFactory(
-            referendumDisplayStringFactory: referendumDisplayStringFactory)
+            referendumDisplayStringFactory: referendumDisplayStringFactory
+        )
 
         let presenter = DelegationListPresenter(
             interactor: interactor,

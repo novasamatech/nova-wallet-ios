@@ -9,10 +9,10 @@ final class ReferendumDetailsPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
     let referendumViewModelFactory: ReferendumsModelFactoryProtocol
-    let referendumStringsFactory: ReferendumDisplayStringFactoryProtocol
+    let referendumVotesFactory: ReferendumVotesViewModelFactoryProtocol
     let referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
-    let endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol
+    let endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol?
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
@@ -56,10 +56,10 @@ final class ReferendumDetailsPresenter {
         referendumViewModelFactory: ReferendumsModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
-        referendumStringsFactory: ReferendumDisplayStringFactoryProtocol,
+        referendumVotesFactory: ReferendumVotesViewModelFactoryProtocol,
         referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol,
         referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
-        endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol,
+        endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol?,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -71,7 +71,7 @@ final class ReferendumDetailsPresenter {
         self.governanceType = governanceType
         self.accountManagementFilter = accountManagementFilter
         self.referendumViewModelFactory = referendumViewModelFactory
-        self.referendumStringsFactory = referendumStringsFactory
+        self.referendumVotesFactory = referendumVotesFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.referendumFormatter = referendumFormatter
         self.referendumTimelineViewModelFactory = referendumTimelineViewModelFactory
@@ -248,7 +248,7 @@ extension ReferendumDetailsPresenter {
         let viewModel: [YourVoteRow.Model]
 
         if let accountVotes = accountVotes {
-            viewModel = referendumStringsFactory.createDirectVotesViewModel(
+            viewModel = referendumVotesFactory.createDirectVotesViewModel(
                 from: accountVotes,
                 chain: chain,
                 locale: selectedLocale
@@ -256,13 +256,13 @@ extension ReferendumDetailsPresenter {
         } else if let offchainVoting = offchainVoting {
             switch offchainVoting.voteType {
             case let .direct(directVote):
-                viewModel = referendumStringsFactory.createDirectVotesViewModel(
+                viewModel = referendumVotesFactory.createDirectVotesViewModel(
                     from: directVote,
                     chain: chain,
                     locale: selectedLocale
                 )
             case let .delegated(delegateVote):
-                viewModel = referendumStringsFactory.createDelegatorVotesViaDelegateViewModel(
+                viewModel = referendumVotesFactory.createDelegatorVotesViaDelegateViewModel(
                     from: delegateVote,
                     delegateName: offchainVoting.identity?.displayName ?? offchainVoting.metadata?.name,
                     chain: chain,
@@ -339,10 +339,9 @@ extension ReferendumDetailsPresenter {
             )
         )
 
-        let votes = referendumStringsFactory.createReferendumVotes(
+        let votes = referendumVotesFactory.createReferendumVotes(
             from: referendum,
             offchainVotingAmount: offchainVotingAmount,
-            abstainVotingAvailable: abstainVotingAvailable,
             chain: chain,
             locale: selectedLocale
         )
@@ -361,17 +360,33 @@ extension ReferendumDetailsPresenter {
 
     private func loadableProgressViewModel(
         from referendumViewModel: ReferendumView.Model
-    ) -> LoadableViewModelState<VotingProgressView.Model> {
-        let votingProgress = referendumViewModel.progress
-            ?? endedReferendumProgressViewModelFactory.createProgressViewModel(
+    ) -> LoadableViewModelState<VotingProgressView.Model?> {
+        var votingProgress = referendumViewModel.progress
+
+        if let endedReferendumProgressViewModelFactory, votingProgress == nil {
+            votingProgress = endedReferendumProgressViewModelFactory.createProgressViewModel(
+                votingAmount: offchainVotingAmount,
+                locale: selectedLocale
+            )
+        }
+
+        let loadableVotingProgress: LoadableViewModelState<VotingProgressView.Model?>
+
+        if let votingProgress {
+            loadableVotingProgress = .loaded(value: votingProgress)
+        } else if let endedReferendumProgressViewModelFactory {
+            let progress = endedReferendumProgressViewModelFactory.createProgressViewModel(
                 votingAmount: offchainVotingAmount,
                 locale: selectedLocale
             )
 
-        let loadableVotingProgress: LoadableViewModelState<VotingProgressView.Model> = if let votingProgress {
-            .loaded(value: votingProgress)
+            if let progress {
+                loadableVotingProgress = .loaded(value: progress)
+            } else {
+                loadableVotingProgress = .loading
+            }
         } else {
-            .loading
+            loadableVotingProgress = .loaded(value: nil)
         }
 
         return loadableVotingProgress
