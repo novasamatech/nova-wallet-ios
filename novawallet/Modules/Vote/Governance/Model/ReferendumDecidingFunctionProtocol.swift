@@ -32,12 +32,19 @@ extension ReferendumDecidingFunctionProtocol {
             return nil
         }
 
-        return if yVal < floor {
-            Decimal(1)
+        if yVal < floor {
+            return Decimal(1)
         } else if yVal > ceil {
-            .zero
+            return .zero
         } else {
-            (ceil - yVal) / (ceil - floor) * length
+            let numerator = (ceil - yVal) as NSDecimalNumber
+            let denominator = (ceil - floor) as NSDecimalNumber
+            let divisionResult = numerator.dividing(
+                by: denominator,
+                withBehavior: Decimal.Rounding.up(scale: NSDecimalNoScale)
+            ).decimalValue
+
+            return divisionResult * length
         }
     }
 
@@ -76,18 +83,9 @@ extension ReferendumDecidingFunctionProtocol {
             return Decimal(1)
         }
 
-        let roundingHandler = NSDecimalNumberHandler(
-            roundingMode: .up,
-            scale: Int16(truncatingIfNeeded: NSDecimalMaxSize),
-            raiseOnExactness: false,
-            raiseOnOverflow: false,
-            raiseOnUnderflow: false,
-            raiseOnDivideByZero: false
-        )
-
         let term = factor.dividing(
             by: yTerm as NSDecimalNumber,
-            withBehavior: roundingHandler
+            withBehavior: Decimal.Rounding.up(scale: NSDecimalNoScale)
         )
 
         let result = max(0, min(term.decimalValue - xOffset, 1))
@@ -106,15 +104,24 @@ struct Gov2LocalDecidingFunction: ReferendumDecidingFunctionProtocol {
             let length = Decimal.fromSubstratePerbill(value: params.length),
             length > 0.0,
             let ceil = Decimal.fromSubstratePerbill(value: params.ceil),
-            let floor = Decimal.fromSubstratePerbill(value: params.floor) else {
+            let floor = Decimal.fromSubstratePerbill(value: params.floor)
+        else {
             return nil
         }
 
-        return ceil - (ceil - floor) * min(xPoint, length) / length
+        let result = ceil
+            - (ceil - floor)
+            * (min(xPoint, length) as NSDecimalNumber)
+            .dividing(
+                by: length as NSDecimalNumber,
+                withBehavior: Decimal.Rounding.down(scale: NSDecimalNoScale)
+            ).decimalValue
+
+        return result
     }
 
     private func calculateReciprocal(from xPoint: Decimal, params: Referenda.ReciprocalCurve) -> Decimal? {
-        let factor = Decimal.fromFixedI64(value: params.factor)
+        let factor = Decimal.fromFixedI64(value: params.factor) as NSDecimalNumber
         let xOffset = Decimal.fromFixedI64(value: params.xOffset)
         let yOffset = Decimal.fromFixedI64(value: params.yOffset)
 
@@ -124,7 +131,10 @@ struct Gov2LocalDecidingFunction: ReferendumDecidingFunctionProtocol {
             return nil
         }
 
-        let result = factor / xAdd + yOffset
+        let result = factor.dividing(
+            by: xAdd as NSDecimalNumber,
+            withBehavior: Decimal.Rounding.down(scale: NSDecimalNoScale)
+        ).decimalValue + yOffset
 
         return max(0, min(result, 1))
     }
@@ -143,7 +153,7 @@ struct Gov2LocalDecidingFunction: ReferendumDecidingFunctionProtocol {
         }
 
         let periodIndex = (xPoint / period).floor()
-        let yPoint = min(begin - periodIndex * step, begin)
+        let yPoint = begin - min(periodIndex * step, begin)
 
         return max(yPoint, end)
     }
