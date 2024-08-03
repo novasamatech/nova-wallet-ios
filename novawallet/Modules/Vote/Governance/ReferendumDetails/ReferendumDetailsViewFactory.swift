@@ -97,6 +97,7 @@ struct ReferendumDetailsViewFactory {
 
         let referendumVotesFactory = ReferendumVotesViewModelFactoryProvider.factory(
             for: stateOption.type,
+            offchainVotingAvailable: chain.externalApis?.governanceDelegations()?.first != nil,
             stringFactory: referendumDisplayStringFactory
         )
 

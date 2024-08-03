@@ -22,10 +22,6 @@ final class ReferendumDetailsPresenter {
     let governanceType: GovernanceType
     let logger: LoggerProtocol
 
-    private var abstainVotingAvailable: Bool {
-        governanceType == .governanceV2
-    }
-
     private var referendum: ReferendumLocal
     private var offchainVotingAmount: ReferendumVotingAmount?
     private var actionDetails: ReferendumActionLocal?
@@ -554,7 +550,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         refreshIdentities()
     }
 
-    func didReceiveVotingAmount(_ amount: ReferendumVotingAmount) {
+    func didReceiveVotingAmount(_ amount: ReferendumVotingAmount?) {
         offchainVotingAmount = amount
 
         provideVotingDetails()

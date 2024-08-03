@@ -283,10 +283,12 @@ final class ReferendumDetailsInteractor {
     }
 
     private func provideAbstains() {
-        guard
-            !abstainsFetchCancellable.hasCall,
-            let totalVotesFactory
-        else {
+        guard !abstainsFetchCancellable.hasCall else {
+            return
+        }
+
+        guard let totalVotesFactory else {
+            presenter?.didReceiveVotingAmount(nil)
             return
         }
 
@@ -311,10 +313,12 @@ final class ReferendumDetailsInteractor {
     }
 
     private func provideAllVotes() {
-        guard
-            !allVotesFetchCancellable.hasCall,
-            let totalVotesFactory
-        else {
+        guard !allVotesFetchCancellable.hasCall else {
+            return
+        }
+
+        guard let totalVotesFactory else {
+            presenter?.didReceiveVotingAmount(nil)
             return
         }
 
