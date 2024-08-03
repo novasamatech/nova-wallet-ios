@@ -2,20 +2,25 @@ import Foundation
 import SoraFoundation
 
 protocol EndedReferendumProgressViewModelFactoryProtocol {
-    func createProgressViewModel(
+    func createLoadableViewModel(
         votingAmount: ReferendumVotingAmount?,
         locale: Locale
-    ) -> VotingProgressView.Model?
+    ) -> LoadableViewModelState<VotingProgressView.Model?>
 }
 
-final class EndedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol {
+final class EndedReferendumProgressViewModelFactory {
     let localizedPercentFormatter: LocalizableResource<NumberFormatter>
+    let offchainVotingAvailable: Bool
 
-    init(localizedPercentFormatter: LocalizableResource<NumberFormatter>) {
+    init(
+        localizedPercentFormatter: LocalizableResource<NumberFormatter>,
+        offchainVotingAvailable: Bool
+    ) {
         self.localizedPercentFormatter = localizedPercentFormatter
+        self.offchainVotingAvailable = offchainVotingAvailable
     }
 
-    func createProgressViewModel(
+    private func createViewModel(
         votingAmount: ReferendumVotingAmount?,
         locale: Locale
     ) -> VotingProgressView.Model? {
@@ -59,5 +64,27 @@ final class EndedReferendumProgressViewModelFactory: EndedReferendumProgressView
         }
 
         return aye / total
+    }
+}
+
+extension EndedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol {
+    func createLoadableViewModel(
+        votingAmount: ReferendumVotingAmount?,
+        locale: Locale
+    ) -> LoadableViewModelState<VotingProgressView.Model?> {
+        guard offchainVotingAvailable else {
+            return .loaded(value: nil)
+        }
+
+        let progress = createViewModel(
+            votingAmount: votingAmount,
+            locale: locale
+        )
+
+        return if let progress {
+            .loaded(value: progress)
+        } else {
+            .loading
+        }
     }
 }

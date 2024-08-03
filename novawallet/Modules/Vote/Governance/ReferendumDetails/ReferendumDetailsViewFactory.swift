@@ -3,6 +3,7 @@ import SubstrateSdk
 import Operation_iOS
 import SoraFoundation
 
+// swiftlint:disable function_body_length
 struct ReferendumDetailsViewFactory {
     static func createView(
         for state: GovernanceSharedState,
@@ -87,17 +88,16 @@ struct ReferendumDetailsViewFactory {
 
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
 
-        var endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactory?
+        let offchainVotingAvailable = chain.externalApis?.governanceDelegations()?.first != nil
 
-        if stateOption.type == .governanceV2 {
-            endedReferendumProgressViewModelFactory = EndedReferendumProgressViewModelFactory(
-                localizedPercentFormatter: NumberFormatter.referendumPercent.localizableResource()
-            )
-        }
+        let endedReferendumProgressViewModelFactory = EndedReferendumProgressViewModelFactory(
+            localizedPercentFormatter: NumberFormatter.referendumPercent.localizableResource(),
+            offchainVotingAvailable: offchainVotingAvailable
+        )
 
         let referendumVotesFactory = ReferendumVotesViewModelFactoryProvider.factory(
             for: stateOption.type,
-            offchainVotingAvailable: chain.externalApis?.governanceDelegations()?.first != nil,
+            offchainVotingAvailable: offchainVotingAvailable,
             stringFactory: referendumDisplayStringFactory
         )
 

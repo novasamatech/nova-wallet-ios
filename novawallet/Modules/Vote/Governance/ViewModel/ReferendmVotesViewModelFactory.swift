@@ -146,6 +146,7 @@ protocol BaseReferendumVotesViewModelFactory {
 }
 
 extension BaseReferendumVotesViewModelFactory {
+    // swiftlint:disable function_body_length
     func createReferendumVotes(
         from referendum: ReferendumLocal,
         offchainVotingAmount: ReferendumVotingAmount?,
