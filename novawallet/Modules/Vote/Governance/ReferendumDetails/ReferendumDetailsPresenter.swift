@@ -527,7 +527,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         refreshIdentities()
     }
 
-    func didReceiveVotingAmount(_ amount: ReferendumVotingAmount?) {
+    func didReceiveVotingAmount(_ amount: ReferendumVotingAmount) {
         offchainVotingAmount = amount
 
         provideVotingDetails()
