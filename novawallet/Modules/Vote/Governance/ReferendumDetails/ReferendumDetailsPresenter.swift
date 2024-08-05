@@ -12,7 +12,7 @@ final class ReferendumDetailsPresenter {
     let referendumVotesFactory: ReferendumVotesViewModelFactoryProtocol
     let referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
-    let endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol?
+    let endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
@@ -21,10 +21,6 @@ final class ReferendumDetailsPresenter {
     let chain: ChainModel
     let governanceType: GovernanceType
     let logger: LoggerProtocol
-
-    private var abstainVotingAvailable: Bool {
-        governanceType == .governanceV2
-    }
 
     private var referendum: ReferendumLocal
     private var offchainVotingAmount: ReferendumVotingAmount?
@@ -59,7 +55,7 @@ final class ReferendumDetailsPresenter {
         referendumVotesFactory: ReferendumVotesViewModelFactoryProtocol,
         referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol,
         referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
-        endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol?,
+        endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -346,9 +342,20 @@ extension ReferendumDetailsPresenter {
             locale: selectedLocale
         )
 
+        let votingProgress: LoadableViewModelState<VotingProgressView.Model?> = {
+            if let progress = referendumViewModel.progress {
+                .loaded(value: progress)
+            } else {
+                endedReferendumProgressViewModelFactory.createLoadableViewModel(
+                    votingAmount: offchainVotingAmount,
+                    locale: selectedLocale
+                )
+            }
+        }()
+
         let viewModel = ReferendumVotingStatusDetailsView.Model(
             status: statusViewModel(for: referendumViewModel),
-            votingProgress: loadableProgressViewModel(from: referendumViewModel),
+            votingProgress: votingProgress,
             aye: votes.ayes,
             nay: votes.nays,
             abstain: votes.abstains,
@@ -356,40 +363,6 @@ extension ReferendumDetailsPresenter {
         )
 
         view?.didReceive(votingDetails: viewModel)
-    }
-
-    private func loadableProgressViewModel(
-        from referendumViewModel: ReferendumView.Model
-    ) -> LoadableViewModelState<VotingProgressView.Model?> {
-        var votingProgress = referendumViewModel.progress
-
-        if let endedReferendumProgressViewModelFactory, votingProgress == nil {
-            votingProgress = endedReferendumProgressViewModelFactory.createProgressViewModel(
-                votingAmount: offchainVotingAmount,
-                locale: selectedLocale
-            )
-        }
-
-        let loadableVotingProgress: LoadableViewModelState<VotingProgressView.Model?>
-
-        if let votingProgress {
-            loadableVotingProgress = .loaded(value: votingProgress)
-        } else if let endedReferendumProgressViewModelFactory {
-            let progress = endedReferendumProgressViewModelFactory.createProgressViewModel(
-                votingAmount: offchainVotingAmount,
-                locale: selectedLocale
-            )
-
-            if let progress {
-                loadableVotingProgress = .loaded(value: progress)
-            } else {
-                loadableVotingProgress = .loading
-            }
-        } else {
-            loadableVotingProgress = .loaded(value: nil)
-        }
-
-        return loadableVotingProgress
     }
 
     private func statusViewModel(for referendumViewModel: ReferendumView.Model) -> ReferendumVotingStatusView.Model {

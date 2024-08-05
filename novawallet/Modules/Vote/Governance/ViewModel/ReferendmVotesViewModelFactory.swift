@@ -26,12 +26,19 @@ protocol ReferendumVotesViewModelFactoryProtocol {
 enum ReferendumVotesViewModelFactoryProvider {
     static func factory(
         for govType: GovernanceType,
+        offchainVotingAvailable: Bool,
         stringFactory: ReferendumDisplayStringFactoryProtocol = ReferendumDisplayStringFactory()
     ) -> ReferendumVotesViewModelFactoryProtocol {
         if govType == .governanceV2 {
-            OpenGovReferendumVotesViewModelFactory(stringFactory: stringFactory)
+            OpenGovReferendumVotesViewModelFactory(
+                stringFactory: stringFactory,
+                offchainVotingAvailable: offchainVotingAvailable
+            )
         } else {
-            Gov1ReferendumVotesViewModelFactory(stringFactory: stringFactory)
+            Gov1ReferendumVotesViewModelFactory(
+                stringFactory: stringFactory,
+                offchainVotingAvailable: offchainVotingAvailable
+            )
         }
     }
 }
@@ -43,9 +50,14 @@ private typealias ReferendmVotesViewModelFactory = ReferendumVotesViewModelFacto
 
 final class OpenGovReferendumVotesViewModelFactory: ReferendmVotesViewModelFactory {
     let stringFactory: ReferendumDisplayStringFactoryProtocol
+    let offchainVotingAvailable: Bool
 
-    init(stringFactory: ReferendumDisplayStringFactoryProtocol) {
+    init(
+        stringFactory: ReferendumDisplayStringFactoryProtocol,
+        offchainVotingAvailable: Bool
+    ) {
         self.stringFactory = stringFactory
+        self.offchainVotingAvailable = offchainVotingAvailable
     }
 
     func createViewModel(
@@ -81,9 +93,14 @@ final class OpenGovReferendumVotesViewModelFactory: ReferendmVotesViewModelFacto
 
 final class Gov1ReferendumVotesViewModelFactory: ReferendmVotesViewModelFactory {
     let stringFactory: ReferendumDisplayStringFactoryProtocol
+    let offchainVotingAvailable: Bool
 
-    init(stringFactory: ReferendumDisplayStringFactoryProtocol) {
+    init(
+        stringFactory: ReferendumDisplayStringFactoryProtocol,
+        offchainVotingAvailable: Bool
+    ) {
         self.stringFactory = stringFactory
+        self.offchainVotingAvailable = offchainVotingAvailable
     }
 
     func createViewModel(
@@ -118,6 +135,7 @@ final class Gov1ReferendumVotesViewModelFactory: ReferendmVotesViewModelFactory 
 
 protocol BaseReferendumVotesViewModelFactory {
     var stringFactory: ReferendumDisplayStringFactoryProtocol { get }
+    var offchainVotingAvailable: Bool { get }
 
     func createViewModel(
         title: String,
@@ -128,6 +146,7 @@ protocol BaseReferendumVotesViewModelFactory {
 }
 
 extension BaseReferendumVotesViewModelFactory {
+    // swiftlint:disable function_body_length
     func createReferendumVotes(
         from referendum: ReferendumLocal,
         offchainVotingAmount: ReferendumVotingAmount?,
@@ -147,9 +166,15 @@ extension BaseReferendumVotesViewModelFactory {
                 ayes = model.ayes
                 nays = model.nays
             }
-        } else if let offchainVotingAmount {
-            ayes = offchainVotingAmount.aye
-            nays = offchainVotingAmount.nay
+        } else if offchainVotingAvailable {
+            ayes = offchainVotingAmount?.aye
+            nays = offchainVotingAmount?.nay
+        } else {
+            return ReferendumVotesViewModel(
+                ayes: nil,
+                nays: nil,
+                abstains: nil
+            )
         }
 
         let aye = createViewModel(
@@ -164,12 +189,16 @@ extension BaseReferendumVotesViewModelFactory {
             chain: chain,
             locale: locale
         )
-        let abstain = createViewModel(
-            title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
-            value: abstains,
-            chain: chain,
-            locale: locale
-        )
+        let abstain: VoteRowView.Model? = {
+            guard offchainVotingAvailable else { return nil }
+
+            return createViewModel(
+                title: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
+                value: abstains,
+                chain: chain,
+                locale: locale
+            )
+        }()
 
         return ReferendumVotesViewModel(
             ayes: aye,
