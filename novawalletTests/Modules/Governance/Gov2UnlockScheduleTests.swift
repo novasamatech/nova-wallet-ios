@@ -506,7 +506,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
         GovernanceUnlocksTestBuilding.run(atBlock: 1100) {
             GovernanceUnlocksTestBuilding.given(
                 tracksDef: [
-                    .init(trackId: 1, decisionPeriod: 200)
+                    .init(trackId: 1, decisionPeriod: 200, confirmPeriod: 10)
                 ],
                 referendumsDef: [
                     .init(index: 1, trackId: 1, type: .ongoing(since: 1000))
@@ -514,14 +514,14 @@ class Gov2UnlockScheduleTests: XCTestCase {
             ) {
                 TrackTestBuilding.track(1) {
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote.abstain(referendum: 1, amount: 2, unlockAt: 1200)
+                        TrackTestBuilding.Vote.abstain(referendum: 1, amount: 2, unlockAt: 1210)
                     }
                 }
             }
             
             GovernanceUnlocksTestBuilding.expect {
                 UnlockScheduleTestBuilding.ScheduleResult.remainingItems {
-                    UnlockScheduleTestBuilding.unlock(amount: 2, atBlock: 1200) {
+                    UnlockScheduleTestBuilding.unlock(amount: 2, atBlock: 1210) {
                         GovernanceUnlockSchedule.Action.unvote(track: 1, index: 1)
                         GovernanceUnlockSchedule.Action.unlock(track: 1)
                     }
