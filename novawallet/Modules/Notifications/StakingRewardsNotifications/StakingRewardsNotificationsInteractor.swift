@@ -13,8 +13,7 @@ final class StakingRewardsNotificationsInteractor {
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: .main,
-            filterStrategy: .enabledChains
+            runningInQueue: .main
         ) { [weak self] changes in
             let stakingChains = changes.filter {
                 switch $0 {

@@ -48,11 +48,6 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                     return
                 }
 
-                guard chain.syncMode.enabled() else {
-                    completion(.filteredOut)
-                    return
-                }
-
                 let title = R.string.localizable.pushNotificationNewReferendumTitle(
                     preferredLanguages: self.locale.rLanguages
                 )

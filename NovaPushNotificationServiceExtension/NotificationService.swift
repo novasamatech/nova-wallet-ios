@@ -38,9 +38,6 @@ final class NotificationService: UNNotificationServiceExtension {
             switch handlerResult {
             case let .modified(notification):
                 contentHandler(notification.toUserNotificationContent(with: bestAttemptContent))
-            case .filteredOut:
-                self?.logger.info("Notification skipped")
-                return
             case let .original(error):
                 self?.logError(error)
 

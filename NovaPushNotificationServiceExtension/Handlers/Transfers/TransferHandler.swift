@@ -49,10 +49,6 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
                     throw PushNotificationsHandlerErrors.assetNotFound(assetId: chainId)
                 }
 
-                guard chain.syncMode.enabled() else {
-                    throw PushNotificationsHandlerErrors.chainDisabled
-                }
-
                 let priceOperation: BaseOperation<[PriceData]>
                 if let priceId = asset.priceId,
                    let currency = currencyManager(operationQueue: operationQueue)?.selectedCurrency {
@@ -94,8 +90,6 @@ final class TransferHandler: CommonHandler, PushNotificationHandler {
             switch result {
             case let .success(content):
                 completion(.modified(content))
-            case let .failure(error as PushNotificationsHandlerErrors) where error == .chainDisabled:
-                completion(.filteredOut)
             case let .failure(error as PushNotificationsHandlerErrors):
                 completion(.original(error))
             case let .failure(error):

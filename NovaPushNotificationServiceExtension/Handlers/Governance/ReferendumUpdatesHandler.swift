@@ -40,11 +40,6 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
                     return
                 }
 
-                guard chain.syncMode.enabled() else {
-                    completion(.filteredOut)
-                    return
-                }
-
                 let content = self.content(from: chain)
                 completion(.modified(content))
             case let .failure(error):

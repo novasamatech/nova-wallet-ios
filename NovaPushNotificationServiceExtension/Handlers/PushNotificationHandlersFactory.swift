@@ -3,7 +3,6 @@ import SoraFoundation
 
 enum PushNotificationHandleResult {
     case modified(NotificationContentResult)
-    case filteredOut
     case original(PushNotificationsHandlerErrors)
 }
 
