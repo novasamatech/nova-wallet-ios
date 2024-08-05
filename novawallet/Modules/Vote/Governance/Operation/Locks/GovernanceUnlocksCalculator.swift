@@ -2,6 +2,7 @@ import Foundation
 
 struct GovUnlockCalculationInfo {
     let decisionPeriods: [Referenda.TrackId: Moment]
+    let confirmPeriods: [Referenda.TrackId: Moment]
     let undecidingTimeout: Moment
     let voteLockingPeriod: Moment
 }

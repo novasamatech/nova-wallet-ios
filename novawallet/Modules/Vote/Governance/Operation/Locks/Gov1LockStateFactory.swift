@@ -70,6 +70,7 @@ final class Gov1LockStateFactory: GovernanceLockStateFactory {
 
             return GovUnlockCalculationInfo(
                 decisionPeriods: [Gov1OperationFactory.trackId: votingPeriod],
+                confirmPeriods: [:],
                 undecidingTimeout: 0,
                 voteLockingPeriod: lockingPeriod
             )
