@@ -124,8 +124,8 @@ struct SupportAndVotesLocal {
             let supportDelay = supportFunction?.delay(for: supportFraction),
             let approvalDelayedThreshold = approvalFunction?.calculateThreshold(for: approvalDelay),
             let supportDelayedThreshold = supportFunction?.calculateThreshold(for: supportDelay),
-            approvalFraction.greaterThanOrEqual(approvalDelayedThreshold, .up),
-            supportFraction.greaterThanOrEqual(supportDelayedThreshold, .up)
+            approvalFraction >= approvalDelayedThreshold,
+            supportFraction >= supportDelayedThreshold
         else {
             return .notPassing
         }
