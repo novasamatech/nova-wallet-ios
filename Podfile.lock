@@ -980,7 +980,7 @@ DEPENDENCIES:
   - SoraKeystore (~> 1.0.0)
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
-  - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.11`)
+  - Starscream (from `https://github.com/novasamatech/Starscream.git`, branch `fix/proxy-tcptransport-waiting-state`)
   - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.2.1`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
@@ -1066,8 +1066,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/UIkit-iOS.git
     :tag: 1.13.0
   Starscream:
+    :branch: fix/proxy-tcptransport-waiting-state
     :git: https://github.com/novasamatech/Starscream.git
-    :tag: 4.0.11
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
     :tag: 3.2.1
@@ -1106,8 +1106,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/UIkit-iOS.git
     :tag: 1.13.0
   Starscream:
+    :commit: e89e69f383eb3178b7278d195a882240438a0164
     :git: https://github.com/novasamatech/Starscream.git
-    :tag: 4.0.11
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
     :tag: 3.2.1
@@ -1187,6 +1187,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 8dfafdc5df8b2ed5b21c9f7ad84354d9e910df2a
+PODFILE CHECKSUM: c5d96393b5fdc80b6859869bdc762cc093c7015f
 
 COCOAPODS: 1.15.2
