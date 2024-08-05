@@ -33,6 +33,12 @@ struct CustomNetworkViewFactory {
             operationQueue: operationQueue
         )
 
+        let setupFinishStrategyFactory = CustomNetworkSetupFinishStrategyFactory(
+            chainRegistry: chainRegistry,
+            repository: repository,
+            operationQueue: operationQueue
+        )
+
         let interactor = CustomNetworkAddInteractor(
             networkToAdd: networkToAdd,
             chainRegistry: chainRegistry,
@@ -40,6 +46,7 @@ struct CustomNetworkViewFactory {
             connectionFactory: connectionFactory,
             repository: repository,
             priceIdParser: CoingeckoUrlParser(),
+            setupFinishStrategyFactory: setupFinishStrategyFactory,
             operationQueue: operationQueue
         )
 
@@ -99,6 +106,12 @@ struct CustomNetworkViewFactory {
             operationQueue: operationQueue
         )
 
+        let setupFinishStrategyFactory = CustomNetworkSetupFinishStrategyFactory(
+            chainRegistry: chainRegistry,
+            repository: repository,
+            operationQueue: operationQueue
+        )
+
         let interactor = CustomNetworkEditInteractor(
             networkToEdit: network,
             selectedNode: selectedNode,
@@ -107,6 +120,7 @@ struct CustomNetworkViewFactory {
             connectionFactory: connectionFactory,
             repository: repository,
             priceIdParser: CoingeckoUrlParser(),
+            setupFinishStrategyFactory: setupFinishStrategyFactory,
             operationQueue: operationQueue
         )
 

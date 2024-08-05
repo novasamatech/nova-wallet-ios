@@ -9,9 +9,10 @@ final class ReferendumDetailsPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
     let referendumViewModelFactory: ReferendumsModelFactoryProtocol
-    let referendumStringsFactory: ReferendumDisplayStringFactoryProtocol
+    let referendumVotesFactory: ReferendumVotesViewModelFactoryProtocol
     let referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
+    let endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
@@ -21,12 +22,8 @@ final class ReferendumDetailsPresenter {
     let governanceType: GovernanceType
     let logger: LoggerProtocol
 
-    private var abstainVotingAvailable: Bool {
-        governanceType == .governanceV2
-    }
-
     private var referendum: ReferendumLocal
-    private var abstainAmount: ReferendumVotingAmount?
+    private var offchainVotingAmount: ReferendumVotingAmount?
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
     private var offchainVoting: GovernanceOffchainVotesLocal.Single?
@@ -55,9 +52,10 @@ final class ReferendumDetailsPresenter {
         referendumViewModelFactory: ReferendumsModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
-        referendumStringsFactory: ReferendumDisplayStringFactoryProtocol,
+        referendumVotesFactory: ReferendumVotesViewModelFactoryProtocol,
         referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol,
         referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
+        endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -69,11 +67,12 @@ final class ReferendumDetailsPresenter {
         self.governanceType = governanceType
         self.accountManagementFilter = accountManagementFilter
         self.referendumViewModelFactory = referendumViewModelFactory
-        self.referendumStringsFactory = referendumStringsFactory
+        self.referendumVotesFactory = referendumVotesFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.referendumFormatter = referendumFormatter
         self.referendumTimelineViewModelFactory = referendumTimelineViewModelFactory
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
+        self.endedReferendumProgressViewModelFactory = endedReferendumProgressViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         referendum = initData.referendum
@@ -90,214 +89,6 @@ final class ReferendumDetailsPresenter {
 
     deinit {
         invalidateTimer()
-    }
-
-    private func provideReferendumInfoViewModel() {
-        let referendumIndex = referendumFormatter.value(for: selectedLocale).string(
-            from: referendum.index as NSNumber
-        )
-
-        // display track name only if there is more than 1 track in the network
-        let trackViewModel: ReferendumInfoView.Track?
-        if let track = referendum.track, track.totalTracksCount > 1 {
-            trackViewModel = ReferendumTrackType.createViewModel(
-                from: track.name,
-                chain: chain,
-                locale: selectedLocale
-            )
-        } else {
-            trackViewModel = nil
-        }
-
-        let viewModel = TrackTagsView.Model(titleIcon: trackViewModel, referendumNumber: referendumIndex)
-        view?.didReceive(trackTagsModel: viewModel)
-    }
-
-    private func provideTitleViewModel() {
-        let accountViewModel: DisplayAddressViewModel?
-
-        let optProposer = referendum.proposer ?? referendumMetadata?.proposerAccountId(for: chain.chainFormat)
-
-        if
-            let proposer = optProposer,
-            let identities = identities,
-            let address = try? proposer.toAddress(using: chain.chainFormat) {
-            let displayAddress = DisplayAddress(address: address, username: identities[address]?.displayName ?? "")
-            accountViewModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
-        } else {
-            accountViewModel = nil
-        }
-
-        let detailsViewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
-            for: referendum,
-            metadata: referendumMetadata,
-            locale: selectedLocale
-        )
-
-        let viewModel = ReferendumDetailsTitleView.Model(account: accountViewModel, details: detailsViewModel)
-
-        view?.didReceive(titleModel: viewModel)
-    }
-
-    private func provideRequestedAmount() {
-        guard
-            let requestedAmount = actionDetails?.spentAmount(),
-            let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
-            let decimalAmount = Decimal.fromSubstrateAmount(requestedAmount, precision: precision) else {
-            view?.didReceive(requestedAmount: nil)
-            return
-        }
-
-        let balanceViewModel = balanceViewModelFactory.balanceFromPrice(decimalAmount, priceData: price).value(
-            for: selectedLocale
-        )
-
-        let viewModel: RequestedAmountRow.Model = .init(
-            title: R.string.localizable.commonRequestedAmount(preferredLanguages: selectedLocale.rLanguages),
-            amount: .init(
-                topValue: balanceViewModel.amount,
-                bottomValue: balanceViewModel.price
-            )
-        )
-
-        view?.didReceive(requestedAmount: viewModel)
-    }
-
-    private func provideYourVote() {
-        let viewModel: [YourVoteRow.Model]
-
-        if let accountVotes = accountVotes {
-            viewModel = referendumStringsFactory.createDirectVotesViewModel(
-                from: accountVotes,
-                chain: chain,
-                locale: selectedLocale
-            )
-        } else if let offchainVoting = offchainVoting {
-            switch offchainVoting.voteType {
-            case let .direct(directVote):
-                viewModel = referendumStringsFactory.createDirectVotesViewModel(
-                    from: directVote,
-                    chain: chain,
-                    locale: selectedLocale
-                )
-            case let .delegated(delegateVote):
-                viewModel = referendumStringsFactory.createDelegatorVotesViaDelegateViewModel(
-                    from: delegateVote,
-                    delegateName: offchainVoting.identity?.displayName ?? offchainVoting.metadata?.name,
-                    chain: chain,
-                    locale: selectedLocale
-                )
-            }
-        } else {
-            viewModel = []
-        }
-
-        view?.didReceive(yourVoteModel: viewModel)
-    }
-
-    private func provideVotingDetails() {
-        guard let blockNumber = blockNumber, let blockTime = blockTime else {
-            return
-        }
-
-        let chainInfo = ReferendumsModelFactoryInput.ChainInformation(
-            chain: chain,
-            currentBlock: blockNumber,
-            blockDuration: blockTime
-        )
-
-        let referendumViewModel = referendumViewModelFactory.createViewModel(
-            input: .init(
-                referendum: referendum,
-                metadata: referendumMetadata,
-                onchainVotes: accountVotes,
-                offchainVotes: nil,
-                chainInfo: chainInfo,
-                selectedLocale: selectedLocale
-            )
-        )
-
-        let votingProgress = referendumViewModel.progress
-        let status: ReferendumVotingStatusView.Model = .init(
-            status: .init(
-                name: referendumViewModel.referendumInfo.status.name,
-                kind: .init(infoKind: referendumViewModel.referendumInfo.status.kind)
-            ),
-            time: referendumViewModel.referendumInfo.time.map { .init(titleIcon: $0.titleIcon, isUrgent: $0.isUrgent) },
-            title: R.string.localizable.govDetailsVotingStatus(preferredLanguages: selectedLocale.rLanguages)
-        )
-
-        let button: String?
-
-        if referendum.canVote, votingAvailable {
-            if accountVotes != nil {
-                button = R.string.localizable.govRevote(preferredLanguages: selectedLocale.rLanguages)
-            } else {
-                button = R.string.localizable.govVote(preferredLanguages: selectedLocale.rLanguages)
-            }
-        } else {
-            button = nil
-        }
-
-        let votes = referendumStringsFactory.createReferendumVotes(
-            from: referendum,
-            abstainAmount: abstainAmount,
-            abstainVotingAvailable: abstainVotingAvailable,
-            chain: chain,
-            locale: selectedLocale
-        )
-
-        let viewModel = ReferendumVotingStatusDetailsView.Model(
-            status: status,
-            votingProgress: votingProgress,
-            aye: votes?.ayes,
-            nay: votes?.nays,
-            abstain: votes?.abstains,
-            buttonText: button
-        )
-
-        view?.didReceive(votingDetails: viewModel)
-    }
-
-    private func provideDAppViewModel() {
-        guard let dApps = dApps else {
-            view?.didReceive(dAppModels: nil)
-            return
-        }
-
-        let viewModels = dApps.map {
-            DAppView.Model(
-                icon: RemoteImageViewModel(url: $0.icon),
-                title: $0.title,
-                subtitle: $0.details
-            )
-        }
-
-        view?.didReceive(dAppModels: viewModels)
-    }
-
-    private func provideTimelineViewModel() {
-        guard
-            let blockNumber = blockNumber,
-            let blockTime = blockTime else {
-            view?.didReceive(timelineModel: nil)
-            return
-        }
-
-        let timeline = referendumTimelineViewModelFactory.createTimelineViewModel(
-            for: referendum,
-            metadata: referendumMetadata,
-            currentBlock: blockNumber,
-            blockDuration: blockTime,
-            locale: selectedLocale
-        )
-
-        view?.didReceive(timelineModel: timeline)
-    }
-
-    private func provideFullDetailsViewModel() {
-        let shouldHide = actionDetails == nil || referendum.state.completed
-        view?.didReceive(shouldHideFullDetails: shouldHide)
     }
 
     private func updateView() {
@@ -374,6 +165,235 @@ final class ReferendumDetailsPresenter {
         interactor.refreshIdentities(for: accountIds)
     }
 }
+
+// MARK: Provide View Models
+
+extension ReferendumDetailsPresenter {
+    private func provideReferendumInfoViewModel() {
+        let referendumIndex = referendumFormatter.value(for: selectedLocale).string(
+            from: referendum.index as NSNumber
+        )
+
+        // display track name only if there is more than 1 track in the network
+        let trackViewModel: ReferendumInfoView.Track?
+        if let track = referendum.track, track.totalTracksCount > 1 {
+            trackViewModel = ReferendumTrackType.createViewModel(
+                from: track.name,
+                chain: chain,
+                locale: selectedLocale
+            )
+        } else {
+            trackViewModel = nil
+        }
+
+        let viewModel = TrackTagsView.Model(titleIcon: trackViewModel, referendumNumber: referendumIndex)
+        view?.didReceive(trackTagsModel: viewModel)
+    }
+
+    private func provideTitleViewModel() {
+        let accountViewModel: DisplayAddressViewModel?
+
+        let optProposer = referendum.proposer ?? referendumMetadata?.proposerAccountId(for: chain.chainFormat)
+
+        if
+            let proposer = optProposer,
+            let identities = identities,
+            let address = try? proposer.toAddress(using: chain.chainFormat) {
+            let displayAddress = DisplayAddress(address: address, username: identities[address]?.displayName ?? "")
+            accountViewModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
+        } else {
+            accountViewModel = nil
+        }
+
+        let detailsViewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
+            for: referendum,
+            metadata: referendumMetadata,
+            locale: selectedLocale
+        )
+
+        let viewModel = ReferendumDetailsTitleView.Model(account: accountViewModel, details: detailsViewModel)
+
+        view?.didReceive(titleModel: viewModel)
+    }
+
+    private func provideRequestedAmount() {
+        guard
+            let requestedAmount = actionDetails?.spentAmount(),
+            let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
+            let decimalAmount = Decimal.fromSubstrateAmount(requestedAmount, precision: precision) else {
+            view?.didReceive(requestedAmount: nil)
+            return
+        }
+
+        let balanceViewModel = balanceViewModelFactory.balanceFromPrice(decimalAmount, priceData: price).value(
+            for: selectedLocale
+        )
+
+        let viewModel: RequestedAmountRow.Model = .init(
+            title: R.string.localizable.commonRequestedAmount(preferredLanguages: selectedLocale.rLanguages),
+            amount: .init(
+                topValue: balanceViewModel.amount,
+                bottomValue: balanceViewModel.price
+            )
+        )
+
+        view?.didReceive(requestedAmount: viewModel)
+    }
+
+    private func provideYourVote() {
+        let viewModel: [YourVoteRow.Model]
+
+        if let accountVotes = accountVotes {
+            viewModel = referendumVotesFactory.createDirectVotesViewModel(
+                from: accountVotes,
+                chain: chain,
+                locale: selectedLocale
+            )
+        } else if let offchainVoting = offchainVoting {
+            switch offchainVoting.voteType {
+            case let .direct(directVote):
+                viewModel = referendumVotesFactory.createDirectVotesViewModel(
+                    from: directVote,
+                    chain: chain,
+                    locale: selectedLocale
+                )
+            case let .delegated(delegateVote):
+                viewModel = referendumVotesFactory.createDelegatorVotesViaDelegateViewModel(
+                    from: delegateVote,
+                    delegateName: offchainVoting.identity?.displayName ?? offchainVoting.metadata?.name,
+                    chain: chain,
+                    locale: selectedLocale
+                )
+            }
+        } else {
+            viewModel = []
+        }
+
+        view?.didReceive(yourVoteModel: viewModel)
+    }
+
+    private func provideDAppViewModel() {
+        guard let dApps = dApps else {
+            view?.didReceive(dAppModels: nil)
+            return
+        }
+
+        let viewModels = dApps.map {
+            DAppView.Model(
+                icon: RemoteImageViewModel(url: $0.icon),
+                title: $0.title,
+                subtitle: $0.details
+            )
+        }
+
+        view?.didReceive(dAppModels: viewModels)
+    }
+
+    private func provideTimelineViewModel() {
+        guard
+            let blockNumber = blockNumber,
+            let blockTime = blockTime else {
+            view?.didReceive(timelineModel: nil)
+            return
+        }
+
+        let timeline = referendumTimelineViewModelFactory.createTimelineViewModel(
+            for: referendum,
+            metadata: referendumMetadata,
+            currentBlock: blockNumber,
+            blockDuration: blockTime,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(timelineModel: timeline)
+    }
+
+    private func provideFullDetailsViewModel() {
+        let shouldHide = actionDetails == nil || referendum.state.completed
+        view?.didReceive(shouldHideFullDetails: shouldHide)
+    }
+
+    private func provideVotingDetails() {
+        guard let blockNumber = blockNumber, let blockTime = blockTime else {
+            return
+        }
+
+        let chainInfo = ReferendumsModelFactoryInput.ChainInformation(
+            chain: chain,
+            currentBlock: blockNumber,
+            blockDuration: blockTime
+        )
+
+        let referendumViewModel = referendumViewModelFactory.createViewModel(
+            input: .init(
+                referendum: referendum,
+                metadata: referendumMetadata,
+                onchainVotes: accountVotes,
+                offchainVotes: nil,
+                chainInfo: chainInfo,
+                selectedLocale: selectedLocale
+            )
+        )
+
+        let votes = referendumVotesFactory.createReferendumVotes(
+            from: referendum,
+            offchainVotingAmount: offchainVotingAmount,
+            chain: chain,
+            locale: selectedLocale
+        )
+
+        let votingProgress: LoadableViewModelState<VotingProgressView.Model?> = {
+            if let progress = referendumViewModel.progress {
+                .loaded(value: progress)
+            } else {
+                endedReferendumProgressViewModelFactory.createLoadableViewModel(
+                    votingAmount: offchainVotingAmount,
+                    locale: selectedLocale
+                )
+            }
+        }()
+
+        let viewModel = ReferendumVotingStatusDetailsView.Model(
+            status: statusViewModel(for: referendumViewModel),
+            votingProgress: votingProgress,
+            aye: votes.ayes,
+            nay: votes.nays,
+            abstain: votes.abstains,
+            buttonText: buttonText()
+        )
+
+        view?.didReceive(votingDetails: viewModel)
+    }
+
+    private func statusViewModel(for referendumViewModel: ReferendumView.Model) -> ReferendumVotingStatusView.Model {
+        .init(
+            status: .init(
+                name: referendumViewModel.referendumInfo.status.name,
+                kind: .init(infoKind: referendumViewModel.referendumInfo.status.kind)
+            ),
+            time: referendumViewModel.referendumInfo.time.map { .init(titleIcon: $0.titleIcon, isUrgent: $0.isUrgent) },
+            title: R.string.localizable.govDetailsVotingStatus(preferredLanguages: selectedLocale.rLanguages)
+        )
+    }
+
+    private func buttonText() -> String? {
+        let button: String?
+
+        if referendum.canVote, votingAvailable {
+            if accountVotes != nil {
+                button = R.string.localizable.govRevote(preferredLanguages: selectedLocale.rLanguages)
+            } else {
+                button = R.string.localizable.govVote(preferredLanguages: selectedLocale.rLanguages)
+            }
+        } else {
+            button = nil
+        }
+
+        return button
+    }
+}
+
+// MARK: ReferendumDetailsPresenterProtocol
 
 extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func setup() {
@@ -493,6 +513,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 }
 
+// MARK: ReferendumDetailsInteractorOutputProtocol
+
 extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol {
     func didReceiveReferendum(_ referendum: ReferendumLocal) {
         self.referendum = referendum
@@ -505,8 +527,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         refreshIdentities()
     }
 
-    func didReceiveAbstainsTotalAmount(_ amount: ReferendumVotingAmount) {
-        abstainAmount = amount
+    func didReceiveVotingAmount(_ amount: ReferendumVotingAmount) {
+        offchainVotingAmount = amount
 
         provideVotingDetails()
     }
@@ -603,6 +625,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
     }
 }
 
+// MARK: CountdownTimerDelegate
+
 extension ReferendumDetailsPresenter: CountdownTimerDelegate {
     func didStart(with _: TimeInterval) {
         updateTimerDisplay()
@@ -616,6 +640,8 @@ extension ReferendumDetailsPresenter: CountdownTimerDelegate {
         updateTimerDisplay()
     }
 }
+
+// MARK: Localizable
 
 extension ReferendumDetailsPresenter: Localizable {
     func applyLocalization() {

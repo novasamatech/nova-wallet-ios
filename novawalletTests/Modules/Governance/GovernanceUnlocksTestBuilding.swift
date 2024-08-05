@@ -21,6 +21,7 @@ enum GovernanceUnlocksTestBuilding {
     struct TrackDef {
         let trackId: Referenda.TrackId
         let decisionPeriod: Moment
+        let confirmPeriod: Moment
     }
 
     @resultBuilder
@@ -86,6 +87,7 @@ enum GovernanceUnlocksTestBuilding {
 
         let additions = GovUnlockCalculationInfo(
             decisionPeriods: prepareDecisionPeriods(from: tracksDef),
+            confirmPeriods: prepareConfirmPeriods(from: tracksDef),
             undecidingTimeout: 0,
             voteLockingPeriod: 0
         )
@@ -144,6 +146,10 @@ enum GovernanceUnlocksTestBuilding {
     
     private static func prepareDecisionPeriods(from tracksDef: [TrackDef]) -> [Referenda.TrackId: Moment] {
         tracksDef.reduce(into: [Referenda.TrackId: Moment]()) { $0[$1.trackId] = $1.decisionPeriod }
+    }
+    
+    private static func prepareConfirmPeriods(from tracksDef: [TrackDef]) -> [Referenda.TrackId: Moment] {
+        tracksDef.reduce(into: [Referenda.TrackId: Moment]()) { $0[$1.trackId] = $1.confirmPeriod }
     }
 }
 

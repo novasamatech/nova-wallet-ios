@@ -12,6 +12,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     let priceIdParser: PriceUrlParserProtocol
     let operationQueue: OperationQueue
 
+    let setupFinishStrategyFactory: CustomNetworkSetupFinishStrategyFactory
+
     var currentConnectingNode: ChainNodeModel?
     var currentConnection: ChainConnection?
 
@@ -26,6 +28,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         priceIdParser: PriceUrlParserProtocol,
+        setupFinishStrategyFactory: CustomNetworkSetupFinishStrategyFactory,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
@@ -33,6 +36,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         self.connectionFactory = connectionFactory
         self.repository = repository
         self.priceIdParser = priceIdParser
+        self.setupFinishStrategyFactory = setupFinishStrategyFactory
         self.operationQueue = operationQueue
     }
 
@@ -247,7 +251,7 @@ private extension CustomNetworkBaseInteractor {
             case let .success(chain):
                 self?.setupFinishStrategy?.handleSetupFinished(
                     for: chain,
-                    presenter: self?.presenter
+                    output: self?.presenter
                 )
             case let .failure(error):
                 self?.presenter?.didReceive(.init(from: error))

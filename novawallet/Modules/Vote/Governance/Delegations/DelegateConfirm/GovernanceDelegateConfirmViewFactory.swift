@@ -76,7 +76,7 @@ struct GovernanceDelegateConfirmViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
 
@@ -88,7 +88,7 @@ struct GovernanceDelegateConfirmViewFactory {
             delegation: delegation,
             delegationInfo: delegationDisplayInfo,
             balanceViewModelFactory: balanceViewModelFactory,
-            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             trackViewModelFactory: GovernanceTrackViewModelFactory(),
             dataValidatingFactory: dataValidatingFactory,

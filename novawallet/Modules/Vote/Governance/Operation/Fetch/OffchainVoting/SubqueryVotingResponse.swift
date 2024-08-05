@@ -38,12 +38,11 @@ enum SubqueryVotingResponse {
         let nodes: [DelegatorVoting]
     }
 
-    struct CastingVoting: CastingVotingProtocol, Decodable {
+    struct CastingVoting: Decodable {
         let referendumId: String
         let standardVote: StandardVote?
         let splitVote: SplitVote?
         let splitAbstainVote: SplitAbstainVote?
-        var voter: String
     }
 
     struct CastingVotings: Decodable {
@@ -158,7 +157,7 @@ extension ReferendumAccountVoteLocal {
 }
 
 extension SubqueryVotingResponse {
-    struct CastingAndDelegationsVoting: CastingWithDelegatorVotingProtocol, Decodable {
+    struct CastingAndDelegationsVoting: Decodable {
         let referendumId: String
         let standardVote: StandardVote?
         let splitVote: SplitVote?
@@ -185,30 +184,7 @@ extension SubqueryVotingResponse {
     }
 }
 
-protocol CastingVotingProtocol {
-    var referendumId: String { get }
-    var standardVote: SubqueryVotingResponse.StandardVote? { get }
-    var splitVote: SubqueryVotingResponse.SplitVote? { get }
-    var splitAbstainVote: SubqueryVotingResponse.SplitAbstainVote? { get }
-    var voter: String { get }
-}
-
-protocol CastingWithDelegatorVotingProtocol: CastingVotingProtocol {
-    var delegatorVotes: SubqueryVotingResponse.DelegatorVotesReponse { get }
-}
-
 extension ReferendumVoterLocal {
-    init?(from castingVote: SubqueryVotingResponse.CastingVoting) {
-        guard let vote = Self.createVoteLocal(from: castingVote),
-              let accountId = try? AccountAddress(castingVote.voter).toAccountId() else {
-            return nil
-        }
-
-        self.vote = vote
-        self.accountId = accountId
-        delegators = []
-    }
-
     init?(from castingVote: SubqueryVotingResponse.CastingAndDelegationsVoting) {
         guard let vote = Self.createVoteLocal(from: castingVote),
               let accountId = try? AccountAddress(castingVote.voter).toAccountId() else {
@@ -221,7 +197,7 @@ extension ReferendumVoterLocal {
     }
 
     private static func createVoteLocal(
-        from castingVote: CastingVotingProtocol
+        from castingVote: SubqueryVotingResponse.CastingAndDelegationsVoting
     ) -> ReferendumAccountVoteLocal? {
         if let standardVote = castingVote.standardVote {
             return ReferendumAccountVoteLocal(subqueryStandardVote: standardVote)
