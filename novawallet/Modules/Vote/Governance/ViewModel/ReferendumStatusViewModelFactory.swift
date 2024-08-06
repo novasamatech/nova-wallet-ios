@@ -27,9 +27,144 @@ extension ReferendumStatusViewModelFactoryProtocol {
     }
 }
 
-final class ReferendumStatusViewModelFactory {
+final class ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProtocol {
+    func createTimeViewModel(
+        for referendum: ReferendumLocal,
+        currentBlock: BlockNumber,
+        blockDuration: UInt64,
+        locale: Locale
+    ) -> StatusTimeViewModel? {
+        switch referendum.state {
+        case let .preparing(model):
+            createPreparingTimeModel(
+                with: model,
+                for: referendum.state,
+                currentBlock: currentBlock,
+                blockDuration: blockDuration,
+                locale: locale
+            )
+        case let .deciding(model):
+            createDecidingTimeModel(
+                with: model,
+                for: referendum.state,
+                currentBlock: currentBlock,
+                blockDuration: blockDuration,
+                locale: locale
+            )
+        case let .approved(model):
+            createApprovedTimeModel(
+                with: model,
+                for: referendum.state,
+                currentBlock: currentBlock,
+                blockDuration: blockDuration,
+                locale: locale
+            )
+        case .rejected, .cancelled, .timedOut, .killed, .executed:
+            nil
+        }
+    }
+}
+
+// MARK: Private
+
+private extension ReferendumStatusViewModelFactory {
+    func createPreparingTimeModel(
+        with model: ReferendumStateLocal.Preparing,
+        for referendumState: ReferendumStateLocal,
+        currentBlock: BlockNumber,
+        blockDuration: UInt64,
+        locale: Locale
+    ) -> StatusTimeViewModel? {
+        let strings = R.string.localizable.self
+
+        if model.deposit == nil || currentBlock >= model.preparingEnd {
+            return createTimeViewModel(
+                state: referendumState,
+                atBlock: max(currentBlock, model.timeoutAt),
+                currentBlock: currentBlock,
+                blockDuration: blockDuration,
+                timeStringProvider: strings.governanceReferendumsTimeTimeout,
+                locale: locale
+            )
+        } else {
+            return createTimeViewModel(
+                state: referendumState,
+                atBlock: model.preparingEnd,
+                currentBlock: currentBlock,
+                blockDuration: blockDuration,
+                timeStringProvider: strings.governanceReferendumsTimeDeciding,
+                locale: locale
+            )
+        }
+    }
+
+    func createDecidingTimeModel(
+        with model: ReferendumStateLocal.Deciding,
+        for referendumState: ReferendumStateLocal,
+        currentBlock: BlockNumber,
+        blockDuration: UInt64,
+        locale: Locale
+    ) -> StatusTimeViewModel? {
+        let strings = R.string.localizable.self
+
+        if model.isPassing(for: currentBlock), let confirmationUntil = model.confirmationUntil {
+            return createTimeViewModel(
+                state: referendumState,
+                atBlock: confirmationUntil,
+                currentBlock: currentBlock,
+                blockDuration: blockDuration,
+                timeStringProvider: strings.governanceReferendumsTimeApprove,
+                locale: locale
+            )
+        } else {
+            return switch model.projectPassing(for: currentBlock) {
+            case let .passing(approvalBlock):
+                createTimeViewModel(
+                    state: referendumState,
+                    atBlock: approvalBlock,
+                    currentBlock: currentBlock,
+                    blockDuration: blockDuration,
+                    timeStringProvider: strings.governanceReferendumsTimeApprove,
+                    locale: locale
+                )
+            case .notPassing:
+                createTimeViewModel(
+                    state: referendumState,
+                    atBlock: model.rejectedAt,
+                    currentBlock: currentBlock,
+                    blockDuration: blockDuration,
+                    timeStringProvider: strings.governanceReferendumsTimeReject,
+                    locale: locale
+                )
+            }
+        }
+    }
+
+    func createApprovedTimeModel(
+        with model: ReferendumStateLocal.Approved,
+        for referendumState: ReferendumStateLocal,
+        currentBlock: BlockNumber,
+        blockDuration: UInt64,
+        locale: Locale
+    ) -> StatusTimeViewModel? {
+        let strings = R.string.localizable.self
+
+        guard let whenEnactment = model.whenEnactment else {
+            return nil
+        }
+
+        return createTimeViewModel(
+            state: referendumState,
+            atBlock: whenEnactment,
+            currentBlock: currentBlock,
+            blockDuration: blockDuration,
+            timeStringProvider: strings.governanceReferendumsTimeExecute,
+            locale: locale
+        )
+    }
+
     // swiftlint:disable:next function_parameter_count
-    private func createTimeViewModel(
+    func createTimeViewModel(
         state: ReferendumStateLocal,
         atBlock: Moment,
         currentBlock: BlockNumber,
@@ -60,15 +195,16 @@ final class ReferendumStatusViewModelFactory {
         }
     }
 
-    private func createTimeViewModel(
+    func createTimeViewModel(
         time: TimeInterval,
         timeStringProvider: (String, [String]?) -> String,
         state: ReferendumStateLocal,
         locale: Locale
     ) -> ReferendumInfoView.Time? {
-        guard let localizedDaysHours = time.localizedDaysOrTime(for: locale) else {
+        guard let localizedDaysHours = time.localizedDaysHoursOrTime(for: locale) else {
             return nil
         }
+
         let timeString = timeStringProvider(localizedDaysHours, locale.rLanguages)
         let timeModel = isUrgent(state: state, time: time).map { isUrgent in
             ReferendumInfoView.Time(
@@ -82,11 +218,11 @@ final class ReferendumStatusViewModelFactory {
         return timeModel
     }
 
-    private func calculateTime(block: Moment, currentBlock: BlockNumber, blockDuration: UInt64) -> TimeInterval {
+    func calculateTime(block: Moment, currentBlock: BlockNumber, blockDuration: UInt64) -> TimeInterval {
         currentBlock.secondsTo(block: block, blockDuration: blockDuration)
     }
 
-    private func isUrgent(state: ReferendumStateLocal, time: TimeInterval) -> Bool? {
+    func isUrgent(state: ReferendumStateLocal, time: TimeInterval) -> Bool? {
         switch state {
         case .preparing:
             return time.hoursFromSeconds <= 3
@@ -97,75 +233,6 @@ final class ReferendumStatusViewModelFactory {
         case .rejected:
             return time.daysFromSeconds < 1
         case .cancelled, .timedOut, .killed, .executed:
-            return nil
-        }
-    }
-}
-
-extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProtocol {
-    // swiftlint:disable:next function_body_length
-    func createTimeViewModel(
-        for referendum: ReferendumLocal,
-        currentBlock: BlockNumber,
-        blockDuration: UInt64,
-        locale: Locale
-    ) -> StatusTimeViewModel? {
-        let strings = R.string.localizable.self
-        switch referendum.state {
-        case let .preparing(model):
-            if model.deposit == nil || currentBlock >= model.preparingEnd {
-                return createTimeViewModel(
-                    state: referendum.state,
-                    atBlock: max(currentBlock, model.timeoutAt),
-                    currentBlock: currentBlock,
-                    blockDuration: blockDuration,
-                    timeStringProvider: strings.governanceReferendumsTimeTimeout,
-                    locale: locale
-                )
-            } else {
-                return createTimeViewModel(
-                    state: referendum.state,
-                    atBlock: model.preparingEnd,
-                    currentBlock: currentBlock,
-                    blockDuration: blockDuration,
-                    timeStringProvider: strings.governanceReferendumsTimeDeciding,
-                    locale: locale
-                )
-            }
-        case let .deciding(model):
-            if model.isPassing(for: currentBlock), let confirmationUntil = model.confirmationUntil {
-                return createTimeViewModel(
-                    state: referendum.state,
-                    atBlock: confirmationUntil,
-                    currentBlock: currentBlock,
-                    blockDuration: blockDuration,
-                    timeStringProvider: strings.governanceReferendumsTimeApprove,
-                    locale: locale
-                )
-            } else {
-                return createTimeViewModel(
-                    state: referendum.state,
-                    atBlock: model.rejectedAt,
-                    currentBlock: currentBlock,
-                    blockDuration: blockDuration,
-                    timeStringProvider: strings.governanceReferendumsTimeReject,
-                    locale: locale
-                )
-            }
-        case let .approved(model):
-            guard let whenEnactment = model.whenEnactment else {
-                return nil
-            }
-
-            return createTimeViewModel(
-                state: referendum.state,
-                atBlock: whenEnactment,
-                currentBlock: currentBlock,
-                blockDuration: blockDuration,
-                timeStringProvider: strings.governanceReferendumsTimeExecute,
-                locale: locale
-            )
-        case .rejected, .cancelled, .timedOut, .killed, .executed:
             return nil
         }
     }

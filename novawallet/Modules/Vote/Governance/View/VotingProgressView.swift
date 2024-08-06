@@ -70,10 +70,10 @@ extension VotingProgressView: BindableView {
     }
 
     struct ApprovalModel {
-        let passThreshold: Decimal
+        let passThreshold: Decimal?
         let ayeProgress: Decimal?
         let ayeMessage: String
-        let passMessage: String
+        let passMessage: String?
         let nayMessage: String
     }
 

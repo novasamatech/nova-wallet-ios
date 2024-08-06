@@ -3,6 +3,7 @@ import SubstrateSdk
 import Operation_iOS
 import SoraFoundation
 
+// swiftlint:disable function_body_length
 struct ReferendumDetailsViewFactory {
     static func createView(
         for state: GovernanceSharedState,
@@ -67,13 +68,14 @@ struct ReferendumDetailsViewFactory {
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
 
         let indexFormatter = NumberFormatter.index.localizableResource()
-        let referendumStringFactory = ReferendumDisplayStringFactory()
+
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let referendumViewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            stringDisplayViewModelFactory: referendumStringFactory,
+            stringDisplayViewModelFactory: referendumDisplayStringFactory,
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: indexFormatter,
             quantityFormatter: NumberFormatter.quantity.localizableResource()
@@ -86,6 +88,19 @@ struct ReferendumDetailsViewFactory {
 
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
 
+        let offchainVotingAvailable = chain.externalApis?.governanceDelegations()?.first != nil
+
+        let endedReferendumProgressViewModelFactory = EndedReferendumProgressViewModelFactory(
+            localizedPercentFormatter: NumberFormatter.referendumPercent.localizableResource(),
+            offchainVotingAvailable: offchainVotingAvailable
+        )
+
+        let referendumVotesFactory = ReferendumVotesViewModelFactoryProvider.factory(
+            for: stateOption.type,
+            offchainVotingAvailable: offchainVotingAvailable,
+            stringFactory: referendumDisplayStringFactory
+        )
+
         return ReferendumDetailsPresenter(
             chain: chain,
             governanceType: stateOption.type,
@@ -97,9 +112,10 @@ struct ReferendumDetailsViewFactory {
             referendumViewModelFactory: referendumViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: indexFormatter,
-            referendumStringsFactory: referendumStringFactory,
+            referendumVotesFactory: referendumVotesFactory,
             referendumTimelineViewModelFactory: timelineViewModelFactory,
             referendumMetadataViewModelFactory: metadataViewModelFactory,
+            endedReferendumProgressViewModelFactory: endedReferendumProgressViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: LocalizationManager.shared,
@@ -154,6 +170,14 @@ struct ReferendumDetailsViewFactory {
         let dAppsProvider: AnySingleValueProvider<GovernanceDAppList> =
             JsonDataProviderFactory.shared.getJson(for: dAppsUrl)
 
+        let delegationApi = chain.externalApis?.governanceDelegations()?.first
+
+        let totalVotesFactory: GovernanceTotalVotesFactoryProtocol? = if let delegationApi {
+            GovernanceTotalVotesFactory(url: delegationApi.url)
+        } else {
+            nil
+        }
+
         return ReferendumDetailsInteractor(
             referendum: referendum,
             selectedAccount: selectedAccount,
@@ -168,6 +192,7 @@ struct ReferendumDetailsViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
+            totalVotesFactory: totalVotesFactory,
             dAppsProvider: dAppsProvider,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue

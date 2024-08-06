@@ -7,12 +7,7 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
         referendum: ReferendumIdLocal,
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        let accountVote = ConvictionVoting.AccountVote.standard(
-            .init(
-                vote: .init(aye: action.isAye, conviction: action.conviction),
-                balance: action.amount
-            )
-        )
+        let accountVote = AccountVoteFactory.accountVote(from: action)
 
         let voteCall = ConvictionVoting.VoteCall(
             referendumIndex: Referenda.ReferendumIndex(referendum),

@@ -13,6 +13,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         priceIdParser: PriceUrlParserProtocol,
+        setupFinishStrategyFactory: CustomNetworkSetupFinishStrategyFactory,
         operationQueue: OperationQueue
     ) {
         self.networkToEdit = networkToEdit
@@ -24,6 +25,7 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
             connectionFactory: connectionFactory,
             repository: repository,
             priceIdParser: priceIdParser,
+            setupFinishStrategyFactory: setupFinishStrategyFactory,
             operationQueue: operationQueue
         )
     }
@@ -40,11 +42,9 @@ final class CustomNetworkEditInteractor: CustomNetworkBaseInteractor {
 
 extension CustomNetworkEditInteractor: CustomNetworkEditInteractorInputProtocol {
     func editNetwork(with request: CustomNetwork.EditRequest) {
-        setupFinishStrategy = CustomNetworkEditStrategy(
+        setupFinishStrategy = setupFinishStrategyFactory.createEditStrategy(
             networkToEdit: networkToEdit,
-            selectedNode: selectedNode,
-            repository: repository,
-            operationQueue: operationQueue
+            selectedNode: selectedNode
         )
 
         let setupRequest = CustomNetwork.SetupRequest(

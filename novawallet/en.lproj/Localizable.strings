@@ -521,8 +521,6 @@
 "wallet.balances.widget.title" = "Your balance";
 "common.max" = "max";
 "crowdloan.custom.contrib.format" = "%@ (via %@)";
-"username.setup.hint" = "";
-"username.setup.title" = "";
 "commmon.view.in.format" = "View in %@";
 "import.json.unsupported.ethereum.crypto.message" = "Cannot import account with Substrate secret into the network with Ethereum encryption";
 "import.json.unsupported.substrate.crypto.message" = "Cannot import account with Ethereum secret into the network with Substrate encryption";
@@ -970,6 +968,7 @@
 "gov.referendum.description.fallback" = "Only the proposer can edit this description and the title. If you own proposer\'s account, visit Polkassembly and fill in information about your proposal";
 "gov.voters.nay" = "Nay votes";
 "gov.voters.aye" = "Aye votes";
+"gov.voters.abstain" = "Abstain votes";
 "gov.support.curve" = "Support curve";
 "gov.approve.curve" = "Approve curve";
 "gov.call.hash" = "Call hash";
@@ -1727,3 +1726,6 @@
 "staking.setup.conflict.message" = "You cannot stake with Direct Staking and Nomination Pools at the same time";
 "nomination.pools.conflict.title" = "Pool operations are not available";
 "nomination.pools.conflict.message" = "You can no longer use both Direct Staking and Pool Staking from the same account. To manage your Pool  Staking you first need to unstake your tokens from Direct Staking.";
+"gov.vote.conviction.hint.title" = "Conviction will be set to 0.1x when you vote Abstain";
+"gov.vote.conviction.alert.title" = "Conviction update";
+"gov.vote.conviction.alert.message" = "Abstain votes can only be done with 0.1x conviction. Vote with 0.1x conviction?";

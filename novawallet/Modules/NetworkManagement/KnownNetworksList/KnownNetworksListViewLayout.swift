@@ -47,6 +47,7 @@ private extension KnownNetworksListViewLayout {
     }
 
     func setupStyle() {
+        searchView.searchBar.textFieldBackgroundView.cornerRadius = 10
         searchView.backgroundColor = R.color.colorSecondaryScreenBackground()
         backgroundColor = R.color.colorSecondaryScreenBackground()
     }

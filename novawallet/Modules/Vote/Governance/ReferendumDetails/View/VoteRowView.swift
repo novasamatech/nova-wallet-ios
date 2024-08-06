@@ -24,10 +24,23 @@ final class VoteRowView: RowView<
 
     var trailingImageView: UIImageView { rowContentView.valueView.imageView }
 
+    var skeletonView: SkrullableView?
+
+    private var isLoading: Bool = false
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         configureStyle()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
     }
 
     @available(*, unavailable)
@@ -45,11 +58,57 @@ final class VoteRowView: RowView<
         rowContentView.valueView.mode = .detailsIcon
 
         indicatorView.cornerRadius = 2.0
+        indicatorView.shadowOpacity = 0.0
 
         rowContentView.valueView.iconWidth = 16.0
 
         titleLabel.apply(style: .rowTitle)
         detailsLabel.apply(style: .footnoteSecondary)
+    }
+}
+
+extension VoteRowView: SkeletonableView {
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let size = CGSize(width: 68, height: 8)
+
+        let xOffset = spaceSize.width
+            - size.width
+            - rowContentView.valueView.iconWidth
+            - rowContentView.valueView.spacing
+            - UIConstants.horizontalInset
+
+        let yOffset = spaceSize.height / 2.0 - size.height / 2.0
+
+        let offset = CGPoint(
+            x: xOffset,
+            y: yOffset
+        )
+
+        let row = SingleSkeleton.createRow(
+            on: self,
+            containerView: rowContentView.valueView,
+            spaceSize: spaceSize,
+            offset: offset,
+            size: size
+        )
+
+        return [row]
+    }
+
+    var skeletonSuperview: UIView {
+        rowContentView.valueView
+    }
+
+    var hidingViews: [UIView] {
+        [detailsLabel]
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
     }
 }
 
@@ -70,12 +129,21 @@ extension VoteRowView {
 extension VoteRowView {
     struct Model {
         let title: String
-        let votes: String
+        let votes: LoadableViewModelState<String>
     }
 
     func bind(viewModel: Model) {
         titleLabel.text = viewModel.title
-        detailsLabel.text = viewModel.votes
+
+        switch viewModel.votes {
+        case let .cached(value), let .loaded(value):
+            isLoading = false
+            stopLoadingIfNeeded()
+            detailsLabel.text = value
+        case .loading:
+            isLoading = true
+            startLoadingIfNeeded()
+        }
     }
 
     func bindOrHide(viewModel: Model?) {

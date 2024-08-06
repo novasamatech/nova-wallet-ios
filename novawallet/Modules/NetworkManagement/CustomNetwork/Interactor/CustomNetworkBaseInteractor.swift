@@ -12,6 +12,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     let priceIdParser: PriceUrlParserProtocol
     let operationQueue: OperationQueue
 
+    let setupFinishStrategyFactory: CustomNetworkSetupFinishStrategyFactory
+
     var currentConnectingNode: ChainNodeModel?
     var currentConnection: ChainConnection?
 
@@ -26,6 +28,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         connectionFactory: ConnectionFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         priceIdParser: PriceUrlParserProtocol,
+        setupFinishStrategyFactory: CustomNetworkSetupFinishStrategyFactory,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
@@ -33,6 +36,7 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
         self.connectionFactory = connectionFactory
         self.repository = repository
         self.priceIdParser = priceIdParser
+        self.setupFinishStrategyFactory = setupFinishStrategyFactory
         self.operationQueue = operationQueue
     }
 
@@ -43,8 +47,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     func modify(with request: CustomNetwork.ModifyRequest) {
         let mainAsset = request.existingNetwork.assets.first(where: { $0.assetId == 0 })
 
-        let evmChainId: UInt16? = if let chainId = request.chainId, let intChainId = Int(chainId) {
-            UInt16(intChainId)
+        let evmChainId: UInt64? = if let chainId = request.chainId, let intChainId = Int(chainId) {
+            UInt64(intChainId)
         } else {
             nil
         }
@@ -89,8 +93,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     }
 
     func setupChain(with request: CustomNetwork.SetupRequest) {
-        let evmChainId: UInt16? = if let chainId = request.chainId, let intChainId = Int(chainId) {
-            UInt16(intChainId)
+        let evmChainId: UInt64? = if let chainId = request.chainId, let intChainId = Int(chainId) {
+            UInt64(intChainId)
         } else {
             nil
         }
@@ -247,7 +251,7 @@ private extension CustomNetworkBaseInteractor {
             case let .success(chain):
                 self?.setupFinishStrategy?.handleSetupFinished(
                     for: chain,
-                    presenter: self?.presenter
+                    output: self?.presenter
                 )
             case let .failure(error):
                 self?.presenter?.didReceive(.init(from: error))

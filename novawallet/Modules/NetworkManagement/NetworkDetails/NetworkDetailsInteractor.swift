@@ -405,7 +405,7 @@ private extension NetworkDetailsInteractor {
     }
 
     func filtered(_ nodes: Set<ChainNodeModel>) -> Set<ChainNodeModel> {
-        nodes.filter { $0.url.hasPrefix(ConnectionNodeSchema.wss) }
+        nodes.filter { NSPredicate.ws.evaluate(with: $0.url) }
     }
 
     func executeDataOperationWithErrorHandling(

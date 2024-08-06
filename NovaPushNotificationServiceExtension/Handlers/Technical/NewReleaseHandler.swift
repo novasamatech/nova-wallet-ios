@@ -21,7 +21,7 @@ final class NewReleaseHandler: PushNotificationHandler {
 
     func handle(
         callbackQueue: DispatchQueue?,
-        completion: @escaping (NotificationContentResult?) -> Void
+        completion: @escaping (PushNotificationHandleResult) -> Void
     ) {
         dispatchInQueueWhenPossible(callbackQueue) {
             let locale = self.localizationManager.selectedLocale
@@ -31,7 +31,12 @@ final class NewReleaseHandler: PushNotificationHandler {
                 preferredLanguages: locale.rLanguages
             )
 
-            completion(.init(title: title, subtitle: subtitle))
+            let notificationConentResult: NotificationContentResult = .init(
+                title: title,
+                subtitle: subtitle
+            )
+
+            completion(.modified(notificationConentResult))
         }
     }
 }

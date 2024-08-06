@@ -880,7 +880,7 @@ PODS:
     - SoraUI/Controls
   - SoraUI/Skrull (1.13.0)
   - Sourcery (1.4.1)
-  - Starscream (4.0.10)
+  - Starscream (4.0.12)
   - SubstrateSdk (3.2.1):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
@@ -903,25 +903,51 @@ PODS:
     - BigInt (~> 5.0)
   - SwiftyBeaver (1.9.3)
   - TweetNacl (1.0.2)
-  - WalletConnectSwiftV2 (1.5.14):
-    - WalletConnectSwiftV2/WalletConnect (= 1.5.14)
-  - WalletConnectSwiftV2/Commons (1.5.14)
-  - WalletConnectSwiftV2/JSONRPC (1.5.14):
-    - WalletConnectSwiftV2/Commons
-  - WalletConnectSwiftV2/WalletConnect (1.5.14):
-    - WalletConnectSwiftV2/WalletConnectPairing
-  - WalletConnectSwiftV2/WalletConnectJWT (1.5.14):
-    - WalletConnectSwiftV2/WalletConnectKMS
-  - WalletConnectSwiftV2/WalletConnectKMS (1.5.14):
-    - WalletConnectSwiftV2/WalletConnectUtils
-  - WalletConnectSwiftV2/WalletConnectNetworking (1.5.14):
-    - WalletConnectSwiftV2/WalletConnectRelay
-  - WalletConnectSwiftV2/WalletConnectPairing (1.5.14):
+  - WalletConnectSwiftV2 (1.19.5):
+    - WalletConnectSwiftV2/WalletConnect (= 1.19.5)
+  - WalletConnectSwiftV2/Commons (1.19.5)
+  - WalletConnectSwiftV2/Events (1.19.5):
     - WalletConnectSwiftV2/WalletConnectNetworking
-  - WalletConnectSwiftV2/WalletConnectRelay (1.5.14):
+    - WalletConnectSwiftV2/WalletConnectUtils
+  - WalletConnectSwiftV2/HTTPClient (1.19.5)
+  - WalletConnectSwiftV2/JSONRPC (1.19.5):
+    - WalletConnectSwiftV2/Commons
+  - WalletConnectSwiftV2/WalletConnect (1.19.5):
+    - WalletConnectSwiftV2/WalletConnectAuth
+    - WalletConnectSwiftV2/WalletConnectPush
+    - WalletConnectSwiftV2/WalletConnectSign
+    - WalletConnectSwiftV2/WalletConnectVerify
+  - WalletConnectSwiftV2/WalletConnectAuth (1.19.5):
+    - WalletConnectSwiftV2/WalletConnectPairing
+    - WalletConnectSwiftV2/WalletConnectSigner
+    - WalletConnectSwiftV2/WalletConnectVerify
+  - WalletConnectSwiftV2/WalletConnectJWT (1.19.5):
+    - WalletConnectSwiftV2/WalletConnectKMS
+  - WalletConnectSwiftV2/WalletConnectKMS (1.19.5):
+    - WalletConnectSwiftV2/WalletConnectUtils
+  - WalletConnectSwiftV2/WalletConnectNetworking (1.19.5):
+    - WalletConnectSwiftV2/HTTPClient
+    - WalletConnectSwiftV2/WalletConnectRelay
+  - WalletConnectSwiftV2/WalletConnectPairing (1.19.5):
+    - WalletConnectSwiftV2/Events
+    - WalletConnectSwiftV2/WalletConnectNetworking
+  - WalletConnectSwiftV2/WalletConnectPush (1.19.5):
     - WalletConnectSwiftV2/WalletConnectJWT
-  - WalletConnectSwiftV2/WalletConnectUtils (1.5.14):
+    - WalletConnectSwiftV2/WalletConnectNetworking
+  - WalletConnectSwiftV2/WalletConnectRelay (1.19.5):
+    - WalletConnectSwiftV2/WalletConnectJWT
+  - WalletConnectSwiftV2/WalletConnectSign (1.19.5):
+    - WalletConnectSwiftV2/Events
+    - WalletConnectSwiftV2/WalletConnectPairing
+    - WalletConnectSwiftV2/WalletConnectSigner
+    - WalletConnectSwiftV2/WalletConnectVerify
+  - WalletConnectSwiftV2/WalletConnectSigner (1.19.5):
+    - WalletConnectSwiftV2/WalletConnectNetworking
+  - WalletConnectSwiftV2/WalletConnectUtils (1.19.5):
     - WalletConnectSwiftV2/JSONRPC
+  - WalletConnectSwiftV2/WalletConnectVerify (1.19.5):
+    - WalletConnectSwiftV2/WalletConnectNetworking
+    - WalletConnectSwiftV2/WalletConnectUtils
   - Web3Core (3.0.6):
     - BigInt (~> 5.2.0)
     - CryptoSwift (~> 1.5.1)
@@ -954,7 +980,7 @@ DEPENDENCIES:
   - SoraKeystore (~> 1.0.0)
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
-  - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.10`)
+  - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
   - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.2.1`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
@@ -962,7 +988,7 @@ DEPENDENCIES:
   - SwiftLint
   - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
   - SwiftyBeaver
-  - WalletConnectSwiftV2 (from `https://github.com/WalletConnect/WalletConnectSwiftV2.git`, tag `1.5.14`)
+  - WalletConnectSwiftV2 (from `https://github.com/novasamatech/WalletConnectSwiftV2.git`, tag `rc1.9.6`)
   - web3swift (from `https://github.com/web3swift-team/web3swift.git`, tag `3.0.6`)
   - ZMarkupParser (= 1.6.1)
 
@@ -1040,8 +1066,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/UIkit-iOS.git
     :tag: 1.13.0
   Starscream:
-    :git: https://github.com/ERussel/Starscream.git
-    :tag: 4.0.10
+    :git: https://github.com/novasamatech/Starscream.git
+    :tag: 4.0.12
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
     :tag: 3.2.1
@@ -1051,8 +1077,8 @@ EXTERNAL SOURCES:
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
   WalletConnectSwiftV2:
-    :git: https://github.com/WalletConnect/WalletConnectSwiftV2.git
-    :tag: 1.5.14
+    :git: https://github.com/novasamatech/WalletConnectSwiftV2.git
+    :tag: rc1.9.6
   web3swift:
     :git: https://github.com/web3swift-team/web3swift.git
     :tag: 3.0.6
@@ -1080,8 +1106,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/UIkit-iOS.git
     :tag: 1.13.0
   Starscream:
-    :git: https://github.com/ERussel/Starscream.git
-    :tag: 4.0.10
+    :git: https://github.com/novasamatech/Starscream.git
+    :tag: 4.0.12
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
     :tag: 3.2.1
@@ -1092,8 +1118,8 @@ CHECKOUT OPTIONS:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
   WalletConnectSwiftV2:
-    :git: https://github.com/WalletConnect/WalletConnectSwiftV2.git
-    :tag: 1.5.14
+    :git: https://github.com/novasamatech/WalletConnectSwiftV2.git
+    :tag: rc1.9.6
   web3swift:
     :git: https://github.com/web3swift-team/web3swift.git
     :tag: 3.0.6
@@ -1145,7 +1171,7 @@ SPEC CHECKSUMS:
   SoraKeystore: 92cff6e2a12f212dd64ed089970ff7c365247b1c
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
-  Starscream: 867607a51eafadc6402b5c6f6acc0d8efdb98746
+  Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
   SubstrateSdk: fe20689ad3f1bc680318a338c9e7dcde53e9c36b
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
@@ -1154,13 +1180,13 @@ SPEC CHECKSUMS:
   SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
-  WalletConnectSwiftV2: ff5cb17196b583a72c8ab826dd236ab3aa7b2c39
+  WalletConnectSwiftV2: 52356e22c518bfc6deb0bb93e71f915be1c33536
   Web3Core: 4a62a109cac056915d2d5023606438c89e229a1e
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 65dd64d36e6c0b46ddacb7d2629960ec17b1a716
+PODFILE CHECKSUM: 98141de3b13f527da1029c2ef17b57dfef7c184a
 
 COCOAPODS: 1.15.2

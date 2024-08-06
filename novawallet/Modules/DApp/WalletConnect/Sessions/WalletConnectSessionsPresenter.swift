@@ -69,8 +69,8 @@ extension WalletConnectSessionsPresenter: WalletConnectSessionsInteractorOutputP
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retrySessionsFetch()
             }
-        case .connectionFailed:
-            wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        case let .connectionFailed(internalError):
+            wireframe.presentWCConnectionError(from: view, error: internalError, locale: selectedLocale)
         }
     }
 }

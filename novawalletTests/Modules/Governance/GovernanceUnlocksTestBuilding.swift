@@ -7,6 +7,22 @@ enum GovernanceUnlocksTestBuilding {
         let givenSchedule: GovernanceUnlockSchedule?
         let expectSchedule: UnlockScheduleTestBuilding.ScheduleResult?
     }
+    
+    struct ReferendumDef {
+        enum ReferendumType {
+            case ongoing(since: BlockNumber)
+        }
+        
+        let index: ReferendumIdLocal
+        let trackId: Referenda.TrackId
+        let type: ReferendumType
+    }
+    
+    struct TrackDef {
+        let trackId: Referenda.TrackId
+        let decisionPeriod: Moment
+        let confirmPeriod: Moment
+    }
 
     @resultBuilder
     struct TestBuilder {
@@ -48,6 +64,8 @@ enum GovernanceUnlocksTestBuilding {
     }
 
     static func given(
+        tracksDef: [TrackDef] = [],
+        referendumsDef: [ReferendumDef] = [],
         @TrackTestBuilding.TrackVotingBuilder _ content: () -> TrackTestBuilding.VotingWithReferendumUnlock
     ) -> Test {
         let compoundVoting = content()
@@ -58,19 +76,18 @@ enum GovernanceUnlocksTestBuilding {
         let initReferendums = [ReferendumIdLocal: GovUnlockReferendumProtocol]()
         let referendums = tracksVoting.votes.tracksByReferendums().keys.reduce(into: initReferendums) { (accum, referendumId) in
             let deposit = Referenda.Deposit(who: AccountId.zeroAccountId(of: 32), amount: BigUInt(0))
-            let referendum = ReferendumInfo.approved(
-                .init(
-                    since: refendumsUnlock[referendumId] ?? 0,
-                    submissionDeposit: deposit,
-                    decisionDeposit: deposit
-                )
+            let referendum = prepareReferendumInfo(
+                for: referendumId,
+                given: referendumsDef,
+                referendumsUnlock: refendumsUnlock
             )
 
             accum[referendumId] = Gov2UnlockReferendum(referendumInfo: referendum)
         }
 
         let additions = GovUnlockCalculationInfo(
-            decisionPeriods: [:],
+            decisionPeriods: prepareDecisionPeriods(from: tracksDef),
+            confirmPeriods: prepareConfirmPeriods(from: tracksDef),
             undecidingTimeout: 0,
             voteLockingPeriod: 0
         )
@@ -90,6 +107,49 @@ enum GovernanceUnlocksTestBuilding {
         let result = builder()
 
         return .init(givenSchedule: nil, expectSchedule: result)
+    }
+    
+    private static func prepareReferendumInfo(
+        for referendumId: ReferendumIdLocal,
+        given definitions: [ReferendumDef],
+        referendumsUnlock: [ReferendumIdLocal: BlockNumber]
+    ) -> ReferendumInfo {
+        let deposit = Referenda.Deposit(who: AccountId.zeroAccountId(of: 32), amount: BigUInt(0))
+        
+        guard let definition = definitions.first(where: {$0.index == referendumId }) else {
+            return .approved(
+                .init(
+                    since: referendumsUnlock[referendumId] ?? 0,
+                    submissionDeposit: deposit,
+                    decisionDeposit: deposit
+                )
+            )
+        }
+        
+        switch definition.type {
+        case let .ongoing(since):
+            return .ongoing(
+                .init(
+                    track: definition.trackId,
+                    proposal: .legacy(hash: Data.random(of: 32)!),
+                    enactment: .unknown,
+                    submitted: since,
+                    submissionDeposit: deposit,
+                    decisionDeposit: deposit,
+                    deciding: .some(.init(since: since)),
+                    tally: .init(ayes: 0, nays: 0, support: 0),
+                    inQueue: false
+                )
+            )
+        }
+    }
+    
+    private static func prepareDecisionPeriods(from tracksDef: [TrackDef]) -> [Referenda.TrackId: Moment] {
+        tracksDef.reduce(into: [Referenda.TrackId: Moment]()) { $0[$1.trackId] = $1.decisionPeriod }
+    }
+    
+    private static func prepareConfirmPeriods(from tracksDef: [TrackDef]) -> [Referenda.TrackId: Moment] {
+        tracksDef.reduce(into: [Referenda.TrackId: Moment]()) { $0[$1.trackId] = $1.confirmPeriod }
     }
 }
 
@@ -178,17 +238,33 @@ enum TrackTestBuilding {
                 var accountVoting = accum.votes
 
                 for vote in voting.votes {
-                    accountVoting = accountVoting
-                        .addingReferendum(vote.referendum, track: voting.trackId)
-                        .addingVote(
-                            .standard(
-                                .init(
-                                    vote: .init(aye: vote.isAye, conviction: vote.conviction),
-                                    balance: vote.amount
-                                )
-                            ),
-                            referendumId: vote.referendum
-                        )
+                    switch vote.type {
+                    case .standard(let amount, let conviction, let isAye):
+                        accountVoting = accountVoting
+                            .addingReferendum(vote.referendum, track: voting.trackId)
+                            .addingVote(
+                                .standard(
+                                    .init(
+                                        vote: .init(aye: isAye, conviction: conviction),
+                                        balance: amount
+                                    )
+                                ),
+                                referendumId: vote.referendum
+                            )
+                    case .abstain(let amount):
+                        accountVoting = accountVoting
+                            .addingReferendum(vote.referendum, track: voting.trackId)
+                            .addingVote(
+                                .splitAbstain(
+                                    .init(
+                                        aye: 0,
+                                        nay: 0,
+                                        abstain: amount
+                                    )
+                                ),
+                                referendumId: vote.referendum
+                            )
+                    }
                 }
 
                 if voting.prior.exists {
@@ -229,26 +305,37 @@ enum TrackTestBuilding {
     }
 
     typealias Locked = BigUInt
+    
+    enum VoteType {
+        case standard(amount: BigUInt, conviction: ConvictionVoting.Conviction, isAye: Bool)
+        case abstain(amount: BigUInt)
+    }
 
     struct Vote {
         let referendum: ReferendumIdLocal
-        let amount: BigUInt
-        let conviction: ConvictionVoting.Conviction
         let unlockAt: BlockNumber
-        let isAye: Bool
-
-        init(
+        let type: VoteType
+        
+        static func standard(
             referendum: ReferendumIdLocal,
             amount: BigUInt,
             unlockAt: BlockNumber,
             conviction: ConvictionVoting.Conviction = .locked1x,
             isAye: Bool = true
-        ) {
-            self.referendum = referendum
-            self.amount = amount
-            self.unlockAt = unlockAt
-            self.conviction = conviction
-            self.isAye = isAye
+        ) -> Vote {
+            Vote(
+                referendum: referendum,
+                unlockAt: unlockAt,
+                type: .standard(amount: amount, conviction: conviction, isAye: isAye)
+            )
+        }
+        
+        static func abstain(
+            referendum: ReferendumIdLocal,
+            amount: BigUInt,
+            unlockAt: BlockNumber
+        ) -> Vote {
+            Vote(referendum: referendum, unlockAt: unlockAt, type: .abstain(amount: amount))
         }
     }
 

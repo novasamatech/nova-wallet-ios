@@ -37,6 +37,12 @@ protocol GovernanceErrorPresentable: BaseErrorPresentable {
         from view: ControllerBackedProtocol,
         locale: Locale?
     )
+
+    func presentConvictionUpdateRequired(
+        from view: ControllerBackedProtocol,
+        action: @escaping () -> Void,
+        locale: Locale?
+    )
 }
 
 extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -129,5 +135,37 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: close, from: view)
+    }
+
+    func presentConvictionUpdateRequired(
+        from view: ControllerBackedProtocol,
+        action: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let languages = locale?.rLanguages
+        let actions = [
+            AlertPresentableAction(
+                title: R.string.localizable.commonCancel(preferredLanguages: languages),
+                style: .destructive,
+                handler: {}
+            ),
+            AlertPresentableAction(
+                title: R.string.localizable.commonContinue(preferredLanguages: languages),
+                style: .normal,
+                handler: action
+            )
+        ]
+        let viewModel = AlertPresentableViewModel(
+            title: R.string.localizable.govVoteConvictionAlertTitle(preferredLanguages: languages),
+            message: R.string.localizable.govVoteConvictionAlertMessage(preferredLanguages: languages),
+            actions: actions,
+            closeAction: nil
+        )
+
+        present(
+            viewModel: viewModel,
+            style: .alert,
+            from: view
+        )
     }
 }

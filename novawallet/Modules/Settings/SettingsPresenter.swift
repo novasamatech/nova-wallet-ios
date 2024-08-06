@@ -293,8 +293,8 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
                 from: view,
                 locale: selectedLocale
             )
-        case .walletConnectFailed:
-            wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        case let .walletConnectFailed(internalError):
+            wireframe.presentWCConnectionError(from: view, error: internalError, locale: selectedLocale)
         }
     }
 

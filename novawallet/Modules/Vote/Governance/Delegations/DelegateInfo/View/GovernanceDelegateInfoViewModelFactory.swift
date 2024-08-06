@@ -36,7 +36,7 @@ final class GovernanceDelegateInfoViewModelFactory {
     let recentVotesInDays: Int
 
     init(
-        stringDisplayFactory: ReferendumDisplayStringFactoryProtocol = ReferendumDisplayStringFactory(),
+        stringDisplayFactory: ReferendumDisplayStringFactoryProtocol,
         quantityFormatter: LocalizableResource<NumberFormatter> = NumberFormatter.quantity.localizableResource(),
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
         recentVotesInDays: Int = GovernanceDelegationConstants.recentVotesInDays

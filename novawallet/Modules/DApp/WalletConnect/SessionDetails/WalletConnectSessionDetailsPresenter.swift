@@ -84,10 +84,10 @@ extension WalletConnectSessionDetailsPresenter: WalletConnectSessionDetailsInter
             ) { [weak self] in
                 self?.interactor.retrySessionUpdate()
             }
-        case .disconnectionFailed:
+        case let .disconnectionFailed(internalError):
             view?.didStopLoading()
 
-            wireframe.presentWCDisconnectionError(from: view, locale: selectedLocale)
+            wireframe.presentWCDisconnectionError(from: view, error: internalError, locale: selectedLocale)
         }
     }
 }
