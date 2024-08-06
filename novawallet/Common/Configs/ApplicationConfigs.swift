@@ -301,5 +301,13 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
     }
 
+    var novaWalletURL: URL {
+        #if F_RELEASE
+            URL(string: "https://app.novawallet.io")!
+        #else
+            URL(string: "https://dev.novawallet.io")!
+        #endif
+    }
+
     // swiftlint:enable line_length
 }

@@ -53,6 +53,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         Logger.shared.error("Failed to register push notifications: \(error)")
     }
+
+    func application(
+        _: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler _: @escaping ([any UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+        guard
+            userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+            let url = userActivity.webpageURL
+        else {
+            return false
+        }
+
+        URLHandlingService.shared.handle(url: url)
+
+        return true
+    }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {

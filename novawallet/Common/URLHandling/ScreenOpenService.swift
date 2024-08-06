@@ -43,36 +43,49 @@ final class ScreenOpenService {
 
     let logger: LoggerProtocol
     let parsingFactory: OpenScreenUrlParsingServiceFactoryProtocol
+    let validators: [URLActivityValidator]
 
     init(
         parsingFactory: OpenScreenUrlParsingServiceFactoryProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        validators: [URLActivityValidator]
     ) {
         self.parsingFactory = parsingFactory
         self.logger = logger
+        self.validators = validators
+    }
+}
+
+extension ScreenOpenService {
+    struct ActivityValidator: URLActivityValidator {
+        func validate(_ url: URL) -> Bool {
+            let deeplinkHost = "nova"
+            let applinkHost = ApplicationConfig.shared.novaWalletURL.host
+
+            guard url.host == deeplinkHost || url.host == applinkHost else {
+                return false
+            }
+
+            return true
+        }
     }
 }
 
 extension ScreenOpenService: ScreenOpenServiceProtocol {
     func handle(url: URL) -> Bool {
-        // we are expecting nova/open/{screen}
-        guard url.host == "nova" else {
-            return false
-        }
+        guard validators.allSatisfy({ $0.validate(url) }) else { return false }
 
-        let pathComponents = url.pathComponents
-        guard pathComponents.count == 3 else {
-            return false
-        }
-
-        guard UrlHandlingAction(rawValue: pathComponents[1]) == .open else {
+        guard
+            let action = UrlHandlingAction(from: url),
+            case let .open(screen) = action
+        else {
             return false
         }
 
         processingHandler?.cancel()
 
-        guard let handler = parsingFactory.createUrlHandler(screen: pathComponents[2]) else {
-            logger.warning("unsupported screen: \(pathComponents[2])")
+        guard let handler = parsingFactory.createUrlHandler(screen: screen) else {
+            logger.warning("unsupported screen: \(screen)")
             return false
         }
         processingHandler = handler

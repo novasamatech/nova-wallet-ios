@@ -36,7 +36,18 @@ final class RootInteractor {
     }
 
     private func setupURLHandlingService() {
-        let keystoreImportService = KeystoreImportService(logger: Logger.shared)
+        let parsingFactory = OpenScreenUrlParsingServiceFactory(chainRegistryClosure: chainRegistryClosure)
+        let screenOpenURLActivityValidators: [URLActivityValidator] = [ScreenOpenService.ActivityValidator()]
+        let screenOpenService = ScreenOpenService(
+            parsingFactory: parsingFactory,
+            logger: Logger.shared,
+            validators: screenOpenURLActivityValidators
+        )
+
+        let keystoreImportService = KeystoreImportService(
+            validators: screenOpenURLActivityValidators,
+            logger: Logger.shared
+        )
 
         let callbackUrl = applicationConfig.purchaseRedirect
         let purchaseHandler = PurchaseCompletionHandler(
@@ -44,13 +55,11 @@ final class RootInteractor {
             eventCenter: eventCenter
         )
 
-        let parsingFactory = OpenScreenUrlParsingServiceFactory(chainRegistryClosure: chainRegistryClosure)
-        let screenOpenService = ScreenOpenService(
-            parsingFactory: parsingFactory,
-            logger: Logger.shared
-        )
-
-        let wcHandlingService = WalletConnectUrlParsingService()
+        let wcURLActivityValidators: [URLActivityValidator] = [
+            WalletConnectUrlParsingService.WCActivityValidator(),
+            WalletConnectUrlParsingService.OldWCActivityValidator()
+        ]
+        let wcHandlingService = WalletConnectUrlParsingService(validators: wcURLActivityValidators)
 
         URLHandlingService.shared.setup(
             children: [
