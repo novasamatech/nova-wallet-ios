@@ -1,25 +1,13 @@
 import Foundation
 
-enum URLActivity {
-    case applink(url: URL)
-    case custom(url: URL)
-
-    func getURL() -> URL {
-        switch self {
-        case let .applink(url), let .custom(url):
-            return url
-        }
-    }
-}
-
-protocol URLActivityValidator {
-    func validate(_ url: URL) -> Bool
-}
-
 protocol URLHandlingServiceProtocol: AnyObject {
     var validators: [URLActivityValidator] { get }
 
     func handle(url: URL) -> Bool
+}
+
+protocol URLActivityValidator {
+    func validate(_ url: URL) -> Bool
 }
 
 extension URLHandlingServiceProtocol {
