@@ -1729,3 +1729,5 @@
 "gov.vote.conviction.alert.title" = "信念の更新";
 "gov.vote.conviction.alert.message" = "棄権票は0.1xの信念でのみ行うことができます。0.1xの信念で投票しますか？";
 "gov.vote.conviction.hint.title" = "棄権時には信念が0.1xに設定されます";
+"cloud.backup.password.confirm.title" = "バックアップパスワードを確認";
+"cloud.backup.password.confirm.details" = "前の画面で作成したパスワードを入力してください";

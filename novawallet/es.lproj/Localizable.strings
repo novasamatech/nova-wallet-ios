@@ -1729,3 +1729,5 @@
 "gov.vote.conviction.alert.title" = "Actualización de la convicción";
 "gov.vote.conviction.alert.message" = "Los votos de Abstención solo se pueden realizar con una convicción de 0.1x. ¿Votar con una convicción de 0.1x?";
 "gov.vote.conviction.hint.title" = "La convicción se establecerá en 0.1x cuando se Abstenga";
+"cloud.backup.password.confirm.title" = "Confirme la contraseña de respaldo";
+"cloud.backup.password.confirm.details" = "Por favor, ingrese la contraseña que creó en la pantalla anterior";
