@@ -54,7 +54,7 @@ final class KeystoreImportService {
     let logger: LoggerProtocol
 
     init(
-        validators: [URLActivityValidator],
+        validators: [URLActivityValidator] = [],
         logger: LoggerProtocol
     ) {
         self.validators = validators
