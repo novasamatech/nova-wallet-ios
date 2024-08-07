@@ -65,6 +65,9 @@ final class ReferendumVotersPresenter {
         case .nays:
             amountInPlank = voter.vote.nayBalance
             votes = voter.vote.nays
+        case .abstains:
+            amountInPlank = voter.vote.abstainBalance
+            votes = voter.vote.abstains
         }
 
         let votesString = stringFactory.createVotes(from: votes, chain: chain, locale: selectedLocale)
@@ -93,6 +96,8 @@ final class ReferendumVotersPresenter {
                 return voter.vote.hasAyeVotes
             case .nays:
                 return voter.vote.hasNayVotes
+            case .abstains:
+                return voter.vote.hasAbstainVotes
             }
         }
         .sorted {
@@ -101,6 +106,8 @@ final class ReferendumVotersPresenter {
                 return $0.vote.ayes > $1.vote.ayes
             case .nays:
                 return $0.vote.nays > $1.vote.nays
+            case .abstains:
+                return $0.vote.abstains > $1.vote.abstains
             }
         }
         .compactMap { voter in
@@ -120,6 +127,10 @@ final class ReferendumVotersPresenter {
         case .nays:
             return LocalizableResource { locale in
                 R.string.localizable.govVotersNay(preferredLanguages: locale.rLanguages)
+            }
+        case .abstains:
+            return LocalizableResource { locale in
+                R.string.localizable.govVotersAbstain(preferredLanguages: locale.rLanguages)
             }
         }
     }

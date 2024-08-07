@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 final class ChangeWatchOnlyInteractor {
     weak var presenter: ChangeWatchOnlyInteractorOutputProtocol?
@@ -49,8 +49,7 @@ final class ChangeWatchOnlyInteractor {
             saveOperation = ClosureOperation {
                 let newWallet = try replaceAccountOperation.extractNoCancellableResultData()
                 settings.save(value: newWallet)
-                eventCenter.notify(with: SelectedAccountChanged())
-                eventCenter.notify(with: AccountsChanged(method: .manually))
+                eventCenter.notify(with: SelectedWalletSwitched())
             }
         } else {
             saveOperation = repository.saveOperation({
@@ -67,7 +66,7 @@ final class ChangeWatchOnlyInteractor {
             DispatchQueue.main.async {
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
-                    self?.eventCenter.notify(with: ChainAccountChanged(method: .manually))
+                    self?.eventCenter.notify(with: ChainAccountChanged())
                     self?.presenter?.didSaveAddress(newAddress)
                 } catch {
                     self?.presenter?.didReceiveError(error)

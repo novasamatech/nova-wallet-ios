@@ -120,14 +120,11 @@ extension TimeInterval {
         }
     }
 
-    func localizedDaysOrTime(for locale: Locale) -> String? {
+    func localizedDaysHoursOrTime(for locale: Locale) -> String? {
         let days = daysFromSeconds
 
         if days > 0 {
-            let daysString = R.string.localizable.commonDaysFormat(
-                format: days, preferredLanguages: locale.rLanguages
-            )
-            return daysString
+            return localizedDaysHours(for: locale)
         } else {
             let formatter = DateComponentsFormatter.fullTime
             return formatter.value(for: locale).string(from: self)

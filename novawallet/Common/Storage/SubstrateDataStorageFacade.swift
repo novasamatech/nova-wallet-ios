@@ -1,10 +1,10 @@
-import RobinHood
+import Operation_iOS
 import CoreData
 
 enum SubstrateStorageParams {
     static let databaseName = "SubstrateDataModel.sqlite"
     static let modelDirectory: String = "SubstrateDataModel.momd"
-    static let modelVersion: SubstrateStorageVersion = .version27
+    static let modelVersion: SubstrateStorageVersion = .version31
 
     static let deprecatedStorageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(

@@ -51,23 +51,23 @@ final class GovernanceTracksSettingsPresenter: SelectTracksPresenter {
                 initialSelectedTracks.contains($0.trackId)
             }
         }
-        selectedTracks = Set(tracks.compactMap { ReferendumTrackType(rawValue: $0.name) })
+        selectedTrackIds = Set(tracks.map(\.trackId))
     }
 
     override func setup() {
         super.setup()
         view?.didReceive(networkViewModel: .init(
             name: chain.name,
-            icon: RemoteImageViewModel(url: chain.icon)
+            icon: ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
         ))
     }
 
     override func toggleTrackSelection(track: GovernanceSelectTrackViewModel.Track) {
-        guard let selectedTracks = selectedTracks else {
+        guard let selectedTrackIds else {
             return
         }
 
-        if selectedTracks.contains(track.type), selectedTracks.count == 1 {
+        if selectedTrackIds.contains(track.trackId), selectedTrackIds.count == 1 {
             return
         }
 
@@ -75,20 +75,14 @@ final class GovernanceTracksSettingsPresenter: SelectTracksPresenter {
     }
 
     override func proceed() {
-        guard let selectedTrackTypes = selectedTracks, let allTracks = tracks else {
+        guard let selectedTrackIds, let allTracks = tracks else {
             return
         }
 
         let selectedTracks = allTracks.filter { track in
-            guard let trackType = ReferendumTrackType(rawValue: track.name) else {
-                return false
-            }
-
-            return selectedTrackTypes.contains(trackType)
+            selectedTrackIds.contains(track.trackId)
         }
 
-        let tracksCount = allTracks.compactMap { ReferendumTrackType(rawValue: $0.name) }.count
-
-        wireframe?.proceed(from: view, tracks: selectedTracks, totalCount: tracksCount)
+        wireframe?.proceed(from: view, tracks: selectedTracks, totalCount: allTracks.count)
     }
 }

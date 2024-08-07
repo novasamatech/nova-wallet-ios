@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 struct ParaStkSelectCollatorsViewFactory {
     static func createView(
@@ -75,18 +75,24 @@ struct ParaStkSelectCollatorsViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         let collatorOperationFactory = ParaStkCollatorsOperationFactory(
             requestFactory: requestFactory,
-            identityOperationFactory: identityOperationFactory
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            identityProxyFactory: identityProxyFactory,
+            chainFormat: chain.chainFormat
         )
 
         return ParaStkSelectCollatorsInteractor(
             chainAsset: chainAsset,
             collatorService: collatorService,
             rewardService: rewardEngineService,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
             collatorOperationFactory: collatorOperationFactory,
             preferredCollatorsProvider: state.preferredCollatorsProvider,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

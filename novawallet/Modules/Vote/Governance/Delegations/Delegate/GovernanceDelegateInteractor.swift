@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import BigInt
 
 class GovernanceDelegateInteractor: AnyCancellableCleaning {
@@ -171,7 +171,12 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
     }
 
     func createExtrinsicSplitter(for actions: [GovernanceDelegatorAction]) throws -> ExtrinsicSplitting {
-        let splitter = ExtrinsicSplitter(chain: chain, chainRegistry: chainRegistry)
+        let splitter = ExtrinsicSplitter(
+            chain: chain,
+            maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic,
+            chainRegistry: chainRegistry
+        )
+
         return try extrinsicFactory.delegationUpdate(with: actions, splitter: splitter)
     }
 

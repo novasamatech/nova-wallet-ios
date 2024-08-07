@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 struct AcalaContributionConfirmViewFactory {
     static func createView(
@@ -103,8 +103,9 @@ struct AcalaContributionConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: accountResponse, chain: chain)
 
         let feeProxy = ExtrinsicFeeProxy()

@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-import RobinHood
+import Operation_iOS
 
 extension CDContactItem: CoreDataCodable {
     public func populate(from decoder: Decoder, using _: NSManagedObjectContext) throws {

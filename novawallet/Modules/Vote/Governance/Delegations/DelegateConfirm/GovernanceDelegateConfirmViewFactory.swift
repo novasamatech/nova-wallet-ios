@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 struct GovernanceDelegateConfirmViewFactory {
     static func createAddDelegationView(
@@ -76,7 +76,7 @@ struct GovernanceDelegateConfirmViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
 
@@ -88,7 +88,7 @@ struct GovernanceDelegateConfirmViewFactory {
             delegation: delegation,
             delegationInfo: delegationDisplayInfo,
             balanceViewModelFactory: balanceViewModelFactory,
-            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             trackViewModelFactory: GovernanceTrackViewModelFactory(),
             dataValidatingFactory: dataValidatingFactory,
@@ -137,13 +137,13 @@ struct GovernanceDelegateConfirmViewFactory {
         let extrinsicFactory = state.createExtrinsicFactory(for: option)
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let operationManager = OperationManager(operationQueue: operationQueue)
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: option.chain)
 
         let signer = SigningWrapperFactory.createSigner(from: selectedAccount)

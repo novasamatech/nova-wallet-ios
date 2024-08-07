@@ -1,10 +1,15 @@
 import Foundation
 
 struct ElectedAndPrefValidators: Equatable {
-    let electedValidators: [ElectedValidatorInfo]
+    let allElectedValidators: [ElectedValidatorInfo]
+    let notExcludedElectedValidators: [ElectedValidatorInfo]
     let preferredValidators: [SelectedValidatorInfo]
 
-    func electedToSelectedValidators(for address: AccountAddress? = nil) -> [SelectedValidatorInfo] {
-        electedValidators.map { $0.toSelected(for: address) }
+    func notExcludedElectedToSelectedValidators(for address: AccountAddress? = nil) -> [SelectedValidatorInfo] {
+        notExcludedElectedValidators.map { $0.toSelected(for: address) }
+    }
+
+    func allElectedToSelectedValidators(for address: AccountAddress? = nil) -> [SelectedValidatorInfo] {
+        allElectedValidators.map { $0.toSelected(for: address) }
     }
 }

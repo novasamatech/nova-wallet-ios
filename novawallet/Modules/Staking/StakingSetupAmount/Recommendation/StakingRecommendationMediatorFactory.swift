@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol StakingRecommendationMediatorFactoryProtocol {
     func createDirectStakingMediator(
@@ -60,6 +60,12 @@ final class StakingRecommendationMediatorFactory {
             requestFactory: storageRequestFactory
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let validatorOperationFactory = ValidatorOperationFactory(
             chainInfo: state.chainAsset.chainAssetInfo,
             eraValidatorService: state.eraValidatorService,
@@ -67,7 +73,7 @@ final class StakingRecommendationMediatorFactory {
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityOperationFactory: identityOperationFactory
+            identityProxyFactory: identityProxyFactory
         )
 
         let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)
@@ -89,15 +95,26 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
     func createDirectStakingMediator(
         for state: RelaychainStartStakingStateProtocol
     ) -> RelaychainStakingRecommendationMediating? {
+        let chainId = state.chainAsset.chain.chainId
+
         guard
             let recommendationFactory = createDirectStakingRecommendationFactory(for: state),
-            let restrictionsBuilder = createDirectStakingRestrictionsBuilder(for: state) else {
+            let restrictionsBuilder = createDirectStakingRestrictionsBuilder(for: state),
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
             return nil
         }
+
+        let validationFactory = DirectStkRecommendingValidationFactory(
+            connection: connection,
+            runtimeProvider: runtimeService,
+            operationQueue: operationQueue
+        )
 
         return DirectStakingRecommendationMediator(
             recommendationFactory: recommendationFactory,
             restrictionsBuilder: restrictionsBuilder,
+            validationFactory: validationFactory,
             operationQueue: operationQueue,
             logger: logger
         )
@@ -132,11 +149,18 @@ extension StakingRecommendationMediatorFactory: StakingRecommendationMediatorFac
             storageOperationFactory: poolsOperationFactory
         )
 
+        let validationFactory = PoolStakingRecommendingValidationFactory(
+            connection: connection,
+            runtimeProvider: runtimeService,
+            operationQueue: operationQueue
+        )
+
         return PoolStakingRecommendationMediator(
             chainAsset: state.chainAsset,
             npoolsLocalSubscriptionFactory: state.npLocalSubscriptionFactory,
             restrictionsBuilder: restrictionsBuilder,
             operationFactory: operationFactory,
+            validationFactory: validationFactory,
             operationQueue: operationQueue,
             logger: logger
         )

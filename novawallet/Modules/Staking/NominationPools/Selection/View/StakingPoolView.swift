@@ -31,7 +31,7 @@ final class StakingPoolView: GenericTitleValueView<SelectPoolAccountView, Select
         rewardView.spacing = 2
         rewardView.makeHorizontal()
         rewardView.fView.apply(style: .caption1Positive)
-        rewardView.sView.apply(style: .caption1Tertiary)
+        rewardView.sView.apply(style: .caption1Secondary)
         rewardView.fView.setContentHuggingPriority(.high, for: .horizontal)
         rewardView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         valueView.spacing = 8

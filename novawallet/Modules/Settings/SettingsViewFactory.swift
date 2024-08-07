@@ -6,13 +6,11 @@ import SubstrateSdk
 
 struct SettingsViewFactory {
     static func createView(
-        with dappMediator: DAppInteractionMediating,
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        with serviceCoordinator: ServiceCoordinatorProtocol
     ) -> SettingsViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
-            let walletConnect = dappMediator.children.first(
+            let walletConnect = serviceCoordinator.dappMediator.children.first(
                 where: { $0 is WalletConnectDelegateInputProtocol }
             ) as? WalletConnectDelegateInputProtocol else {
             return nil
@@ -34,12 +32,12 @@ struct SettingsViewFactory {
             currencyManager: currencyManager,
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
-            walletNotificationService: walletNotificationService,
+            walletNotificationService: serviceCoordinator.walletNotificationService,
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
             operationQueue: operationQueue
         )
 
-        let wireframe = SettingsWireframe(dappMediator: dappMediator, proxySyncService: proxySyncService)
+        let wireframe = SettingsWireframe(serviceCoordinator: serviceCoordinator)
 
         let view = SettingsViewController()
 

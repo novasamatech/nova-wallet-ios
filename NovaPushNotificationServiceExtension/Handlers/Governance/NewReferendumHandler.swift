@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraKeystore
 import BigInt
 import SoraFoundation
@@ -22,7 +22,7 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
 
     func handle(
         callbackQueue: DispatchQueue?,
-        completion: @escaping (NotificationContentResult?) -> Void
+        completion: @escaping (PushNotificationHandleResult) -> Void
     ) {
         let chainOperation = chainsRepository.fetchAllOperation(with: .init())
 
@@ -32,16 +32,19 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
             backingCallIn: callStore,
             runningCallbackIn: callbackQueue
         ) { [weak self] result in
-            guard let self = self else {
+            guard let self else {
                 return
             }
+
             switch result {
             case let .success(chains):
-                guard let chain = self.search(
-                    chainId: self.chainId,
-                    in: chains
-                ) else {
-                    completion(nil)
+                guard
+                    let chain = search(
+                        chainId: chainId,
+                        in: chains
+                    )
+                else {
+                    completion(.original(.chainNotFound(chainId: chainId)))
                     return
                 }
 
@@ -54,9 +57,14 @@ final class NewReferendumHandler: CommonHandler, PushNotificationHandler {
                     self.payload.referendumNumber,
                     preferredLanguages: self.locale.rLanguages
                 )
-                completion(.init(title: title, subtitle: subtitle))
-            case .failure:
-                completion(nil)
+
+                let notificationContentResult: NotificationContentResult = .init(
+                    title: title,
+                    subtitle: subtitle
+                )
+                completion(.modified(notificationContentResult))
+            case let .failure(error):
+                completion(.original(.internalError(error: error)))
             }
         }
     }

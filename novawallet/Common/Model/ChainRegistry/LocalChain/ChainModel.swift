@@ -1,11 +1,13 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import BigInt
 
 struct ChainModel: Equatable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = String
+
+    typealias AddressPrefix = UInt64
 
     struct TypesSettings: Codable, Hashable {
         let url: URL?
@@ -17,6 +19,11 @@ struct ChainModel: Equatable, Hashable {
         let account: String?
         let extrinsic: String?
         let event: String?
+    }
+
+    enum Source: String, Codable {
+        case remote
+        case user
     }
 
     enum TypesUsage {
@@ -35,14 +42,37 @@ struct ChainModel: Equatable, Hashable {
         }
     }
 
+    enum ConnectionMode: Hashable, Equatable {
+        case manual(ChainNodeModel)
+        case autoBalanced
+
+        var rawValue: Int16 {
+            switch self {
+            case .manual: 0
+            case .autoBalanced: 1
+            }
+        }
+
+        init?(rawValue: Int16, selectedNode: ChainNodeModel?) {
+            switch (rawValue, selectedNode) {
+            case let (0, .some(node)):
+                self = .manual(node)
+            case (1, _):
+                self = .autoBalanced
+            default:
+                return nil
+            }
+        }
+    }
+
     let chainId: Id
     let parentId: Id?
     let name: String
     let assets: Set<AssetModel>
     let nodes: Set<ChainNodeModel>
-    let addressPrefix: UInt16
+    let addressPrefix: AddressPrefix
     let types: TypesSettings?
-    let icon: URL
+    let icon: URL?
     let options: [LocalChainOptions]?
     let externalApis: LocalChainExternalApiSet?
     let nodeSwitchStrategy: NodeSwitchStrategy
@@ -50,6 +80,8 @@ struct ChainModel: Equatable, Hashable {
     let order: Int64
     let additional: JSON?
     let syncMode: ChainSyncMode
+    let source: Source
+    let connectionMode: ConnectionMode
 
     init(
         chainId: Id,
@@ -58,15 +90,17 @@ struct ChainModel: Equatable, Hashable {
         assets: Set<AssetModel>,
         nodes: Set<ChainNodeModel>,
         nodeSwitchStrategy: NodeSwitchStrategy,
-        addressPrefix: UInt16,
+        addressPrefix: AddressPrefix,
         types: TypesSettings?,
-        icon: URL,
+        icon: URL?,
         options: [LocalChainOptions]?,
         externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,
         order: Int64,
         additional: JSON?,
-        syncMode: ChainSyncMode
+        syncMode: ChainSyncMode,
+        source: Source,
+        connectionMode: ConnectionMode
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -83,6 +117,8 @@ struct ChainModel: Equatable, Hashable {
         self.order = order
         self.additional = additional
         self.syncMode = syncMode
+        self.source = source
+        self.connectionMode = connectionMode
     }
 
     func asset(for assetId: AssetModel.Id) -> AssetModel? {
@@ -191,6 +227,10 @@ struct ChainModel: Equatable, Hashable {
         utilityAssets().first
     }
 
+    func chainAssets() -> [ChainAsset] {
+        assets.map { ChainAsset(chain: self, asset: $0) }
+    }
+
     func utilityAssetDisplayInfo() -> AssetBalanceDisplayInfo? {
         utilityAsset()?.displayInfo(with: icon)
     }
@@ -262,6 +302,22 @@ struct ChainModel: Equatable, Hashable {
     var feeViaRuntimeCall: Bool {
         additional?.feeViaRuntimeCall?.boolValue ?? false
     }
+
+    var identityChain: ChainModel.Id? {
+        additional?.identityChain?.stringValue
+    }
+
+    var supportsGenericLedgerApp: Bool {
+        additional?.supportsGenericLedgerApp?.boolValue ?? false
+    }
+
+    var disabledCheckMetadataHash: Bool {
+        additional?.disabledCheckMetadataHash?.boolValue ?? false
+    }
+
+    var isAddedByUser: Bool {
+        source == .user
+    }
 }
 
 extension ChainModel: Identifiable {
@@ -298,7 +354,9 @@ extension ChainModel {
             explorers: explorers,
             order: order,
             additional: additional,
-            syncMode: syncMode
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
         )
     }
 
@@ -321,11 +379,121 @@ extension ChainModel {
             explorers: explorers,
             order: order,
             additional: additional,
-            syncMode: syncMode
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
         )
     }
 
-    func byChanging(assets: Set<AssetModel>? = nil, name: String? = nil) -> ChainModel {
+    func adding(node: ChainNodeModel) -> ChainModel {
+        var mutNodes = nodes
+
+        mutNodes.insert(node)
+
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: mutNodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
+
+    func adding(nodes: Set<ChainNodeModel>) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: self.nodes.union(nodes),
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
+
+    func removing(node: ChainNodeModel) -> ChainModel {
+        var mutNodes = nodes
+
+        mutNodes.remove(node)
+
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: mutNodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
+
+    func replacing(
+        _ oldNode: ChainNodeModel,
+        with newNode: ChainNodeModel
+    ) -> ChainModel {
+        var mutNodes = nodes
+
+        mutNodes.remove(oldNode)
+        mutNodes.insert(newNode)
+
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: mutNodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
+
+    func byChanging(
+        assets: Set<AssetModel>? = nil,
+        name: String? = nil,
+        source: Source? = nil
+    ) -> ChainModel {
         let newAssets = assets ?? self.assets
         let newName = name ?? self.name
 
@@ -344,7 +512,9 @@ extension ChainModel {
             explorers: explorers,
             order: order,
             additional: additional,
-            syncMode: syncMode
+            syncMode: syncMode,
+            source: source ?? self.source,
+            connectionMode: connectionMode
         )
     }
 
@@ -364,7 +534,31 @@ extension ChainModel {
             explorers: explorers,
             order: order,
             additional: additional,
-            syncMode: newMode
+            syncMode: newMode,
+            source: source,
+            connectionMode: connectionMode
+        )
+    }
+
+    func updatingConnectionMode(for newMode: ConnectionMode) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApis: externalApis,
+            explorers: explorers,
+            order: order,
+            additional: additional,
+            syncMode: syncMode,
+            source: source,
+            connectionMode: newMode
         )
     }
 }
@@ -375,3 +569,47 @@ extension ChainModel {
         return Set(priceIds)
     }
 }
+
+extension ChainModel.AddressPrefix {
+    func toSubstrateFormat() -> UInt16 {
+        // The assumption is that we don't map values overflowing UInt16
+        // in the ChainModel for substrate networks.
+        UInt16(self)
+    }
+}
+
+// MARK: ChainNodeConnectable
+
+protocol ChainNodeConnectable {
+    var chainId: String { get }
+    var name: String { get }
+    var nodes: Set<ChainNodeModel> { get }
+    var options: [LocalChainOptions]? { get }
+    var nodeSwitchStrategy: ChainModel.NodeSwitchStrategy { get }
+    var addressPrefix: ChainModel.AddressPrefix { get }
+    var connectionMode: ChainModel.ConnectionMode { get }
+}
+
+extension ChainNodeConnectable {
+    var noSubstrateRuntime: Bool {
+        options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
+    }
+
+    var hasSubstrateRuntime: Bool {
+        !noSubstrateRuntime
+    }
+
+    var isEthereumBased: Bool {
+        options?.contains(.ethereumBased) ?? false
+    }
+}
+
+// MARK: ChainViewModelSource
+
+protocol ChainViewModelSource {
+    var icon: URL? { get }
+    var name: String { get }
+}
+
+extension ChainModel: ChainNodeConnectable {}
+extension ChainModel: ChainViewModelSource {}

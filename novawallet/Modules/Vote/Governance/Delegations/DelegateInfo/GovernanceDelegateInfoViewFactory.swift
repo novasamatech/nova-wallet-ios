@@ -18,6 +18,12 @@ struct GovernanceDelegateInfoViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
+
+        let governanceDelegateInfoViewModelFactory = GovernanceDelegateInfoViewModelFactory(
+            stringDisplayFactory: referendumDisplayStringFactory
+        )
+
         let presenter = GovernanceDelegateInfoPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -25,10 +31,10 @@ struct GovernanceDelegateInfoViewFactory {
             accountManagementFilter: AccountManagementFilter(),
             wallet: wallet,
             initDelegate: delegate,
-            infoViewModelFactory: GovernanceDelegateInfoViewModelFactory(),
+            infoViewModelFactory: governanceDelegateInfoViewModelFactory,
             identityViewModelFactory: IdentityViewModelFactory(),
             tracksViewModelFactory: GovernanceTrackViewModelFactory(),
-            votesViewModelFactory: ReferendumDisplayStringFactory(),
+            votesViewModelFactory: referendumDisplayStringFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -54,7 +60,6 @@ struct GovernanceDelegateInfoViewFactory {
             let chain = state.settings.value?.chain,
             let delegateAccountId = try? delegate.stats.address.toAccountId(),
             let statsUrl = chain.externalApis?.governanceDelegations()?.first?.url,
-            let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let blockTimeService = state.blockTimeService,
             let referendumsOperationFactory = state.referendumsOperationFactory,
@@ -71,6 +76,12 @@ struct GovernanceDelegateInfoViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
 
         return .init(
@@ -81,10 +92,9 @@ struct GovernanceDelegateInfoViewFactory {
             referendumOperationFactory: referendumsOperationFactory,
             subscriptionFactory: subscriptionFactory,
             detailsOperationFactory: statsOperationFactory,
-            connection: connection,
             runtimeService: runtimeProvider,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,
             govJsonProviderFactory: JsonDataProviderFactory.shared,

@@ -103,7 +103,7 @@ final class GovEditDelegationTracksPresenter: GovernanceSelectTracksPresenter {
             }
         }
 
-        selectedTracks = Set(selectedTracksList.compactMap { ReferendumTrackType(rawValue: $0.name) })
+        selectedTrackIds = Set(selectedTracksList.map(\.trackId))
     }
 
     override func updateView() {

@@ -12,7 +12,23 @@ protocol ConnectionPoolProtocol {
 }
 
 protocol ConnectionStateSubscription: AnyObject {
-    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)
+    func didReceive(
+        state: WebSocketEngine.State,
+        for chainId: ChainModel.Id
+    )
+    func didSwitchURL(
+        _ connection: ChainConnection,
+        newURL: URL,
+        for chainId: ChainModel.Id
+    )
+}
+
+extension ConnectionStateSubscription {
+    func didSwitchURL(
+        _: ChainConnection,
+        newURL _: URL,
+        for _: ChainModel.Id
+    ) {}
 }
 
 class ConnectionPool {
@@ -54,10 +70,10 @@ extension ConnectionPool: ConnectionPoolProtocol {
         subscribers.append(WeakWrapper(target: subscriber))
         stateSubscriptions[chainId] = subscribers
 
-        let connection = connections[chainId] as? ChainConnection
+        let connection = connections[chainId]?.target as? ChainConnection
 
         DispatchQueue.main.async {
-            subscriber.didReceive(state: connection?.state ?? .notConnected, for: chainId)
+            subscriber.didReceive(state: connection?.state ?? .notConnected(url: nil), for: chainId)
         }
     }
 
@@ -83,6 +99,11 @@ extension ConnectionPool: ConnectionPoolProtocol {
 
         if let connection = connections[chain.chainId]?.target as? ChainConnection {
             connectionFactory.updateConnection(connection, chain: chain)
+
+            if case .notConnected = connection.state {
+                connection.connect()
+            }
+
             return connection
         }
 
@@ -99,10 +120,10 @@ extension ConnectionPool: ConnectionPoolProtocol {
             mutex.unlock()
         }
 
-        let optConnection = connections[chainId]
-        connections[chainId] = nil
+        let optConnection = connections[chainId]?.target
         oneShotConnections[chainId] = nil
-        stateSubscriptions[chainId] = nil
+
+        clearUnusedConnections()
 
         if let connection = optConnection as? ChainConnection {
             connection.disconnect(true)
@@ -143,12 +164,33 @@ extension ConnectionPool: ConnectionPoolProtocol {
 }
 
 extension ConnectionPool: WebSocketEngineDelegate {
-    func webSocketDidSwitchURL(_: AnyObject, newUrl _: URL) {}
+    func webSocketDidSwitchURL(
+        _ connection: AnyObject,
+        newUrl: URL
+    ) {
+        processWebsocketChange(
+            connection: connection,
+            newState: nil,
+            newUrl: newUrl
+        )
+    }
 
     func webSocketDidChangeState(
         _ connection: AnyObject,
         from _: WebSocketEngine.State,
         to newState: WebSocketEngine.State
+    ) {
+        processWebsocketChange(
+            connection: connection,
+            newState: newState,
+            newUrl: nil
+        )
+    }
+
+    func processWebsocketChange(
+        connection: AnyObject,
+        newState: WebSocketEngine.State?,
+        newUrl: URL?
     ) {
         mutex.lock()
 
@@ -159,7 +201,10 @@ extension ConnectionPool: WebSocketEngineDelegate {
         let allChainIds = connections.keys
         let maybeChainId = allChainIds.first(where: { connections[$0]?.target === connection })
 
-        guard let chainId = maybeChainId else {
+        guard
+            let chainId = maybeChainId,
+            let chainConnection = connection as? ChainConnection
+        else {
             return
         }
 
@@ -170,7 +215,22 @@ extension ConnectionPool: WebSocketEngineDelegate {
         }
 
         DispatchQueue.main.async {
-            subscriptions.forEach { $0.didReceive(state: newState, for: chainId) }
+            if let newUrl {
+                subscriptions.forEach {
+                    $0.didSwitchURL(
+                        chainConnection,
+                        newURL: newUrl,
+                        for: chainId
+                    )
+                }
+            } else if let newState {
+                subscriptions.forEach {
+                    $0.didReceive(
+                        state: newState,
+                        for: chainId
+                    )
+                }
+            }
         }
     }
 }

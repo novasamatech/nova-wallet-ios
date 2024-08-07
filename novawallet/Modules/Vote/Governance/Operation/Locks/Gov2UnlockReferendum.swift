@@ -21,15 +21,17 @@ extension Gov2UnlockReferendum: GovUnlockReferendumProtocol {
 
         switch referendumInfo {
         case let .ongoing(ongoingStatus):
-            guard let decisionPeriod = additionalInfo.decisionPeriods[ongoingStatus.track] else {
+            guard
+                let decisionPeriod = additionalInfo.decisionPeriods[ongoingStatus.track],
+                let confirmPeriod = additionalInfo.confirmPeriods[ongoingStatus.track] else {
                 return nil
             }
 
             if let decidingSince = ongoingStatus.deciding?.since {
-                return decidingSince + decisionPeriod + convictionPeriod
+                return decidingSince + decisionPeriod + confirmPeriod + convictionPeriod
             } else {
                 return ongoingStatus.submitted + additionalInfo.undecidingTimeout +
-                    decisionPeriod + convictionPeriod
+                    decisionPeriod + confirmPeriod + convictionPeriod
             }
         case let .approved(completedStatus):
             if accountVote.hasAyeVotes {

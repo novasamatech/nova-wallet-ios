@@ -1,32 +1,22 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class ScaleDecoderOperation<T: ScaleDecodable>: BaseOperation<T?> {
     var data: Data?
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<T?, Error>) -> Void) throws {
         guard let data = data else {
-            result = .success(nil)
+            callback(.success(nil))
             return
         }
 
         do {
             let decoder = try ScaleDecoder(data: data)
             let item = try T(scaleDecoder: decoder)
-            result = .success(item)
+            callback(.success(item))
         } catch {
-            result = .failure(error)
+            callback(.failure(error))
         }
     }
 }

@@ -4,10 +4,10 @@ protocol WalletsListTableViewCellProtocol {
     func bind(viewModel: WalletsListViewModel)
 }
 
-class WalletsListTableViewCell<V: UIView>: PlainBaseTableViewCell<
-    GenericTitleValueView<WalletView, V>
+class WalletsListTableViewCell<T: WalletViewProtocol, V: UIView>: PlainBaseTableViewCell<
+    GenericTitleValueView<T, V>
 >, WalletsListTableViewCellProtocol {
-    var infoView: WalletView { contentDisplayView.titleView }
+    var infoView: WalletViewProtocol { contentDisplayView.titleView }
 
     override func prepareForReuse() {
         super.prepareForReuse()

@@ -3,7 +3,7 @@ import XCTest
 import SoraKeystore
 import SoraFoundation
 import Cuckoo
-import RobinHood
+import Operation_iOS
 
 class DAppListTests: XCTestCase {
     func testSuccessSetup() throws {

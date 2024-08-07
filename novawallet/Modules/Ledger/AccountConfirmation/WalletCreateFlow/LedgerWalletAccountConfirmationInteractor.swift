@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class LedgerWalletAccountConfirmationInteractor: LedgerBaseAccountConfirmationInteractor,
     LedgerAccountConfirmationInteractorInputProtocol {
@@ -9,7 +9,7 @@ final class LedgerWalletAccountConfirmationInteractor: LedgerBaseAccountConfirma
     init(
         chain: ChainModel,
         deviceId: UUID,
-        application: LedgerApplication,
+        application: LedgerAccountRetrievable,
         accountsStore: LedgerAccountsStore,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,

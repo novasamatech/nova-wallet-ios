@@ -1,7 +1,7 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
-class WalletsListInteractor {
+class WalletsListInteractor: WalletsListInteractorInputProtocol {
     weak var basePresenter: WalletsListInteractorOutputProtocol?
 
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
@@ -30,7 +30,11 @@ class WalletsListInteractor {
     }
 
     private func subscribeChains() {
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .main,
+            filterStrategy: .enabledChains
+        ) { [weak self] changes in
             self?.basePresenter?.didReceiveChainChanges(changes)
         }
     }
@@ -38,9 +42,7 @@ class WalletsListInteractor {
     func applyWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         basePresenter?.didReceiveWalletsChanges(changes)
     }
-}
 
-extension WalletsListInteractor: WalletsListInteractorInputProtocol {
     func setup() {
         subscribeChains()
         subscribeWallets()

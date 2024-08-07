@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 final class StakingRebondSetupViewFactory {
     static func createView(for state: RelaychainStakingSharedStateProtocol) -> StakingRebondSetupViewProtocol? {
@@ -74,8 +74,9 @@ final class StakingRebondSetupViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
 
         let feeProxy = ExtrinsicFeeProxy()

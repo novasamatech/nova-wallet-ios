@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import SoraKeystore
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 final class SelectValidatorsStartViewFactory {
     static func createInitiatedBondingView(
@@ -80,6 +80,11 @@ final class SelectValidatorsStartViewFactory {
             operationManager: operationManager
         )
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageOperationFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         let operationFactory = ValidatorOperationFactory(
             chainInfo: chainAsset.chainAssetInfo,
@@ -88,7 +93,7 @@ final class SelectValidatorsStartViewFactory {
             storageRequestFactory: storageOperationFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityOperationFactory: identityOperationFactory
+            identityProxyFactory: identityProxyFactory
         )
 
         let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)

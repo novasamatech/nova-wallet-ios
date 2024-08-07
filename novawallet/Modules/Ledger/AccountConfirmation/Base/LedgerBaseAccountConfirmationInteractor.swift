@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 enum LedgerAccountConfirmationInteractorError: Error {
     case accountVerificationFailed
@@ -11,7 +11,7 @@ class LedgerBaseAccountConfirmationInteractor {
 
     let chain: ChainModel
     let deviceId: UUID
-    let application: LedgerApplication
+    let application: LedgerAccountRetrievable
     let requestFactory: StorageRequestFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
@@ -20,7 +20,7 @@ class LedgerBaseAccountConfirmationInteractor {
     init(
         chain: ChainModel,
         deviceId: UUID,
-        application: LedgerApplication,
+        application: LedgerAccountRetrievable,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
@@ -48,7 +48,7 @@ class LedgerBaseAccountConfirmationInteractor {
             let info = LedgerChainAccount.Info(
                 accountId: accountId,
                 publicKey: responseAccount.publicKey,
-                cryptoType: LedgerApplication.defaultCryptoScheme.walletCryptoType
+                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType
             )
 
             addAccount(for: info, chain: chain, derivationPath: response.derivationPath, index: index)

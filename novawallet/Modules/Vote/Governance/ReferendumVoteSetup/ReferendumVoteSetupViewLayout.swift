@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class ReferendumVoteSetupViewLayout: UIView {
     let containerView: ScrollableContainerView = {
@@ -9,25 +10,49 @@ final class ReferendumVoteSetupViewLayout: UIView {
         return view
     }()
 
-    let ayeButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        button.triangularedView?.fillColor = R.color.colorButtonBackgroundApprove()!
-        button.triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundApprove()!
+    let ayeButton: RoundedButton = {
+        let button = RoundedButton()
+        button.applyIconWithBackgroundStyle()
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundApprove()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundApprove()!
+        button.roundedBackgroundView?.cornerRadius = Constants.bigButtonSize / 2
+        button.imageWithTitleView?.iconImage = R.image.iconThumbsUpFilled()
         return button
     }()
 
-    let nayButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        button.triangularedView?.fillColor = R.color.colorButtonBackgroundReject()!
-        button.triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundReject()!
+    let abstainButton: RoundedButton = {
+        let button = RoundedButton()
+        button.applyIconWithBackgroundStyle()
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundSecondary()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
+        button.roundedBackgroundView?.cornerRadius = Constants.smallButtonSize / 2
+        button.imageWithTitleView?.iconImage = R.image.iconAbstain()
         return button
     }()
+
+    let nayButton: RoundedButton = {
+        let button = RoundedButton()
+        button.applyIconWithBackgroundStyle()
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundReject()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundReject()!
+        button.roundedBackgroundView?.cornerRadius = Constants.bigButtonSize / 2
+        button.imageWithTitleView?.iconImage = R.image.iconThumbsDownFilled()
+        return button
+    }()
+
+    let convictionHintView: BorderedIconLabelView = .create { view in
+        view.iconDetailsView.spacing = Constants.convictionHintContentSpacing
+        view.iconDetailsView.imageView.image = R.image.iconInfoAccent()
+        view.iconDetailsView.detailsLabel.apply(style: .caption1Primary)
+
+        view.backgroundView.cornerRadius = Constants.convictionHintCornerRadius
+        view.backgroundView.fillColor = R.color.colorIndividualChipBackground()!
+        view.contentInsets = Constants.convictionHintContentInsets
+    }
 
     let titleLabel: UILabel = .create { view in
         view.textColor = R.color.colorTextPrimary()
-        view.font = .boldTitle2
+        view.font = .boldTitle3
         view.numberOfLines = 0
     }
 
@@ -125,6 +150,76 @@ final class ReferendumVoteSetupViewLayout: UIView {
         lockReuseContainerView.setNeedsLayout()
     }
 
+    func showAbstain() {
+        convictionHintView.isHidden = false
+        showAbstainButton()
+    }
+
+    func hideAbstain() {
+        convictionHintView.isHidden = true
+        hideAbstainButton()
+    }
+}
+
+// MARK: Private
+
+extension ReferendumVoteSetupViewLayout {
+    private func showAbstainButton() {
+        guard abstainButton.isHidden else {
+            return
+        }
+
+        abstainButton.isHidden = false
+
+        nayButton.snp.remakeConstraints { make in
+            make.size.equalTo(Constants.bigButtonSize)
+            make.leading.greaterThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(abstainButton.snp.leading).offset(-40)
+            make.centerY.equalTo(abstainButton.snp.centerY)
+        }
+
+        ayeButton.snp.remakeConstraints { make in
+            make.size.equalTo(Constants.bigButtonSize)
+            make.leading.equalTo(abstainButton.snp.trailing).offset(40)
+            make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalTo(abstainButton.snp.centerY)
+        }
+
+        abstainButton.snp.remakeConstraints { make in
+            make.size.equalTo(Constants.smallButtonSize)
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
+        }
+
+        nayButton.roundedBackgroundView?.cornerRadius = Constants.bigButtonSize / 2
+        ayeButton.roundedBackgroundView?.cornerRadius = Constants.bigButtonSize / 2
+    }
+
+    private func hideAbstainButton() {
+        guard !abstainButton.isHidden else {
+            return
+        }
+
+        abstainButton.isHidden = true
+
+        nayButton.snp.remakeConstraints { make in
+            make.height.equalTo(52)
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(snp.centerX).offset(-8)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
+        }
+
+        ayeButton.snp.remakeConstraints { make in
+            make.height.equalTo(52)
+            make.leading.equalTo(snp.centerX).offset(8)
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
+        }
+
+        nayButton.roundedBackgroundView?.cornerRadius = 12
+        ayeButton.roundedBackgroundView?.cornerRadius = 12
+    }
+
     private func createReuseLockButton() -> TriangularedButton {
         let button = TriangularedButton()
         button.applySecondaryDefaultStyle()
@@ -134,21 +229,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
     }
 
     private func setupLayout() {
-        addSubview(nayButton)
-        nayButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(safeAreaLayoutGuide.snp.centerX).offset(-8.0)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
-
-        addSubview(ayeButton)
-        ayeButton.snp.makeConstraints { make in
-            make.leading.equalTo(safeAreaLayoutGuide.snp.centerX).offset(8.0)
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
+        setupVoteButtonsLayout()
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
@@ -157,9 +238,51 @@ final class ReferendumVoteSetupViewLayout: UIView {
         }
 
         containerView.stackView.addArrangedSubview(titleLabel)
-
         containerView.stackView.setCustomSpacing(12.0, after: titleLabel)
 
+        setupAmountViewsLayout()
+
+        setupLockReuseContainerLayout()
+
+        containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
+
+        containerView.stackView.addArrangedSubview(convictionView)
+        containerView.stackView.setCustomSpacing(16.0, after: convictionView)
+
+        containerView.stackView.addArrangedSubview(convictionHintView)
+        containerView.stackView.setCustomSpacing(16, after: convictionHintView)
+
+        setupLockedViewsLayout()
+
+        setupContentWidth()
+    }
+
+    private func setupVoteButtonsLayout() {
+        addSubview(abstainButton)
+        abstainButton.snp.makeConstraints { make in
+            make.size.equalTo(Constants.smallButtonSize)
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
+        }
+
+        addSubview(nayButton)
+        nayButton.snp.makeConstraints { make in
+            make.size.equalTo(Constants.bigButtonSize)
+            make.leading.greaterThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(abstainButton.snp.leading).offset(-40)
+            make.centerY.equalTo(abstainButton.snp.centerY)
+        }
+
+        addSubview(ayeButton)
+        ayeButton.snp.makeConstraints { make in
+            make.size.equalTo(Constants.bigButtonSize)
+            make.leading.equalTo(abstainButton.snp.trailing).offset(40)
+            make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalTo(abstainButton.snp.centerY)
+        }
+    }
+
+    private func setupAmountViewsLayout() {
         containerView.stackView.addArrangedSubview(amountView)
         containerView.stackView.addArrangedSubview(amountInputView)
 
@@ -170,23 +293,10 @@ final class ReferendumVoteSetupViewLayout: UIView {
         amountInputView.snp.makeConstraints { make in
             make.height.equalTo(64)
         }
+    }
 
-        containerView.stackView.addArrangedSubview(lockReuseContainerView)
-        lockReuseContainerView.snp.makeConstraints { make in
-            make.height.equalTo(32.0)
-            make.width.equalTo(self)
-        }
-
-        containerView.stackView.setCustomSpacing(16.0, after: lockReuseContainerView)
-
-        containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
-
-        containerView.stackView.addArrangedSubview(convictionView)
-
-        containerView.stackView.setCustomSpacing(16.0, after: convictionView)
-
+    private func setupLockedViewsLayout() {
         containerView.stackView.addArrangedSubview(lockedAmountView)
-
         containerView.stackView.setCustomSpacing(10.0, after: lockedAmountView)
 
         lockedAmountView.snp.makeConstraints { make in
@@ -198,8 +308,17 @@ final class ReferendumVoteSetupViewLayout: UIView {
         lockedPeriodView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
         }
+    }
 
-        setupContentWidth()
+    private func setupLockReuseContainerLayout() {
+        containerView.stackView.addArrangedSubview(lockReuseContainerView)
+
+        lockReuseContainerView.snp.makeConstraints { make in
+            make.height.equalTo(32.0)
+            make.width.equalTo(self)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: lockReuseContainerView)
     }
 
     private func setupContentWidth() {
@@ -210,5 +329,23 @@ final class ReferendumVoteSetupViewLayout: UIView {
                     make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
                 }
             }
+    }
+}
+
+// MARK: Constants
+
+extension ReferendumVoteSetupViewLayout {
+    enum Constants {
+        static let bigButtonSize: CGFloat = 64
+        static let smallButtonSize: CGFloat = 56
+        static let buttonsBottomInset: CGFloat = 20
+        static let convictionHintContentSpacing: CGFloat = 12
+        static let convictionHintCornerRadius: CGFloat = 10
+        static let convictionHintContentInsets = UIEdgeInsets(
+            top: 10,
+            left: 12,
+            bottom: 10,
+            right: 12
+        )
     }
 }

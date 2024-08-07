@@ -5,24 +5,24 @@ extension DataValidationRunner {
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceVoteValidatingParams,
         selectedLocale: Locale,
-        feeErrorClosure: @escaping () -> Void,
+        handlers: GovernanceVoteValidatingHandlers,
         successClosure: @escaping DataValidationRunnerCompletion
     ) {
         let runner = DataValidationRunner(validators: [
             factory.enoughTokensForVoting(
                 params.assetBalance,
-                votingAmount: params.newVote?.voteAction.amount,
+                votingAmount: params.newVote?.voteAction.amount(),
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             ),
             factory.has(
                 fee: params.fee,
                 locale: selectedLocale,
-                onError: feeErrorClosure
+                onError: handlers.feeErrorClosure
             ),
             factory.enoughTokensForVotingAndFee(
                 params.assetBalance,
-                votingAmount: params.newVote?.voteAction.amount,
+                votingAmount: params.newVote?.voteAction.amount(),
                 fee: params.fee,
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
@@ -36,6 +36,12 @@ extension DataValidationRunner {
             factory.maxVotesNotReached(
                 params.votes,
                 track: params.referendum?.trackId,
+                locale: selectedLocale
+            ),
+            factory.voteMatchesConviction(
+                with: params.newVote,
+                selectedConviction: params.selectedConviction,
+                convictionUpdateClosure: handlers.convictionUpdateClosure,
                 locale: selectedLocale
             )
         ])

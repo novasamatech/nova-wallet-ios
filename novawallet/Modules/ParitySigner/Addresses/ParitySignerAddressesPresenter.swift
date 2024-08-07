@@ -1,67 +1,54 @@
 import Foundation
-import RobinHood
+import Operation_iOS
+import SoraFoundation
 
-final class ParitySignerAddressesPresenter {
-    weak var view: ParitySignerAddressesViewProtocol?
+final class ParitySignerAddressesPresenter: HardwareWalletAddressesPresenter {
     let wireframe: ParitySignerAddressesWireframeProtocol
     let interactor: ParitySignerAddressesInteractorInputProtocol
-    let viewModelFactory: ChainAccountViewModelFactoryProtocol
     let type: ParitySignerType
 
     let logger: LoggerProtocol
-
-    private let chainList: ListDifferenceCalculator<ChainModel>
-    private var accountId: AccountId?
 
     init(
         type: ParitySignerType,
         interactor: ParitySignerAddressesInteractorInputProtocol,
         wireframe: ParitySignerAddressesWireframeProtocol,
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.type = type
         self.interactor = interactor
         self.wireframe = wireframe
-        self.viewModelFactory = viewModelFactory
         self.logger = logger
 
-        chainList = ListDifferenceCalculator(initialItems: []) { chain1, chain2 in
-            ChainModelCompator.defaultComparator(chain1: chain1, chain2: chain2)
-        }
+        super.init(viewModelFactory: viewModelFactory)
+
+        self.localizationManager = localizationManager
     }
 
-    private func provideViewModel() {
-        if let accountId = accountId {
-            let viewModels: [ChainAccountViewModelItem] = chainList.allItems.compactMap { chain in
-                guard !chain.isEthereumBased else {
-                    return nil
-                }
+    func provideDescriptionViewModel() {
+        let languages = selectedLocale.rLanguages
+        let viewModel = TitleWithSubtitleViewModel(
+            title: R.string.localizable.paritySignerAddressesTitle(preferredLanguages: languages),
+            subtitle: R.string.localizable.paritySignerAddressesSubtitle(
+                type.getName(for: selectedLocale),
+                preferredLanguages: languages
+            )
+        )
 
-                return viewModelFactory.createDefinedViewModelItem(for: accountId, chain: chain)
-            }
-
-            view?.didReceive(viewModels: viewModels)
-        } else {
-            view?.didReceive(viewModels: [])
-        }
+        view?.didReceive(descriptionViewModel: viewModel)
     }
 }
 
-extension ParitySignerAddressesPresenter: ParitySignerAddressesPresenterProtocol {
+extension ParitySignerAddressesPresenter: HardwareWalletAddressesPresenterProtocol {
     func setup() {
+        provideDescriptionViewModel()
         interactor.setup()
     }
 
     func select(viewModel: ChainAccountViewModelItem) {
-        guard
-            let chain = chainList.allItems.first(where: { $0.chainId == viewModel.chainId }),
-            let address = try? accountId?.toAddress(using: chain.chainFormat),
-            let view = view else {
-            return
-        }
-
-        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: view.selectedLocale)
+        performSelection(of: viewModel, wireframe: wireframe, locale: selectedLocale)
     }
 
     func proceed() {
@@ -87,8 +74,16 @@ extension ParitySignerAddressesPresenter: ParitySignerAddressesInteractorOutputP
     }
 
     func didReceive(error: Error) {
-        _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
+        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
         logger.error("Did receive error: \(error)")
+    }
+}
+
+extension ParitySignerAddressesPresenter: Localizable {
+    func applyLocalization() {
+        if let view, view.isSetup {
+            provideDescriptionViewModel()
+        }
     }
 }

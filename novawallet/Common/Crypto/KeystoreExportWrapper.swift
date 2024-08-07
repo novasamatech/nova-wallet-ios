@@ -4,14 +4,14 @@ import SubstrateSdk
 import IrohaCrypto
 
 protocol KeystoreExportWrapperProtocol {
-    func export(metaAccount: MetaAccountModel, chain: ChainModel, password: String?) throws -> Data
+    func export(metaAccount: MetaAccountModel, chain: ChainModel?, password: String?) throws -> Data
 }
 
 enum KeystoreExportWrapperError: Error {
     case missingSecretKey
 }
 
-final class KeystoreExportWrapper: KeystoreExportWrapperProtocol {
+final class KeystoreExportWrapper {
     let keystore: KeystoreProtocol
 
     private lazy var jsonEncoder: JSONEncoder = {
@@ -24,7 +24,11 @@ final class KeystoreExportWrapper: KeystoreExportWrapperProtocol {
         self.keystore = keystore
     }
 
-    func export(metaAccount: MetaAccountModel, chain: ChainModel, password: String?) throws -> Data {
+    private func exportInKnownChain(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel,
+        password: String?
+    ) throws -> Data {
         let accountRequest = chain.accountRequest()
 
         guard let accountResponse = metaAccount.fetch(for: accountRequest) else {
@@ -64,5 +68,50 @@ final class KeystoreExportWrapper: KeystoreExportWrapperProtocol {
         let definition = try builder.build(from: keystoreData, password: password)
 
         return try jsonEncoder.encode(definition)
+    }
+
+    private func exportSubstrateAccount(
+        metaAccount: MetaAccountModel,
+        password: String?
+    ) throws -> Data {
+        guard
+            let accountId = metaAccount.substrateAccountId,
+            let publicKey = metaAccount.substratePublicKey,
+            let cryptoType = metaAccount.substrateMultiAssetCryptoType else {
+            throw ChainAccountFetchingError.accountNotExists
+        }
+
+        let address = try accountId.toAddress(
+            using: .substrate(SubstrateConstants.genericAddressPrefix)
+        )
+
+        let tag = KeystoreTagV2.substrateSecretKeyTagForMetaId(metaAccount.metaId)
+
+        guard let secretKey = try keystore.loadIfKeyExists(tag) else {
+            throw KeystoreExportWrapperError.missingSecretKey
+        }
+
+        let keystoreData = KeystoreData(
+            address: address,
+            secretKeyData: secretKey,
+            publicKeyData: publicKey,
+            secretType: cryptoType.secretType
+        )
+
+        let definition = try KeystoreBuilder()
+            .with(name: metaAccount.name)
+            .build(from: keystoreData, password: password)
+
+        return try jsonEncoder.encode(definition)
+    }
+}
+
+extension KeystoreExportWrapper: KeystoreExportWrapperProtocol {
+    func export(metaAccount: MetaAccountModel, chain: ChainModel?, password: String?) throws -> Data {
+        if let chain {
+            return try exportInKnownChain(metaAccount: metaAccount, chain: chain, password: password)
+        } else {
+            return try exportSubstrateAccount(metaAccount: metaAccount, password: password)
+        }
     }
 }

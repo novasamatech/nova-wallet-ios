@@ -13,19 +13,17 @@ struct DelegationListViewFactory {
 
         guard let interactor = createInteractor(
             accountAddress: accountAddress,
-            chain: chain,
-            state: state
+            chain: chain
         ) else {
             return nil
         }
 
         let wireframe = DelegationListWireframe()
         let localizationManager = LocalizationManager.shared
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactory(
-            formatterFactory: AssetBalanceFormatterFactory()
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
         let stringViewModelFactory = DelegationsDisplayStringFactory(
-            referendumDisplayStringFactory: referendumDisplayStringFactory)
+            referendumDisplayStringFactory: referendumDisplayStringFactory
+        )
 
         let presenter = DelegationListPresenter(
             interactor: interactor,
@@ -50,20 +48,13 @@ struct DelegationListViewFactory {
 
     private static func createInteractor(
         accountAddress: AccountAddress,
-        chain: ChainModel,
-        state _: GovernanceSharedState
+        chain: ChainModel
     ) -> DelegationListInteractor? {
         guard let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
             return nil
         }
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-
-        guard
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return nil
-        }
 
         let requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -74,17 +65,22 @@ struct DelegationListViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let subquery = SubqueryDelegationsOperationFactory(url: delegationApi.url)
 
         let delegationsLocalWrapperFactoryProtocol = GovernanceDelegationsLocalWrapperFactory(
+            chain: chain,
             operationFactory: subquery,
-            identityOperationFactory: identityOperationFactory
+            identityProxyFactory: identityProxyFactory
         )
+
         return DelegationListInteractor(
             accountAddress: accountAddress,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeProvider,
             delegationsLocalWrapperFactoryProtocol: delegationsLocalWrapperFactoryProtocol,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

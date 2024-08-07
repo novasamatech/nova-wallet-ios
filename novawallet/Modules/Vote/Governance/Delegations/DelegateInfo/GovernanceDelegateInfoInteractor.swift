@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class GovernanceDelegateInfoInteractor {
     weak var presenter: GovernanceDelegateInfoInteractorOutputProtocol?
@@ -12,10 +12,9 @@ final class GovernanceDelegateInfoInteractor {
     let referendumOperationFactory: ReferendumsOperationFactoryProtocol
     let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol
-    let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
@@ -33,10 +32,9 @@ final class GovernanceDelegateInfoInteractor {
         referendumOperationFactory: ReferendumsOperationFactoryProtocol,
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
-        connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
@@ -49,10 +47,9 @@ final class GovernanceDelegateInfoInteractor {
         self.detailsOperationFactory = detailsOperationFactory
         self.referendumOperationFactory = referendumOperationFactory
         self.subscriptionFactory = subscriptionFactory
-        self.connection = connection
         self.runtimeService = runtimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
         self.govJsonProviderFactory = govJsonProviderFactory
@@ -180,12 +177,7 @@ final class GovernanceDelegateInfoInteractor {
     }
 
     private func provideIdentity(for delegate: AccountId) {
-        let wrapper = identityOperationFactory.createIdentityWrapper(
-            for: { [delegate] },
-            engine: connection,
-            runtimeService: runtimeService,
-            chainFormat: chain.chainFormat
-        )
+        let wrapper = identityProxyFactory.createIdentityWrapper(for: { [delegate] })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

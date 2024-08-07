@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol AssetHubFlowStateProtocol {
     func setupReQuoteService() -> AssetHubReQuoteService
@@ -17,6 +17,7 @@ final class AssetHubFlowState {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let userStorageFacade: StorageFacadeProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
     let mutex = NSLock()
@@ -29,6 +30,7 @@ final class AssetHubFlowState {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
@@ -36,6 +38,7 @@ final class AssetHubFlowState {
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
     }
 }
@@ -78,8 +81,9 @@ extension AssetHubFlowState: AssetHubFlowStateProtocol {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: userStorageFacade
+            operationQueue: operationQueue,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
         )
 
         let conversionOperationFactory = AssetHubSwapOperationFactory(
@@ -106,8 +110,9 @@ extension AssetHubFlowState: AssetHubFlowStateProtocol {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: userStorageFacade
+            operationQueue: operationQueue,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
         )
 
         return AssetHubExtrinsicService(

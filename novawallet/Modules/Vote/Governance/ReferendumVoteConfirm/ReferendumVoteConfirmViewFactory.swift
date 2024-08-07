@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import SoraFoundation
 
@@ -47,7 +47,7 @@ struct ReferendumVoteConfirmViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let dataValidatingFactory = GovernanceValidatorFactory(
             presentable: wireframe,
@@ -63,7 +63,7 @@ struct ReferendumVoteConfirmViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: NumberFormatter.index.localizableResource(),
-            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             interactor: interactor,
             wireframe: wireframe,
@@ -116,13 +116,13 @@ struct ReferendumVoteConfirmViewFactory {
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let operationManager = OperationManager(operationQueue: operationQueue)
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         let signer = SigningWrapperFactory().createSigningWrapper(

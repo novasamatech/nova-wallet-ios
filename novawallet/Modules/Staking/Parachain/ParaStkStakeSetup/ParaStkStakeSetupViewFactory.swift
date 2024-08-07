@@ -111,8 +111,9 @@ struct ParaStkStakeSetupViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
         let operationManager = OperationManagerFacade.sharedManager
@@ -125,6 +126,11 @@ struct ParaStkStakeSetupViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         let preferredCollatorFactory: ParaStkPreferredCollatorFactory?
 
@@ -137,7 +143,7 @@ struct ParaStkStakeSetupViewFactory {
                 runtimeService: runtimeProvider,
                 collatorService: collatorService,
                 rewardService: rewardService,
-                identityOperationFactory: identityOperationFactory,
+                identityProxyFactory: identityProxyFactory,
                 preferredCollatorProvider: state.preferredCollatorsProvider,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             )
@@ -158,7 +164,7 @@ struct ParaStkStakeSetupViewFactory {
             connection: connection,
             runtimeProvider: runtimeProvider,
             repositoryFactory: repositoryFactory,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

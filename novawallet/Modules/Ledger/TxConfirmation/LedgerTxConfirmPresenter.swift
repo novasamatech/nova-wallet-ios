@@ -22,17 +22,24 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
             timer.remainedInterval < TimeInterval.leastNonzeroMagnitude
     }
 
+    let needsMigration: Bool
+    let applicationConfig: ApplicationConfigProtocol
+
     init(
         chainName: String,
+        needsMigration: Bool,
+        applicationConfig: ApplicationConfigProtocol,
         interactor: LedgerTxConfirmInteractorInputProtocol,
         wireframe: LedgerTxConfirmWireframeProtocol,
         completion: @escaping TransactionSigningClosure,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.completion = completion
+        self.needsMigration = needsMigration
+        self.applicationConfig = applicationConfig
 
         super.init(
-            chainName: chainName,
+            appName: chainName,
             baseInteractor: interactor,
             baseWireframe: wireframe,
             localizationManager: localizationManager
@@ -41,10 +48,69 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         timer.addObserver(self)
     }
 
-    private func performCancellation() {
-        wireframe?.complete(on: view)
+    private func createMigrationWillBeUnavailableIfNeeded() -> MessageSheetMigrationBannerView.ContentViewModel? {
+        guard needsMigration else {
+            return nil
+        }
 
-        completion(.failure(HardwareSigningError.signingCancelled))
+        return LocalizableResource { locale in
+            MessageSheetMigrationBannerView.ViewModel.createLedgerMigrationWillBeUnavailable(
+                for: locale
+            ) { [weak self] in
+                self?.activateMigrationPage()
+            }
+        }
+    }
+
+    private func createMigrationDownloadIfNeeded() -> MessageSheetMigrationBannerView.ContentViewModel? {
+        guard needsMigration else {
+            return nil
+        }
+
+        return LocalizableResource { locale in
+            MessageSheetMigrationBannerView.ViewModel.createLedgerMigrationDownload(
+                for: locale
+            ) { [weak self] in
+                self?.activateMigrationPage()
+            }
+        }
+    }
+
+    private func createMigrationIfNeeded(
+        for error: LedgerError
+    ) -> MessageSheetMigrationBannerView.ContentViewModel? {
+        if
+            case let .response(responseError) = error,
+            responseError.isValidAppNotOpen() {
+            return createMigrationDownloadIfNeeded()
+        } else {
+            return createMigrationWillBeUnavailableIfNeeded()
+        }
+    }
+
+    private func activateMigrationPage() {
+        guard let view else {
+            return
+        }
+
+        if let connectingDevice {
+            interactor?.cancelTransactionRequest(for: connectingDevice.identifier)
+            stopConnecting()
+        }
+
+        wireframe?.closeMessageSheet(on: view)
+
+        wireframe?.showWeb(
+            url: applicationConfig.ledgerMigrationURL,
+            from: view,
+            style: .automatic
+        )
+    }
+
+    private func performCancellation() {
+        wireframe?.complete(on: view) {
+            self.completion(.failure(HardwareSigningError.signingCancelled))
+        }
     }
 
     override func handleAppConnection(error: Error, deviceId: UUID) {
@@ -56,7 +122,8 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
             wireframe?.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: chainName,
+                networkName: appName,
+                migrationViewModel: createMigrationIfNeeded(for: ledgerError),
                 cancelClosure: { [weak self] in
                     self?.performCancellation()
                 },
@@ -71,7 +138,10 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         } else if
             let signatureError = error as? LedgerTxConfirmInteractorError,
             signatureError == .invalidSignature {
-            wireframe?.transitToInvalidSignature(on: view) { [weak self] in
+            wireframe?.transitToInvalidSignature(
+                on: view,
+                migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
+            ) { [weak self] in
                 self?.performCancellation()
             }
         }
@@ -83,7 +153,12 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         super.selectDevice(at: index)
 
         if let device = connectingDevice {
-            wireframe?.transitToTransactionReview(on: view, timer: timer, deviceName: device.name) { [weak self] in
+            wireframe?.transitToTransactionReview(
+                on: view,
+                timer: timer,
+                deviceName: device.name,
+                migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
+            ) { [weak self] in
                 self?.stopConnecting()
                 self?.interactor?.cancelTransactionRequest(for: device.identifier)
             }
@@ -106,7 +181,8 @@ extension LedgerTxConfirmPresenter: CountdownTimerDelegate {
         if isExpired, let expirationTimeInterval = expirationTimeInterval {
             wireframe?.transitToTransactionExpired(
                 on: view,
-                expirationTimeInterval: expirationTimeInterval
+                expirationTimeInterval: expirationTimeInterval,
+                migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
             ) { [weak self] in
                 self?.performCancellation()
             }
@@ -128,8 +204,9 @@ extension LedgerTxConfirmPresenter: LedgerTxConfirmInteractorOutputProtocol {
             }
 
             wireframe?.closeMessageSheet(on: view)
-            wireframe?.complete(on: view)
-            completion(.success(signature))
+            wireframe?.complete(on: view) {
+                self.completion(.success(signature))
+            }
         case let .failure(error):
             stopConnecting()
 

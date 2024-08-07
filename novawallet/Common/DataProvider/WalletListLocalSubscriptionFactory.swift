@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol WalletListLocalSubscriptionFactoryProtocol {
     func getWalletProvider(for walletId: String) throws -> StreamableProvider<ManagedMetaAccountModel>

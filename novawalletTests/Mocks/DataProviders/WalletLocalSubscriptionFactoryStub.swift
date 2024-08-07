@@ -1,6 +1,6 @@
 import Foundation
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 import BigInt
 
 final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryProtocol {
@@ -80,6 +80,18 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) throws -> StreamableProvider<AssetLock> {
+        throw CommonError.undefined
+    }
+    
+    func getHoldsProvider(for accountId: AccountId) throws -> StreamableProvider<AssetHold> {
+        throw CommonError.undefined
+    }
+    
+    func getHoldsProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) throws -> StreamableProvider<AssetHold> {
         throw CommonError.undefined
     }
 }

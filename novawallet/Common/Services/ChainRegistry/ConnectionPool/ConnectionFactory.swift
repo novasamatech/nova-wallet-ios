@@ -3,10 +3,28 @@ import SubstrateSdk
 import SoraFoundation
 
 protocol ConnectionFactoryProtocol {
-    func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection
-    func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection
-    func updateConnection(_ connection: ChainConnection, chain: ChainModel)
-    func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel)
+    func createConnection(
+        for chain: ChainNodeConnectable,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection
+
+    func createConnection(
+        for node: ChainNodeModel,
+        chain: ChainNodeConnectable,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection
+
+    func updateConnection(
+        _ connection: ChainConnection,
+        chain: ChainNodeConnectable
+    )
+
+    func updateOneShotConnection(
+        _ connection: OneShotConnection,
+        chain: ChainNodeConnectable
+    )
+
+    func createOneShotConnection(for chain: ChainNodeConnectable) throws -> OneShotConnection
 }
 
 final class ConnectionFactory {
@@ -21,41 +39,59 @@ final class ConnectionFactory {
 
 enum ConnectionFactoryError: Error {
     case noNodes
+    case invalidNode
 }
 
 extension ConnectionFactory: ConnectionFactoryProtocol {
-    func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection {
-        let urls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
+    func createConnection(
+        for chain: ChainNodeConnectable,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection {
+        let urlModels = extractNodeUrls(
+            from: chain,
+            schemaPredicate: .ws
+        )
 
-        let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
-        let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
-
-        guard
-            let connection = WebSocketEngine(
-                urls: urls,
-                connectionFactory: ConnectionTransportFactory(chainId: chain.chainId),
-                customNodeSwitcher: nodeSwitcher,
-                healthCheckMethod: healthCheckMethod,
-                name: chain.name,
-                logger: logger
-            ) else {
-            throw ConnectionFactoryError.noNodes
-        }
-
-        connection.delegate = delegate
-        return connection
+        return try createConnection(
+            urlModels: urlModels,
+            for: chain,
+            delegate: delegate
+        )
     }
 
-    func updateConnection(_ connection: ChainConnection, chain: ChainModel) {
-        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
+    func createConnection(
+        for node: ChainNodeModel,
+        chain: ChainNodeConnectable,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection {
+        guard let urlModel = nodeUrl(from: node) else {
+            throw ConnectionFactoryError.invalidNode
+        }
+
+        return try createConnection(
+            urlModels: [urlModel],
+            for: chain,
+            delegate: delegate
+        )
+    }
+
+    func updateConnection(_ connection: ChainConnection, chain: ChainNodeConnectable) {
+        let newUrlModels = extractNodeUrls(
+            from: chain,
+            schemaPredicate: .ws
+        )
+        let newUrls = newUrlModels.map(\.url)
 
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
         }
     }
 
-    func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection {
-        let urls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
+    func createOneShotConnection(for chain: ChainNodeConnectable) throws -> OneShotConnection {
+        let urls = extractNodeUrls(
+            from: chain,
+            schemaPredicate: .urlPredicate
+        ).map(\.url)
 
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
 
@@ -74,16 +110,73 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         return connection
     }
 
-    func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel) {
-        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
+    func updateOneShotConnection(
+        _ connection: OneShotConnection,
+        chain: ChainNodeConnectable
+    ) {
+        let newUrls = extractNodeUrls(
+            from: chain,
+            schemaPredicate: .urlPredicate
+        ).map(\.url)
 
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
         }
     }
 
-    private func extractNodeUrls(from chain: ChainModel, schema: String) -> [URL] {
-        let filteredNodes = chain.nodes.filter { $0.url.hasPrefix(schema) }
+    private func createConnection(
+        urlModels: [ConnectionCreationParams],
+        for chain: ChainNodeConnectable,
+        delegate: WebSocketEngineDelegate?
+    ) throws -> ChainConnection {
+        let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
+        let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
+
+        let urls = urlModels.map(\.url)
+
+        guard
+            let connection = WebSocketEngine(
+                urls: urls,
+                connectionFactory: ConnectionTransportFactory(),
+                customNodeSwitcher: nodeSwitcher,
+                healthCheckMethod: healthCheckMethod,
+                name: chain.name,
+                logger: logger
+            ) else {
+            throw ConnectionFactoryError.noNodes
+        }
+
+        connection.delegate = delegate
+        return connection
+    }
+
+    private func nodeUrl(from node: ChainNodeModel) -> ConnectionCreationParams? {
+        let builder = URLBuilder(urlTemplate: node.url)
+
+        guard let url = try? builder.buildBy(closure: { apiKeyType in
+            guard let apiKey = ConnectionApiKeys.getKey(by: apiKeyType) else {
+                throw CommonError.undefined
+            }
+
+            return apiKey
+        }) else {
+            return nil
+        }
+
+        return ConnectionCreationParams(url: url)
+    }
+
+    private func extractNodeUrls(
+        from chain: ChainNodeConnectable,
+        schemaPredicate: NSPredicate
+    ) -> [ConnectionCreationParams] {
+        let filteredNodes = if case let .manual(selectedNode) = chain.connectionMode {
+            schemaPredicate.evaluate(with: selectedNode.url)
+                ? Set([selectedNode])
+                : Set()
+        } else {
+            chain.nodes.filter { schemaPredicate.evaluate(with: $0.url) }
+        }
 
         let nodes: [ChainNodeModel]
 
@@ -94,16 +187,6 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
             nodes = filteredNodes.shuffled()
         }
 
-        return nodes.compactMap { node in
-            let builder = URLBuilder(urlTemplate: node.url)
-
-            return try? builder.buildBy { apiKeyType in
-                guard let apiKey = ConnectionApiKeys.getKey(by: apiKeyType) else {
-                    throw CommonError.undefined
-                }
-
-                return apiKey
-            }
-        }
+        return nodes.compactMap { nodeUrl(from: $0) }
     }
 }

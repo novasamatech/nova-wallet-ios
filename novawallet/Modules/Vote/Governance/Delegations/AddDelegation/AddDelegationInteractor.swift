@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import SoraKeystore
 
 final class AddDelegationInteractor {
@@ -60,8 +60,6 @@ final class AddDelegationInteractor {
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: blockTimeFactory
             ),
-            chain: chain,
-            connection: connection,
             runtimeService: runtimeService,
             operationManager: OperationManager(operationQueue: operationQueue)
         )

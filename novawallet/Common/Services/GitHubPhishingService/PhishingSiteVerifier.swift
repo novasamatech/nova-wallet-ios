@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol PhishingSiteVerifing {
     func verify(host: String, completion: @escaping (Result<Bool, Error>) -> Void)
@@ -7,15 +7,29 @@ protocol PhishingSiteVerifing {
 }
 
 final class PhishingSiteVerifier: PhishingSiteVerifing {
+    let forbiddenTopLevelDomains: Set<String>
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let operationQueue: OperationQueue
 
-    init(repositoryFactory: SubstrateRepositoryFactoryProtocol, operationQueue: OperationQueue) {
+    init(
+        forbiddenTopLevelDomains: Set<String>,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
+        self.forbiddenTopLevelDomains = forbiddenTopLevelDomains
         self.repositoryFactory = repositoryFactory
         self.operationQueue = operationQueue
     }
 
     func verify(host: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard
+            let topLevel = host.split(by: .dot).last,
+            !forbiddenTopLevelDomains.contains(topLevel)
+        else {
+            completion(.success(false))
+            return
+        }
+
         let filter = NSPredicate.filterPhishingSitesDomain(host)
         let repository = repositoryFactory.createPhishingSitesRepositoryWithPredicate(filter)
         let fetchOperation = repository.fetchCountOperation()

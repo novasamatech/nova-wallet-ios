@@ -1,13 +1,12 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class HydraStableswapFlowState {
     let account: ChainAccountResponse
     let chain: ChainModel
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
-    let userStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
     let mutex = NSLock()
@@ -19,14 +18,12 @@ final class HydraStableswapFlowState {
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        userStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.account = account
         self.chain = chain
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.userStorageFacade = userStorageFacade
         self.operationQueue = operationQueue
     }
 

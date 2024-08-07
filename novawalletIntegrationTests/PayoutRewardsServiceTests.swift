@@ -2,7 +2,7 @@ import XCTest
 import SoraKeystore
 import SubstrateSdk
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 @testable import novawallet
 
 class PayoutRewardsServiceTests: XCTestCase {
@@ -77,7 +77,13 @@ class PayoutRewardsServiceTests: XCTestCase {
             url: rewardUrl
         )
 
-        let identityOperation = IdentityOperationFactory(requestFactory: storageRequestFactory)
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+        
         let payoutInfoFactory = NominatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)
 
         let exposureSearchFactory = ExposurePagedEraOperationFactory(operationQueue: operationQueue)
@@ -102,7 +108,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             storageRequestFactory: storageRequestFactory,
             engine: chainRegistry.getConnection(for: chainAsset.chain.chainId)!,
             operationManager: operationManager,
-            identityOperationFactory: identityOperation,
+            identityProxyFactory: identityProxyFactory,
             payoutInfoFactory: payoutInfoFactory
         )
 
@@ -132,7 +138,13 @@ class PayoutRewardsServiceTests: XCTestCase {
         )
         let validatorsResolutionFactory = PayoutValidatorsForValidatorFactory()
 
-        let identityOperation = IdentityOperationFactory(requestFactory: storageRequestFactory)
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+        
         let payoutInfoFactory = ValidatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)
 
         let exposureSearchFactory = ExposurePagedEraOperationFactory(operationQueue: operationQueue)
@@ -157,7 +169,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             storageRequestFactory: storageRequestFactory,
             engine: chainRegistry.getConnection(for: chainAsset.chain.chainId)!,
             operationManager: operationManager,
-            identityOperationFactory: identityOperation,
+            identityProxyFactory: identityProxyFactory,
             payoutInfoFactory: payoutInfoFactory
         )
 

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 struct RemoteChainModel: Equatable, Codable {
@@ -9,9 +9,9 @@ struct RemoteChainModel: Equatable, Codable {
     let assets: [RemoteAssetModel]
     let nodes: [RemoteChainNodeModel]
     let nodeSelectionStrategy: String?
-    let addressPrefix: UInt16
+    let addressPrefix: ChainModel.AddressPrefix
     let types: ChainModel.TypesSettings?
-    let icon: URL
+    let icon: URL?
     let options: [String]?
     let externalApi: RemoteChainExternalApiSet?
     let explorers: [ChainModel.Explorer]?

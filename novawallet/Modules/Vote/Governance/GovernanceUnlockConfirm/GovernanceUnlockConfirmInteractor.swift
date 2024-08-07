@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import BigInt
 
 final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyProviderAutoCleaning {
@@ -17,6 +17,7 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let extrinsicFactory: GovernanceExtrinsicFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
+    let chainRegistry: ChainRegistryProtocol
     let signer: SigningWrapperProtocol
 
     private var locksSubscription: StreamableProvider<AssetLock>?
@@ -24,6 +25,7 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
 
     init(
         chain: ChainModel,
+        chainRegistry: ChainRegistryProtocol,
         selectedAccount: MetaChainAccountResponse,
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
@@ -40,6 +42,7 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
+        self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.extrinsicFactory = extrinsicFactory
         self.extrinsicService = extrinsicService
@@ -89,20 +92,18 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
         )
     }
 
-    private func createExtrinsicBuilderClosure(
-        for actions: Set<GovernanceUnlockSchedule.Action>
-    ) -> ExtrinsicBuilderClosure {
-        { [weak self] builder in
-            guard let strongSelf = self else {
-                return builder
-            }
+    func createExtrinsicSplitter(for actions: Set<GovernanceUnlockSchedule.Action>) throws -> ExtrinsicSplitting {
+        let splitter = ExtrinsicSplitter(
+            chain: chain,
+            maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic,
+            chainRegistry: chainRegistry
+        )
 
-            return try strongSelf.extrinsicFactory.unlock(
-                with: actions,
-                accountId: strongSelf.selectedAccount.chainAccount.accountId,
-                builder: builder
-            )
-        }
+        return try extrinsicFactory.unlock(
+            with: actions,
+            accountId: selectedAccount.chainAccount.accountId,
+            splitter: splitter
+        )
     }
 
     private func makeSubscription() {
@@ -121,32 +122,46 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
 
         makeSubscription()
     }
+
+    func handleMultiExtrinsicSubmission(result: SubmitIndexedExtrinsicResult) {
+        presenter?.didReceiveSubmissionResult(result)
+    }
 }
 
 extension GovernanceUnlockConfirmInteractor: GovernanceUnlockConfirmInteractorInputProtocol {
     func estimateFee(for actions: Set<GovernanceUnlockSchedule.Action>) {
-        let closure = createExtrinsicBuilderClosure(for: actions)
+        do {
+            let extrinsicSplitter = try createExtrinsicSplitter(for: actions)
 
-        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
-            switch result {
-            case let .success(feeInfo):
-                self?.presenter?.didReceiveFee(feeInfo)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.feeFetchFailed(error))
+            extrinsicService.estimateFeeWithSplitter(
+                extrinsicSplitter,
+                runningIn: .main
+            ) { [weak self] result in
+                switch result.convertToTotalFee() {
+                case let .success(feeInfo):
+                    self?.presenter?.didReceiveFee(feeInfo)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(.feeFetchFailed(error))
+                }
             }
+        } catch {
+            presenter?.didReceiveError(.feeFetchFailed(error))
         }
     }
 
     func unlock(using actions: Set<GovernanceUnlockSchedule.Action>) {
-        let closure = createExtrinsicBuilderClosure(for: actions)
+        do {
+            let extrinsicSplitter = try createExtrinsicSplitter(for: actions)
 
-        extrinsicService.submit(closure, signer: signer, runningIn: .main) { [weak self] result in
-            switch result {
-            case let .success(hashString):
-                self?.presenter?.didReceiveUnlockHash(hashString)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.unlockFailed(error))
+            extrinsicService.submitWithTxSplitter(
+                extrinsicSplitter,
+                signer: signer,
+                runningIn: .main
+            ) { [weak self] result in
+                self?.handleMultiExtrinsicSubmission(result: result)
             }
+        } catch {
+            presenter?.didReceiveError(.unlockFailed(error))
         }
     }
 }

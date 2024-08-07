@@ -2,12 +2,14 @@ import Foundation
 import BigInt
 
 struct StakingRecommendationValidationParams {
+    let accountId: AccountId
     let stakingAmount: Decimal?
     let assetBalance: AssetBalance?
     let assetLocks: AssetLocks?
     let fee: ExtrinsicFeeProtocol?
     let existentialDeposit: BigUInt?
     let stakeUpdateClosure: (Decimal) -> Void
+    let onAsyncProgress: AsyncValidationOnProgress?
 }
 
 protocol StakingRecommendationValidationFactoryProtocol: AnyObject {

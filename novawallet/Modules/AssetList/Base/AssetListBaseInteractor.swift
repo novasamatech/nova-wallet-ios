@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import SoraKeystore
 import BigInt
@@ -340,7 +340,10 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     }
 
     func subscribeChains() {
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+        chainRegistry.chainsSubscribe(
+            self, runningInQueue: .main,
+            filterStrategy: .enabledChains
+        ) { [weak self] changes in
             self?.handle(changes: changes)
         }
     }
@@ -366,6 +369,8 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     }
 
     func handleAccountLocks(result _: Result<[DataProviderChange<AssetLock>], Error>, accountId _: AccountId) {}
+
+    func handleAccountHolds(result _: Result<[DataProviderChange<AssetHold>], Error>, accountId _: AccountId) {}
 }
 
 extension AssetListBaseInteractor {

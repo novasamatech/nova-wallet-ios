@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import BigInt
-import RobinHood
+import Operation_iOS
 
 final class AssetHubSwapTests: XCTestCase {
     func testWestmintAllDirections() throws {
@@ -241,6 +241,7 @@ final class AssetHubSwapTests: XCTestCase {
             wallet: wallet,
             chainRegistry: chainRegistry,
             userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: storageFacade,
             generalSubscriptonFactory: generalLocalSubscriptionFactory,
             operationQueue: operationQueue
         ).createFeeService(for: chain)

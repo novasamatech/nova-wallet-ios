@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import BigInt
 
 final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellableCleaning, RuntimeConstantFetching {
@@ -8,7 +8,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         basePresenter as? ParaStkUnstakeInteractorOutputProtocol
     }
 
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
 
     private var collatorSubscription: CallbackStorageSubscription<ParachainStaking.CandidateMetadata>?
     private var identitiesCancellable: CancellableCall?
@@ -21,7 +21,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         connection: JSONRPCEngine,
@@ -32,7 +32,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
 
         super.init(
             chainAsset: chainAsset,
@@ -143,12 +143,7 @@ extension ParaStkUnstakeInteractor: ParaStkUnstakeInteractorInputProtocol {
     func fetchIdentities(for collatorIds: [AccountId]) {
         clear(cancellable: &identitiesCancellable)
 
-        let wrapper = identityOperationFactory.createIdentityWrapperByAccountId(
-            for: { collatorIds },
-            engine: connection,
-            runtimeService: runtimeProvider,
-            chainFormat: chainAsset.chain.chainFormat
-        )
+        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { collatorIds })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

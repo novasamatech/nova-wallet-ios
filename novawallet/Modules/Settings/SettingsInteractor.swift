@@ -1,7 +1,7 @@
 import Foundation
 import SoraKeystore
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 
 enum ProfileInteractorError: Error {
     case noSelectedAccount
@@ -124,12 +124,14 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
 }
 
 extension SettingsInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         provideUserSettings()
     }
 
-    func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
-        provideUserSettings()
+    func processWalletNameChanged(event: WalletNameChanged) {
+        if event.isSelectedWallet {
+            provideUserSettings()
+        }
     }
 }
 

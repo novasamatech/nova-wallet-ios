@@ -1,16 +1,15 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class GovernanceDelegateSearchInteractor {
     weak var presenter: GovernanceDelegateSearchInteractorOutputProtocol?
 
     let delegateListOperationFactory: GovernanceDelegateListFactoryProtocol
     let lastVotedDays: Int
-    let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
     let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
@@ -23,10 +22,9 @@ final class GovernanceDelegateSearchInteractor {
     init(
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
         lastVotedDays: Int,
-        connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
         metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
@@ -35,10 +33,9 @@ final class GovernanceDelegateSearchInteractor {
     ) {
         self.delegateListOperationFactory = delegateListOperationFactory
         self.lastVotedDays = lastVotedDays
-        self.connection = connection
         self.runtimeService = runtimeService
         self.metadataProvider = metadataProvider
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
@@ -58,8 +55,6 @@ final class GovernanceDelegateSearchInteractor {
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: blockTimeFactory
             ),
-            chain: chain,
-            connection: connection,
             runtimeService: runtimeService,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
@@ -126,12 +121,7 @@ extension GovernanceDelegateSearchInteractor: GovernanceDelegateSearchInteractor
     }
 
     func performDelegateSearch(accountId: AccountId) {
-        let wrapper = identityOperationFactory.createIdentityWrapperByAccountId(
-            for: { [accountId] },
-            engine: connection,
-            runtimeService: runtimeService,
-            chainFormat: chain.chainFormat
-        )
+        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { [accountId] })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

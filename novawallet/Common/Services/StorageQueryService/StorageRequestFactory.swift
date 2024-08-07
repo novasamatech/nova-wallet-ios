@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 struct StorageResponse<T: Decodable> {
@@ -85,6 +85,12 @@ protocol StorageRequestFactoryProtocol {
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         options: StorageQueryListOptions
     ) -> CompoundOperationWrapper<[K: T]> where K: JSONListConvertible, T: Decodable
+
+    func queryRawItems(
+        for keys: @escaping () throws -> [Data],
+        at blockHash: Data?,
+        engine: JSONRPCEngine
+    ) -> BaseOperation<[[StorageUpdate]]>
 }
 
 final class StorageRequestFactory: StorageRequestFactoryProtocol {
@@ -186,6 +192,19 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
 
             return wrappers
         }.longrunOperation()
+    }
+
+    func queryRawItems(
+        for keys: @escaping () throws -> [Data],
+        at blockHash: Data?,
+        engine: JSONRPCEngine
+    ) -> BaseOperation<[[StorageUpdate]]> {
+        createQueryOperation(
+            for: keys,
+            at: blockHash,
+            engine: engine,
+            timeout: timeout
+        )
     }
 
     func queryItem<T>(

@@ -83,8 +83,9 @@ struct ParaStkRebondViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
         let storageRequestFactory = StorageRequestFactory(
@@ -93,6 +94,11 @@ struct ParaStkRebondViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         let signer = SigningWrapperFactory().createSigningWrapper(
             for: selectedAccount.metaId,
@@ -108,9 +114,7 @@ struct ParaStkRebondViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             signer: signer,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
-            identityOperationFactory: identityOperationFactory,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
+            identityProxyFactory: identityProxyFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

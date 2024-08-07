@@ -7,6 +7,10 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
 
     var iconImageView: UIImageView { rowContentView.valueView.imageView }
 
+    var accessoryImageView: UIImageView {
+        rowContentView.valueView.detailsView.imageView
+    }
+
     var canSelect: Bool = true {
         didSet {
             if oldValue != canSelect {

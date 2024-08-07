@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 final class TokensManageInteractor {
     weak var presenter: TokensManageInteractorOutputProtocol?
@@ -26,7 +26,8 @@ final class TokensManageInteractor {
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: .main
+            runningInQueue: .main,
+            filterStrategy: .enabledChains
         ) { [weak self] changes in
             self?.presenter?.didReceiveChainModel(changes: changes)
         }

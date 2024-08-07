@@ -1,6 +1,6 @@
 import UIKit
 
-final class NPoolsUnstakeSetupViewLayout: SCSingleActionLayoutView {
+final class NPoolsUnstakeSetupViewLayout: SCLoadableActionLayoutView {
     let amountView = TitleHorizontalMultiValueView()
 
     let amountInputView = NewAmountInputView()
@@ -12,6 +12,10 @@ final class NPoolsUnstakeSetupViewLayout: SCSingleActionLayoutView {
     let hintListView = HintListView()
 
     var actionButton: TriangularedButton {
+        genericActionView.actionButton
+    }
+
+    var loadingView: LoadableActionView {
         genericActionView
     }
 

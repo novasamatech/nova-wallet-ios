@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 enum XcmTransferServiceError: Error {
@@ -17,6 +17,7 @@ final class XcmTransferService {
     let chainRegistry: ChainRegistryProtocol
     let senderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol
     let operationQueue: OperationQueue
+    let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     private(set) lazy var xcmFactory = XcmTransferFactory()
     private(set) lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
@@ -26,11 +27,13 @@ final class XcmTransferService {
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         senderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol,
+        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
         self.senderResolutionFacade = senderResolutionFacade
+        self.metadataHashOperationFactory = metadataHashOperationFactory
         self.operationQueue = operationQueue
     }
 
@@ -72,7 +75,9 @@ final class XcmTransferService {
             runtimeRegistry: runtimeProvider,
             customExtensions: signedExtensionFactory.createExtensions(),
             engine: connection,
+            metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
+            blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
         )
     }

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 enum EraValidatorServiceError: Error {
@@ -26,7 +26,7 @@ final class EraValidatorService {
 
     private var snapshot: EraStakersInfo?
     private var eraDataProvider: AnyDataProvider<DecodedActiveEra>?
-    private var pendingRequests: [PendingRequest] = []
+    private var pendingRequests: [UUID: PendingRequest] = [:]
 
     var validatorUpdater: EraValidatorsUpdating?
 
@@ -66,9 +66,9 @@ final class EraValidatorService {
 
         if !pendingRequests.isEmpty {
             let requests = pendingRequests
-            pendingRequests = []
+            pendingRequests = [:]
 
-            requests.forEach { deliver(snapshot: snapshot, to: $0) }
+            requests.values.forEach { deliver(snapshot: snapshot, to: $0) }
 
             logger.debug("Fulfilled pendings")
         }
@@ -84,6 +84,7 @@ final class EraValidatorService {
     }
 
     private func fetchInfoFactory(
+        assigning requestId: UUID,
         runCompletionIn queue: DispatchQueue?,
         executing closure: @escaping (EraStakersInfo) -> Void
     ) {
@@ -92,8 +93,12 @@ final class EraValidatorService {
         if let snapshot = snapshot {
             deliver(snapshot: snapshot, to: request)
         } else {
-            pendingRequests.append(request)
+            pendingRequests[requestId] = request
         }
+    }
+
+    private func cancel(for requestId: UUID) {
+        pendingRequests[requestId] = nil
     }
 
     private func deliver(snapshot: EraStakersInfo, to request: PendingRequest) {
@@ -162,25 +167,21 @@ extension EraValidatorService: EraValidatorServiceProtocol {
     }
 
     func fetchInfoOperation() -> BaseOperation<EraStakersInfo> {
-        ClosureOperation {
-            var fetchedInfo: EraStakersInfo?
+        let requestId = UUID()
 
-            let semaphore = DispatchSemaphore(value: 0)
-
-            self.syncQueue.async {
-                self.fetchInfoFactory(runCompletionIn: nil) { [weak semaphore] info in
-                    fetchedInfo = info
-                    semaphore?.signal()
+        return AsyncClosureOperation(
+            operationClosure: { completion in
+                self.syncQueue.async {
+                    self.fetchInfoFactory(assigning: requestId, runCompletionIn: nil) { info in
+                        completion(.success(info))
+                    }
+                }
+            },
+            cancelationClosure: {
+                self.syncQueue.async {
+                    self.cancel(for: requestId)
                 }
             }
-
-            semaphore.wait()
-
-            guard let info = fetchedInfo else {
-                throw EraValidatorServiceError.unexpectedInfo
-            }
-
-            return info
-        }
+        )
     }
 }

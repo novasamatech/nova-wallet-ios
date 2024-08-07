@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import BigInt
-import RobinHood
+import Operation_iOS
 
 final class HydraStableswapTests: XCTestCase {
     
@@ -155,7 +155,6 @@ final class HydraStableswapTests: XCTestCase {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeService,
-            userStorageFacade: UserDataStorageTestFacade(),
             operationQueue: operationQueue
         )
         

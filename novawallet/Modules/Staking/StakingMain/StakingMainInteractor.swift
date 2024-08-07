@@ -1,6 +1,6 @@
 import Foundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import SoraFoundation
 
@@ -114,7 +114,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 }
 
 extension StakingMainInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         provideStakingRewardsFilter()
     }
 }

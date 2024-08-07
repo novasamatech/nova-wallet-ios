@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 import Cuckoo
 
 class ChainSyncServiceTests: XCTestCase {
@@ -409,5 +409,129 @@ class ChainSyncServiceTests: XCTestCase {
         let localItems = try localItemsOperation.extractNoCancellableResultData()
 
         XCTAssertEqual(Set(localItems), Set(expectedLocalItems))
+    }
+    
+    func testSyncDontOverwriteDisabledSyncMode() throws {
+        try syncDontChangeLocal(
+            initialLocalChainChange: { localItem in
+                localItem.updatingSyncMode(for: .disabled)
+            },
+            updatedRemoteChainsChange: { $0 }
+        )
+    }
+    
+    func testSyncDontSyncUpdateChains() throws {
+        try syncDontChangeLocal(
+            initialLocalChainChange: { localItem in
+                localItem.byChanging(source: .user)
+            },
+            updatedRemoteChainsChange: { remoteItems in
+                remoteItems.map { remoteItem in
+                    let newName = UUID().uuidString
+                    
+                    return remoteItem.byChanging(name: newName)
+                }
+            }
+        )
+    }
+    
+    func testSyncDontRemoveUserChains() throws {
+        try syncDontChangeLocal(
+            initialLocalChainChange: { localItem in
+                localItem.byChanging(source: .user)
+            },
+            updatedRemoteChainsChange: { Array($0.dropLast()) }
+        )
+    }
+    
+    func syncDontChangeLocal(
+        initialLocalChainChange: (ChainModel) -> ChainModel,
+        updatedRemoteChainsChange: ([RemoteChainModel]) -> [RemoteChainModel]
+    ) throws {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+
+        let mapper = ChainModelMapper()
+        let repository: CoreDataRepository<ChainModel, CDChain> =
+        storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        let dataOperationFactory = MockDataOperationFactoryProtocol()
+        let operationQueue = OperationQueue()
+        let eventCenter = MockEventCenterProtocol()
+        let converter = ChainModelConverter()
+
+        let chainService = ChainSyncService(
+            url: chainURL,
+            evmAssetsURL: evmAssetURL,
+            chainConverter: ChainModelConverter(),
+            dataFetchFactory: dataOperationFactory,
+            repository: AnyDataProviderRepository(repository),
+            eventCenter: eventCenter,
+            operationQueue: operationQueue
+        )
+        
+        // when
+        let remoteItems = ChainModelGenerator.generateRemote(count: 16)
+        let localItems = remoteItems.enumerated().map { index, item in
+            let localChain = converter.update(
+                localModel: nil,
+                remoteModel: item,
+                additionalAssets: [],
+                order: Int64(index)
+            )!
+
+            var assets = Array(localChain.assets)
+            assets[0] = assets[0].byChanging(enabled: false)
+
+            return initialLocalChainChange(localChain.byChanging(assets: Set(assets)))
+        }
+        
+        // update remote items
+
+        let updatedRemoteItems = updatedRemoteChainsChange(remoteItems)
+
+        let chainsData = try JSONEncoder().encode(updatedRemoteItems)
+        let evmTokensData = try JSONEncoder().encode([RemoteEvmToken]())
+
+        stub(dataOperationFactory) { stub in
+            stub.fetchData(from: chainURL).thenReturn(BaseOperation.createWithResult(chainsData))
+            stub.fetchData(from: evmAssetURL).thenReturn(BaseOperation.createWithResult(evmTokensData))
+        }
+
+        let repositoryPresetOperation = repository.saveOperation({
+            return localItems
+        }, {
+            return []
+        })
+
+        operationQueue.addOperations([repositoryPresetOperation], waitUntilFinished: true)
+
+        let startExpectation = XCTestExpectation()
+        let completionExpectation = XCTestExpectation()
+
+        stub(eventCenter) { stub in
+            stub.notify(with: any()).then { event in
+                if event is ChainSyncDidStart {
+                    startExpectation.fulfill()
+                }
+
+                if event is ChainSyncDidComplete {
+                    completionExpectation.fulfill()
+                }
+            }
+        }
+
+        chainService.syncUp()
+        
+        // then
+
+        wait(for: [startExpectation, completionExpectation], timeout: 10, enforceOrder: true)
+
+        let localItemsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        operationQueue.addOperations([localItemsOperation], waitUntilFinished: true)
+
+        let localItemsAfterSync = try localItemsOperation.extractNoCancellableResultData()
+
+        XCTAssertEqual(Set(localItemsAfterSync), Set(localItems))
     }
 }

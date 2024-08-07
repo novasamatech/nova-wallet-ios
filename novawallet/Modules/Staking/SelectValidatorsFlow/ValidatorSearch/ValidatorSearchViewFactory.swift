@@ -1,6 +1,6 @@
 import SoraFoundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 struct ValidatorSearchViewFactory {
@@ -21,6 +21,12 @@ struct ValidatorSearchViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
+        )
+
         let validatorOperationFactory = ValidatorOperationFactory(
             chainInfo: chainAsset.chainAssetInfo,
             eraValidatorService: eraValidatorService,
@@ -28,7 +34,7 @@ struct ValidatorSearchViewFactory {
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
+            identityProxyFactory: identityProxyFactory
         )
 
         return ValidatorSearchInteractor(

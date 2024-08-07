@@ -11,6 +11,7 @@ protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel)
     func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel)
     func didReceiveLockReuse(viewModel: ReferendumLockReuseViewModel)
+    func didReceive(abstainAvailable: Bool)
 }
 
 protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
@@ -22,6 +23,7 @@ protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
     func reuseAllLock()
     func proceedNay()
     func proceedAye()
+    func proceedAbstain()
 }
 
 protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {}

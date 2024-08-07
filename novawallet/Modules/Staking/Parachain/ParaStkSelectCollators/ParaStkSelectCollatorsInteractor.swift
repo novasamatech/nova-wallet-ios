@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
     weak var presenter: ParaStkSelectCollatorsInteractorOutputProtocol?
@@ -9,8 +9,6 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
     let chainAsset: ChainAsset
     let collatorService: ParachainStakingCollatorServiceProtocol
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
-    let connection: ChainConnection
-    let runtimeProvider: RuntimeProviderProtocol
     let collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol
     let preferredCollatorsProvider: PreferredValidatorsProviding
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -22,8 +20,6 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
         chainAsset: ChainAsset,
         collatorService: ParachainStakingCollatorServiceProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
-        connection: ChainConnection,
-        runtimeProvider: RuntimeProviderProtocol,
         collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
         preferredCollatorsProvider: PreferredValidatorsProviding,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -33,8 +29,6 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
         self.chainAsset = chainAsset
         self.collatorService = collatorService
         self.rewardService = rewardService
-        self.connection = connection
-        self.runtimeProvider = runtimeProvider
         self.preferredCollatorsProvider = preferredCollatorsProvider
         self.collatorOperationFactory = collatorOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -51,8 +45,8 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(collators):
-                self?.presenter?.didReceivePreferredCollators(collators)
+            case let .success(prefs):
+                self?.presenter?.didReceiveCollatorsPref(prefs)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.allCollatorsFailed(error))
             }
@@ -62,10 +56,7 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
     private func provideElectedCollatorsInfo() {
         let wrapper = collatorOperationFactory.electedCollatorsInfoOperation(
             for: collatorService,
-            rewardService: rewardService,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            chainFormat: chain.chainFormat
+            rewardService: rewardService
         )
 
         execute(

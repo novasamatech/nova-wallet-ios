@@ -9,6 +9,7 @@ struct BalanceContext {
     let priceChange: Decimal
     let priceId: Int?
     let balanceLocks: [AssetLock]
+    let balanceHolds: [AssetHold]
 }
 
 extension BalanceContext {

@@ -2,8 +2,9 @@ import Foundation
 
 struct ChainAccountRequest {
     let chainId: ChainModel.Id
-    let addressPrefix: UInt16
+    let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
+    let supportsGenericLedger: Bool
 }
 
 struct ChainAccountResponse {
@@ -13,7 +14,7 @@ struct ChainAccountResponse {
     let publicKey: Data
     let name: String
     let cryptoType: MultiassetCryptoType
-    let addressPrefix: UInt16
+    let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let isChainAccount: Bool
     let type: MetaAccountModelType
@@ -54,18 +55,24 @@ extension MetaChainAccountResponse {
 
 extension ChainAccountResponse {
     var chainFormat: ChainFormat {
-        isEthereumBased ? .ethereum : .substrate(addressPrefix)
+        isEthereumBased
+            ? .ethereum
+            : .substrate(addressPrefix.toSubstrateFormat())
     }
 
     func toDisplayAddress() throws -> DisplayAddress {
-        let chainFormat: ChainFormat = isEthereumBased ? .ethereum : .substrate(addressPrefix)
+        let chainFormat: ChainFormat = isEthereumBased
+            ? .ethereum
+            : .substrate(addressPrefix.toSubstrateFormat())
         let address = try accountId.toAddress(using: chainFormat)
 
         return DisplayAddress(address: address, username: name)
     }
 
     func toAddress() -> AccountAddress? {
-        let chainFormat: ChainFormat = isEthereumBased ? .ethereum : .substrate(addressPrefix)
+        let chainFormat: ChainFormat = isEthereumBased
+            ? .ethereum
+            : .substrate(addressPrefix.toSubstrateFormat())
         return try? accountId.toAddress(using: chainFormat)
     }
 
@@ -82,7 +89,7 @@ extension ChainAccountResponse {
 }
 
 extension MetaAccountModel {
-    func fetch(for request: ChainAccountRequest) -> ChainAccountResponse? {
+    private func executeFetch(request: ChainAccountRequest) -> ChainAccountResponse? {
         if let chainAccount = chainAccounts.first(where: { $0.chainId == request.chainId }) {
             guard let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) else {
                 return nil
@@ -141,6 +148,19 @@ extension MetaAccountModel {
             isChainAccount: false,
             type: type
         )
+    }
+
+    func fetch(for request: ChainAccountRequest) -> ChainAccountResponse? {
+        switch type {
+        case .genericLedger:
+            if request.supportsGenericLedger {
+                return executeFetch(request: request)
+            } else {
+                return nil
+            }
+        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+            return executeFetch(request: request)
+        }
     }
 
     // Note that this query might return an account in another chain if it can't be found for provided chain
@@ -314,7 +334,8 @@ extension ChainModel {
         ChainAccountRequest(
             chainId: chainId,
             addressPrefix: addressPrefix,
-            isEthereumBased: isEthereumBased
+            isEthereumBased: isEthereumBased,
+            supportsGenericLedger: supportsGenericLedgerApp
         )
     }
 

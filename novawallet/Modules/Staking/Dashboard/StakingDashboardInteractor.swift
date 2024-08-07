@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 final class StakingDashboardInteractor {
@@ -198,7 +198,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
 
 extension StakingDashboardInteractor: ChainsStoreDelegate {
     func didUpdateChainsStore(_ chainsStore: ChainsStoreProtocol) {
-        let newChainAssets = chainsStore.getAllStakebleAssets()
+        let newChainAssets = chainsStore.getAllStakebleAssets(filter: { $0.syncMode.enabled() })
 
         modelBuilder?.applyAssets(models: newChainAssets)
 
@@ -258,7 +258,7 @@ extension StakingDashboardInteractor: PriceLocalStorageSubscriber, PriceLocalSub
 }
 
 extension StakingDashboardInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         guard let wallet = walletSettings.value else {
             return
         }

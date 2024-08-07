@@ -13,12 +13,20 @@ final class ChainAccountView: UIView {
         return view
     }()
 
-    let networkLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularSubheadline
-        label.textColor = R.color.colorTextPrimary()
-        return label
-    }()
+    let multiLabelView: MultiValueView = .create { view in
+        view.valueTop.apply(style: .regularSubhedlinePrimary)
+        view.valueTop.textAlignment = .left
+
+        view.valueBottom.apply(style: .caption1Secondary)
+        view.valueBottom.textAlignment = .left
+        view.valueBottom.numberOfLines = 0
+        view.valueBottom.isHidden = true
+
+        view.spacing = 4
+    }
+
+    var networkLabel: UILabel { multiLabelView.valueTop }
+    var secondaryLabel: UILabel { multiLabelView.valueBottom }
 
     private(set) var accountView: IconDetailsGenericView<UILabel>?
 
@@ -107,7 +115,7 @@ final class ChainAccountView: UIView {
 
     private func updateLayout() {
         if let accountView = accountView {
-            networkLabel.snp.remakeConstraints { make in
+            multiLabelView.snp.remakeConstraints { make in
                 make.top.equalToSuperview()
                 make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
                 make.trailing.lessThanOrEqualTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
@@ -115,10 +123,10 @@ final class ChainAccountView: UIView {
 
             accountView.snp.makeConstraints { make in
                 make.bottom.equalToSuperview()
-                make.leading.trailing.equalTo(networkLabel)
+                make.leading.trailing.equalTo(multiLabelView)
             }
         } else {
-            networkLabel.snp.remakeConstraints { make in
+            multiLabelView.snp.remakeConstraints { make in
                 make.centerY.equalToSuperview()
                 make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
                 make.trailing.lessThanOrEqualTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
@@ -138,11 +146,11 @@ final class ChainAccountView: UIView {
             make.trailing.centerY.equalToSuperview()
         }
 
-        addSubview(networkLabel)
-        networkLabel.snp.makeConstraints { make in
+        addSubview(multiLabelView)
+        multiLabelView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
-            make.trailing.equalTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
+            make.trailing.lessThanOrEqualTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
         }
     }
 }

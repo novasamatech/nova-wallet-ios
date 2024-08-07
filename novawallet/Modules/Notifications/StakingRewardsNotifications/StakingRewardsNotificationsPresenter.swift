@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class StakingRewardsNotificationsPresenter {
     weak var view: StakingRewardsNotificationsViewProtocol?
@@ -27,7 +27,7 @@ final class StakingRewardsNotificationsPresenter {
         let viewModels = chainList.allItems.map {
             StakingRewardsNotificationsViewModel(
                 identifier: $0.identifier,
-                icon: RemoteImageViewModel(url: $0.icon),
+                icon: ImageViewModelFactory.createChainIconOrDefault(from: $0.icon),
                 name: $0.name,
                 enabled: selectedChains?.contains($0.identifier) == true
             )

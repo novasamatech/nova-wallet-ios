@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 struct GovRevokeDelegationConfirmViewFactory {
@@ -39,7 +39,9 @@ struct GovRevokeDelegationConfirmViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+        let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
+
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
 
@@ -51,7 +53,7 @@ struct GovRevokeDelegationConfirmViewFactory {
             selectedTracks: selectedTracks,
             delegationInfo: delegate,
             balanceViewModelFactory: balanceViewModelFactory,
-            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             trackViewModelFactory: GovernanceTrackViewModelFactory(),
             dataValidatingFactory: dataValidatingFactory,
@@ -103,8 +105,9 @@ struct GovRevokeDelegationConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: option.chain)
 
         let signer = SigningWrapperFactory.createSigner(from: selectedAccount)

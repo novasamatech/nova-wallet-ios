@@ -182,7 +182,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
             IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: proxyWallet.info.metaId)
         }
         let chainModel = chains[chainAccount.chainId]
-        let chainIcon = chainModel.map { RemoteImageViewModel(url: $0.icon) }
+        let chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
         let proxyInfo = WalletView.ViewModel.ProxyInfo(
             networkIcon: chainIcon,
             proxyType: proxy.type.subtitle(locale: locale),
@@ -254,6 +254,16 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
                 locale: locale
             ) {
             sections.append(paritySignerSection)
+        }
+
+        if
+            let genericLedger = createSection(
+                type: .genericLedger,
+                wallets: wallets,
+                balancesCalculator: balancesCalculator,
+                locale: locale
+            ) {
+            sections.append(genericLedger)
         }
 
         if

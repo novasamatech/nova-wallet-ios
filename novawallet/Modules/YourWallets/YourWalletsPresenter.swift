@@ -13,6 +13,7 @@ final class YourWalletsPresenter {
         .secrets,
         .polkadotVault,
         .paritySigner,
+        .genericLedger,
         .ledger,
         .proxied,
         .watchOnly
@@ -81,10 +82,10 @@ final class YourWalletsPresenter {
             return .init(title: type.getName(for: selectedLocale).uppercased(), icon: type.icon)
         case .ledger:
             return .init(
-                title: R.string.localizable.commonLedger(
+                title: R.string.localizable.commonLedgerLegacy(
                     preferredLanguages: selectedLocale.rLanguages
                 ).uppercased(),
-                icon: R.image.iconLedger()
+                icon: R.image.iconLedgerWarning()
             )
         case .proxied:
             return .init(
@@ -92,6 +93,13 @@ final class YourWalletsPresenter {
                     preferredLanguages: selectedLocale.rLanguages
                 ).uppercased(),
                 icon: R.image.iconProxy()
+            )
+        case .genericLedger:
+            return .init(
+                title: R.string.localizable.commonLedger(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).uppercased(),
+                icon: R.image.iconLedger()
             )
         }
     }

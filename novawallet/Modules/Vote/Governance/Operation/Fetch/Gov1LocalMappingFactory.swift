@@ -30,6 +30,7 @@ final class Gov1LocalMappingFactory {
             submitted: submitted,
             since: submitted,
             period: additionalInfo.votingPeriod,
+            confirmPeriod: nil,
             confirmationUntil: referendum.end,
             deposit: nil
         )

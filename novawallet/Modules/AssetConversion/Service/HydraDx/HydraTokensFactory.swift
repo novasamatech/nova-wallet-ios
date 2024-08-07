@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 protocol HydraPoolTokensFactoryProtocol {
@@ -65,7 +65,7 @@ extension HydraTokensFactory: HydraTokensFactoryProtocol {
         let mergeOperation = ClosureOperation<[ChainAssetId: Set<ChainAssetId>]> {
             let pairPools = try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
 
-            let graph = GraphModel<ChainAssetId>.createFromConnections(pairPools)
+            let graph = GraphModelFactory.createFromConnections(pairPools)
 
             return graph.connections.keys.reduce(into: [ChainAssetId: Set<ChainAssetId>]()) { accum, asset in
                 accum[asset] = graph.reachableNodes(for: asset)
@@ -87,7 +87,7 @@ extension HydraTokensFactory: HydraTokensFactoryProtocol {
         let mergeOperation = ClosureOperation<Set<ChainAssetId>> {
             let pairPools = try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
 
-            let graph = GraphModel<ChainAssetId>.createFromConnections(pairPools)
+            let graph = GraphModelFactory.createFromConnections(pairPools)
 
             return graph.reachableNodes(for: chainAssetId)
         }
@@ -159,8 +159,15 @@ extension HydraTokensFactory {
             operationQueue: operationQueue
         )
 
+        let xykswap = HydraXYKPoolTokensFactory(
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
         return .init(
-            poolsFactory: [omnipool, stableswap],
+            poolsFactory: [omnipool, stableswap, xykswap],
             chain: chain,
             runtimeService: runtimeService,
             connection: connection,

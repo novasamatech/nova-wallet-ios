@@ -27,29 +27,32 @@ struct DelegationReferendumVotersViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let subquery = SubqueryVotingOperationFactory(url: delegationApi.url)
 
         let votersLocalWrapperFactory = ReferendumVotersLocalWrapperFactory(
+            chain: chain,
             operationFactory: subquery,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             metadataOperationFactory: GovernanceDelegateMetadataFactory()
         )
 
         let interactor = DelegationReferendumVotersInteractor(
             referendumId: referendum.index,
             votersType: type,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeProvider,
             votersLocalWrapperFactory: votersLocalWrapperFactory,
             operationQueue: OperationQueue()
         )
         let wireframe = DelegationReferendumVotersWireframe()
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactory(
-            formatterFactory: AssetBalanceFormatterFactory()
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
+        let viewModelFactory = DelegationReferendumVotersViewModelFactory(
+            stringFactory: referendumDisplayStringFactory
         )
-
-        let viewModelFactory = DelegationReferendumVotersViewModelFactory(stringFactory: referendumDisplayStringFactory)
         let presenter = DelegationReferendumVotersPresenter(
             interactor: interactor,
             wireframe: wireframe,

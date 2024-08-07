@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class DAppInteractionMediator {
     struct QueueMessage {
@@ -173,7 +173,7 @@ extension DAppInteractionMediator: ChainsStoreDelegate {
 extension DAppInteractionMediator {
     func setup() {
         chainsStore.delegate = self
-        chainsStore.setup()
+        chainsStore.setup(with: { $0.syncMode.enabled() })
 
         children.forEach { $0.setup() }
     }

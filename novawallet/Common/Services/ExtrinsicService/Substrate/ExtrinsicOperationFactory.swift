@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import IrohaCrypto
 import BigInt
@@ -103,23 +103,29 @@ extension ExtrinsicOperationFactoryProtocol {
 
 final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     let chain: ChainModel
-    let customExtensions: [ExtrinsicExtension]
+    let customExtensions: [ExtrinsicSignedExtending]
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
+    let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
+    let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
         chain: ChainModel,
         runtimeRegistry: RuntimeCodingServiceProtocol,
-        customExtensions: [ExtrinsicExtension],
+        customExtensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
+        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil,
+        blockHashOperationFactory: BlockHashOperationFactoryProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.chain = chain
         self.senderResolvingFactory = senderResolvingFactory
         self.customExtensions = customExtensions
+        self.metadataHashOperationFactory = metadataHashOperationFactory
         self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
+        self.blockHashOperationFactory = blockHashOperationFactory
 
         super.init(
             runtimeRegistry: runtimeRegistry,
@@ -151,49 +157,35 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         return operation
     }
 
-    private func createBlockHashOperation(
-        connection: JSONRPCEngine,
-        for numberClosure: @escaping () throws -> BlockNumber
-    ) -> BaseOperation<String> {
-        let requestOperation = JSONRPCListOperation<String>(
-            engine: connection,
-            method: RPCMethod.getBlockHash
-        )
-
-        requestOperation.configurationBlock = {
-            do {
-                let blockNumber = try numberClosure()
-                requestOperation.parameters = [blockNumber.toHex()]
-            } catch {
-                requestOperation.result = .failure(error)
-            }
-        }
-
-        return requestOperation
-    }
-
     private func createPartialBuildersWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
         chain: ChainModel,
-        customExtensions: [ExtrinsicExtension],
+        customExtensions: [ExtrinsicSignedExtending],
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<[ExtrinsicBuilderProtocol]> {
-        let genesisBlockOperation = createBlockHashOperation(connection: engine, for: { 0 })
+        let genesisBlockOperation = blockHashOperationFactory.createBlockHashOperation(connection: engine, for: { 0 })
 
         let eraWrapper = eraOperationFactory.createOperation(from: engine, runtimeService: runtimeRegistry)
 
-        let eraBlockOperation = createBlockHashOperation(connection: engine) {
+        let eraBlockOperation = blockHashOperationFactory.createBlockHashOperation(connection: engine) {
             try eraWrapper.targetOperation.extractNoCancellableResultData().blockNumber
         }
 
         eraBlockOperation.addDependency(eraWrapper.targetOperation)
+
+        let metadataHashWrapper = metadataHashOperationFactory.createCheckMetadataHashWrapper(
+            for: chain,
+            connection: engine,
+            runtimeProvider: runtimeRegistry
+        )
 
         let partialBuildersOperation = ClosureOperation<[ExtrinsicBuilderProtocol]> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let genesisHash = try genesisBlockOperation.extractNoCancellableResultData()
             let era = try eraWrapper.targetOperation.extractNoCancellableResultData().extrinsicEra
             let eraBlockHash = try eraBlockOperation.extractNoCancellableResultData()
+            let metadataHash = try metadataHashWrapper.targetOperation.extractNoCancellableResultData()
 
             let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
 
@@ -206,19 +198,24 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                 .with(runtimeJsonContext: runtimeJsonContext)
                 .with(era: era, blockHash: eraBlockHash)
 
+                if let metadataHash {
+                    builder = builder.with(metadataHash: metadataHash)
+                }
+
                 if let defaultTip = chain.defaultTip {
                     builder = builder.with(tip: defaultTip)
                 }
 
                 for customExtension in customExtensions {
-                    builder = builder.adding(extrinsicExtension: customExtension)
+                    builder = builder.adding(extrinsicSignedExtension: customExtension)
                 }
 
                 return try customClosure(builder, index)
             }
         }
 
-        let dependencies = [genesisBlockOperation] + eraWrapper.allOperations + [eraBlockOperation]
+        let dependencies = [genesisBlockOperation] + eraWrapper.allOperations + [eraBlockOperation] +
+            metadataHashWrapper.allOperations
 
         dependencies.forEach { partialBuildersOperation.addDependency($0) }
 
@@ -245,7 +242,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
                 let context = ExtrinsicSigningContext.Substrate(
                     senderResolution: senderResolution,
-                    calls: builder.getCalls()
+                    extrinsicMemo: builder.makeMemo(),
+                    codingFactory: codingFactory
                 )
 
                 builder = try builder.signing(

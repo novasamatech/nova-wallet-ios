@@ -118,7 +118,7 @@ extension TransferSetupPresenterFactory {
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 
-        let walletRemoteSubscriptionService = WalletServiceFacade.sharedRemoteSubscriptionService
+        let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
             remoteSubscriptionService: walletRemoteSubscriptionService,
@@ -132,8 +132,9 @@ extension TransferSetupPresenterFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chain)
 
         return OnChainTransferSetupInteractor(

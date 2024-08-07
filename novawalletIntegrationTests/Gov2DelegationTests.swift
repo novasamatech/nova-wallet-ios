@@ -12,21 +12,14 @@ final class Gov2DelegationTests: XCTestCase {
         let chainId: ChainModel.Id = KnowChainId.kusama
         let recentBlockNumber: BlockNumber = 1000
 
-        guard
-            let operationFactory = setupDelegationListFactory(for: chainId, chainRegistry: chainRegistry),
-            let chain = chainRegistry.getChain(for: chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+        guard let operationFactory = setupDelegationListFactory(for: chainId, chainRegistry: chainRegistry) else {
             return
         }
 
         // when
 
         let wrapper = operationFactory.fetchDelegateListWrapper(
-            for: recentBlockNumber,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
+            for: recentBlockNumber
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -56,9 +49,7 @@ final class Gov2DelegationTests: XCTestCase {
 
         guard
             let operationFactory = setupDelegationListFactory(for: chainId, chainRegistry: chainRegistry),
-            let chain = chainRegistry.getChain(for: chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let chain = chainRegistry.getChain(for: chainId) else {
             return
         }
 
@@ -67,10 +58,7 @@ final class Gov2DelegationTests: XCTestCase {
         let delegateIds = Set(delegates.compactMap({ try? $0.toAccountId(using: chain.chainFormat) }))
         let wrapper = operationFactory.fetchDelegateListByIdsWrapper(
             from: Set(delegateIds),
-            activityStartBlock: recentBlockNumber,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
+            activityStartBlock: recentBlockNumber
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -269,11 +257,18 @@ final class Gov2DelegationTests: XCTestCase {
             requestFactory: requestFactory,
             emptyIdentitiesWhenNoStorage: true
         )
+        
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
 
         return GovernanceDelegateListOperationFactory(
+            chain: chain,
             statsOperationFactory: statsOperationFactory,
             metadataOperationFactory: metadataOperationFactory,
-            identityOperationFactory: identityOperationFactory
+            identityProxyFactory: identityProxyFactory
         )
     }
     
@@ -293,7 +288,10 @@ final class Gov2DelegationTests: XCTestCase {
         
         // when
 
-        let wrapper = operationFactory.createReferendumVotesFetchOperation(referendumId: referendumId, isAye: true)
+        let wrapper = operationFactory.createReferendumVotesFetchOperation(
+            referendumId: referendumId,
+            votersType: .ayes
+        )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 

@@ -1,18 +1,26 @@
 import Foundation
 import SubstrateSdk
 
+struct NPoolSubscriptionServiceParams {
+    let chainId: ChainModel.Id
+    let poolId: NominationPools.PoolId
+    let accountId: AccountId
+
+    func encodableSubscriptionElement() -> [UInt8] {
+        accountId.bytes + poolId.bigEndianBytes
+    }
+}
+
 protocol NominationPoolsPoolSubscriptionServiceProtocol {
-    func attachToPoolData(
-        for chainId: ChainModel.Id,
-        poolId: NominationPools.PoolId,
+    func attachToAccountPoolData(
+        for params: NPoolSubscriptionServiceParams,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID?
 
-    func detachFromPoolData(
+    func detachFromAccountPoolData(
         for subscriptionId: UUID,
-        chainId: ChainModel.Id,
-        poolId: NominationPools.PoolId,
+        params: NPoolSubscriptionServiceParams,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     )
@@ -24,12 +32,15 @@ final class NominationPoolsPoolSubscriptionService: RemoteSubscriptionService {
         NominationPools.rewardPoolsPath,
         NominationPools.subPoolsPath
     ]
+
+    private static let accountStoragePaths: [StorageCodingPath] = [
+        DelegatedStakingPallet.delegatorsPath
+    ]
 }
 
 extension NominationPoolsPoolSubscriptionService: NominationPoolsPoolSubscriptionServiceProtocol {
-    func attachToPoolData(
-        for chainId: ChainModel.Id,
-        poolId: NominationPools.PoolId,
+    func attachToAccountPoolData(
+        for params: NPoolSubscriptionServiceParams,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
@@ -40,28 +51,40 @@ extension NominationPoolsPoolSubscriptionService: NominationPoolsPoolSubscriptio
                 .map { path in
                     let localKey = try localKeyFactory.createFromStoragePath(
                         path,
-                        encodableElement: poolId,
-                        chainId: chainId
+                        encodableElement: params.poolId,
+                        chainId: params.chainId
                     )
 
                     return MapSubscriptionRequest(storagePath: path, localKey: localKey) {
-                        StringScaleMapper(value: poolId)
+                        StringScaleMapper(value: params.poolId)
                     }
                 }
 
-            let allPaths = Self.poolIdStoragePaths
+            let accountRequests: [SubscriptionRequestProtocol] = try Self.accountStoragePaths.map { path in
+                let localKey = try localKeyFactory.createFromStoragePath(
+                    path,
+                    accountId: params.accountId,
+                    chainId: params.chainId
+                )
+
+                return MapSubscriptionRequest(storagePath: path, localKey: localKey) {
+                    BytesCodable(wrappedValue: params.accountId)
+                }
+            }
+
+            let allPaths = Self.poolIdStoragePaths + Self.accountStoragePaths
 
             let cacheKey = try localKeyFactory.createRestorableCacheKey(
                 from: allPaths,
-                encodableElement: poolId,
-                chainId: chainId
+                encodableElement: params.encodableSubscriptionElement(),
+                chainId: params.chainId
             )
 
-            let allRequests = poolIdRequests
+            let allRequests = poolIdRequests + accountRequests
 
             return attachToSubscription(
                 with: allRequests,
-                chainId: chainId,
+                chainId: params.chainId,
                 cacheKey: cacheKey,
                 queue: queue,
                 closure: closure
@@ -73,10 +96,9 @@ extension NominationPoolsPoolSubscriptionService: NominationPoolsPoolSubscriptio
         }
     }
 
-    func detachFromPoolData(
+    func detachFromAccountPoolData(
         for subscriptionId: UUID,
-        chainId: ChainModel.Id,
-        poolId: NominationPools.PoolId,
+        params: NPoolSubscriptionServiceParams,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) {
@@ -85,8 +107,8 @@ extension NominationPoolsPoolSubscriptionService: NominationPoolsPoolSubscriptio
 
             let cacheKey = try LocalStorageKeyFactory().createRestorableCacheKey(
                 from: allPaths,
-                encodableElement: poolId,
-                chainId: chainId
+                encodableElement: params.encodableSubscriptionElement(),
+                chainId: params.chainId
             )
 
             detachFromSubscription(

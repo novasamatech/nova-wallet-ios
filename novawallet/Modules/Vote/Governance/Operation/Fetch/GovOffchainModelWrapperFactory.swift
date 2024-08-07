@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 class GovOffchainModelWrapperFactory<P, R: Equatable> {
     struct MetadataParams {
@@ -9,36 +9,34 @@ class GovOffchainModelWrapperFactory<P, R: Equatable> {
     }
 
     struct IdentityParams {
-        let operationFactory: IdentityOperationFactoryProtocol
+        let proxyFactory: IdentityProxyFactoryProtocol
         let closure: (R) throws -> [AccountId]
     }
 
     let metadataParams: MetadataParams?
     let identityParams: IdentityParams?
 
+    let chain: ChainModel
+
     init(
+        chain: ChainModel,
         identityParams: IdentityParams? = nil,
         metadataParams: MetadataParams? = nil
     ) {
+        self.chain = chain
         self.identityParams = identityParams
         self.metadataParams = metadataParams
     }
 
     private func createIdentityWrapper(
-        dependingOn modelOperation: BaseOperation<R>,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        dependingOn modelOperation: BaseOperation<R>
     ) -> CompoundOperationWrapper<[AccountId: AccountIdentity]> {
         if let identityParams = identityParams {
-            return identityParams.operationFactory.createIdentityWrapperByAccountId(
+            return identityParams.proxyFactory.createIdentityWrapperByAccountId(
                 for: {
                     let model = try modelOperation.extractNoCancellableResultData()
                     return try identityParams.closure(model)
-                },
-                engine: connection,
-                runtimeService: runtimeService,
-                chainFormat: chain.chainFormat
+                }
             )
         } else {
             return CompoundOperationWrapper.createWithResult([:])
@@ -98,24 +96,16 @@ class GovOffchainModelWrapperFactory<P, R: Equatable> {
         }
     }
 
-    func createModelWrapper(for _: P, chain _: ChainModel) -> CompoundOperationWrapper<R> {
+    func createModelWrapper(for _: P) -> CompoundOperationWrapper<R> {
         fatalError("Child factory must override this method")
     }
 
     func createWrapper(
-        for params: P,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for params: P
     ) -> CompoundOperationWrapper<GovernanceDelegationAdditions<R>> {
-        let modelWrapper = createModelWrapper(for: params, chain: chain)
+        let modelWrapper = createModelWrapper(for: params)
 
-        let identityWrapper = createIdentityWrapper(
-            dependingOn: modelWrapper.targetOperation,
-            chain: chain,
-            connection: connection,
-            runtimeService: runtimeService
-        )
+        let identityWrapper = createIdentityWrapper(dependingOn: modelWrapper.targetOperation)
 
         identityWrapper.addDependency(wrapper: modelWrapper)
 

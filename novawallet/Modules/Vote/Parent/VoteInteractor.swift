@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class VoteInteractor {
     weak var presenter: VoteInteractorOutputProtocol?
@@ -43,7 +43,7 @@ extension VoteInteractor: VoteInteractorInputProtocol {
 }
 
 extension VoteInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         provideSelectedWallet()
     }
 

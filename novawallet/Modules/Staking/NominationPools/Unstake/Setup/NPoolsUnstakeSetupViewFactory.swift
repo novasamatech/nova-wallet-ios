@@ -1,12 +1,18 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 struct NPoolsUnstakeSetupViewFactory {
     static func createView(for state: NPoolsStakingSharedStateProtocol) -> NPoolsUnstakeSetupViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let stakingActivity = StakingActivityForValidation(
+                wallet: SelectedWalletSettings.shared.value,
+                chain: state.chainAsset.chain,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ) else {
             return nil
         }
 
@@ -34,6 +40,7 @@ struct NPoolsUnstakeSetupViewFactory {
             hintsViewModelFactory: hintsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatingFactory,
+            stakingActivity: stakingActivity,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -43,7 +50,7 @@ struct NPoolsUnstakeSetupViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        presenter.view = view
+        presenter.baseView = view
         interactor.presenter = presenter
         dataValidatingFactory.view = view
 
@@ -71,8 +78,9 @@ struct NPoolsUnstakeSetupViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
         let eraCountdownOperationFactory = state.createEraCountdownOperationFactory(for: operationQueue)

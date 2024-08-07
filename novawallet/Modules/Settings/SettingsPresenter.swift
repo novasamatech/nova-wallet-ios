@@ -212,6 +212,10 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
 
             wireframe.showManageNotifications(from: view)
+        case .backup:
+            wireframe.showBackup(from: view)
+        case .networks:
+            wireframe.showNetworks(from: view)
         case .pay:
             let purchaseAction = PurchaseAction(
                 title: "Mercuryo",
@@ -303,8 +307,8 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
                 from: view,
                 locale: selectedLocale
             )
-        case .walletConnectFailed:
-            wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        case let .walletConnectFailed(internalError):
+            wireframe.presentWCConnectionError(from: view, error: internalError, locale: selectedLocale)
         }
     }
 

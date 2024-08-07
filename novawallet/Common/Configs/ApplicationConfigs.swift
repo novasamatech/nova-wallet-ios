@@ -33,6 +33,7 @@ protocol ApplicationConfigProtocol {
     var polkadotVaultTroubleshoutingURL: URL { get }
     var controllerDeprecationURL: URL { get }
     var ledgerGuideURL: URL { get }
+    var ledgerMigrationURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
@@ -130,11 +131,31 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://polkadot.js.org/phishing/all.json")!
     }
 
+    var phishingDAppsTopLevelSet: Set<String> {
+        ["top"]
+    }
+
     var chainListURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains_dev.json")!
+        #endif
+    }
+
+    var preConfiguredLightChainListURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains_dev.json")!
+        #endif
+    }
+
+    var preConfiguredChainDirectoryURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/details")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/detailsDev")!
         #endif
     }
 
@@ -174,9 +195,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var preferredValidatorsURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/nova_validators.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/validators/v1/nova_validators.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/nova_validators.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/validators/v1/nova_validators_dev.json")!
         #endif
     }
 
@@ -229,6 +250,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://support.ledger.com/hc/en-us/articles/360019138694-Set-up-Bluetooth-connection")!
     }
 
+    var ledgerMigrationURL: URL {
+        // swiftlint:disable:next line_length
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/ledger-nano-x/ledger-app-migration")!
+    }
+
     var learnRecommendedValidatorsURL: URL {
         // swiftlint:disable:next line_length
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/staking-faq#q-how-does-nova-wallet-select-validators-collators")!
@@ -240,6 +266,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var learnGovernanceDelegateMetadata: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/governance/add-delegate-information")!
+    }
+
+    var learnNetworkManagementURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/misc/developer-documentation/integrate-network")!
     }
 
     // swiftlint:disable line_length

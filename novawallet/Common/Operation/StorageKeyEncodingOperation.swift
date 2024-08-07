@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 enum StorageKeyEncodingOperationError: Error {
     case missingRequiredParams
@@ -21,39 +21,21 @@ class UnkeyedEncodingOperation: BaseOperation<Data> {
         super.init()
     }
 
-    private func performEncoding() {
-        do {
-            guard let factory = codingFactory else {
-                throw StorageKeyEncodingOperationError.missingRequiredParams
-            }
-
-            guard factory.metadata.getStorageMetadata(in: path.moduleName, storageName: path.itemName) != nil else {
-                throw StorageKeyEncodingOperationError.invalidStoragePath
-            }
-
-            let keyData: Data = try storageKeyFactory.createStorageKey(
-                moduleName: path.moduleName,
-                storageName: path.itemName
-            )
-
-            result = .success(keyData)
-        } catch {
-            result = .failure(error)
-        }
-    }
-
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
+    override func performAsync(_ callback: @escaping (Result<Data, Error>) -> Void) throws {
+        guard let factory = codingFactory else {
+            throw StorageKeyEncodingOperationError.missingRequiredParams
         }
 
-        if result != nil {
-            return
+        guard factory.metadata.getStorageMetadata(in: path.moduleName, storageName: path.itemName) != nil else {
+            throw StorageKeyEncodingOperationError.invalidStoragePath
         }
 
-        performEncoding()
+        let keyData: Data = try storageKeyFactory.createStorageKey(
+            moduleName: path.moduleName,
+            storageName: path.itemName
+        )
+
+        callback(.success(keyData))
     }
 }
 
@@ -79,81 +61,63 @@ class MapKeyEncodingOperation<T: Encodable>: BaseOperation<[Data]> {
         super.init()
     }
 
-    private func performEncoding() {
-        do {
-            guard let factory = codingFactory, let keyParams = keyParams else {
+    override func performAsync(_ callback: @escaping (Result<[Data], Error>) -> Void) throws {
+        guard let factory = codingFactory, let keyParams = keyParams else {
+            throw StorageKeyEncodingOperationError.missingRequiredParams
+        }
+
+        guard let entry = factory.metadata.getStorageMetadata(
+            in: path.moduleName,
+            storageName: path.itemName
+        ) else {
+            throw StorageKeyEncodingOperationError.invalidStoragePath
+        }
+
+        let keyType: String
+        let hasher: StorageHasher
+
+        switch entry.type {
+        case let .map(mapEntry):
+            keyType = mapEntry.key
+            hasher = mapEntry.hasher
+        case let .doubleMap(doubleMapEntry):
+            keyType = doubleMapEntry.key1
+            hasher = doubleMapEntry.hasher
+        case let .nMap(nMapEntry):
+            guard
+                let firstKey = nMapEntry.keyVec.first,
+                let firstHasher = nMapEntry.hashers.first else {
                 throw StorageKeyEncodingOperationError.missingRequiredParams
             }
 
-            guard let entry = factory.metadata.getStorageMetadata(
-                in: path.moduleName,
-                storageName: path.itemName
-            ) else {
-                throw StorageKeyEncodingOperationError.invalidStoragePath
-            }
+            keyType = firstKey
+            hasher = firstHasher
+        case .plain:
+            throw StorageKeyEncodingOperationError.incompatibleStorageType
+        }
 
-            let keyType: String
-            let hasher: StorageHasher
+        let keys: [Data] = try keyParams.map { keyParam in
+            let encodedParam: Data
 
-            switch entry.type {
-            case let .map(mapEntry):
-                keyType = mapEntry.key
-                hasher = mapEntry.hasher
-            case let .doubleMap(doubleMapEntry):
-                keyType = doubleMapEntry.key1
-                hasher = doubleMapEntry.hasher
-            case let .nMap(nMapEntry):
-                guard
-                    let firstKey = nMapEntry.keyVec.first,
-                    let firstHasher = nMapEntry.hashers.first else {
-                    throw StorageKeyEncodingOperationError.missingRequiredParams
-                }
-
-                keyType = firstKey
-                hasher = firstHasher
-            case .plain:
-                throw StorageKeyEncodingOperationError.incompatibleStorageType
-            }
-
-            let keys: [Data] = try keyParams.map { keyParam in
-                let encodedParam: Data
-
-                if let paramEncoder = paramEncoder {
-                    encodedParam = try paramEncoder(keyParam)
-                } else {
-                    encodedParam = try encodeParam(
-                        keyParam,
-                        factory: factory,
-                        type: keyType
-                    )
-                }
-
-                return try storageKeyFactory.createStorageKey(
-                    moduleName: path.moduleName,
-                    storageName: path.itemName,
-                    key: encodedParam,
-                    hasher: hasher
+            if let paramEncoder = paramEncoder {
+                encodedParam = try paramEncoder(keyParam)
+            } else {
+                encodedParam = try encodeParam(
+                    keyParam,
+                    factory: factory,
+                    type: keyType
                 )
             }
 
-            result = .success(keys)
-        } catch {
-            result = .failure(error)
-        }
-    }
-
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
+            return try storageKeyFactory.createStorageKey(
+                moduleName: path.moduleName,
+                storageName: path.itemName,
+                key: encodedParam,
+                hasher: hasher
+            )
         }
 
-        if result != nil {
-            return
-        }
-
-        performEncoding()
+        callback(.success(keys))
     }
 
     private func encodeParam<T: Encodable>(
@@ -196,76 +160,62 @@ class DoubleMapKeyEncodingOperation<T1: Encodable, T2: Encodable>: BaseOperation
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
+    override func performAsync(_ callback: @escaping (Result<[Data], Error>) -> Void) throws {
+        guard let factory = codingFactory,
+              let keyParams1 = keyParams1,
+              let keyParams2 = keyParams2,
+              keyParams1.count == keyParams2.count
+        else {
+            throw StorageKeyEncodingOperationError.missingRequiredParams
         }
 
-        if result != nil {
-            return
+        guard let entry = factory.metadata.getStorageMetadata(
+            in: path.moduleName,
+            storageName: path.itemName
+        ) else {
+            throw StorageKeyEncodingOperationError.invalidStoragePath
         }
 
-        do {
-            guard let factory = codingFactory,
-                  let keyParams1 = keyParams1,
-                  let keyParams2 = keyParams2,
-                  keyParams1.count == keyParams2.count
-            else {
-                throw StorageKeyEncodingOperationError.missingRequiredParams
-            }
+        guard case let .doubleMap(doubleMapEntry) = entry.type else {
+            throw StorageKeyEncodingOperationError.incompatibleStorageType
+        }
 
-            guard let entry = factory.metadata.getStorageMetadata(
-                in: path.moduleName,
-                storageName: path.itemName
-            ) else {
-                throw StorageKeyEncodingOperationError.invalidStoragePath
-            }
+        let keys: [Data] = try zip(keyParams1, keyParams2).map { param in
+            let encodedParam1: Data
 
-            guard case let .doubleMap(doubleMapEntry) = entry.type else {
-                throw StorageKeyEncodingOperationError.incompatibleStorageType
-            }
-
-            let keys: [Data] = try zip(keyParams1, keyParams2).map { param in
-                let encodedParam1: Data
-
-                if let param1Encoder = param1Encoder {
-                    encodedParam1 = try param1Encoder(param.0)
-                } else {
-                    encodedParam1 = try encodeParam(
-                        param.0,
-                        factory: factory,
-                        type: doubleMapEntry.key1
-                    )
-                }
-
-                let encodedParam2: Data
-
-                if let param2Encoder = param2Encoder {
-                    encodedParam2 = try param2Encoder(param.1)
-                } else {
-                    encodedParam2 = try encodeParam(
-                        param.1,
-                        factory: factory,
-                        type: doubleMapEntry.key2
-                    )
-                }
-
-                return try storageKeyFactory.createStorageKey(
-                    moduleName: path.moduleName,
-                    storageName: path.itemName,
-                    key1: encodedParam1,
-                    hasher1: doubleMapEntry.hasher,
-                    key2: encodedParam2,
-                    hasher2: doubleMapEntry.key2Hasher
+            if let param1Encoder = param1Encoder {
+                encodedParam1 = try param1Encoder(param.0)
+            } else {
+                encodedParam1 = try encodeParam(
+                    param.0,
+                    factory: factory,
+                    type: doubleMapEntry.key1
                 )
             }
 
-            result = .success(keys)
-        } catch {
-            result = .failure(error)
+            let encodedParam2: Data
+
+            if let param2Encoder = param2Encoder {
+                encodedParam2 = try param2Encoder(param.1)
+            } else {
+                encodedParam2 = try encodeParam(
+                    param.1,
+                    factory: factory,
+                    type: doubleMapEntry.key2
+                )
+            }
+
+            return try storageKeyFactory.createStorageKey(
+                moduleName: path.moduleName,
+                storageName: path.itemName,
+                key1: encodedParam1,
+                hasher1: doubleMapEntry.hasher,
+                key2: encodedParam2,
+                hasher2: doubleMapEntry.key2Hasher
+            )
         }
+
+        callback(.success(keys))
     }
 
     private func encodeParam<T: Encodable>(

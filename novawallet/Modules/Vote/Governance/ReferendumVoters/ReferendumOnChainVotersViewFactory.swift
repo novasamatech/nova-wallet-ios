@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 struct ReferendumOnChainVotersViewFactory {
@@ -10,7 +10,11 @@ struct ReferendumOnChainVotersViewFactory {
         type: ReferendumVotersType
     ) -> VotesViewProtocol? {
         guard
-            let interactor = createInteractor(for: state, referendum: referendum),
+            let interactor = createInteractor(
+                for: state,
+                votersType: type,
+                referendum: referendum
+            ),
             let chain = state.settings.value?.chain
         else {
             return nil
@@ -20,9 +24,7 @@ struct ReferendumOnChainVotersViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let stringViewModelFactory = ReferendumDisplayStringFactory(
-            formatterFactory: AssetBalanceFormatterFactory()
-        )
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
         let presenter = ReferendumVotersPresenter(
             interactor: interactor,
@@ -30,7 +32,7 @@ struct ReferendumOnChainVotersViewFactory {
             type: type,
             referendum: referendum,
             chain: chain,
-            stringFactory: stringViewModelFactory,
+            stringFactory: referendumDisplayStringFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -49,6 +51,7 @@ struct ReferendumOnChainVotersViewFactory {
 
     private static func createInteractor(
         for state: GovernanceSharedState,
+        votersType: ReferendumVotersType,
         referendum: ReferendumLocal
     ) -> ReferendumVotersInteractor? {
         guard let chain = state.settings.value?.chain else {
@@ -76,11 +79,32 @@ struct ReferendumOnChainVotersViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
+        let delegationApi = chain.externalApis?.governanceDelegations()?.first
+
+        let votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol? = if let delegationApi {
+            ReferendumVotersLocalWrapperFactory(
+                chain: chain,
+                operationFactory: SubqueryVotingOperationFactory(url: delegationApi.url),
+                identityProxyFactory: identityProxyFactory,
+                metadataOperationFactory: GovernanceDelegateMetadataFactory()
+            )
+        } else {
+            nil
+        }
+
         return ReferendumVotersInteractor(
             referendumIndex: referendum.index,
             chain: chain,
+            votersType: votersType,
             referendumsOperationFactory: referendumsOperationFactory,
-            identityOperationFactory: identityOperationFactory,
+            votersLocalWrapperFactory: votersLocalWrapperFactory,
+            identityProxyFactory: identityProxyFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue

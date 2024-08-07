@@ -1,6 +1,6 @@
 import SoraFoundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 struct StakingRewardDestSetupViewFactory {
     static func createView(for state: RelaychainStakingSharedStateProtocol) -> StakingRewardDestSetupViewProtocol? {
@@ -82,8 +82,9 @@ struct StakingRewardDestSetupViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
 
         let storageFacade = UserDataStorageFacade.shared

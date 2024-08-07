@@ -14,6 +14,12 @@ protocol NPoolsLocalSubscriptionHandler {
         chainId: ChainModel.Id
     )
 
+    func handleDelegatedStaking(
+        result: Result<DelegatedStakingPallet.Delegation?, Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    )
+
     func handlePoolMetadata(
         result: Result<Data?, Error>,
         poolId: NominationPools.PoolId,
@@ -68,6 +74,12 @@ extension NPoolsLocalSubscriptionHandler {
     func handleBondedPool(
         result _: Result<NominationPools.BondedPool?, Error>,
         poolId _: NominationPools.PoolId,
+        chainId _: ChainModel.Id
+    ) {}
+
+    func handleDelegatedStaking(
+        result _: Result<DelegatedStakingPallet.Delegation?, Error>,
+        accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {}
 

@@ -41,7 +41,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             (.general, [
                 createCommonViewViewModel(row: .wallets, locale: locale),
                 createCommonViewViewModel(row: .pay, locale: locale),
-                createWalletConnectViewModel(from: parameters.walletConnectSessionsCount, locale: locale)
+                createWalletConnectViewModel(from: parameters.walletConnectSessionsCount, locale: locale),
+                createCommonViewViewModel(row: .networks, locale: locale)
             ]),
             (.preferences, [
                 createNotificationsViewModel(row: .notifications, isOn: parameters.isNotificationsOn, locale: locale),
@@ -49,6 +50,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createLanguageViewModel(from: language, locale: locale)
             ]),
             (.security, [
+                createCommonViewViewModel(row: .backup, locale: locale),
                 parameters.isBiometricAuthOn.map {
                     createSwitchViewModel(row: .biometricAuth, isOn: $0, locale: locale)
                 },

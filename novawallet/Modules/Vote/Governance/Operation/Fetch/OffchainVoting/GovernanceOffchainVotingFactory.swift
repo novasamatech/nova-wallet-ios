@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 typealias GovernanceOffchainVotes = [ReferendumIdLocal: ReferendumAccountVoteLocal]
 
@@ -15,6 +15,6 @@ protocol GovernanceOffchainVotingFactoryProtocol {
 
     func createReferendumVotesFetchOperation(
         referendumId: ReferendumIdLocal,
-        isAye: Bool
+        votersType: ReferendumVotersType
     ) -> CompoundOperationWrapper<[ReferendumVoterLocal]>
 }

@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancellableCleaning {
     let accountId: AccountId
@@ -120,9 +120,7 @@ final class ParachainMultistakingUpdateService: ObservableSyncService, AnyCancel
         let collatorIds = delegator.collators()
 
         let wrapper = operationFactory.createMetadataWrapper(
-            for: { collatorIds },
-            connection: connection,
-            runtimeService: runtimeService
+            for: { collatorIds }
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in

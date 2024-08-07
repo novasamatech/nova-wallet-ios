@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 final class DAppBrowserInteractor {
     struct QueueMessage {
@@ -56,7 +56,11 @@ final class DAppBrowserInteractor {
     }
 
     private func subscribeChainRegistry() {
-        dataSource.chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+        dataSource.chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .main,
+            filterStrategy: .enabledChains
+        ) { [weak self] changes in
             for change in changes {
                 switch change {
                 case let .insert(newItem):

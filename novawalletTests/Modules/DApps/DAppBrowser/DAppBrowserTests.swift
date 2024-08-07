@@ -3,7 +3,7 @@ import XCTest
 import Cuckoo
 import SoraKeystore
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 class DAppBrowserTests: XCTestCase {
     let dAppURL = "https://polkadot.js.org/apps"

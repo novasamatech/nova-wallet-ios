@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
@@ -62,7 +62,7 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
         """
     }
 
-    private func prepareReferendumVotersQuery(referendumId: ReferendumIdLocal, isAye: Bool) -> String {
+    private func prepareReferendumVotersWithDelegatorsQuery(referendumId: ReferendumIdLocal, isAye: Bool) -> String {
         """
         {
             castingVotings (filter: {
@@ -85,6 +85,31 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
                       vote
                     }
                   }
+                }
+            }
+        }
+        """
+    }
+
+    private func prepareSplitAbstainVotesWithDelegatorsQuery(referendumId: ReferendumIdLocal) -> String {
+        """
+        {
+            castingVotings(
+                filter: {
+                    referendumId: { equalTo: "\(referendumId)" },
+                    splitAbstainVote: { isNull: false }
+                }
+            ) {
+                nodes {
+                    voter
+                    referendumId
+                    splitAbstainVote
+                    delegatorVotes {
+                        nodes {
+                            delegator
+                            vote
+                        }
+                    }
                 }
             }
         }
@@ -149,10 +174,16 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
 
     func createReferendumVotesFetchOperation(
         referendumId: ReferendumIdLocal,
-        isAye: Bool
-    ) ->
-        CompoundOperationWrapper<[ReferendumVoterLocal]> {
-        let query = prepareReferendumVotersQuery(referendumId: referendumId, isAye: isAye)
+        votersType: ReferendumVotersType
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
+        let query = switch votersType {
+        case .ayes:
+            prepareReferendumVotersWithDelegatorsQuery(referendumId: referendumId, isAye: true)
+        case .nays:
+            prepareReferendumVotersWithDelegatorsQuery(referendumId: referendumId, isAye: false)
+        case .abstains:
+            prepareSplitAbstainVotesWithDelegatorsQuery(referendumId: referendumId)
+        }
 
         let operation = createOperation(
             for: query

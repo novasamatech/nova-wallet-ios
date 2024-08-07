@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 
 final class HydraSwapsFeeTests: XCTestCase {
     
@@ -101,6 +101,7 @@ final class HydraSwapsFeeTests: XCTestCase {
             wallet: wallet,
             chainRegistry: chainRegistry,
             userStorageFacade: userFacade,
+            substrateStorageFacade: substrateStorageFacade,
             generalSubscriptonFactory: generalSubscriptionFactory,
             operationQueue: operationQueue
         ).createFeeService(for: chain)

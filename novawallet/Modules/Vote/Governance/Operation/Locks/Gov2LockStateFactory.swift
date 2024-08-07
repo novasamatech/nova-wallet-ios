@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class Gov2LockStateFactory: GovernanceLockStateFactory {
@@ -74,12 +74,17 @@ final class Gov2LockStateFactory: GovernanceLockStateFactory {
                 into: [Referenda.TrackId: Moment]()
             ) { $0[$1.trackId] = $1.info.decisionPeriod }
 
+            let confirmPeriods = try tracksOperation.extractNoCancellableResultData().reduce(
+                into: [Referenda.TrackId: Moment]()
+            ) { $0[$1.trackId] = $1.info.confirmPeriod }
+
             let undecidingTimeout = try undecidingTimeoutOperation.extractNoCancellableResultData()
 
             let lockingPeriod = try lockingPeriodOperation.extractNoCancellableResultData()
 
             return GovUnlockCalculationInfo(
                 decisionPeriods: decisionPeriods,
+                confirmPeriods: confirmPeriods,
                 undecidingTimeout: undecidingTimeout,
                 voteLockingPeriod: lockingPeriod
             )

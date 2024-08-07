@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 import BigInt
 
 final class AssetSelectionInteractor {
@@ -56,7 +56,7 @@ final class AssetSelectionInteractor {
             let chainAssets: [ChainAsset] = chains.reduce(into: []) { result, item in
                 let assets: [ChainAsset] = item.assets.compactMap { asset in
                     let chainAsset = ChainAsset(chain: item, asset: asset)
-                    if assetFilter(chainAsset) {
+                    if (assetFilter)(chainAsset) {
                         return chainAsset
                     } else {
                         return nil

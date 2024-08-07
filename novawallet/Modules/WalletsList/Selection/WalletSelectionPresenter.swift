@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 final class WalletSelectionPresenter: WalletsListPresenter {
     var interactor: WalletSelectionInteractorInputProtocol? {

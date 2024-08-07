@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol ValidatorOperationFactoryProtocol {
     func allElectedOperation() -> CompoundOperationWrapper<[ElectedValidatorInfo]>
@@ -21,6 +21,6 @@ protocol ValidatorOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<[SelectedValidatorInfo]>
 
     func allPreferred(
-        for preferredAccountIds: [AccountId]
+        for preferrence: PreferredValidatorsProviderModel?
     ) -> CompoundOperationWrapper<ElectedAndPrefValidators>
 }

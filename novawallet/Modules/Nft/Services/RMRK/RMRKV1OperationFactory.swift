@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol RMRKV1NftOperationFactoryProtocol {
     func fetchNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV1]>

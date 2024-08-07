@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 
 final class CreateWatchOnlyInteractor {
     weak var presenter: CreateWatchOnlyInteractorOutputProtocol?
@@ -56,8 +56,8 @@ extension CreateWatchOnlyInteractor: CreateWatchOnlyInteractorInputProtocol {
                 do {
                     _ = try saveOperation.extractNoCancellableResultData()
                     self?.settings.setup()
-                    self?.eventCenter.notify(with: SelectedAccountChanged())
-                    self?.eventCenter.notify(with: AccountsChanged(method: .manually))
+                    self?.eventCenter.notify(with: SelectedWalletSwitched())
+                    self?.eventCenter.notify(with: NewWalletImported())
                     self?.presenter?.didCreateWallet()
                 } catch {
                     self?.presenter?.didFailWalletCreation(with: error)

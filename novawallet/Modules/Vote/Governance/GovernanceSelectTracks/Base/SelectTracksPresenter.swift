@@ -11,7 +11,7 @@ class SelectTracksPresenter: SelectTracksPresenterProtocol {
 
     private(set) var tracks: [GovernanceTrackInfoLocal]?
     var availableTrackIds: Set<TrackIdLocal>?
-    var selectedTracks: Set<ReferendumTrackType>?
+    var selectedTrackIds: Set<TrackIdLocal>?
 
     init(
         interactor: SelectTracksInteractorInputProtocol,
@@ -27,40 +27,36 @@ class SelectTracksPresenter: SelectTracksPresenterProtocol {
         self.localizationManager = localizationManager
     }
 
-    private func getAvailableTrackTypes() -> Set<ReferendumTrackType>? {
+    private func getAvailableTrackTypes() -> Set<String>? {
         guard let tracks = tracks, let availableTrackIds = availableTrackIds else {
             return nil
         }
 
         let availableTracks = tracks.filter { availableTrackIds.contains($0.trackId) }
-        return Set(availableTracks.compactMap { ReferendumTrackType(rawValue: $0.name) })
+        return Set(availableTracks.map(\.name))
     }
 
     private func createTrackViewModels(
         from availableTracks: [GovernanceTrackInfoLocal],
-        selectedTracks: Set<ReferendumTrackType>
+        selectedTrackIds: Set<TrackIdLocal>
     ) -> [GovernanceSelectTrackViewModel.Track] {
-        availableTracks.compactMap { track in
-            guard let type = ReferendumTrackType(rawValue: track.name) else {
-                return nil
-            }
-
-            let selected = selectedTracks.contains(type)
+        availableTracks.map { track in
+            let selected = selectedTrackIds.contains(track.trackId)
 
             let viewModel = ReferendumInfoView.Track(
-                title: type.title(for: selectedLocale)?.uppercased() ?? "",
-                icon: type.imageViewModel(for: chain)
+                title: ReferendumTrackType.title(for: track.name, locale: selectedLocale).uppercased(),
+                icon: ReferendumTrackType.imageViewModel(for: track.name, chain: chain)
             )
 
             return GovernanceSelectTrackViewModel.Track(
-                type: type,
+                trackId: track.trackId,
                 viewModel: .init(underlyingViewModel: viewModel, selectable: selected)
             )
         }
     }
 
     private func createGroupViewModels(
-        from availableTrackTypes: Set<ReferendumTrackType>
+        from availableTrackTypes: Set<String>
     ) -> [GovernanceSelectTrackViewModel.Group] {
         let selectAllViewModel = GovernanceSelectTrackViewModel.Group.all(
             title: R.string.localizable.commonSelectAll(
@@ -97,8 +93,8 @@ class SelectTracksPresenter: SelectTracksPresenterProtocol {
         guard
             let availableTrackIds = availableTrackIds,
             let availableTrackTypes = getAvailableTrackTypes(),
-            let tracks = tracks,
-            let selectedTracks = selectedTracks else {
+            let tracks,
+            let selectedTrackIds else {
             return
         }
 
@@ -106,7 +102,7 @@ class SelectTracksPresenter: SelectTracksPresenterProtocol {
 
         let availableTracksViewModel = createTrackViewModels(
             from: availableTracks,
-            selectedTracks: selectedTracks
+            selectedTrackIds: selectedTrackIds
         )
 
         let trackGroupsViewModel = createGroupViewModels(from: availableTrackTypes)
@@ -120,21 +116,22 @@ class SelectTracksPresenter: SelectTracksPresenterProtocol {
     }
 
     private func performSelectAll() {
-        guard let availableTrackTypes = getAvailableTrackTypes() else {
+        guard let availableTrackIds else {
             return
         }
 
-        selectedTracks?.formUnion(availableTrackTypes)
+        selectedTrackIds = availableTrackIds
 
         updateTracksView()
     }
 
     private func performSelect(group: ReferendumTrackGroup) {
-        guard let availableTrackTypes = getAvailableTrackTypes() else {
+        guard let tracks, let availableTrackTypes = getAvailableTrackTypes() else {
             return
         }
 
-        selectedTracks = availableTrackTypes.intersection(Set(group.trackTypes))
+        let selectedTypes = availableTrackTypes.intersection(Set(group.trackTypes))
+        selectedTrackIds = Set(tracks.compactMap { selectedTypes.contains($0.name) ? $0.trackId : nil })
 
         updateTracksView()
     }
@@ -155,10 +152,10 @@ class SelectTracksPresenter: SelectTracksPresenterProtocol {
     }
 
     func toggleTrackSelection(track: GovernanceSelectTrackViewModel.Track) {
-        if selectedTracks?.contains(track.type) != true {
-            selectedTracks?.insert(track.type)
+        if selectedTrackIds?.contains(track.trackId) != true {
+            selectedTrackIds?.insert(track.trackId)
         } else {
-            selectedTracks?.remove(track.type)
+            selectedTrackIds?.remove(track.trackId)
         }
 
         updateTracksView()

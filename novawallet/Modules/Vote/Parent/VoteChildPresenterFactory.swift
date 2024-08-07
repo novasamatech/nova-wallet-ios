@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 protocol VoteChildPresenterFactoryProtocol {
@@ -85,6 +85,7 @@ final class VoteChildPresenterFactory {
         )
 
         return CrowdloanListInteractor(
+            eventCenter: EventCenter.shared,
             selectedMetaAccount: wallet,
             crowdloanState: state,
             chainRegistry: chainRegistry,
@@ -113,6 +114,7 @@ final class VoteChildPresenterFactory {
         )
 
         return ReferendumsInteractor(
+            eventCenter: EventCenter.shared,
             selectedMetaAccount: wallet,
             governanceState: state,
             chainRegistry: chainRegistry,
@@ -177,11 +179,13 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
 
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
+        let stringDisplayViewModelFactory = ReferendumDisplayStringFactory()
+
         let viewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
-            stringDisplayViewModelFactory: ReferendumDisplayStringFactory(),
+            stringDisplayViewModelFactory: stringDisplayViewModelFactory,
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource()

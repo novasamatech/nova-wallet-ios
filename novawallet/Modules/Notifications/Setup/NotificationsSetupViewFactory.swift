@@ -7,7 +7,7 @@ struct NotificationsSetupViewFactory {
         createView(completion: nil)
     }
 
-    static func createView(completion: (() -> Void)? = nil) -> NotificationsSetupViewProtocol? {
+    static func createView(completion: ((Bool) -> Void)? = nil) -> NotificationsSetupViewProtocol? {
         guard
             let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil

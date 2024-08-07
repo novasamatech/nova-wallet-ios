@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 struct SwapSetupViewFactory {
     static func createView(
@@ -40,6 +40,7 @@ struct SwapSetupViewFactory {
             wallet: selectedWallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             generalSubscriptonFactory: generalLocalSubscriptionFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 final class TokensManagePresenter {
@@ -108,8 +108,7 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
     }
 
     func performAddToken() {
-        let allChains = chains.allItems.reduceToDict()
-        wireframe.showAddToken(from: view, allChains: allChains)
+        wireframe.showAddToken(from: view)
     }
 
     func performEdit(for viewModel: TokensManageViewModel) {

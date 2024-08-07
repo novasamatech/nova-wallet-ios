@@ -1,6 +1,6 @@
 import Foundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 struct GovernanceSelectedOption: Equatable {
     let chain: ChainModel
@@ -34,7 +34,8 @@ final class GovernanceChainSettings: PersistentValueSettings<GovernanceSelectedO
 
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: DispatchQueue.global(qos: .userInteractive)
+            runningInQueue: DispatchQueue.global(qos: .userInteractive),
+            filterStrategy: .enabledChains
         ) { [weak self] changes in
             mutex.lock()
 

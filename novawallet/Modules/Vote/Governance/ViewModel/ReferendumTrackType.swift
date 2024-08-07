@@ -1,89 +1,120 @@
 import Foundation
 import UIKit
 
-enum ReferendumTrackType: String, CaseIterable, Equatable {
-    case root
-    case whiteListedCaller = "whitelisted_caller"
-    case stakingAdmin = "staking_admin"
-    case treasurer
-    case leaseAdmin = "lease_admin"
-    case fellowshipAdmin = "fellowship_admin"
-    case generalAdmin = "general_admin"
-    case auctionAdmin = "auction_admin"
-    case referendumCanceller = "referendum_canceller"
-    case referendumKiller = "referendum_killer"
-    case smallTipper = "small_tipper"
-    case bigTipper = "big_tipper"
-    case smallSpender = "small_spender"
-    case mediumSpender = "medium_spender"
-    case bigSpender = "big_spender"
+enum ReferendumTrackType {
+    static let root = "root"
+    static let whiteListedCaller = "whitelisted_caller"
+    static let stakingAdmin = "staking_admin"
+    static let treasurer = "treasurer"
+    static let leaseAdmin = "lease_admin"
+    static let fellowshipAdmin = "fellowship_admin"
+    static let generalAdmin = "general_admin"
+    static let auctionAdmin = "auction_admin"
+    static let referendumCanceller = "referendum_canceller"
+    static let referendumKiller = "referendum_killer"
+    static let smallTipper = "small_tipper"
+    static let bigTipper = "big_tipper"
+    static let smallSpender = "small_spender"
+    static let mediumSpender = "medium_spender"
+    static let bigSpender = "big_spender"
 
-    var priority: UInt {
-        let index = Self.allCases.firstIndex(of: self)
-        return UInt(index ?? 0)
+    static func getPriority(for trackId: String) -> UInt {
+        let priorities = [
+            Self.root,
+            Self.whiteListedCaller,
+            Self.stakingAdmin,
+            Self.treasurer,
+            Self.leaseAdmin,
+            Self.fellowshipAdmin,
+            Self.generalAdmin,
+            Self.auctionAdmin,
+            Self.referendumCanceller,
+            Self.referendumKiller,
+            Self.smallTipper,
+            Self.bigTipper,
+            Self.smallSpender,
+            Self.mediumSpender,
+            Self.bigSpender
+        ]
+
+        let priority = priorities.firstIndex(of: trackId) ?? 2
+
+        return UInt(priority)
     }
 
     // swiftlint:disable:next cyclomatic_complexity
-    func title(for locale: Locale) -> String? {
-        switch self {
-        case .root:
+    static func title(for trackName: String, locale: Locale) -> String {
+        switch trackName {
+        case Self.root:
             return R.string.localizable.govTrackRoot(preferredLanguages: locale.rLanguages)
-        case .whiteListedCaller:
+        case Self.whiteListedCaller:
             return R.string.localizable.govTrackWhitelistedCaller(preferredLanguages: locale.rLanguages)
-        case .stakingAdmin:
+        case Self.stakingAdmin:
             return R.string.localizable.govTrackStakingAdmin(preferredLanguages: locale.rLanguages)
-        case .treasurer:
+        case Self.treasurer:
             return R.string.localizable.govTrackTreasurer(preferredLanguages: locale.rLanguages)
-        case .leaseAdmin:
+        case Self.leaseAdmin:
             return R.string.localizable.govTrackLeaseAdmin(preferredLanguages: locale.rLanguages)
-        case .fellowshipAdmin:
+        case Self.fellowshipAdmin:
             return R.string.localizable.govTrackFellowshipAdmin(preferredLanguages: locale.rLanguages)
-        case .generalAdmin:
+        case Self.generalAdmin:
             return R.string.localizable.govTrackGeneralAdmin(preferredLanguages: locale.rLanguages)
-        case .auctionAdmin:
+        case Self.auctionAdmin:
             return R.string.localizable.govTrackAuctionAdmin(preferredLanguages: locale.rLanguages)
-        case .referendumCanceller:
+        case Self.referendumCanceller:
             return R.string.localizable.govTrackReferendumCanceller(preferredLanguages: locale.rLanguages)
-        case .referendumKiller:
+        case Self.referendumKiller:
             return R.string.localizable.govTrackReferendumKiller(preferredLanguages: locale.rLanguages)
-        case .smallTipper:
+        case Self.smallTipper:
             return R.string.localizable.govTrackSmallTipper(preferredLanguages: locale.rLanguages)
-        case .bigTipper:
+        case Self.bigTipper:
             return R.string.localizable.govTrackBigTipper(preferredLanguages: locale.rLanguages)
-        case .smallSpender:
+        case Self.smallSpender:
             return R.string.localizable.govTrackSmallSpender(preferredLanguages: locale.rLanguages)
-        case .mediumSpender:
+        case Self.mediumSpender:
             return R.string.localizable.govTrackMediumSpender(preferredLanguages: locale.rLanguages)
-        case .bigSpender:
+        case Self.bigSpender:
             return R.string.localizable.govTrackBigSpender(preferredLanguages: locale.rLanguages)
+        default:
+            return trackName.replacingSnakeCase()
         }
     }
 
-    func imageViewModel(for chain: ChainModel) -> ImageViewModelProtocol? {
-        switch self {
-        case .root:
-            return RemoteImageViewModel(url: chain.utilityAsset()?.icon ?? chain.icon)
-        case .whiteListedCaller, .fellowshipAdmin:
+    static func imageViewModel(
+        for trackName: String,
+        chain: ChainModel
+    ) -> ImageViewModelProtocol? {
+        switch trackName {
+        case Self.root:
+            return ImageViewModelFactory.createChainIconOrDefault(from: chain.utilityAsset()?.icon ?? chain.icon)
+        case Self.whiteListedCaller, Self.fellowshipAdmin:
             return StaticImageViewModel(image: R.image.iconGovFellowship()!)
-        case .auctionAdmin:
+        case Self.auctionAdmin:
             return StaticImageViewModel(image: R.image.iconGovCrowdloan()!)
-        case .stakingAdmin:
+        case Self.stakingAdmin:
             return StaticImageViewModel(image: R.image.iconGovStaking()!)
-        case .leaseAdmin, .generalAdmin, .referendumCanceller, .referendumKiller:
+        case Self.leaseAdmin, Self.generalAdmin, Self.referendumCanceller, Self.referendumKiller:
             return StaticImageViewModel(image: R.image.iconGovGovernance()!)
-        case .treasurer, .smallTipper, .bigTipper, .smallSpender, .mediumSpender, .bigSpender:
+        case
+            Self.treasurer,
+            Self.smallTipper,
+            Self.bigTipper,
+            Self.smallSpender,
+            Self.mediumSpender,
+            Self.bigSpender:
             return StaticImageViewModel(image: R.image.iconGovTreasury()!)
+        default:
+            return StaticImageViewModel(image: R.image.iconGovUniversalTrack()!)
         }
     }
 
     static func createViewModel(
-        from rawName: String,
+        from trackName: String,
         chain: ChainModel,
         locale: Locale
     ) -> ReferendumInfoView.Track {
-        let type = ReferendumTrackType(rawValue: rawName)
-        let title = type?.title(for: locale)?.uppercased() ?? rawName.replacingSnakeCase().uppercased()
-        let icon = type?.imageViewModel(for: chain)
+        let title = title(for: trackName, locale: locale).uppercased()
+        let icon = imageViewModel(for: trackName, chain: chain)
 
         return .init(title: title, icon: icon)
     }

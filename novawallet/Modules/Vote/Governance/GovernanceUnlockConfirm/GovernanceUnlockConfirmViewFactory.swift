@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 struct GovernanceUnlockConfirmViewFactory {
@@ -99,8 +99,9 @@ struct GovernanceUnlockConfirmViewFactory {
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         let signer = SigningWrapperFactory().createSigningWrapper(
@@ -110,6 +111,7 @@ struct GovernanceUnlockConfirmViewFactory {
 
         return .init(
             chain: chain,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             selectedAccount: selectedAccount,
             subscriptionFactory: subscriptionFactory,
             lockStateFactory: lockStateFactory,

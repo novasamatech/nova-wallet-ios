@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import SoraKeystore
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 struct ControllerAccountViewFactory {
     static func createView(for state: RelaychainStakingSharedStateProtocol) -> ControllerAccountViewProtocol? {
@@ -69,8 +69,9 @@ struct ControllerAccountViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
 
         let storageRequestFactory = StorageRequestFactory(

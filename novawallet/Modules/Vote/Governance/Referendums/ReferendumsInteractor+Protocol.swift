@@ -1,18 +1,11 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     func setup() {
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            self?.governanceState.settings.setup(runningCompletionIn: .main) { result in
-                switch result {
-                case .success:
-                    self?.continueSetup()
-                case .failure:
-                    self?.presenter?.didReceiveError(.settingsLoadFailed)
-                }
-            }
+        setupState { [weak self] _ in
+            self?.continueSetup()
         }
     }
 

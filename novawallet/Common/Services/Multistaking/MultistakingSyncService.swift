@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 protocol MultistakingSyncServiceProtocol: ApplicationServiceProtocol {
@@ -72,7 +72,8 @@ final class MultistakingSyncService {
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: workingQueue
+            runningInQueue: workingQueue,
+            filterStrategy: .enabledChains
         ) { [weak self] changes in
             guard let self = self else {
                 return
@@ -318,9 +319,18 @@ final class MultistakingSyncService {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityFactory
+        )
+
         let operationFactory = ParaStkCollatorsOperationFactory(
             requestFactory: requestFactory,
-            identityOperationFactory: identityFactory
+            connection: connection,
+            runtimeProvider: runtimeService,
+            identityProxyFactory: identityProxyFactory,
+            chainFormat: chainAsset.chain.chainFormat
         )
 
         return ParachainMultistakingUpdateService(

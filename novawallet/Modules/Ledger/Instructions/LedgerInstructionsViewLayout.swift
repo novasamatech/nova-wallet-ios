@@ -19,7 +19,7 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTextPrimary()
-        label.font = .boldTitle2
+        label.font = .boldTitle3
         label.numberOfLines = 0
         return label
     }()
@@ -57,6 +57,8 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
         return view
     }()
 
+    private var migrationBannerView: LedgerMigrationBannerView?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -68,6 +70,20 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupMigrationBannerViewIfNeeded() -> LedgerMigrationBannerView {
+        if let migrationBannerView {
+            return migrationBannerView
+        }
+
+        let view = LedgerMigrationBannerView()
+        view.apply(style: .warning)
+        migrationBannerView = view
+
+        containerView.stackView.addArrangedSubview(view)
+
+        return view
     }
 
     private func setupLayout() {
@@ -117,5 +133,11 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
         containerView.stackView.setCustomSpacing(24.0, after: step3)
 
         containerView.stackView.addArrangedSubview(step4)
+        containerView.stackView.setCustomSpacing(24.0, after: step4)
+    }
+
+    func showMigrationBannerView(for viewModel: LedgerMigrationBannerView.ViewModel) {
+        let view = setupMigrationBannerViewIfNeeded()
+        view.bind(viewModel: viewModel)
     }
 }

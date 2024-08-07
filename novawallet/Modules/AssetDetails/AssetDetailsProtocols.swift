@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol, Containable {
     func didReceive(assetModel: AssetDetailsModel)
@@ -24,6 +24,7 @@ protocol AssetDetailsInteractorInputProtocol: AnyObject {
 protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(balance: AssetBalance?)
     func didReceive(lockChanges: [DataProviderChange<AssetLock>])
+    func didReceive(holdsChanges: [DataProviderChange<AssetHold>])
     func didReceive(externalBalanceChanges: [DataProviderChange<ExternalAssetBalance>])
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
@@ -50,4 +51,5 @@ enum AssetDetailsError: Error {
     case locks(Error)
     case externalBalances(Error)
     case swaps(Error)
+    case holds(Error)
 }

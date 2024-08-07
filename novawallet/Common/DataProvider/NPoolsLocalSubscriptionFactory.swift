@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 protocol NPoolsLocalSubscriptionFactoryProtocol {
@@ -15,6 +15,11 @@ protocol NPoolsLocalSubscriptionFactoryProtocol {
         for accountId: AccountId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedPoolMember>
+
+    func getDelegatedStakingDelegatorProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedDelegatedStakingDelegator>
 
     func getBondedPoolProvider(
         for poolId: NominationPools.PoolId,
@@ -86,6 +91,17 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
     ) throws -> AnyDataProvider<DecodedPoolMember> {
         try getNoFallbackAccountProvider(
             for: NominationPools.poolMembersPath,
+            accountId: accountId,
+            chainId: chainId
+        )
+    }
+
+    func getDelegatedStakingDelegatorProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedDelegatedStakingDelegator> {
+        try getNoFallbackAccountProvider(
+            for: DelegatedStakingPallet.delegatorsPath,
             accountId: accountId,
             chainId: chainId
         )

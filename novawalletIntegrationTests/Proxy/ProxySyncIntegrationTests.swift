@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 
 final class ProxySyncIntegrationTests: XCTestCase {
     func testKusamaSync() throws {
@@ -42,8 +42,9 @@ final class ProxySyncIntegrationTests: XCTestCase {
         let syncService = ProxySyncService(
             chainRegistry: chainRegistry,
             proxyOperationFactory: ProxyOperationFactory(),
-            metaAccountsRepository: managedAccountRepository, walletUpdateMediator: walletUpdateMediator,
-            chainFilter: { $0.chainId == chainId },
+            metaAccountsRepository: managedAccountRepository, 
+            walletUpdateMediator: walletUpdateMediator,
+            chainFilter: .chainId(chainId),
             chainWalletFilter: { _, _ in true }
         )
         

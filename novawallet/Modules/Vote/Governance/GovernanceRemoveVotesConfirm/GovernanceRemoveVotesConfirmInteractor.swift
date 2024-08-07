@@ -1,12 +1,13 @@
 import Foundation
 import BigInt
-import RobinHood
+import Operation_iOS
 
 final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
     weak var presenter: GovernanceRemoveVotesConfirmInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chain: ChainModel
+    let chainRegistry: ChainRegistryProtocol
     let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -20,6 +21,7 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
     init(
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
+        chainRegistry: ChainRegistryProtocol,
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -30,6 +32,7 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
     ) {
         self.selectedAccount = selectedAccount
         self.chain = chain
+        self.chainRegistry = chainRegistry
         self.subscriptionFactory = subscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -90,9 +93,9 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
         }
     }
 
-    private func createExtrinsicBuilderClosure(
+    private func createExtrinsicSplitter(
         for requests: [GovernanceRemoveVoteRequest]
-    ) -> ExtrinsicBuilderClosure {
+    ) throws -> ExtrinsicSplitting {
         let actions = requests.map { request in
             GovernanceUnlockSchedule.Action.unvote(
                 track: request.trackId,
@@ -100,17 +103,21 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
             )
         }
 
-        return { [weak self] builder in
-            guard let strongSelf = self else {
-                return builder
-            }
+        let splitter = ExtrinsicSplitter(
+            chain: chain,
+            maxCallsPerExtrinsic: selectedAccount.type.maxCallsPerExtrinsic,
+            chainRegistry: chainRegistry
+        )
 
-            return try strongSelf.extrinsicFactory.unlock(
-                with: Set(actions),
-                accountId: strongSelf.selectedAccount.accountId,
-                builder: builder
-            )
-        }
+        return try extrinsicFactory.unlock(
+            with: Set(actions),
+            accountId: selectedAccount.accountId,
+            splitter: splitter
+        )
+    }
+
+    func handleMultiExtrinsicSubmission(result: SubmitIndexedExtrinsicResult) {
+        presenter?.didReceiveSubmissionResult(result)
     }
 }
 
@@ -122,28 +129,38 @@ extension GovernanceRemoveVotesConfirmInteractor: GovernanceRemoveVotesConfirmIn
     }
 
     func estimateFee(for requests: [GovernanceRemoveVoteRequest]) {
-        let closure = createExtrinsicBuilderClosure(for: requests)
+        do {
+            let splitter = try createExtrinsicSplitter(for: requests)
 
-        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] feeResult in
-            switch feeResult {
-            case let .success(info):
-                self?.presenter?.didReceiveFee(info)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.feeFetchFailed(error))
+            extrinsicService.estimateFeeWithSplitter(
+                splitter,
+                runningIn: .main
+            ) { [weak self] result in
+                switch result.convertToTotalFee() {
+                case let .success(fee):
+                    self?.presenter?.didReceiveFee(fee)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(.feeFetchFailed(error))
+                }
             }
+        } catch {
+            presenter?.didReceiveError(.feeFetchFailed(error))
         }
     }
 
     func submit(requests: [GovernanceRemoveVoteRequest]) {
-        let closure = createExtrinsicBuilderClosure(for: requests)
+        do {
+            let splitter = try createExtrinsicSplitter(for: requests)
 
-        extrinsicService.submit(closure, signer: signer, runningIn: .main) { [weak self] result in
-            switch result {
-            case let .success(hash):
-                self?.presenter?.didReceiveRemoveVotesHash(hash)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.removeVotesFailed(error))
+            extrinsicService.submitWithTxSplitter(
+                splitter,
+                signer: signer,
+                runningIn: .main
+            ) { [weak self] result in
+                self?.handleMultiExtrinsicSubmission(result: result)
             }
+        } catch {
+            presenter?.didReceiveError(.removeVotesFailed(error))
         }
     }
 

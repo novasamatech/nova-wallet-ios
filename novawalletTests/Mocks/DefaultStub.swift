@@ -1,7 +1,7 @@
 import Foundation
 @testable import novawallet
 import Cuckoo
-import RobinHood
+import Operation_iOS
 
 extension MockEventCenterProtocol {
     func applyingDefaultStub() -> MockEventCenterProtocol {

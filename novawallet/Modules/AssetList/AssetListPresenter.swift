@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import SoraFoundation
 import BigInt
@@ -412,6 +412,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             let priceResult = model.priceResult,
             let prices = try? priceResult.get(),
             let locks = try? model.locksResult?.get(),
+            let holds = try? model.holdsResult?.get(),
             let externalBalances = try? model.externalBalanceResult?.get() else {
             return
         }
@@ -421,6 +422,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             balances: model.balances.values.compactMap { try? $0.get() },
             chains: model.allChains,
             locks: locks,
+            holds: holds,
             externalBalances: externalBalances
         )
 
@@ -529,8 +531,8 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
     func didReceiveWalletConnect(error: WalletConnectSessionsError) {
         switch error {
-        case .connectionFailed:
-            wireframe.presentWCConnectionError(from: view, locale: selectedLocale)
+        case let .connectionFailed(internalError):
+            wireframe.presentWCConnectionError(from: view, error: internalError, locale: selectedLocale)
         case .sessionsFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryFetchWalletConnectSessionsCount()

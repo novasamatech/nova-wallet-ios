@@ -1,6 +1,6 @@
 import BigInt
 
-protocol NPoolsClaimRewardsViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+protocol NPoolsClaimRewardsViewProtocol: SCLoadableControllerProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol)
     func didReceiveWallet(viewModel: DisplayWalletViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
@@ -19,8 +19,8 @@ protocol NPoolsClaimRewardsInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
     func retryExistentialDeposit()
-    func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy)
-    func submit(for strategy: NominationPools.ClaimRewardsStrategy)
+    func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool)
+    func submit(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool)
 }
 
 protocol NPoolsClaimRewardsInteractorOutputProtocol: AnyObject {
@@ -30,6 +30,7 @@ protocol NPoolsClaimRewardsInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(fee: ExtrinsicFeeProtocol)
     func didReceive(submissionResult: Result<String, Error>)
+    func didReceive(needsMigration: Bool)
     func didReceive(error: NPoolsClaimRewardsError)
 }
 

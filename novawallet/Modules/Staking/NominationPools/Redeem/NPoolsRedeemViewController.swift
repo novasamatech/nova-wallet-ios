@@ -89,14 +89,6 @@ extension NPoolsRedeemViewController: NPoolsRedeemViewProtocol {
     func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
-
-    func didStartLoading() {
-        rootView.loadingView.startLoading()
-    }
-
-    func didStopLoading() {
-        rootView.loadingView.stopLoading()
-    }
 }
 
 extension NPoolsRedeemViewController: Localizable {

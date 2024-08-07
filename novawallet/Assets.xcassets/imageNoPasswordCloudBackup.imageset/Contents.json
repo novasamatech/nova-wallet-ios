@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "imageBackupNoPassword.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

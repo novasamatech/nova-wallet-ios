@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class NominationPoolsAccountUpdatingService: BaseSyncService, NPoolsLocalStorageSubscriber,
@@ -73,10 +73,13 @@ final class NominationPoolsAccountUpdatingService: BaseSyncService, NPoolsLocalS
 
     private func clearRemoteSubscription() {
         if let remoteSubscriptionId = remoteSubscriptionId, let poolId = poolId {
-            remoteSubscriptionService.detachFromPoolData(
+            remoteSubscriptionService.detachFromAccountPoolData(
                 for: remoteSubscriptionId,
-                chainId: chainAsset.chain.chainId,
-                poolId: poolId,
+                params: NPoolSubscriptionServiceParams(
+                    chainId: chainAsset.chain.chainId,
+                    poolId: poolId,
+                    accountId: accountId
+                ),
                 queue: nil,
                 closure: nil
             )
@@ -86,9 +89,12 @@ final class NominationPoolsAccountUpdatingService: BaseSyncService, NPoolsLocalS
     }
 
     private func subscribeRemote(for poolId: NominationPools.PoolId) {
-        remoteSubscriptionId = remoteSubscriptionService.attachToPoolData(
-            for: chainAsset.chain.chainId,
-            poolId: poolId,
+        remoteSubscriptionId = remoteSubscriptionService.attachToAccountPoolData(
+            for: NPoolSubscriptionServiceParams(
+                chainId: chainAsset.chain.chainId,
+                poolId: poolId,
+                accountId: accountId
+            ),
             queue: .global(qos: .userInitiated)
         ) { [weak self] result in
             self?.mutex.lock()

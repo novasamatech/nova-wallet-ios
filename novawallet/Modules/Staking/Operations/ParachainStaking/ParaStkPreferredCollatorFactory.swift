@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 protocol ParaStkPreferredCollatorFactoryProtocol {
     func createPreferredCollatorWrapper() -> CompoundOperationWrapper<DisplayAddress?>
@@ -10,7 +10,7 @@ final class ParaStkPreferredCollatorFactory {
     let chain: ChainModel
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let collatorService: ParachainStakingCollatorServiceProtocol
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
     let preferredCollatorProvider: PreferredValidatorsProviding
@@ -22,7 +22,7 @@ final class ParaStkPreferredCollatorFactory {
         runtimeService: RuntimeCodingServiceProtocol,
         collatorService: ParachainStakingCollatorServiceProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         preferredCollatorProvider: PreferredValidatorsProviding,
         operationQueue: OperationQueue
     ) {
@@ -31,7 +31,7 @@ final class ParaStkPreferredCollatorFactory {
         self.runtimeService = runtimeService
         self.rewardService = rewardService
         self.collatorService = collatorService
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.preferredCollatorProvider = preferredCollatorProvider
         self.operationQueue = operationQueue
     }
@@ -48,12 +48,7 @@ final class ParaStkPreferredCollatorFactory {
                 return CompoundOperationWrapper.createWithResult(nil)
             }
 
-            let identityWrapper = self.identityOperationFactory.createIdentityWrapper(
-                for: { [accountId] },
-                engine: self.connection,
-                runtimeService: self.runtimeService,
-                chainFormat: self.chain.chainFormat
-            )
+            let identityWrapper = self.identityProxyFactory.createIdentityWrapper(for: { [accountId] })
 
             let mappingOperation = ClosureOperation<DisplayAddress?> {
                 let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
@@ -83,16 +78,16 @@ extension ParaStkPreferredCollatorFactory: ParaStkPreferredCollatorFactoryProtoc
         let mergeOperation = ClosureOperation<AccountId?> {
             let collators = try collatorsOperation.extractNoCancellableResultData().collators
             let rewardsCalculator = try rewardOperation.extractNoCancellableResultData()
-            let preferredCollators = try preferredCollatorsWrapper.targetOperation.extractNoCancellableResultData()
+            let preferredModel = try preferredCollatorsWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard !preferredCollators.isEmpty else {
+            let preferredCollatorsSet = Set(preferredModel?.preferred ?? [])
+
+            guard !preferredCollatorsSet.isEmpty else {
                 return nil
             }
 
-            let collatorsSet = Set(preferredCollators)
-
             let optCollator = collators
-                .filter { collatorsSet.contains($0.accountId) }
+                .filter { preferredCollatorsSet.contains($0.accountId) }
                 .sorted { col1, col2 in
                     let optApr1 = try? rewardsCalculator.calculateAPR(for: col1.accountId)
                     let optApr2 = try? rewardsCalculator.calculateAPR(for: col2.accountId)

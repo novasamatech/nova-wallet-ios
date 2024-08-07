@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 
 class ParaStakingRewardCalculatorTests: XCTestCase {
     func testMaxAndAvgAprCalculation() throws {

@@ -78,9 +78,19 @@ struct ParaStkYourCollatorsViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let collatorsOperationFactory = ParaStkCollatorsOperationFactory(
             requestFactory: requestFactory,
-            identityOperationFactory: IdentityOperationFactory(requestFactory: requestFactory)
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            identityProxyFactory: identityProxyFactory,
+            chainFormat: chainAsset.chain.chainFormat
         )
 
         return ParaStkYourCollatorsInteractor(
@@ -89,8 +99,6 @@ struct ParaStkYourCollatorsViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             collatorService: collatorService,
             rewardService: rewardService,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
             collatorsOperationFactory: collatorsOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

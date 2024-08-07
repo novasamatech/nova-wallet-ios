@@ -40,16 +40,12 @@ class GovernanceSelectTracksPresenter: SelectTracksPresenter, GovernanceSelectTr
     // MARK: - GovernanceSelectTracksPresenterProtocol
 
     override func proceed() {
-        guard let selectedTrackTypes = selectedTracks, let allTracks = tracks else {
+        guard let selectedTrackIds, let allTracks = tracks else {
             return
         }
 
         let selectedTracks = allTracks.filter { track in
-            guard let trackType = ReferendumTrackType(rawValue: track.name) else {
-                return false
-            }
-
-            return selectedTrackTypes.contains(trackType)
+            selectedTrackIds.contains(track.trackId)
         }
 
         baseWireframe?.proceed(from: baseView, tracks: selectedTracks)

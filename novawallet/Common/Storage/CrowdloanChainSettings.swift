@@ -1,6 +1,6 @@
 import Foundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 
 final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
     let chainRegistry: ChainRegistryProtocol
@@ -22,7 +22,8 @@ final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
 
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: DispatchQueue.global(qos: .userInteractive)
+            runningInQueue: DispatchQueue.global(qos: .userInteractive),
+            filterStrategy: .enabledChains
         ) { [weak self] changes in
             mutex.lock()
 

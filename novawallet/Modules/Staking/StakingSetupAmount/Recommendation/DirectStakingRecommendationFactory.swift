@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import BigInt
 
@@ -48,12 +48,12 @@ final class DirectStakingRecommendationFactory {
             let validators = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
             let maxNominations = try maxNominationsOperation.extractNoCancellableResultData()
 
-            let resultLimit = min(validators.electedValidators.count, Int(maxNominations))
+            let resultLimit = min(validators.notExcludedElectedValidators.count, Int(maxNominations))
             let recommendedValidators = RecommendationsComposer(
                 resultSize: resultLimit,
                 clusterSizeLimit: clusterLimit
             ).compose(
-                from: validators.electedToSelectedValidators(),
+                from: validators.notExcludedElectedToSelectedValidators(),
                 preferrences: validators.preferredValidators
             )
 

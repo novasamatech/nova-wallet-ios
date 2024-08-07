@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class AccountInfoSubscription {
     let remoteStorageKey: Data
@@ -7,7 +7,7 @@ final class AccountInfoSubscription {
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
-    let transactionSubscription: TransactionSubscription?
+    let transactionSubscription: TransactionSubscribing?
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
     let operationManager: OperationManagerProtocol
@@ -17,7 +17,7 @@ final class AccountInfoSubscription {
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         assetRepository: AnyDataProviderRepository<AssetBalance>,
-        transactionSubscription: TransactionSubscription?,
+        transactionSubscription: TransactionSubscribing?,
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol,

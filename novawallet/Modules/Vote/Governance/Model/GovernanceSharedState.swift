@@ -1,6 +1,6 @@
 import Foundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class GovernanceSharedState {
@@ -15,6 +15,10 @@ final class GovernanceSharedState {
     private(set) var referendumsOperationFactory: ReferendumsOperationFactoryProtocol?
     private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
+
+    var supportsAbstainVoting: Bool {
+        settings.settings.governanceType == .governanceV2
+    }
 
     init(
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
@@ -194,11 +198,18 @@ final class GovernanceSharedState {
                 emptyIdentitiesWhenNoStorage: true
             )
 
+            let identityProxyFactory = IdentityProxyFactory(
+                originChain: option.chain,
+                chainRegistry: chainRegistry,
+                identityOperationFactory: identityOperationFactory
+            )
+
             let fetchOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
 
             return GovernanceOffchainVotingWrapperFactory(
+                chain: option.chain,
                 operationFactory: fetchOperationFactory,
-                identityOperationFactory: identityOperationFactory
+                identityProxyFactory: identityProxyFactory
             )
         }
     }
@@ -222,10 +233,17 @@ final class GovernanceSharedState {
                 emptyIdentitiesWhenNoStorage: true
             )
 
+            let identityProxyFactory = IdentityProxyFactory(
+                originChain: option.chain,
+                chainRegistry: chainRegistry,
+                identityOperationFactory: identityOperationFactory
+            )
+
             return GovernanceDelegateListOperationFactory(
+                chain: option.chain,
                 statsOperationFactory: statsOperationFactory,
                 metadataOperationFactory: delegateMetadataFactory,
-                identityOperationFactory: identityOperationFactory
+                identityProxyFactory: identityProxyFactory
             )
         }
     }

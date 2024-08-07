@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class SelectValidatorsStartPresenter {
     weak var view: SelectValidatorsStartViewProtocol?
@@ -58,12 +58,12 @@ final class SelectValidatorsStartPresenter {
             return
         }
 
-        let resultLimit = min(electedAndPrefValidators.electedValidators.count, maxNominations)
+        let resultLimit = min(electedAndPrefValidators.notExcludedElectedValidators.count, maxNominations)
         let recomendedValidators = RecommendationsComposer(
             resultSize: resultLimit,
             clusterSizeLimit: StakingConstants.targetsClusterLimit
         ).compose(
-            from: electedAndPrefValidators.electedToSelectedValidators(for: existingStashAddress),
+            from: electedAndPrefValidators.notExcludedElectedToSelectedValidators(for: existingStashAddress),
             preferrences: electedAndPrefValidators.preferredValidators
         )
 
@@ -132,7 +132,7 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartPresenterProtocol
         }
 
         let customValidatorList = CustomValidatorsFullList(
-            allValidators: electedAndPrefValidators.electedToSelectedValidators(for: existingStashAddress),
+            allValidators: electedAndPrefValidators.allElectedToSelectedValidators(for: existingStashAddress),
             preferredValidators: electedAndPrefValidators.preferredValidators
         )
 
@@ -175,13 +175,13 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartInteractorOutputP
         case let .success(validators):
             electedAndPrefValidators = validators
 
-            electedValidators = validators.electedValidators.reduce(
+            electedValidators = validators.allElectedValidators.reduce(
                 into: [AccountAddress: ElectedValidatorInfo]()
             ) { dict, validator in
                 dict[validator.address] = validator
             }
 
-            hasIdentity = validators.electedValidators.contains { $0.hasIdentity }
+            hasIdentity = validators.allElectedValidators.contains { $0.hasIdentity }
 
             updateRecommendedValidators()
             updateSelectedValidatorsIfNeeded()

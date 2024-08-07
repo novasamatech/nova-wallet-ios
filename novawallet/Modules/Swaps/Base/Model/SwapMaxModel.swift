@@ -34,12 +34,12 @@ struct SwapMaxModel {
 
         if shouldKeepMinBalance, !minBalanceCoveredByFrozen(in: balance) {
             let minBalance = payAssetExistense?.minBalance ?? 0
-            maxAmount = maxAmount.saturatingSub(minBalance)
+            maxAmount = maxAmount.subtractOrZero(minBalance)
         }
 
         if let feeModel = feeModel {
             let fee = feeModel.totalFee.targetAmount
-            maxAmount = maxAmount.saturatingSub(fee)
+            maxAmount = maxAmount.subtractOrZero(fee)
         }
 
         return maxAmount.decimal(precision: payChainAsset.asset.precision)
@@ -51,7 +51,7 @@ struct SwapMaxModel {
         }
 
         let fee = feeModel.totalFee.targetAmount
-        let maxAmount = balance.transferable.saturatingSub(fee)
+        let maxAmount = balance.transferable.subtractOrZero(fee)
 
         return maxAmount.decimal(precision: payChainAsset.asset.precision)
     }

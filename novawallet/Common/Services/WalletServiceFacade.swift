@@ -1,17 +1,58 @@
 import Foundation
-import RobinHood
+import Operation_iOS
+import SubstrateSdk
 
 final class WalletServiceFacade {
-    static let sharedRemoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol = {
+    static let sharedEquillibriumRemoteSubscriptionService: EquillibriumRemoteSubscriptionServiceProtocol = {
         let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
         let syncOperationQueue = OperationManagerFacade.assetsSyncQueue
         let repositoryOperationQueue = OperationManagerFacade.assetsRepositoryQueue
         let syncOperationManager = OperationManager(operationQueue: syncOperationQueue)
         let repositoryOperationManager = OperationManager(operationQueue: repositoryOperationQueue)
 
-        return WalletRemoteSubscriptionService(
+        return EquillibriumRemoteSubscriptionService(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             repository: repository,
+            syncOperationManager: syncOperationManager,
+            repositoryOperationManager: repositoryOperationManager,
+            logger: Logger.shared
+        )
+    }()
+
+    static let sharedSubstrateRemoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol = {
+        let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
+        let syncOperationQueue = OperationManagerFacade.assetsSyncQueue
+        let repositoryOperationQueue = OperationManagerFacade.assetsRepositoryQueue
+        let syncOperationManager = OperationManager(operationQueue: syncOperationQueue)
+        let repositoryOperationManager = OperationManager(operationQueue: repositoryOperationQueue)
+        let substrateStorageFacade = SubstrateDataStorageFacade.shared
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: syncOperationManager
+        )
+
+        let subscriptionHandlingFactory = BalanceRemoteSubscriptionHandlingFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            substrateStorageFacade: substrateStorageFacade,
+            eventCenter: EventCenter.shared,
+            operationQueue: OperationManagerFacade.assetsRepositoryQueue,
+            logger: Logger.shared
+        )
+
+        let transactionSubscriptionFactory = TransactionSubscriptionFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            eventCenter: EventCenter.shared,
+            repositoryFactory: SubstrateRepositoryFactory(storageFacade: substrateStorageFacade),
+            storageRequestFactory: storageRequestFactory,
+            operationQueue: syncOperationQueue,
+            logger: Logger.shared
+        )
+
+        return BalanceRemoteSubscriptionService(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            repository: repository,
+            subscriptionHandlingFactory: subscriptionHandlingFactory,
+            transactionSubscriptionFactory: transactionSubscriptionFactory,
             syncOperationManager: syncOperationManager,
             repositoryOperationManager: repositoryOperationManager,
             logger: Logger.shared

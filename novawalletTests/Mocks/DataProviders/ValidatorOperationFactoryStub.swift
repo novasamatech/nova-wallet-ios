@@ -1,5 +1,5 @@
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 
 class ValidatorOperationFactoryStub: ValidatorOperationFactoryProtocol {
     private let electedValidatorList: [ElectedValidatorInfo]
@@ -33,9 +33,12 @@ class ValidatorOperationFactoryStub: ValidatorOperationFactoryProtocol {
         CompoundOperationWrapper.createWithResult(selectedValidatorList)
     }
     
-    func allPreferred(for preferredAccountIds: [AccountId]) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
+    func allPreferred(
+        for preferrence: PreferredValidatorsProviderModel?
+    ) -> CompoundOperationWrapper<ElectedAndPrefValidators> {
         let electedAndPrefValidators = ElectedAndPrefValidators(
-            electedValidators: electedValidatorList,
+            allElectedValidators: electedValidatorList,
+            notExcludedElectedValidators: electedValidatorList,
             preferredValidators: selectedValidatorList
         )
         

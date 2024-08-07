@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import BigInt
 
 final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
@@ -12,9 +12,8 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
     let connection: JSONRPCEngine
-    let runtimeProvider: RuntimeCodingServiceProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol
     let yieldBoostOperationFactory: ParaStkYieldBoostOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -38,9 +37,8 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeCodingServiceProtocol,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol,
         yieldBoostOperationFactory: ParaStkYieldBoostOperationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -54,9 +52,8 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.rewardService = rewardService
         self.connection = connection
-        self.runtimeProvider = runtimeProvider
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
-        self.identityOperationFactory = identityOperationFactory
+        self.identityProxyFactory = identityProxyFactory
         self.yieldBoostProviderFactory = yieldBoostProviderFactory
         self.yieldBoostOperationFactory = yieldBoostOperationFactory
         self.operationQueue = operationQueue
@@ -118,12 +115,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     }
 
     private func provideIdentities(for delegations: [AccountId]) {
-        let wrapper = identityOperationFactory.createIdentityWrapper(
-            for: { delegations },
-            engine: connection,
-            runtimeService: runtimeProvider,
-            chainFormat: chainAsset.chain.chainFormat
-        )
+        let wrapper = identityProxyFactory.createIdentityWrapper(for: { delegations })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

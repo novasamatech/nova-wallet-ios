@@ -1,15 +1,27 @@
 import Foundation
-import RobinHood
+import Operation_iOS
+
+struct PreferredValidatorsProviderModel {
+    let preferred: [AccountId]
+    let excluded: Set<AccountId>
+}
 
 protocol PreferredValidatorsProviding {
-    func createPreferredValidatorsWrapper(for chain: ChainModel) -> CompoundOperationWrapper<[AccountId]>
+    func createPreferredValidatorsWrapper(
+        for chain: ChainModel
+    ) -> CompoundOperationWrapper<PreferredValidatorsProviderModel?>
 }
 
 final class PreferredValidatorsProvider: BaseFetchOperationFactory {
     typealias Store = [ChainModel.Id: [AccountAddress]]
 
+    struct RemoteModel: Decodable {
+        let preferred: Store?
+        let excluded: Store?
+    }
+
     @Atomic(defaultValue: nil)
-    private var allValidators: Store?
+    private var remoteModel: RemoteModel?
 
     let remoteUrl: URL
     let timeout: TimeInterval
@@ -22,30 +34,47 @@ final class PreferredValidatorsProvider: BaseFetchOperationFactory {
     private func convert(addresses: [AccountAddress], chainFormat: ChainFormat) throws -> [AccountId] {
         try addresses.compactMap { try $0.toAccountId(using: chainFormat) }
     }
+
+    private func createLocalModel(
+        for chain: ChainModel,
+        remoteModel: RemoteModel
+    ) throws -> PreferredValidatorsProviderModel {
+        let preferred = try convert(
+            addresses: remoteModel.preferred?[chain.chainId] ?? [],
+            chainFormat: chain.chainFormat
+        )
+
+        let prohibited = try convert(
+            addresses: remoteModel.excluded?[chain.chainId] ?? [],
+            chainFormat: chain.chainFormat
+        )
+
+        return .init(preferred: preferred, excluded: Set(prohibited))
+    }
 }
 
 extension PreferredValidatorsProvider: PreferredValidatorsProviding {
-    func createPreferredValidatorsWrapper(for chain: ChainModel) -> CompoundOperationWrapper<[AccountId]> {
-        if
-            let validators = allValidators?[chain.chainId],
-            let accountIds = try? convert(addresses: validators, chainFormat: chain.chainFormat) {
-            return CompoundOperationWrapper.createWithResult(accountIds)
+    func createPreferredValidatorsWrapper(
+        for chain: ChainModel
+    ) -> CompoundOperationWrapper<PreferredValidatorsProviderModel?> {
+        if let remoteModel, let localModel = try? createLocalModel(for: chain, remoteModel: remoteModel) {
+            return CompoundOperationWrapper.createWithResult(localModel)
         }
 
-        let fetchOperation: BaseOperation<Store> = createFetchOperation(
+        let fetchOperation: BaseOperation<RemoteModel> = createFetchOperation(
             from: remoteUrl,
             shouldUseCache: false,
             timeout: timeout
         )
 
-        let mapOperation = ClosureOperation<[AccountId]> {
-            guard let newStore = try? fetchOperation.extractNoCancellableResultData() else {
-                return []
+        let mapOperation = ClosureOperation<PreferredValidatorsProviderModel?> {
+            guard let remoteModel = try? fetchOperation.extractNoCancellableResultData() else {
+                return nil
             }
 
-            self.allValidators = newStore
+            self.remoteModel = remoteModel
 
-            return (try? self.convert(addresses: newStore[chain.chainId] ?? [], chainFormat: chain.chainFormat)) ?? []
+            return try? self.createLocalModel(for: chain, remoteModel: remoteModel)
         }
 
         mapOperation.addDependency(fetchOperation)

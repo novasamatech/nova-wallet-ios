@@ -1,6 +1,6 @@
 import Foundation
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 import SoraFoundation
 
 struct StakingRewardDestConfirmViewFactory {
@@ -79,8 +79,9 @@ struct StakingRewardDestConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
 
         let storageFacade = UserDataStorageFacade.shared

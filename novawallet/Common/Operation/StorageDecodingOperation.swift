@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 enum StorageDecodingOperationError: Error {
     case missingRequiredParams
@@ -61,26 +61,16 @@ class StorageJSONDecodingOperation: BaseOperation<JSON>, StorageDecodable {
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<JSON, Error>) -> Void) throws {
         do {
             guard let data = data, let factory = codingFactory else {
                 throw StorageDecodingOperationError.missingRequiredParams
             }
 
             let item = try decode(data: data, path: path, codingFactory: factory)
-            result = .success(item)
+            callback(.success(item))
         } catch {
-            result = .failure(error)
+            callback(.failure(error))
         }
     }
 }
@@ -98,26 +88,16 @@ final class StorageDecodingOperation<T: Decodable>: BaseOperation<T>, StorageDec
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<T, Error>) -> Void) throws {
         do {
             guard let data = data, let factory = codingFactory else {
                 throw StorageDecodingOperationError.missingRequiredParams
             }
 
             let item = try decode(data: data, path: path, codingFactory: factory).map(to: T.self)
-            result = .success(item)
+            callback(.success(item))
         } catch {
-            result = .failure(error)
+            callback(.failure(error))
         }
     }
 }
@@ -136,17 +116,7 @@ final class StorageFallbackDecodingOperation<T: Decodable>: BaseOperation<T?>,
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<T?, Error>) -> Void) throws {
         do {
             guard let factory = codingFactory else {
                 throw StorageDecodingOperationError.missingRequiredParams
@@ -154,14 +124,14 @@ final class StorageFallbackDecodingOperation<T: Decodable>: BaseOperation<T?>,
 
             if let data = data {
                 let item = try decode(data: data, path: path, codingFactory: factory).map(to: T.self)
-                result = .success(item)
+                callback(.success(item))
             } else {
                 let item = try handleModifier(at: path, codingFactory: factory)?.map(to: T.self)
-                result = .success(item)
+                callback(.success(item))
             }
 
         } catch {
-            result = .failure(error)
+            callback(.failure(error))
         }
     }
 }
@@ -179,17 +149,7 @@ final class StorageDecodingListOperation<T: Decodable>: BaseOperation<[T]>, Stor
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<[T], Error>) -> Void) throws {
         do {
             guard let dataList = dataList, let factory = codingFactory else {
                 throw StorageDecodingOperationError.missingRequiredParams
@@ -199,9 +159,9 @@ final class StorageDecodingListOperation<T: Decodable>: BaseOperation<[T]>, Stor
                 .map(to: T.self)
             }
 
-            result = .success(items)
+            callback(.success(items))
         } catch {
-            result = .failure(error)
+            callback(.failure(error))
         }
     }
 }
@@ -222,17 +182,7 @@ final class StorageFallbackDecodingListOperation<T: Decodable>: BaseOperation<[T
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<[T?], Error>) -> Void) throws {
         do {
             guard let dataList = dataList, let factory = codingFactory else {
                 throw StorageDecodingOperationError.missingRequiredParams
@@ -254,9 +204,9 @@ final class StorageFallbackDecodingListOperation<T: Decodable>: BaseOperation<[T
                 }
             }
 
-            result = .success(items)
+            callback(.success(items))
         } catch {
-            result = .failure(error)
+            callback(.failure(error))
         }
     }
 }
@@ -291,32 +241,22 @@ final class StorageConstantOperation<T: Decodable>: BaseOperation<T>, ConstantDe
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<T, Error>) -> Void) throws {
         do {
             guard let factory = codingFactory else {
                 throw StorageDecodingOperationError.missingRequiredParams
             }
 
             let item: T = try decode(at: path, codingFactory: factory).map(to: T.self)
-            result = .success(item)
+            callback(.success(item))
         } catch {
             if
                 let storageError = error as? StorageDecodingOperationError,
                 storageError == .invalidStoragePath,
                 let fallbackValue = fallbackValue {
-                result = .success(fallbackValue)
+                callback(.success(fallbackValue))
             } else {
-                result = .failure(error)
+                callback(.failure(error))
             }
         }
     }
@@ -343,17 +283,7 @@ final class PrimitiveConstantOperation<T: LosslessStringConvertible & Equatable>
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<T, Error>) -> Void) throws {
         do {
             guard let factory = codingFactory, !oneOfPaths.isEmpty else {
                 throw StorageDecodingOperationError.missingRequiredParams
@@ -363,15 +293,15 @@ final class PrimitiveConstantOperation<T: LosslessStringConvertible & Equatable>
 
             let item: StringScaleMapper<T> = try decode(at: path, codingFactory: factory)
                 .map(to: StringScaleMapper<T>.self)
-            result = .success(item.value)
+            callback(.success(item.value))
         } catch {
             if
                 let storageError = error as? StorageDecodingOperationError,
                 storageError == .invalidStoragePath,
                 let fallbackValue = fallbackValue {
-                result = .success(fallbackValue)
+                callback(.success(fallbackValue))
             } else {
-                result = .failure(error)
+                callback(.failure(error))
             }
         }
     }
@@ -390,17 +320,7 @@ final class StorageDecodingOptionalListOperation<T: Decodable>: BaseOperation<[T
         super.init()
     }
 
-    override func main() {
-        super.main()
-
-        if isCancelled {
-            return
-        }
-
-        if result != nil {
-            return
-        }
-
+    override func performAsync(_ callback: @escaping (Result<[T?], Error>) -> Void) throws {
         do {
             guard let factory = codingFactory else {
                 throw StorageDecodingOperationError.missingRequiredParams
@@ -414,9 +334,9 @@ final class StorageDecodingOptionalListOperation<T: Decodable>: BaseOperation<[T
                 return try decode(data: item, path: path, codingFactory: factory).map(to: T.self)
             }
 
-            result = .success(items)
+            callback(.success(items))
         } catch {
-            result = .failure(error)
+            callback(.failure(error))
         }
     }
 }

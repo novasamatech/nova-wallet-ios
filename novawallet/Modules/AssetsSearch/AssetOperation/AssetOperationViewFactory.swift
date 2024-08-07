@@ -160,7 +160,7 @@ enum AssetOperationViewFactory {
     ) -> ReceiveAssetOperationPresenter {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
-            filter: nil,
+            filter: { $0.chain.syncMode.enabled() },
             logger: Logger.shared
         )
 
@@ -185,9 +185,13 @@ enum AssetOperationViewFactory {
         let purchaseProvider = PurchaseAggregator.defaultAggregator()
 
         let filter: ChainAssetsFilter = { chainAsset in
-            guard let accountId = wallet.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
+            guard
+                chainAsset.chain.syncMode.enabled(),
+                let accountId = wallet.fetch(for: chainAsset.chain.accountRequest())?.accountId
+            else {
                 return false
             }
+
             let purchaseActions = purchaseProvider.buildPurchaseActions(
                 for: chainAsset,
                 accountId: accountId

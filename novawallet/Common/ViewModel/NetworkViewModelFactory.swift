@@ -1,18 +1,18 @@
 import Foundation
 
 protocol NetworkViewModelFactoryProtocol {
-    func createViewModel(from chain: ChainModel) -> NetworkViewModel
-    func createDiffableViewModel(from chain: ChainModel) -> DiffableNetworkViewModel
+    func createViewModel(from chain: ChainViewModelSource) -> NetworkViewModel
+    func createDiffableViewModel(from chain: ChainViewModelSource) -> DiffableNetworkViewModel
 }
 
 final class NetworkViewModelFactory: NetworkViewModelFactoryProtocol {
-    func createViewModel(from chain: ChainModel) -> NetworkViewModel {
-        let imageViewModel = RemoteImageViewModel(url: chain.icon)
+    func createViewModel(from chain: ChainViewModelSource) -> NetworkViewModel {
+        let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
 
         return NetworkViewModel(name: chain.name, icon: imageViewModel)
     }
 
-    func createDiffableViewModel(from chain: ChainModel) -> DiffableNetworkViewModel {
+    func createDiffableViewModel(from chain: ChainViewModelSource) -> DiffableNetworkViewModel {
         let network = createViewModel(from: chain)
 
         var hasher = Hasher()

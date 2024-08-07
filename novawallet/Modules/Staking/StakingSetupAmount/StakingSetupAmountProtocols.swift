@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-protocol StakingSetupAmountViewProtocol: ControllerBackedProtocol {
+protocol StakingSetupAmountViewProtocol: SCLoadableControllerProtocol {
     func didReceive(balance: TitleHorizontalMultiValueView.Model)
     func didReceive(title: String)
     func didReceiveButtonState(title: String, enabled: Bool)

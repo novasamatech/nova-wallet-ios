@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import RobinHood
+import Operation_iOS
 
 final class WalletUpdateMediatorTests: XCTestCase {
     struct Common {
@@ -279,6 +279,39 @@ final class WalletUpdateMediatorTests: XCTestCase {
             XCTAssertTrue(maybeSelected.contains(common.selectedAccountSettings.value.identifier))
         } catch {
             XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testAutoSwitchNewWalletIfAllRemoved() throws {
+        // given
+        
+        let common = Common()
+        
+        let allWallets = (0..<6).map { (index: UInt32) in
+            let metaAccount = AccountGenerator.generateMetaAccount(generatingChainAccounts: 0)
+            
+            return ManagedMetaAccountModel(info: metaAccount, isSelected: false, order: index)
+        }
+        
+        let oldWallets = Array(allWallets[0..<3])
+        let newWallets = Array(allWallets[3..<6])
+        
+        common.setup(with: oldWallets)
+        try common.select(walletId: oldWallets[0].identifier)
+        
+        // when
+        
+        let result = try common.update(with: newWallets, remove: oldWallets)
+        
+        // then
+        
+        XCTAssertTrue(result.isWalletSwitched)
+        
+        if let selectedWallet = result.selectedWallet {
+            XCTAssertTrue(selectedWallet.isSelected)
+            XCTAssertTrue(newWallets.contains(where: { $0.identifier == selectedWallet.identifier }))
+        } else {
+            XCTFail("Selected wallet expected")
         }
     }
 }

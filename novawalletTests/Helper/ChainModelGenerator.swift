@@ -33,7 +33,8 @@ enum ChainModelGenerator {
                 url: "wss://node.io/\(chainId)",
                 name: chainId,
                 order: 0,
-                features: nil
+                features: nil, 
+                source: .remote
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -77,7 +78,7 @@ enum ChainModelGenerator {
                 assets: [asset],
                 nodes: [node],
                 nodeSwitchStrategy: .roundRobin,
-                addressPrefix: UInt16(index),
+                addressPrefix: ChainModel.AddressPrefix(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
                 options: options.isEmpty ? nil : options,
@@ -85,7 +86,9 @@ enum ChainModelGenerator {
                 explorers: explorers,
                 order: Int64(index),
                 additional: nil,
-                syncMode: .full
+                syncMode: .full,
+                source: .remote,
+                connectionMode: .autoBalanced
             )
         }
     }
@@ -161,7 +164,7 @@ enum ChainModelGenerator {
                 assets: [asset],
                 nodes: [node],
                 nodeSelectionStrategy: nil,
-                addressPrefix: UInt16(index),
+                addressPrefix: ChainModel.AddressPrefix(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
                 options: options.isEmpty ? nil : options,
@@ -175,11 +178,13 @@ enum ChainModelGenerator {
     static func generateChain(
         defaultChainId: ChainModel.Id? = nil,
         generatingAssets count: Int,
-        addressPrefix: UInt16,
+        addressPrefix: ChainModel.AddressPrefix,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasSubstrateRuntime: Bool = true
+        hasSubstrateRuntime: Bool = true,
+        hasProxy: Bool = true,
+        enabled: Bool = true
     ) -> ChainModel {
         let assets = (0..<count).map { index in
             generateAssetWithId(
@@ -196,18 +201,22 @@ enum ChainModelGenerator {
             assetPresicion: assetPresicion,
             hasStaking: hasStaking,
             hasCrowdloans: hasCrowdloans,
-            hasSubstrateRuntime: hasSubstrateRuntime
+            hasSubstrateRuntime: hasSubstrateRuntime,
+            hasProxy: hasProxy,
+            enabled: enabled
         )
     }
 
     static func generateChain(
         assets: [AssetModel],
         defaultChainId: ChainModel.Id? = nil,
-        addressPrefix: UInt16,
+        addressPrefix: ChainModel.AddressPrefix,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasSubstrateRuntime: Bool = true
+        hasSubstrateRuntime: Bool = true,
+        hasProxy: Bool = true,
+        enabled: Bool = true
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
 
@@ -217,7 +226,8 @@ enum ChainModelGenerator {
             url: urlString,
             name: UUID().uuidString,
             order: 0,
-            features: nil
+            features: nil,
+            source: .remote
         )
 
         var options: [LocalChainOptions] = []
@@ -228,6 +238,10 @@ enum ChainModelGenerator {
 
         if !hasSubstrateRuntime {
             options.append(.noSubstrateRuntime)
+        }
+        
+        if hasProxy {
+            options.append(.proxy)
         }
 
         let externalApis = generateExternaApis(
@@ -260,7 +274,9 @@ enum ChainModelGenerator {
             explorers: explorers,
             order: 0,
             additional: nil,
-            syncMode: .full
+            syncMode: enabled ? .full : .disabled,
+            source: .remote,
+            connectionMode: .autoBalanced
         )
     }
 

@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import Cuckoo
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 import SoraKeystore
 import SoraFoundation
@@ -189,18 +189,21 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             rewardDestinationViewModelFactory: rewardDestViewModelFactory
         )
 
+        let validationFactory = StakingDataValidatingFactory(presentable: wireframe)
+        
         let presenter = StakingRewardDestSetupPresenter(
             wireframe: wireframe,
             interactor: interactor,
             rewardDestViewModelFactory: viewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
+            dataValidatingFactory: validationFactory,
             applicationConfig: ApplicationConfig.shared,
             assetInfo: assetInfo
         )
 
         presenter.view = view
         interactor.presenter = presenter
+        validationFactory.view = view
 
         // when
 

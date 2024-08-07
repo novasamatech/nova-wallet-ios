@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 import IrohaCrypto
 
 protocol ExtrinsicServiceProtocol {
@@ -103,7 +103,8 @@ final class ExtrinsicService {
         chain: ChainModel,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
-        extensions: [ExtrinsicExtension],
+        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
+        extensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol
     ) {
@@ -112,7 +113,9 @@ final class ExtrinsicService {
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
+            blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: operationManager
         )
 

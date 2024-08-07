@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 struct GovernanceRemoveVotesConfirmViewFactory {
     static func createView(
@@ -87,13 +87,13 @@ struct GovernanceRemoveVotesConfirmViewFactory {
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let operationManager = OperationManager(operationQueue: operationQueue)
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: operationManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         let signer = SigningWrapperFactory().createSigningWrapper(
@@ -104,6 +104,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
         return GovernanceRemoveVotesConfirmInteractor(
             selectedAccount: selectedAccount.chainAccount,
             chain: chain,
+            chainRegistry: state.chainRegistry,
             subscriptionFactory: subscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

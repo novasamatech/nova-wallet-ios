@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 protocol ParaStkYieldBoostStorageSubscriber where Self: AnyObject {
     var yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol { get }

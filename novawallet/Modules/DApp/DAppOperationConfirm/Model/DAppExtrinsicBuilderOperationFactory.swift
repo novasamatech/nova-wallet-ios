@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import RobinHood
+import Operation_iOS
 
 struct DAppExtrinsicRawSignatureResult {
     let sender: ExtrinsicSenderResolution
@@ -54,7 +54,7 @@ final class DAppExtrinsicBuilderOperationFactory {
             .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
 
             for signedExtension in signedExtensionFactory.createExtensions() {
-                builder = builder.adding(extrinsicExtension: signedExtension)
+                builder = builder.adding(extrinsicSignedExtension: signedExtension)
             }
 
             builder = try result.extrinsic.method.accept(builder: builder)
@@ -89,7 +89,8 @@ final class DAppExtrinsicBuilderOperationFactory {
             let builder = builderResult.builder
             let context = ExtrinsicSigningContext.Substrate(
                 senderResolution: builderResult.sender,
-                calls: builder.getCalls()
+                extrinsicMemo: builder.makeMemo(),
+                codingFactory: codingFactory
             )
 
             let signedExtrinsic = try builder.signing(
@@ -162,7 +163,8 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
             let context = ExtrinsicSigningContext.substrateExtrinsic(
                 .init(
                     senderResolution: builderResult.sender,
-                    calls: builder.getCalls()
+                    extrinsicMemo: builder.makeMemo(),
+                    codingFactory: codingFactory
                 )
             )
 

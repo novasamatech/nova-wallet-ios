@@ -3,6 +3,7 @@ import SoraKeystore
 import BigInt
 import IrohaCrypto
 @testable import novawallet
+import Operation_iOS
 
 class ExtrinsicServiceTests: XCTestCase {
 
@@ -52,13 +53,21 @@ class ExtrinsicServiceTests: XCTestCase {
         
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
         
+        let operationQueue = OperationQueue()
+        
+        let metadataHashOperationFactory = MetadataHashOperationFactory(
+            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+            operationQueue: operationQueue
+        )
+        
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
+            metadataHashOperationFactory: metadataHashOperationFactory,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
 
         let feeExpectation = XCTestExpectation()
@@ -99,13 +108,21 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
         
+        let operationQueue = OperationQueue()
+        
+        let metadataHashOperationFactory = MetadataHashOperationFactory(
+            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
+            operationQueue: operationQueue
+        )
+        
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
+            metadataHashOperationFactory: metadataHashOperationFactory,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
 
         let feeExpectation = XCTestExpectation()

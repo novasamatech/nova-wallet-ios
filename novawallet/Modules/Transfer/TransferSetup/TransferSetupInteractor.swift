@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
@@ -68,7 +68,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     private func setupChainsStore() {
         chainsStore.delegate = self
 
-        chainsStore.setup()
+        chainsStore.setup(with: { $0.syncMode.enabled() })
     }
 
     private func provideAvailableTransfers() {

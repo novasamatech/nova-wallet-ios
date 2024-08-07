@@ -1,9 +1,10 @@
 import XCTest
 @testable import novawallet
 import SoraKeystore
+import SoraFoundation
 import Cuckoo
 import IrohaCrypto
-import RobinHood
+import Operation_iOS
 
 class AccountConfirmTests: XCTestCase {
 
@@ -44,17 +45,27 @@ class AccountConfirmTests: XCTestCase {
                                                   settings: settings,
                                                   operationManager: OperationManager(),
                                                   eventCenter: eventCenter)
+        
+        let localizationManager = LocalizationManager.shared
+        let mnemonicViewModelFactory = MnemonicViewModelFactory(localizationManager: localizationManager)
 
-        let presenter = AccountConfirmPresenter()
+        let presenter = AccountConfirmPresenter(
+            wireframe: wireframe,
+            interactor: interactor,
+            mnemonicViewModelFactory: mnemonicViewModelFactory,
+            localizationManager: localizationManager
+        )
         presenter.view = view
-        presenter.wireframe = wireframe
-        presenter.interactor = interactor
         interactor.presenter = presenter
 
         let setupExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceive(words: any(), afterConfirmationFail: any()).then { _ in
+            when(stub).update(
+                with: any(),
+                gridUnits: any(),
+                afterConfirmationFail: any()
+            ).then { _ in
                 setupExpectation.fulfill()
             }
         }
@@ -71,7 +82,7 @@ class AccountConfirmTests: XCTestCase {
 
         stub(eventCenter) { stub in
             stub.notify(with: any()).then { event in
-                if event is SelectedAccountChanged {
+                if event is SelectedWalletSwitched {
                     completeExpectation.fulfill()
                 }
             }
@@ -81,13 +92,13 @@ class AccountConfirmTests: XCTestCase {
 
         presenter.setup()
 
-        wait(for: [setupExpectation], timeout: Constants.defaultExpectationDuration)
+        wait(for: [setupExpectation], timeout: 10)
 
         presenter.confirm(words: mnemonic.allWords())
 
         // then
 
-        wait(for: [expectation, completeExpectation], timeout: Constants.defaultExpectationDuration)
+        wait(for: [expectation, completeExpectation], timeout: 10)
 
         guard let selectedAccount = settings.value else {
             XCTFail("Unexpected empty account")

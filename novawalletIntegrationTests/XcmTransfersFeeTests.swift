@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import BigInt
-import RobinHood
+import Operation_iOS
 
 class XcmTransfersFeeTests: XCTestCase {
     func testKaruraMoonriverBnc() throws {
@@ -193,6 +193,7 @@ class XcmTransfersFeeTests: XCTestCase {
                 parties: parties,
                 xcmTransfers: xcmTransfers,
                 chainRegistry: chainRegistry,
+                substrateStorageFacade: storageFacade,
                 amount: amount,
                 isForDestination: true
             )
@@ -206,6 +207,7 @@ class XcmTransfersFeeTests: XCTestCase {
                     parties: parties,
                     xcmTransfers: xcmTransfers,
                     chainRegistry: chainRegistry,
+                    substrateStorageFacade: storageFacade,
                     amount: amount,
                     isForDestination: false
                 )
@@ -255,6 +257,7 @@ class XcmTransfersFeeTests: XCTestCase {
                 parties: parties,
                 xcmTransfers: xcmTransfers,
                 chainRegistry: chainRegistry,
+                substrateStorageFacade: storageFacade,
                 amount: amount
             )
 
@@ -319,14 +322,23 @@ class XcmTransfersFeeTests: XCTestCase {
         parties: XcmTransferParties,
         xcmTransfers: XcmTransfers,
         chainRegistry: ChainRegistryProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         amount: BigUInt,
         isForDestination: Bool
     ) throws -> XcmFeeModelProtocol {
+        let operationQueue = OperationQueue()
+        
+        let metadataHashFactory = MetadataHashOperationFactory(
+            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
+            operationQueue: operationQueue
+        )
+        
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
             senderResolutionFacade: ExtrinsicSenderResolutionFacadeStub(),
-            operationQueue: OperationQueue()
+            metadataHashOperationFactory: metadataHashFactory,
+            operationQueue: operationQueue
         )
 
         let semaphore = DispatchSemaphore(value: 0)
@@ -377,12 +389,21 @@ class XcmTransfersFeeTests: XCTestCase {
         parties: XcmTransferParties,
         xcmTransfers: XcmTransfers,
         chainRegistry: ChainRegistryProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         amount: BigUInt
     ) throws -> XcmFeeModelProtocol {
+        let operationQueue = OperationQueue()
+        
+        let metadataHashFactory = MetadataHashOperationFactory(
+            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
+            operationQueue: operationQueue
+        )
+        
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
             senderResolutionFacade: ExtrinsicSenderResolutionFacadeStub(),
+            metadataHashOperationFactory: metadataHashFactory,
             operationQueue: OperationQueue()
         )
 

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 protocol RuntimeSyncServiceProtocol {
@@ -38,6 +38,8 @@ final class RuntimeSyncService {
     let repository: AnyDataProviderRepository<RuntimeMetadataItem>
     let filesOperationFactory: RuntimeFilesOperationFactoryProtocol
     let dataOperationFactory: DataOperationFactoryProtocol
+    let runtimeFetchFactory: RuntimeFetchOperationFactoryProtocol
+    let runtimeLocalMigrator: RuntimeLocalMigrating
     let eventCenter: EventCenterProtocol
     let retryStrategy: ReconnectionStrategyProtocol
     let operationQueue: OperationQueue
@@ -53,16 +55,20 @@ final class RuntimeSyncService {
 
     init(
         repository: AnyDataProviderRepository<RuntimeMetadataItem>,
+        runtimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
+        runtimeLocalMigrator: RuntimeLocalMigrating,
         filesOperationFactory: RuntimeFilesOperationFactoryProtocol,
         dataOperationFactory: DataOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         dataHasher: StorageHasher = .twox256,
-        rpcTimeout: Int = Int.max,
+        rpcTimeout: Int = Int(UInt16.max),
         logger: LoggerProtocol? = nil
     ) {
         self.repository = repository
+        self.runtimeFetchFactory = runtimeFetchFactory
+        self.runtimeLocalMigrator = runtimeLocalMigrator
         self.filesOperationFactory = filesOperationFactory
         self.dataOperationFactory = dataOperationFactory
         self.retryStrategy = retryStrategy
@@ -90,7 +96,9 @@ final class RuntimeSyncService {
             createMetadataSyncOperation(
                 for: chainId,
                 runtimeVersion: $0,
-                connection: syncInfo.connection
+                connection: syncInfo.connection,
+                runtimeFetchFactory: runtimeFetchFactory,
+                runtimeLocalMigrator: runtimeLocalMigrator
             )
         }
 
@@ -127,15 +135,14 @@ final class RuntimeSyncService {
                         runtimeVersion: newVersion
                     )
 
+                    self?.logger?.error("Error: \(error)")
+
                     self?.processSyncResult(result)
                 }
             }
         }
 
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: processingOperation,
-            dependencies: dependencies
-        )
+        let wrapper = CompoundOperationWrapper(targetOperation: processingOperation, dependencies: dependencies)
 
         syncingChains[chainId] = wrapper
 
@@ -257,47 +264,49 @@ final class RuntimeSyncService {
     private func createMetadataSyncOperation(
         for chainId: ChainModel.Id,
         runtimeVersion: RuntimeVersion,
-        connection: JSONRPCEngine
+        connection: JSONRPCEngine,
+        runtimeFetchFactory: RuntimeFetchOperationFactoryProtocol,
+        runtimeLocalMigrator: RuntimeLocalMigrating
     ) -> CompoundOperationWrapper<Void> {
-        let localMetadataOperation = repository.fetchOperation(
-            by: chainId,
-            options: RepositoryFetchOptions()
-        )
+        let localMetadataOperation = repository.fetchOperation(by: chainId, options: RepositoryFetchOptions())
 
-        let remoteMetadaOperation = JSONRPCOperation<[String], String>(
-            engine: connection,
-            method: RPCMethod.getRuntimeMetadata,
-            timeout: rpcTimeout
-        )
+        let remoteFetchWrapper: CompoundOperationWrapper<RawRuntimeMetadata>
+        remoteFetchWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let currentItem = try localMetadataOperation
+                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
-        remoteMetadaOperation.configurationBlock = {
-            do {
-                let currentItem = try localMetadataOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                if let item = currentItem, item.version == runtimeVersion.specVersion {
-                    remoteMetadaOperation.result = .failure(RuntimeSyncServiceError.skipMetadataUnchanged)
-                }
-            } catch {
-                remoteMetadaOperation.result = .failure(error)
+            if
+                let item = currentItem,
+                item.version == runtimeVersion.specVersion,
+                !runtimeLocalMigrator.needsMigration(for: item) {
+                throw RuntimeSyncServiceError.skipMetadataUnchanged
             }
+
+            return runtimeFetchFactory.createMetadataFetchWrapper(
+                for: chainId,
+                connection: connection
+            )
         }
 
-        remoteMetadaOperation.addDependency(localMetadataOperation)
+        remoteFetchWrapper.addDependency(operations: [localMetadataOperation])
 
         let saveMetadataOperation = repository.saveOperation({
-            let hexMetadata = try remoteMetadaOperation.extractNoCancellableResultData()
-            let rawMetadata = try Data(hexString: hexMetadata)
+            let rawMetadata = try remoteFetchWrapper.targetOperation.extractNoCancellableResultData()
             let metadataItem = RuntimeMetadataItem(
                 chain: chainId,
                 version: runtimeVersion.specVersion,
                 txVersion: runtimeVersion.transactionVersion,
-                metadata: rawMetadata
+                localMigratorVersion: runtimeLocalMigrator.version,
+                opaque: rawMetadata.isOpaque,
+                metadata: rawMetadata.content
             )
 
             return [metadataItem]
         }, { [] })
 
-        saveMetadataOperation.addDependency(remoteMetadaOperation)
+        saveMetadataOperation.addDependency(remoteFetchWrapper.targetOperation)
 
         let filterOperation = ClosureOperation<Void> {
             do {
@@ -309,10 +318,9 @@ final class RuntimeSyncService {
 
         filterOperation.addDependency(saveMetadataOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: filterOperation,
-            dependencies: [localMetadataOperation, remoteMetadaOperation, saveMetadataOperation]
-        )
+        let dependencies = [localMetadataOperation] + remoteFetchWrapper.allOperations + [saveMetadataOperation]
+
+        return CompoundOperationWrapper(targetOperation: filterOperation, dependencies: dependencies)
     }
 
     func clearOperations(for chainId: ChainModel.Id) {

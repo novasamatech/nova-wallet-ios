@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 struct GovernanceDelegateSearchViewFactory {
     static func createView(
@@ -67,7 +67,6 @@ struct GovernanceDelegateSearchViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
-            let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let blockTimeService = state.blockTimeService,
             let delegateListOperationFactory = state.createOffchainDelegateListFactory(for: settings) else {
@@ -83,15 +82,20 @@ struct GovernanceDelegateSearchViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
 
         return .init(
             delegateListOperationFactory: delegateListOperationFactory,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
-            connection: connection,
             runtimeService: runtimeService,
             metadataProvider: metadataProvider,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,

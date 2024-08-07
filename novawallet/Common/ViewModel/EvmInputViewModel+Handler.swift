@@ -58,4 +58,27 @@ extension InputViewModel {
 
         return InputViewModel(inputHandler: inputHandling, placeholder: placeholder ?? "")
     }
+
+    static func createNotEmptyInputViewModel(
+        for value: String,
+        enabled: Bool = true,
+        required: Bool = true,
+        placeholder: String? = nil,
+        spacesAllowed: Bool = false
+    ) -> InputViewModelProtocol {
+        let inputHandling = InputHandler(
+            value: value,
+            required: required,
+            enabled: enabled,
+            predicate: required ? NSPredicate.notEmpty : nil,
+            processor: spacesAllowed
+                ? nil
+                : TrimmingCharacterProcessor(charset: .whitespaces)
+        )
+
+        return InputViewModel(
+            inputHandler: inputHandling,
+            placeholder: placeholder ?? ""
+        )
+    }
 }

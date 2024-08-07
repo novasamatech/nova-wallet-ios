@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 struct ParaStkYieldBoostSetupViewFactory {
     static func createView(
@@ -88,11 +88,18 @@ struct ParaStkYieldBoostSetupViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chainAsset.chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager,
-            userStorageFacade: UserDataStorageFacade.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chainAsset.chain)
 
         let yieldBoostOperationFactory = ParaStkYieldBoostOperationFactory()
@@ -123,9 +130,8 @@ struct ParaStkYieldBoostSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             rewardService: rewardService,
             connection: connection,
-            runtimeProvider: runtimeProvider,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
-            identityOperationFactory: identityOperationFactory,
+            identityProxyFactory: identityProxyFactory,
             yieldBoostProviderFactory: ParaStkYieldBoostProviderFactory.shared,
             yieldBoostOperationFactory: yieldBoostOperationFactory,
             currencyManager: currencyManager,

@@ -1,7 +1,7 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
-protocol WalletLocalStorageSubscriber where Self: AnyObject {
+protocol WalletLocalStorageSubscriber: LocalStorageProviderObserving where Self: AnyObject {
     var walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol { get }
 
     var walletLocalSubscriptionHandler: WalletLocalSubscriptionHandler { get }
@@ -27,6 +27,16 @@ protocol WalletLocalStorageSubscriber where Self: AnyObject {
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) -> StreamableProvider<AssetLock>?
+
+    func subscribeToAllHoldsProvider(
+        for accountId: AccountId
+    ) -> StreamableProvider<AssetHold>?
+
+    func subscribeToHoldsProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> StreamableProvider<AssetHold>?
 }
 
 extension WalletLocalStorageSubscriber {
@@ -253,6 +263,69 @@ extension WalletLocalStorageSubscriber {
         )
 
         return locksProvider
+    }
+
+    func subscribeToAllHoldsProvider(
+        for accountId: AccountId
+    ) -> StreamableProvider<AssetHold>? {
+        guard let holdsProvider = try? walletLocalSubscriptionFactory.getHoldsProvider(for: accountId) else {
+            return nil
+        }
+
+        addStreamableProviderObserver(
+            for: holdsProvider,
+            updateClosure: { [weak self] changes in
+                self?.walletLocalSubscriptionHandler.handleAccountHolds(
+                    result: .success(changes),
+                    accountId: accountId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.walletLocalSubscriptionHandler.handleAccountHolds(
+                    result: .failure(error),
+                    accountId: accountId
+                )
+            }
+        )
+
+        return holdsProvider
+    }
+
+    func subscribeToHoldsProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> StreamableProvider<AssetHold>? {
+        guard
+            let holdsProvider = try? walletLocalSubscriptionFactory.getHoldsProvider(
+                for: accountId,
+                chainId: chainId,
+                assetId: assetId
+            ) else {
+            return nil
+        }
+
+        addStreamableProviderObserver(
+            for: holdsProvider,
+            updateClosure: { [weak self] changes in
+                self?.walletLocalSubscriptionHandler.handleAccountHolds(
+                    result: .success(changes),
+                    accountId: accountId,
+                    chainId: chainId,
+                    assetId: assetId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.walletLocalSubscriptionHandler.handleAccountHolds(
+                    result: .failure(error),
+                    accountId: accountId,
+                    chainId: chainId,
+                    assetId: assetId
+                )
+            }
+        )
+
+        return holdsProvider
     }
 }
 

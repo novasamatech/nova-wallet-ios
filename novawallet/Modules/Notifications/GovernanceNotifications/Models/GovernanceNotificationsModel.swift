@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 struct GovernanceNotificationsModel {
     let newReferendum: [ChainModel.Id: Set<TrackIdLocal>]

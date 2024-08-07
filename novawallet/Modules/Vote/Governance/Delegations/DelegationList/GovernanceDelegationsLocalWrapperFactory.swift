@@ -1,15 +1,12 @@
 import SubstrateSdk
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 typealias GovernanceOffchainDelegationsLocal = GovernanceDelegationAdditions<[GovernanceOffchainDelegation]>
 
 protocol GovernanceDelegationsLocalWrapperFactoryProtocol {
     func createWrapper(
-        for params: AccountAddress,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        for params: AccountAddress
     ) -> CompoundOperationWrapper<GovernanceOffchainDelegationsLocal>
 }
 
@@ -19,21 +16,22 @@ final class GovernanceDelegationsLocalWrapperFactory: GovOffchainModelWrapperFac
     let operationFactory: GovernanceOffchainDelegationsFactoryProtocol
 
     init(
+        chain: ChainModel,
         operationFactory: GovernanceOffchainDelegationsFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol
+        identityProxyFactory: IdentityProxyFactoryProtocol
     ) {
         self.operationFactory = operationFactory
 
         super.init(
-            identityParams: .init(operationFactory: identityOperationFactory) { delegations in
+            chain: chain,
+            identityParams: .init(proxyFactory: identityProxyFactory) { delegations in
                 delegations.compactMap { try? $0.delegator.toAccountId() }
             }
         )
     }
 
     override func createModelWrapper(
-        for params: AccountAddress,
-        chain _: ChainModel
+        for params: AccountAddress
     ) -> CompoundOperationWrapper<[GovernanceOffchainDelegation]> {
         operationFactory.createDelegationsFetchWrapper(for: params)
     }

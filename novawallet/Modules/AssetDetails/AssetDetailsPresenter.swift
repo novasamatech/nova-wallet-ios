@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
-import RobinHood
+import Operation_iOS
 
 final class AssetDetailsPresenter: PurchaseFlowManaging {
     weak var view: AssetDetailsViewProtocol?
@@ -15,6 +15,7 @@ final class AssetDetailsPresenter: PurchaseFlowManaging {
     private var priceData: PriceData?
     private var balance: AssetBalance?
     private var locks: [AssetLock] = []
+    private var holds: [AssetHold] = []
     private var externalAssetBalances: [ExternalAssetBalance] = []
     private var purchaseActions: [PurchaseAction] = []
     private var availableOperations: AssetDetailsOperation = []
@@ -136,7 +137,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             showReceiveTokens()
-        case .ledger:
+        case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
                 wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
             } else {
@@ -156,7 +157,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             showPurchase()
-        case .ledger:
+        case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
                 wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
             } else {
@@ -185,7 +186,8 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
             price: priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0,
             priceChange: priceData?.dayChange ?? 0,
             priceId: priceData?.currencyId,
-            balanceLocks: locks
+            balanceLocks: locks,
+            balanceHolds: holds
         )
         let model = AssetDetailsLocksViewModel(
             balanceContext: balanceContext,
@@ -209,6 +211,11 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
 
     func didReceive(lockChanges: [DataProviderChange<AssetLock>]) {
         locks = locks.applying(changes: lockChanges)
+        updateView()
+    }
+
+    func didReceive(holdsChanges: [DataProviderChange<AssetHold>]) {
+        holds = holds.applying(changes: holdsChanges)
         updateView()
     }
 

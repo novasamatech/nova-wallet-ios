@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol ProxyListLocalSubscriptionFactoryProtocol {
     func getProxyListProvider() throws -> StreamableProvider<ProxyAccountModel>

@@ -1,4 +1,4 @@
-import RobinHood
+import Operation_iOS
 
 protocol DAppSearchViewProtocol: ControllerBackedProtocol {
     func didReceive(initialQuery: String)
@@ -22,7 +22,7 @@ protocol DAppSearchInteractorOutputProtocol: AnyObject {
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
 }
 
-protocol DAppSearchWireframeProtocol: AnyObject {
+protocol DAppSearchWireframeProtocol: DAppAlertPresentable {
     func close(from view: DAppSearchViewProtocol?)
 }
 

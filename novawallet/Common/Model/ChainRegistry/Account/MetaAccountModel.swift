@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 enum MetaAccountModelType: UInt8 {
     case secrets
@@ -8,14 +8,28 @@ enum MetaAccountModelType: UInt8 {
     case ledger
     case polkadotVault
     case proxied
+    case genericLedger
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner, .polkadotVault, .ledger, .proxied:
+        case .secrets, .paritySigner, .polkadotVault, .ledger, .proxied, .genericLedger:
             return true
         case .watchOnly:
             return false
         }
+    }
+}
+
+extension MetaAccountModelType {
+    static func getDisplayPriorities() -> [MetaAccountModelType] {
+        [
+            .secrets,
+            .polkadotVault,
+            .paritySigner,
+            .ledger,
+            .proxied,
+            .watchOnly
+        ]
     }
 }
 

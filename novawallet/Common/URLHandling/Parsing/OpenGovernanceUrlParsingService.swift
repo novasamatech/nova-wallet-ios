@@ -82,7 +82,8 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
     ) {
         chainRegistry.chainsSubscribe(
             self,
-            runningInQueue: .main
+            runningInQueue: .main,
+            filterStrategy: .enabledChains
         ) { [weak self] changes in
             guard let self = self else {
                 return

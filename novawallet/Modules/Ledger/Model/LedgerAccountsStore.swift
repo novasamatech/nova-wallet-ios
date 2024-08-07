@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 
 final class LedgerAccountsStore: Observable<[LedgerChainAccount]> {
     let walletId: String?
@@ -35,7 +35,11 @@ final class LedgerAccountsStore: Observable<[LedgerChainAccount]> {
     }
 
     private func subscribeChainRegistry() {
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .main,
+            filterStrategy: .enabledChains
+        ) { [weak self] changes in
             self?.currentChains = changes.mergeToDict(self?.currentChains ?? [:])
             self?.updateChainAccounts()
         }

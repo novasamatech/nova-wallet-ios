@@ -58,5 +58,7 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showWalletConnect(from view: ControllerBackedProtocol?)
     func showPincodeAuthorization(completion: @escaping (Bool) -> Void)
     func showManageNotifications(from view: ControllerBackedProtocol?)
+    func showBackup(from view: ControllerBackedProtocol?)
+    func showNetworks(from view: ControllerBackedProtocol?)
     func showCardIssueDidComplete(from view: ControllerBackedProtocol?, locale: Locale)
 }

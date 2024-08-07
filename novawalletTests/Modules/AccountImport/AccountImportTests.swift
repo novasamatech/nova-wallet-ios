@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import SoraKeystore
-import RobinHood
+import Operation_iOS
 import Cuckoo
 import SoraFoundation
 
@@ -85,7 +85,7 @@ class AccountImportTests: XCTestCase {
 
         stub(eventCenter) { stub in
             stub.notify(with: any()).then { event in
-                if event is SelectedAccountChanged {
+                if event is SelectedWalletSwitched {
                     completeExpectation.fulfill()
                 }
             }

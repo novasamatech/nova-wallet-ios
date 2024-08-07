@@ -1,5 +1,5 @@
 import UIKit
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
@@ -140,7 +140,6 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
 
         let votingWrapper = fetchFactory.createVotedReferendaWrapper(
             for: .init(address: address, blockNumber: blockNumber),
-            chain: governanceOption.chain,
             connection: connection,
             runtimeService: runtimeService
         )

@@ -1,5 +1,5 @@
 import Foundation
-import RobinHood
+import Operation_iOS
 import SubstrateSdk
 
 protocol HydraRoutesOperationFactoryProtocol {
@@ -11,6 +11,7 @@ protocol HydraRoutesOperationFactoryProtocol {
 final class HydraRoutesOperationFactory {
     let omnipoolTokensFactory: HydraOmnipoolTokensFactory
     let stableswapTokensFactory: HydraStableSwapsTokensFactory
+    let xykTokensFactory: HydraXYKPoolTokensFactory
     let runtimeProvider: RuntimeProviderProtocol
     let chain: ChainModel
 
@@ -39,6 +40,13 @@ final class HydraRoutesOperationFactory {
             connection: connection,
             operationQueue: operationQueue
         )
+
+        xykTokensFactory = .init(
+            chain: chain,
+            runtimeService: runtimeProvider,
+            connection: connection,
+            operationQueue: operationQueue
+        )
     }
 
     private func createDataWrapper() -> CompoundOperationWrapper<HydraRoutesResolver.Data> {
@@ -49,16 +57,20 @@ final class HydraRoutesOperationFactory {
         let omnipoolDirectionsWrapper = omnipoolTokensFactory.availableDirections()
         let stableswapDirectionsWrapper = stableswapTokensFactory.availableDirections()
         let stableswapPoolAssetsWrapper = stableswapTokensFactory.fetchAllLocalPoolAssets()
+        let xykDirectionsWrapper = xykTokensFactory.availableDirections()
 
         let resultOperation = ClosureOperation<HydraRoutesResolver.Data> {
             let omnipoolDirections = try omnipoolDirectionsWrapper.targetOperation.extractNoCancellableResultData()
             let stableswapDirections = try stableswapDirectionsWrapper.targetOperation.extractNoCancellableResultData()
             let poolAssets = try stableswapPoolAssetsWrapper.targetOperation.extractNoCancellableResultData()
 
+            let xykDirections = try xykDirectionsWrapper.targetOperation.extractNoCancellableResultData()
+
             let data = HydraRoutesResolver.Data(
                 omnipoolDirections: omnipoolDirections,
                 stableswapDirections: stableswapDirections,
-                stableswapPoolAssets: poolAssets
+                stableswapPoolAssets: poolAssets,
+                xykDirections: xykDirections
             )
 
             self.data = data
@@ -69,9 +81,10 @@ final class HydraRoutesOperationFactory {
         resultOperation.addDependency(omnipoolDirectionsWrapper.targetOperation)
         resultOperation.addDependency(stableswapDirectionsWrapper.targetOperation)
         resultOperation.addDependency(stableswapPoolAssetsWrapper.targetOperation)
+        resultOperation.addDependency(xykDirectionsWrapper.targetOperation)
 
         let dependencies = omnipoolDirectionsWrapper.allOperations + stableswapDirectionsWrapper.allOperations +
-            stableswapPoolAssetsWrapper.allOperations
+            stableswapPoolAssetsWrapper.allOperations + xykDirectionsWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: resultOperation, dependencies: dependencies)
     }
