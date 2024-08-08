@@ -1,9 +1,12 @@
 import Foundation
 
-final class CloudBackupCreateWireframe: BaseCloudBackupUpdatePasswordWireframe, CloudBackupCreateWireframeProtocol {
+final class CloudBackupCreateConfirmWireframe: BaseCloudBackupUpdatePasswordWireframe, CloudBackupCreateWireframeProtocol {
     lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
 
-    func proceed(from _: CloudBackupCreateViewProtocol?, locale _: Locale) {
+    override func proceed(
+        from _: CloudBackupCreateViewProtocol?,
+        locale _: Locale
+    ) {
         guard let pincodeViewController = PinViewFactory.createPinSetupView()?.controller else {
             return
         }

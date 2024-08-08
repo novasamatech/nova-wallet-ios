@@ -1729,3 +1729,5 @@
 "gov.vote.conviction.alert.title" = "更新决心";
 "gov.vote.conviction.alert.message" = "弃权票只能通过 0.1x 决心投票。是否以 0.1x 决心投票？";
 "gov.vote.conviction.hint.title" = "弃权时将把决心设置为 0.1x";
+"cloud.backup.password.confirm.title" = "确认备份密码";
+"cloud.backup.password.confirm.details" = "请输入您在上一个屏幕上创建的密码";

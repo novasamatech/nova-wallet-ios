@@ -1,8 +1,8 @@
 import Foundation
 
-final class CloudBackupEnablePasswordWireframe: BaseCloudBackupUpdatePasswordWireframe,
+final class CloudBackupUpdatePasswordConfirmWireframe: BaseCloudBackupUpdatePasswordWireframe,
     CloudBackupCreateWireframeProtocol, ModalAlertPresenting {
-    func proceed(from view: CloudBackupCreateViewProtocol?, locale: Locale) {
+    override func proceed(from view: CloudBackupCreateViewProtocol?, locale: Locale) {
         guard
             let navigationController = view?.controller.navigationController,
             let cloudBackupSettingsView = navigationController.viewControllers.first(
@@ -14,7 +14,7 @@ final class CloudBackupEnablePasswordWireframe: BaseCloudBackupUpdatePasswordWir
         navigationController.popToViewController(cloudBackupSettingsView, animated: true)
 
         presentMultilineSuccessNotification(
-            R.string.localizable.cloudBackupCreatedSuccessfully(
+            R.string.localizable.cloudBackupPasswordChanged(
                 preferredLanguages: locale.rLanguages
             ),
             from: view
