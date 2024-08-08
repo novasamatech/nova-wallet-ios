@@ -6,6 +6,9 @@ enum UrlHandlingAction {
 
     init?(from url: URL) {
         let pathComponents = url.pathComponents
+
+        guard pathComponents.count >= 3 else { return nil }
+
         let action = pathComponents[1].lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         let screen = pathComponents[2].lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
 

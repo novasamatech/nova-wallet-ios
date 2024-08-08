@@ -60,7 +60,7 @@ extension ScreenOpenService {
     struct ActivityValidator: URLActivityValidator {
         func validate(_ url: URL) -> Bool {
             let deeplinkHost = "nova"
-            let applinkHost = ApplicationConfig.shared.novaWalletURL.host
+            let applinkHost = ApplicationConfig.shared.universalLinkUL.host
 
             guard url.host == deeplinkHost || url.host == applinkHost else {
                 return false
