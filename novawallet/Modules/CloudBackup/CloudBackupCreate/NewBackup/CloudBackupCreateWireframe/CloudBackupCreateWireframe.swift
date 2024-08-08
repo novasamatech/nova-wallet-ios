@@ -1,8 +1,6 @@
 import Foundation
 
 final class CloudBackupCreateWireframe: BaseCloudBackupUpdatePasswordWireframe, CloudBackupCreateWireframeProtocol {
-    lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
-
     private var walletName: String
 
     init(walletName: String) {
