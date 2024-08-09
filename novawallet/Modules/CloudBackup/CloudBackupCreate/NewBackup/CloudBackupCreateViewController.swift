@@ -42,6 +42,7 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
         super.viewDidAppear(animated)
 
         presenter.activateOnAppear()
+        preparePasswordView()
     }
 
     private func setupHandlers() {
@@ -103,6 +104,11 @@ final class CloudBackupCreateViewController: UIViewController, ViewHolder {
         )
 
         rootView.passwordView.textField.attributedPlaceholder = passwordPlaceholder
+    }
+
+    func preparePasswordView() {
+        guard flow == .confirmPassword else { return }
+        rootView.passwordView.textField.becomeFirstResponder()
     }
 
     @objc func actionContinue() {
