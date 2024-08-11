@@ -43,6 +43,7 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func scanRecepientCode()
     func applyMyselfRecepient()
     func didTapOnYourWallets()
+    func editFeeAsset()
     func showWeb3NameRecipient()
     func complete(recipient: String)
 }
@@ -73,6 +74,11 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
         chainAsset: ChainAsset,
         selectionState: CrossChainOriginSelectionState,
         delegate: ModalPickerViewControllerDelegate
+    )
+
+    func showNetworkFeeAssetSelection(
+        form view: ControllerBackedProtocol?,
+        viewModel: SwapNetworkFeeSheetViewModel
     )
 
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool

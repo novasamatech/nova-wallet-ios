@@ -81,6 +81,13 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
+        rootView.originFeeView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(actionSetFeeAsset)
+            )
+        )
+
         rootView.web3NameReceipientView.delegate = self
         rootView.recepientInputView.delegate = self
     }
@@ -202,6 +209,10 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
     @objc func actionYourWallets() {
         presenter.didTapOnYourWallets()
+    }
+
+    @objc func actionSetFeeAsset() {
+        presenter.editFeeAsset()
     }
 }
 

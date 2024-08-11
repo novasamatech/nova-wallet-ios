@@ -20,6 +20,7 @@ final class TransferSetupPresenter {
     var childPresenter: TransferSetupChildPresenterProtocol?
 
     private(set) var peerChainAsset: ChainAsset?
+    private(set) var feeChainAsset: ChainAsset?
     private(set) var availablePeers: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
     private(set) var recipientAddress: TransferSetupRecipientAccount? {
@@ -34,6 +35,8 @@ final class TransferSetupPresenter {
             }
         }
     }
+
+    private var isManualFeeSet: Bool = false
 
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
 
@@ -288,6 +291,45 @@ final class TransferSetupPresenter {
             interactor.peerChainAssetDidChanged(chainAsset)
         }
     }
+
+    private func showFeeActions() {
+        guard let utilityAsset = chainAsset.chain.utilityChainAsset() else {
+            return
+        }
+
+        let payAssetSelected = feeChainAsset?.chainAssetId == chainAsset.chainAssetId
+        let viewModel = SwapNetworkFeeSheetViewModel(
+            title: FeeSelectionViewModel.title,
+            message: FeeSelectionViewModel.message,
+            sectionTitle: { section in
+                .init { [weak self] _ in
+                    FeeSelectionViewModel(rawValue: section) == .utilityAsset
+                        ? utilityAsset.asset.symbol
+                        : self?.chainAsset.asset.symbol ?? utilityAsset.asset.symbol
+                }
+            },
+            action: { [weak self] in
+                let chainAsset = FeeSelectionViewModel(rawValue: $0) == .utilityAsset ? utilityAsset : self?.chainAsset
+                if chainAsset?.chainAssetId != self?.feeChainAsset?.chainAssetId {
+                    self?.isManualFeeSet = true
+                }
+                self?.updateFeeChainAsset(chainAsset)
+            },
+            selectedIndex: payAssetSelected ? FeeSelectionViewModel.payAsset.rawValue :
+                FeeSelectionViewModel.utilityAsset.rawValue,
+            count: FeeSelectionViewModel.allCases.count,
+            hint: FeeSelectionViewModel.hint
+        )
+
+        wireframe.showNetworkFeeAssetSelection(
+            form: view,
+            viewModel: viewModel
+        )
+    }
+
+    private func updateFeeChainAsset(_ chainAsset: ChainAsset?) {
+        feeChainAsset = chainAsset
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -360,6 +402,10 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             address: childPresenter?.inputState.recepient,
             delegate: self
         )
+    }
+
+    func editFeeAsset() {
+        showFeeActions()
     }
 
     func complete(recipient: String) {
