@@ -6,17 +6,20 @@ import BigInt
 class BaseExtrinsicOperationFactory {
     let runtimeRegistry: RuntimeCodingServiceProtocol
     let engine: JSONRPCEngine
+    let feeEstimationRegistry: ExtrinsicFeeEstimationRegistring
     let operationManager: OperationManagerProtocol
     let usesStateCallForFee: Bool
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
+        feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         operationManager: OperationManagerProtocol,
         usesStateCallForFee: Bool
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
+        self.feeEstimationRegistry = feeEstimationRegistry
         self.operationManager = operationManager
         self.usesStateCallForFee = usesStateCallForFee
     }
@@ -28,6 +31,7 @@ class BaseExtrinsicOperationFactory {
     func createExtrinsicWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
+        payingFeeIn _: ChainAssetId?,
         signingClosure _: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         fatalError("Subclass must override this method")
@@ -184,7 +188,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
 
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        indexes: IndexSet
+        indexes: IndexSet,
+        payingIn _: ChainAssetId?
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
         let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
             guard let cryptoType = context.substrateCryptoType else {

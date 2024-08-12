@@ -6,12 +6,14 @@ import IrohaCrypto
 protocol ExtrinsicServiceProtocol {
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeClosure
     )
 
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        payingIn chainAssetId: ChainAssetId?,
         runningIn queue: DispatchQueue,
         indexes: IndexSet,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
@@ -19,12 +21,14 @@ protocol ExtrinsicServiceProtocol {
 
     func estimateFeeWithSplitter(
         _ splitter: ExtrinsicSplitting,
+        payingIn chainAssetId: ChainAssetId?,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     )
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitClosure
@@ -32,14 +36,16 @@ protocol ExtrinsicServiceProtocol {
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        payingIn chainAssetId: ChainAssetId?,
+        indexes: IndexSet,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        indexes: IndexSet,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     )
 
     func submitWithTxSplitter(
         _ splitter: ExtrinsicSplitting,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
@@ -47,6 +53,7 @@ protocol ExtrinsicServiceProtocol {
 
     func submitAndWatch(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         subscriptionIdClosure: @escaping ExtrinsicSubscriptionIdClosure,
@@ -57,6 +64,7 @@ protocol ExtrinsicServiceProtocol {
 
     func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitClosure
@@ -64,6 +72,47 @@ protocol ExtrinsicServiceProtocol {
 }
 
 extension ExtrinsicServiceProtocol {
+    func estimateFee(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping EstimateFeeClosure
+    ) {
+        estimateFee(
+            closure,
+            payingIn: nil,
+            runningIn: queue,
+            completion: completionClosure
+        )
+    }
+
+    func estimateFee(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        runningIn queue: DispatchQueue,
+        indexes: IndexSet,
+        completion completionClosure: @escaping EstimateFeeIndexedClosure
+    ) {
+        estimateFee(
+            closure,
+            payingIn: nil,
+            runningIn: queue,
+            indexes: indexes,
+            completion: completionClosure
+        )
+    }
+
+    func estimateFeeWithSplitter(
+        _ splitter: ExtrinsicSplitting,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping EstimateFeeIndexedClosure
+    ) {
+        estimateFeeWithSplitter(
+            splitter,
+            payingIn: nil,
+            runningIn: queue,
+            completion: completionClosure
+        )
+    }
+
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         runningIn queue: DispatchQueue,
@@ -79,17 +128,35 @@ extension ExtrinsicServiceProtocol {
     }
 
     func submit(
-        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
+        numberOfExtrinsics _: Int,
+        completion completionClosure: @escaping ExtrinsicSubmitClosure
+    ) {
+        submit(
+            closure,
+            payingIn: nil,
+            signer: signer,
+            runningIn: queue,
+            completion: completionClosure
+        )
+    }
+
+    func submit(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        payingFeeIn chainAssetId: ChainAssetId? = nil,
         numberOfExtrinsics: Int,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
         submit(
             closure,
+            payingIn: chainAssetId,
+            indexes: IndexSet(0 ..< numberOfExtrinsics),
             signer: signer,
             runningIn: queue,
-            indexes: IndexSet(0 ..< numberOfExtrinsics),
             completion: completionClosure
         )
     }
@@ -162,6 +229,7 @@ final class ExtrinsicService {
 extension ExtrinsicService: ExtrinsicServiceProtocol {
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn _: ChainAssetId?,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeClosure
     ) {

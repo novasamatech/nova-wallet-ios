@@ -9,39 +9,78 @@ protocol ExtrinsicOperationFactoryProtocol {
 
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        indexes: IndexSet
+        indexes: IndexSet,
+        payingIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult>
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         signer: SigningWrapperProtocol,
-        indexes: IndexSet
+        indexes: IndexSet,
+        payingIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<SubmitIndexedExtrinsicResult>
 
     func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        payingFeeIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<String>
 }
 
 extension ExtrinsicOperationFactoryProtocol {
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        numberOfExtrinsics: Int
+        indexes: IndexSet
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
-        estimateFeeOperation(closure, indexes: IndexSet(0 ..< numberOfExtrinsics))
+        estimateFeeOperation(
+            closure,
+            indexes: indexes,
+            payingIn: nil
+        )
+    }
+
+    func estimateFeeOperation(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        numberOfExtrinsics: Int,
+        payingIn chainAssetId: ChainAssetId? = nil
+    ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
+        estimateFeeOperation(
+            closure,
+            indexes: IndexSet(0 ..< numberOfExtrinsics),
+            payingIn: chainAssetId
+        )
     }
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         signer: SigningWrapperProtocol,
-        numberOfExtrinsics: Int
+        indexes: IndexSet
     ) -> CompoundOperationWrapper<SubmitIndexedExtrinsicResult> {
-        submit(closure, signer: signer, indexes: IndexSet(0 ..< numberOfExtrinsics))
+        submit(
+            closure,
+            signer: signer,
+            indexes: indexes,
+            payingIn: nil
+        )
+    }
+
+    func submit(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        signer: SigningWrapperProtocol,
+        numberOfExtrinsics: Int,
+        payingIn chainAssetId: ChainAssetId? = nil
+    ) -> CompoundOperationWrapper<SubmitIndexedExtrinsicResult> {
+        submit(
+            closure,
+            signer: signer,
+            indexes: IndexSet(0 ..< numberOfExtrinsics),
+            payingIn: chainAssetId
+        )
     }
 
     func estimateFeeOperation(
-        _ closure: @escaping ExtrinsicBuilderClosure
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId? = nil
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
         let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
             try closure(builder)
@@ -49,7 +88,8 @@ extension ExtrinsicOperationFactoryProtocol {
 
         let feeOperation = estimateFeeOperation(
             wrapperClosure,
-            numberOfExtrinsics: 1
+            numberOfExtrinsics: 1,
+            payingIn: chainAssetId
         )
 
         let resultMappingOperation = ClosureOperation<ExtrinsicFeeProtocol> {
@@ -71,7 +111,8 @@ extension ExtrinsicOperationFactoryProtocol {
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        payingIn chainAssetId: ChainAssetId? = nil
     ) -> CompoundOperationWrapper<String> {
         let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
             try closure(builder)
@@ -80,7 +121,8 @@ extension ExtrinsicOperationFactoryProtocol {
         let submitOperation = submit(
             wrapperClosure,
             signer: signer,
-            numberOfExtrinsics: 1
+            numberOfExtrinsics: 1,
+            payingIn: chainAssetId
         )
 
         let resultMappingOperation = ClosureOperation<String> {
@@ -114,6 +156,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         runtimeRegistry: RuntimeCodingServiceProtocol,
         customExtensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
+        feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil,
@@ -130,6 +173,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         super.init(
             runtimeRegistry: runtimeRegistry,
             engine: engine,
+            feeEstimationRegistry: feeEstimationRegistry,
             operationManager: operationManager,
             usesStateCallForFee: chain.feeViaRuntimeCall
         )
@@ -226,12 +270,14 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         dependingOn nonceOperation: BaseOperation<UInt32>,
         senderResolutionOperation: BaseOperation<ExtrinsicSenderBuilderResolution>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        feeInstallerOperation: BaseOperation<ExtrinsicFeeInstalling>,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> BaseOperation<ExtrinsicsCreationResult> {
         ClosureOperation<ExtrinsicsCreationResult> {
             let nonce = try nonceOperation.extractNoCancellableResultData()
             let (senderResolution, builders) = try senderResolutionOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let feeInstaller = try feeInstallerOperation.extractNoCancellableResultData()
 
             let extrinsics: [Data] = try builders.enumerated().map { index, partialBuilder in
                 var builder = partialBuilder.with(nonce: nonce + UInt32(index))
@@ -239,6 +285,11 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                 builder = try builder
                     .with(address: account)
                     .with(signaturePayloadFormat: senderResolution.account.type.signaturePayloadFormat)
+
+                builder = try feeInstaller.installingFeeSettings(
+                    to: builder,
+                    coderFactory: codingFactory
+                )
 
                 let context = ExtrinsicSigningContext.Substrate(
                     senderResolution: senderResolution,
@@ -262,6 +313,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     override func createExtrinsicWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
+        payingFeeIn chainAssetId: ChainAssetId?,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         let codingFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
@@ -296,19 +348,30 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
         nonceOperation.addDependency(senderResolutionOperation)
 
+        let feeInstallerWrapper = feeEstimationRegistry.createFeeInstallerWrapper(
+            paingIn: chainAssetId,
+            connection: connection,
+            runtimeService: runtimeRegistry
+        )
+
         let extrinsicsOperation = createExtrinsicsOperation(
             dependingOn: nonceOperation,
             senderResolutionOperation: senderResolutionOperation,
             codingFactoryOperation: codingFactoryOperation,
+            feeInstallerOperation: feeInstallerWrapper.targetOperation,
             signingClosure: signingClosure
         )
 
         extrinsicsOperation.addDependency(nonceOperation)
         extrinsicsOperation.addDependency(senderResolutionOperation)
         extrinsicsOperation.addDependency(codingFactoryOperation)
+        extrinsicsOperation.addDependency(feeInstallerWrapper.targetOperation)
 
-        let dependencies = [codingFactoryOperation] + partialBuildersWrapper.allOperations +
-            senderResolverWrapper.allOperations + [senderResolutionOperation, nonceOperation]
+        let dependencies = [codingFactoryOperation]
+            + partialBuildersWrapper.allOperations
+            + senderResolverWrapper.allOperations
+            + [senderResolutionOperation, nonceOperation]
+            + feeInstallerWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
     }
