@@ -6,9 +6,7 @@ final class CloudBackupEnterPasswordCheckWireframe: ImportCloudPasswordWireframe
         password: String,
         locale _: Locale
     ) {
-        guard let updatePasswordView = CloudBackupCreateViewFactory.createViewForUpdatePassword(
-            for: password
-        ) else {
+        guard let updatePasswordView = CloudBackupCreateViewFactory.createViewForUpdatePassword(password: password) else {
             return
         }
 

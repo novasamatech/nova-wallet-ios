@@ -1729,3 +1729,5 @@
 "gov.vote.conviction.hint.title" = "Conviction will be set to 0.1x when you vote Abstain";
 "gov.vote.conviction.alert.title" = "Conviction update";
 "gov.vote.conviction.alert.message" = "Abstain votes can only be done with 0.1x conviction. Vote with 0.1x conviction?";
+"cloud.backup.password.confirm.title" = "Confirm backup password";
+"cloud.backup.password.confirm.details" = "Please enter the password you created on the previous screen";

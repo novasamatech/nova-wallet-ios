@@ -1,19 +1,34 @@
 import Foundation
 
 protocol CloudBackupPasswordValidating {
-    func validate(password: String?, confirmation: String?) -> CloudBackup.PasswordValidationResult
+    func validate(with type: CloudBackup.PasswordValidationType) -> CloudBackup.PasswordValidationResult
 }
 
 extension CloudBackupPasswordValidating {
-    func isValid(password: String?, confirmation: String?) -> Bool {
-        validate(password: password, confirmation: confirmation) == .all
+    func isValid(with validationType: CloudBackup.PasswordValidationType) -> Bool {
+        validate(with: validationType) == .all(for: validationType)
     }
 }
 
 final class CloudBackupPasswordValidator {}
 
 extension CloudBackupPasswordValidator: CloudBackupPasswordValidating {
-    func validate(password: String?, confirmation: String?) -> CloudBackup.PasswordValidationResult {
+    func validate(with type: CloudBackup.PasswordValidationType) -> CloudBackup.PasswordValidationResult {
+        switch type {
+        case let .newPassword(password):
+            return validatePassword(password)
+        case let .confirmation(password, confirmation):
+            var partialResult = validatePassword(confirmation)
+
+            if password == confirmation {
+                partialResult = partialResult.union([.confirmMatchesPassword])
+            }
+
+            return partialResult
+        }
+    }
+
+    private func validatePassword(_ password: String?) -> CloudBackup.PasswordValidationResult {
         var result: CloudBackup.PasswordValidationResult = []
 
         guard let password, !password.isEmpty else {
@@ -30,10 +45,6 @@ extension CloudBackupPasswordValidator: CloudBackupPasswordValidating {
 
         if password.rangeOfCharacter(from: .decimalDigits) != nil {
             result = result.union([.digits])
-        }
-
-        if password == confirmation {
-            result = result.union([.confirmMatchesPassword])
         }
 
         return result

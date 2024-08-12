@@ -8,6 +8,12 @@ protocol CloudBackPasswordViewModelFactoryProtocol {
 }
 
 final class CloudBackPasswordViewModelFactory {
+    private let flow: CloudBackupSetupPasswordFlow
+
+    init(flow: CloudBackupSetupPasswordFlow) {
+        self.flow = flow
+    }
+
     func createViewModel(for text: String, isMatches: Bool) -> HintListView.ViewModel {
         let color = isMatches ? R.color.colorTextPositive()! : R.color.colorTextSecondary()!
 
@@ -27,7 +33,7 @@ extension CloudBackPasswordViewModelFactory: CloudBackPasswordViewModelFactoryPr
         from result: CloudBackup.PasswordValidationResult,
         locale: Locale
     ) -> [HintListView.ViewModel] {
-        [
+        var hints = [
             createViewModel(
                 for: R.string.localizable.cloudBackupCreateHintMinChar(
                     "\(CloudBackup.PasswordValidationResult.minLength)",
@@ -42,11 +48,18 @@ extension CloudBackPasswordViewModelFactory: CloudBackPasswordViewModelFactoryPr
             createViewModel(
                 for: R.string.localizable.cloudBackupCreateHintLetters(preferredLanguages: locale.rLanguages),
                 isMatches: result.contains(.asciiChars)
-            ),
-            createViewModel(
-                for: R.string.localizable.cloudBackupCreateHintPasswordMatch(preferredLanguages: locale.rLanguages),
-                isMatches: result.contains(.confirmMatchesPassword)
             )
         ]
+
+        if flow == .confirmPassword {
+            hints.append(
+                createViewModel(
+                    for: R.string.localizable.cloudBackupCreateHintPasswordMatch(preferredLanguages: locale.rLanguages),
+                    isMatches: result.contains(.confirmMatchesPassword)
+                )
+            )
+        }
+
+        return hints
     }
 }

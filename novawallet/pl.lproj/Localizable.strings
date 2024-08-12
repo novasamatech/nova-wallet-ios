@@ -1729,3 +1729,5 @@
 "gov.vote.conviction.alert.title" = "Aktualizacja conviction";
 "gov.vote.conviction.alert.message" = "Wstrzymanie się od głosu może być dokonane tylko z 0.1x conviction. Głosować z 0.1x conviction?";
 "gov.vote.conviction.hint.title" = "Conviction zostanie ustawione na 0.1x podczas Wstrzymania się";
+"cloud.backup.password.confirm.title" = "Potwierdź hasło do kopii zapasowej";
+"cloud.backup.password.confirm.details" = "Proszę wprowadzić hasło, które utworzyłeś na poprzednim ekranie";

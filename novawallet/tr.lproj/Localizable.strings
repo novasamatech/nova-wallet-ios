@@ -1729,3 +1729,5 @@
 "gov.vote.conviction.alert.title" = "İnanç Güncellemesi";
 "gov.vote.conviction.alert.message" = "Çekimser oylar yalnızca 0.1x inançla yapılabilir. 0.1x inançla oy kullanmak ister misiniz?";
 "gov.vote.conviction.hint.title" = "Çekinmelerde 0.1x olarak Ayarlanacak";
+"cloud.backup.password.confirm.title" = "Yedekleme parolasını onaylayın";
+"cloud.backup.password.confirm.details" = "Lütfen önceki ekranda oluşturduğunuz parolayı girin";

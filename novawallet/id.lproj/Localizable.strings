@@ -1729,3 +1729,5 @@
 "gov.vote.conviction.alert.title" = "Pembaruan keyakinan";
 "gov.vote.conviction.alert.message" = "Suara Abstain hanya dapat dilakukan dengan keyakinan 0,1x. Pilih dengan keyakinan 0,1x?";
 "gov.vote.conviction.hint.title" = "Keyakinan akan diatur ke 0,1x ketika Abstain";
+"cloud.backup.password.confirm.title" = "Konfirmasikan kata sandi cadangan";
+"cloud.backup.password.confirm.details" = "Harap masukkan kata sandi yang Anda buat di layar sebelumnya";
