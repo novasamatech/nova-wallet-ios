@@ -19,18 +19,22 @@ class OnChainTransferPresenter {
     private(set) var sendingAssetExistence: AssetBalanceExistence?
     private(set) var utilityAssetMinBalance: BigUInt?
 
-    var senderUtilityBalanceCountingEd: BigUInt? {
-        isUtilityTransfer ? senderSendingAssetBalance?.balanceCountingEd :
-            senderUtilityAssetBalance?.balanceCountingEd
+    var senderBalanceCountingEd: BigUInt? {
+        feeAsset == chainAsset
+            ? senderSendingAssetBalance?.balanceCountingEd
+            : senderUtilityAssetBalance?.balanceCountingEd
     }
 
-    var senderUtilityAssetTransferable: BigUInt? {
-        isUtilityTransfer ? senderSendingAssetBalance?.transferable : senderUtilityAssetBalance?.transferable
+    var senderAssetTransferable: BigUInt? {
+        feeAsset == chainAsset
+            ? senderSendingAssetBalance?.transferable
+            : senderUtilityAssetBalance?.transferable
     }
 
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var fee: FeeOutputModel?
+    var feeAsset: ChainAsset
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -44,8 +48,13 @@ class OnChainTransferPresenter {
         chainAsset.chain.utilityAssets().first?.assetId == chainAsset.asset.assetId
     }
 
+    var feeAssetChangeAvailable: Bool {
+        chainAsset.chain.hasCustomTransferFees && !isUtilityTransfer
+    }
+
     init(
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
@@ -54,6 +63,7 @@ class OnChainTransferPresenter {
         logger: LoggerProtocol? = nil
     ) {
         self.chainAsset = chainAsset
+        self.feeAsset = feeAsset
         self.networkViewModelFactory = networkViewModelFactory
         self.sendingBalanceViewModelFactory = sendingBalanceViewModelFactory
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
@@ -82,7 +92,7 @@ class OnChainTransferPresenter {
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
-        utilityAssetInfo: AssetBalanceDisplayInfo,
+        utilityAssetInfo _: AssetBalanceDisplayInfo,
         view: ControllerBackedProtocol?,
         selectedLocale: Locale
     ) -> [DataValidating] {
@@ -113,18 +123,18 @@ class OnChainTransferPresenter {
             ),
 
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
-                balance: senderUtilityAssetTransferable,
+                balance: senderAssetTransferable,
                 fee: fee?.value,
-                spendingAmount: isUtilityTransfer ? sendingAmount : nil,
-                asset: utilityAssetInfo,
+                spendingAmount: feeAsset == chainAsset ? sendingAmount : nil,
+                asset: feeAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee?.value,
-                total: senderUtilityBalanceCountingEd,
-                minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
-                asset: utilityAssetInfo,
+                total: senderBalanceCountingEd,
+                minBalance: feeAsset == chainAsset ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
+                asset: feeAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
 

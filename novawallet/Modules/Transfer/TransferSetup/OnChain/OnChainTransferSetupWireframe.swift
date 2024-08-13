@@ -10,11 +10,13 @@ class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol {
     func showConfirmation(
         from view: TransferSetupChildViewProtocol?,
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         sendingAmount: OnChainTransferAmount<Decimal>,
         recepient: AccountAddress
     ) {
         guard let confirmView = TransferConfirmOnChainViewFactory.createView(
             chainAsset: chainAsset,
+            feeAsset: feeAsset,
             recepient: recepient,
             amount: sendingAmount,
             transferCompletion: transferCompletion

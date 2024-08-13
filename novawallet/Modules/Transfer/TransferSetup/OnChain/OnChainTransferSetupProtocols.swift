@@ -5,6 +5,7 @@ protocol OnChainTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?)
     func change(recepient: AccountId?)
+    func change(feeAsset: ChainAsset?)
 }
 
 protocol OnChainTransferSetupInteractorOutputProtocol: AnyObject {
@@ -26,6 +27,7 @@ protocol OnChainTransferSetupWireframeProtocol: AlertPresentable, ErrorPresentab
     func showConfirmation(
         from view: TransferSetupChildViewProtocol?,
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         sendingAmount: OnChainTransferAmount<Decimal>,
         recepient: AccountAddress
     )

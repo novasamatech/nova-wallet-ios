@@ -62,14 +62,14 @@ extension TransferSetupPresenterFactory {
             return nil
         }
 
-        guard let utilityAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo else {
+        guard let utilityChainAsset = chainAsset.chain.utilityChainAsset() else {
             return nil
         }
 
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
-            utilityAssetInfo: utilityAssetInfo,
+            utilityAssetInfo: utilityChainAsset.asset.displayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
@@ -84,6 +84,7 @@ extension TransferSetupPresenterFactory {
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
+            feeAsset: utilityChainAsset,
             initialState: initialState,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
@@ -141,6 +142,7 @@ extension TransferSetupPresenterFactory {
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
+            feeAsset: chain.utilityChainAsset(),
             runtimeService: runtimeProvider,
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,

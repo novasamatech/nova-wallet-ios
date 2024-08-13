@@ -81,11 +81,10 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.originFeeView.addGestureRecognizer(
-            UITapGestureRecognizer(
-                target: self,
-                action: #selector(actionSetFeeAsset)
-            )
+        rootView.originFeeView.valueTopButton.addTarget(
+            self,
+            action: #selector(actionSetFeeAsset),
+            for: .touchUpInside
         )
 
         rootView.web3NameReceipientView.delegate = self
@@ -105,8 +104,11 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
+        rootView.originFeeView.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
         rootView.recepientInputView.locale = selectedLocale
-        rootView.originFeeView.locale = selectedLocale
 
         rootView.networkContainerView.locale = selectedLocale
 
@@ -259,8 +261,8 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         detailsValueLabel.text = viewModel
     }
 
-    func didReceiveOriginFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.originFeeView.bind(viewModel: viewModel)
+    func didReceiveOriginFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
+        rootView.originFeeView.bind(loadableViewModel: viewModel)
     }
 
     func didReceiveCrossChainFee(viewModel: BalanceViewModelProtocol?) {

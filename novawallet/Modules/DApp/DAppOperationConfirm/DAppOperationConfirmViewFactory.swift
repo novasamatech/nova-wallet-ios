@@ -148,15 +148,23 @@ struct DAppOperationConfirmViewFactory {
             return nil
         }
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            operationQueue: operationQueue
+        )
+
         return DAppOperationConfirmInteractor(
             request: request,
             chain: chain,
             runtimeProvider: runtimeProvider,
+            feeEstimationRegistry: feeEstimationRegistry,
             connection: connection,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
             priceProviderFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: operationQueue
         )
     }
 

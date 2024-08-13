@@ -36,6 +36,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
+            feeAsset: chain.utilityChainAsset(),
             runtimeService: runtimeService,
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,

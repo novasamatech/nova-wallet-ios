@@ -64,14 +64,14 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
 
         guard
             chain.chainId == chainAssetId.chainId,
-            let asset = chain.asset(for: chainAssetId.assetId),
-            let rawAssetType = asset.type else {
+            let asset = chain.asset(for: chainAssetId.assetId)
+        else {
             return CompoundOperationWrapper.createWithError(
                 ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
             )
         }
 
-        switch AssetType(rawValue: rawAssetType) {
+        switch AssetType(rawType: asset.type) {
         case .none,
              .orml:
             return createNativeFeeEstimatingWrapper(
@@ -94,7 +94,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
     }
 
     func createFeeInstallerWrapper(
-        paingIn chainAssetId: ChainAssetId?,
+        payingIn chainAssetId: ChainAssetId?,
         connection _: JSONRPCEngine,
         runtimeService _: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
@@ -105,13 +105,12 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
         do {
             guard
                 chainAssetId.chainId == chain.chainId,
-                let asset = chain.asset(for: chainAssetId.assetId),
-                let rawAssetType = asset.type
+                let asset = chain.asset(for: chainAssetId.assetId)
             else {
                 throw ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
             }
 
-            switch AssetType(rawValue: rawAssetType) {
+            switch AssetType(rawType: asset.type) {
             case .none:
                 return CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
             case .statemine:

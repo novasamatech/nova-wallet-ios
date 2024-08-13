@@ -6,6 +6,7 @@ import SoraKeystore
 struct TransferConfirmOnChainViewFactory {
     static func createView(
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         recepient: AccountAddress,
         amount: OnChainTransferAmount<Decimal>,
         transferCompletion: TransferCompletionClosure?
@@ -94,6 +95,7 @@ struct TransferConfirmOnChainViewFactory {
             amount: amount,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             chainAsset: chainAsset,
+            feeAsset: feeAsset,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,

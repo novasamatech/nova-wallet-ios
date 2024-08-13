@@ -329,6 +329,7 @@ final class TransferSetupPresenter {
 
     private func updateFeeChainAsset(_ chainAsset: ChainAsset?) {
         feeChainAsset = chainAsset
+        childPresenter?.changeFeeAsset(to: chainAsset)
     }
 }
 

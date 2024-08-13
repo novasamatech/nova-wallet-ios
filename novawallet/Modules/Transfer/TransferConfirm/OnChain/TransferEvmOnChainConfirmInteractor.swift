@@ -70,6 +70,8 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
 }
 
 extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorInputProtocol {
+    func change(feeAsset _: ChainAsset?) {}
+
     func submit(amount: OnChainTransferAmount<BigUInt>, recepient: AccountAddress, lastFee: BigUInt?) {
         do {
             guard let transferType = transferType, let lastFeeModel = lastFeeModel else {

@@ -44,7 +44,7 @@ protocol ExtrinsicServiceProtocol {
     )
 
     func submitWithTxSplitter(
-        _ splitter: ExtrinsicSplitting,
+        _ txSplitter: ExtrinsicSplitting,
         payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
@@ -131,7 +131,6 @@ extension ExtrinsicServiceProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        numberOfExtrinsics _: Int,
         completion completionClosure: @escaping ExtrinsicSubmitClosure
     ) {
         submit(
@@ -145,7 +144,7 @@ extension ExtrinsicServiceProtocol {
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        payingFeeIn chainAssetId: ChainAssetId? = nil,
+        payingIn chainAssetId: ChainAssetId? = nil,
         numberOfExtrinsics: Int,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
@@ -155,6 +154,72 @@ extension ExtrinsicServiceProtocol {
             closure,
             payingIn: chainAssetId,
             indexes: IndexSet(0 ..< numberOfExtrinsics),
+            signer: signer,
+            runningIn: queue,
+            completion: completionClosure
+        )
+    }
+
+    func submit(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        indexes: IndexSet,
+        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
+    ) {
+        submit(
+            closure,
+            payingIn: nil,
+            indexes: indexes,
+            signer: signer,
+            runningIn: queue,
+            completion: completionClosure
+        )
+    }
+
+    func submitWithTxSplitter(
+        _ txSplitter: ExtrinsicSplitting,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
+    ) {
+        submitWithTxSplitter(
+            txSplitter,
+            payingIn: nil,
+            signer: signer,
+            runningIn: queue,
+            completion: completionClosure
+        )
+    }
+
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId? = nil,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        subscriptionIdClosure: @escaping ExtrinsicSubscriptionIdClosure,
+        notificationClosure: @escaping ExtrinsicSubscriptionStatusClosure
+    ) {
+        submitAndWatch(
+            closure,
+            payingIn: chainAssetId,
+            signer: signer,
+            runningIn: queue,
+            subscriptionIdClosure: subscriptionIdClosure,
+            notificationClosure: notificationClosure
+        )
+    }
+
+    func buildExtrinsic(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId? = nil,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitClosure
+    ) {
+        buildExtrinsic(
+            closure,
+            payingIn: chainAssetId,
             signer: signer,
             runningIn: queue,
             completion: completionClosure
@@ -171,6 +236,7 @@ final class ExtrinsicService {
         runtimeRegistry: RuntimeCodingServiceProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
+        feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         extensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol
@@ -180,6 +246,7 @@ final class ExtrinsicService {
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            feeEstimationRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
@@ -229,11 +296,14 @@ final class ExtrinsicService {
 extension ExtrinsicService: ExtrinsicServiceProtocol {
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderClosure,
-        payingIn _: ChainAssetId?,
+        payingIn chainAssetId: ChainAssetId?,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeClosure
     ) {
-        let wrapper = operationFactory.estimateFeeOperation(closure)
+        let wrapper = operationFactory.estimateFeeOperation(
+            closure,
+            payingIn: chainAssetId
+        )
 
         wrapper.targetOperation.completionBlock = {
             queue.async {
@@ -250,11 +320,16 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
 
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        payingIn chainAssetId: ChainAssetId?,
         runningIn queue: DispatchQueue,
         indexes: IndexSet,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     ) {
-        let wrapper = operationFactory.estimateFeeOperation(closure, indexes: indexes)
+        let wrapper = operationFactory.estimateFeeOperation(
+            closure,
+            indexes: indexes,
+            payingIn: chainAssetId
+        )
 
         wrapper.targetOperation.completionBlock = {
             queue.async {
@@ -278,6 +353,7 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
 
     func estimateFeeWithSplitter(
         _ splitter: ExtrinsicSplitting,
+        payingIn chainAssetId: ChainAssetId?,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     ) {
@@ -288,7 +364,8 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
 
             return self.operationFactory.estimateFeeOperation(
                 result.closure,
-                numberOfExtrinsics: result.numberOfExtrinsics
+                numberOfExtrinsics: result.numberOfExtrinsics,
+                payingIn: chainAssetId
             )
         }
 
@@ -323,12 +400,18 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        payingIn chainAssetId: ChainAssetId?,
+        indexes: IndexSet,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        indexes: IndexSet,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
-        let wrapper = operationFactory.submit(closure, signer: signer, indexes: indexes)
+        let wrapper = operationFactory.submit(
+            closure,
+            signer: signer,
+            indexes: indexes,
+            payingIn: chainAssetId
+        )
 
         wrapper.targetOperation.completionBlock = {
             queue.async {
@@ -352,11 +435,16 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitClosure
     ) {
-        let wrapper = operationFactory.submit(closure, signer: signer)
+        let wrapper = operationFactory.submit(
+            closure,
+            signer: signer,
+            payingIn: chainAssetId
+        )
 
         wrapper.targetOperation.completionBlock = {
             queue.async {
@@ -373,6 +461,7 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
 
     func submitWithTxSplitter(
         _ txSplitter: ExtrinsicSplitting,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
@@ -385,7 +474,8 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
             return self.operationFactory.submit(
                 result.closure,
                 signer: signer,
-                numberOfExtrinsics: result.numberOfExtrinsics
+                numberOfExtrinsics: result.numberOfExtrinsics,
+                payingIn: chainAssetId
             )
         }
 
@@ -420,12 +510,17 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
 
     func submitAndWatch(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         subscriptionIdClosure: @escaping ExtrinsicSubscriptionIdClosure,
         notificationClosure: @escaping ExtrinsicSubscriptionStatusClosure
     ) {
-        let extrinsicWrapper = operationFactory.buildExtrinsic(closure, signer: signer)
+        let extrinsicWrapper = operationFactory.buildExtrinsic(
+            closure,
+            signer: signer,
+            payingFeeIn: chainAssetId
+        )
 
         extrinsicWrapper.targetOperation.completionBlock = { [weak self] in
             queue.async {
@@ -452,11 +547,16 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
 
     func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping (Result<String, Error>) -> Void
     ) {
-        let extrinsicOperation = operationFactory.buildExtrinsic(closure, signer: signer)
+        let extrinsicOperation = operationFactory.buildExtrinsic(
+            closure,
+            signer: signer,
+            payingFeeIn: chainAssetId
+        )
 
         extrinsicOperation.targetOperation.completionBlock = {
             queue.async {

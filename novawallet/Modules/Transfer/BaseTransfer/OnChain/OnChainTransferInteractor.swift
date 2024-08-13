@@ -20,6 +20,8 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     private var sendingAssetInfo: AssetStorageInfo?
     private var utilityAssetInfo: AssetStorageInfo?
 
+    private var feeAsset: ChainAsset?
+
     private var sendingAssetSubscriptionId: UUID?
     private var utilityAssetSubscriptionId: UUID?
 
@@ -36,6 +38,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
+        feeAsset: ChainAsset?,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
@@ -48,6 +51,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     ) {
         self.runtimeService = runtimeService
         self.feeProxy = feeProxy
+        self.feeAsset = feeAsset
         self.extrinsicService = extrinsicService
         self.walletRemoteWrapper = walletRemoteWrapper
         self.substrateStorageFacade = substrateStorageFacade
@@ -516,6 +520,11 @@ extension OnChainTransferInteractor {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    func change(feeAsset: ChainAsset?) {
+        guard let feeAsset else { return }
+        self.feeAsset = feeAsset
+    }
+
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?) {
         let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
 
@@ -523,7 +532,8 @@ extension OnChainTransferInteractor {
 
         feeProxy.estimateFee(
             using: extrinsicService,
-            reuseIdentifier: identifier
+            reuseIdentifier: identifier,
+            payingIn: feeAsset?.chainAssetId
         ) { [weak self] builder in
             let (newBuilder, _) = try self?.addingTransferCommand(
                 to: builder,

@@ -25,6 +25,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         amount: OnChainTransferAmount<Decimal>,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
@@ -43,6 +44,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         self.transferCompletion = transferCompletion
         super.init(
             chainAsset: chainAsset,
+            feeAsset: feeAsset,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,

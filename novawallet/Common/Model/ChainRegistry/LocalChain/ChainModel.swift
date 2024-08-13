@@ -181,6 +181,18 @@ struct ChainModel: Equatable, Hashable {
         hasSwapHub || hasSwapHydra
     }
 
+    var hasAssetHubTransferFees: Bool {
+        options?.contains(where: { $0 == .assetHubFees }) ?? false
+    }
+
+    var hasHydationTransferFees: Bool {
+        options?.contains(where: { $0 == .hydrationFees }) ?? false
+    }
+
+    var hasCustomTransferFees: Bool {
+        hasAssetHubTransferFees || hasHydationTransferFees
+    }
+
     var hasProxy: Bool {
         options?.contains(where: { $0 == .proxy }) ?? false
     }
@@ -335,6 +347,8 @@ enum LocalChainOptions: String, Codable {
     case swapHydra = "hydradx-swaps"
     case proxy
     case pushNotifications = "pushSupport"
+    case assetHubFees = "assethub-fees"
+    case hydrationFees = "hydration-fees"
 }
 
 extension ChainModel {

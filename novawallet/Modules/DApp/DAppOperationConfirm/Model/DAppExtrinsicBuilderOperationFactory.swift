@@ -117,6 +117,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
     func createWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
+        payingFeeIn _: ChainAssetId?,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         let signatureWrapper = createRawSignatureOperation(
