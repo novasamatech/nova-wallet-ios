@@ -62,8 +62,13 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceive(recipients: [Web3TransferRecipient], for name: String)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable,
-    Web3NameAddressListPresentable, YourWalletsPresentable, ScanAddressPresentable {
+protocol TransferSetupWireframeProtocol: AlertPresentable,
+    ErrorPresentable,
+    AddressOptionsPresentable,
+    Web3NameAddressListPresentable,
+    YourWalletsPresentable,
+    ScanAddressPresentable,
+    FeeAssetSelectionPresentable {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
@@ -75,11 +80,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
         chainAsset: ChainAsset,
         selectionState: CrossChainOriginSelectionState,
         delegate: ModalPickerViewControllerDelegate
-    )
-
-    func showNetworkFeeAssetSelection(
-        form view: ControllerBackedProtocol?,
-        viewModel: SwapNetworkFeeSheetViewModel
     )
 
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool

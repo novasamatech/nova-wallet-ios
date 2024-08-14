@@ -292,41 +292,6 @@ final class TransferSetupPresenter {
         }
     }
 
-    private func showFeeActions() {
-        guard let utilityAsset = chainAsset.chain.utilityChainAsset() else {
-            return
-        }
-
-        let payAssetSelected = feeChainAsset?.chainAssetId == chainAsset.chainAssetId
-        let viewModel = SwapNetworkFeeSheetViewModel(
-            title: FeeSelectionViewModel.title,
-            message: FeeSelectionViewModel.message,
-            sectionTitle: { section in
-                .init { [weak self] _ in
-                    FeeSelectionViewModel(rawValue: section) == .utilityAsset
-                        ? utilityAsset.asset.symbol
-                        : self?.chainAsset.asset.symbol ?? utilityAsset.asset.symbol
-                }
-            },
-            action: { [weak self] in
-                let chainAsset = FeeSelectionViewModel(rawValue: $0) == .utilityAsset ? utilityAsset : self?.chainAsset
-                if chainAsset?.chainAssetId != self?.feeChainAsset?.chainAssetId {
-                    self?.isManualFeeSet = true
-                }
-                self?.updateFeeChainAsset(chainAsset)
-            },
-            selectedIndex: payAssetSelected ? FeeSelectionViewModel.payAsset.rawValue :
-                FeeSelectionViewModel.utilityAsset.rawValue,
-            count: FeeSelectionViewModel.allCases.count,
-            hint: FeeSelectionViewModel.hint
-        )
-
-        wireframe.showNetworkFeeAssetSelection(
-            form: view,
-            viewModel: viewModel
-        )
-    }
-
     private func updateFeeChainAsset(_ chainAsset: ChainAsset?) {
         feeChainAsset = chainAsset
         childPresenter?.changeFeeAsset(to: chainAsset)
@@ -406,7 +371,19 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func editFeeAsset() {
-        showFeeActions()
+        guard let utilityAsset = chainAsset.chain.utilityChainAsset() else {
+            return
+        }
+
+        wireframe.showFeeAssetSelection(
+            from: view,
+            utilityAsset: utilityAsset,
+            sendingAsset: chainAsset,
+            currentFeeAsset: feeChainAsset,
+            onFeeAssetSelect: { [weak self] selectedAsset in
+                self?.updateFeeChainAsset(selectedAsset)
+            }
+        )
     }
 
     func complete(recipient: String) {

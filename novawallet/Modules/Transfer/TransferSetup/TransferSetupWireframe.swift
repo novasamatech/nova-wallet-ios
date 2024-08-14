@@ -36,20 +36,6 @@ class TransferSetupWireframe: TransferSetupWireframeProtocol {
         )
     }
 
-    func showNetworkFeeAssetSelection(
-        form view: ControllerBackedProtocol?,
-        viewModel: SwapNetworkFeeSheetViewModel
-    ) {
-        let bottomSheet = SwapNetworkFeeSheetViewFactory.createView(from: viewModel)
-
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
-
-        bottomSheet.controller.modalTransitioningFactory = factory
-        bottomSheet.controller.modalPresentationStyle = .custom
-
-        view?.controller.present(bottomSheet.controller, animated: true)
-    }
-
     func checkDismissing(view: TransferSetupViewProtocol?) -> Bool {
         view?.controller.navigationController?.isBeingDismissed ?? true
     }
