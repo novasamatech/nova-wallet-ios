@@ -99,6 +99,7 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
 
             extrinsicService.submit(
                 extrinsicClosure,
+                payingIn: feeAsset?.chainAssetId,
                 signer: signingWrapper,
                 runningIn: .main,
                 completion: { [weak self] result in

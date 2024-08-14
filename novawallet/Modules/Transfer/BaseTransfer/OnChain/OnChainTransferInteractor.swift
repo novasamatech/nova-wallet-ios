@@ -21,7 +21,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     private var sendingAssetInfo: AssetStorageInfo?
     private var utilityAssetInfo: AssetStorageInfo?
 
-    private var feeAsset: ChainAsset?
+    private(set) var feeAsset: ChainAsset?
 
     private var sendingAssetSubscriptionId: UUID?
     private var utilityAssetSubscriptionId: UUID?
