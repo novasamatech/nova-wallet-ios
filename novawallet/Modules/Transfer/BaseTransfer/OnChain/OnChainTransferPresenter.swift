@@ -20,13 +20,13 @@ class OnChainTransferPresenter {
     private(set) var utilityAssetMinBalance: BigUInt?
 
     var senderBalanceCountingEd: BigUInt? {
-        feeAsset == chainAsset
+        sendingAssetFeeSelected
             ? senderSendingAssetBalance?.balanceCountingEd
             : senderUtilityAssetBalance?.balanceCountingEd
     }
 
     var senderAssetTransferable: BigUInt? {
-        feeAsset == chainAsset
+        sendingAssetFeeSelected
             ? senderSendingAssetBalance?.transferable
             : senderUtilityAssetBalance?.transferable
     }
@@ -48,6 +48,10 @@ class OnChainTransferPresenter {
 
     var isUtilityTransfer: Bool {
         chainAsset.chain.utilityAssets().first?.assetId == chainAsset.asset.assetId
+    }
+
+    var sendingAssetFeeSelected: Bool {
+        feeAsset.chainAssetId == chainAsset.chainAssetId
     }
 
     var feeAssetChangeAvailable: Bool {
@@ -129,7 +133,7 @@ class OnChainTransferPresenter {
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: senderAssetTransferable,
                 fee: fee?.value,
-                spendingAmount: feeAsset == chainAsset ? sendingAmount : nil,
+                spendingAmount: sendingAssetFeeSelected ? sendingAmount : nil,
                 asset: feeAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
@@ -137,7 +141,7 @@ class OnChainTransferPresenter {
             dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee?.value,
                 total: senderBalanceCountingEd,
-                minBalance: feeAsset == chainAsset ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
+                minBalance: sendingAssetFeeSelected ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
                 asset: feeAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),

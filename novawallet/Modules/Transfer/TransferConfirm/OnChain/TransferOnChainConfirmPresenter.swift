@@ -95,11 +95,11 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
-            let viewModelFactory = feeAsset == chainAsset
+            let viewModelFactory = sendingAssetFeeSelected
                 ? sendingBalanceViewModelFactory
                 : utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
 
-            let priceData = feeAsset == chainAsset
+            let priceData = sendingAssetFeeSelected
                 ? sendingAssetPrice
                 : utilityAssetPrice
 

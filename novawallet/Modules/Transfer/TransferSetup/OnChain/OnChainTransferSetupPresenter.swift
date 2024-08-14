@@ -113,11 +113,11 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
-            let viewModelFactory = feeAsset == chainAsset
+            let viewModelFactory = sendingAssetFeeSelected
                 ? sendingBalanceViewModelFactory
                 : utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
 
-            let priceData = feeAsset == chainAsset
+            let priceData = sendingAssetFeeSelected
                 ? sendingAssetPrice
                 : utilityAssetPrice
 
@@ -175,7 +175,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
-        let feeValue = feeAsset == chainAsset
+        let feeValue = sendingAssetFeeSelected
             ? (fee?.value.amountForCurrentAccount ?? 0)
             : 0
 
@@ -269,7 +269,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
         super.didReceiveSendingAssetPrice(priceData)
 
-        if feeAsset == chainAsset {
+        if sendingAssetFeeSelected {
             updateFeeView()
         }
 
@@ -371,7 +371,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
 
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
-                fee: feeAsset == chainAsset ? fee?.value : nil,
+                fee: sendingAssetFeeSelected ? fee?.value : nil,
                 totalAmount: senderSendingAssetBalance?.balanceCountingEd,
                 minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
