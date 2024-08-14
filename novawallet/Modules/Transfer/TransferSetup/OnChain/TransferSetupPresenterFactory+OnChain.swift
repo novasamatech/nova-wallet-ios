@@ -117,6 +117,8 @@ extension TransferSetupPresenterFactory {
             return nil
         }
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 
         let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
@@ -126,7 +128,7 @@ extension TransferSetupPresenterFactory {
             chainRegistry: chainRegistry,
             repositoryFactory: repositoryFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
 
@@ -137,6 +139,11 @@ extension TransferSetupPresenterFactory {
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chain)
+
+        let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
 
         return OnChainTransferSetupInteractor(
             selectedAccount: selectedAccount,
@@ -150,6 +157,7 @@ extension TransferSetupPresenterFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

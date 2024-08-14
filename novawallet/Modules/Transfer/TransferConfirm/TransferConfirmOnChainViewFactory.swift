@@ -199,6 +199,8 @@ struct TransferConfirmOnChainViewFactory {
             return nil
         }
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let repositoryFactory = SubstrateRepositoryFactory()
 
         let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
@@ -208,7 +210,7 @@ struct TransferConfirmOnChainViewFactory {
             chainRegistry: chainRegistry,
             repositoryFactory: repositoryFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
 
@@ -231,6 +233,11 @@ struct TransferConfirmOnChainViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
+        let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
         return TransferOnChainConfirmInteractor(
             selectedAccount: account,
             chain: chain,
@@ -245,6 +252,7 @@ struct TransferConfirmOnChainViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

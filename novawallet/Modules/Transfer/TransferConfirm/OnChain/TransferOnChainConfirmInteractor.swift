@@ -25,6 +25,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -44,6 +45,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             substrateStorageFacade: substrateStorageFacade,
+            transferAggregationWrapperFactory: transferAggregationWrapperFactory,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

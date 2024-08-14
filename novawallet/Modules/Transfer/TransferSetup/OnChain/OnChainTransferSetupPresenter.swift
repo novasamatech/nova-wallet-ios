@@ -260,6 +260,12 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         }
     }
 
+    override func didReceiveSendingAssetFeeAvailable(_ available: Bool) {
+        super.didReceiveSendingAssetFeeAvailable(available)
+
+        refreshFee()
+    }
+
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
         super.didReceiveSendingAssetPrice(priceData)
 
@@ -280,7 +286,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         super.didCompleteSetup()
 
         interactor.change(recepient: getRecepientAccountId())
-        refreshFee()
+        interactor.requestFeePaymentAvailability(for: chainAsset)
     }
 
     override func didReceiveError(_ error: Error) {

@@ -167,6 +167,10 @@ extension EvmOnChainTransferInteractor {
         }
     }
 
+    func requestFeePaymentAvailability(for _: ChainAsset) {
+        presenter?.didReceiveSendingAssetFeeAvailable(false)
+    }
+
     func change(recepient: AccountId?) {
         guard let recepient = recepient else {
             return

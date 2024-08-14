@@ -9,6 +9,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     let extrinsicService: ExtrinsicServiceProtocol
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
     let substrateStorageFacade: StorageFacadeProtocol
+    let transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol
 
     private lazy var callFactory = SubstrateCallFactory()
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
@@ -46,6 +47,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -55,6 +57,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         self.extrinsicService = extrinsicService
         self.walletRemoteWrapper = walletRemoteWrapper
         self.substrateStorageFacade = substrateStorageFacade
+        self.transferAggregationWrapperFactory = transferAggregationWrapperFactory
 
         super.init(
             selectedAccount: selectedAccount,
@@ -543,6 +546,26 @@ extension OnChainTransferInteractor {
 
             return newBuilder
         }
+    }
+
+    func requestFeePaymentAvailability(for chainAsset: ChainAsset) {
+        let wrapper = transferAggregationWrapperFactory.createCanPayFeeWrapper(in: chainAsset)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: { [weak self] result in
+                switch result {
+                case let .success(available):
+                    self?.presenter?.didReceiveSendingAssetFeeAvailable(available)
+                case let .failure(error) where error is AssetConversionAggregationFactoryError:
+                    self?.presenter?.didReceiveSendingAssetFeeAvailable(false)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        )
     }
 
     func change(recepient: AccountId?) {

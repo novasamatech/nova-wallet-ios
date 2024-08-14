@@ -44,12 +44,16 @@ class OnChainTransferPresenter {
 
     let logger: LoggerProtocol?
 
+    var sendingAssetFeeAvailable: Bool?
+
     var isUtilityTransfer: Bool {
         chainAsset.chain.utilityAssets().first?.assetId == chainAsset.asset.assetId
     }
 
     var feeAssetChangeAvailable: Bool {
-        chainAsset.chain.hasCustomTransferFees && !isUtilityTransfer
+        chainAsset.chain.hasCustomTransferFees
+            && sendingAssetFeeAvailable ?? false
+            && !isUtilityTransfer
     }
 
     init(
@@ -200,6 +204,10 @@ class OnChainTransferPresenter {
         case .failure:
             askFeeRetry()
         }
+    }
+
+    func didReceiveSendingAssetFeeAvailable(_ available: Bool) {
+        sendingAssetFeeAvailable = available
     }
 
     func didReceiveSendingAssetPrice(_ priceData: PriceData?) {

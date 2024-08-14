@@ -4,6 +4,7 @@ import Foundation
 protocol OnChainTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?)
+    func requestFeePaymentAvailability(for chainAsset: ChainAsset)
     func change(recepient: AccountId?)
     func change(feeAsset: ChainAsset?)
 }
@@ -18,6 +19,7 @@ protocol OnChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveUtilityAssetPrice(_ price: PriceData?)
     func didReceiveUtilityAssetMinBalance(_ value: BigUInt)
     func didReceiveSendingAssetExistence(_ value: AssetBalanceExistence)
+    func didReceiveSendingAssetFeeAvailable(_ available: Bool)
     func didCompleteSetup()
     func didReceiveError(_ error: Error)
 }
