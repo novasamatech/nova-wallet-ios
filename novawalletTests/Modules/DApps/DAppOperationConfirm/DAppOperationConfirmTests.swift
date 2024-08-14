@@ -108,16 +108,24 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let signingWrapperFactory = DummySigningWrapperFactory()
         let priceProvider = PriceProviderFactoryStub(priceData: nil)
+        
+        let operationQueue = OperationQueue()
+        
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            operationQueue: operationQueue
+        )
 
         let interactor = DAppOperationConfirmInteractor(
             request: request,
             chain: chain,
             runtimeProvider: runtimeProvider,
+            feeEstimationRegistry: feeEstimationRegistry,
             connection: connection,
             signingWrapperFactory: signingWrapperFactory,
             priceProviderFactory: priceProvider,
             currencyManager: CurrencyManagerStub(),
-            operationQueue: OperationQueue()
+            operationQueue: operationQueue
         )
 
         let delegate = MockDAppOperationConfirmDelegate()

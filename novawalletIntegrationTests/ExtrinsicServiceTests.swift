@@ -60,11 +60,17 @@ class ExtrinsicServiceTests: XCTestCase {
             operationQueue: operationQueue
         )
         
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            operationQueue: operationQueue
+        )
+        
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -115,11 +121,17 @@ class ExtrinsicServiceTests: XCTestCase {
             operationQueue: operationQueue
         )
         
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            operationQueue: operationQueue
+        )
+        
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)

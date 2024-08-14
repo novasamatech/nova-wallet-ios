@@ -11,9 +11,12 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         self.txHash = txHash
     }
 
-    func estimateFee(_ closure: @escaping ExtrinsicBuilderClosure,
-                     runningIn queue: DispatchQueue,
-                     completion completionClosure: @escaping EstimateFeeClosure) {
+    func estimateFee(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping EstimateFeeClosure
+    ) {
         queue.async {
             completionClosure(self.feeResult)
         }
@@ -21,6 +24,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        payingIn chainAssetId: ChainAssetId?,
         runningIn queue: DispatchQueue,
         indexes: IndexSet,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
@@ -36,6 +40,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 
     func estimateFeeWithSplitter(
         _ splitter: ExtrinsicSplitting,
+        payingIn chainAssetId: ChainAssetId?,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     ) {
@@ -45,10 +50,13 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         completionClosure(feeResult)
     }
 
-    func submit(_ closure: @escaping ExtrinsicBuilderClosure,
-                signer: SigningWrapperProtocol,
-                runningIn queue: DispatchQueue,
-                completion completionClosure: @escaping ExtrinsicSubmitClosure) {
+    func submit(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitClosure
+    ) {
         queue.async {
             completionClosure(self.txHash)
         }
@@ -67,9 +75,10 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        payingIn chainAssetId: ChainAssetId?,
+        indexes: IndexSet,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        indexes: IndexSet,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
         let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: txHash)
@@ -79,10 +88,11 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     }
 
     func submitWithTxSplitter(
-        _ splitter: novawallet.ExtrinsicSplitting,
-        signer: novawallet.SigningWrapperProtocol,
+        _ txSplitter: ExtrinsicSplitting,
+        payingIn chainAssetId: ChainAssetId?,
+        signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping novawallet.ExtrinsicSubmitIndexedClosure
+        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
         let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: txHash)
         let submissionResult = SubmitIndexedExtrinsicResult(builderClosure: nil, results: [result])
@@ -92,6 +102,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 
     func submitAndWatch(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         subscriptionIdClosure: @escaping ExtrinsicSubscriptionIdClosure,

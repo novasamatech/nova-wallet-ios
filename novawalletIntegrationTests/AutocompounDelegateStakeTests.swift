@@ -197,6 +197,11 @@ class AutocompounDelegateStakeTests: XCTestCase {
         
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
         
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            operationQueue: operationQueue
+        )
+        
         extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeProvider,
@@ -205,6 +210,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
                 metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
                 operationQueue: operationQueue
             ),
+            feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -279,6 +285,11 @@ class AutocompounDelegateStakeTests: XCTestCase {
 
         let operationQueue = OperationQueue()
         
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            operationQueue: operationQueue
+        )
+        
         extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeProvider,
@@ -287,6 +298,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
                 metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
                 operationQueue: operationQueue
             ),
+            feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
