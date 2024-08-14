@@ -67,6 +67,7 @@ struct TransferConfirmOnChainViewFactory {
             wireframe = TransferConfirmWireframe()
             optInteractor = createSubstrateInteractor(
                 for: chainAsset,
+                feeAsset: feeAsset,
                 account: selectedAccount,
                 accountMetaId: wallet.metaId
             )
@@ -185,6 +186,7 @@ struct TransferConfirmOnChainViewFactory {
 
     private static func createSubstrateInteractor(
         for chainAsset: ChainAsset,
+        feeAsset: ChainAsset?,
         account: ChainAccountResponse,
         accountMetaId: String
     ) -> TransferOnChainConfirmInteractor? {
@@ -242,6 +244,7 @@ struct TransferConfirmOnChainViewFactory {
             selectedAccount: account,
             chain: chain,
             asset: asset,
+            feeAsset: feeAsset,
             runtimeService: runtimeProvider,
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,

@@ -87,20 +87,28 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     }
 
     private func provideNetworkFeeViewModel() {
-        let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
-        if let fee = fee, let assetInfo = optAssetInfo {
+        if let fee = fee {
+            let assetInfo = feeAsset.asset.displayInfo
+
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee.value.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
-            let viewModelFactory = utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
-            let priceData = isUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
+            let viewModelFactory = feeAsset == chainAsset
+                ? sendingBalanceViewModelFactory
+                : utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
 
-            let viewModel = viewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
-                .value(for: selectedLocale)
+            let priceData = feeAsset == chainAsset
+                ? sendingAssetPrice
+                : utilityAssetPrice
 
-            view?.didReceiveOriginFee(viewModel: viewModel)
+            let balanceViewModel = viewModelFactory.balanceFromPrice(
+                feeDecimal,
+                priceData: priceData
+            ).value(for: selectedLocale)
+
+            view?.didReceiveOriginFee(viewModel: balanceViewModel)
         } else {
             view?.didReceiveOriginFee(viewModel: nil)
         }
