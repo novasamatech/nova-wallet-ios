@@ -9,6 +9,10 @@ protocol OnChainTransferSetupInteractorInputProtocol: AnyObject {
     func change(feeAsset: ChainAsset?)
 }
 
+extension OnChainTransferSetupInteractorInputProtocol {
+    func change(feeAsset _: ChainAsset?) {}
+}
+
 protocol OnChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance)
     func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance)

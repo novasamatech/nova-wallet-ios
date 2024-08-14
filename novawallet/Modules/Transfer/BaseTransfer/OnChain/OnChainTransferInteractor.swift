@@ -524,7 +524,6 @@ extension OnChainTransferInteractor {
     }
 
     func change(feeAsset: ChainAsset?) {
-        guard let feeAsset else { return }
         self.feeAsset = feeAsset
     }
 
