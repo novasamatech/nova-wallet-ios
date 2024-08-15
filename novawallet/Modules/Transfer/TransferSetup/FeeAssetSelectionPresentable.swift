@@ -27,7 +27,7 @@ extension FeeAssetSelectionPresentable {
             onFeeAssetSelect: onFeeAssetSelect
         )
 
-        let bottomSheet = SwapNetworkFeeSheetViewFactory.createView(from: viewModel)
+        let bottomSheet = FeeAssetSelectSheetViewFactory.createView(from: viewModel)
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
@@ -42,7 +42,7 @@ extension FeeAssetSelectionPresentable {
         sendingAsset: ChainAsset,
         currentFeeAsset: ChainAsset?,
         onFeeAssetSelect: ((ChainAsset) -> Void)?
-    ) -> SwapNetworkFeeSheetViewModel {
+    ) -> FeeAssetSelectSheetViewModel {
         let payAssetSelected = currentFeeAsset?.chainAssetId == sendingAsset.chainAssetId
 
         let selectedIndex = payAssetSelected
@@ -65,7 +65,7 @@ extension FeeAssetSelectionPresentable {
             onFeeAssetSelect?(chainAsset)
         }
 
-        return SwapNetworkFeeSheetViewModel(
+        return FeeAssetSelectSheetViewModel(
             title: FeeSelectionViewModel.title,
             message: FeeSelectionViewModel.message,
             sectionTitle: sectionTitle,

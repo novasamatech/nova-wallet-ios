@@ -226,7 +226,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
         let validators: [DataValidating] = baseValidators(
             for: amount.value,
             recepientAddress: recepientAccountAddress,
-            utilityAssetInfo: utilityAssetInfo,
+            feeAssetInfo: feeAsset.assetDisplayInfo,
             view: view,
             selectedLocale: selectedLocale
         )

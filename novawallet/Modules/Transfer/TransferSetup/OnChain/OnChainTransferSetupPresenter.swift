@@ -260,8 +260,8 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         }
     }
 
-    override func didReceiveSendingAssetFeeAvailable(_ available: Bool) {
-        super.didReceiveSendingAssetFeeAvailable(available)
+    override func didReceiveCustomAssetFeeAvailable(_ available: Bool) {
+        super.didReceiveCustomAssetFeeAvailable(available)
 
         refreshFee()
     }
@@ -358,7 +358,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
             recepientAddress: partialRecepientAddress,
-            utilityAssetInfo: utilityAssetInfo,
+            feeAssetInfo: feeAsset.assetDisplayInfo,
             view: view,
             selectedLocale: selectedLocale
         )

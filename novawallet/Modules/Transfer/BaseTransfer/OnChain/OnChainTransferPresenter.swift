@@ -19,13 +19,13 @@ class OnChainTransferPresenter {
     private(set) var sendingAssetExistence: AssetBalanceExistence?
     private(set) var utilityAssetMinBalance: BigUInt?
 
-    var senderBalanceCountingEd: BigUInt? {
+    var senderFeeBalanceCountingEd: BigUInt? {
         sendingAssetFeeSelected
             ? senderSendingAssetBalance?.balanceCountingEd
             : senderUtilityAssetBalance?.balanceCountingEd
     }
 
-    var senderAssetTransferable: BigUInt? {
+    var senderFeeAssetTransferable: BigUInt? {
         sendingAssetFeeSelected
             ? senderSendingAssetBalance?.transferable
             : senderUtilityAssetBalance?.transferable
@@ -100,7 +100,7 @@ class OnChainTransferPresenter {
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
-        utilityAssetInfo _: AssetBalanceDisplayInfo,
+        feeAssetInfo: AssetBalanceDisplayInfo,
         view: ControllerBackedProtocol?,
         selectedLocale: Locale
     ) -> [DataValidating] {
@@ -118,7 +118,10 @@ class OnChainTransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.has(fee: fee?.value, locale: selectedLocale) { [weak self] in
+            dataValidatingFactory.has(
+                fee: fee?.value,
+                locale: selectedLocale
+            ) { [weak self] in
                 self?.refreshFee()
                 return
             },
@@ -131,18 +134,18 @@ class OnChainTransferPresenter {
             ),
 
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
-                balance: senderAssetTransferable,
+                balance: senderFeeAssetTransferable,
                 fee: fee?.value,
                 spendingAmount: sendingAssetFeeSelected ? sendingAmount : nil,
-                asset: feeAsset.assetDisplayInfo,
+                asset: feeAssetInfo,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee?.value,
-                total: senderBalanceCountingEd,
+                total: senderFeeBalanceCountingEd,
                 minBalance: sendingAssetFeeSelected ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
-                asset: feeAsset.assetDisplayInfo,
+                asset: feeAssetInfo,
                 locale: selectedLocale
             ),
 
@@ -210,7 +213,7 @@ class OnChainTransferPresenter {
         }
     }
 
-    func didReceiveSendingAssetFeeAvailable(_ available: Bool) {
+    func didReceiveCustomAssetFeeAvailable(_ available: Bool) {
         sendingAssetFeeAvailable = available
     }
 

@@ -557,9 +557,9 @@ extension OnChainTransferInteractor {
             callbackClosure: { [weak self] result in
                 switch result {
                 case let .success(available):
-                    self?.presenter?.didReceiveSendingAssetFeeAvailable(available)
+                    self?.presenter?.didReceiveCustomAssetFeeAvailable(available)
                 case let .failure(error) where error is AssetConversionAggregationFactoryError:
-                    self?.presenter?.didReceiveSendingAssetFeeAvailable(false)
+                    self?.presenter?.didReceiveCustomAssetFeeAvailable(false)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }

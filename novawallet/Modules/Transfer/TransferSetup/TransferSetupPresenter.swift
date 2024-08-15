@@ -36,8 +36,6 @@ final class TransferSetupPresenter {
         }
     }
 
-    private var isManualFeeSet: Bool = false
-
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
 
     private var originChainAsset: ChainAsset? {
