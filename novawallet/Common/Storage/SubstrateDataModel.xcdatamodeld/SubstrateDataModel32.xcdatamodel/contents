@@ -55,7 +55,7 @@
         <attribute name="hasCrowdloans" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="hasGovernance" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="hasGovernanceV1" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="hasHydationTransferFees" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="hasHydrationTransferFees" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="hasProxy" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="hasPushNotifications" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="hasSwapHub" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>

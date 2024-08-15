@@ -61,7 +61,7 @@ final class AssetTransferAggregationFactory: AssetTransferAggregationFactoryProt
     func createCanPayFeeWrapper(in chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
         if chainAsset.chain.hasAssetHubTransferFees {
             return createAssetHubCanPayFee(for: chainAsset)
-        } else if chainAsset.chain.hasHydationTransferFees {
+        } else if chainAsset.chain.hasHydrationTransferFees {
             return createHydraCanPayFee(for: chainAsset)
         } else {
             return CompoundOperationWrapper.createWithError(

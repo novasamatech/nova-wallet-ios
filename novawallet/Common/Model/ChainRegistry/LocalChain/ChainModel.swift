@@ -185,12 +185,12 @@ struct ChainModel: Equatable, Hashable {
         options?.contains(where: { $0 == .assetHubFees }) ?? false
     }
 
-    var hasHydationTransferFees: Bool {
+    var hasHydrationTransferFees: Bool {
         options?.contains(where: { $0 == .hydrationFees }) ?? false
     }
 
     var hasCustomTransferFees: Bool {
-        hasAssetHubTransferFees || hasHydationTransferFees
+        hasAssetHubTransferFees || hasHydrationTransferFees
     }
 
     var hasProxy: Bool {
