@@ -52,7 +52,10 @@ protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceive(setupError: SwapSetupError)
 }
 
-protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol, ShortTextInfoPresentable, PurchasePresentable {
+protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
+    ShortTextInfoPresentable,
+    PurchasePresentable,
+    FeeAssetSelectionPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset?,
@@ -77,10 +80,6 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol, ShortTextInfoPre
     func showConfirmation(
         from view: ControllerBackedProtocol?,
         initState: SwapConfirmInitState
-    )
-    func showNetworkFeeAssetSelection(
-        form view: ControllerBackedProtocol?,
-        viewModel: SwapNetworkFeeSheetViewModel
     )
 
     func showGetTokenOptions(

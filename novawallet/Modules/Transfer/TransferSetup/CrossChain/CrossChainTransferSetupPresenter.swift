@@ -113,14 +113,21 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
             let viewModelFactory = utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
             let priceData = isOriginUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
 
-            let viewModel = viewModelFactory.balanceFromPrice(
+            let balanceViewModel = viewModelFactory.balanceFromPrice(
                 feeDecimal,
                 priceData: priceData
             ).value(for: selectedLocale)
 
-            view?.didReceiveOriginFee(viewModel: viewModel)
+            let viewModel = NetworkFeeInfoViewModel(
+                isEditable: false,
+                balanceViewModel: balanceViewModel
+            )
+
+            let loadableViewModel = LoadableViewModelState<NetworkFeeInfoViewModel>.loaded(value: viewModel)
+
+            view?.didReceiveOriginFee(viewModel: loadableViewModel)
         } else {
-            view?.didReceiveOriginFee(viewModel: nil)
+            view?.didReceiveOriginFee(viewModel: .loading)
         }
     }
 
@@ -249,7 +256,11 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
         let weightLimit = crossChainFee?.weightLimit ?? 0
 
-        interactor.estimateOriginFee(for: amount, recepient: getRecepientAccountId(), weightLimit: weightLimit)
+        interactor.estimateOriginFee(
+            for: amount,
+            recepient: getRecepientAccountId(),
+            weightLimit: weightLimit
+        )
     }
 
     override func refreshCrossChainFee() {
@@ -356,6 +367,8 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 }
 
 extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
+    func changeFeeAsset(to _: ChainAsset?) {}
+
     var inputState: TransferSetupInputState {
         TransferSetupInputState(recepient: partialRecepientAddress, amount: inputResult)
     }

@@ -106,12 +106,17 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            operationQueue: operationQueue
+        )
 
         return ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeRegistry,
             senderResolvingFactory: senderResolvingFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            feeEstimationRegistry: feeEstimationRegistry,
             extensions: extensions,
             engine: engine,
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -128,12 +133,17 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            operationQueue: operationQueue
+        )
 
         return ExtrinsicOperationFactory(
             chain: chain,
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            feeEstimationRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),

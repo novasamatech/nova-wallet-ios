@@ -44,21 +44,4 @@ extension AssetConversionAggregationFactory {
     ) -> CompoundOperationWrapper<AssetConversion.Quote> {
         HydraQuoteFactory(flowState: state).quote(for: args)
     }
-
-    func createHydraCanPayFee(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.connectionUnavailable)
-        }
-
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
-        return HydraTokensFactory.createWithDefaultPools(
-            chain: chainAsset.chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        ).canPayFee(in: chainAsset.chainAssetId)
-    }
 }

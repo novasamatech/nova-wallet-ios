@@ -39,11 +39,9 @@ final class TransferSetupViewLayout: UIView {
         return view
     }()
 
-    let originFeeView: NetworkFeeView = {
-        let view = UIFactory.default.createNetworkFeeView()
-        view.verticalOffset = 13.0
-        return view
-    }()
+    let originFeeView: NetworkFeeInfoView = .create { view in
+        view.hideInfoIcon()
+    }
 
     private(set) var crossChainFeeView: NetworkFeeView?
 

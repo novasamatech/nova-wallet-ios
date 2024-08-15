@@ -6,17 +6,20 @@ import BigInt
 class BaseExtrinsicOperationFactory {
     let runtimeRegistry: RuntimeCodingServiceProtocol
     let engine: JSONRPCEngine
+    let feeEstimationRegistry: ExtrinsicFeeEstimationRegistring
     let operationManager: OperationManagerProtocol
     let usesStateCallForFee: Bool
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
+        feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         operationManager: OperationManagerProtocol,
         usesStateCallForFee: Bool
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
+        self.feeEstimationRegistry = feeEstimationRegistry
         self.operationManager = operationManager
         self.usesStateCallForFee = usesStateCallForFee
     }
@@ -28,6 +31,7 @@ class BaseExtrinsicOperationFactory {
     func createExtrinsicWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
+        payingFeeIn _: ChainAssetId?,
         signingClosure _: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         fatalError("Subclass must override this method")
@@ -184,7 +188,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
 
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        indexes: IndexSet
+        indexes: IndexSet,
+        payingIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
         let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
             guard let cryptoType = context.substrateCryptoType else {
@@ -201,36 +206,32 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         let builderWrapper = createExtrinsicWrapper(
             customClosure: closure,
             indexes: indexList,
+            payingFeeIn: chainAssetId,
             signingClosure: signingClosure
         )
 
         let coderFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
 
-        let feeOperation = createFeeOperation(
-            dependingOn: coderFactoryOperation,
-            extrinsicOperation: builderWrapper.targetOperation,
+        let feeWrapper = feeEstimationRegistry.createFeeEstimatingWrapper(
+            payingIn: chainAssetId,
             connection: connection,
-            usesStateCallForFee: usesStateCallForFee
+            runtimeService: runtimeRegistry,
+            extrinsicCreatingResultClosure: {
+                try builderWrapper.targetOperation.extractNoCancellableResultData()
+            }
         )
 
-        feeOperation.addDependency(coderFactoryOperation)
-        feeOperation.addDependency(builderWrapper.targetOperation)
+        feeWrapper.addDependency(operations: [coderFactoryOperation])
+        feeWrapper.addDependency(wrapper: builderWrapper)
 
         let wrapperOperation = ClosureOperation<ExtrinsicRetriableResult<ExtrinsicFeeProtocol>> {
             do {
-                let results = try feeOperation.extractNoCancellableResultData()
-                let sender = try builderWrapper.targetOperation.extractNoCancellableResultData().sender
+                let result = try feeWrapper.targetOperation.extractNoCancellableResultData()
 
-                let feePayer = ExtrinsicFeePayer(senderResolution: sender)
-
-                let indexedResults = try zip(indexList, results).map { indexedResult in
-                    guard let convertedResult = ExtrinsicFee(dispatchInfo: indexedResult.1, payer: feePayer) else {
-                        throw CommonError.dataCorruption
-                    }
-
-                    return FeeIndexedExtrinsicResult.IndexedResult(
+                let indexedResults = zip(indexList, result.items).map { indexedResult in
+                    FeeIndexedExtrinsicResult.IndexedResult(
                         index: indexedResult.0,
-                        result: .success(convertedResult)
+                        result: .success(indexedResult.1)
                     )
                 }
 
@@ -244,18 +245,18 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             }
         }
 
-        wrapperOperation.addDependency(feeOperation)
+        wrapperOperation.addDependency(feeWrapper.targetOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: wrapperOperation,
-            dependencies: builderWrapper.allOperations + [coderFactoryOperation, feeOperation]
-        )
+        return feeWrapper
+            .insertingHead(operations: builderWrapper.allOperations + [coderFactoryOperation])
+            .insertingTail(operation: wrapperOperation)
     }
 
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         signer: SigningWrapperProtocol,
-        indexes: IndexSet
+        indexes: IndexSet,
+        payingIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<SubmitIndexedExtrinsicResult> {
         let signingClosure: (Data, ExtrinsicSigningContext) throws -> Data = { data, context in
             try signer.sign(data, context: context).rawData()
@@ -266,6 +267,7 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         let builderWrapper = createExtrinsicWrapper(
             customClosure: closure,
             indexes: indexList,
+            payingFeeIn: chainAssetId,
             signingClosure: signingClosure
         )
 
@@ -319,7 +321,8 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
 
     func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        payingFeeIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<String> {
         let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
             try closure(builder)
@@ -332,6 +335,7 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         let builderWrapper = createExtrinsicWrapper(
             customClosure: wrapperClosure,
             indexes: [0],
+            payingFeeIn: chainAssetId,
             signingClosure: signingClosure
         )
 

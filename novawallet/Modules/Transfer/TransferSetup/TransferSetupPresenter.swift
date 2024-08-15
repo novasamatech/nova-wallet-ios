@@ -20,6 +20,7 @@ final class TransferSetupPresenter {
     var childPresenter: TransferSetupChildPresenterProtocol?
 
     private(set) var peerChainAsset: ChainAsset?
+    private(set) var feeChainAsset: ChainAsset?
     private(set) var availablePeers: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
     private(set) var recipientAddress: TransferSetupRecipientAccount? {
@@ -288,6 +289,11 @@ final class TransferSetupPresenter {
             interactor.peerChainAssetDidChanged(chainAsset)
         }
     }
+
+    private func updateFeeChainAsset(_ chainAsset: ChainAsset?) {
+        feeChainAsset = chainAsset
+        childPresenter?.changeFeeAsset(to: chainAsset)
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -359,6 +365,22 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             accounts: getYourWallets(),
             address: childPresenter?.inputState.recepient,
             delegate: self
+        )
+    }
+
+    func editFeeAsset() {
+        guard let utilityAsset = chainAsset.chain.utilityChainAsset() else {
+            return
+        }
+
+        wireframe.showFeeAssetSelection(
+            from: view,
+            utilityAsset: utilityAsset,
+            sendingAsset: chainAsset,
+            currentFeeAsset: feeChainAsset,
+            onFeeAssetSelect: { [weak self] selectedAsset in
+                self?.updateFeeChainAsset(selectedAsset)
+            }
         )
     }
 

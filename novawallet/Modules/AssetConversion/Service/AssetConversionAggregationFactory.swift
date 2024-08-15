@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol AssetConversionAggregationFactoryProtocol {
+protocol AssetConversionAggregationFactoryProtocol: AssetCanPayFeeWrapperFactoryProtocol {
     func createAvailableDirectionsWrapper(
         for chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<Set<ChainAssetId>>
@@ -14,15 +14,13 @@ protocol AssetConversionAggregationFactoryProtocol {
         for state: AssetConversionFlowState,
         args: AssetConversion.QuoteArgs
     ) -> CompoundOperationWrapper<AssetConversion.Quote>
-
-    func createCanPayFeeWrapper(in chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool>
 }
 
 enum AssetConversionAggregationFactoryError: Error {
     case unavailableProvider(ChainModel)
 }
 
-final class AssetConversionAggregationFactory {
+final class AssetConversionAggregationFactory: AssetConversionAggregationFactoryProtocol {
     let operationQueue: OperationQueue
     let chainRegistry: ChainRegistryProtocol
 
@@ -33,9 +31,7 @@ final class AssetConversionAggregationFactory {
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
     }
-}
 
-extension AssetConversionAggregationFactory: AssetConversionAggregationFactoryProtocol {
     func createAvailableDirectionsWrapper(
         for chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<Set<ChainAssetId>> {

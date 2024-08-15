@@ -329,6 +329,14 @@ final class ChainModelMapper {
             options.append(.swapHydra)
         }
 
+        if entity.hasAssetHubTransferFees {
+            options.append(.assetHubFees)
+        }
+
+        if entity.hasHydrationTransferFees {
+            options.append(.hydrationFees)
+        }
+
         if entity.hasProxy {
             options.append(.proxy)
         }
@@ -437,6 +445,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.noSubstrateRuntime = model.noSubstrateRuntime
         entity.hasSwapHub = model.hasSwapHub
         entity.hasSwapHydra = model.hasSwapHydra
+        entity.hasAssetHubTransferFees = model.hasAssetHubTransferFees
+        entity.hasHydrationTransferFees = model.hasHydrationTransferFees
         entity.hasProxy = model.hasProxy
         entity.hasPushNotifications = model.hasPushNotifications
         entity.order = model.order

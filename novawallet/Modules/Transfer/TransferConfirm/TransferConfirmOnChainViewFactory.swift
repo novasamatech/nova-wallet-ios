@@ -6,6 +6,7 @@ import SoraKeystore
 struct TransferConfirmOnChainViewFactory {
     static func createView(
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         recepient: AccountAddress,
         amount: OnChainTransferAmount<Decimal>,
         transferCompletion: TransferCompletionClosure?
@@ -66,6 +67,7 @@ struct TransferConfirmOnChainViewFactory {
             wireframe = TransferConfirmWireframe()
             optInteractor = createSubstrateInteractor(
                 for: chainAsset,
+                feeAsset: feeAsset,
                 account: selectedAccount,
                 accountMetaId: wallet.metaId
             )
@@ -94,6 +96,7 @@ struct TransferConfirmOnChainViewFactory {
             amount: amount,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             chainAsset: chainAsset,
+            feeAsset: feeAsset,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
@@ -183,6 +186,7 @@ struct TransferConfirmOnChainViewFactory {
 
     private static func createSubstrateInteractor(
         for chainAsset: ChainAsset,
+        feeAsset: ChainAsset?,
         account: ChainAccountResponse,
         accountMetaId: String
     ) -> TransferOnChainConfirmInteractor? {
@@ -197,6 +201,8 @@ struct TransferConfirmOnChainViewFactory {
             return nil
         }
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let repositoryFactory = SubstrateRepositoryFactory()
 
         let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
@@ -206,7 +212,7 @@ struct TransferConfirmOnChainViewFactory {
             chainRegistry: chainRegistry,
             repositoryFactory: repositoryFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
 
@@ -229,10 +235,16 @@ struct TransferConfirmOnChainViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
+        let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
         return TransferOnChainConfirmInteractor(
             selectedAccount: account,
             chain: chain,
             asset: asset,
+            feeAsset: feeAsset,
             runtimeService: runtimeProvider,
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
@@ -243,6 +255,7 @@ struct TransferConfirmOnChainViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

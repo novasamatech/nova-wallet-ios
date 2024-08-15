@@ -12,6 +12,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let runtimeProvider: RuntimeProviderProtocol
+    let feeEstimationRegistry: ExtrinsicFeeEstimationRegistring
     let operationQueue: OperationQueue
 
     var extrinsicFactory: DAppExtrinsicBuilderOperationFactory?
@@ -24,6 +25,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         request: DAppOperationRequest,
         chain: ChainModel,
         runtimeProvider: RuntimeProviderProtocol,
+        feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         connection: JSONRPCEngine,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         priceProviderFactory: PriceProviderFactoryProtocol,
@@ -33,6 +35,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         self.request = request
         self.chain = chain
         self.runtimeProvider = runtimeProvider
+        self.feeEstimationRegistry = feeEstimationRegistry
         self.connection = connection
         self.signingWrapperFactory = signingWrapperFactory
         priceLocalSubscriptionFactory = priceProviderFactory

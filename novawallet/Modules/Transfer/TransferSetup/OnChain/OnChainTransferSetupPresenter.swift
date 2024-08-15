@@ -19,6 +19,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         interactor: OnChainTransferSetupInteractorInputProtocol,
         wireframe: OnChainTransferSetupWireframeProtocol,
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         initialState: TransferSetupInputState,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
@@ -39,6 +40,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
         super.init(
             chainAsset: chainAsset,
+            feeAsset: feeAsset,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
@@ -103,24 +105,37 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     }
 
     private func updateFeeView() {
-        let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
-        if let fee = fee, let assetInfo = optAssetInfo {
+        if let fee = fee {
+            let assetInfo = feeAsset.asset.displayInfo
+
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee.value.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
-            let viewModelFactory = utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
-            let priceData = isUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
+            let viewModelFactory = sendingAssetFeeSelected
+                ? sendingBalanceViewModelFactory
+                : utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
 
-            let viewModel = viewModelFactory.balanceFromPrice(
+            let priceData = sendingAssetFeeSelected
+                ? sendingAssetPrice
+                : utilityAssetPrice
+
+            let balanceViewModel = viewModelFactory.balanceFromPrice(
                 feeDecimal,
                 priceData: priceData
             ).value(for: selectedLocale)
 
-            view?.didReceiveOriginFee(viewModel: viewModel)
+            let viewModel = NetworkFeeInfoViewModel(
+                isEditable: feeAssetChangeAvailable,
+                balanceViewModel: balanceViewModel
+            )
+
+            let loadableViewModel = LoadableViewModelState<NetworkFeeInfoViewModel>.loaded(value: viewModel)
+
+            view?.didReceiveOriginFee(viewModel: loadableViewModel)
         } else {
-            view?.didReceiveOriginFee(viewModel: nil)
+            view?.didReceiveOriginFee(viewModel: .loading)
         }
     }
 
@@ -160,7 +175,9 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
-        let feeValue = isUtilityTransfer ? (fee?.value.amountForCurrentAccount ?? 0) : 0
+        let feeValue = sendingAssetFeeSelected
+            ? (fee?.value.amountForCurrentAccount ?? 0)
+            : 0
 
         let precision = chainAsset.assetDisplayInfo.assetPrecision
 
@@ -243,10 +260,16 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         }
     }
 
+    override func didReceiveCustomAssetFeeAvailable(_ available: Bool) {
+        super.didReceiveCustomAssetFeeAvailable(available)
+
+        refreshFee()
+    }
+
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
         super.didReceiveSendingAssetPrice(priceData)
 
-        if isUtilityTransfer {
+        if sendingAssetFeeSelected {
             updateFeeView()
         }
 
@@ -263,7 +286,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         super.didCompleteSetup()
 
         interactor.change(recepient: getRecepientAccountId())
-        refreshFee()
+        interactor.requestFeePaymentAvailability(for: chainAsset)
     }
 
     override func didReceiveError(_ error: Error) {
@@ -274,6 +297,15 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 }
 
 extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
+    func changeFeeAsset(to chainAsset: ChainAsset?) {
+        guard let chainAsset else { return }
+
+        feeAsset = chainAsset
+
+        interactor.change(feeAsset: chainAsset)
+        refreshFee()
+    }
+
     var inputState: TransferSetupInputState {
         TransferSetupInputState(recepient: partialRecepientAddress, amount: inputResult)
     }
@@ -326,7 +358,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
             recepientAddress: partialRecepientAddress,
-            utilityAssetInfo: utilityAssetInfo,
+            feeAssetInfo: feeAsset.assetDisplayInfo,
             view: view,
             selectedLocale: selectedLocale
         )
@@ -339,7 +371,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
 
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
-                fee: isUtilityTransfer ? fee?.value : nil,
+                fee: sendingAssetFeeSelected ? fee?.value : nil,
                 totalAmount: senderSendingAssetBalance?.balanceCountingEd,
                 minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
@@ -355,25 +387,27 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard
+                let self,
                 let amountValue = sendingAmount,
-                let recepient = self?.partialRecepientAddress,
-                let chainAsset = self?.chainAsset else {
+                let recepient = partialRecepientAddress
+            else {
                 return
             }
 
-            self?.logger?.debug("Did complete validation")
+            logger?.debug("Did complete validation")
 
             let amount: OnChainTransferAmount<Decimal>
 
-            if let inputResult = self?.inputResult, inputResult.isMax {
+            if let inputResult = inputResult, inputResult.isMax {
                 amount = .all(value: amountValue)
             } else {
                 amount = .concrete(value: amountValue)
             }
 
-            self?.wireframe.showConfirmation(
-                from: self?.view,
+            wireframe.showConfirmation(
+                from: view,
                 chainAsset: chainAsset,
+                feeAsset: feeAsset,
                 sendingAmount: amount,
                 recepient: recepient
             )

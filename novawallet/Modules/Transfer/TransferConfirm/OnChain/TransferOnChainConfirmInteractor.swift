@@ -15,6 +15,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
+        feeAsset: ChainAsset?,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
@@ -25,6 +26,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -36,6 +38,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
+            feeAsset: feeAsset,
             runtimeService: runtimeService,
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,
@@ -43,6 +46,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             substrateStorageFacade: substrateStorageFacade,
+            transferAggregationWrapperFactory: transferAggregationWrapperFactory,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -95,6 +99,7 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
 
             extrinsicService.submit(
                 extrinsicClosure,
+                payingIn: feeAsset?.chainAssetId,
                 signer: signingWrapper,
                 runningIn: .main,
                 completion: { [weak self] result in
