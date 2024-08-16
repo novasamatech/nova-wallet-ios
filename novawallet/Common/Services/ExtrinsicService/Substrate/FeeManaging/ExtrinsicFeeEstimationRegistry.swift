@@ -9,16 +9,13 @@ enum ExtrinsicFeeEstimationRegistryError: Error {
 final class ExtrinsicFeeEstimationRegistry {
     let chain: ChainModel
     let estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol
-    let operationQueue: OperationQueue
 
     init(
         chain: ChainModel,
-        estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol,
-        operationQueue: OperationQueue
+        estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol
     ) {
         self.chain = chain
         self.estimatingWrapperFactory = estimatingWrapperFactory
-        self.operationQueue = operationQueue
     }
 }
 

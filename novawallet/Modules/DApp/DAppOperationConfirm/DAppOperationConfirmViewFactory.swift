@@ -161,8 +161,7 @@ struct DAppOperationConfirmViewFactory {
         )
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory,
-            operationQueue: operationQueue
+            estimatingWrapperFactory: feeEstimatingWrapperFactory
         )
 
         return DAppOperationConfirmInteractor(
