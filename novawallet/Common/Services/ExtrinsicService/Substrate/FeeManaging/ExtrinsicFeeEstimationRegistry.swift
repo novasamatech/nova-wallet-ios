@@ -63,7 +63,6 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
             )
         case .none, .orml:
             estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
-                chain: chain,
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
         case .statemine where chain.hasAssetHubTransferFees:
