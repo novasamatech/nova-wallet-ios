@@ -67,8 +67,20 @@ final class XcmTransferService {
             for: chainAccount,
             chainModel: chain
         )
+
+        let flowState = HydraFlowState(
+            account: chainAccount,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            operationQueue: operationQueue
+        )
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
+            flowState: flowState,
             operationQueue: operationQueue
         )
 

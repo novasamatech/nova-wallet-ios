@@ -69,14 +69,14 @@ extension ExtrinsicServiceFactoryProtocol {
 }
 
 final class ExtrinsicServiceFactory {
-    private let runtimeRegistry: RuntimeCodingServiceProtocol
+    private let runtimeRegistry: RuntimeCodingServiceProtocol & RuntimeProviderProtocol
     private let engine: JSONRPCEngine
     private let operationQueue: OperationQueue
     private let userStorageFacade: StorageFacadeProtocol
     private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
-        runtimeRegistry: RuntimeCodingServiceProtocol,
+        runtimeRegistry: RuntimeCodingServiceProtocol & RuntimeProviderProtocol,
         engine: JSONRPCEngine,
         operationQueue: OperationQueue,
         userStorageFacade: StorageFacadeProtocol,
@@ -106,8 +106,19 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
+
+        let flowState = HydraFlowState(
+            account: account,
+            chain: chain,
+            connection: engine,
+            runtimeProvider: runtimeRegistry,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            operationQueue: operationQueue
+        )
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
+            flowState: flowState,
             operationQueue: operationQueue
         )
 
@@ -133,8 +144,18 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
+        let flowState = HydraFlowState(
+            account: account,
+            chain: chain,
+            connection: engine,
+            runtimeProvider: runtimeRegistry,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            operationQueue: operationQueue
+        )
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
+            flowState: flowState,
             operationQueue: operationQueue
         )
 

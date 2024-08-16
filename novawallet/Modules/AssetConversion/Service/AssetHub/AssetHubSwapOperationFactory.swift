@@ -3,10 +3,13 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-protocol AssetHubSwapOperationFactoryProtocol {
+protocol AssetQuoteFactoryProtocol {
+    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote>
+}
+
+protocol AssetHubSwapOperationFactoryProtocol: AssetQuoteFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]>
     func availableDirectionsForAsset(_ chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Set<ChainAssetId>>
-    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote>
     func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool>
 }
 
