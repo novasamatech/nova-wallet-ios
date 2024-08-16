@@ -96,20 +96,23 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
 
         return createFeeEstimatingWrapper(
             for: asset,
+            chainAssetId: chainAssetId,
             connection: connection,
             runtimeService: runtimeService,
             extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
         )
     }
-    
+
     func createFeeEstimatingWrapper(
         for asset: AssetModel,
+        chainAssetId: ChainAssetId,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
         switch AssetType(rawType: asset.type) {
-        case .none, .orml where chain.hasHydrationTransferFees:
+        case .none where chain.hasHydrationTransferFees,
+             .orml where chain.hasHydrationTransferFees:
             createHydraAssetFeeEstimationWrapper(
                 chainAsset: .init(chain: chain, asset: asset),
                 connection: connection,
@@ -168,7 +171,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
             return CompoundOperationWrapper.createWithError(error)
         }
     }
-    
+
     func createFeeInstallerWrapper(
         chain: ChainModel,
         asset: AssetModel,
@@ -190,7 +193,9 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
                 )
             )
         case .orml, .equilibrium, .evmNative, .evmAsset:
-            throw ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
+            .createWithError(
+                ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
+            )
         }
     }
 }
