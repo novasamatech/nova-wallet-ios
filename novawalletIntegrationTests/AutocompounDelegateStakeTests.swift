@@ -153,24 +153,21 @@ class AutocompounDelegateStakeTests: XCTestCase {
         accountMinimum: BigUInt
     ) throws {
         // given
-
+        
+        let wallet = AccountGenerator.generateMetaAccount()
+        
+        let chainId = "0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d"
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let chainId = "0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d"
-
+        
         // when
-
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            XCTFail("Can't find connection")
-            return
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            XCTFail("Can't find runtime provider")
-            return
-        }
-
-        guard let chain = chainRegistry.getChain(for: chainId) else {
+        
+        guard
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId),
+            let chain = chainRegistry.getChain(for: chainId),
+            let account = wallet.fetch(for: chain.accountRequest())
+        else {
             XCTFail("Can't find chain \(chainId)")
             return
         }
@@ -197,9 +194,17 @@ class AutocompounDelegateStakeTests: XCTestCase {
         
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
         
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeProvider,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            operationQueue: operationQueue
+            estimatingWrapperFactory: feeEstimatingWrapperFactory
         )
         
         extrinsicService = ExtrinsicService(
@@ -254,24 +259,21 @@ class AutocompounDelegateStakeTests: XCTestCase {
 
     private func performCancelTaskFeeEstimation(for taskId: AutomationTime.TaskId) {
         // given
-
+        
+        let wallet = AccountGenerator.generateMetaAccount()
+        
+        let chainId = "0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d"
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let chainId = "0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d"
-
+        
         // when
-
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            XCTFail("Can't find connection")
-            return
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            XCTFail("Can't find runtime provider")
-            return
-        }
-
-        guard let chain = chainRegistry.getChain(for: chainId) else {
+        
+        guard
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+            let chain = chainRegistry.getChain(for: chainId),
+            let account = wallet.fetch(for: chain.accountRequest())
+        else {
             XCTFail("Can't find chain \(chainId)")
             return
         }
@@ -285,14 +287,22 @@ class AutocompounDelegateStakeTests: XCTestCase {
 
         let operationQueue = OperationQueue()
         
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            operationQueue: operationQueue
+            estimatingWrapperFactory: feeEstimatingWrapperFactory
         )
         
         extrinsicService = ExtrinsicService(
             chain: chain,
-            runtimeRegistry: runtimeProvider,
+            runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: MetadataHashOperationFactory(
                 metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),

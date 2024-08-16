@@ -111,9 +111,17 @@ class DAppOperationConfirmTests: XCTestCase {
         
         let operationQueue = OperationQueue()
         
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: wallet.fetch(for: chain.accountRequest())!,
+            chain: chain,
+            runtimeService: runtimeProvider,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            operationQueue: operationQueue
+            estimatingWrapperFactory: feeEstimatingWrapperFactory
         )
 
         let interactor = DAppOperationConfirmInteractor(
