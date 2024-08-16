@@ -107,18 +107,17 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             userStorageFacade: userStorageFacade
         )
 
-        let flowState = HydraFlowState(
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
             account: account,
             chain: chain,
+            runtimeService: runtimeRegistry,
             connection: engine,
-            runtimeProvider: runtimeRegistry,
-            userStorageFacade: userStorageFacade,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            flowState: flowState,
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             operationQueue: operationQueue
         )
 
@@ -144,18 +143,16 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
-        let flowState = HydraFlowState(
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
             account: account,
             chain: chain,
+            runtimeService: runtimeRegistry,
             connection: engine,
-            runtimeProvider: runtimeRegistry,
-            userStorageFacade: userStorageFacade,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            flowState: flowState,
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             operationQueue: operationQueue
         )
 

@@ -152,18 +152,16 @@ struct DAppOperationConfirmViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let flowState = HydraFlowState(
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
             account: account,
             chain: chain,
+            runtimeService: runtimeProvider,
             connection: connection,
-            runtimeProvider: runtimeProvider,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            flowState: flowState,
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             operationQueue: operationQueue
         )
 

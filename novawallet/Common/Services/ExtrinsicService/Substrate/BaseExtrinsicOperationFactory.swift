@@ -214,8 +214,6 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
 
         let feeWrapper = feeEstimationRegistry.createFeeEstimatingWrapper(
             payingIn: chainAssetId,
-            connection: connection,
-            runtimeService: runtimeRegistry,
             extrinsicCreatingResultClosure: {
                 try builderWrapper.targetOperation.extractNoCancellableResultData()
             }
