@@ -178,14 +178,14 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
         chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
         switch AssetType(rawType: asset.type) {
-        case .none:
-            CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
-        case .statemine:
+        case .statemine where chain.hasAssetHubTransferFees:
             CompoundOperationWrapper.createWithResult(
                 ExtrinsicAssetConversionFeeInstaller(
                     feeAsset: ChainAsset(chain: chain, asset: asset)
                 )
             )
+        case .none, .statemine:
+            CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
         case .orml where chain.hasHydrationTransferFees:
             CompoundOperationWrapper.createWithResult(
                 HydraExtrinsicFeeInstaller(
