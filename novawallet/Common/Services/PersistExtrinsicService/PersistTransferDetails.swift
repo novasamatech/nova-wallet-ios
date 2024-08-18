@@ -8,6 +8,7 @@ struct PersistTransferDetails {
     let txHash: Data
     let callPath: CallCodingPath
     let fee: BigUInt?
+    let feeAssetId: AssetModel.Id?
 }
 
 struct PersistExtrinsicDetails {

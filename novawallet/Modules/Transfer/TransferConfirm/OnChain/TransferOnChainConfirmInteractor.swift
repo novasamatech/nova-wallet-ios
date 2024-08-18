@@ -114,7 +114,8 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                                 amount: amount.value,
                                 txHash: txHashData,
                                 callPath: callCodingPath,
-                                fee: lastFee
+                                fee: lastFee,
+                                feeAssetId: self?.feeAsset?.asset.assetId
                             )
 
                             self?.persistExtrinsicAndComplete(details: details)

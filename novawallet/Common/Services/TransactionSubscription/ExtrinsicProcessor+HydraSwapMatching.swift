@@ -366,7 +366,7 @@ extension ExtrinsicProcessor {
 
             guard
                 let feeAssetId = chain.utilityChainAssetId()?.assetId,
-                let nativeFee = optNativeFee else {
+                let nativeFee = optNativeFee?.amount else {
                 return nil
             }
 

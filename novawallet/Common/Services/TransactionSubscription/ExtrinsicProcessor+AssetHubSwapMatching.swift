@@ -83,7 +83,7 @@ extension ExtrinsicProcessor {
                     return nil
                 }
 
-                fee = nativeFee
+                fee = nativeFee.amount
                 feeAssetId = chain.utilityAsset()?.assetId
             }
 

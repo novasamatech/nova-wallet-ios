@@ -90,6 +90,11 @@ extension ExtrinsicProcessor {
                 runtimeJsonContext: context
             )
 
+            let feeAsset = localAsset(
+                for: fee?.assetId,
+                using: codingFactory
+            )
+
             let peerId = accountId == result.callSenderId ? result.callAccountId : result.callSenderId
 
             guard
@@ -106,8 +111,8 @@ extension ExtrinsicProcessor {
                 callPath: result.callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
-                feeAssetId: nil,
+                fee: fee?.amount,
+                feeAssetId: feeAsset?.asset.assetId,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: status,
@@ -240,7 +245,7 @@ extension ExtrinsicProcessor {
                 callPath: CallCodingPath.ethereumTransact,
                 call: extrinsic.call,
                 extrinsicHash: executedValue.transactionHash,
-                fee: fee,
+                fee: fee?.amount,
                 feeAssetId: nil,
                 peerId: executedValue.to,
                 amount: nil,
@@ -320,7 +325,7 @@ extension ExtrinsicProcessor {
                 callPath: callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
+                fee: fee?.amount,
                 feeAssetId: nil,
                 peerId: nil,
                 amount: nil,
@@ -372,6 +377,11 @@ extension ExtrinsicProcessor {
                 runtimeJsonContext: context
             )
 
+            let feeAsset = localAsset(
+                for: fee?.assetId,
+                using: codingFactory
+            )
+
             let peerId = accountId == result.callSenderAccountId ? result.callAccountId : result.callSenderAccountId
 
             let remotePalletName = result.callPath.moduleName
@@ -402,8 +412,8 @@ extension ExtrinsicProcessor {
                 callPath: result.callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
-                feeAssetId: nil,
+                fee: fee?.amount,
+                feeAssetId: feeAsset?.asset.assetId,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: isSuccess,
@@ -493,7 +503,7 @@ extension ExtrinsicProcessor {
                 callPath: result.callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
+                fee: fee?.amount,
                 feeAssetId: nil,
                 peerId: peerId,
                 amount: result.callAmount,
@@ -652,7 +662,7 @@ extension ExtrinsicProcessor {
                 callPath: callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
+                fee: fee?.amount,
                 feeAssetId: nil,
                 peerId: peerId,
                 amount: call.args.value,
@@ -664,5 +674,26 @@ extension ExtrinsicProcessor {
         } catch {
             return nil
         }
+    }
+
+    private func localAsset(
+        for assetId: JSON?,
+        using codingFactory: RuntimeCoderFactoryProtocol
+    ) -> ChainAsset? {
+        guard let remoteAssetId = try? assetId?.map(
+            to: AssetConversionPallet.AssetId.self,
+            with: codingFactory.createRuntimeJsonContext().toRawContext()
+        ) else {
+            return nil
+        }
+
+        return AssetHubTokensConverter.convertFromMultilocationToLocal(
+            remoteAssetId,
+            chain: chain,
+            conversionClosure: AssetHubTokensConverter.createPoolAssetToLocalClosure(
+                for: chain,
+                codingFactory: codingFactory
+            )
+        )
     }
 }
