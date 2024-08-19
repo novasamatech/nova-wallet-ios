@@ -5,7 +5,7 @@ import SubstrateSdk
 extension ExtrinsicProcessor {
     struct Fee {
         let amount: BigUInt
-        let assetId: JSON?
+        let assetId: AssetModel.Id?
     }
 
     func findFee(
@@ -15,14 +15,7 @@ extension ExtrinsicProcessor {
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
     ) -> Fee? {
-        if let fee = findTransactionFeePaidInCustomAsset(
-            for: index,
-            eventRecords: eventRecords,
-            metadata: metadata,
-            runtimeJsonContext: runtimeJsonContext
-        ) {
-            return fee
-        } else if let fee = findTransactionFeePaid(
+        if let fee = findTransactionFeePaid(
             for: index,
             eventRecords: eventRecords,
             metadata: metadata,
@@ -47,29 +40,60 @@ extension ExtrinsicProcessor {
         }
     }
 
-    private func findTransactionFeePaidInCustomAsset(
+    func findAssetsFee(
         for index: UInt32,
+        sender: AccountId,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol,
-        runtimeJsonContext: RuntimeJsonContext
+        codingFactory: RuntimeCoderFactoryProtocol
     ) -> Fee? {
-        let extrinsicEvents = eventRecords.filter { $0.extrinsicIndex == index }
-
-        let path = AssetTxPaymentPallet.assetTxFeePaidEvent
-        guard
-            let record = extrinsicEvents.last(where: { metadata.eventMatches($0.event, path: path) }),
-            let feePaidEvent: AssetTxPaymentPallet.AssetTxFeePaid = try? ExtrinsicExtraction.getEventParams(
-                from: record.event,
-                context: runtimeJsonContext
-            )
-        else {
-            return nil
-        }
-
-        return Fee(
-            amount: feePaidEvent.actualFee,
-            assetId: feePaidEvent.assetId
+        findAssetsCustomFee(
+            for: index,
+            eventRecords: eventRecords,
+            codingFactory: codingFactory
         )
+            ?? findFee(
+                for: index,
+                sender: sender,
+                eventRecords: eventRecords,
+                metadata: codingFactory.metadata,
+                runtimeJsonContext: codingFactory.createRuntimeJsonContext()
+            )
+    }
+
+    func findOrmlFee(
+        for params: HydraSwapExtrinsicParsingParams,
+        extrinsicIndex: UInt32,
+        eventRecords: [EventRecord],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> Fee? {
+        if
+            let customFee = try findHydraCustomFee(
+                in: eventRecords,
+                swapEvents: params.events,
+                codingFactory: codingFactory
+            ) {
+            return customFee
+        } else {
+            let optNativeFee = findFee(
+                for: extrinsicIndex,
+                sender: params.sender,
+                eventRecords: eventRecords,
+                metadata: codingFactory.metadata,
+                runtimeJsonContext: codingFactory.createRuntimeJsonContext()
+            )
+
+            guard
+                let feeAssetId = chain.utilityChainAssetId()?.assetId,
+                let nativeFee = optNativeFee?.amount
+            else {
+                return nil
+            }
+
+            return Fee(
+                amount: nativeFee,
+                assetId: feeAssetId
+            )
+        }
     }
 
     private func findTransactionFeePaid(

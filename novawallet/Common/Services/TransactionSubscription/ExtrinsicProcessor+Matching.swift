@@ -82,17 +82,16 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            let fee = findFee(
-                for: extrinsicIndex,
-                sender: sender,
-                eventRecords: eventRecords,
-                metadata: metadata,
-                runtimeJsonContext: context
+            let hydraParsingParams = prepareHydraParsingParams(
+                for: sender,
+                codingFactory: codingFactory
             )
 
-            let feeAsset = localAsset(
-                for: fee?.assetId,
-                using: codingFactory
+            let fee = try? findOrmlFee(
+                for: hydraParsingParams,
+                extrinsicIndex: extrinsicIndex,
+                eventRecords: eventRecords,
+                codingFactory: codingFactory
             )
 
             let peerId = accountId == result.callSenderId ? result.callAccountId : result.callSenderId
@@ -112,7 +111,7 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 extrinsicHash: nil,
                 fee: fee?.amount,
-                feeAssetId: feeAsset?.asset.assetId,
+                feeAssetId: fee?.assetId,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: status,
@@ -369,17 +368,11 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            let fee = findFee(
+            let fee = findAssetsFee(
                 for: extrinsicIndex,
                 sender: sender,
                 eventRecords: eventRecords,
-                metadata: metadata,
-                runtimeJsonContext: context
-            )
-
-            let feeAsset = localAsset(
-                for: fee?.assetId,
-                using: codingFactory
+                codingFactory: codingFactory
             )
 
             let peerId = accountId == result.callSenderAccountId ? result.callAccountId : result.callSenderAccountId
@@ -413,14 +406,13 @@ extension ExtrinsicProcessor {
                 call: extrinsic.call,
                 extrinsicHash: nil,
                 fee: fee?.amount,
-                feeAssetId: feeAsset?.asset.assetId,
+                feeAssetId: fee?.assetId,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: isSuccess,
                 assetId: asset.assetId,
                 swap: nil
             )
-
         } catch {
             return nil
         }
@@ -674,26 +666,5 @@ extension ExtrinsicProcessor {
         } catch {
             return nil
         }
-    }
-
-    private func localAsset(
-        for assetId: JSON?,
-        using codingFactory: RuntimeCoderFactoryProtocol
-    ) -> ChainAsset? {
-        guard let remoteAssetId = try? assetId?.map(
-            to: AssetConversionPallet.AssetId.self,
-            with: codingFactory.createRuntimeJsonContext().toRawContext()
-        ) else {
-            return nil
-        }
-
-        return AssetHubTokensConverter.convertFromMultilocationToLocal(
-            remoteAssetId,
-            chain: chain,
-            conversionClosure: AssetHubTokensConverter.createPoolAssetToLocalClosure(
-                for: chain,
-                codingFactory: codingFactory
-            )
-        )
     }
 }

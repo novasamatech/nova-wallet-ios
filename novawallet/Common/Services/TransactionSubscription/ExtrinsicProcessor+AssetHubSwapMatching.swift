@@ -18,7 +18,7 @@ private struct AssetHubSwapExtrinsicParsingResult {
     let amountOut: BigUInt
     let callPath: CallCodingPath
     let call: JSON
-    let customFee: AssetTxPaymentPallet.AssetTxFeePaid?
+    let customFee: ExtrinsicProcessor.Fee?
     let isSuccess: Bool
 }
 
@@ -55,21 +55,10 @@ extension ExtrinsicProcessor {
             let feeAssetId: AssetModel.Id?
 
             if
-                let customFee = swapResult.customFee,
-                let remoteAssetId = try? customFee.assetId.map(
-                    to: AssetConversionPallet.AssetId.self,
-                    with: context.toRawContext()
-                ),
-                let localAsset = AssetHubTokensConverter.convertFromMultilocationToLocal(
-                    remoteAssetId,
-                    chain: chain,
-                    conversionClosure: AssetHubTokensConverter.createPoolAssetToLocalClosure(
-                        for: chain,
-                        codingFactory: codingFactory
-                    )
-                ) {
-                fee = customFee.actualFee
-                feeAssetId = localAsset.asset.assetId
+                let customFeeAmount = swapResult.customFee?.amount,
+                let customFeeAssetId = swapResult.customFee?.assetId {
+                fee = customFeeAmount
+                feeAssetId = customFeeAssetId
             } else {
                 let optNativeFee = findFee(
                     for: extrinsicIndex,
@@ -146,8 +135,9 @@ extension ExtrinsicProcessor {
             return nil
         }
 
-        let customFee = try findFeeInCustomAsset(
-            in: eventRecords,
+        let customFee = findAssetsCustomFee(
+            for: extrinsicIndex,
+            eventRecords: eventRecords,
             codingFactory: codingFactory
         )
 
@@ -182,7 +172,7 @@ extension ExtrinsicProcessor {
         from call: RuntimeCall<JSON>,
         callSender: AccountId,
         eventRecords: [EventRecord],
-        customFee: AssetTxPaymentPallet.AssetTxFeePaid?,
+        customFee: Fee?,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> AssetHubSwapExtrinsicParsingResult? {
         let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
@@ -245,7 +235,7 @@ extension ExtrinsicProcessor {
     private func findFailedAssetHubSwapResult(
         from call: RuntimeCall<JSON>,
         callSender: AccountId,
-        customFee: AssetTxPaymentPallet.AssetTxFeePaid?,
+        customFee: Fee?,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> AssetHubSwapExtrinsicParsingResult? {
         let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
@@ -306,7 +296,7 @@ extension ExtrinsicProcessor {
 
     private func findAssetHubSwap(
         _ swapEvents: [AssetConversionPallet.SwapExecutedEvent],
-        customFee: AssetTxPaymentPallet.AssetTxFeePaid?
+        customFee: Fee?
     ) -> AssetConversionPallet.SwapExecutedEvent? {
         guard customFee != nil else {
             return swapEvents.first
