@@ -20,7 +20,7 @@ protocol ExtrinsicFeeEstimatingWrapperFactoryProtocol {
 final class ExtrinsicFeeEstimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol {
     let account: ChainAccountResponse
     let chain: ChainModel
-    let runtimeService: RuntimeCodingServiceProtocol & RuntimeProviderProtocol
+    let runtimeService: RuntimeProviderProtocol
     let connection: JSONRPCEngine
     let operationQueue: OperationQueue
 
@@ -39,7 +39,7 @@ final class ExtrinsicFeeEstimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperF
     init(
         account: ChainAccountResponse,
         chain: ChainModel,
-        runtimeService: RuntimeCodingServiceProtocol & RuntimeProviderProtocol,
+        runtimeService: RuntimeProviderProtocol,
         connection: JSONRPCEngine,
         operationQueue: OperationQueue
     ) {

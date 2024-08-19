@@ -52,14 +52,13 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
         switch AssetType(rawType: asset.type) {
-        case .none where chain.hasHydrationTransferFees,
-             .orml where chain.hasHydrationTransferFees:
-            estimatingWrapperFactory.createHydraFeeEstimatingWrapper(
-                asset: asset,
+        case .none:
+            estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
-        case .none, .orml:
-            estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
+        case .orml where chain.hasHydrationTransferFees:
+            estimatingWrapperFactory.createHydraFeeEstimatingWrapper(
+                asset: asset,
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
         case .statemine where chain.hasAssetHubTransferFees:
@@ -67,11 +66,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
                 asset: asset,
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
-        case .statemine:
-            estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
-                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
-            )
-        case .equilibrium, .evmNative, .evmAsset:
+        case .equilibrium, .evmNative, .evmAsset, .orml, .statemine:
             .createWithError(
                 ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
             )
@@ -111,21 +106,21 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
         chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
         switch AssetType(rawType: asset.type) {
+        case .none:
+            CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
         case .statemine where chain.hasAssetHubTransferFees:
             CompoundOperationWrapper.createWithResult(
                 ExtrinsicAssetConversionFeeInstaller(
                     feeAsset: ChainAsset(chain: chain, asset: asset)
                 )
             )
-        case .none, .statemine:
-            CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
         case .orml where chain.hasHydrationTransferFees:
             CompoundOperationWrapper.createWithResult(
                 HydraExtrinsicFeeInstaller(
                     feeAsset: ChainAsset(chain: chain, asset: asset)
                 )
             )
-        case .orml, .equilibrium, .evmNative, .evmAsset:
+        case .orml, .statemine, .equilibrium, .evmNative, .evmAsset:
             .createWithError(
                 ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
             )

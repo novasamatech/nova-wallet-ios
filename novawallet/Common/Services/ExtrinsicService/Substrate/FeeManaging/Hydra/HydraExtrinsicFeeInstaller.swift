@@ -42,18 +42,15 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
     }
 
     private func createTransferFeeCalls(using assetId: HydraDx.LocalRemoteAssetId) -> TransferFeeInstallingCalls {
-        let shouldSetCurrency = feeAsset.chain.utilityAsset()?.assetId != feeAsset.asset.assetId
-        let setCurrencyCall: HydraDx.SetCurrencyCall? = {
-            guard shouldSetCurrency else { return nil }
+        let shouldSetCurrency = feeAsset.asset.assetId != HydraDx.nativeAssetId
 
-            return .init(currency: assetId.remoteAssetId)
-        }()
+        let (setCurrencyCall, revertCurrencyCall): (HydraDx.SetCurrencyCall?, HydraDx.SetCurrencyCall?) = {
+            guard shouldSetCurrency else { return (nil, nil) }
 
-        let shouldRevertCurrency = feeAsset.asset.assetId != HydraDx.nativeAssetId
-        let revertCurrencyCall: HydraDx.SetCurrencyCall? = {
-            guard shouldRevertCurrency else { return nil }
-
-            return .init(currency: HydraDx.nativeAssetId)
+            return (
+                .init(currency: assetId.remoteAssetId),
+                .init(currency: HydraDx.nativeAssetId)
+            )
         }()
 
         return TransferFeeInstallingCalls(
