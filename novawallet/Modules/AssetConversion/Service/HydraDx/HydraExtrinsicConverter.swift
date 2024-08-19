@@ -2,17 +2,6 @@ import Foundation
 import SubstrateSdk
 
 enum HydraExtrinsicConverter {
-    static func addingSetCurrencyCall(
-        from params: HydraSwapParams,
-        builder: ExtrinsicBuilderProtocol
-    ) throws -> ExtrinsicBuilderProtocol {
-        guard let setCurrencyCall = params.changeFeeCurrency else {
-            return builder
-        }
-
-        return try builder.adding(call: setCurrencyCall.runtimeCall())
-    }
-
     static func addingOperation(
         from params: HydraSwapParams,
         builder: ExtrinsicBuilderProtocol
@@ -33,12 +22,6 @@ enum HydraExtrinsicConverter {
         case let .routedBuy(call):
             currentBuilder = try currentBuilder.adding(call: call.runtimeCall())
         }
-
-        if let revertFeeCurrency = params.revertFeeCurrency {
-            currentBuilder = try currentBuilder.adding(call: revertFeeCurrency.runtimeCall())
-        }
-
-        currentBuilder = currentBuilder.with(batchType: .ignoreFails)
 
         return currentBuilder
     }

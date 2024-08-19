@@ -374,7 +374,7 @@
 		0C846B902BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */; };
 		0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */; };
 		0C846B952BE69417000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */; };
-		0C85FF222B6C001900FC0014 /* HydraExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF212B6C001900FC0014 /* HydraExtrinsicService.swift */; };
+		0C85FF222B6C001900FC0014 /* HydraSwapExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF212B6C001900FC0014 /* HydraSwapExtrinsicService.swift */; };
 		0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */; };
 		0C85FF262B6CB9B400FC0014 /* HydraCallPathFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF252B6CB9B400FC0014 /* HydraCallPathFactory.swift */; };
 		0C85FF282B6CBA9D00FC0014 /* AssetHubCallPathFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF272B6CBA9D00FC0014 /* AssetHubCallPathFactory.swift */; };
@@ -5364,7 +5364,7 @@
 		0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingGlobalConfigProvider.swift; sourceTree = "<group>"; };
 		0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		0C85FF212B6C001900FC0014 /* HydraExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicService.swift; sourceTree = "<group>"; };
+		0C85FF212B6C001900FC0014 /* HydraSwapExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapExtrinsicService.swift; sourceTree = "<group>"; };
 		0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicConverter.swift; sourceTree = "<group>"; };
 		0C85FF252B6CB9B400FC0014 /* HydraCallPathFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraCallPathFactory.swift; sourceTree = "<group>"; };
 		0C85FF272B6CBA9D00FC0014 /* AssetHubCallPathFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubCallPathFactory.swift; sourceTree = "<group>"; };
@@ -10318,7 +10318,7 @@
 				0C363E992B6B69D60065AFA6 /* HydraFeeService.swift */,
 				0C363E952B6B591C0065AFA6 /* HydraExtrinsicOperationFactory.swift */,
 				0C363E9B2B6B8C400065AFA6 /* HydraExtrinsicConverter.swift */,
-				0C85FF212B6C001900FC0014 /* HydraExtrinsicService.swift */,
+				0C85FF212B6C001900FC0014 /* HydraSwapExtrinsicService.swift */,
 				0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */,
 				0C7A3FCD2B6A874500764603 /* HydraSwapRemoteState.swift */,
 				0C85FF252B6CB9B400FC0014 /* HydraCallPathFactory.swift */,
@@ -25158,7 +25158,7 @@
 				0C363E962B6B591C0065AFA6 /* HydraExtrinsicOperationFactory.swift in Sources */,
 				8824D424290324260022D778 /* PrettyPrintedJSONOperationFactory.swift in Sources */,
 				778D979B2A24D1D8002BA681 /* BaseAssetsSearchViewLayout.swift in Sources */,
-				0C85FF222B6C001900FC0014 /* HydraExtrinsicService.swift in Sources */,
+				0C85FF222B6C001900FC0014 /* HydraSwapExtrinsicService.swift in Sources */,
 				AEA0C8C6268131C500F9666F /* InitiatedBondingSelectedValidatorsListWireframe.swift in Sources */,
 				880059E328EF128000E87B9B /* ReferendumInfoView.swift in Sources */,
 				84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */,

@@ -51,6 +51,21 @@ extension ExtrinsicOperationFactoryProtocol {
         )
     }
 
+    func estimateFeeOperation(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        payingFeeIn chainAssetId: ChainAssetId?
+    ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
+        let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
+            try closure(builder)
+        }
+
+        return estimateFeeOperation(
+            wrapperClosure,
+            numberOfExtrinsics: 1,
+            payingIn: chainAssetId
+        )
+    }
+
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         signer: SigningWrapperProtocol,
@@ -82,14 +97,9 @@ extension ExtrinsicOperationFactoryProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         payingIn chainAssetId: ChainAssetId? = nil
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
-            try closure(builder)
-        }
-
         let feeOperation = estimateFeeOperation(
-            wrapperClosure,
-            numberOfExtrinsics: 1,
-            payingIn: chainAssetId
+            closure,
+            payingFeeIn: chainAssetId
         )
 
         let resultMappingOperation = ClosureOperation<ExtrinsicFeeProtocol> {
