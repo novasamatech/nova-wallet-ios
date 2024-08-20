@@ -27,7 +27,6 @@ protocol ExtrinsicFeeEstimationRegistring {
 
     func createFeeInstallerWrapper(
         payingIn chainAssetId: ChainAssetId?,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
+        senderResolutionOperation: ClosureOperation<ExtrinsicSenderBuilderResolution>
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling>
 }

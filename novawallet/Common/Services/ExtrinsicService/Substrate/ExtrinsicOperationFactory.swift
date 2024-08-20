@@ -360,8 +360,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
         let feeInstallerWrapper = feeEstimationRegistry.createFeeInstallerWrapper(
             payingIn: chainAssetId,
-            connection: connection,
-            runtimeService: runtimeRegistry
+            senderResolutionOperation: senderResolutionOperation
         )
 
         let extrinsicsOperation = createExtrinsicsOperation(

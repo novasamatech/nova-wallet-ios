@@ -117,7 +117,10 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
 
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
 
         return ExtrinsicService(
@@ -151,7 +154,10 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         )
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
         )
 
         return ExtrinsicOperationFactory(

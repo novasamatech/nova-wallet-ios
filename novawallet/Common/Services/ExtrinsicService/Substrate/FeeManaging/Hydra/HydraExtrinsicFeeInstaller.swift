@@ -3,9 +3,14 @@ import SubstrateSdk
 
 final class HydraExtrinsicFeeInstaller {
     let feeAsset: ChainAsset
+    let swapState: HydraDx.SwapRemoteState
 
-    init(feeAsset: ChainAsset) {
+    init(
+        feeAsset: ChainAsset,
+        swapState: HydraDx.SwapRemoteState
+    ) {
         self.feeAsset = feeAsset
+        self.swapState = swapState
     }
 }
 
@@ -42,20 +47,19 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
     }
 
     private func createTransferFeeCalls(using assetId: HydraDx.LocalRemoteAssetId) -> TransferFeeInstallingCalls {
-        let shouldSetCurrency = feeAsset.asset.assetId != HydraDx.nativeAssetId
-
-        let (setCurrencyCall, revertCurrencyCall): (HydraDx.SetCurrencyCall?, HydraDx.SetCurrencyCall?) = {
-            guard shouldSetCurrency else { return (nil, nil) }
-
-            return (
-                .init(currency: assetId.remoteAssetId),
-                .init(currency: HydraDx.nativeAssetId)
+        guard
+            let currentFeeAssetId = swapState.feeCurrency,
+            currentFeeAssetId != assetId.remoteAssetId
+        else {
+            return TransferFeeInstallingCalls(
+                setCurrencyCall: nil,
+                revertCurrencyCall: nil
             )
-        }()
+        }
 
         return TransferFeeInstallingCalls(
-            setCurrencyCall: setCurrencyCall,
-            revertCurrencyCall: revertCurrencyCall
+            setCurrencyCall: .init(currency: assetId.remoteAssetId),
+            revertCurrencyCall: .init(currency: HydraDx.nativeAssetId)
         )
     }
 }

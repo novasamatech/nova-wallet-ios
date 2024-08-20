@@ -76,7 +76,10 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            chainRegistry: chainRegistry,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: storageFacade
         )
         
         let extrinsicService = ExtrinsicService(
@@ -151,7 +154,10 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            chainRegistry: chainRegistry,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: storageFacade
         )
         
         let extrinsicService = ExtrinsicService(
