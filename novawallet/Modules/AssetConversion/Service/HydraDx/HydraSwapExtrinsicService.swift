@@ -75,7 +75,7 @@ extension HydraSwapExtrinsicService: AssetConversionExtrinsicServiceProtocol {
                     self?.performSwapSubmission(
                         for: swapParams,
                         signer: signer,
-                        runCompletionIn: .main,
+                        runCompletionIn: queue,
                         completion: closure
                     )
                 case let .failure(error):
