@@ -109,14 +109,15 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         guard
             let fee,
             !isManualFeeSet,
+            !chainAsset.isUtilityAsset,
+            feeAsset.isUtilityAsset,
             let utilityAssetMinBalance,
-            let senderUtilityAssetBalance,
-            feeAsset.isUtilityAsset
+            let senderUtilityAssetBalance
         else {
             return
         }
 
-        if senderUtilityAssetBalance.transferable - fee.value.amount < utilityAssetMinBalance {
+        if senderUtilityAssetBalance.transferable.subtractOrZero(fee.value.amount) < utilityAssetMinBalance {
             changeFeeAsset(to: chainAsset)
         }
     }
