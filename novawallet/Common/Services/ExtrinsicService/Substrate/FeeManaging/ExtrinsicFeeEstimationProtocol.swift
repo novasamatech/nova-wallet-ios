@@ -22,8 +22,6 @@ protocol ExtrinsicFeeEstimating {
 protocol ExtrinsicFeeEstimationRegistring {
     func createFeeEstimatingWrapper(
         payingIn chainAssetId: ChainAssetId?,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol>
 

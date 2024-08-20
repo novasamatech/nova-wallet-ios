@@ -67,9 +67,18 @@ final class XcmTransferService {
             for: chainAccount,
             chainModel: chain
         )
+
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: chainAccount,
+            chain: chain,
+            runtimeService: runtimeProvider,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            operationQueue: operationQueue
+            estimatingWrapperFactory: feeEstimatingWrapperFactory
         )
 
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)

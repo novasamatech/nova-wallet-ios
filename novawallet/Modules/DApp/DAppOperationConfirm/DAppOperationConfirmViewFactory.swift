@@ -144,15 +144,24 @@ struct DAppOperationConfirmViewFactory {
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let account = request.wallet.fetch(for: chain.accountRequest())
+        else {
             return nil
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeProvider,
+            connection: connection,
+            operationQueue: operationQueue
+        )
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            operationQueue: operationQueue
+            estimatingWrapperFactory: feeEstimatingWrapperFactory
         )
 
         return DAppOperationConfirmInteractor(

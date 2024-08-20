@@ -8,56 +8,24 @@ enum ExtrinsicFeeEstimationRegistryError: Error {
 
 final class ExtrinsicFeeEstimationRegistry {
     let chain: ChainModel
-    let operationQueue: OperationQueue
+    let estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol
 
-    init(chain: ChainModel, operationQueue: OperationQueue) {
+    init(
+        chain: ChainModel,
+        estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol
+    ) {
         self.chain = chain
-        self.operationQueue = operationQueue
-    }
-
-    private func createNativeFeeEstimatingWrapper(
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
-        extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
-    ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
-        ExtrinsicNativeFeeEstimator(
-            chain: chain,
-            operationQueue: operationQueue
-        ).createFeeEstimatingWrapper(
-            connection: connection,
-            runtimeService: runtimeService,
-            extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
-        )
-    }
-
-    private func createAssetConversionFeeEstimationWrapper(
-        chainAsset: ChainAsset,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
-        extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
-    ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
-        ExtrinsicAssetsCustomFeeEstimator(
-            chainAsset: chainAsset,
-            operationQueue: operationQueue
-        ).createFeeEstimatingWrapper(
-            connection: connection,
-            runtimeService: runtimeService,
-            extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
-        )
+        self.estimatingWrapperFactory = estimatingWrapperFactory
     }
 }
 
 extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
     func createFeeEstimatingWrapper(
         payingIn chainAssetId: ChainAssetId?,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
         guard let chainAssetId else {
-            return createNativeFeeEstimatingWrapper(
-                connection: connection,
-                runtimeService: runtimeService,
+            return estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
         }
@@ -71,23 +39,35 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
             )
         }
 
+        return createFeeEstimatingWrapper(
+            for: asset,
+            chainAssetId: chainAssetId,
+            extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
+        )
+    }
+
+    func createFeeEstimatingWrapper(
+        for asset: AssetModel,
+        chainAssetId: ChainAssetId,
+        extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
+    ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
         switch AssetType(rawType: asset.type) {
-        case .none,
-             .orml:
-            return createNativeFeeEstimatingWrapper(
-                connection: connection,
-                runtimeService: runtimeService,
+        case .none:
+            estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
-        case .statemine:
-            return createAssetConversionFeeEstimationWrapper(
-                chainAsset: .init(chain: chain, asset: asset),
-                connection: connection,
-                runtimeService: runtimeService,
+        case .orml where chain.hasHydrationTransferFees:
+            estimatingWrapperFactory.createHydraFeeEstimatingWrapper(
+                asset: asset,
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
-        case .equilibrium, .evmNative, .evmAsset:
-            return .createWithError(
+        case .statemine where chain.hasAssetHubTransferFees:
+            estimatingWrapperFactory.createCustomFeeEstimatingWrapper(
+                asset: asset,
+                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
+            )
+        case .equilibrium, .evmNative, .evmAsset, .orml, .statemine:
+            .createWithError(
                 ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
             )
         }
@@ -110,20 +90,40 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
                 throw ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
             }
 
-            switch AssetType(rawType: asset.type) {
-            case .none:
-                return CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
-            case .statemine:
-                let assetConversionInstaller = ExtrinsicAssetConversionFeeInstaller(
-                    feeAsset: ChainAsset(chain: chain, asset: asset)
-                )
-
-                return CompoundOperationWrapper.createWithResult(assetConversionInstaller)
-            case .orml, .equilibrium, .evmNative, .evmAsset:
-                throw ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
-            }
+            return createFeeInstallerWrapper(
+                chain: chain,
+                asset: asset,
+                chainAssetId: chainAssetId
+            )
         } catch {
             return CompoundOperationWrapper.createWithError(error)
+        }
+    }
+
+    func createFeeInstallerWrapper(
+        chain: ChainModel,
+        asset: AssetModel,
+        chainAssetId: ChainAssetId
+    ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
+        switch AssetType(rawType: asset.type) {
+        case .none:
+            CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
+        case .statemine where chain.hasAssetHubTransferFees:
+            CompoundOperationWrapper.createWithResult(
+                ExtrinsicAssetConversionFeeInstaller(
+                    feeAsset: ChainAsset(chain: chain, asset: asset)
+                )
+            )
+        case .orml where chain.hasHydrationTransferFees:
+            CompoundOperationWrapper.createWithResult(
+                HydraExtrinsicFeeInstaller(
+                    feeAsset: ChainAsset(chain: chain, asset: asset)
+                )
+            )
+        case .orml, .statemine, .equilibrium, .evmNative, .evmAsset:
+            .createWithError(
+                ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
+            )
         }
     }
 }

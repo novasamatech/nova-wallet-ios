@@ -69,14 +69,14 @@ extension ExtrinsicServiceFactoryProtocol {
 }
 
 final class ExtrinsicServiceFactory {
-    private let runtimeRegistry: RuntimeCodingServiceProtocol
+    private let runtimeRegistry: RuntimeProviderProtocol
     private let engine: JSONRPCEngine
     private let operationQueue: OperationQueue
     private let userStorageFacade: StorageFacadeProtocol
     private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
-        runtimeRegistry: RuntimeCodingServiceProtocol,
+        runtimeRegistry: RuntimeProviderProtocol,
         engine: JSONRPCEngine,
         operationQueue: OperationQueue,
         userStorageFacade: StorageFacadeProtocol,
@@ -106,9 +106,18 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
+
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeRegistry,
+            connection: engine,
+            operationQueue: operationQueue
+        )
+
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            operationQueue: operationQueue
+            estimatingWrapperFactory: feeEstimatingWrapperFactory
         )
 
         return ExtrinsicService(
@@ -133,9 +142,16 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeRegistry,
+            connection: engine,
+            operationQueue: operationQueue
+        )
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            operationQueue: operationQueue
+            estimatingWrapperFactory: feeEstimatingWrapperFactory
         )
 
         return ExtrinsicOperationFactory(
