@@ -82,12 +82,16 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            let fee = findFee(
-                for: extrinsicIndex,
-                sender: sender,
+            let hydraParsingParams = prepareHydraParsingParams(
+                for: sender,
+                codingFactory: codingFactory
+            )
+
+            let fee = try? findOrmlFee(
+                for: hydraParsingParams,
+                extrinsicIndex: extrinsicIndex,
                 eventRecords: eventRecords,
-                metadata: metadata,
-                runtimeJsonContext: context
+                codingFactory: codingFactory
             )
 
             let peerId = accountId == result.callSenderId ? result.callAccountId : result.callSenderId
@@ -106,8 +110,8 @@ extension ExtrinsicProcessor {
                 callPath: result.callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
-                feeAssetId: nil,
+                fee: fee?.amount,
+                feeAssetId: fee?.assetId,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: status,
@@ -240,7 +244,7 @@ extension ExtrinsicProcessor {
                 callPath: CallCodingPath.ethereumTransact,
                 call: extrinsic.call,
                 extrinsicHash: executedValue.transactionHash,
-                fee: fee,
+                fee: fee?.amount,
                 feeAssetId: nil,
                 peerId: executedValue.to,
                 amount: nil,
@@ -320,7 +324,7 @@ extension ExtrinsicProcessor {
                 callPath: callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
+                fee: fee?.amount,
                 feeAssetId: nil,
                 peerId: nil,
                 amount: nil,
@@ -364,12 +368,11 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            let fee = findFee(
+            let fee = findAssetsFee(
                 for: extrinsicIndex,
                 sender: sender,
                 eventRecords: eventRecords,
-                metadata: metadata,
-                runtimeJsonContext: context
+                codingFactory: codingFactory
             )
 
             let peerId = accountId == result.callSenderAccountId ? result.callAccountId : result.callSenderAccountId
@@ -402,15 +405,14 @@ extension ExtrinsicProcessor {
                 callPath: result.callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
-                feeAssetId: nil,
+                fee: fee?.amount,
+                feeAssetId: fee?.assetId,
                 peerId: peerId,
                 amount: result.callAmount,
                 isSuccess: isSuccess,
                 assetId: asset.assetId,
                 swap: nil
             )
-
         } catch {
             return nil
         }
@@ -493,7 +495,7 @@ extension ExtrinsicProcessor {
                 callPath: result.callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
+                fee: fee?.amount,
                 feeAssetId: nil,
                 peerId: peerId,
                 amount: result.callAmount,
@@ -652,7 +654,7 @@ extension ExtrinsicProcessor {
                 callPath: callPath,
                 call: extrinsic.call,
                 extrinsicHash: nil,
-                fee: fee,
+                fee: fee?.amount,
                 feeAssetId: nil,
                 peerId: peerId,
                 amount: call.args.value,

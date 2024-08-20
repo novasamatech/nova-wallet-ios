@@ -3,13 +3,18 @@ import BigInt
 import SubstrateSdk
 
 extension ExtrinsicProcessor {
+    struct Fee {
+        let amount: BigUInt
+        let assetId: AssetModel.Id?
+    }
+
     func findFee(
         for index: UInt32,
         sender: AccountId,
         eventRecords: [EventRecord],
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
-    ) -> BigUInt? {
+    ) -> Fee? {
         if let fee = findTransactionFeePaid(
             for: index,
             eventRecords: eventRecords,
@@ -35,25 +40,69 @@ extension ExtrinsicProcessor {
         }
     }
 
+    func findAssetsFee(
+        for index: UInt32,
+        sender: AccountId,
+        eventRecords: [EventRecord],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> Fee? {
+        findAssetsCustomFee(
+            for: index,
+            eventRecords: eventRecords,
+            codingFactory: codingFactory
+        )
+            ?? findFee(
+                for: index,
+                sender: sender,
+                eventRecords: eventRecords,
+                metadata: codingFactory.metadata,
+                runtimeJsonContext: codingFactory.createRuntimeJsonContext()
+            )
+    }
+
+    func findOrmlFee(
+        for params: HydraSwapExtrinsicParsingParams,
+        extrinsicIndex: UInt32,
+        eventRecords: [EventRecord],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> Fee? {
+        try findHydraCustomFee(
+            in: eventRecords,
+            swapEvents: params.events,
+            codingFactory: codingFactory
+        )
+            ?? findFee(
+                for: extrinsicIndex,
+                sender: params.sender,
+                eventRecords: eventRecords,
+                metadata: codingFactory.metadata,
+                runtimeJsonContext: codingFactory.createRuntimeJsonContext()
+            )
+    }
+
     private func findTransactionFeePaid(
         for index: UInt32,
         eventRecords: [EventRecord],
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
-    ) -> BigUInt? {
+    ) -> Fee? {
         let extrinsicEvents = eventRecords.filter { $0.extrinsicIndex == index }
 
         let path = TransactionPaymentPallet.feePaidPath
-        guard let record = extrinsicEvents.last(where: { metadata.eventMatches($0.event, path: path) }) else {
+        guard
+            let record = extrinsicEvents.last(where: { metadata.eventMatches($0.event, path: path) }),
+            let feePaidEvent: TransactionPaymentPallet.TransactionFeePaid = try? ExtrinsicExtraction.getEventParams(
+                from: record.event,
+                context: runtimeJsonContext
+            )
+        else {
             return nil
         }
 
-        let feePaidEvent: TransactionPaymentPallet.TransactionFeePaid? = try? ExtrinsicExtraction.getEventParams(
-            from: record.event,
-            context: runtimeJsonContext
+        return Fee(
+            amount: feePaidEvent.amount,
+            assetId: nil
         )
-
-        return feePaidEvent?.amount
     }
 
     private func findFeeOfBalancesWithdraw(
@@ -62,7 +111,7 @@ extension ExtrinsicProcessor {
         eventRecords: [EventRecord],
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
-    ) -> BigUInt? {
+    ) -> Fee? {
         let withdraw = EventCodingPath.balancesWithdraw
         let closure: (EventRecord) -> Bool = { record in
             guard record.extrinsicIndex == index,
@@ -94,7 +143,10 @@ extension ExtrinsicProcessor {
             return nil
         }
 
-        return event.amount
+        return Fee(
+            amount: event.amount,
+            assetId: nil
+        )
     }
 
     private func findFeeOfBalancesTreasuryDeposit(
@@ -102,7 +154,7 @@ extension ExtrinsicProcessor {
         eventRecords: [EventRecord],
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
-    ) -> BigUInt? {
+    ) -> Fee? {
         let balances = EventCodingPath.balancesDeposit
 
         let maybeBalancesDeposit: BigUInt? = eventRecords.last { record in
@@ -149,6 +201,15 @@ extension ExtrinsicProcessor {
             deposits.append(treasury)
         }
 
-        return !deposits.isEmpty ? deposits.reduce(0, +) : nil
+        let amount: BigUInt? = !deposits.isEmpty ? deposits.reduce(0, +) : nil
+
+        guard let amount else {
+            return nil
+        }
+
+        return Fee(
+            amount: amount,
+            assetId: nil
+        )
     }
 }

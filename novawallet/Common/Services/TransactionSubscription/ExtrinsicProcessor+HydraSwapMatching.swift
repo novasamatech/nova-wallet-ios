@@ -2,19 +2,14 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-private struct HydraSwapExtrinsicCallArgs {
+struct HydraSwapExtrinsicCallArgs {
     let assetIn: HydraDx.AssetId
     let assetOut: HydraDx.AssetId
     let amountIn: BigUInt
     let amountOut: BigUInt
 }
 
-private struct HydraFee {
-    let assetId: AssetModel.Id
-    let amount: BigUInt
-}
-
-private struct HydraSwapExtrinsicParsingParams {
+struct HydraSwapExtrinsicParsingParams {
     let sender: AccountId
     let events: Set<EventCodingPath>
     let eventParser: (Event, EventCodingPath) throws -> HydraSwapExtrinsicCallArgs
@@ -47,7 +42,7 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            let params = prepareParsingParams(for: sender, codingFactory: codingFactory)
+            let params = prepareHydraParsingParams(for: sender, codingFactory: codingFactory)
 
             guard let swapResult = try parseHydraSwapExtrinsic(
                 extrinsic,
@@ -59,7 +54,7 @@ extension ExtrinsicProcessor {
                 return nil
             }
 
-            guard let fee = try findHydraFee(
+            guard let fee = try findOrmlFee(
                 for: params,
                 extrinsicIndex: extrinsicIndex,
                 eventRecords: extrinsicEvents,
@@ -93,7 +88,7 @@ extension ExtrinsicProcessor {
     }
 
     // swiftlint:disable:next function_body_length
-    private func prepareParsingParams(
+    func prepareHydraParsingParams(
         for sender: AccountId,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> HydraSwapExtrinsicParsingParams {
@@ -340,80 +335,5 @@ extension ExtrinsicProcessor {
             call: call.args,
             isSuccess: false
         )
-    }
-
-    private func findHydraFee(
-        for params: HydraSwapExtrinsicParsingParams,
-        extrinsicIndex: UInt32,
-        eventRecords: [EventRecord],
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraFee? {
-        if
-            let customFee = try findHydraCustomFee(
-                in: eventRecords,
-                swapEvents: params.events,
-                codingFactory: codingFactory
-            ) {
-            return customFee
-        } else {
-            let optNativeFee = findFee(
-                for: extrinsicIndex,
-                sender: params.sender,
-                eventRecords: eventRecords,
-                metadata: codingFactory.metadata,
-                runtimeJsonContext: codingFactory.createRuntimeJsonContext()
-            )
-
-            guard
-                let feeAssetId = chain.utilityChainAssetId()?.assetId,
-                let nativeFee = optNativeFee else {
-                return nil
-            }
-
-            return HydraFee(assetId: feeAssetId, amount: nativeFee)
-        }
-    }
-
-    private func findHydraCustomFee(
-        in events: [EventRecord],
-        swapEvents: Set<EventCodingPath>,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraFee? {
-        let metadata = codingFactory.metadata
-
-        let swapIndex = events.lastIndex { metadata.eventMatches($0.event, oneOf: swapEvents) } ?? 0
-
-        let feePaidPath = TransactionPaymentPallet.feePaidPath
-        let optFeePaidIndex = events.lastIndex { metadata.eventMatches($0.event, path: feePaidPath) }
-
-        guard let feePaidIndex = optFeePaidIndex,
-              swapIndex < feePaidIndex else {
-            return nil
-        }
-
-        let depositedPath = TokensPallet.depositedEventPath
-        let optDepositEvent = events[swapIndex ..< feePaidIndex].first {
-            metadata.eventMatches($0.event, path: depositedPath)
-        }
-
-        let context = codingFactory.createRuntimeJsonContext()
-
-        guard
-            let depositedEvent = optDepositEvent,
-            let depositedModel: TokensPallet.DepositedEvent<StringScaleMapper<BigUInt>> =
-            try? ExtrinsicExtraction.getEventParams(
-                from: depositedEvent.event,
-                context: context
-            ) else {
-            return nil
-        }
-
-        let assetId = try HydraDxTokenConverter.converToLocal(
-            for: depositedModel.currencyId.value,
-            chain: chain,
-            codingFactory: codingFactory
-        ).assetId
-
-        return HydraFee(assetId: assetId, amount: depositedModel.amount)
     }
 }
