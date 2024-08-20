@@ -66,34 +66,18 @@ extension ExtrinsicProcessor {
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Fee? {
-        if
-            let customFee = try findHydraCustomFee(
-                in: eventRecords,
-                swapEvents: params.events,
-                codingFactory: codingFactory
-            ) {
-            return customFee
-        } else {
-            let optNativeFee = findFee(
+        try findHydraCustomFee(
+            in: eventRecords,
+            swapEvents: params.events,
+            codingFactory: codingFactory
+        )
+            ?? findFee(
                 for: extrinsicIndex,
                 sender: params.sender,
                 eventRecords: eventRecords,
                 metadata: codingFactory.metadata,
                 runtimeJsonContext: codingFactory.createRuntimeJsonContext()
             )
-
-            guard
-                let feeAssetId = chain.utilityChainAssetId()?.assetId,
-                let nativeFee = optNativeFee?.amount
-            else {
-                return nil
-            }
-
-            return Fee(
-                amount: nativeFee,
-                assetId: feeAssetId
-            )
-        }
     }
 
     private func findTransactionFeePaid(
