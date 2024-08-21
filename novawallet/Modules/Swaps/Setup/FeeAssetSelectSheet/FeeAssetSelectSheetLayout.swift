@@ -1,6 +1,6 @@
 import UIKit
 
-final class SwapNetworkFeeSheetLayout: UIView {
+final class FeeAssetSelectSheetLayout: UIView {
     let titleLabel: UILabel = .create {
         $0.apply(style: .bottomSheetTitle)
         $0.numberOfLines = 0
@@ -59,7 +59,7 @@ final class SwapNetworkFeeSheetLayout: UIView {
     }
 }
 
-extension SwapNetworkFeeSheetLayout {
+extension FeeAssetSelectSheetLayout {
     enum Constants {
         static let titleDetailsOffset: CGFloat = 18
         static let detailsSwitchOffset: CGFloat = 10
@@ -70,8 +70,8 @@ extension SwapNetworkFeeSheetLayout {
     }
 }
 
-extension SwapNetworkFeeSheetLayout {
-    func contentHeight(model: SwapNetworkFeeSheetViewModel, locale: Locale) -> CGFloat {
+extension FeeAssetSelectSheetLayout {
+    func contentHeight(model: FeeAssetSelectSheetViewModel, locale: Locale) -> CGFloat {
         let titleHeight = height(for: titleLabel, with: model.title.value(for: locale))
         let messageHeight = height(for: detailsLabel, with: model.message.value(for: locale))
         let hintHeight = height(for: hint.detailsLabel, with: model.hint.value(for: locale))

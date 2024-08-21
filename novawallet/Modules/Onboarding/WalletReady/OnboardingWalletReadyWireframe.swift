@@ -2,7 +2,9 @@ import Foundation
 
 final class OnboardingWalletReadyWireframe: OnboardingWalletReadyWireframeProtocol {
     func showCloudBackup(from view: OnboardingWalletReadyViewProtocol?, walletName: String) {
-        guard let cloudBackupView = CloudBackupCreateViewFactory.createViewForNewBackup(from: walletName) else {
+        guard let cloudBackupView = CloudBackupCreateViewFactory.createViewForNewBackup(
+            from: walletName
+        ) else {
             return
         }
 

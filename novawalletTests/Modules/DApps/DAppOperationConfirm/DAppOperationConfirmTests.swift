@@ -108,16 +108,37 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let signingWrapperFactory = DummySigningWrapperFactory()
         let priceProvider = PriceProviderFactoryStub(priceData: nil)
+        
+        let operationQueue = OperationQueue()
+        
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: wallet.fetch(for: chain.accountRequest())!,
+            chain: chain,
+            runtimeService: runtimeProvider,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: SubstrateStorageTestFacade(),
+            operationQueue: operationQueue
+        )
 
         let interactor = DAppOperationConfirmInteractor(
             request: request,
             chain: chain,
             runtimeProvider: runtimeProvider,
+            feeEstimationRegistry: feeEstimationRegistry,
             connection: connection,
             signingWrapperFactory: signingWrapperFactory,
             priceProviderFactory: priceProvider,
             currencyManager: CurrencyManagerStub(),
-            operationQueue: OperationQueue()
+            operationQueue: operationQueue
         )
 
         let delegate = MockDAppOperationConfirmDelegate()

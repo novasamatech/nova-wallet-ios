@@ -35,22 +35,24 @@ final class HydraFeeService {
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
+        ) { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
             let swap = try paramsOperation.extractNoCancellableResultData()
 
-            return self.extrinsicFactory.estimateFeeOperation({ builder, index in
-                if index == 0, swap.params.shouldSetFeeCurrency {
-                    return try HydraExtrinsicConverter.addingSetCurrencyCall(
-                        from: swap,
-                        builder: builder
-                    )
-                } else {
-                    return try HydraExtrinsicConverter.addingOperation(
-                        from: swap,
-                        builder: builder
-                    )
-                }
-            }, numberOfExtrinsics: swap.numberOfExtrinsics)
+            let builderClosure: ExtrinsicBuilderClosure = {
+                try HydraExtrinsicConverter.addingOperation(
+                    from: swap,
+                    builder: $0
+                )
+            }
+
+            return extrinsicFactory.estimateFeeOperation(
+                builderClosure,
+                payingFeeIn: swap.params.newFeeCurrency
+            )
         }
     }
 

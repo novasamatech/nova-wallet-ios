@@ -791,36 +791,24 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func showFeeActions() {
-        guard let payChainAsset = payChainAsset,
-              let utilityAsset = payChainAsset.chain.utilityChainAsset() else {
+        guard
+            let payChainAsset = payChainAsset,
+            let utilityAsset = payChainAsset.chain.utilityChainAsset()
+        else {
             return
         }
-        let payAssetSelected = feeChainAsset?.chainAssetId == payChainAsset.chainAssetId
-        let viewModel = SwapNetworkFeeSheetViewModel(
-            title: FeeSelectionViewModel.title,
-            message: FeeSelectionViewModel.message,
-            sectionTitle: { section in
-                .init { _ in
-                    FeeSelectionViewModel(rawValue: section) == .utilityAsset ?
-                        utilityAsset.asset.symbol : payChainAsset.asset.symbol
-                }
-            },
-            action: { [weak self] in
-                let chainAsset = FeeSelectionViewModel(rawValue: $0) == .utilityAsset ? utilityAsset : payChainAsset
-                if chainAsset.chainAssetId != self?.feeChainAsset?.chainAssetId {
+
+        wireframe.showFeeAssetSelection(
+            from: view,
+            utilityAsset: utilityAsset,
+            sendingAsset: payChainAsset,
+            currentFeeAsset: feeChainAsset,
+            onFeeAssetSelect: { [weak self] selectedAsset in
+                if selectedAsset.chainAssetId != self?.feeChainAsset?.chainAssetId {
                     self?.isManualFeeSet = true
                 }
-                self?.updateFeeChainAsset(chainAsset)
-            },
-            selectedIndex: payAssetSelected ? FeeSelectionViewModel.payAsset.rawValue :
-                FeeSelectionViewModel.utilityAsset.rawValue,
-            count: FeeSelectionViewModel.allCases.count,
-            hint: FeeSelectionViewModel.hint
-        )
-
-        wireframe.showNetworkFeeAssetSelection(
-            form: view,
-            viewModel: viewModel
+                self?.updateFeeChainAsset(selectedAsset)
+            }
         )
     }
 

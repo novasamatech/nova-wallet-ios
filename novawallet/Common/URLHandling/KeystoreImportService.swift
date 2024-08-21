@@ -50,9 +50,14 @@ final class KeystoreImportService {
 
     private(set) var definition: SecretImportDefinition?
 
+    let validators: [URLActivityValidator]
     let logger: LoggerProtocol
 
-    init(logger: LoggerProtocol) {
+    init(
+        validators: [URLActivityValidator] = [],
+        logger: LoggerProtocol
+    ) {
+        self.validators = validators
         self.logger = logger
     }
 }
@@ -67,14 +72,15 @@ extension KeystoreImportService: KeystoreImportServiceProtocol {
     }
 
     private func handleDeeplink(url: URL) -> Bool {
-        let pathComponents = url.pathComponents
-        guard pathComponents.count == 3 else {
+        guard validators.allSatisfy({ $0.validate(url) }) else { return false }
+
+        guard
+            let action = UrlHandlingAction(from: url),
+            case let .create(screen) = action
+        else {
             return false
         }
-        guard UrlHandlingAction(rawValue: pathComponents[1]) == .create else {
-            return false
-        }
-        let screen = pathComponents[2].lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+
         guard screen == "wallet" else {
             return false
         }

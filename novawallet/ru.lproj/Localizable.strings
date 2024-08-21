@@ -1729,5 +1729,7 @@
 "gov.vote.conviction.alert.title" = "Обновление убежденности";
 "gov.vote.conviction.alert.message" = "Голосование с воздержанием возможно только с убежденностью 0.1x. Проголосовать с убежденностью 0.1x?";
 "gov.vote.conviction.hint.title" = "Убежденность будет установлена на 0.1x при Воздержании";
+"cloud.backup.password.confirm.title" = "Подтвердите пароль для бэкапа";
+"cloud.backup.password.confirm.details" = "Пожалуйста, введите пароль, который вы создали на предыдущем экране";
 "common.pay" = "Оплата";
 "common.card.issued" = "Карта выпущена";

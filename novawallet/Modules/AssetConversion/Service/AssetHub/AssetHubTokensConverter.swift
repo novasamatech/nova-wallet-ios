@@ -161,4 +161,26 @@ enum AssetHubTokensConverter {
             }
         }
     }
+
+    static func convertToLocalAsset(
+        for assetId: JSON?,
+        on chain: ChainModel,
+        using codingFactory: RuntimeCoderFactoryProtocol
+    ) -> ChainAsset? {
+        guard let remoteAssetId = try? assetId?.map(
+            to: AssetConversionPallet.AssetId.self,
+            with: codingFactory.createRuntimeJsonContext().toRawContext()
+        ) else {
+            return nil
+        }
+
+        return convertFromMultilocationToLocal(
+            remoteAssetId,
+            chain: chain,
+            conversionClosure: createPoolAssetToLocalClosure(
+                for: chain,
+                codingFactory: codingFactory
+            )
+        )
+    }
 }

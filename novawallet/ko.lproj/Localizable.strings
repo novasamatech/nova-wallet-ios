@@ -1729,3 +1729,5 @@
 "gov.vote.conviction.alert.title" = "확신도 업데이트";
 "gov.vote.conviction.alert.message" = "기권 투표는 0.1x 확신도로만 가능합니다. 0.1x 확신도로 투표하시겠습니까?";
 "gov.vote.conviction.hint.title" = "<font>기권</font> 시 확신도가 0.1x로 설정됩니다";
+"cloud.backup.password.confirm.title" = "백업 비밀번호 확인";
+"cloud.backup.password.confirm.details" = "이전 화면에서 생성한 비밀번호를 입력하세요";

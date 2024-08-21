@@ -35,6 +35,10 @@ final class NetworkFeeInfoView: GenericTitleValueView<RoundedButton, GenericPair
         fatalError("init(coder:) has not been implemented")
     }
 
+    func hideInfoIcon() {
+        titleButton.imageWithTitleView?.iconImage = nil
+    }
+
     private func configure() {
         titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         titleButton.imageWithTitleView?.titleFont = .regularFootnote

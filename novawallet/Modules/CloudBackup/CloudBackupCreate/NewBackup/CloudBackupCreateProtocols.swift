@@ -2,7 +2,6 @@ import SoraFoundation
 
 protocol CloudBackupCreateViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceive(passwordViewModel: InputViewModelProtocol)
-    func didReceive(confirmViewModel: InputViewModelProtocol)
     func didRecieve(hints: [HintListView.ViewModel])
     func didReceive(canContinue: Bool)
 }
@@ -10,7 +9,6 @@ protocol CloudBackupCreateViewProtocol: ControllerBackedProtocol, LoadableViewPr
 protocol CloudBackupCreatePresenterProtocol: AnyObject {
     func setup()
     func applyEnterPasswordChange()
-    func applyConfirmPasswordChange()
     func activateContinue()
     func activateOnAppear()
 }
@@ -26,6 +24,14 @@ protocol CloudBackupCreateInteractorOutputProtocol: AnyObject {
 
 protocol CloudBackupCreateWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
     CloudBackupErrorPresentable {
-    func proceed(from view: CloudBackupCreateViewProtocol?, locale: Locale)
+    func proceed(
+        from view: CloudBackupCreateViewProtocol?,
+        locale: Locale
+    )
+    func proceed(
+        from view: CloudBackupCreateViewProtocol?,
+        password: String,
+        locale: Locale
+    )
     func showPasswordHint(from view: CloudBackupCreateViewProtocol?)
 }
