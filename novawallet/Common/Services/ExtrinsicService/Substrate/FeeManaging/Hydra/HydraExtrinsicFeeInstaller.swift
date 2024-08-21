@@ -44,7 +44,7 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
             .adding(call: setCurrencyCall.runtimeCall(), at: 0)
             .adding(call: revertCurrencyCall.runtimeCall())
     }
-    
+
     private func createTransferFeeCalls(using assetId: HydraDx.LocalRemoteAssetId) -> TransferFeeInstallingCalls {
         let setCurrencyCall: HydraDx.SetCurrencyCall? = {
             let currentFeeAssetId = swapState.feeCurrency ?? HydraDx.nativeAssetId
