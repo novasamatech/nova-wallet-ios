@@ -121,7 +121,12 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: SubstrateStorageTestFacade(),
+            operationQueue: operationQueue
         )
 
         let interactor = DAppOperationConfirmInteractor(

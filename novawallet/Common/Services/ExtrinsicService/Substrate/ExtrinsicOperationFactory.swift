@@ -358,11 +358,11 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
         nonceOperation.addDependency(senderResolutionOperation)
 
-        let feeInstallerWrapper = feeEstimationRegistry.createFeeInstallerWrapper(
-            payingIn: chainAssetId,
-            connection: connection,
-            runtimeService: runtimeRegistry
-        )
+        let feeInstallerWrapper = feeEstimationRegistry.createFeeInstallerWrapper(payingIn: chainAssetId) {
+            try senderResolutionOperation.extractNoCancellableResultData().sender.account
+        }
+
+        feeInstallerWrapper.addDependency(operations: [senderResolutionOperation])
 
         let extrinsicsOperation = createExtrinsicsOperation(
             dependingOn: nonceOperation,

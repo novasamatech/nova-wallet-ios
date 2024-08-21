@@ -9,13 +9,51 @@ enum ExtrinsicFeeEstimationRegistryError: Error {
 final class ExtrinsicFeeEstimationRegistry {
     let chain: ChainModel
     let estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol
+    let connection: JSONRPCEngine
+    let runtimeProvider: RuntimeProviderProtocol
+    let userStorageFacade: StorageFacadeProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
+    let operationQueue: OperationQueue
+
+    /// We need to keep HydraFlowStates alive until the flow is complete,
+    /// so we collect strong references received during HydraFlowStore updates.
+    var existingFlowsStates: [HydraFlowState] = []
+
+    private lazy var flowStateStore: HydraFlowStateStore = {
+        let store = HydraFlowStateStore.getShared(
+            for: connection,
+            runtimeProvider: runtimeProvider,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
+        )
+
+        store.subscribeForChangesUpdates(self)
+
+        return store
+    }()
 
     init(
         chain: ChainModel,
-        estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol
+        estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.estimatingWrapperFactory = estimatingWrapperFactory
+        self.connection = connection
+        self.runtimeProvider = runtimeProvider
+        self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
+        self.operationQueue = operationQueue
+    }
+}
+
+extension ExtrinsicFeeEstimationRegistry: HydraFlowStateStoreSubscriber {
+    func flowStateStoreDidUpdate(_ newStates: [HydraFlowState]) {
+        existingFlowsStates = newStates
     }
 }
 
@@ -59,6 +97,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
         case .orml where chain.hasHydrationTransferFees:
             estimatingWrapperFactory.createHydraFeeEstimatingWrapper(
                 asset: asset,
+                flowStateStore: flowStateStore,
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
             )
         case .statemine where chain.hasAssetHubTransferFees:
@@ -75,8 +114,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
 
     func createFeeInstallerWrapper(
         payingIn chainAssetId: ChainAssetId?,
-        connection _: JSONRPCEngine,
-        runtimeService _: RuntimeCodingServiceProtocol
+        accountClosure: @escaping () throws -> ChainAccountResponse
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
         guard let chainAssetId else {
             return CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
@@ -91,9 +129,8 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
             }
 
             return createFeeInstallerWrapper(
-                chain: chain,
-                asset: asset,
-                chainAssetId: chainAssetId
+                accountClosure: accountClosure,
+                chainAsset: ChainAsset(chain: chain, asset: asset)
             )
         } catch {
             return CompoundOperationWrapper.createWithError(error)
@@ -101,29 +138,78 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
     }
 
     func createFeeInstallerWrapper(
-        chain: ChainModel,
-        asset: AssetModel,
-        chainAssetId: ChainAssetId
+        accountClosure: @escaping () throws -> ChainAccountResponse,
+        chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
-        switch AssetType(rawType: asset.type) {
+        switch AssetType(rawType: chainAsset.asset.type) {
         case .none:
             CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
         case .statemine where chain.hasAssetHubTransferFees:
             CompoundOperationWrapper.createWithResult(
                 ExtrinsicAssetConversionFeeInstaller(
-                    feeAsset: ChainAsset(chain: chain, asset: asset)
+                    feeAsset: chainAsset
                 )
             )
         case .orml where chain.hasHydrationTransferFees:
-            CompoundOperationWrapper.createWithResult(
-                HydraExtrinsicFeeInstaller(
-                    feeAsset: ChainAsset(chain: chain, asset: asset)
-                )
+            createHydraFeeInstallingWrapper(
+                accountClosure: accountClosure,
+                chainAsset: chainAsset
             )
         case .orml, .statemine, .equilibrium, .evmNative, .evmAsset:
             .createWithError(
-                ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAssetId)
+                ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAsset.chainAssetId)
             )
         }
+    }
+
+    private func createHydraFeeInstallingWrapper(
+        accountClosure: @escaping () throws -> ChainAccountResponse,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
+        let swapStateWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
+            let account = try accountClosure()
+
+            let swapStateFetchOperation = try flowStateStore.setupFlowState(
+                account: account,
+                chain: chainAsset.chain,
+                queue: operationQueue
+            )
+            .setupSwapService()
+            .createFetchOperation()
+
+            return CompoundOperationWrapper(targetOperation: swapStateFetchOperation)
+        }
+
+        return createHydraFeeInstallingWrapper(
+            using: swapStateWrapper,
+            chainAsset: chainAsset
+        )
+    }
+
+    private func createHydraFeeInstallingWrapper(
+        using swapStateWrapper: CompoundOperationWrapper<HydraDx.SwapRemoteState>,
+        chainAsset: ChainAsset
+    ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
+        let operation = ClosureOperation<ExtrinsicFeeInstalling> {
+            let swapState = try swapStateWrapper.targetOperation.extractNoCancellableResultData()
+
+            return HydraExtrinsicFeeInstaller(
+                feeAsset: chainAsset,
+                swapState: swapState
+            )
+        }
+
+        operation.addDependency(swapStateWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: operation,
+            dependencies: swapStateWrapper.allOperations
+        )
     }
 }
