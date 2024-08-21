@@ -102,7 +102,8 @@ final class AssetConversionFlowFacade {
         }
 
         let flowStateStore = HydraFlowStateStore.getShared(
-            for: chainRegistry,
+            for: connection,
+            runtimeProvider: runtimeProvider,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade
         )

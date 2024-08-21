@@ -73,6 +73,7 @@ final class ExtrinsicServiceFactory {
     private let engine: JSONRPCEngine
     private let operationQueue: OperationQueue
     private let userStorageFacade: StorageFacadeProtocol
+    private let substrateStorageFacade: StorageFacadeProtocol
     private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
@@ -92,6 +93,7 @@ final class ExtrinsicServiceFactory {
 
         self.operationQueue = operationQueue
         self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
     }
 }
 
@@ -118,9 +120,11 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: feeEstimatingWrapperFactory,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            connection: engine,
+            runtimeProvider: runtimeRegistry,
             userStorageFacade: userStorageFacade,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared
+            substrateStorageFacade: substrateStorageFacade,
+            operationQueue: operationQueue
         )
 
         return ExtrinsicService(
@@ -155,9 +159,11 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: feeEstimatingWrapperFactory,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            connection: engine,
+            runtimeProvider: runtimeRegistry,
             userStorageFacade: userStorageFacade,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared
+            substrateStorageFacade: substrateStorageFacade,
+            operationQueue: operationQueue
         )
 
         return ExtrinsicOperationFactory(

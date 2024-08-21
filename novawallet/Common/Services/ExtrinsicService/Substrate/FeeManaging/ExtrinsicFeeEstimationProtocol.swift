@@ -27,6 +27,6 @@ protocol ExtrinsicFeeEstimationRegistring {
 
     func createFeeInstallerWrapper(
         payingIn chainAssetId: ChainAssetId?,
-        senderResolutionOperation: ClosureOperation<ExtrinsicSenderBuilderResolution>
+        accountClosure: @escaping () throws -> ChainAccountResponse
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling>
 }

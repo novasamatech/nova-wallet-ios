@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 private struct StateKey: Hashable {
     let chainId: ChainModel.Id
@@ -15,16 +16,19 @@ class HydraFlowStateStore {
     private var states: [StateKey: WeakWrapper] = [:]
     private var statesUpdatesSubscriptions: [WeakWrapper] = []
     private let mutex = NSLock()
-    private let chainRegistry: ChainRegistryProtocol
+    private let connection: JSONRPCEngine
+    private let runtimeProvider: RuntimeProviderProtocol
     private let userStorageFacade: StorageFacadeProtocol
     private let substrateStorageFacade: StorageFacadeProtocol
 
     init(
-        chainRegistry: ChainRegistryProtocol,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol
     ) {
-        self.chainRegistry = chainRegistry
+        self.connection = connection
+        self.runtimeProvider = runtimeProvider
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
     }
@@ -37,14 +41,6 @@ private extension HydraFlowStateStore {
         stateKey: StateKey,
         queue: OperationQueue
     ) throws -> HydraFlowState {
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
-
         let flowState = HydraFlowState(
             account: account,
             chain: chain,
@@ -67,6 +63,10 @@ private extension HydraFlowStateStore {
 
         return flowState
     }
+
+    func clearEmptySubscribers() {
+        statesUpdatesSubscriptions.removeAll { $0.target == nil }
+    }
 }
 
 extension HydraFlowStateStore {
@@ -80,6 +80,8 @@ extension HydraFlowStateStore {
         defer {
             mutex.unlock()
         }
+
+        clearEmptySubscribers()
 
         let stateKey = StateKey(
             chainId: chain.chainId,
@@ -103,6 +105,8 @@ extension HydraFlowStateStore {
     func subscribeForChangesUpdates(_ subscriber: HydraFlowStateStoreSubscriber) {
         mutex.lock()
 
+        clearEmptySubscribers()
+
         let weak = WeakWrapper(target: subscriber)
         statesUpdatesSubscriptions.append(weak)
 
@@ -110,7 +114,8 @@ extension HydraFlowStateStore {
     }
 
     static func getShared(
-        for chainRegistry: ChainRegistryProtocol,
+        for connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol
     ) -> HydraFlowStateStore {
@@ -119,7 +124,8 @@ extension HydraFlowStateStore {
         }
 
         let store = HydraFlowStateStore(
-            chainRegistry: chainRegistry,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade
         )

@@ -205,9 +205,11 @@ class AutocompounDelegateStakeTests: XCTestCase {
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: feeEstimatingWrapperFactory,
-            chainRegistry: chainRegistry,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
             userStorageFacade: UserDataStorageTestFacade(),
-            substrateStorageFacade: storageFacade
+            substrateStorageFacade: storageFacade,
+            operationQueue: operationQueue
         )
         
         extrinsicService = ExtrinsicService(
@@ -301,9 +303,11 @@ class AutocompounDelegateStakeTests: XCTestCase {
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: feeEstimatingWrapperFactory,
-            chainRegistry: chainRegistry,
+            connection: connection,
+            runtimeProvider: runtimeService,
             userStorageFacade: UserDataStorageTestFacade(),
-            substrateStorageFacade: storageFacade
+            substrateStorageFacade: storageFacade,
+            operationQueue: operationQueue
         )
         
         extrinsicService = ExtrinsicService(

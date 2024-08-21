@@ -9,9 +9,11 @@ enum ExtrinsicFeeEstimationRegistryError: Error {
 final class ExtrinsicFeeEstimationRegistry {
     let chain: ChainModel
     let estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol
-    let chainRegistry: ChainRegistryProtocol
+    let connection: JSONRPCEngine
+    let runtimeProvider: RuntimeProviderProtocol
     let userStorageFacade: StorageFacadeProtocol
     let substrateStorageFacade: StorageFacadeProtocol
+    let operationQueue: OperationQueue
 
     /// We need to keep HydraFlowStates alive until the flow is complete,
     /// so we collect strong references received during HydraFlowStore updates.
@@ -19,7 +21,8 @@ final class ExtrinsicFeeEstimationRegistry {
 
     private lazy var flowStateStore: HydraFlowStateStore = {
         let store = HydraFlowStateStore.getShared(
-            for: chainRegistry,
+            for: connection,
+            runtimeProvider: runtimeProvider,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade
         )
@@ -32,15 +35,19 @@ final class ExtrinsicFeeEstimationRegistry {
     init(
         chain: ChainModel,
         estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol,
-        chainRegistry: ChainRegistryProtocol,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
         userStorageFacade: StorageFacadeProtocol,
-        substrateStorageFacade: StorageFacadeProtocol
+        substrateStorageFacade: StorageFacadeProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.estimatingWrapperFactory = estimatingWrapperFactory
-        self.chainRegistry = chainRegistry
+        self.connection = connection
+        self.runtimeProvider = runtimeProvider
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
+        self.operationQueue = operationQueue
     }
 }
 
@@ -107,7 +114,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
 
     func createFeeInstallerWrapper(
         payingIn chainAssetId: ChainAssetId?,
-        senderResolutionOperation: ClosureOperation<ExtrinsicSenderBuilderResolution>
+        accountClosure: @escaping () throws -> ChainAccountResponse
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
         guard let chainAssetId else {
             return CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
@@ -122,7 +129,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
             }
 
             return createFeeInstallerWrapper(
-                senderResolutionOperation: senderResolutionOperation,
+                accountClosure: accountClosure,
                 chainAsset: ChainAsset(chain: chain, asset: asset)
             )
         } catch {
@@ -131,7 +138,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
     }
 
     func createFeeInstallerWrapper(
-        senderResolutionOperation: ClosureOperation<ExtrinsicSenderBuilderResolution>,
+        accountClosure: @escaping () throws -> ChainAccountResponse,
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
         switch AssetType(rawType: chainAsset.asset.type) {
@@ -145,7 +152,7 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
             )
         case .orml where chain.hasHydrationTransferFees:
             createHydraFeeInstallingWrapper(
-                senderResolutionOperation: senderResolutionOperation,
+                accountClosure: accountClosure,
                 chainAsset: chainAsset
             )
         case .orml, .statemine, .equilibrium, .evmNative, .evmAsset:
@@ -156,29 +163,28 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
     }
 
     private func createHydraFeeInstallingWrapper(
-        senderResolutionOperation: ClosureOperation<ExtrinsicSenderBuilderResolution>,
+        accountClosure: @escaping () throws -> ChainAccountResponse,
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
         let swapStateWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: OperationManager(operationQueue: OperationQueue())
+            operationManager: OperationManager(operationQueue: operationQueue)
         ) { [weak self] in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
-            let account = try senderResolutionOperation.extractNoCancellableResultData().sender.account
+            let account = try accountClosure()
+
             let swapStateFetchOperation = try flowStateStore.setupFlowState(
                 account: account,
                 chain: chainAsset.chain,
-                queue: OperationQueue()
+                queue: operationQueue
             )
             .setupSwapService()
             .createFetchOperation()
 
             return CompoundOperationWrapper(targetOperation: swapStateFetchOperation)
         }
-
-        swapStateWrapper.addDependency(operations: [senderResolutionOperation])
 
         return createHydraFeeInstallingWrapper(
             using: swapStateWrapper,
