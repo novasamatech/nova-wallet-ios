@@ -30,10 +30,6 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
             chainAsset: feeAsset,
             codingFactory: coderFactory
         )
-        let batchType = try resolveBatchType(
-            for: builder,
-            coderFactory: coderFactory
-        )
 
         let calls = createTransferFeeCalls(using: assetId)
 
@@ -41,20 +37,15 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
             let setCurrencyCall = calls.setCurrencyCall,
             let revertCurrencyCall = calls.revertCurrencyCall
         else {
-            return builder.with(batchType: batchType)
+            return builder
         }
 
         return try builder
-            .with(batchType: batchType)
             .adding(call: setCurrencyCall.runtimeCall(), at: 0)
             .adding(call: revertCurrencyCall.runtimeCall())
     }
-}
-
-// MARK: Private
-
-private extension HydraExtrinsicFeeInstaller {
-    func createTransferFeeCalls(using assetId: HydraDx.LocalRemoteAssetId) -> TransferFeeInstallingCalls {
+    
+    private func createTransferFeeCalls(using assetId: HydraDx.LocalRemoteAssetId) -> TransferFeeInstallingCalls {
         let setCurrencyCall: HydraDx.SetCurrencyCall? = {
             let currentFeeAssetId = swapState.feeCurrency ?? HydraDx.nativeAssetId
 
@@ -77,24 +68,5 @@ private extension HydraExtrinsicFeeInstaller {
             setCurrencyCall: setCurrencyCall,
             revertCurrencyCall: revertCurrencyCall
         )
-    }
-
-    func resolveBatchType(
-        for builder: ExtrinsicBuilderProtocol,
-        coderFactory: RuntimeCoderFactoryProtocol
-    ) throws -> ExtrinsicBatch {
-        let context = coderFactory.createRuntimeJsonContext()
-
-        let containsSetReferralCall = try builder
-            .getCalls()
-            .map { call in
-                try call.map(
-                    to: RuntimeCall<NoRuntimeArgs>.self,
-                    with: context.toRawContext()
-                )
-            }
-            .contains { $0.moduleName == HydraDx.referralsModule }
-
-        return containsSetReferralCall ? .ignoreFails : .atomic
     }
 }
