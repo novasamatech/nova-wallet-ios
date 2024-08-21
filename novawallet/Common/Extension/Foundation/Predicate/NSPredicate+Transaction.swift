@@ -112,12 +112,27 @@ extension NSPredicate {
         let chainPredicate = filterTransactionsByChainId(chainId)
         let assetPredicate = filterTransactionsByAssetId(utilityAssetId)
         let swapPredicate = filterSwapTransactionsByAssetId(utilityAssetId)
+        let feeAssetPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
+            filterTransactionsByFeeAssetId(utilityAssetId),
+            filterTransactionsByNoFeeAssetId()
+        ])
 
         let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             chainPredicate,
             NSCompoundPredicate(
                 orPredicateWithSubpredicates: [
-                    senderPredicate,
+                    NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        assetPredicate,
+                        senderPredicate
+                    ]),
+                    NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        swapPredicate,
+                        senderPredicate
+                    ]),
+                    NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        feeAssetPredicate,
+                        senderPredicate
+                    ]),
                     NSCompoundPredicate(andPredicateWithSubpredicates: [
                         assetPredicate,
                         receiverPredicate
@@ -160,6 +175,14 @@ extension NSPredicate {
 
     static func filterTransactionsByAssetId(_ assetId: UInt32) -> NSPredicate {
         NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.assetId), Int32(bitPattern: assetId))
+    }
+
+    static func filterTransactionsByFeeAssetId(_ assetId: UInt32) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.feeAssetId), Int32(bitPattern: assetId))
+    }
+
+    static func filterTransactionsByNoFeeAssetId() -> NSPredicate {
+        NSPredicate(format: "%K = nil", #keyPath(CDTransactionItem.feeAssetId))
     }
 
     static func filterTransactionsBySource(_ source: TransactionHistoryItemSource) -> NSPredicate {
