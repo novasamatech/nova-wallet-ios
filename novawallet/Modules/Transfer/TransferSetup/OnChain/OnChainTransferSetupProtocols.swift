@@ -4,7 +4,13 @@ import Foundation
 protocol OnChainTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?)
+    func requestFeePaymentAvailability(for chainAsset: ChainAsset)
     func change(recepient: AccountId?)
+    func change(feeAsset: ChainAsset?)
+}
+
+extension OnChainTransferSetupInteractorInputProtocol {
+    func change(feeAsset _: ChainAsset?) {}
 }
 
 protocol OnChainTransferSetupInteractorOutputProtocol: AnyObject {
@@ -17,6 +23,7 @@ protocol OnChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveUtilityAssetPrice(_ price: PriceData?)
     func didReceiveUtilityAssetMinBalance(_ value: BigUInt)
     func didReceiveSendingAssetExistence(_ value: AssetBalanceExistence)
+    func didReceiveCustomAssetFeeAvailable(_ available: Bool)
     func didCompleteSetup()
     func didReceiveError(_ error: Error)
 }
@@ -26,6 +33,7 @@ protocol OnChainTransferSetupWireframeProtocol: AlertPresentable, ErrorPresentab
     func showConfirmation(
         from view: TransferSetupChildViewProtocol?,
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         sendingAmount: OnChainTransferAmount<Decimal>,
         recepient: AccountAddress
     )

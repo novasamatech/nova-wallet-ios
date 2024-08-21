@@ -34,8 +34,15 @@ extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol
             progressClosure(nil)
             return
         }
+
+        let feeAsset = if let feeAssetId = transaction.feeAssetId {
+            chainAsset.chain.asset(for: feeAssetId)
+        } else {
+            chainAsset.chain.utilityAsset()
+        }
+
         let priceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.asset.priceId)
-        let feePriceCalculator = calculatorFactory.createPriceCalculator(for: chainAsset.chain.utilityAsset()?.priceId)
+        let feePriceCalculator = calculatorFactory.createPriceCalculator(for: feeAsset?.priceId)
         let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender)
             ?? transaction.sender
         let accountId = try? peerAddress.toAccountId(using: chain.chainFormat)
@@ -82,6 +89,7 @@ extension OperationDetailsTransferProvider: OperationDetailsDataProviderProtocol
                         amount: amount,
                         amountPriceData: priceData,
                         fee: fee,
+                        feeAssetId: feeAsset?.assetId,
                         feePriceData: feePriceData,
                         sender: isOutgoing ? currentDisplayAddress : otherDisplayAddress,
                         receiver: isOutgoing ? otherDisplayAddress : currentDisplayAddress,

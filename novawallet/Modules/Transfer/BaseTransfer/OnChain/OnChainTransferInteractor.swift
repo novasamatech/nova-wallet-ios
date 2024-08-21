@@ -9,6 +9,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     let extrinsicService: ExtrinsicServiceProtocol
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
     let substrateStorageFacade: StorageFacadeProtocol
+    let transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol
 
     private lazy var callFactory = SubstrateCallFactory()
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
@@ -19,6 +20,8 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
 
     private var sendingAssetInfo: AssetStorageInfo?
     private var utilityAssetInfo: AssetStorageInfo?
+
+    private(set) var feeAsset: ChainAsset?
 
     private var sendingAssetSubscriptionId: UUID?
     private var utilityAssetSubscriptionId: UUID?
@@ -36,6 +39,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
+        feeAsset: ChainAsset?,
         runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
@@ -43,14 +47,17 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.runtimeService = runtimeService
         self.feeProxy = feeProxy
+        self.feeAsset = feeAsset
         self.extrinsicService = extrinsicService
         self.walletRemoteWrapper = walletRemoteWrapper
         self.substrateStorageFacade = substrateStorageFacade
+        self.transferAggregationWrapperFactory = transferAggregationWrapperFactory
 
         super.init(
             selectedAccount: selectedAccount,
@@ -516,6 +523,10 @@ extension OnChainTransferInteractor {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    func change(feeAsset: ChainAsset?) {
+        self.feeAsset = feeAsset
+    }
+
     func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?) {
         let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
 
@@ -523,7 +534,8 @@ extension OnChainTransferInteractor {
 
         feeProxy.estimateFee(
             using: extrinsicService,
-            reuseIdentifier: identifier
+            reuseIdentifier: identifier,
+            payingIn: feeAsset?.chainAssetId
         ) { [weak self] builder in
             let (newBuilder, _) = try self?.addingTransferCommand(
                 to: builder,
@@ -533,6 +545,26 @@ extension OnChainTransferInteractor {
 
             return newBuilder
         }
+    }
+
+    func requestFeePaymentAvailability(for chainAsset: ChainAsset) {
+        let wrapper = transferAggregationWrapperFactory.createCanPayFeeWrapper(in: chainAsset)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: { [weak self] result in
+                switch result {
+                case let .success(available):
+                    self?.presenter?.didReceiveCustomAssetFeeAvailable(available)
+                case let .failure(error) where error is AssetConversionAggregationFactoryError:
+                    self?.presenter?.didReceiveCustomAssetFeeAvailable(false)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        )
     }
 
     func change(recepient: AccountId?) {

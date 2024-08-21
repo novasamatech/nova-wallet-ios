@@ -25,6 +25,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         amount: OnChainTransferAmount<Decimal>,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
@@ -43,6 +44,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         self.transferCompletion = transferCompletion
         super.init(
             chainAsset: chainAsset,
+            feeAsset: feeAsset,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
@@ -85,20 +87,28 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     }
 
     private func provideNetworkFeeViewModel() {
-        let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
-        if let fee = fee, let assetInfo = optAssetInfo {
+        if let fee = fee {
+            let assetInfo = feeAsset.asset.displayInfo
+
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee.value.amount,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
-            let viewModelFactory = utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
-            let priceData = isUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
+            let viewModelFactory = sendingAssetFeeSelected
+                ? sendingBalanceViewModelFactory
+                : utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
 
-            let viewModel = viewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
-                .value(for: selectedLocale)
+            let priceData = sendingAssetFeeSelected
+                ? sendingAssetPrice
+                : utilityAssetPrice
 
-            view?.didReceiveOriginFee(viewModel: viewModel)
+            let balanceViewModel = viewModelFactory.balanceFromPrice(
+                feeDecimal,
+                priceData: priceData
+            ).value(for: selectedLocale)
+
+            view?.didReceiveOriginFee(viewModel: balanceViewModel)
         } else {
             view?.didReceiveOriginFee(viewModel: nil)
         }
@@ -216,7 +226,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
         let validators: [DataValidating] = baseValidators(
             for: amount.value,
             recepientAddress: recepientAccountAddress,
-            utilityAssetInfo: utilityAssetInfo,
+            feeAssetInfo: feeAsset.assetDisplayInfo,
             view: view,
             selectedLocale: selectedLocale
         )

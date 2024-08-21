@@ -362,6 +362,25 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         )
     }
 
+    func editFeeAsset() {
+        guard
+            let utilityAsset = chainAsset.chain.utilityChainAsset(),
+            let feeAsset = childPresenter?.getFeeAsset()
+        else {
+            return
+        }
+
+        wireframe.showFeeAssetSelection(
+            from: view,
+            utilityAsset: utilityAsset,
+            sendingAsset: chainAsset,
+            currentFeeAsset: feeAsset,
+            onFeeAssetSelect: { [weak self] selectedAsset in
+                self?.childPresenter?.changeFeeAsset(to: selectedAsset)
+            }
+        )
+    }
+
     func complete(recipient: String) {
         guard !wireframe.checkDismissing(view: view) else {
             return

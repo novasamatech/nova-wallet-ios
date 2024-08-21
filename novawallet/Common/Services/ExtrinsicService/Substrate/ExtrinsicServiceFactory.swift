@@ -69,14 +69,15 @@ extension ExtrinsicServiceFactoryProtocol {
 }
 
 final class ExtrinsicServiceFactory {
-    private let runtimeRegistry: RuntimeCodingServiceProtocol
+    private let runtimeRegistry: RuntimeProviderProtocol
     private let engine: JSONRPCEngine
     private let operationQueue: OperationQueue
     private let userStorageFacade: StorageFacadeProtocol
+    private let substrateStorageFacade: StorageFacadeProtocol
     private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
-        runtimeRegistry: RuntimeCodingServiceProtocol,
+        runtimeRegistry: RuntimeProviderProtocol,
         engine: JSONRPCEngine,
         operationQueue: OperationQueue,
         userStorageFacade: StorageFacadeProtocol,
@@ -92,6 +93,7 @@ final class ExtrinsicServiceFactory {
 
         self.operationQueue = operationQueue
         self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
     }
 }
 
@@ -107,11 +109,30 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             userStorageFacade: userStorageFacade
         )
 
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeRegistry,
+            connection: engine,
+            operationQueue: operationQueue
+        )
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            connection: engine,
+            runtimeProvider: runtimeRegistry,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade,
+            operationQueue: operationQueue
+        )
+
         return ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeRegistry,
             senderResolvingFactory: senderResolvingFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            feeEstimationRegistry: feeEstimationRegistry,
             extensions: extensions,
             engine: engine,
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -128,12 +149,29 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeRegistry,
+            connection: engine,
+            operationQueue: operationQueue
+        )
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            connection: engine,
+            runtimeProvider: runtimeRegistry,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade,
+            operationQueue: operationQueue
+        )
 
         return ExtrinsicOperationFactory(
             chain: chain,
             runtimeRegistry: runtimeRegistry,
             customExtensions: extensions,
             engine: engine,
+            feeEstimationRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),

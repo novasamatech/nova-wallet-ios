@@ -5,7 +5,7 @@ import SoraFoundation
 protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveTransferableBalance(viewModel: String)
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
-    func didReceiveOriginFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveOriginFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
     func didReceiveCrossChainFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountInputPrice(viewModel: String?)
@@ -36,6 +36,13 @@ protocol TransferSetupChildPresenterProtocol: TransferSetupCommonPresenterProtoc
     var inputState: TransferSetupInputState { get }
 
     func changeRecepient(address: String)
+    func changeFeeAsset(to chainAsset: ChainAsset?)
+    func getFeeAsset() -> ChainAsset?
+}
+
+extension TransferSetupChildPresenterProtocol {
+    func changeFeeAsset(to _: ChainAsset?) {}
+    func getFeeAsset() -> ChainAsset? { nil }
 }
 
 protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
@@ -43,6 +50,7 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func scanRecepientCode()
     func applyMyselfRecepient()
     func didTapOnYourWallets()
+    func editFeeAsset()
     func showWeb3NameRecipient()
     func complete(recipient: String)
 }
@@ -60,8 +68,13 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceive(recipients: [Web3TransferRecipient], for name: String)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable,
-    Web3NameAddressListPresentable, YourWalletsPresentable, ScanAddressPresentable {
+protocol TransferSetupWireframeProtocol: AlertPresentable,
+    ErrorPresentable,
+    AddressOptionsPresentable,
+    Web3NameAddressListPresentable,
+    YourWalletsPresentable,
+    ScanAddressPresentable,
+    FeeAssetSelectionPresentable {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,

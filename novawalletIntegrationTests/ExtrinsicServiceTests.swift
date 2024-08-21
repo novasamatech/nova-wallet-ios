@@ -37,17 +37,23 @@ class ExtrinsicServiceTests: XCTestCase {
     }
 
     func testEstimateFeeForBondExtraCall() throws {
+        let wallet = AccountGenerator.generateMetaAccount()
+        
         let chainId = KnowChainId.kusama
-        let selectedAddress = "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf"
-        let assetPrecision: Int16 = 12
-
         let storageFacade = SubstrateStorageTestFacade()
-
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        
+        guard 
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+            let chain = chainRegistry.getChain(for: chainId),
+            let account = wallet.fetch(for: chain.accountRequest()),
+            let selectedAddress = account.toAddress()
+        else {
+            throw ChainRegistryError.noChain(chainId)
+        }
 
-        let connection = chainRegistry.getConnection(for: chainId)!
-        let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
-        let chain = chainRegistry.getChain(for: chainId)!
+        let assetPrecision: Int16 = 12
 
         let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
         
@@ -60,11 +66,30 @@ class ExtrinsicServiceTests: XCTestCase {
             operationQueue: operationQueue
         )
         
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            connection: connection,
+            runtimeProvider: runtimeService,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: storageFacade,
+            operationQueue: operationQueue
+        )
+        
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -91,18 +116,24 @@ class ExtrinsicServiceTests: XCTestCase {
     }
 
     func testEstimateFeeForPayoutRewardsCall() throws {
+        let wallet = AccountGenerator.generateMetaAccount()
+        
         let chainId = KnowChainId.kusama
-        let selectedAddress = "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf"
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        
+        guard
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+            let chain = chainRegistry.getChain(for: chainId),
+            let account = wallet.fetch(for: chain.accountRequest()),
+            let selectedAddress = account.toAddress()
+        else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+
         let selectedAccountId = try selectedAddress.toAccountId()
         let assetPrecision: Int16 = 12
-
-        let storageFacade = SubstrateStorageTestFacade()
-
-        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-
-        let connection = chainRegistry.getConnection(for: chainId)!
-        let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
-        let chain = chainRegistry.getChain(for: chainId)!
         
         let senderResolutionFactory = try ExtrinsicSenderResolutionFactoryStub(address: selectedAddress, chain: chain)
 
@@ -115,11 +146,30 @@ class ExtrinsicServiceTests: XCTestCase {
             operationQueue: operationQueue
         )
         
+        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+            account: account,
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: feeEstimatingWrapperFactory,
+            connection: connection,
+            runtimeProvider: runtimeService,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: storageFacade,
+            operationQueue: operationQueue
+        )
+        
         let extrinsicService = ExtrinsicService(
             chain: chain,
             runtimeRegistry: runtimeService,
             senderResolvingFactory: senderResolutionFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
             operationManager: OperationManager(operationQueue: operationQueue)

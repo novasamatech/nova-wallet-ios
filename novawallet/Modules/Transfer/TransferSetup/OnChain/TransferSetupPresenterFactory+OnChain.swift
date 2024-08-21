@@ -62,14 +62,14 @@ extension TransferSetupPresenterFactory {
             return nil
         }
 
-        guard let utilityAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo else {
+        guard let utilityChainAsset = chainAsset.chain.utilityChainAsset() else {
             return nil
         }
 
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
-            utilityAssetInfo: utilityAssetInfo,
+            utilityAssetInfo: utilityChainAsset.asset.displayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
@@ -84,6 +84,7 @@ extension TransferSetupPresenterFactory {
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
+            feeAsset: utilityChainAsset,
             initialState: initialState,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
@@ -116,6 +117,8 @@ extension TransferSetupPresenterFactory {
             return nil
         }
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 
         let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
@@ -125,7 +128,7 @@ extension TransferSetupPresenterFactory {
             chainRegistry: chainRegistry,
             repositoryFactory: repositoryFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
 
@@ -137,10 +140,16 @@ extension TransferSetupPresenterFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount, chain: chain)
 
+        let assetTransferAggregationWrapperFactory = AssetTransferAggregationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
         return OnChainTransferSetupInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
+            feeAsset: chain.utilityChainAsset(),
             runtimeService: runtimeProvider,
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
@@ -148,6 +157,7 @@ extension TransferSetupPresenterFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

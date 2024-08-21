@@ -156,7 +156,8 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
             feeProxy.estimateFee(
                 from: splitter,
                 service: extrinsicService,
-                reuseIdentifier: identifier
+                reuseIdentifier: identifier,
+                payingIn: chainAsset.chainAssetId
             )
 
         } catch {

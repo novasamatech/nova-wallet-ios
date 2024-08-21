@@ -19,18 +19,22 @@ class OnChainTransferPresenter {
     private(set) var sendingAssetExistence: AssetBalanceExistence?
     private(set) var utilityAssetMinBalance: BigUInt?
 
-    var senderUtilityBalanceCountingEd: BigUInt? {
-        isUtilityTransfer ? senderSendingAssetBalance?.balanceCountingEd :
-            senderUtilityAssetBalance?.balanceCountingEd
+    var senderFeeBalanceCountingEd: BigUInt? {
+        sendingAssetFeeSelected
+            ? senderSendingAssetBalance?.balanceCountingEd
+            : senderUtilityAssetBalance?.balanceCountingEd
     }
 
-    var senderUtilityAssetTransferable: BigUInt? {
-        isUtilityTransfer ? senderSendingAssetBalance?.transferable : senderUtilityAssetBalance?.transferable
+    var senderFeeAssetTransferable: BigUInt? {
+        sendingAssetFeeSelected
+            ? senderSendingAssetBalance?.transferable
+            : senderUtilityAssetBalance?.transferable
     }
 
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var fee: FeeOutputModel?
+    var feeAsset: ChainAsset
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -40,12 +44,25 @@ class OnChainTransferPresenter {
 
     let logger: LoggerProtocol?
 
+    var sendingAssetFeeAvailable: Bool?
+
     var isUtilityTransfer: Bool {
         chainAsset.chain.utilityAssets().first?.assetId == chainAsset.asset.assetId
     }
 
+    var sendingAssetFeeSelected: Bool {
+        feeAsset.chainAssetId == chainAsset.chainAssetId
+    }
+
+    var feeAssetChangeAvailable: Bool {
+        chainAsset.chain.hasCustomTransferFees
+            && sendingAssetFeeAvailable ?? false
+            && !isUtilityTransfer
+    }
+
     init(
         chainAsset: ChainAsset,
+        feeAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
@@ -54,6 +71,7 @@ class OnChainTransferPresenter {
         logger: LoggerProtocol? = nil
     ) {
         self.chainAsset = chainAsset
+        self.feeAsset = feeAsset
         self.networkViewModelFactory = networkViewModelFactory
         self.sendingBalanceViewModelFactory = sendingBalanceViewModelFactory
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
@@ -82,7 +100,7 @@ class OnChainTransferPresenter {
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
-        utilityAssetInfo: AssetBalanceDisplayInfo,
+        feeAssetInfo: AssetBalanceDisplayInfo,
         view: ControllerBackedProtocol?,
         selectedLocale: Locale
     ) -> [DataValidating] {
@@ -100,7 +118,10 @@ class OnChainTransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.has(fee: fee?.value, locale: selectedLocale) { [weak self] in
+            dataValidatingFactory.has(
+                fee: fee?.value,
+                locale: selectedLocale
+            ) { [weak self] in
                 self?.refreshFee()
                 return
             },
@@ -113,18 +134,18 @@ class OnChainTransferPresenter {
             ),
 
             dataValidatingFactory.canPayFeeSpendingAmountInPlank(
-                balance: senderUtilityAssetTransferable,
+                balance: senderFeeAssetTransferable,
                 fee: fee?.value,
-                spendingAmount: isUtilityTransfer ? sendingAmount : nil,
-                asset: utilityAssetInfo,
+                spendingAmount: sendingAssetFeeSelected ? sendingAmount : nil,
+                asset: feeAssetInfo,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee?.value,
-                total: senderUtilityBalanceCountingEd,
-                minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
-                asset: utilityAssetInfo,
+                total: senderFeeBalanceCountingEd,
+                minBalance: sendingAssetFeeSelected ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
+                asset: feeAssetInfo,
                 locale: selectedLocale
             ),
 
@@ -190,6 +211,10 @@ class OnChainTransferPresenter {
         case .failure:
             askFeeRetry()
         }
+    }
+
+    func didReceiveCustomAssetFeeAvailable(_ available: Bool) {
+        sendingAssetFeeAvailable = available
     }
 
     func didReceiveSendingAssetPrice(_ priceData: PriceData?) {

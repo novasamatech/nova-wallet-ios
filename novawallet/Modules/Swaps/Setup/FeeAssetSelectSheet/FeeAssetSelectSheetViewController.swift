@@ -2,15 +2,15 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class SwapNetworkFeeSheetViewController: UIViewController, ViewHolder {
-    typealias RootViewType = SwapNetworkFeeSheetLayout
+final class FeeAssetSelectSheetViewController: UIViewController, ViewHolder {
+    typealias RootViewType = FeeAssetSelectSheetLayout
 
     let presenter: MessageSheetPresenterProtocol
-    let viewModel: SwapNetworkFeeSheetViewModel
+    let viewModel: FeeAssetSelectSheetViewModel
 
     init(
         presenter: MessageSheetPresenterProtocol,
-        viewModel: SwapNetworkFeeSheetViewModel,
+        viewModel: FeeAssetSelectSheetViewModel,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -27,7 +27,7 @@ final class SwapNetworkFeeSheetViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = SwapNetworkFeeSheetLayout()
+        view = FeeAssetSelectSheetLayout()
     }
 
     override func viewDidLoad() {
@@ -60,15 +60,15 @@ final class SwapNetworkFeeSheetViewController: UIViewController, ViewHolder {
     }
 }
 
-extension SwapNetworkFeeSheetViewController: MessageSheetViewProtocol {}
+extension FeeAssetSelectSheetViewController: MessageSheetViewProtocol {}
 
-extension SwapNetworkFeeSheetViewController: ModalPresenterDelegate {
+extension FeeAssetSelectSheetViewController: ModalPresenterDelegate {
     func presenterShouldHide(_: ModalPresenterProtocol) -> Bool {
         true
     }
 }
 
-extension SwapNetworkFeeSheetViewController: Localizable {
+extension FeeAssetSelectSheetViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
