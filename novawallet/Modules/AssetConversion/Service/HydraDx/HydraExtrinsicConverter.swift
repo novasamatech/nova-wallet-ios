@@ -9,7 +9,9 @@ enum HydraExtrinsicConverter {
         var currentBuilder = builder
 
         if let updateReferralCall = params.updateReferral {
-            currentBuilder = try currentBuilder.adding(call: updateReferralCall.runtimeCall())
+            currentBuilder = try currentBuilder
+                .with(batchType: .ignoreFails)
+                .adding(call: updateReferralCall.runtimeCall())
         }
 
         switch params.swap {

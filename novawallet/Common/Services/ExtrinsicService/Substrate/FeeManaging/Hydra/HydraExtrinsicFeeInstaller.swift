@@ -41,7 +41,6 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
         }
 
         return try builder
-            .with(batchType: .ignoreFails)
             .adding(call: setCurrencyCall.runtimeCall(), at: 0)
             .adding(call: revertCurrencyCall.runtimeCall())
     }
