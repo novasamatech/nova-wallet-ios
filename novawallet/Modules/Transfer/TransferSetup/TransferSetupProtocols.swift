@@ -37,6 +37,12 @@ protocol TransferSetupChildPresenterProtocol: TransferSetupCommonPresenterProtoc
 
     func changeRecepient(address: String)
     func changeFeeAsset(to chainAsset: ChainAsset?)
+    func getFeeAsset() -> ChainAsset?
+}
+
+extension TransferSetupChildPresenterProtocol {
+    func changeFeeAsset(to _: ChainAsset?) {}
+    func getFeeAsset() -> ChainAsset? { nil }
 }
 
 protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {

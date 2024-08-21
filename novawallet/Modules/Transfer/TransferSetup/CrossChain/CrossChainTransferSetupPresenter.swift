@@ -367,8 +367,6 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 }
 
 extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
-    func changeFeeAsset(to _: ChainAsset?) {}
-
     var inputState: TransferSetupInputState {
         TransferSetupInputState(recepient: partialRecepientAddress, amount: inputResult)
     }

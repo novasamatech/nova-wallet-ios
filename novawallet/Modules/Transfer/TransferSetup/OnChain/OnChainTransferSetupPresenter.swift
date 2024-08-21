@@ -9,6 +9,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     let interactor: OnChainTransferSetupInteractorInputProtocol
 
     private(set) var partialRecepientAddress: AccountAddress?
+    private var isManualFeeSet: Bool = false
 
     let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
@@ -102,6 +103,30 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
     private func provideCanSendMySelf() {
         view?.didReceiveCanSendMySelf(false)
+    }
+
+    private func switchFeeChainAssetIfNecessary() {
+        guard
+            let fee,
+            !isManualFeeSet,
+            !chainAsset.isUtilityAsset,
+            feeAsset.isUtilityAsset,
+            let utilityAssetMinBalance,
+            let senderUtilityAssetBalance
+        else {
+            return
+        }
+
+        if senderUtilityAssetBalance.transferable.subtractOrZero(fee.value.amount) < utilityAssetMinBalance {
+            changeFeeAsset(to: chainAsset)
+        }
+    }
+
+    func changeFeeAsset(to chainAsset: ChainAsset) {
+        feeAsset = chainAsset
+
+        interactor.change(feeAsset: chainAsset)
+        refreshFee()
     }
 
     private func updateFeeView() {
@@ -252,6 +277,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         super.didReceiveFee(result: result)
 
         if case .success = result {
+            switchFeeChainAssetIfNecessary()
             updateFeeView()
             provideAmountInputViewModelIfRate()
             updateAmountPriceView()
@@ -297,13 +323,16 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 }
 
 extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
+    func getFeeAsset() -> ChainAsset? {
+        feeAsset
+    }
+
     func changeFeeAsset(to chainAsset: ChainAsset?) {
         guard let chainAsset else { return }
 
-        feeAsset = chainAsset
+        isManualFeeSet = true
 
-        interactor.change(feeAsset: chainAsset)
-        refreshFee()
+        changeFeeAsset(to: chainAsset)
     }
 
     var inputState: TransferSetupInputState {
