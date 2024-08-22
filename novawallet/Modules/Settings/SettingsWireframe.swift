@@ -138,6 +138,17 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         )
     }
 
+    func showCardFlow(from view: ControllerBackedProtocol?) {
+        guard let payCardView = PayCardViewFactory.createView() else {
+            return
+        }
+
+        view?.controller.present(
+            payCardView.controller,
+            animated: true
+        )
+    }
+
     func showCardIssueDidComplete(from view: ControllerBackedProtocol?, locale: Locale) {
         let languages = locale.rLanguages
         let message = R.string.localizable.commonCardIssued(preferredLanguages: locale.rLanguages)

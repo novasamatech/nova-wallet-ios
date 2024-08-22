@@ -61,4 +61,5 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showBackup(from view: ControllerBackedProtocol?)
     func showNetworks(from view: ControllerBackedProtocol?)
     func showCardIssueDidComplete(from view: ControllerBackedProtocol?, locale: Locale)
+    func showCardFlow(from view: ControllerBackedProtocol?)
 }
