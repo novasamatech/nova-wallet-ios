@@ -51,7 +51,7 @@ final class HydraFeeService {
 
             return extrinsicFactory.estimateFeeOperation(
                 builderClosure,
-                payingFeeIn: swap.params.newFeeCurrency
+                payingFeeIn: nil
             )
         }
     }
