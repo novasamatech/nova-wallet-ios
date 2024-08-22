@@ -2,28 +2,35 @@ import UIKit
 import WebKit
 import SnapKit
 
-final class PayCardViewController: UIViewController, ViewHolder, WKNavigationDelegate, WKUIDelegate {
+private struct WebViewScript {
+    enum InsertionPoint {
+        case atDocStart
+        case atDocEnd
+    }
+
+    let content: String
+    let insertionPoint: InsertionPoint
+}
+
+final class PayCardViewController: UIViewController, ViewHolder {
     typealias RootViewType = PayCardViewLayout
 
-    let webView: WKWebView = {
+    lazy var webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
-        configuration.userContentController = WKUserContentController()
 
-        let view = WKWebView(frame: .zero, configuration: configuration)
+        configuration.userContentController = userContentController
 
         let preferences = WKWebpagePreferences()
         preferences.preferredContentMode = .mobile
-        view.configuration.defaultWebpagePreferences = preferences
+        configuration.defaultWebpagePreferences = preferences
+
+        let view = WKWebView(frame: .zero, configuration: configuration)
+
         view.scrollView.contentInsetAdjustmentBehavior = .always
         view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         return view
     }()
-
-    // swiftlint:disable:next line_length
-    let redirectApiURL = URL(
-        string: "https://exchange.mercuryo.io/?widget_id=4ce98182-ed76-4933-ba1b-b85e4a51d75a&type=sell&fiat_currency=EUR&fix_fiat_currency=true&fix_payment_method=true&payment_method=fiat_card"
-    )
 
     let presenter: PayCardPresenterProtocol
 
@@ -46,6 +53,14 @@ final class PayCardViewController: UIViewController, ViewHolder, WKNavigationDel
 
         presenter.setup()
 
+        setupWebView()
+        webView.loadHTMLString(
+            page,
+            baseURL: URL(string: "https://exchange.mercuryo.io")!
+        )
+    }
+
+    func setupWebView() {
         rootView.addSubview(webView)
         webView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -59,57 +74,69 @@ final class PayCardViewController: UIViewController, ViewHolder, WKNavigationDel
         } else {
             // Fallback on earlier versions
         }
+    }
+}
 
-        let page = """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Mercuryo Widget</title>
-        </head>
-        <body>
-            <div id="widget-container"></div>
-
-            <script src="https://widget.mercuryo.io/embed.2.0.js"></script>
-        </body>
-        </html>
+extension PayCardViewController {
+    var page: String {
         """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Mercuryo Widget</title>
+            </head>
+            <body>
+                <div id="widget-container"></div>
 
-        let url = URL(string: "https://exchange.mercuryo.io")
+                <script src="https://widget.mercuryo.io/embed.2.0.js"></script>
+            </body>
+            </html>
+        """
+    }
 
-        webView.loadHTMLString(
-            page,
-            baseURL: url
+    var userContentController: WKUserContentController {
+        let userController = WKUserContentController()
+
+        let script = WebViewScript(
+            content: """
+            mercuryoWidget.run({
+                widgetId: '4ce98182-ed76-4933-ba1b-b85e4a51d75a',
+                host: document.getElementById('widget-container'),
+                type: 'sell',
+                currency: 'DOT',
+                fiatCurrency: 'EUR',
+                paymentMethod: 'fiat_card_open',
+                width: '100%',
+                fixPaymentMethod: true,
+                height: window.innerHeight,
+                hideRefundAddress: true,
+                refundAddress: '16PkUq6HiR1Zc4KZ2fbWNmdbxYymynEnrxRhzpjWYVxuNodT',
+                onStatusChange: data => {
+
+                },
+                onSellTransferEnabled: data => {
+
+                }
+            });
+            """,
+            insertionPoint: .atDocEnd
         )
 
-        //        webView.load(URLRequest(url: redirectApiURL!))
+        let wkScript = WKUserScript(
+            source: script.content,
+            injectionTime: .atDocumentEnd,
+            forMainFrameOnly: false
+        )
+        userController.addUserScript(wkScript)
+
+        return userController
     }
+}
 
-    func webView(_: WKWebView, didFinish _: WKNavigation!) {
-        let script = """
-        mercuryoWidget.run({
-            widgetId: '4ce98182-ed76-4933-ba1b-b85e4a51d75a',
-            host: document.getElementById('widget-container'),
-            type: 'sell',
-            currency: 'DOT',
-            fiatCurrency: 'EUR',
-            paymentMethod: 'fiat_card_open',
-            width: '100%',
-            fixPaymentMethod: true,
-            height: window.innerHeight,
-            hideRefundAddress: true,
-            refundAddress: '16PkUq6HiR1Zc4KZ2fbWNmdbxYymynEnrxRhzpjWYVxuNodT',
-            onStatusChange: data => {
-
-            },
-            onSellTransferEnabled: data => {
-
-            }
-        });
-        """
-        webView.evaluateJavaScript(script)
-    }
+extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
+    func webView(_: WKWebView, didFinish _: WKNavigation!) {}
 
     func webView(
         _: WKWebView,
