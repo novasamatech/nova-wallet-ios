@@ -1,25 +1,86 @@
 import Foundation
+import BigInt
 import SubstrateSdk
 
 extension ExtrinsicProcessor {
-    func findFeeInCustomAsset(
-        in events: [EventRecord],
+    func findAssetsCustomFee(
+        for index: UInt32,
+        eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> AssetTxPaymentPallet.AssetTxFeePaid? {
-        let context = codingFactory.createRuntimeJsonContext()
+    ) -> Fee? {
         let metadata = codingFactory.metadata
+        let context = codingFactory.createRuntimeJsonContext()
+        let extrinsicEvents = eventRecords.filter { $0.extrinsicIndex == index }
+        let path = AssetTxPaymentPallet.assetTxFeePaidEvent
 
-        let optFeeRecord = events.first { record in
-            guard let eventPath = metadata.createEventCodingPath(from: record.event) else {
-                return false
-            }
-
-            return eventPath == AssetTxPaymentPallet.assetTxFeePaidEvent
+        guard
+            let record = extrinsicEvents.last(where: { metadata.eventMatches($0.event, path: path) }),
+            let feePaidEvent: AssetTxPaymentPallet.AssetTxFeePaid = try? ExtrinsicExtraction.getEventParams(
+                from: record.event,
+                context: context
+            )
+        else {
+            return nil
         }
 
-        return try optFeeRecord?.event.params.map(
-            to: AssetTxPaymentPallet.AssetTxFeePaid.self,
-            with: context.toRawContext()
+        let feeAsset = AssetHubTokensConverter.convertToLocalAsset(
+            for: feePaidEvent.assetId,
+            on: chain,
+            using: codingFactory
+        )
+
+        return Fee(
+            amount: feePaidEvent.actualFee,
+            assetId: feeAsset?.asset.assetId
+        )
+    }
+
+    func findHydraCustomFee(
+        in events: [EventRecord],
+        swapEvents: Set<EventCodingPath>,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> Fee? {
+        let metadata = codingFactory.metadata
+
+        let swapIndex = events.lastIndex { metadata.eventMatches($0.event, oneOf: swapEvents) } ?? 0
+
+        let feePaidPath = TransactionPaymentPallet.feePaidPath
+        let optFeePaidIndex = events.lastIndex { metadata.eventMatches($0.event, path: feePaidPath) }
+
+        guard
+            let feePaidIndex = optFeePaidIndex,
+            swapIndex < feePaidIndex
+        else {
+            return nil
+        }
+
+        let depositedPath = TokensPallet.depositedEventPath
+        let optDepositEvent = events[swapIndex ..< feePaidIndex].first {
+            metadata.eventMatches($0.event, path: depositedPath)
+        }
+
+        let context = codingFactory.createRuntimeJsonContext()
+
+        guard
+            let depositedEvent = optDepositEvent,
+            let depositedModel: TokensPallet.DepositedEvent<StringScaleMapper<BigUInt>> =
+            try? ExtrinsicExtraction.getEventParams(
+                from: depositedEvent.event,
+                context: context
+            )
+        else {
+            return nil
+        }
+
+        let assetId = try HydraDxTokenConverter.converToLocal(
+            for: depositedModel.currencyId.value,
+            chain: chain,
+            codingFactory: codingFactory
+        ).assetId
+
+        return Fee(
+            amount: depositedModel.amount,
+            assetId: assetId
         )
     }
 }

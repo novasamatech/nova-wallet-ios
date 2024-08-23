@@ -5,7 +5,11 @@ import SubstrateSdk
 final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
     var connection: JSONRPCEngine { MockJSONRPCEngine() }
 
-    func buildExtrinsic(_ closure: @escaping ExtrinsicBuilderClosure, signer: SigningWrapperProtocol) -> CompoundOperationWrapper<String> {
+    func buildExtrinsic(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol,
+        payingFeeIn chainAssetId: ChainAssetId?
+    ) -> CompoundOperationWrapper<String> {
         let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
 
         return CompoundOperationWrapper.createWithResult(txHash)
@@ -14,7 +18,8 @@ final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         signer: SigningWrapperProtocol,
-        indexes: IndexSet
+        indexes: IndexSet,
+        payingIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<SubmitIndexedExtrinsicResult> {
         let results = indexes.map { index in
             let txHash = Data(repeating: UInt8(index), count: 32).toHex(includePrefix: true)
@@ -32,7 +37,8 @@ final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
 
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        indexes: IndexSet
+        indexes: IndexSet,
+        payingIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
         let fee = ExtrinsicFee(amount: 10000000000, payer: nil, weight: 10005000)
 

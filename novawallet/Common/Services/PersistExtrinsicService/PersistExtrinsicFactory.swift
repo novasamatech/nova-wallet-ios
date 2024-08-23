@@ -52,7 +52,7 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
             txHash: txHash,
             timestamp: timestamp,
             fee: feeString,
-            feeAssetId: nil,
+            feeAssetId: details.feeAssetId,
             blockNumber: nil,
             txIndex: nil,
             callPath: details.callPath,

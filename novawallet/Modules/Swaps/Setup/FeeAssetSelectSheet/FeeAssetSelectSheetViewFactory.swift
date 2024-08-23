@@ -1,13 +1,13 @@
 import Foundation
 import SoraFoundation
 
-struct SwapNetworkFeeSheetViewFactory {
-    static func createView(from viewModel: SwapNetworkFeeSheetViewModel) -> MessageSheetViewProtocol {
+struct FeeAssetSelectSheetViewFactory {
+    static func createView(from viewModel: FeeAssetSelectSheetViewModel) -> MessageSheetViewProtocol {
         let wireframe = MessageSheetWireframe()
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
-        let view = SwapNetworkFeeSheetViewController(
+        let view = FeeAssetSelectSheetViewController(
             presenter: presenter,
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared

@@ -80,6 +80,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
             proxy: extrinsicFactory,
             runtimeRegistry: runtimeProvider,
             engine: connection,
+            feeEstimationRegistry: feeEstimationRegistry,
             operationManager: OperationManager(operationQueue: operationQueue),
             usesStateCallForFee: chain.feeViaRuntimeCall
         )

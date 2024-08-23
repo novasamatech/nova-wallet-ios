@@ -328,11 +328,14 @@ final class OperationDetailsViewModelFactory {
     private func createContentViewModel(
         from data: OperationDetailsModel.OperationData,
         chainAsset: ChainAsset,
-        feeAssetInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> OperationDetailsViewModel.ContentViewModel {
         switch data {
         case let .transfer(model):
+            let feeAssetInfo: AssetBalanceDisplayInfo = model.feeAssetId == chainAsset.asset.assetId
+                ? chainAsset.assetDisplayInfo
+                : chainAsset.chain.utilityAssetDisplayInfo() ?? chainAsset.assetDisplayInfo
+
             let viewModel = createTransferViewModel(
                 from: model,
                 feeAssetInfo: feeAssetInfo,
@@ -391,12 +394,10 @@ extension OperationDetailsViewModelFactory: OperationDetailsViewModelFactoryProt
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let feeAssetInfo = chainAsset.chain.utilityAsset()?.displayInfo(with: chainAsset.chain.icon) ?? assetInfo
 
         let contentViewModel = createContentViewModel(
             from: model.operation,
             chainAsset: chainAsset,
-            feeAssetInfo: feeAssetInfo,
             locale: locale
         )
 

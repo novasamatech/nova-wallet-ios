@@ -6,6 +6,7 @@ protocol ExtrinsicBuilderOperationFactoryProtocol {
     func createWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
+        payingFeeIn chainAssetId: ChainAssetId?,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<ExtrinsicsCreationResult>
 
@@ -19,6 +20,7 @@ final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
         proxy: ExtrinsicBuilderOperationFactoryProtocol,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
+        feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         operationManager: OperationManagerProtocol,
         usesStateCallForFee: Bool
     ) {
@@ -27,6 +29,7 @@ final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
         super.init(
             runtimeRegistry: runtimeRegistry,
             engine: engine,
+            feeEstimationRegistry: feeEstimationRegistry,
             operationManager: operationManager,
             usesStateCallForFee: usesStateCallForFee
         )
@@ -39,11 +42,13 @@ final class ExtrinsicProxyOperationFactory: BaseExtrinsicOperationFactory {
     override func createExtrinsicWrapper(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
+        payingFeeIn chainAssetId: ChainAssetId?,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         proxy.createWrapper(
             customClosure: customClosure,
             indexes: indexes,
+            payingFeeIn: chainAssetId,
             signingClosure: signingClosure
         )
     }

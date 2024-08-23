@@ -115,7 +115,8 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                             amount: amount.value,
                             txHash: txHashData,
                             callPath: callCodingPath,
-                            fee: lastFee
+                            fee: lastFee,
+                            feeAssetId: nil
                         )
 
                         self?.persistExtrinsicAndComplete(details: details, type: transferType)

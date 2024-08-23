@@ -1,6 +1,6 @@
 import SoraFoundation
 
-struct SwapNetworkFeeSheetViewModel {
+struct FeeAssetSelectSheetViewModel {
     let title: LocalizableResource<String>
     let message: LocalizableResource<String>
     let sectionTitle: (Int) -> LocalizableResource<String>

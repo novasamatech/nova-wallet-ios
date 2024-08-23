@@ -18,10 +18,10 @@ protocol EvmTransactionFeeProxyProtocol: AnyObject {
 final class EvmTransactionFeeProxy: TransactionFeeProxy<EvmFeeModel> {
     weak var delegate: EvmTransactionFeeProxyDelegate?
 
-    private func handle(result: Result<EvmFeeModel, Error>, for identifier: TransactionFeeId) {
-        update(result: result, for: identifier)
+    private func handle(result: Result<EvmFeeModel, Error>, for stateKey: StateKey) {
+        update(result: result, for: stateKey)
 
-        delegate?.didReceiveFee(result: result, for: identifier)
+        delegate?.didReceiveFee(result: result, for: stateKey.reuseIdentifier)
     }
 }
 
@@ -31,7 +31,9 @@ extension EvmTransactionFeeProxy: EvmTransactionFeeProxyProtocol {
         reuseIdentifier: TransactionFeeId,
         setupBy closure: @escaping EvmTransactionBuilderClosure
     ) {
-        if let state = getCachedState(for: reuseIdentifier) {
+        let stateKey = StateKey(reuseIdentifier: reuseIdentifier, chainAssetId: nil)
+
+        if let state = getCachedState(for: stateKey) {
             if case let .loaded(result) = state {
                 delegate?.didReceiveFee(result: result, for: reuseIdentifier)
             }
@@ -39,10 +41,10 @@ extension EvmTransactionFeeProxy: EvmTransactionFeeProxyProtocol {
             return
         }
 
-        setCachedState(.loading, for: reuseIdentifier)
+        setCachedState(.loading, for: stateKey)
 
         service.estimateFee(closure, runningIn: .main) { [weak self] result in
-            self?.handle(result: result, for: reuseIdentifier)
+            self?.handle(result: result, for: stateKey)
         }
     }
 }

@@ -208,7 +208,8 @@ extension GovernanceDelegateInteractor {
             feeProxy.estimateFee(
                 from: splitter,
                 service: extrinsicService,
-                reuseIdentifier: reuseIdentifier
+                reuseIdentifier: reuseIdentifier,
+                payingIn: chain.utilityChainAssetId()
             )
         } catch {
             basePresenter?.didReceiveBaseError(.feeFailed(error))

@@ -2,10 +2,6 @@ import Foundation
 import Operation_iOS
 import BigInt
 
-protocol HydraQuoteFactoryProtocol {
-    func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote>
-}
-
 final class HydraQuoteFactory {
     let flowState: HydraFlowState
     let logger: LoggerProtocol
@@ -167,7 +163,7 @@ final class HydraQuoteFactory {
     }
 }
 
-extension HydraQuoteFactory: HydraQuoteFactoryProtocol {
+extension HydraQuoteFactory: AssetQuoteFactoryProtocol {
     func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote> {
         flowState.resetServicesIfNotMatchingPair(
             .init(assetIn: args.assetIn, assetOut: args.assetOut)

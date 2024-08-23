@@ -3,20 +3,11 @@ import Operation_iOS
 
 struct HydraSwapParams {
     struct Params {
-        let currentFeeCurrency: HydraDx.AssetId
-        let newFeeCurrency: HydraDx.AssetId
+        let newFeeCurrency: ChainAssetId
         let referral: AccountId?
-
-        var shouldSetFeeCurrency: Bool {
-            newFeeCurrency != currentFeeCurrency
-        }
 
         var shouldSetReferral: Bool {
             referral == nil
-        }
-
-        var isFeeInNativeCurrency: Bool {
-            newFeeCurrency == HydraDx.nativeAssetId
         }
     }
 
@@ -28,18 +19,8 @@ struct HydraSwapParams {
     }
 
     let params: Params
-    let changeFeeCurrency: HydraDx.SetCurrencyCall?
     let updateReferral: HydraDx.LinkReferralCodeCall?
-    let revertFeeCurrency: HydraDx.SetCurrencyCall?
     let swap: Operation
-
-    var numberOfExtrinsics: Int {
-        changeFeeCurrency != nil ? 2 : 1
-    }
-
-    var isFeeInNativeCurrency: Bool {
-        params.isFeeInNativeCurrency
-    }
 }
 
 protocol HydraExtrinsicOperationFactoryProtocol {
@@ -126,14 +107,6 @@ final class HydraExtrinsicOperationFactory {
         remoteAssetOut: HydraDx.AssetId,
         callArgs: AssetConversion.CallArgs
     ) throws -> HydraSwapParams {
-        let setCurrencyCall: HydraDx.SetCurrencyCall?
-
-        if params.shouldSetFeeCurrency {
-            setCurrencyCall = .init(currency: params.newFeeCurrency)
-        } else {
-            setCurrencyCall = nil
-        }
-
         let referralCall: HydraDx.LinkReferralCodeCall?
 
         if params.shouldSetReferral {
@@ -159,20 +132,9 @@ final class HydraExtrinsicOperationFactory {
             route: route
         )
 
-        let revertCurrencyCall: HydraDx.SetCurrencyCall?
-
-        // we always revert to native currency after swap if it is not native
-        if !params.isFeeInNativeCurrency {
-            revertCurrencyCall = .init(currency: HydraDx.nativeAssetId)
-        } else {
-            revertCurrencyCall = nil
-        }
-
         return HydraSwapParams(
             params: params,
-            changeFeeCurrency: setCurrencyCall,
             updateReferral: referralCall,
-            revertFeeCurrency: revertCurrencyCall,
             swap: operation
         )
     }
@@ -191,11 +153,6 @@ final class HydraExtrinsicOperationFactory {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let swapParams = try swapParamsOperation.extractNoCancellableResultData()
 
-            let remoteFeeAsset = try HydraDxTokenConverter.convertToRemote(
-                chainAsset: feeAsset,
-                codingFactory: codingFactory
-            ).remoteAssetId
-
             let remoteAssetIn = try HydraDxTokenConverter.convertToRemote(
                 chainAsset: assetIn,
                 codingFactory: codingFactory
@@ -207,8 +164,7 @@ final class HydraExtrinsicOperationFactory {
             ).remoteAssetId
 
             let params = HydraSwapParams.Params(
-                currentFeeCurrency: swapParams.feeCurrency ?? HydraDx.nativeAssetId,
-                newFeeCurrency: remoteFeeAsset,
+                newFeeCurrency: feeAsset.chainAssetId,
                 referral: swapParams.referralLink
             )
 
