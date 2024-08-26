@@ -143,8 +143,10 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
             return
         }
 
+        let navigationController = NovaNavigationController(rootViewController: payCardView.controller)
+
         view?.controller.present(
-            payCardView.controller,
+            navigationController,
             animated: true
         )
     }

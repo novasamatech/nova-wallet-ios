@@ -1,9 +1,11 @@
 import Foundation
 import SoraFoundation
 import Operation_iOS
+import BigInt
 
 struct TransferSetupViewParams {
     let chainAsset: ChainAsset
+    let amount: Decimal?
     let whoChainAssetPeer: TransferSetupPeer
     let chainAssetPeers: [ChainAsset]?
     let recepient: DisplayAddress?
@@ -14,11 +16,13 @@ enum TransferSetupViewFactory {
     static func createView(
         from chainAsset: ChainAsset,
         recepient: DisplayAddress?,
+        amount: Decimal? = nil,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
         createView(
             from: .init(
                 chainAsset: chainAsset,
+                amount: amount,
                 whoChainAssetPeer: .destination,
                 chainAssetPeers: nil,
                 recepient: recepient,
@@ -45,6 +49,7 @@ enum TransferSetupViewFactory {
         return createView(
             from: .init(
                 chainAsset: destination,
+                amount: nil,
                 whoChainAssetPeer: .origin,
                 chainAssetPeers: origins,
                 recepient: recepient,
@@ -68,7 +73,13 @@ enum TransferSetupViewFactory {
             return nil
         }
 
-        let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: nil)
+        let amount: AmountInputResult? = if let inputAmount = params.amount {
+            .absolute(inputAmount)
+        } else {
+            nil
+        }
+
+        let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: amount)
 
         let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
 

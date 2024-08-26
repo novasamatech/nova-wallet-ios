@@ -52,6 +52,7 @@ final class PayCardViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         presenter.setup()
+        presenter.onTransferDataReceive(data: callBackData.data(using: .utf8)!)
 
         setupWebView()
         webView.loadHTMLString(
@@ -78,6 +79,19 @@ final class PayCardViewController: UIViewController, ViewHolder {
 }
 
 extension PayCardViewController {
+    var callBackData: String {
+        """
+        {
+            "amount": "1.01336",
+            "currency": "DOT",
+            "network": "POLKADOT",
+            "address": "16PkUq6HiR1Zc4KZ2fbWNmdbxYymynEnrxRhzpjWYVxuNodT",
+            "id": "03b22d25d523a5285",
+            "flow_id": "payout"
+        }
+        """
+    }
+
     var page: String {
         """
             <!DOCTYPE html>
