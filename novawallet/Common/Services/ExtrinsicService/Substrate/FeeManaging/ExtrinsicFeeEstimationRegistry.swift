@@ -89,7 +89,13 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
         chainAssetId: ChainAssetId,
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
-        switch AssetType(rawType: asset.type) {
+        guard !asset.isUtility else {
+            return estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
+                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
+            )
+        }
+
+        return switch AssetType(rawType: asset.type) {
         case .none:
             estimatingWrapperFactory.createNativeFeeEstimatingWrapper(
                 extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
@@ -141,7 +147,11 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
         accountClosure: @escaping () throws -> ChainAccountResponse,
         chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
-        switch AssetType(rawType: chainAsset.asset.type) {
+        guard !chainAsset.isUtilityAsset else {
+            return CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
+        }
+
+        return switch AssetType(rawType: chainAsset.asset.type) {
         case .none:
             CompoundOperationWrapper.createWithResult(ExtrinsicNativeFeeInstaller())
         case .statemine where chain.hasAssetHubTransferFees:
