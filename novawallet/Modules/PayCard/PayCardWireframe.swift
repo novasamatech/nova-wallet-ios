@@ -5,7 +5,7 @@ final class PayCardWireframe: PayCardWireframeProtocol {
         from view: ControllerBackedProtocol?,
         with transferModel: MercuryoTransferModel
     ) {
-        guard let sendTransferView = TransferSetupViewFactory.createView(
+        guard let sendTransferView = TransferSetupViewFactory.createCardTopUpView(
             from: transferModel.chainAsset,
             recepient: DisplayAddress(address: transferModel.address, username: ""),
             amount: transferModel.amount,
@@ -14,8 +14,10 @@ final class PayCardWireframe: PayCardWireframeProtocol {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            sendTransferView.controller,
+        let navigationController = NovaNavigationController(rootViewController: sendTransferView.controller)
+
+        view?.controller.present(
+            navigationController,
             animated: true
         )
     }

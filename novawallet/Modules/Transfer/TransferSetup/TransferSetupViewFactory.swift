@@ -60,6 +60,78 @@ enum TransferSetupViewFactory {
         )
     }
 
+    static func createCardTopUpView(
+        from chainAsset: ChainAsset,
+        recepient: DisplayAddress?,
+        amount: Decimal? = nil,
+        transferCompletion: TransferCompletionClosure? = nil
+    ) -> TransferSetupViewProtocol? {
+        guard let wallet = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
+        let params = TransferSetupViewParams(
+            chainAsset: chainAsset,
+            amount: amount,
+            whoChainAssetPeer: .destination,
+            chainAssetPeers: nil,
+            recepient: recepient,
+            xcmTransfers: nil
+        )
+
+        guard let interactor = createInteractor(for: params) else {
+            return nil
+        }
+
+        let amount: AmountInputResult? = if let inputAmount = params.amount {
+            .absolute(inputAmount)
+        } else {
+            nil
+        }
+
+        let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: amount)
+
+        let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
+
+        let localizationManager = LocalizationManager.shared
+
+        let networkViewModelFactory = NetworkViewModelFactory()
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+        let viewModelFactory = Web3NameViewModelFactory(
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory()
+        )
+
+        let presenter = TransferSetupPresenter(
+            interactor: interactor,
+            wireframe: TransferSetupWireframe(),
+            wallet: wallet,
+            chainAsset: params.chainAsset,
+            whoChainAssetPeer: params.whoChainAssetPeer,
+            chainAssetPeers: params.chainAssetPeers,
+            childPresenterFactory: presenterFactory,
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
+            networkViewModelFactory: networkViewModelFactory,
+            web3NameViewModelFactory: viewModelFactory,
+            logger: Logger.shared
+        )
+
+        let view = CardTopUpTransferSetupViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+
+        presenter.childPresenter = presenterFactory.createOnChainPresenter(
+            for: params.chainAsset,
+            initialState: initPresenterState,
+            view: view
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
     static func createView(
         from params: TransferSetupViewParams,
         wireframe: TransferSetupWireframeProtocol,

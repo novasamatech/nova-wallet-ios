@@ -18,9 +18,7 @@ extension PayCardPresenter: PayCardPresenterProtocol {
     func setup() {}
 
     func onTransferDataReceive(data: Data) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.interactor.process(data)
-        }
+        interactor.process(data)
     }
 }
 

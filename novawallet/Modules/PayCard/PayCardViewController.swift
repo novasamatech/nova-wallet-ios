@@ -52,13 +52,9 @@ final class PayCardViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         presenter.setup()
-        presenter.onTransferDataReceive(data: callBackData.data(using: .utf8)!)
 
         setupWebView()
-        webView.loadHTMLString(
-            page,
-            baseURL: URL(string: "https://exchange.mercuryo.io")!
-        )
+        startWebView()
     }
 
     func setupWebView() {
@@ -69,69 +65,47 @@ final class PayCardViewController: UIViewController, ViewHolder {
 
         webView.navigationDelegate = self
         webView.uiDelegate = self
+    }
 
-        if #available(iOS 16.4, *) {
-            webView.isInspectable = true
-        } else {
-            // Fallback on earlier versions
+    func startWebView() {
+        guard
+            let htmlFile = Bundle.main.path(forResource: "mercuryoWidget", ofType: "html"),
+            let htmlString = try? String(contentsOfFile: htmlFile, encoding: .utf8)
+        else {
+            return
         }
+
+        webView.loadHTMLString(
+            htmlString,
+            baseURL: URL(string: "https://exchange.mercuryo.io")!
+        )
     }
 }
 
 extension PayCardViewController {
-    var callBackData: String {
-        """
-        {
-            "amount": "1.01336",
-            "currency": "DOT",
-            "network": "POLKADOT",
-            "address": "16PkUq6HiR1Zc4KZ2fbWNmdbxYymynEnrxRhzpjWYVxuNodT",
-            "id": "03b22d25d523a5285",
-            "flow_id": "payout"
-        }
-        """
-    }
-
-    var page: String {
-        """
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Mercuryo Widget</title>
-            </head>
-            <body>
-                <div id="widget-container"></div>
-
-                <script src="https://widget.mercuryo.io/embed.2.0.js"></script>
-            </body>
-            </html>
-        """
-    }
-
     var userContentController: WKUserContentController {
         let userController = WKUserContentController()
+        userController.add(self, name: "onSellTransferEnabled")
 
         let script = WebViewScript(
             content: """
             mercuryoWidget.run({
-                widgetId: '4ce98182-ed76-4933-ba1b-b85e4a51d75a',
+                widgetId: '',
                 host: document.getElementById('widget-container'),
                 type: 'sell',
                 currency: 'DOT',
                 fiatCurrency: 'EUR',
                 paymentMethod: 'fiat_card_open',
+                showSpendCardDetails: true,
                 width: '100%',
                 fixPaymentMethod: true,
                 height: window.innerHeight,
                 hideRefundAddress: true,
-                refundAddress: '16PkUq6HiR1Zc4KZ2fbWNmdbxYymynEnrxRhzpjWYVxuNodT',
+                refundAddress: '14iKGFDp5EBXe3sdX765ngrERMrYUdxmFfayNCGkq7f6tm9w',
                 onStatusChange: data => {
-
                 },
                 onSellTransferEnabled: data => {
-
+                    window.webkit.messageHandlers.onSellTransferEnabled.postMessage(data)
                 }
             });
             """,
@@ -149,9 +123,17 @@ extension PayCardViewController {
     }
 }
 
-extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
-    func webView(_: WKWebView, didFinish _: WKNavigation!) {}
+extension PayCardViewController: WKScriptMessageHandler {
+    func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let data = "\(message.body)".data(using: .utf8) else {
+            return
+        }
 
+        presenter.onTransferDataReceive(data: data)
+    }
+}
+
+extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
     func webView(
         _: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
@@ -163,10 +145,6 @@ extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
         } else {
             decisionHandler(.allow)
         }
-    }
-
-    func webView(_: WKWebView, didFail _: WKNavigation!, withError _: any Error) {
-        print("did_fail")
     }
 
     func webView(
@@ -181,29 +159,8 @@ extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
 
         return nil
     }
-
-    func webView(
-        _: WKWebView,
-        runJavaScriptAlertPanelWithMessage _: String,
-        initiatedByFrame _: WKFrameInfo,
-        completionHandler _: @escaping () -> Void
-    ) {
-        print("runJavaScriptAlertPanelWithMessage")
-    }
-
-    func webView(_: WKWebView, shouldAllowDeprecatedTLSFor _: URLAuthenticationChallenge) async -> Bool {
-        print("deprecated_tls")
-
-        return true
-    }
-
-    func webView(_: WKWebView, didReceiveServerRedirectForProvisionalNavigation _: WKNavigation!) {
-        print("")
-    }
-
-    func webViewWebContentProcessDidTerminate(_: WKWebView) {
-        print("terminate")
-    }
 }
 
-extension PayCardViewController: PayCardViewProtocol {}
+extension PayCardViewController: PayCardViewProtocol {
+    func didReceiveRefundAddress(_: String) {}
+}

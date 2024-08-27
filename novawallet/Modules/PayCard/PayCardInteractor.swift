@@ -57,13 +57,33 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
 
 private extension PayCardInteractor {
     func decode(from data: Data) throws -> MercuryoTransferData {
+        // The data returned from callback is not a valid JSON actually
+        // So we need to make it a valid JSON before decoding
+        guard let validJSONString = String(data: data, encoding: .utf8) else {
+            throw MercuryoTransferDataError.invalidData
+        }
+
+        let correctedJSONString = validJSONString
+            .replacingOccurrences(of: "=", with: ":")
+            .replacingOccurrences(of: ";", with: ",")
+            .replacingOccurrences(of: "(\\w+)\\s*:", with: "\"$1\":", options: .regularExpression)
+            .replacingOccurrences(of: ":\\s*([^\",\\s]+)", with: ": \"$1\"", options: .regularExpression)
+
+        guard let correctJSONData = correctedJSONString.data(using: .utf8) else {
+            throw MercuryoTransferDataError.invalidData
+        }
+
         let decoder = JSONDecoder()
 
         let transferData = try decoder.decode(
             MercuryoTransferData.self,
-            from: data
+            from: correctJSONData
         )
 
         return transferData
     }
+}
+
+enum MercuryoTransferDataError: Error {
+    case invalidData
 }

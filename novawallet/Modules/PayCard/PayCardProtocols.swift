@@ -1,6 +1,8 @@
 import Foundation
 
-protocol PayCardViewProtocol: ControllerBackedProtocol {}
+protocol PayCardViewProtocol: ControllerBackedProtocol {
+    func didReceiveRefundAddress(_ refundAddress: String)
+}
 
 protocol PayCardPresenterProtocol: AnyObject {
     func setup()
