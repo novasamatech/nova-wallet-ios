@@ -46,8 +46,6 @@ final class CardTopUpTransferSetupViewLayout: UIView {
         view.isUserInteractionEnabled = false
     }
 
-    let web3NameReceipientView = Web3NameReceipientView()
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -85,9 +83,7 @@ final class CardTopUpTransferSetupViewLayout: UIView {
         containerView.stackView.addArrangedSubview(recepientTitleLabel)
         containerView.stackView.setCustomSpacing(8.0, after: recepientTitleLabel)
         containerView.stackView.addArrangedSubview(recepientInputView)
-        containerView.stackView.setCustomSpacing(8.0, after: recepientInputView)
-        containerView.stackView.addArrangedSubview(web3NameReceipientView)
-        containerView.stackView.setCustomSpacing(16, after: web3NameReceipientView)
+        containerView.stackView.setCustomSpacing(40.0, after: recepientInputView)
 
         containerView.stackView.addArrangedSubview(amountView)
         amountView.snp.makeConstraints { make in
