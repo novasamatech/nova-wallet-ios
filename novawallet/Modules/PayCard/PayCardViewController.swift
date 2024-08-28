@@ -12,6 +12,11 @@ private struct WebViewScript {
     let insertionPoint: InsertionPoint
 }
 
+private enum CallbackNames: String {
+    case onStatusChange
+    case onSellTransferEnabled
+}
+
 final class PayCardViewController: UIViewController, ViewHolder {
     typealias RootViewType = PayCardViewLayout
 
@@ -85,7 +90,8 @@ final class PayCardViewController: UIViewController, ViewHolder {
 extension PayCardViewController {
     var userContentController: WKUserContentController {
         let userController = WKUserContentController()
-        userController.add(self, name: "onSellTransferEnabled")
+        userController.add(self, name: CallbackNames.onSellTransferEnabled.rawValue)
+        userController.add(self, name: CallbackNames.onStatusChange.rawValue)
 
         let script = WebViewScript(
             content: """
@@ -125,11 +131,19 @@ extension PayCardViewController {
 
 extension PayCardViewController: WKScriptMessageHandler {
     func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard let data = "\(message.body)".data(using: .utf8) else {
+        guard
+            let data = "\(message.body)".data(using: .utf8),
+            let callbackName = CallbackNames(rawValue: message.name)
+        else {
             return
         }
 
-        presenter.onTransferDataReceive(data: data)
+        switch callbackName {
+        case .onStatusChange:
+            presenter.processWidgetState(data: data)
+        case .onSellTransferEnabled:
+            presenter.processTransferData(data: data)
+        }
     }
 }
 

@@ -6,7 +6,8 @@ protocol PayCardViewProtocol: ControllerBackedProtocol {
 
 protocol PayCardPresenterProtocol: AnyObject {
     func setup()
-    func onTransferDataReceive(data: Data)
+    func processTransferData(data: Data)
+    func processWidgetState(data: Data)
 }
 
 protocol PayCardInteractorInputProtocol: AnyObject {

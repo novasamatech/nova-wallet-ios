@@ -17,8 +17,12 @@ final class PayCardPresenter {
 extension PayCardPresenter: PayCardPresenterProtocol {
     func setup() {}
 
-    func onTransferDataReceive(data: Data) {
+    func processTransferData(data: Data) {
         interactor.process(data)
+    }
+
+    func processWidgetState(data _: Data) {
+        // TODO: Implement when design will be ready
     }
 }
 
