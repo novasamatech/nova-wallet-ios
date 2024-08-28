@@ -10,11 +10,16 @@ extension PlainBaseTableViewCell where C == TindergovBannerView {
     }
 }
 
+// MARK: Banner View
+
 final class TindergovBannerView: UIView {
     let gradientBackgroundView: RoundedGradientBackgroundView = .create { view in
         view.cornerRadius = 12
         view.strokeWidth = 1
         view.strokeColor = R.color.colorContainerBorder()!
+        view.shadowColor = UIColor.black
+        view.shadowOpacity = 0.16
+        view.shadowOffset = CGSize(width: 6, height: 4)
         view.bind(model: .tinderGovCell())
     }
 
@@ -51,6 +56,8 @@ final class TindergovBannerView: UIView {
     }
 }
 
+// MARK: Content View
+
 final class TindergovBannerContentView: GenericPairValueView<
     GenericPairValueView<
         UIImageView,
@@ -82,7 +89,7 @@ final class TindergovBannerContentView: GenericPairValueView<
         titleValueView.fView.fView
     }
 
-    var counderLabel: BorderedLabelView {
+    var counterLabel: BorderedLabelView {
         titleValueView.fView.sView
     }
 
@@ -116,9 +123,10 @@ final class TindergovBannerContentView: GenericPairValueView<
         valueLabel.apply(style: .caption1Secondary)
         valueLabel.numberOfLines = 0
 
-        counderLabel.backgroundView.fillColor = R.color.colorChipsBackground()!
-        counderLabel.contentInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
-        counderLabel.backgroundView.cornerRadius = 7
+        counterLabel.backgroundView.fillColor = R.color.colorChipsBackground()!
+        counterLabel.titleLabel.apply(style: .semiboldChip)
+        counterLabel.contentInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
+        counterLabel.backgroundView.cornerRadius = 7
 
         iconView.snp.makeConstraints { make in
             make.width.height.equalTo(72)
@@ -137,57 +145,6 @@ final class TindergovBannerContentView: GenericPairValueView<
     func bind(with viewModel: TinderGovBannerViewModel) {
         titleLabel.text = viewModel.title
         valueLabel.text = viewModel.description
-        counderLabel.titleLabel.text = viewModel.referendumCounterText
-    }
-}
-
-final class RoundedGradientBackgroundView: RoundedView {
-    let leftGradientView = MultigradientView()
-    let rightGradientView = MultigradientView()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupLayout()
-
-        backgroundColor = .clear
-    }
-
-    override var cornerRadius: CGFloat {
-        didSet {
-            super.cornerRadius = cornerRadius
-
-            leftGradientView.cornerRadius = cornerRadius
-            rightGradientView.cornerRadius = cornerRadius
-        }
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func bind(model: GradientBannerModel) {
-        leftGradientView.colors = model.left.colors
-        leftGradientView.locations = model.left.locations
-        leftGradientView.startPoint = model.left.startPoint
-        leftGradientView.endPoint = model.left.endPoint
-
-        rightGradientView.colors = model.right.colors
-        rightGradientView.locations = model.right.locations
-        rightGradientView.startPoint = model.right.startPoint
-        rightGradientView.endPoint = model.right.endPoint
-    }
-
-    private func setupLayout() {
-        addSubview(leftGradientView)
-        leftGradientView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        addSubview(rightGradientView)
-        rightGradientView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        counterLabel.titleLabel.text = viewModel.referendumCounterText
     }
 }
