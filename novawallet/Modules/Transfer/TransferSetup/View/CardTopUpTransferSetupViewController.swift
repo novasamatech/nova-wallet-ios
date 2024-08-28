@@ -80,6 +80,10 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
+        rootView.title.text = R.string.localizable.cardTopUpDotSetupTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages
         )

@@ -1733,3 +1733,4 @@
 "cloud.backup.password.confirm.details" = "Please enter the password you created on the previous screen";
 "common.pay" = "Pay";
 "common.card.issued" = "Card issued";
+"card.top.up.dot.setup.title" = "Top up card with DOT";

@@ -27,15 +27,14 @@ final class CardTopUpTransferSetupViewLayout: UIView {
         return label
     }()
 
-    let recepientInputView: AccountInputView = {
-        let view = AccountInputView()
+    let recepientInputView: AccountInputView = .create { view in
         view.scanButton.isHidden = true
+        view.clearButton.removeFromSuperview()
         view.isUserInteractionEnabled = false
         view.localizablePlaceholder = LocalizableResource { locale in
             R.string.localizable.transferSetupRecipientInputPlaceholder(preferredLanguages: locale.rLanguages)
         }
-        return view
-    }()
+    }
 
     let originFeeView: NetworkFeeInfoView = .create { view in
         view.hideInfoIcon()
@@ -43,7 +42,9 @@ final class CardTopUpTransferSetupViewLayout: UIView {
 
     let amountView = TitleHorizontalMultiValueView()
 
-    let amountInputView = NewAmountInputView()
+    let amountInputView: NewAmountInputView = .create { view in
+        view.isUserInteractionEnabled = false
+    }
 
     let web3NameReceipientView = Web3NameReceipientView()
 
@@ -74,12 +75,15 @@ final class CardTopUpTransferSetupViewLayout: UIView {
             make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
         }
 
-        let titleStackView = UIStackView(arrangedSubviews: [
-            recepientTitleLabel,
-            FlexibleSpaceView()
-        ])
-        containerView.stackView.addArrangedSubview(titleStackView)
-        containerView.stackView.setCustomSpacing(0, after: titleStackView)
+        containerView.stackView.addArrangedSubview(title)
+        title.snp.makeConstraints { make in
+            make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: title)
+
+        containerView.stackView.addArrangedSubview(recepientTitleLabel)
+        containerView.stackView.setCustomSpacing(8.0, after: recepientTitleLabel)
         containerView.stackView.addArrangedSubview(recepientInputView)
         containerView.stackView.setCustomSpacing(8.0, after: recepientInputView)
         containerView.stackView.addArrangedSubview(web3NameReceipientView)
