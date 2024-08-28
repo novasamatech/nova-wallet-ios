@@ -6,6 +6,53 @@ struct GradientBannerModel {
 }
 
 extension GradientBannerModel {
+    static func tinderGovCell() -> GradientBannerModel {
+        let color = UIColor(
+            red: 59.0 / 255.0,
+            green: 61.0 / 255.0,
+            blue: 124.0 / 255.0,
+            alpha: 1
+        )
+
+        let centerColor = UIColor(
+            red: 21.0 / 255.0,
+            green: 22.0 / 255.0,
+            blue: 53.0 / 255.0,
+            alpha: 1
+        )
+
+        let finalColor = UIColor(
+            red: 21.0 / 255.0,
+            green: 22.0 / 255.0,
+            blue: 53.0 / 255.0,
+            alpha: 0
+        )
+
+        let left = GradientModel(
+            startPoint: CGPoint(x: 0.0, y: 1.0),
+            endPoint: CGPoint(x: 1.0, y: 0.0),
+            colors: [
+                color,
+                centerColor,
+                finalColor
+            ],
+            locations: [0, 0.6, 1]
+        )
+
+        let right = GradientModel(
+            startPoint: CGPoint(x: 1.0, y: 0.0),
+            endPoint: CGPoint(x: 0.0, y: 1.0),
+            colors: [
+                color,
+                centerColor,
+                finalColor
+            ],
+            locations: [0, 0.4, 1]
+        )
+
+        return GradientBannerModel(left: left, right: right)
+    }
+
     static func networkIntegration() -> GradientBannerModel {
         let color = UIColor(
             red: 102.0 / 255.0,

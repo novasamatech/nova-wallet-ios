@@ -157,6 +157,20 @@ final class ReferendumsPresenter {
             )
         }
 
+        let tinderGovReferenda = referendums.filter { !$0.state.completed }
+
+        let tinderGovSection: ReferendumsSection? = if !tinderGovReferenda.isEmpty {
+            .tinderGov(
+                TinderGovBannerViewModel(
+                    title: "TinderGov",
+                    description: "A new way to easily distribute your votes across the Referenda",
+                    referendumCounterText: "\(tinderGovReferenda.count) referenda"
+                )
+            )
+        } else {
+            nil
+        }
+
         let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
 
         let filteredReferendumsSections: [ReferendumsSection]
@@ -169,7 +183,11 @@ final class ReferendumsPresenter {
             filteredReferendumsSections = referendumsSections
         }
 
-        let allSections = [activitySection, settingsSection] + filteredReferendumsSections
+        let allSections = [
+            activitySection,
+            tinderGovSection,
+            settingsSection
+        ].compactMap { $0 } + filteredReferendumsSections
 
         view.update(model: .init(sections: allSections))
         observableState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)
