@@ -2,9 +2,9 @@ import UIKit
 import SoraUI
 import SnapKit
 
-typealias TinderGovBannerTableViewCell = PlainBaseTableViewCell<TindergovBannerView>
+typealias TinderGovBannerTableViewCell = PlainBaseTableViewCell<TinderGovBannerView>
 
-extension PlainBaseTableViewCell where C == TindergovBannerView {
+extension PlainBaseTableViewCell where C == TinderGovBannerView {
     func setupStyle() {
         backgroundColor = .clear
     }
@@ -12,7 +12,7 @@ extension PlainBaseTableViewCell where C == TindergovBannerView {
 
 // MARK: Banner View
 
-final class TindergovBannerView: UIView {
+final class TinderGovBannerView: UIView {
     let gradientBackgroundView: RoundedGradientBackgroundView = .create { view in
         view.cornerRadius = 12
         view.strokeWidth = 1
@@ -23,7 +23,7 @@ final class TindergovBannerView: UIView {
         view.bind(model: .tinderGovCell())
     }
 
-    let contentView = TindergovBannerContentView()
+    let contentView = TinderGovBannerContentView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,7 +58,7 @@ final class TindergovBannerView: UIView {
 
 // MARK: Content View
 
-final class TindergovBannerContentView: GenericPairValueView<
+final class TinderGovBannerContentView: GenericPairValueView<
     GenericPairValueView<
         UIImageView,
         GenericPairValueView<
@@ -114,6 +114,7 @@ final class TindergovBannerContentView: GenericPairValueView<
         fView.setHorizontalAndSpacing(12.0)
         titleValueView.setVerticalAndSpacing(9.0)
         titleValueView.stackView.alignment = .leading
+        titleValueView.stackView.distribution = .fill
         titleValueView.fView.setHorizontalAndSpacing(8.0)
         titleValueView.fView.stackView.distribution = .equalCentering
 

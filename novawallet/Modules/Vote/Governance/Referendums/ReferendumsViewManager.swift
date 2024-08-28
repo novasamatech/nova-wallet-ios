@@ -5,6 +5,7 @@ final class ReferendumsViewManager: NSObject {
     private enum Constants {
         static let singleActivityCellHeight: CGFloat = 52
         static let firstOrLastActivityCellHeight: CGFloat = 50
+        static let tinderGovBannerHeight: CGFloat = 102
         static let referendumCellMinimumHeight: CGFloat = 185
         static let headerMinimumHeight: CGFloat = 56
         static let settingsCellHeight: CGFloat = 32
@@ -246,7 +247,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         case let .personalActivities(activities):
             return activities.count > 1 ? Constants.firstOrLastActivityCellHeight : Constants.singleActivityCellHeight
         case .tinderGov:
-            return 102
+            return Constants.tinderGovBannerHeight
         case .settings:
             return Constants.settingsCellHeight
         case let .active(_, cells), let .completed(_, cells):
