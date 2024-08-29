@@ -40,13 +40,17 @@ extension ReferendumsPresenter {
         }
     }
 
-    func createTinderGovSection(for referendums: [ReferendumLocal]) -> ReferendumsSection? {
+    func createTinderGovSection(
+        for referendums: [ReferendumLocal],
+        accountVotes: ReferendumAccountVotingDistribution?
+    ) -> ReferendumsSection? {
         guard supportsTinderGov == true else {
             return nil
         }
 
         return tinderGovViewModelFactory.createTinderGovReferendumsSection(
             for: referendums,
+            accountVotes: accountVotes,
             locale: selectedLocale
         )
     }
