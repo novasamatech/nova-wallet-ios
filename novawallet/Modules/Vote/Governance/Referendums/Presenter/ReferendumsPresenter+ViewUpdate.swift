@@ -21,7 +21,10 @@ extension ReferendumsPresenter {
             chain: chainModel,
             currentBlock: currentBlock
         )
-        let tinderGovSection = createTinderGovSection(for: referendums)
+        let tinderGovSection = createTinderGovSection(
+            for: referendums,
+            accountVotes: voting?.value?.votes
+        )
         let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
         let filteredReferendumsSections = filteredReferendumsSections(for: referendumsSections)
 

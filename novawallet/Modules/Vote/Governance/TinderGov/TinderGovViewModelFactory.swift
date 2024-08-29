@@ -3,6 +3,7 @@ import Foundation
 protocol TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
         for referendums: [ReferendumLocal]?,
+        accountVotes: ReferendumAccountVotingDistribution?,
         locale: Locale
     ) -> ReferendumsSection?
 }
@@ -10,13 +11,16 @@ protocol TinderGovViewModelFactoryProtocol {
 struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
         for referendums: [ReferendumLocal]?,
+        accountVotes: ReferendumAccountVotingDistribution?,
         locale: Locale
     ) -> ReferendumsSection? {
         guard let referendums else {
             return nil
         }
 
-        let tinderGovReferenda = referendums.filter { !$0.state.completed && $0.canVote }
+        let tinderGovReferenda = referendums.filter {
+            $0.canVote && (accountVotes?.votes[$0.index] == nil)
+        }
 
         let section: ReferendumsSection? = {
             guard !tinderGovReferenda.isEmpty else {
