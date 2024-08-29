@@ -3,6 +3,7 @@ import BigInt
 import SoraFoundation
 import Operation_iOS
 
+// swiftlint:disable file_length
 final class ReferendumsPresenter {
     weak var view: ReferendumsViewProtocol?
 
@@ -16,41 +17,45 @@ final class ReferendumsPresenter {
     let sorting: ReferendumsSorting
     let logger: LoggerProtocol
 
-    private var freeBalance: BigUInt?
-    private var selectedOption: GovernanceSelectedOption?
-    private var price: PriceData?
-    private var referendums: [ReferendumLocal]?
-    private var filteredReferendums: [ReferendumIdLocal: ReferendumLocal] = [:]
-    private var referendumsMetadata: ReferendumMetadataMapping?
-    private var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
-    private var offchainVoting: GovernanceOffchainVotesLocal?
-    private var unlockSchedule: GovernanceUnlockSchedule?
-    private var blockNumber: BlockNumber?
-    private var blockTime: BlockTime?
+    private(set) lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
-    private var maxStatusTimeInterval: TimeInterval?
-    private var countdownTimer: CountdownTimer?
-    private var timeModels: [ReferendumIdLocal: StatusTimeViewModel?]? {
+    private(set) var freeBalance: BigUInt?
+    private(set) var selectedOption: GovernanceSelectedOption?
+    private(set) var price: PriceData?
+    private(set) var referendums: [ReferendumLocal]?
+    private(set) var filteredReferendums: [ReferendumIdLocal: ReferendumLocal] = [:]
+    private(set) var referendumsMetadata: ReferendumMetadataMapping?
+    private(set) var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private(set) var offchainVoting: GovernanceOffchainVotesLocal?
+    private(set) var unlockSchedule: GovernanceUnlockSchedule?
+    private(set) var blockNumber: BlockNumber?
+    private(set) var blockTime: BlockTime?
+    private(set) var supportsDelegations: Bool = false
+
+    private(set) var maxStatusTimeInterval: TimeInterval?
+    var countdownTimer: CountdownTimer?
+    var timeModels: [ReferendumIdLocal: StatusTimeViewModel?]? {
         didSet {
             observableState.state.timeModels = timeModels
         }
     }
 
-    private var filter = ReferendumsFilter.all
+    private(set) var filter = ReferendumsFilter.all
+
     let observableState = Observable<ReferendumsState>(state: .init(cells: [], timeModels: nil))
     var referendumsInitState: ReferendumsInitState?
 
-    private var chain: ChainModel? {
+    var chain: ChainModel? {
         selectedOption?.chain
     }
 
-    private var governanceType: GovernanceType? {
-        selectedOption?.type
+    var supportsTinderGov: Bool? {
+        selectedOption?.supportsTinderGov()
     }
 
-    private var supportsDelegations: Bool = false
-
-    private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
+    var governanceType: GovernanceType? {
+        selectedOption?.type
+    }
 
     deinit {
         invalidateTimer()
@@ -80,9 +85,24 @@ final class ReferendumsPresenter {
         self.localizationManager = localizationManager
     }
 
-    func clearOnAssetSwitch() {
-        invalidateTimer()
+    private func filterReferendums() {
+        filteredReferendums = referendums?.filter {
+            filter.match($0, voting: voting, offchainVoting: offchainVoting)
+        }.reduce(into: [ReferendumIdLocal: ReferendumLocal]()) {
+            $0[$1.index] = $1
+        } ?? [:]
+        updateReferendumsView()
+    }
+    
+    private func refreshUnlockSchedule() {
+        guard let tracksVoting = voting?.value else {
+            return
+        }
 
+        interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
+    }
+
+    func clearState() {
         freeBalance = nil
         price = nil
         referendums = nil
@@ -96,128 +116,32 @@ final class ReferendumsPresenter {
         maxStatusTimeInterval = nil
         timeModels = nil
         supportsDelegations = false
-
-        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
     }
 
-    private func provideChainBalance() {
-        guard
-            let chain = chain,
-            let governanceType = governanceType,
-            let asset = chain.utilityAsset() else {
-            return
+    func updateTimeModels(
+        with newModels: [ReferendumIdLocal: StatusTimeViewModel?],
+        updatingMaxStatusTimeInterval: Bool
+    ) {
+        timeModels = newModels
+
+        if updatingMaxStatusTimeInterval {
+            maxStatusTimeInterval = newModels
+                .compactMap { $0.value?.timeInterval }
+                .max(by: <)
         }
-
-        let viewModel = chainBalanceFactory.createViewModel(
-            from: governanceType.title(for: chain),
-            chainAsset: ChainAsset(chain: chain, asset: asset),
-            balanceInPlank: freeBalance,
-            locale: selectedLocale
-        )
-
-        view?.didReceiveChainBalance(viewModel: viewModel)
     }
+}
 
-    private func updateReferendumsView() {
-        guard let view = view else {
-            return
-        }
-        guard let currentBlock = blockNumber,
-              let blockTime = blockTime,
-              let referendums = referendums,
-              let chainModel = chain else {
-            return
-        }
+// MARK: Timers
 
-        let accountVotes = voting?.value?.votes
-        let referendumsSections = viewModelFactory.createSections(input: .init(
-            referendums: referendums,
-            metadataMapping: referendumsMetadata,
-            votes: accountVotes?.votes ?? [:],
-            offchainVotes: offchainVoting,
-            chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
-            locale: selectedLocale,
-            voterName: nil
-        ))
-
-        let activitySection: ReferendumsSection
-
-        if supportsDelegations {
-            activitySection = activityViewModelFactory.createReferendumsActivitySection(
-                chain: chainModel,
-                voting: voting?.value,
-                blockNumber: currentBlock,
-                unlockSchedule: unlockSchedule,
-                locale: selectedLocale
-            )
-        } else {
-            activitySection = activityViewModelFactory.createReferendumsActivitySectionWithoutDelegations(
-                chain: chainModel,
-                voting: voting?.value,
-                blockNumber: currentBlock,
-                unlockSchedule: unlockSchedule,
-                locale: selectedLocale
-            )
-        }
-
-        let tinderGovSection: ReferendumsSection? = tinderGovViewModelFactory.createTinderGovReferendumsSection(
-            for: referendums,
-            locale: selectedLocale
-        )
-
-        let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
-
-        let filteredReferendumsSections: [ReferendumsSection]
-
-        if filter != .all {
-            filteredReferendumsSections = viewModelFactory.filteredSections(referendumsSections) {
-                filteredReferendums[$0.referendumIndex] != nil
-            }
-        } else {
-            filteredReferendumsSections = referendumsSections
-        }
-
-        let allSections = [
-            activitySection,
-            tinderGovSection,
-            settingsSection
-        ].compactMap { $0 } + filteredReferendumsSections
-
-        view.update(model: .init(sections: allSections))
-        observableState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)
-    }
-
-    private func updateTimeModels() {
-        guard let view = view else {
-            return
-        }
-        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = referendums else {
-            return
-        }
-
-        let timeModels = statusViewModelFactory.createTimeViewModels(
-            referendums: referendums,
-            currentBlock: currentBlock,
-            blockDuration: blockTime,
-            locale: selectedLocale
-        )
-
-        self.timeModels = timeModels
-        maxStatusTimeInterval = timeModels.compactMap { $0.value?.timeInterval }.max(by: <)
-        invalidateTimer()
-        setupTimer()
-        updateTimerDisplay()
-
-        view.updateReferendums(time: timeModels)
-    }
-
-    private func invalidateTimer() {
+extension ReferendumsPresenter {
+    func invalidateTimer() {
         countdownTimer?.delegate = nil
         countdownTimer?.stop()
         countdownTimer = nil
     }
 
-    private func setupTimer() {
+    func setupTimer() {
         guard let maxStatusTimeInterval = maxStatusTimeInterval else {
             return
         }
@@ -226,63 +150,9 @@ final class ReferendumsPresenter {
         countdownTimer?.delegate = self
         countdownTimer?.start(with: maxStatusTimeInterval)
     }
-
-    private func updateTimerDisplay() {
-        guard
-            let view = view,
-            let maxStatusTimeInterval = maxStatusTimeInterval,
-            let remainedTimeInterval = countdownTimer?.remainedInterval,
-            let timeModels = timeModels else {
-            return
-        }
-
-        let elapsedTime = maxStatusTimeInterval >= remainedTimeInterval ?
-            maxStatusTimeInterval - remainedTimeInterval : 0
-
-        let updatedTimeModels = timeModels.reduce(into: timeModels) { result, model in
-            guard let timeModel = model.value,
-                  let time = timeModel.timeInterval else {
-                return
-            }
-
-            guard time > elapsedTime else {
-                result[model.key] = nil
-                return
-            }
-            let remainedTime = time - elapsedTime
-            guard let updatedViewModel = timeModel.updateModelClosure(remainedTime) else {
-                result[model.key] = nil
-                return
-            }
-
-            result[model.key] = .init(
-                viewModel: updatedViewModel,
-                timeInterval: time,
-                updateModelClosure: timeModel.updateModelClosure
-            )
-        }
-
-        self.timeModels = updatedTimeModels
-        view.updateReferendums(time: updatedTimeModels)
-    }
-
-    private func refreshUnlockSchedule() {
-        guard let tracksVoting = voting?.value else {
-            return
-        }
-
-        interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
-    }
-
-    private func filterReferendums() {
-        filteredReferendums = referendums?.filter {
-            filter.match($0, voting: voting, offchainVoting: offchainVoting)
-        }.reduce(into: [ReferendumIdLocal: ReferendumLocal]()) {
-            $0[$1.index] = $1
-        } ?? [:]
-        updateReferendumsView()
-    }
 }
+
+// MARK: ReferendumsPresenterProtocol
 
 extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     func showFilters() {
@@ -371,29 +241,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 }
 
-extension ReferendumsPresenter: VoteChildPresenterProtocol {
-    func setup() {
-        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
-        interactor.setup()
-    }
-
-    func becomeOnline() {
-        interactor.becomeOnline()
-    }
-
-    func putOffline() {
-        interactor.putOffline()
-    }
-
-    func selectChain() {
-        wireframe.selectChain(
-            from: view,
-            delegate: self,
-            chainId: chain?.chainId,
-            governanceType: governanceType
-        )
-    }
-}
+// MARK: ReferendumsInteractorOutputProtocol
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
@@ -418,6 +266,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                 }
             }
         }
+
         updateReferendumsView()
     }
 
@@ -513,6 +362,8 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     }
 }
 
+// MARK: GovernanceAssetSelectionDelegate
+
 extension ReferendumsPresenter: GovernanceAssetSelectionDelegate {
     func governanceAssetSelection(
         view _: AssetSelectionViewProtocol,
@@ -531,15 +382,7 @@ extension ReferendumsPresenter: GovernanceAssetSelectionDelegate {
     }
 }
 
-extension ReferendumsPresenter: Localizable {
-    func applyLocalization() {
-        if let view = view, view.isSetup {
-            provideChainBalance()
-
-            updateReferendumsView()
-        }
-    }
-}
+// MARK: CountdownTimerDelegate
 
 extension ReferendumsPresenter: CountdownTimerDelegate {
     func didStart(with _: TimeInterval) {
@@ -555,6 +398,8 @@ extension ReferendumsPresenter: CountdownTimerDelegate {
     }
 }
 
+// MARK: ReferendumsFiltersDelegate
+
 extension ReferendumsPresenter: ReferendumsFiltersDelegate {
     func didUpdate(filter: ReferendumsFilter) {
         self.filter = filter
@@ -562,8 +407,22 @@ extension ReferendumsPresenter: ReferendumsFiltersDelegate {
     }
 }
 
+// MARK: ReferendumSearchDelegate
+
 extension ReferendumsPresenter: ReferendumSearchDelegate {
     func didSelectReferendum(referendumIndex: ReferendumIdLocal) {
         select(referendumIndex: referendumIndex)
+    }
+}
+
+// MARK: Localizable
+
+extension ReferendumsPresenter: Localizable {
+    func applyLocalization() {
+        if let view = view, view.isSetup {
+            provideChainBalance()
+
+            updateReferendumsView()
+        }
     }
 }
