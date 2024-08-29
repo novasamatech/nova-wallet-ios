@@ -944,6 +944,8 @@
 		2DA85A792C8071A500591900 /* ReferendumsPresenter+ReferendumSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A782C8071A500591900 /* ReferendumsPresenter+ReferendumSections.swift */; };
 		2DA85A822C80775F00591900 /* ReferendumsPresenter+VoteChildPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A812C80775F00591900 /* ReferendumsPresenter+VoteChildPresenter.swift */; };
 		2DA85A842C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A832C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift */; };
+		2DA85A872C81170700591900 /* CardsZStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A862C81170700591900 /* CardsZStack.swift */; };
+		2DA85A892C81172F00591900 /* VoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A882C81172F00591900 /* VoteCardView.swift */; };
 		2DA9CC932C2C261100DC74A8 /* BlockHashOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA9CC922C2C261100DC74A8 /* BlockHashOperationFactory.swift */; };
 		2DAF53952C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */; };
 		2DAF539B2C1842D00076B4B6 /* NetworkDetailsNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */; };
@@ -5958,6 +5960,8 @@
 		2DA85A782C8071A500591900 /* ReferendumsPresenter+ReferendumSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsPresenter+ReferendumSections.swift"; sourceTree = "<group>"; };
 		2DA85A812C80775F00591900 /* ReferendumsPresenter+VoteChildPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsPresenter+VoteChildPresenter.swift"; sourceTree = "<group>"; };
 		2DA85A832C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsPresenter+ViewUpdate.swift"; sourceTree = "<group>"; };
+		2DA85A862C81170700591900 /* CardsZStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsZStack.swift; sourceTree = "<group>"; };
+		2DA85A882C81172F00591900 /* VoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardView.swift; sourceTree = "<group>"; };
 		2DA9CC922C2C261100DC74A8 /* BlockHashOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockHashOperationFactory.swift; sourceTree = "<group>"; };
 		2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsNodeView.swift; sourceTree = "<group>"; };
@@ -11858,6 +11862,7 @@
 		22EC1C74711D9EF8A3277AF7 /* TinderGov */ = {
 			isa = PBXGroup;
 			children = (
+				2DA85A852C8116FB00591900 /* Views */,
 				6C972C86D5104BEB79598AC8 /* TinderGovProtocols.swift */,
 				BCE59E7D7D81AD155C08B477 /* TinderGovWireframe.swift */,
 				E7BA4C5AB8F2334E97AEBAE9 /* TinderGovPresenter.swift */,
@@ -12215,6 +12220,15 @@
 				84C355BE298A52F1005072CF /* ReferendumsInteractor+Protocol.swift */,
 			);
 			path = Interactor;
+			sourceTree = "<group>";
+		};
+		2DA85A852C8116FB00591900 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2DA85A862C81170700591900 /* CardsZStack.swift */,
+				2DA85A882C81172F00591900 /* VoteCardView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		2DAF53932C16C9120076B4B6 /* View */ = {
@@ -24005,6 +24019,7 @@
 				0CC4CCF42A67C9C400F63041 /* Multistaking+NominationPools.swift in Sources */,
 				8445F41628C8CFEC009E61C4 /* ParaStkYieldBoostSelectionViewModel.swift in Sources */,
 				84C1706F299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift in Sources */,
+				2DA85A872C81170700591900 /* CardsZStack.swift in Sources */,
 				84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */,
 				2DCC87642C596D180028C3CA /* CloudBackupConfirmPasswordPresenter.swift in Sources */,
 				84A1742428ED3CF70096F943 /* ReferendumLocal.swift in Sources */,
@@ -27101,6 +27116,7 @@
 				7754BD562B5021C30099C13E /* StakingProxyBaseProtocols.swift in Sources */,
 				D600448CB75095E6873E542F /* DAppTxDetailsProtocols.swift in Sources */,
 				84E25BE827E751B400290BF1 /* Charset+Encoding.swift in Sources */,
+				2DA85A892C81172F00591900 /* VoteCardView.swift in Sources */,
 				847999B12888A4FF00D1BAD2 /* SwitchAccount+CreateWatchOnlyWireframe.swift in Sources */,
 				0C3205D42A895EDA002EB914 /* EvmConstantGasLimitProvider.swift in Sources */,
 				0CA50CB72AFE6F40005668CD /* GetTokenOptionsViewFactory.swift in Sources */,
