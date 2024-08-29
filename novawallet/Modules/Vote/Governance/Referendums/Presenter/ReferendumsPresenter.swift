@@ -93,7 +93,7 @@ final class ReferendumsPresenter {
         } ?? [:]
         updateReferendumsView()
     }
-    
+
     private func refreshUnlockSchedule() {
         guard let tracksVoting = voting?.value else {
             return
