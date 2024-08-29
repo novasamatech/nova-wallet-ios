@@ -16,7 +16,7 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
             return nil
         }
 
-        let tinderGovReferenda = referendums.filter { !$0.state.completed }
+        let tinderGovReferenda = referendums.filter { !$0.state.completed && $0.canVote }
 
         let section: ReferendumsSection? = {
             guard !tinderGovReferenda.isEmpty else {
