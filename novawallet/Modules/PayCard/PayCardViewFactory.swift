@@ -2,7 +2,9 @@ import Foundation
 
 struct PayCardViewFactory {
     static func createView() -> PayCardViewProtocol? {
-        let interactor = PayCardInteractor()
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let interactor = PayCardInteractor(chainRegistry: chainRegistry)
         let wireframe = PayCardWireframe()
 
         let presenter = PayCardPresenter(interactor: interactor, wireframe: wireframe)

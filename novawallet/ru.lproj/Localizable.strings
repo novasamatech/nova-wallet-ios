@@ -1733,3 +1733,4 @@
 "cloud.backup.password.confirm.details" = "Пожалуйста, введите пароль, который вы создали на предыдущем экране";
 "common.pay" = "Оплата";
 "common.card.issued" = "Карта выпущена";
+"card.top.up.dot.setup.title" = "Пополнить карту, используя DOT";
