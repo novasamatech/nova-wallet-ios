@@ -111,7 +111,7 @@ extension PayCardViewController {
                 onStatusChange: data => {
                 },
                 onSellTransferEnabled: data => {
-                    window.webkit.messageHandlers.onSellTransferEnabled.postMessage(data)
+                    window.webkit.messageHandlers.onSellTransferEnabled.postMessage(JSON.stringify(data))
                 }
             });
             """,
