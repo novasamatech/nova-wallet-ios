@@ -195,10 +195,13 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             assetBalanceFormatterFactory: assetBalanceFormatterFactory
         )
 
+        let tinderGovViewModelFactory = TinderGovViewModelFactory()
+
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            tinderGovViewModelFactory: tinderGovViewModelFactory,
             activityViewModelFactory: activityViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,

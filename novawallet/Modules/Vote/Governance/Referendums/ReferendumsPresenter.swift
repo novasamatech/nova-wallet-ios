@@ -9,6 +9,7 @@ final class ReferendumsPresenter {
     let interactor: ReferendumsInteractorInputProtocol
     let wireframe: ReferendumsWireframeProtocol
     let viewModelFactory: ReferendumsModelFactoryProtocol
+    let tinderGovViewModelFactory: TinderGovViewModelFactoryProtocol
     let activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
@@ -59,6 +60,7 @@ final class ReferendumsPresenter {
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
         viewModelFactory: ReferendumsModelFactoryProtocol,
+        tinderGovViewModelFactory: TinderGovViewModelFactoryProtocol,
         activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
@@ -69,6 +71,7 @@ final class ReferendumsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.tinderGovViewModelFactory = tinderGovViewModelFactory
         self.activityViewModelFactory = activityViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
@@ -157,6 +160,11 @@ final class ReferendumsPresenter {
             )
         }
 
+        let tinderGovSection: ReferendumsSection? = tinderGovViewModelFactory.createTinderGovReferendumsSection(
+            for: referendums,
+            locale: selectedLocale
+        )
+
         let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
 
         let filteredReferendumsSections: [ReferendumsSection]
@@ -169,7 +177,11 @@ final class ReferendumsPresenter {
             filteredReferendumsSections = referendumsSections
         }
 
-        let allSections = [activitySection, settingsSection] + filteredReferendumsSections
+        let allSections = [
+            activitySection,
+            tinderGovSection,
+            settingsSection
+        ].compactMap { $0 } + filteredReferendumsSections
 
         view.update(model: .init(sections: allSections))
         observableState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)

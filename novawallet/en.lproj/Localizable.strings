@@ -1731,3 +1731,7 @@
 "gov.vote.conviction.alert.message" = "Abstain votes can only be done with 0.1x conviction. Vote with 0.1x conviction?";
 "cloud.backup.password.confirm.title" = "Confirm backup password";
 "cloud.backup.password.confirm.details" = "Please enter the password you created on the previous screen";
+"common.tinder.gov" = "TinderGov";
+"common.counted.referenda" = "%d referenda";
+"tinder.gov.banner.message" = "A new way to easily distribute your votes across the Referenda";
+

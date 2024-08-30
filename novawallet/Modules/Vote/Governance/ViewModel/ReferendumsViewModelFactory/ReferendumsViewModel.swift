@@ -4,6 +4,7 @@ struct ReferendumsViewModel {
 
 enum ReferendumsSection {
     case personalActivities([ReferendumPersonalActivity])
+    case tinderGov(TinderGovBannerViewModel)
     case settings(isFilterOn: Bool)
     case active(LoadableViewModelState<String>, [ReferendumsCellViewModel])
     case completed(LoadableViewModelState<String>, [ReferendumsCellViewModel])
@@ -13,6 +14,12 @@ enum ReferendumsSection {
 enum ReferendumPersonalActivity {
     case locks(ReferendumsUnlocksViewModel)
     case delegations(ReferendumsDelegationViewModel)
+}
+
+struct TinderGovBannerViewModel {
+    let title: String
+    let description: String
+    let referendumCounterText: String
 }
 
 struct ReferendumsCellViewModel: Hashable {
