@@ -193,7 +193,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
                 presenter?.selectDelegations()
             }
         case .tinderGov:
-            print("SHOW_TINDERGOV")
+            presenter?.selectTinderGov()
         case .settings, .empty:
             break
         case let .active(_, cells), let .completed(_, cells):

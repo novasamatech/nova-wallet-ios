@@ -1,4 +1,4 @@
-protocol TinderGovViewProtocol: AnyObject {}
+protocol TinderGovViewProtocol: ControllerBackedProtocol {}
 
 protocol TinderGovPresenterProtocol: AnyObject {
     func setup()

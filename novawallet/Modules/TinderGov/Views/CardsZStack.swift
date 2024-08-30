@@ -10,15 +10,17 @@ final class CardsZStack: UIView {
     enum DismissalDirection {
         case left
         case right
+        case top
     }
 
+    private let stackScale: CGFloat = 0.9
     private let maxCardsAlive: Int
     private var stackedViews: [VoteCardView] = []
     private var emptyStateView: UIView?
     private var viewPool: [VoteCardView] = []
     private var viewModelsQueue: [VoteCardModel] = []
 
-    init(maxCardsAlive: Int = 5) {
+    init(maxCardsAlive: Int = 3) {
         self.maxCardsAlive = maxCardsAlive
         super.init(frame: .zero)
     }
@@ -44,23 +46,52 @@ final class CardsZStack: UIView {
         manageStack()
     }
 
-    func addView(_ view: VoteCardView, atBottom: Bool = true) {
-        if atBottom {
-            stackedViews.insert(view, at: 0)
+    func addView(_ view: VoteCardView) {
+        view.alpha = 0
+
+        stackedViews.insert(view, at: 0)
+
+        if let emptyStateView {
+            insertSubview(view, aboveSubview: emptyStateView)
         } else {
-            stackedViews.append(view)
+            insertSubview(view, at: 0)
         }
-        if atBottom, let emptyView = emptyStateView {
-            insertSubview(view, aboveSubview: emptyView)
-        } else {
-            addSubview(view)
-            bringSubviewToFront(view)
-        }
+
         view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        layoutIfNeeded()
+
         if stackedViews.count == 1 {
             hideEmptyState()
+        }
+
+        guard stackedViews.count > 1 else {
+            view.alpha = 1
+
+            return
+        }
+
+        let prevIndex = stackedViews.endIndex - 1
+
+        let scale = NSDecimalNumber(
+            decimal: pow(Decimal(stackScale), prevIndex)
+        ).doubleValue
+
+        let gap: CGFloat = 8
+
+        let baseHeight = stackedViews[prevIndex].bounds.height
+        let heightDelta = (baseHeight - (baseHeight * scale)) / 2
+        let translationY = heightDelta + (gap * CGFloat(prevIndex))
+
+        let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
+        let translationTransform = CGAffineTransform(translationX: 0, y: translationY)
+
+        view.transform = scaleTransform
+
+        UIView.animate(withDuration: 0.35) {
+            view.alpha = 1
+            view.transform = scaleTransform.concatenating(translationTransform)
         }
     }
 
@@ -74,17 +105,34 @@ final class CardsZStack: UIView {
         sendSubviewToBack(view)
     }
 
-    func dismissTopCard(to direction: DismissalDirection, completion: (() -> Void)? = nil) {
+    func dismissTopCard(
+        to direction: DismissalDirection,
+        completion: (() -> Void)? = nil
+    ) {
         guard let topView = stackedViews.last else {
             return
         }
 
-        let translationX = direction == .left ? -1.5 * bounds.width : 1.5 * bounds.width
-        let rotationDirection = CGFloat(direction == .left ? -1 : 1)
-        UIView.animate(withDuration: 0.35, animations: {
-            topView.transform = CGAffineTransform(rotationAngle: 0.15 * rotationDirection)
-                .translatedBy(x: translationX, y: 0)
-        }, completion: { _ in
+        let translation: (x: CGFloat, y: CGFloat) = switch direction {
+        case .left: (-1.5 * bounds.width, 0)
+        case .right: (1.5 * bounds.width, 0)
+        case .top: (0, -1.5 * bounds.height)
+        }
+
+        let rotationDirection: CGFloat = switch direction {
+        case .left: -1
+        case .right: 1
+        case .top: 0
+        }
+
+        UIView.animate(
+            withDuration: 0.35,
+            animations: {
+                topView.transform = CGAffineTransform(rotationAngle: 0.15 * rotationDirection)
+                    .translatedBy(x: translation.x, y: translation.y)
+            }
+        ) { _ in
+            topView.transform = .identity
             self.stackedViews.removeLast()
             topView.removeFromSuperview()
             self.enqueueVoteCardView(topView)
@@ -94,43 +142,62 @@ final class CardsZStack: UIView {
             }
             self.manageStack()
             completion?()
-        })
+        }
     }
 }
 
 private extension CardsZStack {
     func dequeueVoteCardView() -> VoteCardView {
-        viewPool.popLast() ?? VoteCardView()
+        viewPool.popLast() ?? createCardView()
+    }
+
+    func createCardView() -> VoteCardView {
+        let view = VoteCardView()
+        view.strokeWidth = 2
+        view.strokeColor = R.color.colorContainerBorder()!
+        view.shadowColor = UIColor.black
+        view.shadowOpacity = 0.16
+        view.shadowOffset = CGSize(width: 6, height: 4)
+
+        return view
     }
 
     func enqueueVoteCardView(_ view: VoteCardView) {
         viewPool.append(view)
         view.removeFromSuperview()
-        view.transform = .identity
     }
 
     func manageStack() {
         while stackedViews.count < maxCardsAlive, !viewModelsQueue.isEmpty {
             let cardModel = viewModelsQueue.removeFirst()
             let voteCard = dequeueVoteCardView()
+            voteCard.cornerRadius = 16
             voteCard.prepareForReuse()
             voteCard.bind(viewModel: cardModel.viewModel)
-            voteCard.bind(action: { [weak self] voteResult in
-                self?.dismissTopCard(to: voteResult.dismissalDirection) {
-                    cardModel.voteAction(voteResult, cardModel.viewModel.caseIndex)
-                }
-            })
-            voteCard.bind(reportAction: { [weak self] in
-                self?.dismissTopCard(to: .left) {
-                    cardModel.reportAction(cardModel.viewModel.caseIndex)
-                }
-            })
-            voteCard.bind(skipAction: { [weak self] in
-                self?.dismissTopCard(to: .left) {
-                    cardModel.skipAction(cardModel.viewModel.caseIndex)
-                }
-            })
-            addView(voteCard, atBottom: true)
+
+            addView(voteCard)
+        }
+
+        stackedViews.reversed().enumerated().forEach { index, view in
+            let scale = NSDecimalNumber(decimal: pow(Decimal(self.stackScale), index)).doubleValue
+
+            let prevIndex = index > 0
+                ? index - 1
+                : index
+
+            let gap: CGFloat = 8
+
+            let baseHeight = stackedViews[prevIndex].bounds.height
+            let heightDelta = (baseHeight - (baseHeight * scale)) / 2
+            let translationY = heightDelta + (gap * CGFloat(index))
+
+            let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
+            let translationTransform = CGAffineTransform(translationX: 0, y: translationY)
+            let concatTransform = scaleTransform.concatenating(translationTransform)
+
+            UIView.animate(withDuration: 0.25) {
+                view.transform = concatTransform
+            }
         }
     }
 

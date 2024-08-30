@@ -214,6 +214,10 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         }
     }
 
+    func selectTinderGov() {
+        wireframe.showTinderGov(from: view)
+    }
+
     func showReferendumDetailsIfNeeded() {
         guard let referendumsState = referendumsInitState,
               let referendums = referendums,
