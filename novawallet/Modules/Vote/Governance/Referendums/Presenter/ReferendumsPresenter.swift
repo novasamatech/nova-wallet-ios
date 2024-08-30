@@ -3,7 +3,6 @@ import BigInt
 import SoraFoundation
 import Operation_iOS
 
-// swiftlint:disable file_length
 final class ReferendumsPresenter {
     weak var view: ReferendumsViewProtocol?
 
