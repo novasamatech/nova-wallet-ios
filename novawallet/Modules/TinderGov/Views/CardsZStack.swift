@@ -89,9 +89,60 @@ final class CardsZStack: UIView {
 
         view.transform = scaleTransform
 
-        UIView.animate(withDuration: 0.35) {
+        UIView.animate(
+            withDuration: 0.35,
+            delay: 0.0,
+            usingSpringWithDamping: 0.75,
+            initialSpringVelocity: 0.6,
+            options: [.curveEaseInOut]
+        ) {
             view.alpha = 1
             view.transform = scaleTransform.concatenating(translationTransform)
+        }
+    }
+
+    func addPanGestureRecognizer(for view: UIView) {
+        view.addGestureRecognizer(
+            UIPanGestureRecognizer(target: self, action: #selector(actionPan(gestureRecognizer:)))
+        )
+    }
+
+    @objc func actionPan(gestureRecognizer: UIPanGestureRecognizer) {
+        guard let view = gestureRecognizer.view else {
+            return
+        }
+
+        let translation = gestureRecognizer.translation(in: view)
+
+        if gestureRecognizer.state == .began {
+            // When the drag is first recognized, you can get the starting coordinates here
+        }
+
+        if gestureRecognizer.state == .changed {
+            view.transform = CGAffineTransform(translationX: translation.x, y: translation.y)
+        }
+        if gestureRecognizer.state == .ended {
+            let leftMostX = -(UIScreen.main.bounds.width / 2.3)
+            let rightMostX = UIScreen.main.bounds.width / 2.3
+            let topMostY = -(UIScreen.main.bounds.height / 2.3)
+
+            if translation.y <= topMostY {
+                dismissTopCard(to: .top)
+            } else if translation.x <= leftMostX {
+                dismissTopCard(to: .left)
+            } else if translation.x >= rightMostX {
+                dismissTopCard(to: .right)
+            } else {
+                UIView.animate(
+                    withDuration: 0.35,
+                    delay: 0.0,
+                    usingSpringWithDamping: 0.75,
+                    initialSpringVelocity: 0.6,
+                    options: [.curveEaseInOut]
+                ) {
+                    view.transform = .identity
+                }
+            }
         }
     }
 
@@ -159,6 +210,8 @@ private extension CardsZStack {
         view.shadowOpacity = 0.16
         view.shadowOffset = CGSize(width: 6, height: 4)
 
+        addPanGestureRecognizer(for: view)
+
         return view
     }
 
@@ -195,7 +248,13 @@ private extension CardsZStack {
             let translationTransform = CGAffineTransform(translationX: 0, y: translationY)
             let concatTransform = scaleTransform.concatenating(translationTransform)
 
-            UIView.animate(withDuration: 0.25) {
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0.0,
+                usingSpringWithDamping: 0.6,
+                initialSpringVelocity: 0.3,
+                options: [.curveEaseInOut]
+            ) {
                 view.transform = concatTransform
             }
         }
