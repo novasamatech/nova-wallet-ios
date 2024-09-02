@@ -65,49 +65,6 @@ final class CardsZStack: UIView {
         animateCardAdd(view)
     }
 
-    func addPanGestureRecognizer(for view: UIView) {
-        view.addGestureRecognizer(
-            UIPanGestureRecognizer(
-                target: self,
-                action: #selector(actionPan(gestureRecognizer:))
-            )
-        )
-    }
-
-    @objc func actionPan(gestureRecognizer: UIPanGestureRecognizer) {
-        guard let view = gestureRecognizer.view else {
-            return
-        }
-
-        let translation = gestureRecognizer.translation(in: view)
-
-        if gestureRecognizer.state == .changed {
-            view.transform = CGAffineTransform(
-                translationX: translation.x,
-                y: translation.y
-            )
-        }
-        if gestureRecognizer.state == .ended {
-            if translation.y <= Constants.topMostY {
-                dismissTopCard(to: .top)
-            } else if translation.x <= Constants.leftMostX {
-                dismissTopCard(to: .left)
-            } else if translation.x >= Constants.rightMostX {
-                dismissTopCard(to: .right)
-            } else {
-                UIView.animate(
-                    withDuration: Constants.CardIdentityAnimation.duration,
-                    delay: Constants.CardIdentityAnimation.delay,
-                    usingSpringWithDamping: Constants.CardIdentityAnimation.springDamping,
-                    initialSpringVelocity: Constants.CardIdentityAnimation.springVelocity,
-                    options: [.curveEaseInOut]
-                ) {
-                    view.transform = .identity
-                }
-            }
-        }
-    }
-
     func setEmptyStateView(_ view: UIView) {
         emptyStateView = view
         view.isHidden = true
@@ -139,68 +96,6 @@ final class CardsZStack: UIView {
             manageStack()
             completion?()
         }
-    }
-}
-
-private extension CardsZStack {
-    func dequeueVoteCardView() -> VoteCardView {
-        viewPool.popLast() ?? createCardView()
-    }
-
-    func createCardView() -> VoteCardView {
-        let view = VoteCardView()
-        view.strokeWidth = 2
-        view.strokeColor = R.color.colorContainerBorder()!
-        view.shadowColor = UIColor.black
-        view.shadowOpacity = 0.16
-        view.shadowOffset = CGSize(width: 6, height: 4)
-
-        addPanGestureRecognizer(for: view)
-
-        return view
-    }
-
-    func enqueueVoteCardView(_ view: VoteCardView) {
-        view.snp.removeConstraints()
-        viewPool.append(view)
-        view.removeFromSuperview()
-    }
-
-    func manageStack() {
-        while stackedViews.count < maxCardsAlive, !viewModelsQueue.isEmpty {
-            let cardModel = viewModelsQueue.removeFirst()
-            let voteCard = dequeueVoteCardView()
-            voteCard.cornerRadius = Constants.cardCornerRadius
-            voteCard.prepareForReuse()
-            voteCard.bind(viewModel: cardModel.viewModel)
-
-            addView(voteCard)
-        }
-
-        animateStackManage()
-    }
-
-    func hideEmptyState() {
-        emptyStateView?.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-    }
-
-    func showEmptyState() {
-        guard let emptyStateView else { return }
-        emptyStateView.isHidden = false
-        UIView.animate(
-            withDuration: Constants.EmptyStateAnimation.startDuration,
-            animations: {
-                emptyStateView.transform = CGAffineTransform(
-                    scaleX: 1.05,
-                    y: 1.05
-                )
-            },
-            completion: { _ in
-                UIView.animate(withDuration: Constants.EmptyStateAnimation.endDuration) {
-                    emptyStateView.transform = .identity
-                }
-            }
-        )
     }
 }
 
@@ -317,6 +212,115 @@ private extension CardsZStack {
             translationX: .zero,
             y: translationY
         )
+    }
+}
+
+// MARK: Private
+
+private extension CardsZStack {
+    func dequeueVoteCardView() -> VoteCardView {
+        viewPool.popLast() ?? createCardView()
+    }
+
+    func createCardView() -> VoteCardView {
+        let view = VoteCardView()
+        view.strokeWidth = 2
+        view.strokeColor = R.color.colorContainerBorder()!
+        view.shadowColor = UIColor.black
+        view.shadowOpacity = 0.16
+        view.shadowOffset = CGSize(width: 6, height: 4)
+
+        addPanGestureRecognizer(for: view)
+
+        return view
+    }
+
+    func enqueueVoteCardView(_ view: VoteCardView) {
+        view.snp.removeConstraints()
+        viewPool.append(view)
+        view.removeFromSuperview()
+    }
+
+    func manageStack() {
+        while stackedViews.count < maxCardsAlive, !viewModelsQueue.isEmpty {
+            let cardModel = viewModelsQueue.removeFirst()
+            let voteCard = dequeueVoteCardView()
+            voteCard.cornerRadius = Constants.cardCornerRadius
+            voteCard.prepareForReuse()
+            voteCard.bind(viewModel: cardModel.viewModel)
+
+            addView(voteCard)
+        }
+
+        animateStackManage()
+    }
+
+    func hideEmptyState() {
+        emptyStateView?.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+    }
+
+    func showEmptyState() {
+        guard let emptyStateView else { return }
+        emptyStateView.isHidden = false
+        UIView.animate(
+            withDuration: Constants.EmptyStateAnimation.startDuration,
+            animations: {
+                emptyStateView.transform = CGAffineTransform(
+                    scaleX: 1.05,
+                    y: 1.05
+                )
+            },
+            completion: { _ in
+                UIView.animate(withDuration: Constants.EmptyStateAnimation.endDuration) {
+                    emptyStateView.transform = .identity
+                }
+            }
+        )
+    }
+    
+    func addPanGestureRecognizer(for view: UIView) {
+        view.addGestureRecognizer(
+            UIPanGestureRecognizer(
+                target: self,
+                action: #selector(actionPan(gestureRecognizer:))
+            )
+        )
+    }
+    
+    @objc func actionPan(gestureRecognizer: UIPanGestureRecognizer) {
+        guard let view = gestureRecognizer.view else {
+            return
+        }
+
+        let translation = gestureRecognizer.translation(in: view)
+
+        switch gestureRecognizer.state {
+        case .changed:
+            view.transform = CGAffineTransform(
+                translationX: translation.x,
+                y: translation.y
+            )
+        case .ended:
+            if translation.y <= Constants.topMostY {
+                dismissTopCard(to: .top)
+            } else if translation.x <= Constants.leftMostX {
+                dismissTopCard(to: .left)
+            } else if translation.x >= Constants.rightMostX {
+                dismissTopCard(to: .right)
+            } else {
+                UIView.animate(
+                    withDuration: Constants.CardIdentityAnimation.duration,
+                    delay: Constants.CardIdentityAnimation.delay,
+                    usingSpringWithDamping: Constants.CardIdentityAnimation.springDamping,
+                    initialSpringVelocity: Constants.CardIdentityAnimation.springVelocity,
+                    options: [.curveEaseInOut]
+                ) {
+                    view.transform = .identity
+                }
+            }
+        default:
+            break
+        }
     }
 }
 
