@@ -15,7 +15,7 @@ extension PlainBaseTableViewCell where C == TinderGovBannerView {
 final class TinderGovBannerView: UIView {
     let gradientBackgroundView: RoundedGradientBackgroundView = .create { view in
         view.cornerRadius = 12
-        view.strokeWidth = 1
+        view.strokeWidth = 2
         view.strokeColor = R.color.colorContainerBorder()!
         view.shadowColor = UIColor.black
         view.shadowOpacity = 0.16
@@ -114,7 +114,6 @@ final class TinderGovBannerContentView: GenericPairValueView<
         fView.setHorizontalAndSpacing(12.0)
         titleValueView.setVerticalAndSpacing(9.0)
         titleValueView.stackView.alignment = .leading
-        titleValueView.stackView.distribution = .fill
         titleValueView.fView.setHorizontalAndSpacing(8.0)
         titleValueView.fView.stackView.distribution = .equalCentering
 
@@ -126,7 +125,7 @@ final class TinderGovBannerContentView: GenericPairValueView<
 
         counterLabel.backgroundView.fillColor = R.color.colorChipsBackground()!
         counterLabel.titleLabel.apply(style: .semiboldChip)
-        counterLabel.contentInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
+        counterLabel.contentInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
         counterLabel.backgroundView.cornerRadius = 7
 
         iconView.snp.makeConstraints { make in

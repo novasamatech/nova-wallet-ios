@@ -19,7 +19,13 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
         }
 
         let tinderGovReferenda = referendums.filter {
-            $0.canVote && (accountVotes?.votes[$0.index] == nil)
+            guard let trackId = $0.trackId else {
+                return false
+            }
+
+            return $0.canVote
+                && (accountVotes?.votes[$0.index] == nil)
+                && (accountVotes?.delegatings[trackId] == nil)
         }
 
         let section: ReferendumsSection? = {
