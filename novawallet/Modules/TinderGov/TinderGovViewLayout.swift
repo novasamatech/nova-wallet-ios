@@ -3,6 +3,33 @@ import SnapKit
 import SoraUI
 
 final class TinderGovViewLayout: UIView {
+    let gradientBackgroundView: MultigradientView = .create { view in
+        let gradient = GradientModel(
+            startPoint: .init(x: 0.5, y: 0),
+            endPoint: .init(x: 0.5, y: 1),
+            colors: [
+                .init(
+                    red: 83.0 / 255.0,
+                    green: 96.0 / 255.0,
+                    blue: 161.0 / 255.0,
+                    alpha: 1.0
+                ),
+                .init(
+                    red: 8.0 / 255.0,
+                    green: 9.0 / 255.0,
+                    blue: 14.0 / 255.0,
+                    alpha: 1.0
+                )
+            ],
+            locations: [0.0, 0.25, 0.35, 1.0]
+        )
+
+        view.colors = gradient.colors
+        view.locations = gradient.locations
+        view.startPoint = gradient.startPoint
+        view.endPoint = gradient.endPoint
+    }
+
     let cardsStack = CardsZStack()
 
     let ayeButton: RoundedButton = {
@@ -51,6 +78,11 @@ final class TinderGovViewLayout: UIView {
 
 private extension TinderGovViewLayout {
     func setupLayout() {
+        addSubview(gradientBackgroundView)
+        gradientBackgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         addSubview(abstainButton)
         abstainButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.smallButtonSize)

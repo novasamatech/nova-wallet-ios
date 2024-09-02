@@ -16,6 +16,10 @@ final class TinderGovPresenter {
 
 extension TinderGovPresenter: TinderGovPresenterProtocol {
     func setup() {}
+
+    func actionBack() {
+        wireframe.back(from: view)
+    }
 }
 
 extension TinderGovPresenter: TinderGovInteractorOutputProtocol {}

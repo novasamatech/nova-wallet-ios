@@ -2,35 +2,46 @@ import SnapKit
 import UIKit
 import SoraUI
 
-typealias ReportEvidenceAction = () -> Void
-typealias SkipEvidenceAction = () -> Void
-
 struct VoteCardModel {
     let viewModel: VoteCardView.ViewModel
 }
 
 final class VoteCardView: RoundedView {
-    struct ViewModel {
-        let title: String
-    }
-
-    private enum Constants {
-        static let topAnimationInset: CGFloat = -500
-        static let bottomAnimationInset: CGFloat = -400
-        static let hideInstructionsBottomInset: CGFloat = 36
-        static let titleAndMediaSpacing: CGFloat = -24
-        static let videoCountdownBottomInset: CGFloat = 16
-        static let overlayAnimationDuration: TimeInterval = 0.3
-    }
-
     private let gradientView: RoundedGradientBackgroundView = .create { view in
         view.applyCellBackgroundStyle()
-        view.bind(model: .tinderGovCell())
     }
 
-    private let title: UILabel = .create { view in
+    private var summaryLabel: UILabel = .create { view in
         view.apply(style: .title3Primary)
+        view.numberOfLines = 0
         view.textAlignment = .left
+    }
+
+    private let requestedView: GenericPairValueView<
+        MultiValueView,
+        UILabel
+    > = .create { view in
+        view.setVerticalAndSpacing(Constants.requestedViewInnerSpacing)
+        view.fView.spacing = Constants.requestedViewInnerSpacing
+
+        view.fView.stackView.alignment = .leading
+        view.fView.valueTop.apply(style: .footnoteSecondary)
+        view.fView.valueTop.text = "Requested:"
+        view.fView.valueBottom.apply(style: .title3Primary)
+        view.sView.apply(style: .caption1Secondary)
+    }
+
+    private var assetAmountLabel: UILabel {
+        requestedView.fView.valueBottom
+    }
+
+    private var fiatAmountLabel: UILabel {
+        requestedView.sView
+    }
+
+    private let readMoreButton: LoadableActionView = .create { view in
+        view.actionButton.applyEnabledStyle(colored: R.color.colorButtonBackgroundSecondary()!)
+        view.actionButton.imageWithTitleView?.title = "Read more"
     }
 
     override init(frame: CGRect) {
@@ -55,7 +66,17 @@ final class VoteCardView: RoundedView {
     }
 
     func bind(viewModel: ViewModel) {
-        title.text = viewModel.title
+        gradientView.bind(model: viewModel.gradientModel)
+
+        summaryLabel.text = viewModel.summary
+
+        guard let requestedAmount = viewModel.requestedAmount else {
+            requestedView.isHidden = true
+            return
+        }
+
+        assetAmountLabel.text = requestedAmount.assetAmount
+        fiatAmountLabel.text = requestedAmount.fiatAmount
     }
 }
 
@@ -63,7 +84,11 @@ extension VoteCardView: CardStackable {
     func didBecomeTopView() {}
 
     func prepareForReuse() {
-        title.text = nil
+        transform = .identity
+        summaryLabel.text = nil
+        assetAmountLabel.text = nil
+        fiatAmountLabel.text = nil
+        requestedView.isHidden = false
     }
 }
 
@@ -74,12 +99,52 @@ private extension VoteCardView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(title)
-        title.snp.makeConstraints { make in
-            make.height.equalTo(32)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(16)
+        let content = UIView.vStack(
+            spacing: Constants.contentSpacing,
+            [
+                summaryLabel,
+                FlexibleSpaceView(),
+                requestedView
+            ]
+        )
+
+        addSubview(content)
+        content.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview().inset(Constants.contentInset)
         }
+
+        addSubview(readMoreButton)
+        readMoreButton.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview().inset(Constants.contentInset)
+            make.top.equalTo(content.snp.bottom).offset(Constants.buttonTopOffset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+    }
+}
+
+// MARK: ViewModel
+
+extension VoteCardView {
+    struct ViewModel {
+        struct RequestedAmount {
+            let assetAmount: String
+            let fiatAmount: String
+        }
+
+        let summary: String
+        let requestedAmount: RequestedAmount?
+        let gradientModel: GradientBannerModel
+    }
+}
+
+// MARK: Constants
+
+private extension VoteCardView {
+    enum Constants {
+        static let contentInset: CGFloat = 24
+        static let contentSpacing: CGFloat = 12
+        static let requestedViewInnerSpacing: CGFloat = 8
+        static let buttonTopOffset: CGFloat = 16
     }
 }
 
@@ -87,9 +152,7 @@ enum VoteResult {
     case aye
     case nay
     case abstain
-}
 
-extension VoteResult {
     var dismissalDirection: CardsZStack.DismissalDirection {
         switch self {
         case .aye:

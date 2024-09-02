@@ -13,7 +13,6 @@ final class CardsZStack: UIView {
         case top
     }
 
-    private let stackScale: CGFloat = 0.9
     private let maxCardsAlive: Int
     private var stackedViews: [VoteCardView] = []
     private var emptyStateView: UIView?
@@ -31,8 +30,7 @@ final class CardsZStack: UIView {
     }
 
     /// Should be called after adding batch of cards, to inform top card that it's presented and became top
-    /// `cardsStack.notifyTopView` is called automatically on top card in stack after dismissal animation, .i.e.
-    /// to initialise video playback
+    /// `cardsStack.notifyTopView` is called automatically on top card in stack after dismissal animation
     func notifyTopView() {
         guard let topView = stackedViews.last else {
             showEmptyState()
@@ -47,8 +45,6 @@ final class CardsZStack: UIView {
     }
 
     func addView(_ view: VoteCardView) {
-        view.alpha = 0
-
         stackedViews.insert(view, at: 0)
 
         if let emptyStateView {
@@ -66,44 +62,15 @@ final class CardsZStack: UIView {
             hideEmptyState()
         }
 
-        guard stackedViews.count > 1 else {
-            view.alpha = 1
-
-            return
-        }
-
-        let prevIndex = stackedViews.endIndex - 1
-
-        let scale = NSDecimalNumber(
-            decimal: pow(Decimal(stackScale), prevIndex)
-        ).doubleValue
-
-        let gap: CGFloat = 8
-
-        let baseHeight = stackedViews[prevIndex].bounds.height
-        let heightDelta = (baseHeight - (baseHeight * scale)) / 2
-        let translationY = heightDelta + (gap * CGFloat(prevIndex))
-
-        let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
-        let translationTransform = CGAffineTransform(translationX: 0, y: translationY)
-
-        view.transform = scaleTransform
-
-        UIView.animate(
-            withDuration: 0.35,
-            delay: 0.0,
-            usingSpringWithDamping: 0.75,
-            initialSpringVelocity: 0.6,
-            options: [.curveEaseInOut]
-        ) {
-            view.alpha = 1
-            view.transform = scaleTransform.concatenating(translationTransform)
-        }
+        animateCardAdd(view)
     }
 
     func addPanGestureRecognizer(for view: UIView) {
         view.addGestureRecognizer(
-            UIPanGestureRecognizer(target: self, action: #selector(actionPan(gestureRecognizer:)))
+            UIPanGestureRecognizer(
+                target: self,
+                action: #selector(actionPan(gestureRecognizer:))
+            )
         )
     }
 
@@ -114,30 +81,25 @@ final class CardsZStack: UIView {
 
         let translation = gestureRecognizer.translation(in: view)
 
-        if gestureRecognizer.state == .began {
-            // When the drag is first recognized, you can get the starting coordinates here
-        }
-
         if gestureRecognizer.state == .changed {
-            view.transform = CGAffineTransform(translationX: translation.x, y: translation.y)
+            view.transform = CGAffineTransform(
+                translationX: translation.x,
+                y: translation.y
+            )
         }
         if gestureRecognizer.state == .ended {
-            let leftMostX = -(UIScreen.main.bounds.width / 2.3)
-            let rightMostX = UIScreen.main.bounds.width / 2.3
-            let topMostY = -(UIScreen.main.bounds.height / 2.3)
-
-            if translation.y <= topMostY {
+            if translation.y <= Constants.topMostY {
                 dismissTopCard(to: .top)
-            } else if translation.x <= leftMostX {
+            } else if translation.x <= Constants.leftMostX {
                 dismissTopCard(to: .left)
-            } else if translation.x >= rightMostX {
+            } else if translation.x >= Constants.rightMostX {
                 dismissTopCard(to: .right)
             } else {
                 UIView.animate(
-                    withDuration: 0.35,
-                    delay: 0.0,
-                    usingSpringWithDamping: 0.75,
-                    initialSpringVelocity: 0.6,
+                    withDuration: Constants.CardIdentityAnimation.duration,
+                    delay: Constants.CardIdentityAnimation.delay,
+                    usingSpringWithDamping: Constants.CardIdentityAnimation.springDamping,
+                    initialSpringVelocity: Constants.CardIdentityAnimation.springVelocity,
                     options: [.curveEaseInOut]
                 ) {
                     view.transform = .identity
@@ -164,34 +126,17 @@ final class CardsZStack: UIView {
             return
         }
 
-        let translation: (x: CGFloat, y: CGFloat) = switch direction {
-        case .left: (-1.5 * bounds.width, 0)
-        case .right: (1.5 * bounds.width, 0)
-        case .top: (0, -1.5 * bounds.height)
-        }
+        animateCardDismiss(topView, direction: direction) { [weak self] in
+            guard let self else { return }
+            stackedViews.removeLast()
+            enqueueVoteCardView(topView)
+            notifyTopView()
 
-        let rotationDirection: CGFloat = switch direction {
-        case .left: -1
-        case .right: 1
-        case .top: 0
-        }
+            if stackedViews.isEmpty {
+                showEmptyState()
+            }
 
-        UIView.animate(
-            withDuration: 0.35,
-            animations: {
-                topView.transform = CGAffineTransform(rotationAngle: 0.15 * rotationDirection)
-                    .translatedBy(x: translation.x, y: translation.y)
-            }
-        ) { _ in
-            topView.transform = .identity
-            self.stackedViews.removeLast()
-            topView.removeFromSuperview()
-            self.enqueueVoteCardView(topView)
-            self.notifyTopView()
-            if self.stackedViews.isEmpty {
-                self.showEmptyState()
-            }
-            self.manageStack()
+            manageStack()
             completion?()
         }
     }
@@ -216,6 +161,7 @@ private extension CardsZStack {
     }
 
     func enqueueVoteCardView(_ view: VoteCardView) {
+        view.snp.removeConstraints()
         viewPool.append(view)
         view.removeFromSuperview()
     }
@@ -224,40 +170,14 @@ private extension CardsZStack {
         while stackedViews.count < maxCardsAlive, !viewModelsQueue.isEmpty {
             let cardModel = viewModelsQueue.removeFirst()
             let voteCard = dequeueVoteCardView()
-            voteCard.cornerRadius = 16
+            voteCard.cornerRadius = Constants.cardCornerRadius
             voteCard.prepareForReuse()
             voteCard.bind(viewModel: cardModel.viewModel)
 
             addView(voteCard)
         }
 
-        stackedViews.reversed().enumerated().forEach { index, view in
-            let scale = NSDecimalNumber(decimal: pow(Decimal(self.stackScale), index)).doubleValue
-
-            let prevIndex = index > 0
-                ? index - 1
-                : index
-
-            let gap: CGFloat = 8
-
-            let baseHeight = stackedViews[prevIndex].bounds.height
-            let heightDelta = (baseHeight - (baseHeight * scale)) / 2
-            let translationY = heightDelta + (gap * CGFloat(index))
-
-            let scaleTransform = CGAffineTransform(scaleX: scale, y: scale)
-            let translationTransform = CGAffineTransform(translationX: 0, y: translationY)
-            let concatTransform = scaleTransform.concatenating(translationTransform)
-
-            UIView.animate(
-                withDuration: 0.3,
-                delay: 0.0,
-                usingSpringWithDamping: 0.6,
-                initialSpringVelocity: 0.3,
-                options: [.curveEaseInOut]
-            ) {
-                view.transform = concatTransform
-            }
-        }
+        animateStackManage()
     }
 
     func hideEmptyState() {
@@ -267,12 +187,173 @@ private extension CardsZStack {
     func showEmptyState() {
         guard let emptyStateView else { return }
         emptyStateView.isHidden = false
-        UIView.animate(withDuration: 0.2, animations: {
-            emptyStateView.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
-        }, completion: { _ in
-            UIView.animate(withDuration: 0.1) {
-                emptyStateView.transform = .identity
+        UIView.animate(
+            withDuration: Constants.EmptyStateAnimation.startDuration,
+            animations: {
+                emptyStateView.transform = CGAffineTransform(
+                    scaleX: 1.05,
+                    y: 1.05
+                )
+            },
+            completion: { _ in
+                UIView.animate(withDuration: Constants.EmptyStateAnimation.endDuration) {
+                    emptyStateView.transform = .identity
+                }
             }
-        })
+        )
+    }
+}
+
+// MARK: - Animate
+
+private extension CardsZStack {
+    func animateStackManage() {
+        stackedViews.reversed().enumerated().forEach { index, view in
+            let (scale, scaleTransform): (CGFloat, CGAffineTransform) = createScaleTransform(
+                for: index
+            )
+            let translationTransform = createTranslationTransform(
+                cardIndex: index,
+                cardScale: scale,
+                insertLast: false
+            )
+            let finalTransform = scaleTransform.concatenating(translationTransform)
+
+            UIView.animate(
+                withDuration: Constants.StackManagingAnimation.duration,
+                delay: Constants.StackManagingAnimation.delay,
+                usingSpringWithDamping: Constants.StackManagingAnimation.springDamping,
+                initialSpringVelocity: Constants.StackManagingAnimation.springVelocity,
+                options: [.curveEaseInOut]
+            ) {
+                view.transform = finalTransform
+            }
+        }
+    }
+
+    func animateCardAdd(_ cardView: UIView) {
+        let (scale, scaleTransform): (CGFloat, CGAffineTransform) = createScaleTransform(
+            for: stackedViews.endIndex
+        )
+        let translationTransform = createTranslationTransform(
+            cardIndex: stackedViews.endIndex,
+            cardScale: scale,
+            insertLast: true
+        )
+
+        cardView.alpha = 0
+        cardView.transform = scaleTransform
+
+        UIView.animate(
+            withDuration: Constants.CardAddAnimation.duration,
+            delay: Constants.CardAddAnimation.delay,
+            usingSpringWithDamping: Constants.CardAddAnimation.springDamping,
+            initialSpringVelocity: Constants.CardAddAnimation.springVelocity,
+            options: [.curveEaseInOut]
+        ) {
+            cardView.alpha = 1
+            cardView.transform = scaleTransform.concatenating(translationTransform)
+        }
+    }
+
+    func animateCardDismiss(
+        _ topCard: UIView,
+        direction: DismissalDirection,
+        completion: @escaping () -> Void
+    ) {
+        let translation: (x: CGFloat, y: CGFloat) = switch direction {
+        case .left: (-1.5 * bounds.width, 0)
+        case .right: (1.5 * bounds.width, 0)
+        case .top: (0, -1.5 * bounds.height)
+        }
+
+        let rotationDirection: CGFloat = switch direction {
+        case .left: -1
+        case .right: 1
+        case .top: 0
+        }
+
+        UIView.animate(
+            withDuration: 0.35,
+            animations: {
+                topCard.transform = CGAffineTransform(rotationAngle: 0.15 * rotationDirection)
+                    .translatedBy(x: translation.x, y: translation.y)
+            }
+        ) { _ in completion() }
+    }
+
+    func createScaleTransform(
+        for cardIndex: Int
+    ) -> (scale: CGFloat, transform: CGAffineTransform) {
+        let scale = NSDecimalNumber(
+            decimal: pow(Decimal(Constants.stackZScaling), cardIndex)
+        ).doubleValue
+
+        let transform = CGAffineTransform(
+            scaleX: scale,
+            y: scale
+        )
+
+        return (scale, transform)
+    }
+
+    func createTranslationTransform(
+        cardIndex: Int,
+        cardScale: CGFloat,
+        insertLast: Bool
+    ) -> CGAffineTransform {
+        guard let baseHeight = stackedViews.last?.frame.height else {
+            return .identity
+        }
+
+        let prevIndex = cardIndex > 0
+            ? cardIndex - 1
+            : cardIndex
+
+        let heightDelta = (baseHeight - (baseHeight * cardScale)) / 2
+        let translationY = heightDelta + Constants.lowerCardsOffset * CGFloat(insertLast ? prevIndex : cardIndex)
+
+        return CGAffineTransform(
+            translationX: .zero,
+            y: translationY
+        )
+    }
+}
+
+private extension CardsZStack {
+    enum Constants {
+        enum CardIdentityAnimation {
+            static let duration: CGFloat = 0.35
+            static let delay: CGFloat = .zero
+            static let springDamping: CGFloat = 0.75
+            static let springVelocity: CGFloat = 0.6
+        }
+
+        enum CardAddAnimation {
+            static let duration: CGFloat = 0.35
+            static let delay: CGFloat = .zero
+            static let springDamping: CGFloat = 0.75
+            static let springVelocity: CGFloat = 0.6
+        }
+
+        enum StackManagingAnimation {
+            static let duration: CGFloat = 0.3
+            static let delay: CGFloat = .zero
+            static let springDamping: CGFloat = 0.6
+            static let springVelocity: CGFloat = 0.3
+        }
+
+        enum EmptyStateAnimation {
+            static let startDuration: CGFloat = 0.2
+            static let endDuration: CGFloat = 0.1
+        }
+
+        static let cardCornerRadius: CGFloat = 16
+        static let stackZScaling: CGFloat = 0.9
+        static let lowerCardsOffset: CGFloat = 8.0
+        static let screenSizeDivider: CGFloat = 2.3
+        static let topMostY = -(UIScreen.main.bounds.height / Constants.screenSizeDivider)
+        static let leftMostX = -(UIScreen.main.bounds.width / Constants.screenSizeDivider)
+        static let rightMostX = UIScreen.main.bounds.width / Constants.screenSizeDivider
     }
 }
