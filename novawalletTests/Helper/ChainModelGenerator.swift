@@ -326,7 +326,8 @@ enum ChainModelGenerator {
             history: externalApis.history()?.map(generateRemoteExternal(from:)),
             crowdloans: externalApis.crowdloans()?.map(generateRemoteExternal(from:)),
             governance: externalApis.governance()?.map(generateRemoteExternal(from:)),
-            goverananceDelegations: externalApis.governanceDelegations()?.map(generateRemoteExternal(from:))
+            goverananceDelegations: externalApis.governanceDelegations()?.map(generateRemoteExternal(from:)),
+            referendumSummary: externalApis.referendumSummary()?.map(generateRemoteExternal(from:))
         )
     }
 
