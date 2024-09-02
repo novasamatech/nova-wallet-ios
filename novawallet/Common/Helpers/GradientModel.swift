@@ -62,7 +62,7 @@ extension GradientModel {
             locations: [0.0, 1.0]
         )
     }
-    
+
     static var tinderGovBackgroundGradient: GradientModel {
         GradientModel(
             startPoint: .init(x: 0.5, y: 0),

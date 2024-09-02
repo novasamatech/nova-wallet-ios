@@ -47,6 +47,8 @@ final class VoteCardView: RoundedView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
+
+        backgroundColor = .clear
     }
 
     @available(*, unavailable)
@@ -133,7 +135,7 @@ extension VoteCardView {
 
         let summary: String
         let requestedAmount: RequestedAmount?
-        let gradientModel: GradientBannerModel
+        let gradientModel: GradientModel
     }
 }
 

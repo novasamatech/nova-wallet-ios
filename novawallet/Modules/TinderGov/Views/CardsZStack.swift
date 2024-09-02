@@ -224,11 +224,15 @@ private extension CardsZStack {
 
     func createCardView() -> VoteCardView {
         let view = VoteCardView()
-        view.strokeWidth = 2
-        view.strokeColor = R.color.colorContainerBorder()!
+        view.cornerRadius = Constants.cardCornerRadius
+        view.strokeColor = .clear
+
+        view.layer.borderWidth = 1
+        view.layer.borderColor = R.color.colorContainerBorder()?.cgColor
+        view.layer.cornerRadius = Constants.cardCornerRadius
         view.shadowColor = UIColor.black
-        view.shadowOpacity = 0.16
-        view.shadowOffset = CGSize(width: 6, height: 4)
+        view.shadowOpacity = 0.35
+        view.shadowOffset = CGSize(width: 0, height: 4)
 
         addPanGestureRecognizer(for: view)
 
@@ -245,7 +249,6 @@ private extension CardsZStack {
         while stackedViews.count < maxCardsAlive, !viewModelsQueue.isEmpty {
             let cardModel = viewModelsQueue.removeFirst()
             let voteCard = dequeueVoteCardView()
-            voteCard.cornerRadius = Constants.cardCornerRadius
             voteCard.prepareForReuse()
             voteCard.bind(viewModel: cardModel.viewModel)
 
@@ -277,7 +280,7 @@ private extension CardsZStack {
             }
         )
     }
-    
+
     func addPanGestureRecognizer(for view: UIView) {
         view.addGestureRecognizer(
             UIPanGestureRecognizer(
@@ -286,7 +289,7 @@ private extension CardsZStack {
             )
         )
     }
-    
+
     @objc func actionPan(gestureRecognizer: UIPanGestureRecognizer) {
         guard let view = gestureRecognizer.view else {
             return
@@ -354,7 +357,7 @@ private extension CardsZStack {
 
         static let cardCornerRadius: CGFloat = 16
         static let stackZScaling: CGFloat = 0.9
-        static let lowerCardsOffset: CGFloat = 8.0
+        static let lowerCardsOffset: CGFloat = 10.0
         static let screenSizeDivider: CGFloat = 2.3
         static let topMostY = -(UIScreen.main.bounds.height / Constants.screenSizeDivider)
         static let leftMostX = -(UIScreen.main.bounds.width / Constants.screenSizeDivider)

@@ -5,7 +5,7 @@ import SoraFoundation
 final class TinderGovViewController: UIViewController, ViewHolder {
     typealias RootViewType = TinderGovViewLayout
 
-    let presenter: TinderGovPresenterProtocol
+    let viewModel: TinderGovViewModelProtocol
 
     private lazy var titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldBodyPrimary)
@@ -28,8 +28,8 @@ final class TinderGovViewController: UIViewController, ViewHolder {
         view.text = "7 of 10"
     }
 
-    init(presenter: TinderGovPresenterProtocol) {
-        self.presenter = presenter
+    init(viewModel: TinderGovViewModelProtocol) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -45,8 +45,6 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        presenter.setup()
-
         setupNavigationBar()
         setupActions()
     }
@@ -54,57 +52,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        let cardModels: [VoteCardView.ViewModel] = [
-            .init(
-                // swiftlint:disable:next line_length
-                summary: "The Mythos Foundation and Mythical Games propose a token swap of 1,000,000 DOT for 20,000,000 MYTH tokens to celebrate Mythical Games joining Polkadot, enhancing blockchain gaming and benefiting DOT holders.",
-                requestedAmount: .init(
-                    assetAmount: "1M DOT",
-                    fiatAmount: "$7,42M"
-                ),
-                gradientModel: .tinderGovCell()
-            ),
-            .init(
-                // swiftlint:disable:next line_length
-                summary: "Sovereign Nature proposes DOTphin Event Multipass with WalletConnect integration & dynamic NFTs by Unique Network for Polkadot events, aiming for unified proof of attendance and immersive engagement.",
-                requestedAmount: .init(
-                    assetAmount: "50,000 DOT",
-                    fiatAmount: "$371,000"
-                ),
-                gradientModel: .tinderGovCell()
-            ),
-            .init(
-                // swiftlint:disable:next line_length
-                summary: "Georgi_PS proposes a bounty for technical support in Polkadot. Curator candidates, diverse in background, will review submissions and provide community updates.",
-                requestedAmount: nil,
-                gradientModel: .tinderGovCell()
-            ),
-            .init(
-                // swiftlint:disable:next line_length
-                summary: "The Mythos Foundation and Mythical Games propose a token swap of 1,000,000 DOT for 20,000,000 MYTH tokens to celebrate Mythical Games joining Polkadot, enhancing blockchain gaming and benefiting DOT holders.",
-                requestedAmount: .init(
-                    assetAmount: "1M DOT",
-                    fiatAmount: "$7,42M"
-                ),
-                gradientModel: .tinderGovCell()
-            ),
-            .init(
-                // swiftlint:disable:next line_length
-                summary: "Sovereign Nature proposes DOTphin Event Multipass with WalletConnect integration & dynamic NFTs by Unique Network for Polkadot events, aiming for unified proof of attendance and immersive engagement.",
-                requestedAmount: .init(
-                    assetAmount: "50,000 DOT",
-                    fiatAmount: "$371,000"
-                ),
-                gradientModel: .tinderGovCell()
-            ),
-            .init(
-                // swiftlint:disable:next line_length
-                summary: "Georgi_PS proposes a bounty for technical support in Polkadot. Curator candidates, diverse in background, will review submissions and provide community updates.",
-                requestedAmount: nil,
-                gradientModel: .tinderGovCell()
-            )
-        ]
-
+        let cardModels = viewModel.getCardsModel()
         cardModels.forEach { viewModel in
             rootView.addCard(model: .init(viewModel: viewModel))
         }
@@ -125,7 +73,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionBack() {
-        presenter.actionBack()
+        viewModel.actionBack()
     }
 
     @objc private func actionSettings() {

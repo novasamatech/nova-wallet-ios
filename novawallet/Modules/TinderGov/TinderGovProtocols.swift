@@ -1,8 +1,9 @@
 protocol TinderGovViewProtocol: ControllerBackedProtocol {}
 
-protocol TinderGovPresenterProtocol: AnyObject {
-    func setup()
+protocol TinderGovViewModelProtocol: AnyObject {
+    func bind()
     func actionBack()
+    func getCardsModel() -> [VoteCardView.ViewModel]
 }
 
 protocol TinderGovInteractorInputProtocol: AnyObject {}
