@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class TinderGovPresenter {
     weak var view: TinderGovViewProtocol?
@@ -13,11 +14,13 @@ final class TinderGovPresenter {
     init(
         wireframe: TinderGovWireframeProtocol,
         interactor: TinderGovInteractorInputProtocol,
-        viewModelFactory: TinderGovViewModelFactoryProtocol
+        viewModelFactory: TinderGovViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
         self.interactor = interactor
         self.viewModelFactory = viewModelFactory
+        self.localizationManager = localizationManager
     }
 }
 
@@ -37,15 +40,9 @@ extension TinderGovPresenter: TinderGovPresenterProtocol {
 
 extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
     func didReceive(_ referendums: [ReferendumLocal]) {
-        guard let firstReferendum = referendums.first else {
-            return
-        }
-
         self.referendums = referendums
 
-        updateCardsStackView()
-        updateVotingListView()
-        updateReferendumsCounter(currentReferendumId: firstReferendum.index)
+        updateViews()
     }
 }
 
@@ -65,9 +62,20 @@ private extension TinderGovPresenter {
         updateReferendumsCounter(currentReferendumId: referendumId)
     }
 
+    func updateViews() {
+        guard let firstReferendum = referendums.first else {
+            return
+        }
+
+        updateCardsStackView()
+        updateVotingListView()
+        updateReferendumsCounter(currentReferendumId: firstReferendum.index)
+    }
+
     func updateCardsStackView() {
         let cardViewModels = viewModelFactory.createVoteCardViewModels(
             from: referendums,
+            locale: selectedLocale,
             onVote: { [weak self] voteResult, id in
                 self?.onReferendumVote(voteResult: voteResult, id: id)
             },
@@ -80,18 +88,34 @@ private extension TinderGovPresenter {
     }
 
     func updateVotingListView() {
-        let viewModel = viewModelFactory.createVotingListViewModel(from: votingList)
+        let viewModel = viewModelFactory.createVotingListViewModel(
+            from: votingList,
+            locale: selectedLocale
+        )
         view?.updateVotingList(with: viewModel)
     }
 
     func updateReferendumsCounter(currentReferendumId: ReferendumIdLocal) {
         guard let viewModel = viewModelFactory.createReferendumsCounterViewModel(
             currentReferendumId: currentReferendumId,
-            referendums: referendums
+            referendums: referendums,
+            locale: selectedLocale
         ) else {
             return
         }
 
         view?.updateCardsCounter(with: viewModel)
+    }
+}
+
+// MARK: Localizable
+
+extension TinderGovPresenter: Localizable {
+    func applyLocalization() {
+        guard view?.isSetup == true else {
+            return
+        }
+
+        updateViews()
     }
 }

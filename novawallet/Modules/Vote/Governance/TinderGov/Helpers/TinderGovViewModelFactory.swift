@@ -8,15 +8,20 @@ protocol TinderGovViewModelFactoryProtocol {
 
     func createVoteCardViewModels(
         from referendums: [ReferendumLocal],
+        locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
         onBecomeTop: @escaping (ReferendumIdLocal) -> Void
     ) -> [VoteCardViewModel]
 
-    func createVotingListViewModel(from votingList: [ReferendumIdLocal]) -> VotingListWidgetViewModel
+    func createVotingListViewModel(
+        from votingList: [ReferendumIdLocal],
+        locale: Locale
+    ) -> VotingListWidgetViewModel
 
     func createReferendumsCounterViewModel(
         currentReferendumId: ReferendumIdLocal,
-        referendums: [ReferendumLocal]
+        referendums: [ReferendumLocal],
+        locale: Locale
     ) -> String?
 }
 
@@ -55,6 +60,7 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
 
     func createVoteCardViewModels(
         from referendums: [ReferendumLocal],
+        locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
         onBecomeTop: @escaping (ReferendumIdLocal) -> Void
     ) -> [VoteCardViewModel] {
@@ -64,23 +70,36 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
             return VoteCardViewModel(
                 referendum: referendum,
                 gradient: gradientModel,
+                locale: locale,
                 onVote: onVote,
                 onBecomeTop: onBecomeTop
             )
         }
     }
 
-    func createVotingListViewModel(from votingList: [ReferendumIdLocal]) -> VotingListWidgetViewModel {
-        if votingList.isEmpty {
-            VotingListWidgetViewModel.empty(count: "0", title: "No votings")
+    func createVotingListViewModel(
+        from votingList: [ReferendumIdLocal],
+        locale: Locale
+    ) -> VotingListWidgetViewModel {
+        let languages = locale.rLanguages
+
+        return if votingList.isEmpty {
+            VotingListWidgetViewModel.empty(
+                count: "\(votingList.count)",
+                title: R.string.localizable.votingListWidgetTitleEmpty(preferredLanguages: languages)
+            )
         } else {
-            VotingListWidgetViewModel.votings(count: "\(votingList.count)", title: "Voting list")
+            VotingListWidgetViewModel.votings(
+                count: "\(votingList.count)",
+                title: R.string.localizable.votingListWidgetTitle(preferredLanguages: languages)
+            )
         }
     }
 
     func createReferendumsCounterViewModel(
         currentReferendumId: ReferendumIdLocal,
-        referendums: [ReferendumLocal]
+        referendums: [ReferendumLocal],
+        locale: Locale
     ) -> String? {
         guard let currentIndex = referendums.firstIndex(where: { $0.index == currentReferendumId }) else {
             return nil
@@ -88,7 +107,11 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
 
         let currentNumber = referendums.count - currentIndex
 
-        let counterString = "\(currentNumber) of \(referendums.count)"
+        let counterString = R.string.localizable.commonCounter(
+            currentNumber,
+            referendums.count,
+            preferredLanguages: locale.rLanguages
+        )
 
         return counterString
     }

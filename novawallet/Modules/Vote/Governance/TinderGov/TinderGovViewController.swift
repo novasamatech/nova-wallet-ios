@@ -27,9 +27,13 @@ final class TinderGovViewController: UIViewController, ViewHolder {
         view.textAlignment = .center
     }
 
-    init(presenter: TinderGovPresenterProtocol) {
+    init(
+        presenter: TinderGovPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)

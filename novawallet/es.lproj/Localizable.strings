@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "No sobresuscrito";
 "staking.recommended.hint3" = "Con identidad en cadena";
 "staking.recommended.hint4" = "No penalizado";
-"staking.recommended.validators.counter" = "%@ de %@";
 "staking.recommended.custom.title" = "Elige validadores personalizados";
 "fee.not.yet.loaded.title" = "El cálculo de la comisión está en progreso";
 "fee.not.yet.loaded.message" = "Por favor, espere hasta que se calcule la comisión";
@@ -1731,3 +1730,4 @@
 "gov.vote.conviction.hint.title" = "La convicción se establecerá en 0.1x cuando se Abstenga";
 "cloud.backup.password.confirm.title" = "Confirme la contraseña de respaldo";
 "cloud.backup.password.confirm.details" = "Por favor, ingrese la contraseña que creó en la pantalla anterior";
+"common.counter" = "%d de %d";

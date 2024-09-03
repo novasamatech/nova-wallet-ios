@@ -13,7 +13,7 @@ final class VoteCardView: RoundedView {
         view.textAlignment = .left
     }
 
-    private let requestedView: GenericPairValueView<
+    private lazy var requestedView: GenericPairValueView<
         MultiValueView,
         UILabel
     > = .create { view in
@@ -22,7 +22,11 @@ final class VoteCardView: RoundedView {
 
         view.fView.stackView.alignment = .leading
         view.fView.valueTop.apply(style: .footnoteSecondary)
-        view.fView.valueTop.text = "Requested:"
+
+        view.fView.valueTop.text = R.string.localizable.voteCardRequested(
+            preferredLanguages: viewModel?.locale.rLanguages
+        )
+
         view.fView.valueBottom.apply(style: .title3Primary)
         view.sView.apply(style: .caption1Secondary)
     }
@@ -35,9 +39,11 @@ final class VoteCardView: RoundedView {
         requestedView.sView
     }
 
-    private let readMoreButton: LoadableActionView = .create { view in
+    private lazy var readMoreButton: LoadableActionView = .create { view in
         view.actionButton.applyEnabledStyle(colored: R.color.colorButtonBackgroundSecondary()!)
-        view.actionButton.imageWithTitleView?.title = "Read more"
+        view.actionButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
+            preferredLanguages: viewModel?.locale.rLanguages
+        )
     }
 
     private var viewModel: VoteCardViewModel?

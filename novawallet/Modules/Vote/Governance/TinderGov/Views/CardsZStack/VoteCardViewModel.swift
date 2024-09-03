@@ -1,3 +1,5 @@
+import Foundation
+
 final class VoteCardViewModel {
     struct RequestedAmount {
         let assetAmount: String
@@ -6,6 +8,7 @@ final class VoteCardViewModel {
 
     weak var view: StackCardViewUpdatable?
     let gradient: GradientModel
+    let locale: Locale
 
     private let onVote: (VoteResult, ReferendumIdLocal) -> Void
     private let onBecomeTop: (ReferendumIdLocal) -> Void
@@ -14,11 +17,13 @@ final class VoteCardViewModel {
     init(
         referendum: ReferendumLocal,
         gradient: GradientModel,
+        locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
         onBecomeTop: @escaping (ReferendumIdLocal) -> Void
     ) {
         self.referendum = referendum
         self.gradient = gradient
+        self.locale = locale
         self.onVote = onVote
         self.onBecomeTop = onBecomeTop
     }

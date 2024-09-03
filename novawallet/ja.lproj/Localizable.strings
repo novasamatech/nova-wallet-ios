@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "オーバーサブスクライブされていない";
 "staking.recommended.hint3" = "オンチェーンIDを持っている";
 "staking.recommended.hint4" = "スラッシュされていない";
-"staking.recommended.validators.counter" = "%@ の %@";
 "staking.recommended.custom.title" = "カスタムバリデーターを選択する";
 "fee.not.yet.loaded.title" = "手数料の計算中";
 "fee.not.yet.loaded.message" = "手数料が計算されるまでお待ちください";
@@ -1731,3 +1730,4 @@
 "gov.vote.conviction.hint.title" = "棄権時には信念が0.1xに設定されます";
 "cloud.backup.password.confirm.title" = "バックアップパスワードを確認";
 "cloud.backup.password.confirm.details" = "前の画面で作成したパスワードを入力してください";
+"common.counter" = "%d の %d";

@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "Limit aşmamış";
 "staking.recommended.hint3" = "Çevrimiçi kimliğe sahip";
 "staking.recommended.hint4" = "Ceza almamış";
-"staking.recommended.validators.counter" = "%@ / %@";
 "staking.recommended.custom.title" = "Özel doğrulayıcıları seçin";
 "fee.not.yet.loaded.title" = "Ücret hesaplama işlemi sürüyor";
 "fee.not.yet.loaded.message" = "Lütfen ücret hesaplanana kadar bekleyin";
@@ -1731,3 +1730,4 @@
 "gov.vote.conviction.hint.title" = "Çekinmelerde 0.1x olarak Ayarlanacak";
 "cloud.backup.password.confirm.title" = "Yedekleme parolasını onaylayın";
 "cloud.backup.password.confirm.details" = "Lütfen önceki ekranda oluşturduğunuz parolayı girin";
+"common.counter" = "%d / %d";
