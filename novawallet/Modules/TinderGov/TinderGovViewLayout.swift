@@ -52,7 +52,6 @@ final class TinderGovViewLayout: UIView {
         super.init(frame: frame)
 
         setupLayout()
-        votingListWidget.bind(with: .empty(count: "0", title: "No votings"))
     }
 
     @available(*, unavailable)
