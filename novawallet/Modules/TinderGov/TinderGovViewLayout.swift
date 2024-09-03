@@ -12,6 +12,8 @@ final class TinderGovViewLayout: UIView {
         view.endPoint = gradient.endPoint
     }
 
+    let votingListWidget = VotingListWidget()
+
     let cardsStack = CardsZStack()
 
     let ayeButton: RoundedButton = {
@@ -48,6 +50,7 @@ final class TinderGovViewLayout: UIView {
         super.init(frame: frame)
 
         setupLayout()
+        votingListWidget.bind(with: .empty(count: "0", title: "No votings"))
     }
 
     @available(*, unavailable)
@@ -63,6 +66,12 @@ private extension TinderGovViewLayout {
         addSubview(gradientBackgroundView)
         gradientBackgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+
+        addSubview(votingListWidget)
+        votingListWidget.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide).inset(16)
+            make.centerX.equalToSuperview()
         }
 
         addSubview(abstainButton)
@@ -94,7 +103,7 @@ private extension TinderGovViewLayout {
         addSubview(cardsStack)
         cardsStack.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(safeAreaLayoutGuide).inset(68)
+            make.top.equalTo(votingListWidget.snp.bottom).offset(20)
             make.bottom.equalTo(nayButton.snp.top).offset(-54)
         }
     }

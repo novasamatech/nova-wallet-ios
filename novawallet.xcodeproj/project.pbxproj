@@ -909,6 +909,7 @@
 		2D350DA02C38335300F34E25 /* ChainFilterStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */; };
 		2D367C0C2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */; };
 		2D389B082C8616F900256C7B /* TinderGovGradientFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */; };
+		2D389B0C2C8631FD00256C7B /* VotingListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
@@ -5924,6 +5925,7 @@
 		2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategy.swift; sourceTree = "<group>"; };
 		2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceVoteValidatingHandlers.swift; sourceTree = "<group>"; };
 		2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovGradientFactory.swift; sourceTree = "<group>"; };
+		2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingListWidget.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
@@ -12227,6 +12229,7 @@
 			children = (
 				2DA85A862C81170700591900 /* CardsZStack.swift */,
 				2DA85A882C81172F00591900 /* VoteCardView.swift */,
+				2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -26500,6 +26503,7 @@
 				7719018C2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift in Sources */,
 				85547F698B551ACD387D84E2 /* SelectValidatorsStartViewController.swift in Sources */,
 				845B07F129159AE7005785D3 /* DemocracyVoting.swift in Sources */,
+				2D389B0C2C8631FD00256C7B /* VotingListWidget.swift in Sources */,
 				41B29C1C9239BB2DCB7903A7 /* SelectValidatorsStartViewFactory.swift in Sources */,
 				25381484F16FB930B8A90CE3 /* SelectValidatorsConfirmProtocols.swift in Sources */,
 				B02EAF42C91E069FE6872EE0 /* SelectValidatorsConfirmWireframe.swift in Sources */,
