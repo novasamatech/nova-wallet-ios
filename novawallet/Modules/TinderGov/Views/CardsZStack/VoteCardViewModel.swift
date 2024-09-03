@@ -7,14 +7,20 @@ final class VoteCardViewModel {
     weak var view: StackCardViewUpdatable?
     let gradient: GradientModel
 
+    private let onVote: (VoteResult, ReferendumIdLocal) -> Void
+    private let onBecomeTop: (ReferendumIdLocal) -> Void
     private let referendum: ReferendumLocal
 
     init(
         referendum: ReferendumLocal,
-        gradient: GradientModel
+        gradient: GradientModel,
+        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
+        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
     ) {
         self.referendum = referendum
         self.gradient = gradient
+        self.onVote = onVote
+        self.onBecomeTop = onBecomeTop
     }
 
     func onAddToStack() {
@@ -30,6 +36,16 @@ final class VoteCardViewModel {
                 fiatAmount: "$7,42M"
             ))
         )
+    }
+
+    func onPop(direction: CardsZStack.DismissalDirection) {
+        let voteResult = VoteResult(from: direction)
+
+        onVote(voteResult, referendum.index)
+    }
+
+    func onBecomeTopView() {
+        onBecomeTop(referendum.index)
     }
 
     func onSetup() {

@@ -1,6 +1,7 @@
 protocol TinderGovViewProtocol: ControllerBackedProtocol {
     func updateCards(with newModels: [VoteCardViewModel])
-    func updateVotingList()
+    func updateVotingList(with viewModel: VotingListWidgetViewModel)
+    func updateCardsCounter(with text: String)
 }
 
 protocol TinderGovViewModelProtocol: AnyObject {

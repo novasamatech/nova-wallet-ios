@@ -70,10 +70,16 @@ final class VoteCardView: RoundedView {
 }
 
 extension VoteCardView: CardStackable {
-    func didBecomeTopView() {}
+    func didBecomeTopView() {
+        viewModel?.onBecomeTopView()
+    }
 
     func didAddToStack() {
         viewModel?.onAddToStack()
+    }
+
+    func didPopFromStack(direction: CardsZStack.DismissalDirection) {
+        viewModel?.onPop(direction: direction)
     }
 
     func prepareForReuse() {
@@ -172,6 +178,17 @@ enum VoteResult {
             .left
         case .abstain:
             .top
+        }
+    }
+
+    init(from dismissalDirection: CardsZStack.DismissalDirection) {
+        switch dismissalDirection {
+        case .right:
+            self = .aye
+        case .left:
+            self = .nay
+        case .top:
+            self = .abstain
         }
     }
 }

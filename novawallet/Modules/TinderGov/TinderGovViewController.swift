@@ -25,7 +25,6 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     let titleReferendaCounterLabel: UILabel = .create { view in
         view.apply(style: .footnoteSecondary)
         view.textAlignment = .center
-        view.text = "7 of 10"
     }
 
     init(viewModel: TinderGovViewModelProtocol) {
@@ -87,7 +86,13 @@ extension TinderGovViewController: TinderGovViewProtocol {
         rootView.finishedAddingCards()
     }
 
-    func updateVotingList() {}
+    func updateVotingList(with viewModel: VotingListWidgetViewModel) {
+        rootView.votingListWidget.bind(with: viewModel)
+    }
+
+    func updateCardsCounter(with text: String) {
+        titleReferendaCounterLabel.text = text
+    }
 }
 
 // MARK: Private

@@ -6,7 +6,18 @@ protocol TinderGovViewModelFactoryProtocol {
         locale: Locale
     ) -> ReferendumsSection?
 
-    func createVoteCardViewModels(from referendums: [ReferendumLocal]) -> [VoteCardViewModel]
+    func createVoteCardViewModels(
+        from referendums: [ReferendumLocal],
+        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
+        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
+    ) -> [VoteCardViewModel]
+
+    func createVotingListViewModel(from votingList: [ReferendumIdLocal]) -> VotingListWidgetViewModel
+
+    func createReferendumsCounterViewModel(
+        currentReferendumId: ReferendumIdLocal,
+        referendums: [ReferendumLocal]
+    ) -> String?
 }
 
 struct TinderGovViewModelFactory {
@@ -42,14 +53,43 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
         return section
     }
 
-    func createVoteCardViewModels(from referendums: [ReferendumLocal]) -> [VoteCardViewModel] {
+    func createVoteCardViewModels(
+        from referendums: [ReferendumLocal],
+        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
+        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
+    ) -> [VoteCardViewModel] {
         referendums.enumerated().map { index, referendum in
             let gradientModel = cardGradientFactory.createCardGratient(for: index)
 
             return VoteCardViewModel(
                 referendum: referendum,
-                gradient: gradientModel
+                gradient: gradientModel,
+                onVote: onVote,
+                onBecomeTop: onBecomeTop
             )
         }
+    }
+
+    func createVotingListViewModel(from votingList: [ReferendumIdLocal]) -> VotingListWidgetViewModel {
+        if votingList.isEmpty {
+            VotingListWidgetViewModel.empty(count: "0", title: "No votings")
+        } else {
+            VotingListWidgetViewModel.votings(count: "\(votingList.count)", title: "Voting list")
+        }
+    }
+
+    func createReferendumsCounterViewModel(
+        currentReferendumId: ReferendumIdLocal,
+        referendums: [ReferendumLocal]
+    ) -> String? {
+        guard let currentIndex = referendums.firstIndex(where: { $0.index == currentReferendumId }) else {
+            return nil
+        }
+
+        let currentNumber = referendums.count - currentIndex
+
+        let counterString = "\(currentNumber) of \(referendums.count)"
+
+        return counterString
     }
 }

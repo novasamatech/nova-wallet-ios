@@ -7,6 +7,7 @@ final class TinderGovViewModel {
 
     private let referendums: [ReferendumLocal]
     private let viewModelFactory: TinderGovViewModelFactoryProtocol
+    private var votingList: [ReferendumIdLocal] = []
 
     init(
         wireframe: TinderGovWireframeProtocol,
@@ -21,15 +22,65 @@ final class TinderGovViewModel {
 
 extension TinderGovViewModel: TinderGovViewModelProtocol {
     func bind(with view: TinderGovViewProtocol) {
+        guard let lastReferendum = referendums.last else {
+            return
+        }
+
         self.view = view
 
-        let cardViewModels = viewModelFactory.createVoteCardViewModels(from: referendums)
-
-        view.updateCards(with: cardViewModels)
-        view.updateVotingList()
+        updateCardsStackView()
+        updateVotingListView()
+        updateReferendumsCounter(currentReferendumId: lastReferendum.index)
     }
 
     func actionBack() {
         wireframe.back(from: view)
+    }
+}
+
+// MARK: - Private
+
+private extension TinderGovViewModel {
+    func onReferendumVote(
+        voteResult _: VoteResult,
+        id: ReferendumIdLocal
+    ) {
+        votingList.append(id)
+
+        updateVotingListView()
+    }
+
+    func onTopCardAppear(referendumId: ReferendumIdLocal) {
+        updateReferendumsCounter(currentReferendumId: referendumId)
+    }
+
+    func updateCardsStackView() {
+        let cardViewModels = viewModelFactory.createVoteCardViewModels(
+            from: referendums,
+            onVote: { [weak self] voteResult, id in
+                self?.onReferendumVote(voteResult: voteResult, id: id)
+            },
+            onBecomeTop: { [weak self] id in
+                self?.onTopCardAppear(referendumId: id)
+            }
+        )
+
+        view?.updateCards(with: cardViewModels)
+    }
+
+    func updateVotingListView() {
+        let viewModel = viewModelFactory.createVotingListViewModel(from: votingList)
+        view?.updateVotingList(with: viewModel)
+    }
+
+    func updateReferendumsCounter(currentReferendumId: ReferendumIdLocal) {
+        guard let viewModel = viewModelFactory.createReferendumsCounterViewModel(
+            currentReferendumId: currentReferendumId,
+            referendums: referendums
+        ) else {
+            return
+        }
+
+        view?.updateCardsCounter(with: viewModel)
     }
 }

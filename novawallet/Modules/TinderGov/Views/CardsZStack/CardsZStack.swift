@@ -4,6 +4,7 @@ import SnapKit
 protocol CardStackable: AnyObject {
     func didBecomeTopView()
     func didAddToStack()
+    func didPopFromStack(direction: CardsZStack.DismissalDirection)
     func prepareForReuse()
 }
 
@@ -86,6 +87,9 @@ final class CardsZStack: UIView {
 
         animateCardDismiss(topView, direction: direction) { [weak self] in
             guard let self else { return }
+
+            topView.didPopFromStack(direction: direction)
+
             stackedViews.removeLast()
             enqueueVoteCardView(topView)
             notifyTopView()
