@@ -71,7 +71,7 @@ private extension TinderGovViewLayout {
 
         addSubview(votingListWidget)
         votingListWidget.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(16)
+            make.top.equalTo(safeAreaLayoutGuide).inset(Constants.votingListWidgetTopInset)
             make.centerX.equalToSuperview()
         }
 
@@ -86,14 +86,14 @@ private extension TinderGovViewLayout {
         nayButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.bigButtonSize)
             make.leading.greaterThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(abstainButton.snp.leading).offset(-40)
+            make.trailing.equalTo(abstainButton.snp.leading).offset(Constants.nayButtonTrailingOffset)
             make.centerY.equalTo(abstainButton.snp.centerY)
         }
 
         addSubview(ayeButton)
         ayeButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.bigButtonSize)
-            make.leading.equalTo(abstainButton.snp.trailing).offset(40)
+            make.leading.equalTo(abstainButton.snp.trailing).offset(Constants.ayeButtonLeadingOffset)
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalTo(abstainButton.snp.centerY)
         }
@@ -104,8 +104,8 @@ private extension TinderGovViewLayout {
         addSubview(cardsStack)
         cardsStack.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(votingListWidget.snp.bottom).offset(20)
-            make.bottom.equalTo(nayButton.snp.top).offset(-54)
+            make.top.equalTo(votingListWidget.snp.bottom).inset(Constants.cardsStackTopInset)
+            make.bottom.equalTo(nayButton.snp.top).inset(Constants.cardsStackBottomInset)
         }
 
         cardsStack.setEmptyStateView(emptyStateView)
@@ -132,6 +132,11 @@ extension TinderGovViewLayout {
 
 extension TinderGovViewLayout {
     enum Constants {
+        static let cardsStackBottomInset: CGFloat = -54
+        static let cardsStackTopInset: CGFloat = -20
+        static let ayeButtonLeadingOffset: CGFloat = 40
+        static let nayButtonTrailingOffset: CGFloat = -40
+        static let votingListWidgetTopInset: CGFloat = 16
         static let bigButtonSize: CGFloat = 64
         static let smallButtonSize: CGFloat = 56
         static let buttonsBottomInset: CGFloat = 20

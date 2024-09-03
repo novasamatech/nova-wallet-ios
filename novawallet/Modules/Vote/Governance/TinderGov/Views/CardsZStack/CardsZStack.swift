@@ -174,12 +174,15 @@ private extension CardsZStack {
         }
 
         UIView.animate(
-            withDuration: 0.35,
+            withDuration: Constants.CardDismissAnimation.duration,
             animations: {
                 topCard.transform = CGAffineTransform(rotationAngle: 0.15 * rotationDirection)
                     .translatedBy(x: translation.x, y: translation.y)
+            },
+            completion: { _ in
+                completion()
             }
-        ) { _ in completion() }
+        )
     }
 
     func createScaleTransform(
@@ -265,7 +268,10 @@ private extension CardsZStack {
     }
 
     func hideEmptyState() {
-        emptyStateView?.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        emptyStateView?.transform = CGAffineTransform(
+            scaleX: Constants.emptyStateHideScaling,
+            y: Constants.emptyStateHideScaling
+        )
     }
 
     func showEmptyState() {
@@ -275,8 +281,8 @@ private extension CardsZStack {
             withDuration: Constants.EmptyStateAnimation.startDuration,
             animations: {
                 emptyStateView.transform = CGAffineTransform(
-                    scaleX: 1.05,
-                    y: 1.05
+                    scaleX: Constants.emptyStateShowScaling,
+                    y: Constants.emptyStateShowScaling
                 )
             },
             completion: { _ in
@@ -342,6 +348,10 @@ private extension CardsZStack {
             static let springVelocity: CGFloat = 0.6
         }
 
+        enum CardDismissAnimation {
+            static let duration: CGFloat = 0.35
+        }
+
         enum CardAddAnimation {
             static let duration: CGFloat = 0.35
             static let delay: CGFloat = .zero
@@ -361,6 +371,8 @@ private extension CardsZStack {
             static let endDuration: CGFloat = 0.1
         }
 
+        static let emptyStateHideScaling: CGFloat = 0.8
+        static let emptyStateShowScaling: CGFloat = 1.05
         static let cardCornerRadius: CGFloat = 16
         static let stackZScaling: CGFloat = 0.9
         static let lowerCardsOffset: CGFloat = 10.0
