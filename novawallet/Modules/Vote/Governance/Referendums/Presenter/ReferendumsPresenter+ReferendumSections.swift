@@ -47,10 +47,14 @@ extension ReferendumsPresenter {
         guard supportsTinderGov == true else {
             return nil
         }
+        
+        let filter = TinderGovReferendumsFilter(
+            referendums: referendums,
+            accountVotes: accountVotes
+        )
 
         return tinderGovViewModelFactory.createTinderGovReferendumsSection(
-            for: referendums,
-            accountVotes: accountVotes,
+            using: filter,
             locale: selectedLocale
         )
     }

@@ -913,6 +913,7 @@
 		2D389B0E2C86E94A00256C7B /* TinderGovEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0D2C86E94A00256C7B /* TinderGovEmptyStateView.swift */; };
 		2D389B102C86FEFB00256C7B /* StackCardUpdatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0F2C86FEFB00256C7B /* StackCardUpdatable.swift */; };
 		2D389B132C86FF7300256C7B /* VoteCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */; };
+		2D389B152C87036100256C7B /* TinderGovReferendumsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B142C87036100256C7B /* TinderGovReferendumsFilter.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
@@ -5932,6 +5933,7 @@
 		2D389B0D2C86E94A00256C7B /* TinderGovEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovEmptyStateView.swift; sourceTree = "<group>"; };
 		2D389B0F2C86FEFB00256C7B /* StackCardUpdatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackCardUpdatable.swift; sourceTree = "<group>"; };
 		2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardViewModel.swift; sourceTree = "<group>"; };
+		2D389B142C87036100256C7B /* TinderGovReferendumsFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovReferendumsFilter.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
@@ -11878,6 +11880,7 @@
 				F6AB6A7632DAA329CD5E4F8B /* TinderGovViewLayout.swift */,
 				C18417408E26CB3B36E57B5A /* TinderGovViewFactory.swift */,
 				2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */,
+				2D389B142C87036100256C7B /* TinderGovReferendumsFilter.swift */,
 			);
 			path = TinderGov;
 			sourceTree = "<group>";
@@ -25342,6 +25345,7 @@
 				0C495B992B452B5300B8D339 /* ProxyResolution.swift in Sources */,
 				84ED6BE6286995F400B3C558 /* TransferCrossChainConfirmPresenter.swift in Sources */,
 				84EBFCE7285E7A7C0006327E /* XcmMessage.swift in Sources */,
+				2D389B152C87036100256C7B /* TinderGovReferendumsFilter.swift in Sources */,
 				8424DB0B26B8466A008C834F /* ValidatorOperationFactoryProtocol.swift in Sources */,
 				848FFE6625E6742400652AA5 /* EraValidatorService.swift in Sources */,
 				772AD8E82AC5E30000B0C41A /* StakingBaseErrorPresentable.swift in Sources */,
