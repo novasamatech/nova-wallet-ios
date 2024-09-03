@@ -1,33 +1,35 @@
 import Foundation
 
 final class TinderGovViewModel {
-    weak var view: TinderGovViewProtocol?
     let wireframe: TinderGovWireframeProtocol
 
-    private let referendums: [ReferendumLocal] = []
-    private let cardGradientFactory = TinderGovGradientFactory()
+    private weak var view: TinderGovViewProtocol?
 
-    init(wireframe: TinderGovWireframeProtocol) {
+    private let referendums: [ReferendumLocal]
+    private let viewModelFactory: TinderGovViewModelFactoryProtocol
+
+    init(
+        wireframe: TinderGovWireframeProtocol,
+        viewModelFactory: TinderGovViewModelFactoryProtocol,
+        referendums: [ReferendumLocal]
+    ) {
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
+        self.referendums = referendums
     }
 }
 
 extension TinderGovViewModel: TinderGovViewModelProtocol {
-    func bind() {}
+    func bind(with view: TinderGovViewProtocol) {
+        self.view = view
+
+        let cardViewModels = viewModelFactory.createVoteCardViewModels(from: referendums)
+
+        view.updateCards(with: cardViewModels)
+        view.updateVotingList()
+    }
 
     func actionBack() {
         wireframe.back(from: view)
-    }
-
-    // TODO: Change to binding model
-    func getCardsModel() -> [VoteCardViewModel] {
-        (0 ..< 10).map { index in
-            let gradientModel = cardGradientFactory.createCardGratient(for: index)
-
-            return VoteCardViewModel(
-                referendum: .init(index: 0, state: .executed, proposer: .empty),
-                gradient: gradientModel
-            )
-        }
     }
 }

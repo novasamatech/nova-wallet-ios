@@ -52,12 +52,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        let cardModels = viewModel.getCardsModel()
-        cardModels.forEach { viewModel in
-            rootView.addCard(model: viewModel)
-        }
-
-        rootView.finishedAddingCards()
+        viewModel.bind(with: self)
     }
 
     @objc private func actionVoteNay() {
@@ -83,7 +78,17 @@ final class TinderGovViewController: UIViewController, ViewHolder {
 
 // MARK: TinderGovViewProtocol
 
-extension TinderGovViewController: TinderGovViewProtocol {}
+extension TinderGovViewController: TinderGovViewProtocol {
+    func updateCards(with newModels: [VoteCardViewModel]) {
+        newModels.forEach { viewModel in
+            rootView.addCard(model: viewModel)
+        }
+
+        rootView.finishedAddingCards()
+    }
+
+    func updateVotingList() {}
+}
 
 // MARK: Private
 

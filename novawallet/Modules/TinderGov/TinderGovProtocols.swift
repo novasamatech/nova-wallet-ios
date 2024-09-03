@@ -1,11 +1,11 @@
-
-
-protocol TinderGovViewProtocol: ControllerBackedProtocol {}
+protocol TinderGovViewProtocol: ControllerBackedProtocol {
+    func updateCards(with newModels: [VoteCardViewModel])
+    func updateVotingList()
+}
 
 protocol TinderGovViewModelProtocol: AnyObject {
-    func bind()
+    func bind(with view: TinderGovViewProtocol)
     func actionBack()
-    func getCardsModel() -> [VoteCardViewModel]
 }
 
 protocol TinderGovInteractorInputProtocol: AnyObject {}

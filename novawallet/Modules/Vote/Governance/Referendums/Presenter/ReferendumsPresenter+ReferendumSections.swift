@@ -47,7 +47,7 @@ extension ReferendumsPresenter {
         guard supportsTinderGov == true else {
             return nil
         }
-        
+
         let filter = TinderGovReferendumsFilter(
             referendums: referendums,
             accountVotes: accountVotes

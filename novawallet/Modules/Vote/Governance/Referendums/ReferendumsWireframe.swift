@@ -29,8 +29,11 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showTinderGov(from view: ControllerBackedProtocol?) {
-        guard let tinderGovView = TinderGovViewFactory.createView() else {
+    func showTinderGov(
+        from view: ControllerBackedProtocol?,
+        referendums: [ReferendumLocal]
+    ) {
+        guard let tinderGovView = TinderGovViewFactory.createView(with: referendums) else {
             return
         }
 

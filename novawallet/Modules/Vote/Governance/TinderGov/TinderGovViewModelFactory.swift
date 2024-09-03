@@ -5,9 +5,15 @@ protocol TinderGovViewModelFactoryProtocol {
         using filter: TinderGovReferendumsFilter,
         locale: Locale
     ) -> ReferendumsSection?
+
+    func createVoteCardViewModels(from referendums: [ReferendumLocal]) -> [VoteCardViewModel]
 }
 
-struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
+struct TinderGovViewModelFactory {
+    private let cardGradientFactory = TinderGovGradientFactory()
+}
+
+extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
         using filter: TinderGovReferendumsFilter,
         locale: Locale
@@ -34,5 +40,16 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
         }()
 
         return section
+    }
+
+    func createVoteCardViewModels(from referendums: [ReferendumLocal]) -> [VoteCardViewModel] {
+        referendums.enumerated().map { index, referendum in
+            let gradientModel = cardGradientFactory.createCardGratient(for: index)
+
+            return VoteCardViewModel(
+                referendum: referendum,
+                gradient: gradientModel
+            )
+        }
     }
 }

@@ -53,7 +53,10 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         governanceType: GovernanceType?
     )
 
-    func showTinderGov(from view: ControllerBackedProtocol?)
+    func showTinderGov(
+        from view: ControllerBackedProtocol?,
+        referendums: [ReferendumLocal]
+    )
 
     func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)
 

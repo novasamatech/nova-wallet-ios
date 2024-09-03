@@ -1,7 +1,7 @@
 struct TinderGovReferendumsFilter {
     let referendums: [ReferendumLocal]
     let accountVotes: ReferendumAccountVotingDistribution?
-    
+
     func callAsFunction() -> [ReferendumLocal] {
         referendums.filter {
             guard let trackId = $0.trackId else {
