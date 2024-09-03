@@ -22,7 +22,7 @@ final class TinderGovViewModel {
 
 extension TinderGovViewModel: TinderGovViewModelProtocol {
     func bind(with view: TinderGovViewProtocol) {
-        guard let lastReferendum = referendums.last else {
+        guard let firstReferendum = referendums.last else {
             return
         }
 
@@ -30,7 +30,7 @@ extension TinderGovViewModel: TinderGovViewModelProtocol {
 
         updateCardsStackView()
         updateVotingListView()
-        updateReferendumsCounter(currentReferendumId: lastReferendum.index)
+        updateReferendumsCounter(currentReferendumId: firstReferendum.index)
     }
 
     func actionBack() {
