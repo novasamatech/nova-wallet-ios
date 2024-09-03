@@ -117,7 +117,7 @@ private extension TinderGovViewLayout {
 
 extension TinderGovViewLayout {
     func addCard(
-        model: VoteCardModel
+        model: VoteCardViewModel
     ) {
         cardsStack.addCard(
             model: model

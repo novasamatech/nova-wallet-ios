@@ -54,7 +54,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
 
         let cardModels = viewModel.getCardsModel()
         cardModels.forEach { viewModel in
-            rootView.addCard(model: .init(viewModel: viewModel))
+            rootView.addCard(model: viewModel)
         }
 
         rootView.finishedAddingCards()

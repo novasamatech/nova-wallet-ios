@@ -2,10 +2,6 @@ import SnapKit
 import UIKit
 import SoraUI
 
-struct VoteCardModel {
-    let viewModel: VoteCardView.ViewModel
-}
-
 final class VoteCardView: RoundedView {
     private let gradientView: RoundedGradientBackgroundView = .create { view in
         view.applyCellBackgroundStyle()
@@ -44,6 +40,8 @@ final class VoteCardView: RoundedView {
         view.actionButton.imageWithTitleView?.title = "Read more"
     }
 
+    private var viewModel: VoteCardViewModel?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -63,27 +61,20 @@ final class VoteCardView: RoundedView {
         }
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
+    func bind(with viewModel: VoteCardViewModel) {
+        self.viewModel = viewModel
 
-    func bind(viewModel: ViewModel) {
-        gradientView.bind(model: viewModel.gradientModel)
-
-        summaryLabel.text = viewModel.summary
-
-        guard let requestedAmount = viewModel.requestedAmount else {
-            requestedView.isHidden = true
-            return
-        }
-
-        assetAmountLabel.text = requestedAmount.assetAmount
-        fiatAmountLabel.text = requestedAmount.fiatAmount
+        viewModel.view = self
+        viewModel.onSetup()
     }
 }
 
 extension VoteCardView: CardStackable {
     func didBecomeTopView() {}
+
+    func didAddToStack() {
+        viewModel?.onAddToStack()
+    }
 
     func prepareForReuse() {
         transform = .identity
@@ -91,6 +82,39 @@ extension VoteCardView: CardStackable {
         assetAmountLabel.text = nil
         fiatAmountLabel.text = nil
         requestedView.isHidden = false
+        viewModel = nil
+    }
+}
+
+extension VoteCardView: StackCardViewUpdatable {
+    func setSummary(loadingState: LoadableViewModelState<String>) {
+        switch loadingState {
+        case .loading:
+            // TODO: Implement
+            break
+        case let .cached(value), let .loaded(value):
+            summaryLabel.text = value
+        }
+    }
+
+    func setRequestedAmount(loadingState: LoadableViewModelState<VoteCardViewModel.RequestedAmount?>) {
+        switch loadingState {
+        case .loading:
+            // TODO: Implement
+            break
+        case let .cached(value), let .loaded(value):
+            guard let requestedAmount = value else {
+                requestedView.isHidden = true
+                return
+            }
+
+            assetAmountLabel.text = requestedAmount.assetAmount
+            fiatAmountLabel.text = requestedAmount.fiatAmount
+        }
+    }
+
+    func setBackgroundGradient(model: GradientModel) {
+        gradientView.bind(model: model)
     }
 }
 
@@ -121,21 +145,6 @@ private extension VoteCardView {
             make.top.equalTo(content.snp.bottom).offset(Constants.buttonTopOffset)
             make.height.equalTo(UIConstants.actionHeight)
         }
-    }
-}
-
-// MARK: ViewModel
-
-extension VoteCardView {
-    struct ViewModel {
-        struct RequestedAmount {
-            let assetAmount: String
-            let fiatAmount: String
-        }
-
-        let summary: String
-        let requestedAmount: RequestedAmount?
-        let gradientModel: GradientModel
     }
 }
 

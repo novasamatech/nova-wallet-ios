@@ -3,6 +3,7 @@ import SnapKit
 
 protocol CardStackable: AnyObject {
     func didBecomeTopView()
+    func didAddToStack()
     func prepareForReuse()
 }
 
@@ -17,7 +18,7 @@ final class CardsZStack: UIView {
     private var stackedViews: [VoteCardView] = []
     private var emptyStateView: UIView?
     private var viewPool: [VoteCardView] = []
-    private var viewModelsQueue: [VoteCardModel] = []
+    private var viewModelsQueue: [VoteCardViewModel] = []
 
     init(maxCardsAlive: Int = 3) {
         self.maxCardsAlive = maxCardsAlive
@@ -39,7 +40,7 @@ final class CardsZStack: UIView {
         topView.didBecomeTopView()
     }
 
-    func addCard(model: VoteCardModel) {
+    func addCard(model: VoteCardViewModel) {
         viewModelsQueue.append(model)
         manageStack()
     }
@@ -250,7 +251,8 @@ private extension CardsZStack {
             let cardModel = viewModelsQueue.removeFirst()
             let voteCard = dequeueVoteCardView()
             voteCard.prepareForReuse()
-            voteCard.bind(viewModel: cardModel.viewModel)
+            voteCard.bind(with: cardModel)
+            voteCard.didAddToStack()
 
             addView(voteCard)
         }
