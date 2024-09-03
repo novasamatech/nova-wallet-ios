@@ -46,6 +46,8 @@ final class TinderGovViewLayout: UIView {
         return button
     }()
 
+    let emptyStateView = TinderGovEmptyStateView()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -106,6 +108,8 @@ private extension TinderGovViewLayout {
             make.top.equalTo(votingListWidget.snp.bottom).offset(20)
             make.bottom.equalTo(nayButton.snp.top).offset(-54)
         }
+
+        cardsStack.setEmptyStateView(emptyStateView)
     }
 }
 
