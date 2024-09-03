@@ -22,7 +22,7 @@ final class TinderGovViewModel {
 
 extension TinderGovViewModel: TinderGovViewModelProtocol {
     func bind(with view: TinderGovViewProtocol) {
-        guard let firstReferendum = referendums.last else {
+        guard let firstReferendum = referendums.first else {
             return
         }
 
