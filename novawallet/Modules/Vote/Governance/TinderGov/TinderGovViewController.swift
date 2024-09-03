@@ -5,7 +5,7 @@ import SoraFoundation
 final class TinderGovViewController: UIViewController, ViewHolder {
     typealias RootViewType = TinderGovViewLayout
 
-    let viewModel: TinderGovViewModelProtocol
+    let presenter: TinderGovPresenterProtocol
 
     private lazy var titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldBodyPrimary)
@@ -27,8 +27,8 @@ final class TinderGovViewController: UIViewController, ViewHolder {
         view.textAlignment = .center
     }
 
-    init(viewModel: TinderGovViewModelProtocol) {
-        self.viewModel = viewModel
+    init(presenter: TinderGovPresenterProtocol) {
+        self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -51,7 +51,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        viewModel.bind(with: self)
+        presenter.setup()
     }
 
     @objc private func actionVoteNay() {
@@ -67,7 +67,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionBack() {
-        viewModel.actionBack()
+        presenter.actionBack()
     }
 
     @objc private func actionSettings() {

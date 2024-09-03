@@ -1,36 +1,31 @@
 import Foundation
 
-final class TinderGovViewModel {
+final class TinderGovPresenter {
+    weak var view: TinderGovViewProtocol?
+    let interactor: TinderGovInteractorInputProtocol
     let wireframe: TinderGovWireframeProtocol
 
-    private weak var view: TinderGovViewProtocol?
-
-    private let referendums: [ReferendumLocal]
     private let viewModelFactory: TinderGovViewModelFactoryProtocol
+
+    private var referendums: [ReferendumLocal] = []
     private var votingList: [ReferendumIdLocal] = []
 
     init(
         wireframe: TinderGovWireframeProtocol,
-        viewModelFactory: TinderGovViewModelFactoryProtocol,
-        referendums: [ReferendumLocal]
+        interactor: TinderGovInteractorInputProtocol,
+        viewModelFactory: TinderGovViewModelFactoryProtocol
     ) {
         self.wireframe = wireframe
+        self.interactor = interactor
         self.viewModelFactory = viewModelFactory
-        self.referendums = referendums
     }
 }
 
-extension TinderGovViewModel: TinderGovViewModelProtocol {
-    func bind(with view: TinderGovViewProtocol) {
-        guard let firstReferendum = referendums.first else {
-            return
-        }
+// MARK: TinderGovPresenterProtocol
 
-        self.view = view
-
-        updateCardsStackView()
-        updateVotingListView()
-        updateReferendumsCounter(currentReferendumId: firstReferendum.index)
+extension TinderGovPresenter: TinderGovPresenterProtocol {
+    func setup() {
+        interactor.setup()
     }
 
     func actionBack() {
@@ -38,9 +33,25 @@ extension TinderGovViewModel: TinderGovViewModelProtocol {
     }
 }
 
+// MARK: TinderGovInteractorOutputProtocol
+
+extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
+    func didReceive(_ referendums: [ReferendumLocal]) {
+        guard let firstReferendum = referendums.first else {
+            return
+        }
+
+        self.referendums = referendums
+
+        updateCardsStackView()
+        updateVotingListView()
+        updateReferendumsCounter(currentReferendumId: firstReferendum.index)
+    }
+}
+
 // MARK: - Private
 
-private extension TinderGovViewModel {
+private extension TinderGovPresenter {
     func onReferendumVote(
         voteResult _: VoteResult,
         id: ReferendumIdLocal

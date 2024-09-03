@@ -4,14 +4,18 @@ protocol TinderGovViewProtocol: ControllerBackedProtocol {
     func updateCardsCounter(with text: String)
 }
 
-protocol TinderGovViewModelProtocol: AnyObject {
-    func bind(with view: TinderGovViewProtocol)
+protocol TinderGovPresenterProtocol: AnyObject {
+    func setup()
     func actionBack()
 }
 
-protocol TinderGovInteractorInputProtocol: AnyObject {}
+protocol TinderGovInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol TinderGovInteractorOutputProtocol: AnyObject {}
+protocol TinderGovInteractorOutputProtocol: AnyObject {
+    func didReceive(_ referendums: [ReferendumLocal])
+}
 
 protocol TinderGovWireframeProtocol: AnyObject {
     func back(from view: ControllerBackedProtocol?)
