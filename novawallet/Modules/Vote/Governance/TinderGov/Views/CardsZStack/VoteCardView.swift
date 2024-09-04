@@ -13,6 +13,8 @@ final class VoteCardView: RoundedView {
         view.textAlignment = .left
     }
 
+    var skeletonView: SkrullableView?
+
     private lazy var requestedView: GenericPairValueView<
         MultiValueView,
         UILabel
@@ -48,6 +50,25 @@ final class VoteCardView: RoundedView {
 
     private var viewModel: VoteCardViewModel?
 
+    var isLoading: Bool = false {
+        didSet {
+            isSummaryLoading = isLoading
+            isRequestedAmountLoading = isLoading
+        }
+    }
+
+    private var isSummaryLoading: Bool = false
+    private var isRequestedAmountLoading: Bool = false
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -75,6 +96,8 @@ final class VoteCardView: RoundedView {
     }
 }
 
+// MARK: CardStackable
+
 extension VoteCardView: CardStackable {
     func didBecomeTopView() {
         viewModel?.onBecomeTopView()
@@ -98,35 +121,146 @@ extension VoteCardView: CardStackable {
     }
 }
 
+// MARK: StackCardViewUpdatable
+
 extension VoteCardView: StackCardViewUpdatable {
     func setSummary(loadingState: LoadableViewModelState<String>) {
         switch loadingState {
         case .loading:
-            // TODO: Implement
-            break
+            isSummaryLoading = true
+            startLoadingIfNeeded()
         case let .cached(value), let .loaded(value):
+            isSummaryLoading = false
             summaryLabel.text = value
+
+            stopLoading()
         }
     }
 
     func setRequestedAmount(loadingState: LoadableViewModelState<VoteCardViewModel.RequestedAmount?>) {
         switch loadingState {
         case .loading:
-            // TODO: Implement
-            break
+            isRequestedAmountLoading = true
+            startLoadingIfNeeded()
         case let .cached(value), let .loaded(value):
             guard let requestedAmount = value else {
                 requestedView.isHidden = true
+                isRequestedAmountLoading = false
+                stopLoading()
+
                 return
             }
 
+            isRequestedAmountLoading = false
+
             assetAmountLabel.text = requestedAmount.assetAmount
             fiatAmountLabel.text = requestedAmount.fiatAmount
+
+            stopLoading()
         }
+    }
+
+    func stopLoading() {
+        guard !isRequestedAmountLoading, !isSummaryLoading else {
+            return
+        }
+
+        stopLoadingIfNeeded()
     }
 
     func setBackgroundGradient(model: GradientModel) {
         gradientView.bind(model: model)
+    }
+}
+
+// MARK: SkeletonableView
+
+extension VoteCardView: SkeletonableView {
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let summaryRows = createSummarySkeletons(for: spaceSize)
+        let requestedRows = createRequestedSkeletons(for: spaceSize)
+
+        return summaryRows + requestedRows
+    }
+
+    func createRequestedSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        var lastY = spaceSize.height - 150
+
+        let rows = zip(
+            Constants.skeletonRequestedLineWidths,
+            Constants.skeletonRequestedLineHeights
+        )
+        .enumerated()
+        .map { index, size in
+            let size = CGSize(
+                width: size.0,
+                height: size.1
+            )
+
+            let yPoint = lastY + (index > 0 ? Constants.contentSpacing : 0)
+            lastY = yPoint + size.height
+
+            let offset = CGPoint(
+                x: Constants.contentInset,
+                y: yPoint
+            )
+
+            return SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: offset,
+                size: size
+            )
+        }
+
+        return rows
+    }
+
+    func createSummarySkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let baseWidth = bounds.width - Constants.contentInset * 2
+
+        let rows: [Skeletonable] = (0 ... 2).map { index in
+            let scale = NSDecimalNumber(
+                decimal: pow(Decimal(0.65), index)
+            ).doubleValue
+
+            let size = CGSize(
+                width: baseWidth * scale,
+                height: Constants.skeletonSummaryLineHeight
+            )
+
+            let offset = CGPoint(
+                x: Constants.contentInset,
+                y: Constants.contentInset + (size.height + Constants.contentSpacing) * CGFloat(index)
+            )
+
+            return SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: offset,
+                size: size
+            )
+        }
+
+        return rows
+    }
+
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [summaryLabel, requestedView]
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
     }
 }
 
@@ -168,6 +302,9 @@ private extension VoteCardView {
         static let contentSpacing: CGFloat = 12
         static let requestedViewInnerSpacing: CGFloat = 8
         static let buttonTopOffset: CGFloat = 16
+        static let skeletonSummaryLineHeight: CGFloat = 12
+        static let skeletonRequestedLineHeights: [CGFloat] = [10.0, 16.0, 8.0]
+        static let skeletonRequestedLineWidths: [CGFloat] = [69, 118, 53]
     }
 }
 
