@@ -90,6 +90,10 @@ extension TinderGovViewController: TinderGovViewProtocol {
         rootView.finishedAddingCards()
     }
 
+    func skipCard() {
+        rootView.cardsStack.skipCard()
+    }
+
     func updateVotingList(with viewModel: VotingListWidgetViewModel) {
         rootView.votingListWidget.bind(with: viewModel)
     }

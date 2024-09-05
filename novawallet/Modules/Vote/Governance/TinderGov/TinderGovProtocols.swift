@@ -1,5 +1,6 @@
 protocol TinderGovViewProtocol: ControllerBackedProtocol {
     func updateCards(with newModels: [VoteCardViewModel])
+    func skipCard()
     func updateVotingList(with viewModel: VotingListWidgetViewModel)
     func updateCardsCounter(with text: String)
 }
@@ -17,6 +18,6 @@ protocol TinderGovInteractorOutputProtocol: AnyObject {
     func didReceive(_ referendums: [ReferendumLocal])
 }
 
-protocol TinderGovWireframeProtocol: AnyObject {
+protocol TinderGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func back(from view: ControllerBackedProtocol?)
 }

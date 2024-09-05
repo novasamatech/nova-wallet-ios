@@ -10,6 +10,15 @@ protocol CommonRetryable {
         retryAction: @escaping () -> Void
     )
 
+    func presentRequestStatus(
+        on view: ControllerBackedProtocol?,
+        title: String,
+        message: String,
+        locale: Locale?,
+        retryAction: @escaping () -> Void,
+        skipAction: @escaping () -> Void
+    )
+
     func presentTryAgainOperation(
         on view: ControllerBackedProtocol?,
         title: String,
@@ -55,6 +64,25 @@ extension CommonRetryable where Self: AlertPresentable {
         )
     }
 
+    func presentRequestStatus(
+        on view: ControllerBackedProtocol?,
+        locale: Locale?,
+        retryAction: @escaping () -> Void,
+        skipAction: @escaping () -> Void
+    ) {
+        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.commonRequestRetry(preferredLanguages: locale?.rLanguages)
+
+        presentRequestStatus(
+            on: view,
+            title: title,
+            message: message,
+            locale: locale,
+            retryAction: retryAction,
+            skipAction: skipAction
+        )
+    }
+
     // swiftlint:disable:next function_parameter_count
     func presentRequestStatus(
         on view: ControllerBackedProtocol?,
@@ -74,6 +102,35 @@ extension CommonRetryable where Self: AlertPresentable {
             message: message,
             actions: [retryViewModel],
             closeAction: cancelAction
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    // swiftlint:disable:next function_parameter_count
+    func presentRequestStatus(
+        on view: ControllerBackedProtocol?,
+        title: String,
+        message: String,
+        locale: Locale?,
+        retryAction: @escaping () -> Void,
+        skipAction: @escaping () -> Void
+    ) {
+        let retryViewModel = AlertPresentableAction(
+            title: R.string.localizable.commonRetry(preferredLanguages: locale?.rLanguages),
+            handler: retryAction
+        )
+
+        let skipViewModel = AlertPresentableAction(
+            title: R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages),
+            handler: skipAction
+        )
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [skipViewModel, retryViewModel],
+            closeAction: nil
         )
 
         present(viewModel: viewModel, style: .alert, from: view)

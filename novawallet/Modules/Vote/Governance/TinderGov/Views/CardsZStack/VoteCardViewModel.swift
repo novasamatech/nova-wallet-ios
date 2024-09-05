@@ -3,6 +3,10 @@ import SubstrateSdk
 import Operation_iOS
 import SoraFoundation
 
+struct VoteCardLoadErrorActions {
+    let retry: () -> Void
+}
+
 final class VoteCardViewModel {
     weak var view: StackCardViewUpdatable?
 
@@ -28,9 +32,13 @@ final class VoteCardViewModel {
 
     private let onVote: (VoteResult, ReferendumIdLocal) -> Void
     private let onBecomeTop: (ReferendumIdLocal) -> Void
+    private let onLoadError: (VoteCardLoadErrorActions) -> Void
 
     private var actionDetailsCancellable = CancellableCallStore()
     private var summaryCancellable = CancellableCallStore()
+
+    private var isTopMost: Bool = false
+    private var needsRetryLoad: Bool = false
 
     init(
         operationQueue: OperationQueue,
@@ -46,7 +54,8 @@ final class VoteCardViewModel {
         gradient: GradientModel,
         locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
+        onBecomeTop: @escaping (ReferendumIdLocal) -> Void,
+        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void
     ) {
         self.operationQueue = operationQueue
         self.summaryFetchOperationFactory = summaryFetchOperationFactory
@@ -61,15 +70,12 @@ final class VoteCardViewModel {
         self.locale = locale
         self.onVote = onVote
         self.onBecomeTop = onBecomeTop
+        self.onLoadError = onLoadError
         self.currencyManager = currencyManager
     }
 
     func onAddToStack() {
-        view?.setSummary(loadingState: .loading)
-        view?.setRequestedAmount(loadingState: .loading)
-
-        loadSummary()
-        loadDetails()
+        loadContent()
     }
 
     func onPop(direction: CardsZStack.DismissalDirection) {
@@ -79,6 +85,12 @@ final class VoteCardViewModel {
     }
 
     func onBecomeTopView() {
+        isTopMost = true
+
+        if needsRetryLoad {
+            loadContent()
+        }
+
         onBecomeTop(referendum.index)
     }
 
@@ -90,10 +102,17 @@ final class VoteCardViewModel {
 }
 
 private extension VoteCardViewModel {
+    func loadContent() {
+        loadSummary()
+        loadDetails()
+    }
+
     func loadSummary() {
         guard !summaryCancellable.hasCall else {
             return
         }
+
+        view?.setSummary(loadingState: .loading)
 
         let summaryFetchOperation = summaryFetchOperationFactory.createSummaryOperation(for: referendum.index)
 
@@ -111,7 +130,8 @@ private extension VoteCardViewModel {
 
                 self?.view?.setSummary(loadingState: .loaded(value: summary))
             case let .failure(error):
-                print(error)
+                self?.actionDetailsCancellable.cancel()
+                self?.processLoadFailure()
             }
         }
     }
@@ -120,6 +140,8 @@ private extension VoteCardViewModel {
         guard !actionDetailsCancellable.hasCall else {
             return
         }
+
+        view?.setRequestedAmount(loadingState: .loading)
 
         let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
             for: referendum,
@@ -137,7 +159,8 @@ private extension VoteCardViewModel {
             case let .success(actionDetails):
                 self?.updateRequestedAmount(using: actionDetails)
             case let .failure(error):
-                print(error)
+                self?.summaryCancellable.cancel()
+                self?.processLoadFailure()
             }
         }
     }
@@ -151,12 +174,14 @@ private extension VoteCardViewModel {
                 precision: precision
             )
         else {
+            view?.setRequestedAmount(loadingState: .loaded(value: nil))
             return
         }
 
-        let balanceViewModel = balanceViewModelFactory.balanceFromPrice(decimalAmount, priceData: price).value(
-            for: locale
-        )
+        let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
+            decimalAmount,
+            priceData: price
+        ).value(for: locale)
 
         view?.setRequestedAmount(loadingState: .loaded(value: balanceViewModel))
     }
@@ -165,6 +190,20 @@ private extension VoteCardViewModel {
         if let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
+    }
+
+    func processLoadFailure() {
+        guard isTopMost else {
+            needsRetryLoad = true
+
+            return
+        }
+
+        let handlers = VoteCardLoadErrorActions(
+            retry: { [weak self] in self?.loadContent() }
+        )
+
+        onLoadError(handlers)
     }
 }
 

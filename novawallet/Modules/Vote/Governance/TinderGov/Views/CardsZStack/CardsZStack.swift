@@ -13,6 +13,7 @@ final class CardsZStack: UIView {
         case left
         case right
         case top
+        case bottom
     }
 
     private let maxCardsAlive: Int
@@ -86,21 +87,44 @@ final class CardsZStack: UIView {
         }
 
         animateCardDismiss(topView, direction: direction) { [weak self] in
-            guard let self else { return }
-
-            topView.didPopFromStack(direction: direction)
-
-            stackedViews.removeLast()
-            enqueueVoteCardView(topView)
-            notifyTopView()
-
-            if stackedViews.isEmpty {
-                showEmptyState()
-            }
-
-            manageStack()
-            completion?()
+            self?.processCardDidPop(
+                cardView: topView,
+                direction: direction,
+                completion: completion
+            )
         }
+    }
+
+    func skipCard() {
+        guard let topView = stackedViews.last else {
+            return
+        }
+
+        animateCardDismiss(topView, direction: .bottom) { [weak self] in
+            self?.processCardDidPop(
+                cardView: topView,
+                direction: .bottom
+            )
+        }
+    }
+
+    func processCardDidPop(
+        cardView: VoteCardView,
+        direction _: DismissalDirection,
+        completion: (() -> Void)? = nil
+    ) {
+        cardView.didPopFromStack(direction: .bottom)
+
+        stackedViews.removeLast()
+        enqueueVoteCardView(cardView)
+        notifyTopView()
+
+        if stackedViews.isEmpty {
+            showEmptyState()
+        }
+
+        manageStack()
+        completion?()
     }
 }
 
@@ -165,12 +189,14 @@ private extension CardsZStack {
         case .left: (-1.5 * bounds.width, 0)
         case .right: (1.5 * bounds.width, 0)
         case .top: (0, -1.5 * bounds.height)
+        case .bottom: (0, 1.5 * bounds.height)
         }
 
         let rotationDirection: CGFloat = switch direction {
         case .left: -1
         case .right: 1
         case .top: 0
+        case .bottom: 0
         }
 
         UIView.animate(

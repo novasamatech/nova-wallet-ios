@@ -84,6 +84,15 @@ private extension TinderGovPresenter {
             },
             onBecomeTop: { [weak self] id in
                 self?.onTopCardAppear(referendumId: id)
+            },
+            onLoadError: { [weak self] handlers in
+                guard let self else { return }
+                wireframe.presentRequestStatus(
+                    on: view,
+                    locale: selectedLocale,
+                    retryAction: { handlers.retry() },
+                    skipAction: { self.view?.skipCard() }
+                )
             }
         )
 

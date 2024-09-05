@@ -6,7 +6,8 @@ protocol VoteCardViewModelFactoryProtocol {
         from referendums: [ReferendumLocal],
         locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
+        onBecomeTop: @escaping (ReferendumIdLocal) -> Void,
+        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void
     ) -> [VoteCardViewModel]
 }
 
@@ -47,7 +48,8 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
         from referendums: [ReferendumLocal],
         locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
+        onBecomeTop: @escaping (ReferendumIdLocal) -> Void,
+        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void
     ) -> [VoteCardViewModel] {
         referendums.enumerated().map { index, referendum in
             let gradientModel = cardGradientFactory.createCardGratient(for: index)
@@ -66,7 +68,8 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
                 gradient: gradientModel,
                 locale: locale,
                 onVote: onVote,
-                onBecomeTop: onBecomeTop
+                onBecomeTop: onBecomeTop,
+                onLoadError: onLoadError
             )
         }
     }
