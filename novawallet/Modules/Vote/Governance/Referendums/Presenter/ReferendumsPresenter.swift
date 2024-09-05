@@ -214,7 +214,10 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func selectTinderGov() {
-        guard let referendums else {
+        guard
+            let referendums,
+            let chain
+        else {
             return
         }
 

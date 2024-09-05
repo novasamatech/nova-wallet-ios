@@ -6,13 +6,6 @@ protocol TinderGovViewModelFactoryProtocol {
         locale: Locale
     ) -> ReferendumsSection?
 
-    func createVoteCardViewModels(
-        from referendums: [ReferendumLocal],
-        locale: Locale,
-        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
-    ) -> [VoteCardViewModel]
-
     func createVotingListViewModel(
         from votingList: [ReferendumIdLocal],
         locale: Locale
@@ -25,11 +18,7 @@ protocol TinderGovViewModelFactoryProtocol {
     ) -> String?
 }
 
-struct TinderGovViewModelFactory {
-    private let cardGradientFactory = TinderGovGradientFactory()
-}
-
-extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
+struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
         using filter: TinderGovReferendumsFilter,
         locale: Locale
@@ -56,25 +45,6 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
         }()
 
         return section
-    }
-
-    func createVoteCardViewModels(
-        from referendums: [ReferendumLocal],
-        locale: Locale,
-        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
-    ) -> [VoteCardViewModel] {
-        referendums.enumerated().map { index, referendum in
-            let gradientModel = cardGradientFactory.createCardGratient(for: index)
-
-            return VoteCardViewModel(
-                referendum: referendum,
-                gradient: gradientModel,
-                locale: locale,
-                onVote: onVote,
-                onBecomeTop: onBecomeTop
-            )
-        }
     }
 
     func createVotingListViewModel(

@@ -7,6 +7,7 @@ final class TinderGovPresenter {
     let wireframe: TinderGovWireframeProtocol
 
     private let viewModelFactory: TinderGovViewModelFactoryProtocol
+    private let cardsViewModelFactory: VoteCardViewModelFactoryProtocol
 
     private var referendums: [ReferendumLocal] = []
     private var votingList: [ReferendumIdLocal] = []
@@ -15,11 +16,13 @@ final class TinderGovPresenter {
         wireframe: TinderGovWireframeProtocol,
         interactor: TinderGovInteractorInputProtocol,
         viewModelFactory: TinderGovViewModelFactoryProtocol,
+        cardsViewModelFactory: VoteCardViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
         self.interactor = interactor
         self.viewModelFactory = viewModelFactory
+        self.cardsViewModelFactory = cardsViewModelFactory
         self.localizationManager = localizationManager
     }
 }
@@ -73,7 +76,7 @@ private extension TinderGovPresenter {
     }
 
     func updateCardsStackView() {
-        let cardViewModels = viewModelFactory.createVoteCardViewModels(
+        let cardViewModels = cardsViewModelFactory.createVoteCardViewModels(
             from: referendums,
             locale: selectedLocale,
             onVote: { [weak self] voteResult, id in

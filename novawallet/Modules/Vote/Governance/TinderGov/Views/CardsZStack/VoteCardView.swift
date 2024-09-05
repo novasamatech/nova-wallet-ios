@@ -137,7 +137,7 @@ extension VoteCardView: StackCardViewUpdatable {
         }
     }
 
-    func setRequestedAmount(loadingState: LoadableViewModelState<VoteCardViewModel.RequestedAmount?>) {
+    func setRequestedAmount(loadingState: LoadableViewModelState<BalanceViewModelProtocol?>) {
         switch loadingState {
         case .loading:
             isRequestedAmountLoading = true
@@ -153,8 +153,8 @@ extension VoteCardView: StackCardViewUpdatable {
 
             isRequestedAmountLoading = false
 
-            assetAmountLabel.text = requestedAmount.assetAmount
-            fiatAmountLabel.text = requestedAmount.fiatAmount
+            assetAmountLabel.text = requestedAmount.amount
+            fiatAmountLabel.text = requestedAmount.price
 
             stopLoading()
         }

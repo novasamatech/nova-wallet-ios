@@ -33,7 +33,10 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         from view: ControllerBackedProtocol?,
         referendums: [ReferendumLocal]
     ) {
-        guard let tinderGovView = TinderGovViewFactory.createView(with: referendums) else {
+        guard let tinderGovView = TinderGovViewFactory.createView(
+            with: referendums,
+            sharedState: state
+        ) else {
             return
         }
 

@@ -2,17 +2,53 @@ import Foundation
 import SoraFoundation
 
 struct TinderGovViewFactory {
-    static func createView(with referendums: [ReferendumLocal]) -> TinderGovViewProtocol? {
+    static func createView(
+        with referendums: [ReferendumLocal],
+        sharedState: GovernanceSharedState
+    ) -> TinderGovViewProtocol? {
+        guard
+            let option = sharedState.settings.value,
+            let summaryApi = option.chain.externalApis?.referendumSummary()?.first?.url,
+            let connection = sharedState.chainRegistry.getConnection(for: option.chain.chainId),
+            let runtimeProvider = sharedState.chainRegistry.getRuntimeProvider(for: option.chain.chainId),
+            let assetInfo = option.chain.utilityAsset()?.displayInfo,
+            let currencyManager = CurrencyManager.shared
+        else {
+            return nil
+        }
+
         let wireframe = TinderGovWireframe()
         let interactor = TinderGovInteractor(referendums: referendums)
 
         let localizationManager = LocalizationManager.shared
         let viewModelFactory = TinderGovViewModelFactory()
 
+        let summaryFetchOperationFactory = OpenGovSummaryOperationFactory(
+            url: summaryApi,
+            chain: option.chain
+        )
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let cardsViewModelFactory = VoteCardViewModelFactory(
+            summaryFetchOperationFactory: summaryFetchOperationFactory,
+            chain: option.chain,
+            currencyManager: currencyManager,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            balanceViewModelFactory: balanceViewModelFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            actionDetailsOperationFactory: sharedState.createActionsDetailsFactory(for: option)
+        )
+
         let presenter = TinderGovPresenter(
             wireframe: wireframe,
             interactor: interactor,
             viewModelFactory: viewModelFactory,
+            cardsViewModelFactory: cardsViewModelFactory,
             localizationManager: localizationManager
         )
 
