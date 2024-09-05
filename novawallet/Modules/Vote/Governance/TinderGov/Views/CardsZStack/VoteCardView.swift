@@ -312,6 +312,7 @@ enum VoteResult {
     case aye
     case nay
     case abstain
+    case skip
 
     var dismissalDirection: CardsZStack.DismissalDirection {
         switch self {
@@ -321,6 +322,8 @@ enum VoteResult {
             .left
         case .abstain:
             .top
+        case .skip:
+            .bottom
         }
     }
 
@@ -332,6 +335,8 @@ enum VoteResult {
             self = .nay
         case .top:
             self = .abstain
+        case .bottom:
+            self = .skip
         }
     }
 }
