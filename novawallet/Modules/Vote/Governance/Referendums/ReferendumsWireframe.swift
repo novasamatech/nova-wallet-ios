@@ -31,10 +31,10 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func showTinderGov(
         from view: ControllerBackedProtocol?,
-        referendums: [ReferendumLocal]
+        accountVotes: ReferendumAccountVotingDistribution?
     ) {
         guard let tinderGovView = TinderGovViewFactory.createView(
-            with: referendums,
+            accountVotes: accountVotes,
             sharedState: state
         ) else {
             return
@@ -111,7 +111,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func showSearch(
         from view: ControllerBackedProtocol?,
-        referendumsState: Observable<ReferendumsState>,
+        referendumsState: Observable<ReferendumsViewState>,
         delegate: ReferendumSearchDelegate?
     ) {
         guard let searchView = ReferendumSearchViewFactory.createView(

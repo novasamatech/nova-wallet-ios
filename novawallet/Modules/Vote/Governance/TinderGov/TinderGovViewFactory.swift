@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct TinderGovViewFactory {
     static func createView(
-        with referendums: [ReferendumLocal],
+        accountVotes: ReferendumAccountVotingDistribution?,
         sharedState: GovernanceSharedState
     ) -> TinderGovViewProtocol? {
         guard
@@ -18,7 +18,8 @@ struct TinderGovViewFactory {
         }
 
         let wireframe = TinderGovWireframe()
-        let interactor = TinderGovInteractor(referendums: referendums)
+        let observableSource = sharedState.createVoteAvailableReferendumSource(using: accountVotes)
+        let interactor = TinderGovInteractor(referendumsObservableSource: observableSource)
 
         let localizationManager = LocalizationManager.shared
         let viewModelFactory = TinderGovViewModelFactory()
@@ -49,6 +50,7 @@ struct TinderGovViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             cardsViewModelFactory: cardsViewModelFactory,
+            sorting: ReferendumsTimeSortingProvider(),
             localizationManager: localizationManager
         )
 

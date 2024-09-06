@@ -2,7 +2,7 @@ import Foundation
 
 protocol TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
-        using filter: TinderGovReferendumsFilter,
+        using filter: ReferendumFilter.VoteAvailable,
         locale: Locale
     ) -> ReferendumsSection?
 
@@ -20,7 +20,7 @@ protocol TinderGovViewModelFactoryProtocol {
 
 struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
-        using filter: TinderGovReferendumsFilter,
+        using filter: ReferendumFilter.VoteAvailable,
         locale: Locale
     ) -> ReferendumsSection? {
         let tinderGovReferenda = filter()

@@ -1,13 +1,13 @@
 import Foundation
+import Operation_iOS
 
 class TinderGovInteractor {
     weak var presenter: TinderGovInteractorOutputProtocol?
 
-    // TODO: change to observable state
-    private let referendums: [ReferendumLocal]
+    private let referendumsObservableSource: ReferendumObservableSourceProtocol
 
-    init(referendums: [ReferendumLocal]) {
-        self.referendums = referendums
+    init(referendumsObservableSource: ReferendumObservableSourceProtocol) {
+        self.referendumsObservableSource = referendumsObservableSource
     }
 }
 
@@ -15,6 +15,14 @@ class TinderGovInteractor {
 
 extension TinderGovInteractor: TinderGovInteractorInputProtocol {
     func setup() {
-        presenter?.didReceive(referendums)
+        referendumsObservableSource.observe(self)
+    }
+}
+
+// MARK: ReferendumsSourceObserver
+
+extension TinderGovInteractor: ReferendumsSourceObserver {
+    func didReceive(_ changes: [DataProviderChange<ReferendumLocal>]) {
+        presenter?.didReceive(changes)
     }
 }

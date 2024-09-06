@@ -48,7 +48,7 @@ extension ReferendumsPresenter {
             return nil
         }
 
-        let filter = TinderGovReferendumsFilter(
+        let filter = ReferendumFilter.VoteAvailable(
             referendums: referendums,
             accountVotes: accountVotes
         )

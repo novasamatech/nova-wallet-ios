@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import Operation_iOS
 
 final class TinderGovPresenter {
     weak var view: TinderGovViewProtocol?
@@ -8,21 +9,27 @@ final class TinderGovPresenter {
 
     private let viewModelFactory: TinderGovViewModelFactoryProtocol
     private let cardsViewModelFactory: VoteCardViewModelFactoryProtocol
+    private let localizationManager: LocalizationManagerProtocol
 
-    private var referendums: [ReferendumLocal] = []
+    private var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
+    private var sortedReferendums: [ReferendumLocal] = []
     private var votingList: [ReferendumIdLocal] = []
+
+    private let sorting: ReferendumsSorting
 
     init(
         wireframe: TinderGovWireframeProtocol,
         interactor: TinderGovInteractorInputProtocol,
         viewModelFactory: TinderGovViewModelFactoryProtocol,
         cardsViewModelFactory: VoteCardViewModelFactoryProtocol,
+        sorting: ReferendumsSorting,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
         self.interactor = interactor
         self.viewModelFactory = viewModelFactory
         self.cardsViewModelFactory = cardsViewModelFactory
+        self.sorting = sorting
         self.localizationManager = localizationManager
     }
 }
@@ -42,10 +49,36 @@ extension TinderGovPresenter: TinderGovPresenterProtocol {
 // MARK: TinderGovInteractorOutputProtocol
 
 extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
-    func didReceive(_ referendums: [ReferendumLocal]) {
-        self.referendums = referendums
+    func didReceive(_ changes: [DataProviderChange<ReferendumLocal>]) {
+        referendums = changes.mergeToDict(referendums)
 
-        updateViews()
+        sortedReferendums = referendums.values.sorted {
+            sorting.compare(
+                referendum1: $0,
+                referendum2: $1
+            )
+        }
+
+        let inserts = changes.filter { change in
+            if case .insert = change {
+                return true
+            }
+
+            return false
+        }
+
+        let deletes = changes.filter { change in
+            if case .delete = change {
+                return true
+            }
+
+            return false
+        }
+
+        updateViews(
+            inserting: inserts.compactMap(\.item),
+            deleting: deletes.map { $0.itemIdentifier() }
+        )
     }
 }
 
@@ -65,20 +98,36 @@ private extension TinderGovPresenter {
         updateReferendumsCounter(currentReferendumId: referendumId)
     }
 
-    func updateViews() {
-        guard let firstReferendum = referendums.first else {
+    func updateViews(
+        inserting: [ReferendumLocal],
+        deleting: [ReferendumIdLocal]
+    ) {
+        guard let firstReferendum = sortedReferendums.first else {
             return
         }
 
-        updateCardsStackView()
+        updateCardsStackView(
+            inserting: inserting,
+            deleting: deleting
+        )
         updateVotingListView()
         updateReferendumsCounter(currentReferendumId: firstReferendum.index)
     }
 
-    func updateCardsStackView() {
+    func updateCardsStackView(
+        inserting: [ReferendumLocal],
+        deleting _: [ReferendumIdLocal]
+    ) {
+        let sortedInserts = inserting.sorted {
+            sorting.compare(
+                referendum1: $0,
+                referendum2: $1
+            )
+        }
+
         let cardViewModels = cardsViewModelFactory.createVoteCardViewModels(
-            from: referendums,
-            locale: selectedLocale,
+            from: sortedInserts,
+            locale: localizationManager.selectedLocale,
             onVote: { [weak self] voteResult, id in
                 self?.onReferendumVote(voteResult: voteResult, id: id)
             },
@@ -89,7 +138,7 @@ private extension TinderGovPresenter {
                 guard let self else { return }
                 wireframe.presentRequestStatus(
                     on: view,
-                    locale: selectedLocale,
+                    locale: localizationManager.selectedLocale,
                     retryAction: { handlers.retry() },
                     skipAction: { self.view?.skipCard() }
                 )
@@ -102,7 +151,7 @@ private extension TinderGovPresenter {
     func updateVotingListView() {
         let viewModel = viewModelFactory.createVotingListViewModel(
             from: votingList,
-            locale: selectedLocale
+            locale: localizationManager.selectedLocale
         )
         view?.updateVotingList(with: viewModel)
     }
@@ -110,24 +159,12 @@ private extension TinderGovPresenter {
     func updateReferendumsCounter(currentReferendumId: ReferendumIdLocal) {
         guard let viewModel = viewModelFactory.createReferendumsCounterViewModel(
             currentReferendumId: currentReferendumId,
-            referendums: referendums,
-            locale: selectedLocale
+            referendums: sortedReferendums,
+            locale: localizationManager.selectedLocale
         ) else {
             return
         }
 
         view?.updateCardsCounter(with: viewModel)
-    }
-}
-
-// MARK: Localizable
-
-extension TinderGovPresenter: Localizable {
-    func applyLocalization() {
-        guard view?.isSetup == true else {
-            return
-        }
-
-        updateViews()
     }
 }

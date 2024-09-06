@@ -55,7 +55,7 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
 
     func showTinderGov(
         from view: ControllerBackedProtocol?,
-        referendums: [ReferendumLocal]
+        accountVotes: ReferendumAccountVotingDistribution?
     )
 
     func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)
@@ -72,7 +72,7 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
 
     func showSearch(
         from view: ControllerBackedProtocol?,
-        referendumsState: Observable<ReferendumsState>,
+        referendumsState: Observable<ReferendumsViewState>,
         delegate: ReferendumSearchDelegate?
     )
 }

@@ -6,7 +6,7 @@ final class ReferendumSearchPresenter {
     weak var view: ReferendumSearchViewProtocol?
     let wireframe: ReferendumSearchWireframeProtocol
     let logger: LoggerProtocol?
-    let referendumsState: Observable<ReferendumsState>
+    let referendumsState: Observable<ReferendumsViewState>
     let localizationManager: LocalizationManagerProtocol
     let searchOperationFactory: ReferendumsSearchOperationFactoryProtocol
 
@@ -19,7 +19,7 @@ final class ReferendumSearchPresenter {
     init(
         wireframe: ReferendumSearchWireframeProtocol,
         delegate: ReferendumSearchDelegate?,
-        referendumsState: Observable<ReferendumsState>,
+        referendumsState: Observable<ReferendumsViewState>,
         searchOperationFactory: ReferendumsSearchOperationFactoryProtocol,
         operationQueue: OperationQueue,
         localizationManager: LocalizationManagerProtocol,

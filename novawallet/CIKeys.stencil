@@ -27,3 +27,7 @@ enum ConnectionApiKeys {
 enum WalletConnectCISecrets {
     static var projectId: String = "{{ argument.wcProjectId }}"
 }
+
+enum PolkassemblyApiKeys {
+    static var summaryApi: String = "{{ argument.polkassemblySummaryApiKey }}"
+}

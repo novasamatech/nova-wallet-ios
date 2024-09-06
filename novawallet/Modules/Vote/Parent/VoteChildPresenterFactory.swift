@@ -103,6 +103,7 @@ final class VoteChildPresenterFactory {
 
     private func createGovernanceInteractor(
         for state: GovernanceSharedState,
+        referendumStore _: ReferendumObservableStoreProtocol,
         wallet: MetaAccountModel
     ) -> ReferendumsInteractor {
         let serviceFactory = GovernanceServiceFactory(
@@ -169,8 +170,13 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         referendumsInitState: ReferendumsInitState?
     ) -> VoteChildPresenterProtocol? {
         let state = GovernanceSharedState()
+        let store = ReferendumObservableSource.shared
 
-        let interactor = createGovernanceInteractor(for: state, wallet: wallet)
+        let interactor = createGovernanceInteractor(
+            for: state,
+            referendumStore: store,
+            wallet: wallet
+        )
         let wireframe = ReferendumsWireframe(state: state)
 
         let statusViewModelFactory = ReferendumStatusViewModelFactory()

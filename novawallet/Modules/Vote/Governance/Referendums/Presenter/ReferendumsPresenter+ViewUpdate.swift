@@ -35,7 +35,7 @@ extension ReferendumsPresenter {
         ].compactMap { $0 } + filteredReferendumsSections
 
         view.update(model: .init(sections: allSections))
-        observableState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)
+        observableViewState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)
     }
 
     func updateTimerDisplay() {

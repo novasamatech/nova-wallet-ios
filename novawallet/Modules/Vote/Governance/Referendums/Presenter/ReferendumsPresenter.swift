@@ -35,13 +35,13 @@ final class ReferendumsPresenter {
     var countdownTimer: CountdownTimer?
     var timeModels: [ReferendumIdLocal: StatusTimeViewModel?]? {
         didSet {
-            observableState.state.timeModels = timeModels
+            observableViewState.state.timeModels = timeModels
         }
     }
 
     private(set) var filter = ReferendumsFilter.all
 
-    let observableState = Observable<ReferendumsState>(state: .init(cells: [], timeModels: nil))
+    let observableViewState = Observable<ReferendumsViewState>(state: .init(cells: [], timeModels: nil))
     var referendumsInitState: ReferendumsInitState?
 
     var chain: ChainModel? {
@@ -165,7 +165,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     func showSearch() {
         wireframe.showSearch(
             from: view,
-            referendumsState: observableState,
+            referendumsState: observableViewState,
             delegate: self
         )
     }
@@ -221,14 +221,9 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
-        let filter = TinderGovReferendumsFilter(
-            referendums: referendums,
-            accountVotes: voting?.value?.votes
-        )
-
         wireframe.showTinderGov(
             from: view,
-            referendums: filter()
+            accountVotes: voting?.value?.votes
         )
     }
 

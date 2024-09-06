@@ -20,12 +20,18 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         governanceState.generalLocalSubscriptionFactory
     }
 
+    var referendumObservableSource: ReferendumObservableStoreProtocol {
+        governanceState.referendumStore
+    }
+
     private(set) var priceProvider: StreamableProvider<PriceData>?
     private(set) var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private(set) var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private(set) var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
     private(set) lazy var localKeyFactory = LocalStorageKeyFactory()
+
+    private(set) var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
 
     var referendumsCancellable: CancellableCall?
     var blockTimeCancellable: CancellableCall?
@@ -113,6 +119,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     func setup(with accountId: AccountId?, option: GovernanceSelectedOption) {
         presenter?.didReceiveSelectedOption(option)
         provideDelegationsSupport(for: option)
+        referendumObservableSource.observe(self)
 
         if let accountId = accountId {
             subscribeToAssetBalance(for: accountId, chain: option.chain)
@@ -284,7 +291,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
                 do {
                     let referendums = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveReferendums(referendums)
+                    self?.referendumObservableSource.save(referendums: referendums)
                 } catch {
                     self?.presenter?.didReceiveError(.referendumsFetchFailed(error))
                 }
@@ -368,6 +375,13 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
                 }
             }
         }
+    }
+}
+
+extension ReferendumsInteractor: ReferendumsSourceObserver {
+    func didReceive(_ changes: [DataProviderChange<ReferendumLocal>]) {
+        referendums = changes.mergeToDict(referendums)
+        presenter?.didReceiveReferendums(Array(referendums.values))
     }
 }
 

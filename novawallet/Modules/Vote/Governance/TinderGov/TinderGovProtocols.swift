@@ -1,3 +1,5 @@
+import Operation_iOS
+
 protocol TinderGovViewProtocol: ControllerBackedProtocol {
     func updateCards(with newModels: [VoteCardViewModel])
     func skipCard()
@@ -15,7 +17,7 @@ protocol TinderGovInteractorInputProtocol: AnyObject {
 }
 
 protocol TinderGovInteractorOutputProtocol: AnyObject {
-    func didReceive(_ referendums: [ReferendumLocal])
+    func didReceive(_ changes: [DataProviderChange<ReferendumLocal>])
 }
 
 protocol TinderGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
