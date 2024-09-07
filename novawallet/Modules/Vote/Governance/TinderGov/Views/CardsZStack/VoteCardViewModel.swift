@@ -8,39 +8,6 @@ struct VoteCardLoadErrorActions {
     let retry: () -> Void
 }
 
-protocol ReferendumAmountOperationFactoryProtocol {
-    func createWrapper() -> CompoundOperationWrapper<BigUInt?>
-}
-
-final class ReferendumAmountOperationFactory {
-    private let referendum: ReferendumLocal
-    private let connection: JSONRPCEngine
-    private let runtimeProvider: RuntimeProviderProtocol
-    private let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
-    
-    init(
-        referendum: ReferendumLocal,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
-    ) {
-        self.referendum = referendum
-        self.connection = connection
-        self.runtimeProvider = runtimeProvider
-        self.actionDetailsOperationFactory = actionDetailsOperationFactory
-    }
-}
-
-extension ReferendumAmountOperationFactory: ReferendumAmountOperationFactoryProtocol {
-    func createWrapper() -> CompoundOperationWrapper<BigUInt?> {
-        let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
-            for: referendum,
-            connection: connection,
-            runtimeProvider: runtimeProvider
-        )
-    }
-}
-
 final class VoteCardViewModel {
     weak var view: StackCardViewUpdatable?
 
@@ -50,13 +17,12 @@ final class VoteCardViewModel {
     private let gradient: GradientModel
 
     private let summaryFetchOperationFactory: OpenGovSummaryOperationFactoryProtocol
+    private let amountOperationFactory: ReferendumAmountOperationFactoryProtocol
 
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private let chain: ChainModel
     private let referendum: ReferendumLocal
-    private let connection: JSONRPCEngine
-    private let runtimeProvider: RuntimeProviderProtocol
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var price: PriceData?
@@ -70,17 +36,16 @@ final class VoteCardViewModel {
     private var actionDetailsCancellable = CancellableCallStore()
     private var summaryCancellable = CancellableCallStore()
 
+    private var amount: BigUInt?
     private var isTopMost: Bool = false
     private var needsRetryLoad: Bool = false
 
     init(
         operationQueue: OperationQueue,
         summaryFetchOperationFactory: OpenGovSummaryOperationFactoryProtocol,
-        actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
+        amountOperationFactory: ReferendumAmountOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
         chain: ChainModel,
         referendum: ReferendumLocal,
         currencyManager: CurrencyManagerProtocol,
@@ -92,11 +57,9 @@ final class VoteCardViewModel {
     ) {
         self.operationQueue = operationQueue
         self.summaryFetchOperationFactory = summaryFetchOperationFactory
-        self.actionDetailsOperationFactory = actionDetailsOperationFactory
+        self.amountOperationFactory = amountOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.connection = connection
-        self.runtimeProvider = runtimeProvider
         self.chain = chain
         self.referendum = referendum
         self.gradient = gradient
@@ -137,7 +100,7 @@ final class VoteCardViewModel {
 private extension VoteCardViewModel {
     func loadContent() {
         loadSummary()
-        loadDetails()
+        loadRequestedAmount()
     }
 
     func loadSummary() {
@@ -169,18 +132,14 @@ private extension VoteCardViewModel {
         }
     }
 
-    func loadDetails() {
+    func loadRequestedAmount() {
         guard !actionDetailsCancellable.hasCall else {
             return
         }
 
         view?.setRequestedAmount(loadingState: .loading)
 
-        let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
-            for: referendum,
-            connection: connection,
-            runtimeProvider: runtimeProvider
-        )
+        let wrapper = amountOperationFactory.createWrapper()
 
         executeCancellable(
             wrapper: wrapper,
@@ -189,8 +148,8 @@ private extension VoteCardViewModel {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(actionDetails):
-                self?.updateRequestedAmount(using: actionDetails)
+            case let .success(amount):
+                self?.updateRequestedAmount(amount: amount)
             case let .failure(error):
                 self?.summaryCancellable.cancel()
                 self?.processLoadFailure()
@@ -198,18 +157,20 @@ private extension VoteCardViewModel {
         }
     }
 
-    func updateRequestedAmount(using actionDetails: ReferendumActionLocal) {
+    func updateRequestedAmount(amount: BigUInt?) {
         guard
-            let requestedAmount = actionDetails.spentAmount(),
+            let amount,
             let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
             let decimalAmount = Decimal.fromSubstrateAmount(
-                requestedAmount,
+                amount,
                 precision: precision
             )
         else {
             view?.setRequestedAmount(loadingState: .loaded(value: nil))
             return
         }
+
+        self.amount = amount
 
         let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
             decimalAmount,
@@ -252,6 +213,8 @@ extension VoteCardViewModel: PriceLocalStorageSubscriber, PriceLocalSubscription
         }
 
         self.price = price
+
+        updateRequestedAmount(amount: amount)
     }
 }
 

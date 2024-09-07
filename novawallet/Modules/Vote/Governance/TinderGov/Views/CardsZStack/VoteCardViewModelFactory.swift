@@ -53,15 +53,19 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
     ) -> [VoteCardViewModel] {
         referendums.enumerated().map { index, referendum in
             let gradientModel = cardGradientFactory.createCardGratient(for: index)
+            let requestedAmountFactory = ReferendumAmountOperationFactory(
+                referendum: referendum,
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                actionDetailsOperationFactory: actionDetailsOperationFactory
+            )
 
             return VoteCardViewModel(
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,
                 summaryFetchOperationFactory: summaryFetchOperationFactory,
-                actionDetailsOperationFactory: actionDetailsOperationFactory,
+                amountOperationFactory: requestedAmountFactory,
                 priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
                 balanceViewModelFactory: balanceViewModelFactory,
-                connection: connection,
-                runtimeProvider: runtimeProvider,
                 chain: chain,
                 referendum: referendum,
                 currencyManager: currencyManager,

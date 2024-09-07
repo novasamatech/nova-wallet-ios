@@ -933,6 +933,7 @@
 		2D77487B2C8B34B80059607B /* VoteAvailableReferendumSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487A2C8B34B80059607B /* VoteAvailableReferendumSource.swift */; };
 		2D77487E2C8B41830059607B /* PolkassemblyKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487D2C8B41830059607B /* PolkassemblyKeys.swift */; };
 		2D7748802C8B48C40059607B /* CIKeys.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487F2C8B48C40059607B /* CIKeys.generated.swift */; };
+		2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */; };
 		2D7BEBD62C23818B00BBCB57 /* NetworkManageNodeWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7BEBD52C23818B00BBCB57 /* NetworkManageNodeWireframe.swift */; };
 		2D7C8A8F2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */; };
 		2D7C8A912C2DA2280044E601 /* NetworkNodeConnectingTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */; };
@@ -5960,6 +5961,7 @@
 		2D77487A2C8B34B80059607B /* VoteAvailableReferendumSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteAvailableReferendumSource.swift; sourceTree = "<group>"; };
 		2D77487D2C8B41830059607B /* PolkassemblyKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkassemblyKeys.swift; sourceTree = "<group>"; };
 		2D77487F2C8B48C40059607B /* CIKeys.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIKeys.generated.swift; sourceTree = SOURCE_ROOT; };
+		2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumAmountOperationFactory.swift; sourceTree = "<group>"; };
 		2D7BEBD52C23818B00BBCB57 /* NetworkManageNodeWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManageNodeWireframe.swift; sourceTree = "<group>"; };
 		2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeCreatorTrait.swift; sourceTree = "<group>"; };
 		2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeConnectingTrait.swift; sourceTree = "<group>"; };
@@ -11894,8 +11896,6 @@
 				2D389B162C875B3200256C7B /* TinderGovInteractor.swift */,
 				F6AB6A7632DAA329CD5E4F8B /* TinderGovViewLayout.swift */,
 				C18417408E26CB3B36E57B5A /* TinderGovViewFactory.swift */,
-				2D7748782C8AE9310059607B /* ReferendumObservableSource.swift */,
-				2D77487A2C8B34B80059607B /* VoteAvailableReferendumSource.swift */,
 			);
 			path = TinderGov;
 			sourceTree = "<group>";
@@ -12167,9 +12167,12 @@
 		2D389B182C875E1B00256C7B /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */,
 				2DA85A762C7FCCCE00591900 /* TinderGovViewModelFactory.swift */,
 				2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */,
 				2D389B142C87036100256C7B /* ReferendumFilter.swift */,
+				2D7748782C8AE9310059607B /* ReferendumObservableSource.swift */,
+				2D77487A2C8B34B80059607B /* VoteAvailableReferendumSource.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -25002,6 +25005,7 @@
 				84F4A9182550331D000CF0A3 /* SecretSource.swift in Sources */,
 				84FD3DB12540C09800A234E3 /* TransactionHistoryMergeManager.swift in Sources */,
 				88C7165A28C8D3450015D1E9 /* LocksHeaderView.swift in Sources */,
+				2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */,
 				77799AE72A792B6F00B7E564 /* StakingTypeAccountViewModel.swift in Sources */,
 				840B3D6E289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift in Sources */,
 				F48EB5462722BB7000AE15ED /* AcalaBonusService.swift in Sources */,
