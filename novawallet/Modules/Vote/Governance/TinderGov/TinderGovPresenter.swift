@@ -86,9 +86,13 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
 
 private extension TinderGovPresenter {
     func onReferendumVote(
-        voteResult _: VoteResult,
+        voteResult: VoteResult,
         id: ReferendumIdLocal
     ) {
+        guard voteResult != .skip else {
+            return
+        }
+        
         votingList.append(id)
 
         updateVotingListView()
