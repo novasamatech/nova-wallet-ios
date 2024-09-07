@@ -2,9 +2,43 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 import SoraFoundation
+import BigInt
 
 struct VoteCardLoadErrorActions {
     let retry: () -> Void
+}
+
+protocol ReferendumAmountOperationFactoryProtocol {
+    func createWrapper() -> CompoundOperationWrapper<BigUInt?>
+}
+
+final class ReferendumAmountOperationFactory {
+    private let referendum: ReferendumLocal
+    private let connection: JSONRPCEngine
+    private let runtimeProvider: RuntimeProviderProtocol
+    private let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
+    
+    init(
+        referendum: ReferendumLocal,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
+    ) {
+        self.referendum = referendum
+        self.connection = connection
+        self.runtimeProvider = runtimeProvider
+        self.actionDetailsOperationFactory = actionDetailsOperationFactory
+    }
+}
+
+extension ReferendumAmountOperationFactory: ReferendumAmountOperationFactoryProtocol {
+    func createWrapper() -> CompoundOperationWrapper<BigUInt?> {
+        let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
+            for: referendum,
+            connection: connection,
+            runtimeProvider: runtimeProvider
+        )
+    }
 }
 
 final class VoteCardViewModel {
@@ -16,7 +50,6 @@ final class VoteCardViewModel {
     private let gradient: GradientModel
 
     private let summaryFetchOperationFactory: OpenGovSummaryOperationFactoryProtocol
-    private let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
 
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
