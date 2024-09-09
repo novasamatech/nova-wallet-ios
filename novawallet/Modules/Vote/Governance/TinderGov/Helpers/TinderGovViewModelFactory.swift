@@ -65,7 +65,7 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
         onBecomeTop: @escaping (ReferendumIdLocal) -> Void
     ) -> [VoteCardViewModel] {
         referendums.enumerated().map { index, referendum in
-            let gradientModel = cardGradientFactory.createCardGratient(for: index)
+            let gradientModel = cardGradientFactory.createCardGradient(for: index)
 
             return VoteCardViewModel(
                 referendum: referendum,
@@ -85,12 +85,12 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
 
         return if votingList.isEmpty {
             VotingListWidgetViewModel.empty(
-                count: "\(votingList.count)",
+                value: "0",
                 title: R.string.localizable.votingListWidgetTitleEmpty(preferredLanguages: languages)
             )
         } else {
             VotingListWidgetViewModel.votings(
-                count: "\(votingList.count)",
+                value: "\(votingList.count)",
                 title: R.string.localizable.votingListWidgetTitle(preferredLanguages: languages)
             )
         }

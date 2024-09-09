@@ -2,7 +2,7 @@ import SoraUI
 import UIKit
 
 struct TinderGovGradientFactory {
-    func createCardGratient(for cardIndex: Int) -> GradientModel {
+    func createCardGradient(for cardIndex: Int) -> GradientModel {
         let gradientArray = [
             gradient1,
             gradient2,
