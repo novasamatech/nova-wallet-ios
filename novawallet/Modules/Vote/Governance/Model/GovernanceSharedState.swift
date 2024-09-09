@@ -23,7 +23,7 @@ final class GovernanceSharedState {
 
     init(
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
-        referendumStore: ReferendumObservableStoreProtocol = ReferendumObservableSource.shared,
+        referendumStore: ReferendumObservableStoreProtocol = ReferendumObservableSource(),
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol? = nil,
         blockTimeService: BlockTimeEstimationServiceProtocol? = nil,

@@ -97,10 +97,6 @@ extension ReferendumObservableSource: ReferendumObservableStoreProtocol, WeakWra
     }
 }
 
-extension ReferendumObservableSource {
-    static let shared = ReferendumObservableSource()
-}
-
 // MARK: Helpers
 
 extension DataProviderChange where T == ReferendumLocal {
