@@ -81,19 +81,15 @@ final class TinderGovViewController: UIViewController, ViewHolder {
 
 // MARK: TinderGovViewProtocol
 
+struct CardsZStackChangeModel {
+    let inserts: [VoteCardViewModel]
+    let updates: [VoteCardId: VoteCardViewModel]
+    let deletes: Set<VoteCardId>
+}
+
 extension TinderGovViewController: TinderGovViewProtocol {
-    func updateCardsStack(
-        with newModels: [VoteCardViewModel],
-        deletes: [VoteCardId]
-    ) {
-        deletes.forEach { cardId in
-            rootView.cardsStack.removeCard(with: cardId)
-        }
-
-        newModels.forEach { viewModel in
-            rootView.cardsStack.addCard(model: viewModel)
-        }
-
+    func updateCardsStack(with changeModel: CardsZStackChangeModel) {
+        rootView.cardsStack.updateStack(with: changeModel)
         rootView.finishedAddingCards()
     }
 

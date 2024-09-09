@@ -55,7 +55,7 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
 
     func showTinderGov(
         from view: ControllerBackedProtocol?,
-        accountVotes: ReferendumAccountVotingDistribution?
+        observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
     )
 
     func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)

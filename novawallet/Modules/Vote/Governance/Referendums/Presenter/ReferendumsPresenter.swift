@@ -41,7 +41,13 @@ final class ReferendumsPresenter {
 
     private(set) var filter = ReferendumsFilter.all
 
-    let observableViewState = Observable<ReferendumsViewState>(state: .init(cells: [], timeModels: nil))
+    let tinderGovObservableState = Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>(
+        state: .init(value: [:])
+    )
+    let observableViewState = Observable<ReferendumsViewState>(
+        state: .init(cells: [], timeModels: nil)
+    )
+
     var referendumsInitState: ReferendumsInitState?
 
     var chain: ChainModel? {
@@ -105,6 +111,7 @@ final class ReferendumsPresenter {
         freeBalance = nil
         price = nil
         referendums = nil
+        tinderGovObservableState.state = .init(value: [:])
         filteredReferendums = [:]
         referendumsMetadata = nil
         voting = nil
@@ -223,7 +230,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
 
         wireframe.showTinderGov(
             from: view,
-            accountVotes: voting?.value?.votes
+            observableState: tinderGovObservableState
         )
     }
 
@@ -302,7 +309,22 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     }
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
-        self.referendums = referendums.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
+        self.referendums = referendums.sorted {
+            sorting.compare(
+                referendum1: $0,
+                referendum2: $1
+            )
+        }
+
+        let voteAvailableFilter = ReferendumFilter.VoteAvailable(
+            referendums: referendums,
+            accountVotes: voting?.value?.votes
+        )
+
+        tinderGovObservableState.state = .init(
+            value: voteAvailableFilter().reduce(into: [:]) { $0[$1.index] = $1 }
+        )
+
         filterReferendums()
         updateTimeModels()
         refreshUnlockSchedule()

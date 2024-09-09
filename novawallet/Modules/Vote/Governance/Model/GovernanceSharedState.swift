@@ -9,7 +9,6 @@ final class GovernanceSharedState {
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
     let requestFactory: StorageRequestFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
-    let referendumStore: ReferendumObservableStoreProtocol
     let operationQueue: OperationQueue
 
     private(set) var subscriptionFactory: GovernanceSubscriptionFactoryProtocol?
@@ -23,7 +22,6 @@ final class GovernanceSharedState {
 
     init(
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
-        referendumStore: ReferendumObservableStoreProtocol = ReferendumObservableSource(),
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol? = nil,
         blockTimeService: BlockTimeEstimationServiceProtocol? = nil,
@@ -36,7 +34,6 @@ final class GovernanceSharedState {
         logger: LoggerProtocol = Logger.shared
     ) {
         self.chainRegistry = chainRegistry
-        self.referendumStore = referendumStore
         settings = GovernanceChainSettings(chainRegistry: chainRegistry, settings: internalSettings)
 
         govMetadataLocalSubscriptionFactory = GovMetadataLocalSubscriptionFactory(
@@ -249,16 +246,5 @@ final class GovernanceSharedState {
                 identityProxyFactory: identityProxyFactory
             )
         }
-    }
-
-    func createVoteAvailableReferendumSource(
-        using accountVotes: ReferendumAccountVotingDistribution?
-    ) -> ReferendumObservableSourceProtocol {
-        let filter = ReferendumFilter.VoteAvailableChanges(accountVotes: accountVotes)
-
-        return VoteAvailableReferendumSource(
-            referendumsSource: referendumStore,
-            filter: filter
-        )
     }
 }

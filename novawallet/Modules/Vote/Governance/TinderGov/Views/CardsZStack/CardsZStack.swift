@@ -105,6 +105,26 @@ final class CardsZStack: UIView {
             )
         }
     }
+
+    func updateStack(with changeModel: CardsZStackChangeModel) {
+        if !changeModel.deletes.isEmpty || !changeModel.updates.isEmpty {
+            viewModelsQueue
+                .enumerated()
+                .forEach { index, viewModel in
+                    if changeModel.deletes.contains(viewModel.id) {
+                        viewModelsQueue.remove(at: index)
+                    } else if let updatedModel = changeModel.updates[viewModel.id] {
+                        viewModelsQueue[index] = updatedModel
+                    }
+                }
+        }
+
+        changeModel.inserts.forEach { viewModel in
+            viewModelsQueue.append(viewModel)
+        }
+
+        manageStack()
+    }
 }
 
 // MARK: - Animate

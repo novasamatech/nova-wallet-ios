@@ -4,10 +4,10 @@ import Operation_iOS
 class TinderGovInteractor {
     weak var presenter: TinderGovInteractorOutputProtocol?
 
-    private let referendumsObservableSource: ReferendumObservableSourceProtocol
+    private let observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
 
-    init(referendumsObservableSource: ReferendumObservableSourceProtocol) {
-        self.referendumsObservableSource = referendumsObservableSource
+    init(observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>) {
+        self.observableState = observableState
     }
 }
 
@@ -15,14 +15,38 @@ class TinderGovInteractor {
 
 extension TinderGovInteractor: TinderGovInteractorInputProtocol {
     func setup() {
-        referendumsObservableSource.observe(self)
+        let changes: [DataProviderChange<ReferendumLocal>] = observableState
+            .state
+            .value
+            .map { .insert(newItem: $1) }
+
+        presenter?.didReceive(changes)
+
+        startObservingState()
     }
 }
 
-// MARK: ReferendumsSourceObserver
+// MARK: Private
 
-extension TinderGovInteractor: ReferendumsSourceObserver {
-    func didReceive(_ changes: [DataProviderChange<ReferendumLocal>]) {
-        presenter?.didReceive(changes)
+extension TinderGovInteractor {
+    func startObservingState() {
+        observableState.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] old, new in
+            let insertsAndUpdates: [DataProviderChange<ReferendumLocal>] = new.value.compactMap {
+                old.value[$0.key] == nil
+                    ? .insert(newItem: $0.value)
+                    : .update(newItem: $0.value)
+            }
+
+            let deletes: [DataProviderChange<ReferendumLocal>] = old.value.compactMap {
+                new.value[$0.key] == nil
+                    ? .delete(deletedIdentifier: "\($0.value.index)")
+                    : nil
+            }
+
+            self?.presenter?.didReceive(insertsAndUpdates + deletes)
+        }
     }
 }

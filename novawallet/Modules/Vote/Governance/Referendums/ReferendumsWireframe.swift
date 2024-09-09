@@ -31,10 +31,10 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func showTinderGov(
         from view: ControllerBackedProtocol?,
-        accountVotes: ReferendumAccountVotingDistribution?
+        observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
     ) {
         guard let tinderGovView = TinderGovViewFactory.createView(
-            accountVotes: accountVotes,
+            observableState: observableState,
             sharedState: state
         ) else {
             return

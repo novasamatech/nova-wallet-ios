@@ -59,25 +59,24 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
             )
         }
 
-        let inserts = changes.filter { change in
-            if case .insert = change {
-                return true
+        var inserts: [ReferendumLocal] = []
+        var updates: [ReferendumLocal] = []
+        var deletes: [ReferendumIdLocal] = []
+
+        changes.forEach { change in
+            if case let .insert(item) = change {
+                inserts.append(item)
+            } else if case let .update(item) = change {
+                updates.append(item)
+            } else if change.isDeletion {
+                deletes.append(change.itemIdentifier())
             }
-
-            return false
-        }
-
-        let deletes = changes.filter { change in
-            if case .delete = change {
-                return true
-            }
-
-            return false
         }
 
         updateViews(
-            inserting: inserts.compactMap(\.item),
-            deleting: deletes.map { $0.itemIdentifier() }
+            inserting: inserts,
+            updating: updates,
+            deleting: deletes
         )
     }
 }
@@ -104,6 +103,7 @@ private extension TinderGovPresenter {
 
     func updateViews(
         inserting: [ReferendumLocal],
+        updating: [ReferendumLocal],
         deleting: [ReferendumIdLocal]
     ) {
         guard let firstReferendum = sortedReferendums.first else {
@@ -112,6 +112,7 @@ private extension TinderGovPresenter {
 
         updateCardsStackView(
             inserting: inserting,
+            updating: updating,
             deleting: deleting
         )
         updateVotingListView()
@@ -120,17 +121,32 @@ private extension TinderGovPresenter {
 
     func updateCardsStackView(
         inserting: [ReferendumLocal],
+        updating: [ReferendumLocal],
         deleting: [ReferendumIdLocal]
     ) {
-        let sortedInserts = inserting.sorted {
+        let sortedInserting = inserting.sorted {
             sorting.compare(
                 referendum1: $0,
                 referendum2: $1
             )
         }
 
-        let cardViewModels = cardsViewModelFactory.createVoteCardViewModels(
-            from: sortedInserts,
+        let inserts = createCardViewModel(from: sortedInserting)
+        let updates = createCardViewModel(from: updating).reduce(into: [:]) { $0[$1.id] = $1 }
+        let deletes = Set(deleting)
+
+        let stackChangeModel = CardsZStackChangeModel(
+            inserts: inserts,
+            updates: updates,
+            deletes: deletes
+        )
+
+        view?.updateCardsStack(with: stackChangeModel)
+    }
+
+    func createCardViewModel(from referendums: [ReferendumLocal]) -> [VoteCardViewModel] {
+        cardsViewModelFactory.createVoteCardViewModels(
+            from: referendums,
             locale: localizationManager.selectedLocale,
             onVote: { [weak self] voteResult, id in
                 self?.onReferendumVote(voteResult: voteResult, id: id)
@@ -147,11 +163,6 @@ private extension TinderGovPresenter {
                     skipAction: { self.view?.skipCard() }
                 )
             }
-        )
-
-        view?.updateCardsStack(
-            with: cardViewModels,
-            deletes: deleting
         )
     }
 
