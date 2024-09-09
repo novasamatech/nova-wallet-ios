@@ -74,6 +74,11 @@ extension ReferendumObservableSource: ReferendumObservableStoreProtocol, WeakWra
             referendums[$0] = nil
             changes.append(.delete(deletedIdentifier: "\($0)"))
         }
+        
+        observers.forEach { weakWrapper in
+            let observer = weakWrapper.target as? ReferendumsSourceObserver
+            observer?.didReceive(changes)
+        }
     }
 
     func observe(_ target: ReferendumsSourceObserver) {
