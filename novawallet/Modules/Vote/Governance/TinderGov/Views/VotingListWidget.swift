@@ -2,8 +2,8 @@ import SoraUI
 import UIKit
 
 enum VotingListWidgetViewModel {
-    case votings(count: String, title: String)
-    case empty(count: String, title: String)
+    case votings(value: String, title: String)
+    case empty(value: String, title: String)
 }
 
 class VotingListWidget: UIView {
@@ -44,19 +44,19 @@ class VotingListWidget: UIView {
 
     func bind(with viewModel: VotingListWidgetViewModel) {
         switch viewModel {
-        case let .votings(count, title):
+        case let .votings(value, title):
             counterView.backgroundView.fillColor = R.color.colorIconAccent()!
             counterView.titleLabel.apply(style: .semiboldCaps2Primary)
             titleLabel.apply(style: .footnotePrimary)
 
-            counterView.titleLabel.text = count
+            counterView.titleLabel.text = value
             titleLabel.text = title
-        case let .empty(count, title):
+        case let .empty(value, title):
             counterView.backgroundView.fillColor = R.color.colorIconInactive()!
             counterView.titleLabel.apply(style: .semiboldCaps2Inactive)
             titleLabel.apply(style: .semiboldFootnoteButtonInactive)
 
-            counterView.titleLabel.text = count
+            counterView.titleLabel.text = value
             titleLabel.text = title
         }
     }
