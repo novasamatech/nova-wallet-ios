@@ -71,7 +71,7 @@ private extension OpenGovSummaryOperationFactory {
             [
                 HttpHeaderKey.contentType.rawValue: HttpContentType.json.rawValue,
                 "x-network": chain.name.lowercased(),
-                "x-ai-summary-api-key": PolkassemblyKeys.summaryApiKey
+                "x-ai-summary-api-key": PolkassemblyKeys.getSummaryApiKey()
             ].forEach { request.setValue($1, forHTTPHeaderField: $0) }
 
             request.httpMethod = HttpMethod.get.rawValue
