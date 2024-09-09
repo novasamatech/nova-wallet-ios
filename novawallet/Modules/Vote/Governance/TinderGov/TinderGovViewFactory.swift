@@ -18,7 +18,11 @@ struct TinderGovViewFactory {
         }
 
         let wireframe = TinderGovWireframe()
-        let interactor = TinderGovInteractor(observableState: observableState)
+        let interactor = TinderGovInteractor(
+            observableState: observableState,
+            sorting: ReferendumsTimeSortingProvider(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
 
         let localizationManager = LocalizationManager.shared
         let viewModelFactory = TinderGovViewModelFactory()
@@ -49,7 +53,6 @@ struct TinderGovViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             cardsViewModelFactory: cardsViewModelFactory,
-            sorting: ReferendumsTimeSortingProvider(),
             localizationManager: localizationManager
         )
 

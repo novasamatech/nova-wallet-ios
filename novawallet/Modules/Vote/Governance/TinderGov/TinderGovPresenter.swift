@@ -11,25 +11,19 @@ final class TinderGovPresenter {
     private let cardsViewModelFactory: VoteCardViewModelFactoryProtocol
     private let localizationManager: LocalizationManagerProtocol
 
-    private var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
-    private var sortedReferendums: [ReferendumLocal] = []
-    private var votingList: [ReferendumIdLocal] = []
-
-    private let sorting: ReferendumsSorting
+    private var model: TinderGovModelBuilder.Result.Model?
 
     init(
         wireframe: TinderGovWireframeProtocol,
         interactor: TinderGovInteractorInputProtocol,
         viewModelFactory: TinderGovViewModelFactoryProtocol,
         cardsViewModelFactory: VoteCardViewModelFactoryProtocol,
-        sorting: ReferendumsSorting,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
         self.interactor = interactor
         self.viewModelFactory = viewModelFactory
         self.cardsViewModelFactory = cardsViewModelFactory
-        self.sorting = sorting
         self.localizationManager = localizationManager
     }
 }
@@ -49,35 +43,18 @@ extension TinderGovPresenter: TinderGovPresenterProtocol {
 // MARK: TinderGovInteractorOutputProtocol
 
 extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
-    func didReceive(_ changes: [DataProviderChange<ReferendumLocal>]) {
-        referendums = changes.mergeToDict(referendums)
+    func didReceive(_ modelBuilderResult: TinderGovModelBuilder.Result) {
+        model = modelBuilderResult.model
 
-        sortedReferendums = referendums.values.sorted {
-            sorting.compare(
-                referendum1: $0,
-                referendum2: $1
-            )
+        switch modelBuilderResult.changeKind {
+        case .setup:
+            updateVotingListView()
+            updateReferendumsCounter(with: model?.referendums.first?.index)
+        case .referendums:
+            updateCardsStackView()
+        case .votingList:
+            updateVotingListView()
         }
-
-        var inserts: [ReferendumLocal] = []
-        var updates: [ReferendumLocal] = []
-        var deletes: [ReferendumIdLocal] = []
-
-        changes.forEach { change in
-            if case let .insert(item) = change {
-                inserts.append(item)
-            } else if case let .update(item) = change {
-                updates.append(item)
-            } else if change.isDeletion {
-                deletes.append(change.itemIdentifier())
-            }
-        }
-
-        updateViews(
-            inserting: inserts,
-            updating: updates,
-            deleting: deletes
-        )
     }
 }
 
@@ -92,48 +69,20 @@ private extension TinderGovPresenter {
             return
         }
 
-        votingList.append(id)
-
-        updateVotingListView()
+        interactor.addVoting(for: id)
     }
 
     func onTopCardAppear(referendumId: ReferendumIdLocal) {
-        updateReferendumsCounter(currentReferendumId: referendumId)
+        updateReferendumsCounter(with: referendumId)
     }
 
-    func updateViews(
-        inserting: [ReferendumLocal],
-        updating: [ReferendumLocal],
-        deleting: [ReferendumIdLocal]
-    ) {
-        guard let firstReferendum = sortedReferendums.first else {
-            return
-        }
+    func updateCardsStackView() {
+        guard let model else { return }
 
-        updateCardsStackView(
-            inserting: inserting,
-            updating: updating,
-            deleting: deleting
-        )
-        updateVotingListView()
-        updateReferendumsCounter(currentReferendumId: firstReferendum.index)
-    }
-
-    func updateCardsStackView(
-        inserting: [ReferendumLocal],
-        updating: [ReferendumLocal],
-        deleting: [ReferendumIdLocal]
-    ) {
-        let sortedInserting = inserting.sorted {
-            sorting.compare(
-                referendum1: $0,
-                referendum2: $1
-            )
-        }
-
-        let inserts = createCardViewModel(from: sortedInserting)
-        let updates = createCardViewModel(from: updating).reduce(into: [:]) { $0[$1.id] = $1 }
-        let deletes = Set(deleting)
+        let inserts = createCardViewModel(from: model.referendumsChanges.inserts)
+        let updates = createCardViewModel(from: model.referendumsChanges.updates)
+            .reduce(into: [:]) { $0[$1.id] = $1 }
+        let deletes = Set(model.referendumsChanges.deletes)
 
         let stackChangeModel = CardsZStackChangeModel(
             inserts: inserts,
@@ -167,17 +116,26 @@ private extension TinderGovPresenter {
     }
 
     func updateVotingListView() {
+        guard let model else { return }
+
         let viewModel = viewModelFactory.createVotingListViewModel(
-            from: votingList,
+            from: model.votingList,
             locale: localizationManager.selectedLocale
         )
         view?.updateVotingList(with: viewModel)
     }
 
-    func updateReferendumsCounter(currentReferendumId: ReferendumIdLocal) {
+    func updateReferendumsCounter(with currentReferendumId: ReferendumIdLocal?) {
+        guard
+            let model,
+            let currentReferendumId
+        else {
+            return
+        }
+
         guard let viewModel = viewModelFactory.createReferendumsCounterViewModel(
             currentReferendumId: currentReferendumId,
-            referendums: sortedReferendums,
+            referendums: model.referendums,
             locale: localizationManager.selectedLocale
         ) else {
             return

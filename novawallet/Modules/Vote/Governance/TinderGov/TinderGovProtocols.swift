@@ -14,10 +14,11 @@ protocol TinderGovPresenterProtocol: AnyObject {
 
 protocol TinderGovInteractorInputProtocol: AnyObject {
     func setup()
+    func addVoting(for referendumId: ReferendumIdLocal)
 }
 
 protocol TinderGovInteractorOutputProtocol: AnyObject {
-    func didReceive(_ changes: [DataProviderChange<ReferendumLocal>])
+    func didReceive(_ modelBuilderResult: TinderGovModelBuilder.Result)
 }
 
 protocol TinderGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {

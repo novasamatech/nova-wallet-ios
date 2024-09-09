@@ -5,9 +5,19 @@ class TinderGovInteractor {
     weak var presenter: TinderGovInteractorOutputProtocol?
 
     private let observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
+    private let sorting: ReferendumsSorting
+    private let operationQueue: OperationQueue
 
-    init(observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>) {
+    private var modelBuilder: TinderGovModelBuilder?
+
+    init(
+        observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>,
+        sorting: ReferendumsSorting,
+        operationQueue: OperationQueue
+    ) {
         self.observableState = observableState
+        self.sorting = sorting
+        self.operationQueue = operationQueue
     }
 }
 
@@ -15,14 +25,20 @@ class TinderGovInteractor {
 
 extension TinderGovInteractor: TinderGovInteractorInputProtocol {
     func setup() {
-        let changes: [DataProviderChange<ReferendumLocal>] = observableState
-            .state
-            .value
-            .map { .insert(newItem: $1) }
+        modelBuilder = .init(
+            sorting: sorting,
+            workingQueue: operationQueue
+        ) { [weak self] result in
+            self?.presenter?.didReceive(result)
+        }
 
-        presenter?.didReceive(changes)
-
+        modelBuilder?.buildOnSetup()
+        modelBuilder?.apply(observableState.state.value)
         startObservingState()
+    }
+
+    func addVoting(for referendumId: ReferendumIdLocal) {
+        modelBuilder?.apply(voting: referendumId)
     }
 }
 
@@ -33,20 +49,8 @@ extension TinderGovInteractor {
         observableState.addObserver(
             with: self,
             queue: .main
-        ) { [weak self] old, new in
-            let insertsAndUpdates: [DataProviderChange<ReferendumLocal>] = new.value.compactMap {
-                old.value[$0.key] == nil
-                    ? .insert(newItem: $0.value)
-                    : .update(newItem: $0.value)
-            }
-
-            let deletes: [DataProviderChange<ReferendumLocal>] = old.value.compactMap {
-                new.value[$0.key] == nil
-                    ? .delete(deletedIdentifier: "\($0.value.index)")
-                    : nil
-            }
-
-            self?.presenter?.didReceive(insertsAndUpdates + deletes)
+        ) { [weak self] _, new in
+            self?.modelBuilder?.apply(new.value)
         }
     }
 }

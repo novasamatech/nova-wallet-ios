@@ -40,21 +40,15 @@ extension ReferendumsPresenter {
         }
     }
 
-    func createTinderGovSection(
-        for referendums: [ReferendumLocal],
-        accountVotes: ReferendumAccountVotingDistribution?
-    ) -> ReferendumsSection? {
+    func createTinderGovSection() -> ReferendumsSection? {
         guard supportsTinderGov == true else {
             return nil
         }
 
-        let filter = ReferendumFilter.VoteAvailable(
-            referendums: referendums,
-            accountVotes: accountVotes
-        )
+        let referendums = Array(tinderGovObservableState.state.value.values)
 
         return tinderGovViewModelFactory.createTinderGovReferendumsSection(
-            using: filter,
+            with: referendums,
             locale: selectedLocale
         )
     }

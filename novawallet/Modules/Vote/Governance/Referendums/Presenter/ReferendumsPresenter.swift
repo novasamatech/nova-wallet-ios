@@ -107,6 +107,19 @@ final class ReferendumsPresenter {
         interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
     }
 
+    private func updateTinderGovState() {
+        guard let referendums else { return }
+
+        let voteAvailableFilter = ReferendumFilter.VoteAvailable(
+            referendums: referendums,
+            accountVotes: voting?.value?.votes
+        )
+
+        tinderGovObservableState.state = .init(
+            value: voteAvailableFilter().reduce(into: [:]) { $0[$1.index] = $1 }
+        )
+    }
+
     func clearState() {
         freeBalance = nil
         price = nil
@@ -267,6 +280,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
         self.voting = voting
         filterReferendums()
+        updateTinderGovState()
 
         if let tracksVoting = voting.value {
             interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: voting.blockHash)
@@ -316,15 +330,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
             )
         }
 
-        let voteAvailableFilter = ReferendumFilter.VoteAvailable(
-            referendums: referendums,
-            accountVotes: voting?.value?.votes
-        )
-
-        tinderGovObservableState.state = .init(
-            value: voteAvailableFilter().reduce(into: [:]) { $0[$1.index] = $1 }
-        )
-
+        updateTinderGovState()
         filterReferendums()
         updateTimeModels()
         refreshUnlockSchedule()

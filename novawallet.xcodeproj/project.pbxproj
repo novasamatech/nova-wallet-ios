@@ -933,6 +933,7 @@
 		2D7748802C8B48C40059607B /* CIKeys.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487F2C8B48C40059607B /* CIKeys.generated.swift */; };
 		2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */; };
 		2D7748842C8F65470059607B /* DataProviderChange+ReferendumLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748832C8F65470059607B /* DataProviderChange+ReferendumLocal.swift */; };
+		2D7748862C8F799C0059607B /* TinderGovModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */; };
 		2D7BEBD62C23818B00BBCB57 /* NetworkManageNodeWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7BEBD52C23818B00BBCB57 /* NetworkManageNodeWireframe.swift */; };
 		2D7C8A8F2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */; };
 		2D7C8A912C2DA2280044E601 /* NetworkNodeConnectingTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */; };
@@ -5960,6 +5961,7 @@
 		2D77487F2C8B48C40059607B /* CIKeys.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIKeys.generated.swift; sourceTree = SOURCE_ROOT; };
 		2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumAmountOperationFactory.swift; sourceTree = "<group>"; };
 		2D7748832C8F65470059607B /* DataProviderChange+ReferendumLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+ReferendumLocal.swift"; sourceTree = "<group>"; };
+		2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovModelBuilder.swift; sourceTree = "<group>"; };
 		2D7BEBD52C23818B00BBCB57 /* NetworkManageNodeWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManageNodeWireframe.swift; sourceTree = "<group>"; };
 		2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeCreatorTrait.swift; sourceTree = "<group>"; };
 		2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeConnectingTrait.swift; sourceTree = "<group>"; };
@@ -12170,6 +12172,7 @@
 				2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */,
 				2D389B142C87036100256C7B /* ReferendumFilter.swift */,
 				2D7748832C8F65470059607B /* DataProviderChange+ReferendumLocal.swift */,
+				2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -26473,6 +26476,7 @@
 				7728E58F2A123B70007901E0 /* ReferendumsViewState.swift in Sources */,
 				77F1893E2A4996FC00E8B933 /* ParagraphView.swift in Sources */,
 				8422F2F328881C9B00C7B840 /* WatchOnlyWallet.swift in Sources */,
+				2D7748862C8F799C0059607B /* TinderGovModelBuilder.swift in Sources */,
 				8446F5F228172BBC00B7A86C /* StakingUnbonHintView.swift in Sources */,
 				F40966F526B299FC008CD244 /* SubqueryRewardsSource.swift in Sources */,
 				AF8193D9F818638254854232 /* StakingMainProtocols.swift in Sources */,
