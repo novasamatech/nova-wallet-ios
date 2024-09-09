@@ -65,7 +65,6 @@ final class VoteCardView: RoundedView {
 
         if isLoading {
             updateLoadingState()
-            skeletonView?.restartSkrulling()
         }
     }
 
