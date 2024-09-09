@@ -7,7 +7,7 @@ final class VoteAvailableReferendumSource {
     private let referendumsSource: ReferendumObservableSourceProtocol
     private let filter: ReferendumFilter.VoteAvailableChanges
 
-    private var changes: [DataProviderChange<ReferendumLocal>] = []
+    private var changes: [ReferendumIdLocal: DataProviderChange<ReferendumLocal>] = [:]
 
     private let mutex = NSLock()
 
@@ -36,7 +36,7 @@ extension VoteAvailableReferendumSource: ReferendumObservableSourceProtocol, Wea
 
         guard !changes.isEmpty else { return }
 
-        target.didReceive(changes)
+        target.didReceive(Array(changes.values))
     }
 }
 
@@ -44,7 +44,19 @@ extension VoteAvailableReferendumSource: ReferendumObservableSourceProtocol, Wea
 
 extension VoteAvailableReferendumSource: ReferendumsSourceObserver {
     func didReceive(_ changes: [DataProviderChange<ReferendumLocal>]) {
-        self.changes = filter(changes: changes)
-        observers.forEach { ($0 as? ReferendumsSourceObserver)?.didReceive(changes) }
+        let filteredChanges = filter(changes: changes)
+        observers.forEach { ($0 as? ReferendumsSourceObserver)?.didReceive(filteredChanges) }
+        
+        filteredChanges.forEach { change in
+            let id = change.itemIdentifier()
+            
+            if
+                let existingChange = self.changes[id],
+                change.isDeletion {
+                self.changes[id] = nil
+            } else {
+                self.changes[id] = change
+            }
+        }
     }
 }
