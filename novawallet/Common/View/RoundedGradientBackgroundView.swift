@@ -12,6 +12,9 @@ final class RoundedGradientBackgroundView: RoundedView {
         setupLayout()
 
         backgroundColor = .clear
+        strokeColor = .clear
+        strokeWidth = .zero
+        highlightedStrokeColor = .clear
     }
 
     override var cornerRadius: CGFloat {
@@ -29,6 +32,8 @@ final class RoundedGradientBackgroundView: RoundedView {
     }
 
     func bind(model: GradientBannerModel) {
+        leftGradientView.isHidden = false
+
         leftGradientView.colors = model.left.colors
         leftGradientView.locations = model.left.locations
         leftGradientView.startPoint = model.left.startPoint
@@ -38,6 +43,15 @@ final class RoundedGradientBackgroundView: RoundedView {
         rightGradientView.locations = model.right.locations
         rightGradientView.startPoint = model.right.startPoint
         rightGradientView.endPoint = model.right.endPoint
+    }
+
+    func bind(model: GradientModel) {
+        leftGradientView.isHidden = true
+
+        rightGradientView.colors = model.colors
+        rightGradientView.locations = model.locations
+        rightGradientView.startPoint = model.startPoint
+        rightGradientView.endPoint = model.endPoint
     }
 
     private func setupLayout() {

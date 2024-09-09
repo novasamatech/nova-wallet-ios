@@ -213,6 +213,22 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         }
     }
 
+    func selectTinderGov() {
+        guard let referendums else {
+            return
+        }
+
+        let filter = TinderGovReferendumsFilter(
+            referendums: referendums,
+            accountVotes: voting?.value?.votes
+        )
+
+        wireframe.showTinderGov(
+            from: view,
+            referendums: filter()
+        )
+    }
+
     func showReferendumDetailsIfNeeded() {
         guard let referendumsState = referendumsInitState,
               let referendums = referendums,

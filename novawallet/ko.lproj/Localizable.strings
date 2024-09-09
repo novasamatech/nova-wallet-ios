@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "초과 구독되지 않음";
 "staking.recommended.hint3" = "온라인 신분 확인됨";
 "staking.recommended.hint4" = "슬래시되지 않음";
-"staking.recommended.validators.counter" = "%@ 중 %@";
 "staking.recommended.custom.title" = "커스텀 밸리데이터 선택";
 "fee.not.yet.loaded.title" = "수수료 계산 진행 중";
 "fee.not.yet.loaded.message" = "수수료 계산이 완료될 때까지 기다려주세요";
@@ -1731,3 +1730,4 @@
 "gov.vote.conviction.hint.title" = "<font>기권</font> 시 확신도가 0.1x로 설정됩니다";
 "cloud.backup.password.confirm.title" = "백업 비밀번호 확인";
 "cloud.backup.password.confirm.details" = "이전 화면에서 생성한 비밀번호를 입력하세요";
+"common.counter" = "%d 중 %d";

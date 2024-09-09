@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "Tidak terlalu banyak peminat";
 "staking.recommended.hint3" = "Memiliki identitas onchain";
 "staking.recommended.hint4" = "Tidak dipotong";
-"staking.recommended.validators.counter" = "%@ dari %@";
 "staking.recommended.custom.title" = "Pilih validator kustom";
 "fee.not.yet.loaded.title" = "Perhitungan biaya sedang berlangsung";
 "fee.not.yet.loaded.message" = "Harap tunggu hingga biaya dihitung";
@@ -1731,3 +1730,4 @@
 "gov.vote.conviction.hint.title" = "Keyakinan akan diatur ke 0,1x ketika Abstain";
 "cloud.backup.password.confirm.title" = "Konfirmasikan kata sandi cadangan";
 "cloud.backup.password.confirm.details" = "Harap masukkan kata sandi yang Anda buat di layar sebelumnya";
+"common.counter" = "%d dari %d";

@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "Не превышен лимит номинаторов";
 "staking.recommended.hint3" = "Идентифицирован в сети";
 "staking.recommended.hint4" = "Не был заслешан";
-"staking.recommended.validators.counter" = "%@ из %@";
 "staking.recommended.custom.title" = "Выбрать других валидаторов";
 "fee.not.yet.loaded.title" = "Расчет комиссии в процессе";
 "fee.not.yet.loaded.message" = "Подождите, пока будет рассчитана комиссия";
@@ -1731,3 +1730,7 @@
 "gov.vote.conviction.hint.title" = "Убежденность будет установлена на 0.1x при Воздержании";
 "cloud.backup.password.confirm.title" = "Подтвердите пароль для бэкапа";
 "cloud.backup.password.confirm.details" = "Пожалуйста, введите пароль, который вы создали на предыдущем экране";
+"common.counter" = "%d из %d";
+"voting.list.widget.title" = "Список голосований";
+"voting.list.widget.title.empty" = "Нет голосований";
+"vote.card.requested" = "Запрошено:";

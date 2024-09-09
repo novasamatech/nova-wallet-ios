@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "未超额认购";
 "staking.recommended.hint3" = "拥有链上身份";
 "staking.recommended.hint4" = "未被削减";
-"staking.recommended.validators.counter" = "%@ / %@";
 "staking.recommended.custom.title" = "选择自定义验证器";
 "fee.not.yet.loaded.title" = "费用计算正在进行中";
 "fee.not.yet.loaded.message" = "请等待费用计算";
@@ -1731,3 +1730,4 @@
 "gov.vote.conviction.hint.title" = "弃权时将把决心设置为 0.1x";
 "cloud.backup.password.confirm.title" = "确认备份密码";
 "cloud.backup.password.confirm.details" = "请输入您在上一个屏幕上创建的密码";
+"common.counter" = "%d / %d";
