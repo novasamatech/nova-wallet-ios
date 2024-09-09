@@ -55,12 +55,12 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
 
         return if votingList.isEmpty {
             VotingListWidgetViewModel.empty(
-                count: "\(votingList.count)",
+                value: "0",
                 title: R.string.localizable.votingListWidgetTitleEmpty(preferredLanguages: languages)
             )
         } else {
             VotingListWidgetViewModel.votings(
-                count: "\(votingList.count)",
+                value: "\(votingList.count)",
                 title: R.string.localizable.votingListWidgetTitle(preferredLanguages: languages)
             )
         }

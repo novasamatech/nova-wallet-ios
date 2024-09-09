@@ -92,7 +92,7 @@ private extension TinderGovPresenter {
         guard voteResult != .skip else {
             return
         }
-        
+
         votingList.append(id)
 
         updateVotingListView()
@@ -120,7 +120,7 @@ private extension TinderGovPresenter {
 
     func updateCardsStackView(
         inserting: [ReferendumLocal],
-        deleting _: [ReferendumIdLocal]
+        deleting: [ReferendumIdLocal]
     ) {
         let sortedInserts = inserting.sorted {
             sorting.compare(
@@ -149,7 +149,10 @@ private extension TinderGovPresenter {
             }
         )
 
-        view?.updateCards(with: cardViewModels)
+        view?.updateCardsStack(
+            with: cardViewModels,
+            deletes: deleting
+        )
     }
 
     func updateVotingListView() {

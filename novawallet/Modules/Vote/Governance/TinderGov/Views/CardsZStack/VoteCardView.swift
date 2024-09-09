@@ -48,7 +48,7 @@ final class VoteCardView: RoundedView {
         )
     }
 
-    private var viewModel: VoteCardViewModel?
+    private(set) var viewModel: VoteCardViewModel?
 
     var isLoading: Bool = false {
         didSet {

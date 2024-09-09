@@ -52,7 +52,7 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
         onLoadError: @escaping (VoteCardLoadErrorActions) -> Void
     ) -> [VoteCardViewModel] {
         referendums.enumerated().map { index, referendum in
-            let gradientModel = cardGradientFactory.createCardGratient(for: index)
+            let gradientModel = cardGradientFactory.createCardGradient(for: index)
             let requestedAmountFactory = ReferendumAmountOperationFactory(
                 referendum: referendum,
                 connection: connection,

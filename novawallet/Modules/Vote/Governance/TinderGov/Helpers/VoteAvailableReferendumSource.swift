@@ -46,10 +46,10 @@ extension VoteAvailableReferendumSource: ReferendumsSourceObserver {
     func didReceive(_ changes: [DataProviderChange<ReferendumLocal>]) {
         let filteredChanges = filter(changes: changes)
         observers.forEach { ($0 as? ReferendumsSourceObserver)?.didReceive(filteredChanges) }
-        
+
         filteredChanges.forEach { change in
             let id = change.itemIdentifier()
-            
+
             if
                 let existingChange = self.changes[id],
                 change.isDeletion {
