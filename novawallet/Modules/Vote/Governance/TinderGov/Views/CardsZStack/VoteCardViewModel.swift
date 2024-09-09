@@ -8,8 +8,14 @@ struct VoteCardLoadErrorActions {
     let retry: () -> Void
 }
 
+typealias VoteCardId = ReferendumIdLocal
+
 final class VoteCardViewModel {
     weak var view: StackCardViewUpdatable?
+
+    var id: VoteCardId {
+        referendum.index
+    }
 
     let locale: Locale
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol

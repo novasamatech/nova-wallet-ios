@@ -115,14 +115,6 @@ private extension TinderGovViewLayout {
 // MARK: Cards
 
 extension TinderGovViewLayout {
-    func addCard(
-        model: VoteCardViewModel
-    ) {
-        cardsStack.addCard(
-            model: model
-        )
-    }
-
     /// Should be called after adding batch of cards, to inform top card that it's presented and became top
     /// `cardsStack.notifyTopView` is called automatically on top card in stack after dismissal animation
     func finishedAddingCards() {

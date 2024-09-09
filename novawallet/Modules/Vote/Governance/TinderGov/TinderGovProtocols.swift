@@ -1,7 +1,10 @@
 import Operation_iOS
 
 protocol TinderGovViewProtocol: ControllerBackedProtocol {
-    func updateCards(with newModels: [VoteCardViewModel])
+    func updateCardsStack(
+        with newModels: [VoteCardViewModel],
+        deletes: [ReferendumIdLocal]
+    )
     func skipCard()
     func updateVotingList(with viewModel: VotingListWidgetViewModel)
     func updateCardsCounter(with text: String)
