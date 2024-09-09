@@ -8,6 +8,12 @@ protocol CardStackable: AnyObject {
     func prepareForReuse()
 }
 
+struct CardsZStackChangeModel {
+    let inserts: [VoteCardViewModel]
+    let updates: [VoteCardId: VoteCardViewModel]
+    let deletes: Set<VoteCardId>
+}
+
 final class CardsZStack: UIView {
     enum DismissalDirection {
         case left
