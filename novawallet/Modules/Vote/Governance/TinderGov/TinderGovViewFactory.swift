@@ -22,8 +22,13 @@ struct TinderGovViewFactory {
         let storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared
 
         let mapper = VotingBasketItemMapper()
+
+        let filter = NSPredicate.votingBasketItems(
+            for: option.chain.chainId,
+            metaId: metaAccount.metaId
+        )
         let repository = storageFacade.createRepository(
-            filter: nil,
+            filter: filter,
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(mapper)
         )

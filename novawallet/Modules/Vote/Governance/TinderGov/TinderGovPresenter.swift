@@ -56,7 +56,7 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
             updateVotingListView()
         }
     }
-    
+
     func didReceive(_ error: any Error) {
         wireframe.present(
             error: error,

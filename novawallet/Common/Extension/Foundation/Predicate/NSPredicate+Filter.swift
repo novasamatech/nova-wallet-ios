@@ -418,4 +418,24 @@ extension NSPredicate {
 
         return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
     }
+
+    static func votingBasketItems(
+        for chainId: ChainModel.Id,
+        metaId: String
+    ) -> NSPredicate {
+        let chainPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDVotingBasketItem.chainId),
+            chainId
+        )
+        let metaAccountPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDVotingBasketItem.metaId),
+            metaId
+        )
+
+        return NSCompoundPredicate(
+            andPredicateWithSubpredicates: [chainPredicate, metaAccountPredicate]
+        )
+    }
 }
