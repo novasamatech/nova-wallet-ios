@@ -30,7 +30,11 @@ extension TinderGovModelBuilder {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
-            let changes = findReferendumChanges(for: newReferendums)
+            var mutReferendums = newReferendums
+
+            votingList.forEach { mutReferendums.removeValue(forKey: $0.referendumId) }
+
+            let changes = findReferendumChanges(for: mutReferendums)
 
             referendums = newReferendums
 
@@ -41,34 +45,28 @@ extension TinderGovModelBuilder {
         }
     }
 
-    func apply(votingsChanges: [DataProviderChange<VotingBasketItemLocal>]) {
+    func apply(
+        votingsChanges: [DataProviderChange<VotingBasketItemLocal>],
+        _ referendums: [ReferendumIdLocal: ReferendumLocal]
+    ) {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
-            var mutReferendums = referendums
-
-            votingsChanges
-                .compactMap(\.item)
-                .forEach { mutReferendums[$0.referendumId] = nil }
-
-            let referendumsChanges = findReferendumChanges(for: mutReferendums)
-
             votingList = votingList.applying(changes: votingsChanges)
 
+            var mutReferendums = referendums
+
+            votingList.forEach { mutReferendums.removeValue(forKey: $0.referendumId) }
+
+            let changes = findReferendumChanges(for: mutReferendums)
+
+            self.referendums = referendums
+
             rebuild(
-                with: referendumsChanges,
+                with: changes,
                 changeKind: .full
             )
         }
-    }
-
-    func buildOnSetup() {
-        let result = Result(
-            model: currentModel,
-            changeKind: .setup
-        )
-
-        callbackQueue.async { [weak self] in self?.closure(result) }
     }
 }
 

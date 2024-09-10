@@ -50,7 +50,6 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
         case .setup:
             updateVotingListView()
         case .referendums:
-            updateVotingListView()
             updateCardsStackView()
         case .full:
             updateVotingListView()
@@ -86,9 +85,7 @@ private extension TinderGovPresenter {
         )
     }
 
-    func onTopCardAppear(referendumId _: ReferendumIdLocal) {
-        updateReferendumsCounter()
-    }
+    func onTopCardAppear(referendumId _: ReferendumIdLocal) {}
 
     func updateCardsStackView() {
         guard let model else { return }

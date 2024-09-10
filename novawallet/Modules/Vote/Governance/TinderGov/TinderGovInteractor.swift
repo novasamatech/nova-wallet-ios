@@ -49,7 +49,6 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
         ) { [weak self] result in
             self?.presenter?.didReceive(result)
         }
-        modelBuilder?.apply(observableState.state.value)
         startObservingState()
 
         basketItemsProvider = subscribeToVotingBasketItemProvider(
@@ -97,7 +96,10 @@ extension TinderGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketS
     func handleVotingBasketItems(result: Result<[DataProviderChange<VotingBasketItemLocal>], any Error>) {
         switch result {
         case let .success(votingsChanges):
-            modelBuilder?.apply(votingsChanges: votingsChanges)
+            modelBuilder?.apply(
+                votingsChanges: votingsChanges,
+                observableState.state.value
+            )
         case let .failure(error):
             presenter?.didReceive(error)
         }
