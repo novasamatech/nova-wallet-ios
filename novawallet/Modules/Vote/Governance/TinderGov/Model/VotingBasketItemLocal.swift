@@ -22,7 +22,11 @@ extension VotingBasketItemLocal: Identifiable {
         metaId: String,
         chainId: ChainModel.Id
     ) -> String {
-        chainId + "-" + String(referendumId)
+        [
+            String(referendumId),
+            metaId,
+            chainId
+        ].joined(with: .dash)
     }
 
     var identifier: String {
