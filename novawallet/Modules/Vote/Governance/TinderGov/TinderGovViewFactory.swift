@@ -1,9 +1,11 @@
 import Foundation
 import SoraFoundation
+import Operation_iOS
 
 struct TinderGovViewFactory {
     static func createView(
         observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>,
+        metaAccount: MetaAccountModel,
         sharedState: GovernanceSharedState
     ) -> TinderGovViewProtocol? {
         guard
@@ -17,10 +19,23 @@ struct TinderGovViewFactory {
             return nil
         }
 
+        let storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared
+
+        let mapper = VotingBasketItemMapper()
+        let repository = storageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
         let wireframe = TinderGovWireframe()
+
         let interactor = TinderGovInteractor(
+            metaAccount: metaAccount,
             observableState: observableState,
+            governanceState: sharedState,
             sorting: ReferendumsTimeSortingProvider(),
+            basketItemsRepository: AnyDataProviderRepository(repository),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

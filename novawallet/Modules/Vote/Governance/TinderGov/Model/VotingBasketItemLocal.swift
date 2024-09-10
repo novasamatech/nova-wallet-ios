@@ -53,7 +53,7 @@ enum ConvictionLocal: String {
     case locked5x
     /// 6x votes, locked for 32x...
     case locked6x
-    
+
     init(rawType: String) {
         if let knownType = Self(rawValue: rawType) {
             self = knownType
@@ -61,7 +61,7 @@ enum ConvictionLocal: String {
             self = .none
         }
     }
-    
+
     func votes(for balance: BigUInt) -> BigUInt {
         switch self {
         case .none:

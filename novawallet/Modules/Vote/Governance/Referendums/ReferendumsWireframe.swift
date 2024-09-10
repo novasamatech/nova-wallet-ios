@@ -3,9 +3,14 @@ import UIKit
 
 final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     let state: GovernanceSharedState
+    let metaAccount: MetaAccountModel
 
-    init(state: GovernanceSharedState) {
+    init(
+        state: GovernanceSharedState,
+        metaAccount: MetaAccountModel
+    ) {
         self.state = state
+        self.metaAccount = metaAccount
     }
 
     func selectChain(
@@ -35,6 +40,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     ) {
         guard let tinderGovView = TinderGovViewFactory.createView(
             observableState: observableState,
+            metaAccount: metaAccount,
             sharedState: state
         ) else {
             return

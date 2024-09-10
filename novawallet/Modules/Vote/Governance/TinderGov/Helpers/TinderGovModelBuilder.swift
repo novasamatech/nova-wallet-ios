@@ -67,6 +67,13 @@ extension TinderGovModelBuilder {
         }
     }
 
+    func apply(votings: [ReferendumIdLocal]) {
+        workingQueue.addOperation { [weak self] in
+            votings.forEach { self?.votingList.append($0) }
+            self?.rebuildVotingList()
+        }
+    }
+
     func buildOnSetup() {
         let result = Result(
             model: currentModel,
