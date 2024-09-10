@@ -35,12 +35,20 @@ struct TinderGovViewFactory {
 
         let wireframe = TinderGovWireframe()
 
+        let votingBasketSubscriptionFactory = VotingBasketLocalSubscriptionFactory(
+            chainRegistry: sharedState.chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
+
         let interactor = TinderGovInteractor(
             metaAccount: metaAccount,
             observableState: observableState,
             governanceState: sharedState,
             sorting: ReferendumsTimeSortingProvider(),
             basketItemsRepository: AnyDataProviderRepository(repository),
+            votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

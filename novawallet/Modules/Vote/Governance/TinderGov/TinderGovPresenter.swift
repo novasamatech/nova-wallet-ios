@@ -49,11 +49,12 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
         switch modelBuilderResult.changeKind {
         case .setup:
             updateVotingListView()
-            updateReferendumsCounter(with: model?.referendums.first?.index)
+            updateReferendumsCounter()
         case .referendums:
             updateCardsStackView()
-        case .votingList:
+        case .full:
             updateVotingListView()
+            updateCardsStackView()
         }
     }
 
@@ -83,8 +84,8 @@ private extension TinderGovPresenter {
         )
     }
 
-    func onTopCardAppear(referendumId: ReferendumIdLocal) {
-        updateReferendumsCounter(with: referendumId)
+    func onTopCardAppear(referendumId _: ReferendumIdLocal) {
+        updateReferendumsCounter()
     }
 
     func updateCardsStackView() {
@@ -136,17 +137,12 @@ private extension TinderGovPresenter {
         view?.updateVotingList(with: viewModel)
     }
 
-    func updateReferendumsCounter(with currentReferendumId: ReferendumIdLocal?) {
-        guard
-            let model,
-            let currentReferendumId
-        else {
-            return
-        }
+    func updateReferendumsCounter(with _: ReferendumIdLocal? = nil) {
+        guard let model, !model.referendums.isEmpty else { return }
 
         guard let viewModel = viewModelFactory.createReferendumsCounterViewModel(
-            currentReferendumId: currentReferendumId,
             referendums: model.referendums,
+            votingList: model.votingList,
             locale: localizationManager.selectedLocale
         ) else {
             return

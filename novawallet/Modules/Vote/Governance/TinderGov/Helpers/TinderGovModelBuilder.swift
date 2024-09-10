@@ -8,7 +8,7 @@ final class TinderGovModelBuilder {
     private let closure: (Result) -> Void
 
     private var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
-    private var votingList: [ReferendumIdLocal] = []
+    private var votingList: [VotingBasketItemLocal] = []
 
     private var currentModel: Result.Model = .init()
 
@@ -30,47 +30,35 @@ extension TinderGovModelBuilder {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
-            var inserts: [ReferendumLocal] = []
-            var updates: [ReferendumLocal] = []
-            var deletes: [ReferendumIdLocal] = []
-
-            newReferendums.forEach { key, value in
-                if self.referendums[key] == nil {
-                    inserts.append(value)
-                } else {
-                    updates.append(value)
-                }
-            }
-
-            referendums.forEach { key, value in
-                if newReferendums[key] == nil {
-                    deletes.append(value.index)
-                }
-            }
-
-            let changes = Result.ReferendumsListChanges(
-                inserts: sorted(inserts),
-                updates: updates,
-                deletes: deletes
-            )
+            let changes = findReferendumChanges(for: newReferendums)
 
             referendums = newReferendums
 
-            rebuild(with: sorted(Array(newReferendums.values)), changes)
+            rebuild(
+                with: changes,
+                changeKind: .referendums
+            )
         }
     }
 
-    func apply(voting: ReferendumIdLocal) {
+    func apply(votingsChanges: [DataProviderChange<VotingBasketItemLocal>]) {
         workingQueue.addOperation { [weak self] in
-            self?.votingList.append(voting)
-            self?.rebuildVotingList()
-        }
-    }
+            guard let self else { return }
 
-    func apply(votings: [ReferendumIdLocal]) {
-        workingQueue.addOperation { [weak self] in
-            votings.forEach { self?.votingList.append($0) }
-            self?.rebuildVotingList()
+            var mutReferendums = referendums
+
+            votingsChanges
+                .compactMap(\.item)
+                .forEach { mutReferendums[$0.referendumId] = nil }
+
+            let referendumsChanges = findReferendumChanges(for: mutReferendums)
+
+            votingList = votingList.applying(changes: votingsChanges)
+
+            rebuild(
+                with: referendumsChanges,
+                changeKind: .full
+            )
         }
     }
 
@@ -88,11 +76,11 @@ extension TinderGovModelBuilder {
 
 private extension TinderGovModelBuilder {
     func rebuild(
-        with referendums: [ReferendumLocal],
-        _ changes: Result.ReferendumsListChanges
+        with changes: Result.ReferendumsListChanges,
+        changeKind: Result.ChangeKind
     ) {
         let model = Result.Model(
-            referendums: referendums,
+            referendums: sorted(Array(referendums.values)),
             referendumsChanges: changes,
             votingList: votingList
         )
@@ -101,23 +89,38 @@ private extension TinderGovModelBuilder {
 
         let result = Result(
             model: model,
-            changeKind: .referendums
+            changeKind: changeKind
         )
 
         callbackQueue.async { [weak self] in self?.closure(result) }
     }
 
-    func rebuildVotingList() {
-        let model = currentModel.replacing(votingList)
+    func findReferendumChanges(
+        for newReferendums: [ReferendumIdLocal: ReferendumLocal]
+    ) -> Result.ReferendumsListChanges {
+        var inserts: [ReferendumLocal] = []
+        var updates: [ReferendumLocal] = []
+        var deletes: [ReferendumIdLocal] = []
 
-        currentModel = model
+        newReferendums.forEach { key, value in
+            if self.referendums[key] == nil {
+                inserts.append(value)
+            } else {
+                updates.append(value)
+            }
+        }
 
-        let result = Result(
-            model: model,
-            changeKind: .votingList
+        referendums.forEach { key, value in
+            if newReferendums[key] == nil {
+                deletes.append(value.index)
+            }
+        }
+
+        return Result.ReferendumsListChanges(
+            inserts: sorted(inserts),
+            updates: updates,
+            deletes: deletes
         )
-
-        callbackQueue.async { [weak self] in self?.closure(result) }
     }
 
     func sorted(_ referendums: [ReferendumLocal]) -> [ReferendumLocal] {
@@ -137,19 +140,19 @@ extension TinderGovModelBuilder {
         struct Model {
             let referendums: [ReferendumLocal]
             let referendumsChanges: ReferendumsListChanges
-            let votingList: [ReferendumIdLocal]
+            let votingList: [VotingBasketItemLocal]
 
             init(
                 referendums: [ReferendumLocal] = [],
                 referendumsChanges: ReferendumsListChanges = .init(inserts: [], updates: [], deletes: []),
-                votingList: [ReferendumIdLocal] = []
+                votingList: [VotingBasketItemLocal] = []
             ) {
                 self.referendums = referendums
                 self.referendumsChanges = referendumsChanges
                 self.votingList = votingList
             }
 
-            func replacing(_ votingList: [ReferendumIdLocal]) -> Self {
+            func replacing(_ votingList: [VotingBasketItemLocal]) -> Self {
                 .init(
                     referendums: referendums,
                     referendumsChanges: referendumsChanges,
@@ -165,9 +168,9 @@ extension TinderGovModelBuilder {
         }
 
         enum ChangeKind {
-            case referendums
-            case votingList
             case setup
+            case referendums
+            case full
         }
 
         let model: Model

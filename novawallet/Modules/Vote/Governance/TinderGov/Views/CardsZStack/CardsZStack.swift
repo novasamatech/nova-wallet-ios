@@ -116,6 +116,7 @@ final class CardsZStack: UIView {
         if !changeModel.deletes.isEmpty || !changeModel.updates.isEmpty {
             viewModelsQueue
                 .enumerated()
+                .reversed()
                 .forEach { index, viewModel in
                     if changeModel.deletes.contains(viewModel.id) {
                         viewModelsQueue.remove(at: index)

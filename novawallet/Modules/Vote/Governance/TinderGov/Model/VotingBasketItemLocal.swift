@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import BigInt
 
-struct VotingBasketItemLocal {
+struct VotingBasketItemLocal: Equatable {
     enum VoteType: String {
         case aye
         case nay

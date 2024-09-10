@@ -936,6 +936,8 @@
 		2D7748862C8F799C0059607B /* TinderGovModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */; };
 		2D7748892C90368C0059607B /* VotingBasketMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748882C90368C0059607B /* VotingBasketMapper.swift */; };
 		2D77488C2C90428E0059607B /* VotingBasketItemLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */; };
+		2D77488E2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77488D2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift */; };
+		2D7748902C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77488F2C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift */; };
 		2D7BEBD62C23818B00BBCB57 /* NetworkManageNodeWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7BEBD52C23818B00BBCB57 /* NetworkManageNodeWireframe.swift */; };
 		2D7C8A8F2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */; };
 		2D7C8A912C2DA2280044E601 /* NetworkNodeConnectingTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */; };
@@ -5967,6 +5969,8 @@
 		2D7748872C9035550059607B /* SubstrateDataModel33.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel33.xcdatamodel; sourceTree = "<group>"; };
 		2D7748882C90368C0059607B /* VotingBasketMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketMapper.swift; sourceTree = "<group>"; };
 		2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketItemLocal.swift; sourceTree = "<group>"; };
+		2D77488D2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketLocalStorageSubscriber.swift; sourceTree = "<group>"; };
+		2D77488F2C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D7BEBD52C23818B00BBCB57 /* NetworkManageNodeWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManageNodeWireframe.swift; sourceTree = "<group>"; };
 		2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeCreatorTrait.swift; sourceTree = "<group>"; };
 		2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeConnectingTrait.swift; sourceTree = "<group>"; };
@@ -12177,8 +12181,10 @@
 				2DA85A762C7FCCCE00591900 /* TinderGovViewModelFactory.swift */,
 				2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */,
 				2D389B142C87036100256C7B /* ReferendumFilter.swift */,
+				2D77488D2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift */,
 				2D7748832C8F65470059607B /* DataProviderChange+ReferendumLocal.swift */,
 				2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */,
+				2D77488F2C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -26064,6 +26070,7 @@
 				0CCDB2EB2B74DA55007BC5D6 /* GraphModel.swift in Sources */,
 				84DBEA7729DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift in Sources */,
 				884048D428C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift in Sources */,
+				2D77488E2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift in Sources */,
 				846A2C4D2529FBB700731018 /* NSPredicate+Filter.swift in Sources */,
 				84282292289BB45700163031 /* ParitySignerWallet.swift in Sources */,
 				84D17EDA28054C7500F7BAFF /* DAppLocalStorageSubscriber.swift in Sources */,
@@ -27516,6 +27523,7 @@
 				846A835D28B8D09600D92892 /* LedgerMessageSheetViewFactory.swift in Sources */,
 				774092002ACC1BE400172516 /* SwapAmountInput.swift in Sources */,
 				60FFEE5B386E82D70333BE80 /* CreateWatchOnlyPresenter.swift in Sources */,
+				2D7748902C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift in Sources */,
 				842E9EA02A2DC23900759972 /* StakingDashboardBuilderProtocol.swift in Sources */,
 				454D41CC5C7CC2FDAB778026 /* CreateWatchOnlyInteractor.swift in Sources */,
 				576010F6494B3E2A6CA0B444 /* CreateWatchOnlyViewController.swift in Sources */,

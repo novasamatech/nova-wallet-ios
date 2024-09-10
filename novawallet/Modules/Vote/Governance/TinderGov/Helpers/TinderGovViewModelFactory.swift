@@ -7,13 +7,13 @@ protocol TinderGovViewModelFactoryProtocol {
     ) -> ReferendumsSection?
 
     func createVotingListViewModel(
-        from votingList: [ReferendumIdLocal],
+        from votingList: [VotingBasketItemLocal],
         locale: Locale
     ) -> VotingListWidgetViewModel
 
     func createReferendumsCounterViewModel(
-        currentReferendumId: ReferendumIdLocal,
         referendums: [ReferendumLocal],
+        votingList: [VotingBasketItemLocal],
         locale: Locale
     ) -> String?
 }
@@ -46,7 +46,7 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     }
 
     func createVotingListViewModel(
-        from votingList: [ReferendumIdLocal],
+        from votingList: [VotingBasketItemLocal],
         locale: Locale
     ) -> VotingListWidgetViewModel {
         let languages = locale.rLanguages
@@ -65,15 +65,11 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     }
 
     func createReferendumsCounterViewModel(
-        currentReferendumId: ReferendumIdLocal,
         referendums: [ReferendumLocal],
+        votingList: [VotingBasketItemLocal],
         locale: Locale
     ) -> String? {
-        guard let currentIndex = referendums.firstIndex(where: { $0.index == currentReferendumId }) else {
-            return nil
-        }
-
-        let currentNumber = referendums.count - currentIndex
+        let currentNumber = (referendums.endIndex - 1) - votingList.count
 
         let counterString = R.string.localizable.commonCounter(
             currentNumber,

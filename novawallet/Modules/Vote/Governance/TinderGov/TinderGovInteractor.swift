@@ -11,11 +11,14 @@ class TinderGovInteractor {
     private let basketItemsRepository: AnyDataProviderRepository<VotingBasketItemLocal>
     private let operationQueue: OperationQueue
 
+    private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
     private var modelBuilder: TinderGovModelBuilder?
 
     private var chain: ChainModel {
         governanceState.settings.value.chain
     }
+
+    let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
 
     init(
         metaAccount: MetaAccountModel,
@@ -23,6 +26,7 @@ class TinderGovInteractor {
         governanceState: GovernanceSharedState,
         sorting: ReferendumsSorting,
         basketItemsRepository: AnyDataProviderRepository<VotingBasketItemLocal>,
+        votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.metaAccount = metaAccount
@@ -30,6 +34,7 @@ class TinderGovInteractor {
         self.governanceState = governanceState
         self.sorting = sorting
         self.basketItemsRepository = basketItemsRepository
+        self.votingBasketSubscriptionFactory = votingBasketSubscriptionFactory
         self.operationQueue = operationQueue
     }
 }
@@ -44,26 +49,13 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
         ) { [weak self] result in
             self?.presenter?.didReceive(result)
         }
+        modelBuilder?.apply(observableState.state.value)
+        startObservingState()
 
-        modelBuilder?.buildOnSetup()
-
-        let fetchBasketOperation = basketItemsRepository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        execute(
-            operation: fetchBasketOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            guard let self else { return }
-
-            switch result {
-            case let .success(votings):
-                onReceive(basketItems: votings)
-                startObservingState()
-            case let .failure(error):
-                presenter?.didReceive(error)
-            }
-        }
+        basketItemsProvider = subscribeToVotingBasketItemProvider(
+            for: chain.chainId,
+            metaId: metaAccount.metaId
+        )
     }
 
     func addVoting(
@@ -92,12 +84,22 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            switch result {
-            case let .success(success):
-                self?.modelBuilder?.apply(voting: referendumId)
-            case let .failure(error):
+            if case let .failure(error) = result {
                 self?.presenter?.didReceive(error)
             }
+        }
+    }
+}
+
+// MARK: VotingBasketLocalStorageSubscriber
+
+extension TinderGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketSubscriptionHandler {
+    func handleVotingBasketItems(result: Result<[DataProviderChange<VotingBasketItemLocal>], any Error>) {
+        switch result {
+        case let .success(votingsChanges):
+            modelBuilder?.apply(votingsChanges: votingsChanges)
+        case let .failure(error):
+            presenter?.didReceive(error)
         }
     }
 }
@@ -105,25 +107,15 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
 // MARK: Private
 
 private extension TinderGovInteractor {
-    func onReceive(basketItems: [VotingBasketItemLocal]) {
-        let basketItemsIds = basketItems.map(\.referendumId)
-
-        let referendums = filter(
-            referendums: observableState.state.value,
-            using: basketItemsIds
-        )
-
-        modelBuilder?.apply(referendums)
-        modelBuilder?.apply(votings: basketItemsIds)
-    }
-
     func filter(
         referendums: [ReferendumIdLocal: ReferendumLocal],
-        using basketItemsIds: [ReferendumIdLocal]
+        using basketItemsChanges: [DataProviderChange<VotingBasketItemLocal>]
     ) -> [ReferendumIdLocal: ReferendumLocal] {
         var mutReferendums = referendums
 
-        basketItemsIds.forEach { mutReferendums[$0] = nil }
+        basketItemsChanges
+            .compactMap(\.item)
+            .forEach { mutReferendums[$0.referendumId] = nil }
 
         return mutReferendums
     }
