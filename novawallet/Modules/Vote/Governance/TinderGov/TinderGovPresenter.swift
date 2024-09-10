@@ -49,13 +49,15 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
         switch modelBuilderResult.changeKind {
         case .setup:
             updateVotingListView()
-            updateReferendumsCounter()
         case .referendums:
+            updateVotingListView()
             updateCardsStackView()
         case .full:
             updateVotingListView()
             updateCardsStackView()
         }
+
+        updateReferendumsCounter()
     }
 
     func didReceive(_ error: any Error) {
@@ -137,7 +139,7 @@ private extension TinderGovPresenter {
         view?.updateVotingList(with: viewModel)
     }
 
-    func updateReferendumsCounter(with _: ReferendumIdLocal? = nil) {
+    func updateReferendumsCounter() {
         guard let model, !model.referendums.isEmpty else { return }
 
         guard let viewModel = viewModelFactory.createReferendumsCounterViewModel(

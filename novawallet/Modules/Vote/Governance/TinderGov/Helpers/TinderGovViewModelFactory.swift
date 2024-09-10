@@ -69,7 +69,7 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
         votingList: [VotingBasketItemLocal],
         locale: Locale
     ) -> String? {
-        let currentNumber = (referendums.endIndex - 1) - votingList.count
+        let currentNumber = referendums.count - votingList.count
 
         let counterString = R.string.localizable.commonCounter(
             currentNumber,
