@@ -11,11 +11,21 @@ final class TinderGovWireframe: TinderGovWireframeProtocol {
         view?.controller.navigationController?.popViewController(animated: true)
     }
 
-    func showVoteSetup(from _: ControllerBackedProtocol?) {
-//        guard let voteSetupView = ReferendumVoteSetupViewFactory.createView(
-//            for: sharedState,
-//            referendum: ,
-//            initData:
-//        )
+    func showVoteSetup(
+        from view: ControllerBackedProtocol?,
+        referendum: ReferendumIdLocal,
+        initData: ReferendumVotingInitData
+    ) {
+        guard let setupView = TinderGovSetupViewFactory.createView(
+            for: sharedState,
+            referendum: referendum,
+            initData: initData
+        ) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: setupView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 }

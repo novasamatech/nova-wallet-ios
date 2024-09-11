@@ -10,6 +10,10 @@ final class ReferendumVoteSetupViewLayout: UIView {
         return view
     }()
 
+    let buttonContainer: UIView = .create { view in
+        view.backgroundColor = .clear
+    }
+
     let ayeButton: RoundedButton = {
         let button = RoundedButton()
         button.applyIconWithBackgroundStyle()
@@ -229,12 +233,15 @@ extension ReferendumVoteSetupViewLayout {
     }
 
     private func setupLayout() {
-        setupVoteButtonsLayout()
+        addSubview(buttonContainer)
+        buttonContainer.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(ayeButton.snp.top).offset(-8.0)
+            make.bottom.equalTo(buttonContainer.snp.top).offset(-8.0)
         }
 
         containerView.stackView.addArrangedSubview(titleLabel)
@@ -257,15 +264,15 @@ extension ReferendumVoteSetupViewLayout {
         setupContentWidth()
     }
 
-    private func setupVoteButtonsLayout() {
-        addSubview(abstainButton)
+    func setupVoteButtonsLayout() {
+        buttonContainer.addSubview(abstainButton)
         abstainButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.smallButtonSize)
             make.centerX.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
         }
 
-        addSubview(nayButton)
+        buttonContainer.addSubview(nayButton)
         nayButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.bigButtonSize)
             make.leading.greaterThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
@@ -273,13 +280,17 @@ extension ReferendumVoteSetupViewLayout {
             make.centerY.equalTo(abstainButton.snp.centerY)
         }
 
-        addSubview(ayeButton)
+        buttonContainer.addSubview(ayeButton)
         ayeButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.bigButtonSize)
             make.leading.equalTo(abstainButton.snp.trailing).offset(40)
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalTo(abstainButton.snp.centerY)
         }
+    }
+
+    func setupSingleButtonLayout() {
+        // TODO: Implement
     }
 
     private func setupAmountViewsLayout() {

@@ -63,6 +63,25 @@ enum ConvictionLocal: String {
         }
     }
 
+    init(from voteConviction: ConvictionVoting.Conviction) {
+        switch voteConviction {
+        case .none, .unknown:
+            self = .none
+        case .locked1x:
+            self = .locked1x
+        case .locked2x:
+            self = .locked2x
+        case .locked3x:
+            self = .locked3x
+        case .locked4x:
+            self = .locked4x
+        case .locked5x:
+            self = .locked5x
+        case .locked6x:
+            self = .locked6x
+        }
+    }
+
     func votes(for balance: BigUInt) -> BigUInt {
         switch self {
         case .none:

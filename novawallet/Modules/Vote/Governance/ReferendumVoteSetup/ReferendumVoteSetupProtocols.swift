@@ -1,6 +1,6 @@
 import BigInt
 
-protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
+protocol BaseReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceive(referendumNumber: String)
     func didReceiveBalance(viewModel: String)
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
@@ -11,16 +11,22 @@ protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel)
     func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel)
     func didReceiveLockReuse(viewModel: ReferendumLockReuseViewModel)
+}
+
+protocol ReferendumVoteSetupViewProtocol: BaseReferendumVoteSetupViewProtocol {
     func didReceive(abstainAvailable: Bool)
 }
 
-protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
+protocol BaseReferendumVoteSetupPresenterProtocol: AnyObject {
     func setup()
     func updateAmount(_ newValue: Decimal?)
     func selectAmountPercentage(_ percentage: Float)
     func selectConvictionValue(_ value: UInt)
     func reuseGovernanceLock()
     func reuseAllLock()
+}
+
+protocol ReferendumVoteSetupPresenterProtocol: BaseReferendumVoteSetupPresenterProtocol {
     func proceedNay()
     func proceedAye()
     func proceedAbstain()
@@ -30,8 +36,10 @@ protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInp
 
 protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {}
 
-protocol ReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
-    GovernanceErrorPresentable {
+protocol BaseReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
+    GovernanceErrorPresentable {}
+
+protocol ReferendumVoteSetupWireframeProtocol: BaseReferendumVoteSetupWireframeProtocol {
     func showConfirmation(
         from view: ReferendumVoteSetupViewProtocol?,
         vote: ReferendumNewVote,

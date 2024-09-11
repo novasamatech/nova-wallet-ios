@@ -38,6 +38,26 @@ extension TinderGovPresenter: TinderGovPresenterProtocol {
     func actionBack() {
         wireframe.back(from: view)
     }
+
+    func actionSettings() {
+        guard let referendumId = model?.referendums.first?.index else {
+            return
+        }
+
+        let initData = ReferendumVotingInitData(
+            votesResult: nil,
+            blockNumber: nil,
+            blockTime: nil,
+            referendum: nil,
+            lockDiff: nil
+        )
+
+        wireframe.showVoteSetup(
+            from: view,
+            referendum: referendumId,
+            initData: initData
+        )
+    }
 }
 
 // MARK: TinderGovInteractorOutputProtocol

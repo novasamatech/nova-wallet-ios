@@ -1,15 +1,15 @@
 import UIKit
 import SoraFoundation
 
-final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
+class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumVoteSetupViewLayout
 
-    let presenter: ReferendumVoteSetupPresenterProtocol
+    private let presenter: BaseReferendumVoteSetupPresenterProtocol
 
     private var referendumNumber: String?
 
     init(
-        presenter: ReferendumVoteSetupPresenterProtocol,
+        presenter: BaseReferendumVoteSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -30,35 +30,22 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupView()
         setupHandlers()
         setupLocalization()
 
         presenter.setup()
     }
 
-    private func setupHandlers() {
+    func setupView() {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func setupHandlers() {
         rootView.amountInputView.addTarget(
             self,
             action: #selector(actionAmountChange),
             for: .editingChanged
-        )
-
-        rootView.nayButton.addTarget(
-            self,
-            action: #selector(actionVoteNay),
-            for: .touchUpInside
-        )
-
-        rootView.ayeButton.addTarget(
-            self,
-            action: #selector(actionVoteAye),
-            for: .touchUpInside
-        )
-
-        rootView.abstainButton.addTarget(
-            self,
-            action: #selector(actionVoteAbstain),
-            for: .touchUpInside
         )
 
         rootView.convictionView.slider.addTarget(
@@ -113,18 +100,6 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
         rootView.amountInputView.textField.inputAccessoryView = accessoryView
     }
 
-    @objc private func actionVoteNay() {
-        presenter.proceedNay()
-    }
-
-    @objc private func actionVoteAye() {
-        presenter.proceedAye()
-    }
-
-    @objc private func actionVoteAbstain() {
-        presenter.proceedAbstain()
-    }
-
     @objc private func actionConvictionChanged() {
         presenter.selectConvictionValue(rootView.convictionView.slider.value)
     }
@@ -143,7 +118,7 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
+extension BaseReferendumVoteSetupViewController: BaseReferendumVoteSetupViewProtocol {
     func didReceive(referendumNumber: String) {
         self.referendumNumber = referendumNumber
 
@@ -199,15 +174,9 @@ extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
             for: .touchUpInside
         )
     }
-
-    func didReceive(abstainAvailable: Bool) {
-        abstainAvailable
-            ? rootView.showAbstain()
-            : rootView.hideAbstain()
-    }
 }
 
-extension ReferendumVoteSetupViewController: AmountInputAccessoryViewDelegate {
+extension BaseReferendumVoteSetupViewController: AmountInputAccessoryViewDelegate {
     func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
         rootView.amountInputView.textField.resignFirstResponder()
 
@@ -219,7 +188,7 @@ extension ReferendumVoteSetupViewController: AmountInputAccessoryViewDelegate {
     }
 }
 
-extension ReferendumVoteSetupViewController: Localizable {
+extension BaseReferendumVoteSetupViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
@@ -227,4 +196,4 @@ extension ReferendumVoteSetupViewController: Localizable {
     }
 }
 
-extension ReferendumVoteSetupViewController: ImportantViewProtocol {}
+extension BaseReferendumVoteSetupViewController: ImportantViewProtocol {}

@@ -7,6 +7,10 @@ struct VotingPowerLocal {
     let metaId: MetaAccountModel.Id
     let conviction: ConvictionLocal
     let amount: BigUInt
+
+    var votingAmount: BigUInt {
+        conviction.votes(for: amount)
+    }
 }
 
 extension VotingPowerLocal: Identifiable {

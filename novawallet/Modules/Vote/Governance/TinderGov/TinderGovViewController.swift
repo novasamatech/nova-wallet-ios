@@ -75,7 +75,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionSettings() {
-        // TODO: Implement
+        presenter.actionSettings()
     }
 }
 
