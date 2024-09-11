@@ -380,6 +380,8 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputP
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshLockDiff()
             }
+        default:
+            break
         }
     }
 

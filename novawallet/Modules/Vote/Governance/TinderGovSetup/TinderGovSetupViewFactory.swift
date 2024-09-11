@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import Operation_iOS
 
 struct TinderGovSetupViewFactory {
     static func createView(
@@ -111,9 +112,10 @@ struct TinderGovSetupViewFactory {
         referendum: ReferendumIdLocal,
         currencyManager: CurrencyManagerProtocol
     ) -> TinderGovSetupInteractor? {
-        let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
-
-        guard let option = state.settings.value else {
+        guard
+            let option = state.settings.value,
+            let wallet: MetaAccountModel = SelectedWalletSettings.shared.value
+        else {
             return nil
         }
 
@@ -138,16 +140,30 @@ struct TinderGovSetupViewFactory {
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
             operationQueue: operationQueue,
             userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared
+            substrateStorageFacade: storageFacade
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
+        let mapper = VotingPowerMapper()
+
+        let filter = NSPredicate.votingPower(
+            for: option.chain.chainId,
+            metaId: wallet.metaId
+        )
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
         return TinderGovSetupInteractor(
+            repository: repository,
             referendumIndex: referendum,
             selectedAccount: selectedAccount,
             chain: chain,

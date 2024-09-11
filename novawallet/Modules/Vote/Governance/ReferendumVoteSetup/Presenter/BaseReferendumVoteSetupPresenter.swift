@@ -446,6 +446,12 @@ extension BaseReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputP
             wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.refreshLockDiff()
             }
+        case let .votingPowerSaveFailed(error):
+            wireframe.present(
+                error: error,
+                from: baseView,
+                locale: selectedLocale
+            )
         }
     }
 }
