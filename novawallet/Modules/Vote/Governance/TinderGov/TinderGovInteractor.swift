@@ -12,13 +12,18 @@ class TinderGovInteractor {
     private let operationQueue: OperationQueue
 
     private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
+    private var votingPowerProvider: StreamableProvider<VotingPowerLocal>?
+
     private var modelBuilder: TinderGovModelBuilder?
+
+    private var votingPower: VotingPowerLocal?
 
     private var chain: ChainModel {
         governanceState.settings.value.chain
     }
 
     let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
+    let votingPowerSubscriptionFactory: VotingPowerLocalSubscriptionFactoryProtocol
 
     init(
         metaAccount: MetaAccountModel,
@@ -27,6 +32,7 @@ class TinderGovInteractor {
         sorting: ReferendumsSorting,
         basketItemsRepository: AnyDataProviderRepository<VotingBasketItemLocal>,
         votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol,
+        votingPowerSubscriptionFactory: VotingPowerLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.metaAccount = metaAccount
@@ -35,6 +41,7 @@ class TinderGovInteractor {
         self.sorting = sorting
         self.basketItemsRepository = basketItemsRepository
         self.votingBasketSubscriptionFactory = votingBasketSubscriptionFactory
+        self.votingPowerSubscriptionFactory = votingPowerSubscriptionFactory
         self.operationQueue = operationQueue
     }
 }
@@ -51,6 +58,10 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
         }
         startObservingState()
 
+        votingPowerProvider = subscribeToVotingPowerProvider(
+            for: chain.chainId,
+            metaId: metaAccount.metaId
+        )
         basketItemsProvider = subscribeToVotingBasketItemProvider(
             for: chain.chainId,
             metaId: metaAccount.metaId
@@ -61,7 +72,10 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
         with result: VoteResult,
         for referendumId: ReferendumIdLocal
     ) {
-        guard let voteType = VotingBasketItemLocal.VoteType(from: result) else {
+        guard
+            let voteType = VotingBasketItemLocal.VoteType(from: result),
+            let votingPower
+        else {
             return
         }
 
@@ -69,8 +83,9 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
             referendumId: referendumId,
             chainId: chain.chainId,
             metaId: metaAccount.metaId,
+            amount: votingPower.amount,
             voteType: voteType,
-            conviction: .none
+            conviction: votingPower.conviction
         )
 
         let saveOperation = basketItemsRepository.saveOperation(
@@ -100,6 +115,19 @@ extension TinderGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketS
                 votingsChanges: votingsChanges,
                 observableState.state.value
             )
+        case let .failure(error):
+            presenter?.didReceive(error)
+        }
+    }
+}
+
+// MARK: VotingBasketLocalStorageSubscriber
+
+extension TinderGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSubscriptionHandler {
+    func handleVotingPowerChange(result: Result<[DataProviderChange<VotingPowerLocal>], any Error>) {
+        switch result {
+        case let .success(changes):
+            votingPower = changes.allChangedItems().first
         case let .failure(error):
             presenter?.didReceive(error)
         }

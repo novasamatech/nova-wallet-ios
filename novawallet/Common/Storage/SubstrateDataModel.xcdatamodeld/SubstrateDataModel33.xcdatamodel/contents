@@ -226,6 +226,7 @@
         <relationship name="transaction" optional="YES" maxCount="1" deletionRule="Deny" destinationEntity="CDTransactionItem" inverseName="swap" inverseEntity="CDTransactionItem"/>
     </entity>
     <entity name="CDVotingBasketItem" representedClassName="CDVotingBasketItem" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="String"/>
         <attribute name="chainId" optional="YES" attributeType="String"/>
         <attribute name="conviction" optional="YES" attributeType="String"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>

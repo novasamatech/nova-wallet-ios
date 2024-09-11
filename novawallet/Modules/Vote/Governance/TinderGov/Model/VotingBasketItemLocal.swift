@@ -12,6 +12,7 @@ struct VotingBasketItemLocal: Equatable {
     let referendumId: ReferendumIdLocal
     let chainId: ChainModel.Id
     let metaId: String
+    let amount: BigUInt
     let voteType: VoteType
     let conviction: ConvictionLocal
 }

@@ -33,9 +33,16 @@ struct TinderGovViewFactory {
             mapper: AnyCoreDataMapper(mapper)
         )
 
-        let wireframe = TinderGovWireframe()
+        let wireframe = TinderGovWireframe(sharedState: sharedState)
 
         let votingBasketSubscriptionFactory = VotingBasketLocalSubscriptionFactory(
+            chainRegistry: sharedState.chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
+
+        let votingPowerSubscriptionFactory = VotingPowerLocalSubscriptionFactory(
             chainRegistry: sharedState.chainRegistry,
             storageFacade: storageFacade,
             operationManager: OperationManagerFacade.sharedManager,
@@ -49,6 +56,7 @@ struct TinderGovViewFactory {
             sorting: ReferendumsTimeSortingProvider(),
             basketItemsRepository: AnyDataProviderRepository(repository),
             votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
+            votingPowerSubscriptionFactory: votingPowerSubscriptionFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

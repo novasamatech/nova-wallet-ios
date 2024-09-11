@@ -923,6 +923,10 @@
 		2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */; };
 		2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */; };
 		2D5FC1A42C5220900013352B /* AccountVoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */; };
+		2D6287352C917A2B00060814 /* VotingPowerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287342C917A2B00060814 /* VotingPowerLocal.swift */; };
+		2D6287372C917E3900060814 /* VotingPowerMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287362C917E3900060814 /* VotingPowerMapper.swift */; };
+		2D62873A2C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287392C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift */; };
+		2D62873C2C91812300060814 /* VotingPowerLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62873B2C91812300060814 /* VotingPowerLocalSubscriptionFactory.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -934,7 +938,7 @@
 		2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */; };
 		2D7748842C8F65470059607B /* DataProviderChange+ReferendumLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748832C8F65470059607B /* DataProviderChange+ReferendumLocal.swift */; };
 		2D7748862C8F799C0059607B /* TinderGovModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */; };
-		2D7748892C90368C0059607B /* VotingBasketMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748882C90368C0059607B /* VotingBasketMapper.swift */; };
+		2D7748892C90368C0059607B /* VotingBasketItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748882C90368C0059607B /* VotingBasketItemMapper.swift */; };
 		2D77488C2C90428E0059607B /* VotingBasketItemLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */; };
 		2D77488E2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77488D2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift */; };
 		2D7748902C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77488F2C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift */; };
@@ -5955,6 +5959,10 @@
 		2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksEmptyPlaceholderView.swift; sourceTree = "<group>"; };
 		2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrateNetworksBanner.swift; sourceTree = "<group>"; };
 		2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVoteFactory.swift; sourceTree = "<group>"; };
+		2D6287342C917A2B00060814 /* VotingPowerLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerLocal.swift; sourceTree = "<group>"; };
+		2D6287362C917E3900060814 /* VotingPowerMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerMapper.swift; sourceTree = "<group>"; };
+		2D6287392C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerLocalstorageSubscriber.swift; sourceTree = "<group>"; };
+		2D62873B2C91812300060814 /* VotingPowerLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -5967,7 +5975,7 @@
 		2D7748832C8F65470059607B /* DataProviderChange+ReferendumLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+ReferendumLocal.swift"; sourceTree = "<group>"; };
 		2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovModelBuilder.swift; sourceTree = "<group>"; };
 		2D7748872C9035550059607B /* SubstrateDataModel33.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel33.xcdatamodel; sourceTree = "<group>"; };
-		2D7748882C90368C0059607B /* VotingBasketMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketMapper.swift; sourceTree = "<group>"; };
+		2D7748882C90368C0059607B /* VotingBasketItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketItemMapper.swift; sourceTree = "<group>"; };
 		2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketItemLocal.swift; sourceTree = "<group>"; };
 		2D77488D2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		2D77488F2C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -12181,10 +12189,9 @@
 				2DA85A762C7FCCCE00591900 /* TinderGovViewModelFactory.swift */,
 				2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */,
 				2D389B142C87036100256C7B /* ReferendumFilter.swift */,
-				2D77488D2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift */,
+				2D6287382C91805B00060814 /* Subscriptions */,
 				2D7748832C8F65470059607B /* DataProviderChange+ReferendumLocal.swift */,
 				2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */,
-				2D77488F2C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -12211,6 +12218,17 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2D6287382C91805B00060814 /* Subscriptions */ = {
+			isa = PBXGroup;
+			children = (
+				2D77488F2C907A210059607B /* VotingBasketLocalSubscriptionFactory.swift */,
+				2D62873B2C91812300060814 /* VotingPowerLocalSubscriptionFactory.swift */,
+				2D77488D2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift */,
+				2D6287392C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift */,
+			);
+			path = Subscriptions;
+			sourceTree = "<group>";
+		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -12232,6 +12250,7 @@
 			isa = PBXGroup;
 			children = (
 				2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */,
+				2D6287342C917A2B00060814 /* VotingPowerLocal.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -15574,7 +15593,8 @@
 				84F3B27727F4179A00D64CF5 /* PhishingSiteMapper.swift */,
 				849E07F5284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift */,
 				8493FF37291A59D800F09F1B /* ReferendumMetadataMapper.swift */,
-				2D7748882C90368C0059607B /* VotingBasketMapper.swift */,
+				2D7748882C90368C0059607B /* VotingBasketItemMapper.swift */,
+				2D6287362C917E3900060814 /* VotingPowerMapper.swift */,
 				840D627929CC362500D5E894 /* PriceDataMapper.swift */,
 				77E255662A16145500B644C3 /* StakingRewardsFilterMapper.swift */,
 				8473B4752A20722E003DE213 /* StakingDashboardRelaychainMapper.swift */,
@@ -24002,6 +24022,7 @@
 				F458D3C12642B7D80055CB75 /* LearnMoreView.swift in Sources */,
 				0CD846252BDCABEF0026B5CA /* WalletOptionViewModel.swift in Sources */,
 				F4E17FCA272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift in Sources */,
+				2D6287352C917A2B00060814 /* VotingPowerLocal.swift in Sources */,
 				8441D3C929E8015100070BA3 /* WalletConnectMetadata.swift in Sources */,
 				8434B604298D474D00FACF4C /* GovernanceAddDelegationTracksPresenter.swift in Sources */,
 				8460E11F25420A2C00826F55 /* DetailsTriangularedView+Inspectable.swift in Sources */,
@@ -25213,6 +25234,7 @@
 				8490386B262E22DC0016D541 /* NominatorPayoutInfoFactory.swift in Sources */,
 				2A028D28275688AF0061CB4C /* AddChainAccount.swift in Sources */,
 				F4CE0FF3273453E30094CD8A /* AcalaContributionSetupWireframe.swift in Sources */,
+				2D62873A2C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift in Sources */,
 				8479607E283B60AA0084E779 /* ActionLoadingView.swift in Sources */,
 				841AB78D2993C87800A362E8 /* GovernanceDelegateSetupPresenter+UpdateView.swift in Sources */,
 				0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */,
@@ -26793,6 +26815,7 @@
 				0C0E0A952B3E89D200865F10 /* ExtrinsicWrapperResult.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
 				0C0CB3822AC545A800EAC516 /* AssetConversionExtrinsicService.swift in Sources */,
+				2D6287372C917E3900060814 /* VotingPowerMapper.swift in Sources */,
 				2D7E4A192C406FED00455509 /* CustomNetworkDTO.swift in Sources */,
 				77A4F4032B036615006294BC /* Optional+Result.swift in Sources */,
 				849FA21628A26CB500F83EAA /* CountdownTimerMediator.swift in Sources */,
@@ -27304,7 +27327,7 @@
 				A5880E3789BC9E30835BDCC7 /* TransferSetupViewFactory.swift in Sources */,
 				77F189472A49BD6700E8B933 /* StartStakingViewModel.swift in Sources */,
 				8849AD6629C35B8900F4F7FF /* Web3TransferRecipientRepository.swift in Sources */,
-				2D7748892C90368C0059607B /* VotingBasketMapper.swift in Sources */,
+				2D7748892C90368C0059607B /* VotingBasketItemMapper.swift in Sources */,
 				77F033A62A84EAC3006BC67E /* StakingPoolTableViewCell.swift in Sources */,
 				8453DE5728FD27390055345C /* Gov2SubscriptionFactory.swift in Sources */,
 				90ACE8690DA095E4F45494E9 /* TransferConfirmProtocols.swift in Sources */,
@@ -28138,6 +28161,7 @@
 				F92E73C24AB577F37B35649E /* WalletConnectSessionDetailsInteractor.swift in Sources */,
 				E06F3BD43E589BCE3904BBCB /* WalletConnectSessionDetailsViewController.swift in Sources */,
 				FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */,
+				2D62873C2C91812300060814 /* VotingPowerLocalSubscriptionFactory.swift in Sources */,
 				0CE933E62C07DBE1000F3EFE /* WalletNameChanged.swift in Sources */,
 				54983C354F7EDCD8014C8371 /* WalletConnectSessionDetailsViewFactory.swift in Sources */,
 				B42652A7AB4244F19473C7C5 /* DAppWalletAuthProtocols.swift in Sources */,
