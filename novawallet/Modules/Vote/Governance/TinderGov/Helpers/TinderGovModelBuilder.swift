@@ -1,6 +1,14 @@
 import Foundation
 import Operation_iOS
 
+protocol TinderGovModelBuilderProtocol {
+    func apply(_ referendumsState: ReferendumsState)
+    func apply(
+        votingsChanges: [DataProviderChange<VotingBasketItemLocal>],
+        _ referendumsState: ReferendumsState
+    )
+}
+
 final class TinderGovModelBuilder {
     private let sorting: ReferendumsSorting
     private let workingQueue: OperationQueue
@@ -25,18 +33,17 @@ final class TinderGovModelBuilder {
     }
 }
 
-extension TinderGovModelBuilder {
-    func apply(_ newReferendums: [ReferendumIdLocal: ReferendumLocal]) {
+// MARK: TinderGovModelBuilderProtocol
+
+extension TinderGovModelBuilder: TinderGovModelBuilderProtocol {
+    func apply(_ referendumsState: ReferendumsState) {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
-            var mutReferendums = newReferendums
+            let filteredReferendums = filteredReferendums(from: referendumsState)
+            let changes = createReferendumsChange(from: filteredReferendums)
 
-            votingList.forEach { mutReferendums.removeValue(forKey: $0.referendumId) }
-
-            let changes = findReferendumChanges(for: mutReferendums)
-
-            referendums = newReferendums
+            referendums = filteredReferendums
 
             rebuild(
                 with: changes,
@@ -47,20 +54,17 @@ extension TinderGovModelBuilder {
 
     func apply(
         votingsChanges: [DataProviderChange<VotingBasketItemLocal>],
-        _ referendums: [ReferendumIdLocal: ReferendumLocal]
+        _ referendumsState: ReferendumsState
     ) {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
             votingList = votingList.applying(changes: votingsChanges)
 
-            var mutReferendums = referendums
+            let filteredReferendums = filteredReferendums(from: referendumsState)
+            let changes = createReferendumsChange(from: filteredReferendums)
 
-            votingList.forEach { mutReferendums.removeValue(forKey: $0.referendumId) }
-
-            let changes = findReferendumChanges(for: mutReferendums)
-
-            self.referendums = referendums
+            self.referendums = filteredReferendums
 
             rebuild(
                 with: changes,
@@ -91,6 +95,14 @@ private extension TinderGovModelBuilder {
         )
 
         callbackQueue.async { [weak self] in self?.closure(result) }
+    }
+
+    func createReferendumsChange(from referendums: [ReferendumIdLocal: ReferendumLocal]) -> Result.ReferendumsListChanges {
+        var referendumsToChange = referendums
+
+        votingList.forEach { referendumsToChange.removeValue(forKey: $0.referendumId) }
+
+        return findReferendumChanges(for: referendumsToChange)
     }
 
     func findReferendumChanges(
@@ -128,6 +140,13 @@ private extension TinderGovModelBuilder {
                 referendum2: $1
             )
         }
+    }
+
+    func filteredReferendums(from referendumsState: ReferendumsState) -> [ReferendumIdLocal: ReferendumLocal] {
+        ReferendumFilter.VoteAvailable(
+            referendums: referendumsState.referendums,
+            accountVotes: referendumsState.accountVotes
+        ).callAsFunction()
     }
 }
 

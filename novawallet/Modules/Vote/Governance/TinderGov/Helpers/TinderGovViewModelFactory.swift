@@ -2,7 +2,7 @@ import Foundation
 
 protocol TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
-        with referendums: [ReferendumLocal],
+        with referendumsState: ReferendumsState,
         locale: Locale
     ) -> ReferendumsSection?
 
@@ -20,11 +20,16 @@ protocol TinderGovViewModelFactoryProtocol {
 
 struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
-        with referendums: [ReferendumLocal],
+        with referendumsState: ReferendumsState,
         locale: Locale
     ) -> ReferendumsSection? {
+        let filteredReferendums = ReferendumFilter.VoteAvailable(
+            referendums: referendumsState.referendums,
+            accountVotes: referendumsState.accountVotes
+        ).callAsFunction()
+
         let section: ReferendumsSection? = {
-            guard !referendums.isEmpty else {
+            guard !referendumsState.referendums.isEmpty else {
                 return nil
             }
 
@@ -35,7 +40,7 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
                         preferredLanguages: locale.rLanguages
                     ),
                     referendumCounterText: R.string.localizable.commonCountedReferenda(
-                        referendums.count,
+                        filteredReferendums.count,
                         preferredLanguages: locale.rLanguages
                     )
                 )

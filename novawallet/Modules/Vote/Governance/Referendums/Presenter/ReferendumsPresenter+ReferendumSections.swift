@@ -45,10 +45,8 @@ extension ReferendumsPresenter {
             return nil
         }
 
-        let referendums = Array(observableState.state.value.values)
-
         return tinderGovViewModelFactory.createTinderGovReferendumsSection(
-            with: referendums,
+            with: observableState.state.value,
             locale: selectedLocale
         )
     }

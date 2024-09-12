@@ -13,7 +13,7 @@ class TinderGovInteractor {
     private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
     private var votingPowerProvider: StreamableProvider<VotingPowerLocal>?
 
-    private var modelBuilder: TinderGovModelBuilder?
+    private var modelBuilder: TinderGovModelBuilderProtocol?
     private var votingPower: VotingPowerLocal?
 
     private var observableState: ReferendumsObservableState {
@@ -50,7 +50,7 @@ class TinderGovInteractor {
 
 extension TinderGovInteractor: TinderGovInteractorInputProtocol {
     func setup() {
-        modelBuilder = .init(
+        modelBuilder = TinderGovModelBuilder(
             sorting: sorting,
             workingQueue: operationQueue
         ) { [weak self] result in

@@ -3,12 +3,10 @@ import SoraKeystore
 import Operation_iOS
 import SubstrateSdk
 
-typealias ReferendumsObservableState = Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
+typealias ReferendumsObservableState = Observable<NotEqualWrapper<ReferendumsState>>
 
 final class GovernanceSharedState {
-    let observableState = ReferendumsObservableState(
-        state: .init(value: [:])
-    )
+    let observableState: ReferendumsObservableState
 
     let settings: GovernanceChainSettings
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
@@ -27,6 +25,7 @@ final class GovernanceSharedState {
     }
 
     init(
+        observableState: ReferendumsObservableState = ReferendumsObservableState(state: .init(value: .init())),
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol? = nil,
@@ -39,6 +38,7 @@ final class GovernanceSharedState {
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
+        self.observableState = observableState
         self.chainRegistry = chainRegistry
         settings = GovernanceChainSettings(chainRegistry: chainRegistry, settings: internalSettings)
 
