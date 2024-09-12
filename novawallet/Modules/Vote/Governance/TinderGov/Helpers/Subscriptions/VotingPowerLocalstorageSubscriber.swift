@@ -43,7 +43,6 @@ extension VotingPowerLocalStorageSubscriber {
             refreshWhenEmpty: false
         )
 
-        // we might receive provider from cache and make sure we are not already observing
         provider.removeObserver(self)
 
         provider.addObserver(
