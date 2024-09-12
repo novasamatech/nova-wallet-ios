@@ -4307,7 +4307,6 @@
 		97F1D128D46B072D68940FC4 /* MoonbeamTermsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F0F44AD48C7F3758A90D02 /* MoonbeamTermsViewFactory.swift */; };
 		97FC0EC2B587AAB299FC75A1 /* OnboardingWalletReadyInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641067C2CF2998FD70FE27BE /* OnboardingWalletReadyInteractor.swift */; };
 		982696E7AA7ACDA0B5131F6D /* AssetsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD41B37A8DF2A83231F6B84D /* AssetsSettingsViewController.swift */; };
-		986FAF3A034D80E68D0A70BA /* TinderGovSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819BA25DCD1B2ADA0647925A /* TinderGovSetupViewLayout.swift */; };
 		987813DA927669C364673B4E /* ParaStkCollatorInfoInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D93D6B6DB7BACFEA6F2738C /* ParaStkCollatorInfoInteractor.swift */; };
 		98DADEB52480817D191188C1 /* AssetListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100701AA69652CB91ACBD97 /* AssetListInteractor.swift */; };
 		992678FD5D3F9D39FFC2BB53 /* LedgerTxConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB918ED70D77D1832094A8A /* LedgerTxConfirmWireframe.swift */; };
@@ -6743,7 +6742,6 @@
 		8167536168325942DA6892E1 /* LedgerWalletConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerWalletConfirmWireframe.swift; sourceTree = "<group>"; };
 		817E84903F4A2CD5333518DE /* ParitySignerTxScanViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanViewController.swift; sourceTree = "<group>"; };
 		818D1B632559444D08303469 /* ParaStkSelectCollatorsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkSelectCollatorsViewController.swift; sourceTree = "<group>"; };
-		819BA25DCD1B2ADA0647925A /* TinderGovSetupViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovSetupViewLayout.swift; sourceTree = "<group>"; };
 		81C2B5B924629877CA939D91 /* CustomNetworkViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomNetworkViewLayout.swift; sourceTree = "<group>"; };
 		81EA338A618A41D4192644E4 /* StakingRewardFiltersWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardFiltersWireframe.swift; sourceTree = "<group>"; };
 		81F4883B898928C77D17C824 /* AssetListViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetListViewLayout.swift; sourceTree = "<group>"; };
@@ -12830,7 +12828,6 @@
 				80105CECB120A716A0A3CE1D /* TinderGovSetupWireframe.swift */,
 				88DF073F93EA9D62EB0E607D /* TinderGovSetupPresenter.swift */,
 				A60E944E00C53DD497B78677 /* TinderGovSetupInteractor.swift */,
-				819BA25DCD1B2ADA0647925A /* TinderGovSetupViewLayout.swift */,
 				20F9E5627F64332884633AED /* TinderGovSetupViewFactory.swift */,
 				2D62873D2C919E4B00060814 /* TinderGovSetupViewController.swift */,
 			);
@@ -28595,7 +28592,6 @@
 				9E7A0B1FD06370579F682FF3 /* TinderGovSetupWireframe.swift in Sources */,
 				1401103090F2DD8E6BB5B909 /* TinderGovSetupPresenter.swift in Sources */,
 				79BEBAECBC44DC1CC0D780C6 /* TinderGovSetupInteractor.swift in Sources */,
-				986FAF3A034D80E68D0A70BA /* TinderGovSetupViewLayout.swift in Sources */,
 				EC2775D458C653F7E7C949DF /* TinderGovSetupViewFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
