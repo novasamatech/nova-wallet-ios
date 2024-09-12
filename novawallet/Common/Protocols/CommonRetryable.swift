@@ -37,7 +37,7 @@ extension CommonRetryable where Self: AlertPresentable {
                 handler: skipAction
             )
 
-            actions.append(skipViewModel)
+            actions.insert(skipViewModel, at: 0)
         }
 
         let viewModel = AlertPresentableViewModel(
