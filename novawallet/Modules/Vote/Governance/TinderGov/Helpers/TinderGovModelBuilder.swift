@@ -166,7 +166,6 @@ extension TinderGovModelBuilder {
         }
 
         enum ChangeKind {
-            case setup
             case referendums
             case full
         }
