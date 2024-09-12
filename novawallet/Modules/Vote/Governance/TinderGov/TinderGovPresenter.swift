@@ -12,6 +12,7 @@ final class TinderGovPresenter {
     private let localizationManager: LocalizationManagerProtocol
 
     private var model: TinderGovModelBuilder.Result.Model?
+    private var votingPower: VotingPowerLocal?
 
     init(
         wireframe: TinderGovWireframeProtocol,
@@ -44,13 +45,7 @@ extension TinderGovPresenter: TinderGovPresenterProtocol {
             return
         }
 
-        let initData = ReferendumVotingInitData(
-            votesResult: nil,
-            blockNumber: nil,
-            blockTime: nil,
-            referendum: nil,
-            lockDiff: nil
-        )
+        let initData = ReferendumVotingInitData(presetVotingPower: votingPower)
 
         wireframe.showVoteSetup(
             from: view,
@@ -77,6 +72,10 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
         }
 
         updateReferendumsCounter()
+    }
+
+    func didReceive(_ votingPower: VotingPowerLocal) {
+        self.votingPower = votingPower
     }
 
     func didReceive(_ error: any Error) {

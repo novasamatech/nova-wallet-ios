@@ -114,6 +114,25 @@ enum ConvictionVoting {
             }
         }
 
+        init(from convictionLocal: ConvictionLocal) {
+            switch convictionLocal {
+            case .none:
+                self = .none
+            case .locked1x:
+                self = .locked1x
+            case .locked2x:
+                self = .locked2x
+            case .locked3x:
+                self = .locked3x
+            case .locked4x:
+                self = .locked4x
+            case .locked5x:
+                self = .locked5x
+            case .locked6x:
+                self = .locked6x
+            }
+        }
+
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
             let type: String

@@ -23,6 +23,7 @@ protocol TinderGovInteractorInputProtocol: AnyObject {
 
 protocol TinderGovInteractorOutputProtocol: AnyObject {
     func didReceive(_ modelBuilderResult: TinderGovModelBuilder.Result)
+    func didReceive(_ votingPower: VotingPowerLocal)
     func didReceive(_ error: Error)
 }
 

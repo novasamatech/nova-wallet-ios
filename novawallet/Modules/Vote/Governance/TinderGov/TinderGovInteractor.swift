@@ -127,7 +127,11 @@ extension TinderGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSub
     func handleVotingPowerChange(result: Result<[DataProviderChange<VotingPowerLocal>], any Error>) {
         switch result {
         case let .success(changes):
-            votingPower = changes.allChangedItems().first
+            guard let votingPower = changes.allChangedItems().first else {
+                return
+            }
+            self.votingPower = votingPower
+            presenter?.didReceive(votingPower)
         case let .failure(error):
             presenter?.didReceive(error)
         }

@@ -9,11 +9,11 @@ struct ReferendumVotingInitData {
     let presetVotingPower: VotingPowerLocal?
 
     init(
-        votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?,
-        blockNumber: BlockNumber?,
-        blockTime: BlockTime?,
-        referendum: ReferendumLocal?,
-        lockDiff: GovernanceLockStateDiff?,
+        votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>? = nil,
+        blockNumber: BlockNumber? = nil,
+        blockTime: BlockTime? = nil,
+        referendum: ReferendumLocal? = nil,
+        lockDiff: GovernanceLockStateDiff? = nil,
         presetVotingPower: VotingPowerLocal? = nil
     ) {
         self.votesResult = votesResult

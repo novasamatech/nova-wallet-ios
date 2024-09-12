@@ -29,6 +29,7 @@ class BaseReferendumVoteSetupPresenter {
 
     private(set) var inputResult: AmountInputResult?
     private(set) var conviction: ConvictionVoting.Conviction = .none
+    private(set) var initVotingPower: VotingPowerLocal?
 
     init(
         chain: ChainModel,
@@ -51,6 +52,7 @@ class BaseReferendumVoteSetupPresenter {
         blockTime = initData.blockTime
         referendum = initData.referendum
         lockDiff = initData.lockDiff
+        initVotingPower = initData.presetVotingPower
         self.referendumIndex = referendumIndex
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -301,6 +303,14 @@ extension BaseReferendumVoteSetupPresenter {
 
 extension BaseReferendumVoteSetupPresenter: BaseReferendumVoteSetupPresenterProtocol {
     func setup() {
+        if let initVotingPower, let assetInfo = chain.utilityAssetDisplayInfo() {
+            conviction = ConvictionVoting.Conviction(from: initVotingPower.conviction)
+            inputResult = .absolute(initVotingPower.amount.decimal(assetInfo: assetInfo))
+
+            updateAfterAmountChanged()
+            provideConviction()
+        }
+
         updateView()
 
         interactor.setup()
