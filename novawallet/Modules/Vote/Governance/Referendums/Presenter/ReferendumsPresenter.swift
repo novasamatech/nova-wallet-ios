@@ -41,7 +41,7 @@ final class ReferendumsPresenter {
 
     private(set) var filter = ReferendumsFilter.all
 
-    let tinderGovObservableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
+    let observableState: ReferendumsObservableState
     let observableViewState = Observable<ReferendumsViewState>(
         state: .init(cells: [], timeModels: nil)
     )
@@ -67,7 +67,7 @@ final class ReferendumsPresenter {
     init(
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
-        tinderGovObservableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>,
+        observableState: ReferendumsObservableState,
         viewModelFactory: ReferendumsModelFactoryProtocol,
         tinderGovViewModelFactory: TinderGovViewModelFactoryProtocol,
         activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol,
@@ -79,7 +79,7 @@ final class ReferendumsPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.tinderGovObservableState = tinderGovObservableState
+        self.observableState = observableState
         self.viewModelFactory = viewModelFactory
         self.tinderGovViewModelFactory = tinderGovViewModelFactory
         self.activityViewModelFactory = activityViewModelFactory
@@ -115,7 +115,7 @@ final class ReferendumsPresenter {
             accountVotes: voting?.value?.votes
         )
 
-        tinderGovObservableState.state = .init(
+        observableState.state = .init(
             value: voteAvailableFilter().reduce(into: [:]) { $0[$1.index] = $1 }
         )
     }
@@ -124,7 +124,7 @@ final class ReferendumsPresenter {
         freeBalance = nil
         price = nil
         referendums = nil
-        tinderGovObservableState.state = .init(value: [:])
+        observableState.state = .init(value: [:])
         filteredReferendums = [:]
         referendumsMetadata = nil
         voting = nil
@@ -234,17 +234,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func selectTinderGov() {
-        guard
-            let referendums,
-            let chain
-        else {
-            return
-        }
-
-        wireframe.showTinderGov(
-            from: view,
-            observableState: tinderGovObservableState
-        )
+        wireframe.showTinderGov(from: view)
     }
 
     func showReferendumDetailsIfNeeded() {

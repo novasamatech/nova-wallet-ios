@@ -62,8 +62,6 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
         model = modelBuilderResult.model
 
         switch modelBuilderResult.changeKind {
-        case .setup:
-            updateVotingListView()
         case .referendums:
             updateCardsStackView()
         case .full:

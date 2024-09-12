@@ -206,7 +206,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            tinderGovObservableState: state.tinderGovObservableState,
+            observableState: state.observableState,
             viewModelFactory: viewModelFactory,
             tinderGovViewModelFactory: tinderGovViewModelFactory,
             activityViewModelFactory: activityViewModelFactory,

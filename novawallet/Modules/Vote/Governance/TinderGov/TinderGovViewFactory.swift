@@ -50,7 +50,6 @@ struct TinderGovViewFactory {
 
         let interactor = TinderGovInteractor(
             metaAccount: metaAccount,
-            observableState: sharedState.tinderGovObservableState,
             governanceState: sharedState,
             sorting: ReferendumsTimeSortingProvider(),
             basketItemsRepository: AnyDataProviderRepository(repository),

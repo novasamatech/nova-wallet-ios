@@ -3,11 +3,13 @@ import SoraKeystore
 import Operation_iOS
 import SubstrateSdk
 
+typealias ReferendumsObservableState = Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
+
 final class GovernanceSharedState {
-    let tinderGovObservableState = Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>(
+    let observableState = ReferendumsObservableState(
         state: .init(value: [:])
     )
-    
+
     let settings: GovernanceChainSettings
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol

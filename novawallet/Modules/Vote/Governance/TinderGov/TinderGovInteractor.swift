@@ -15,9 +15,9 @@ class TinderGovInteractor {
 
     private var modelBuilder: TinderGovModelBuilder?
     private var votingPower: VotingPowerLocal?
-    
-    private var observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>> {
-        governanceState.tinderGovObservableState
+
+    private var observableState: ReferendumsObservableState {
+        governanceState.observableState
     }
 
     private var chain: ChainModel {
