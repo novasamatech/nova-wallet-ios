@@ -439,7 +439,7 @@ private extension CardsZStack {
             view.transform = .identity
         }
     }
-    
+
     func createHapticFeedback(style: UIImpactFeedbackGenerator.FeedbackStyle) {
         let generator = UIImpactFeedbackGenerator(style: style)
         generator.prepare()
