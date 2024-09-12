@@ -6,8 +6,6 @@ class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
 
     private let presenter: BaseReferendumVoteSetupPresenterProtocol
 
-    private var referendumNumber: String?
-
     init(
         presenter: BaseReferendumVoteSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -58,8 +56,6 @@ class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
     func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        applyReferendumNumber()
-
         rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
             preferredLanguages: languages
         )
@@ -80,15 +76,6 @@ class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
         rootView.lockPeriodTitleLabel.text = R.string.localizable.commonLockingPeriod(preferredLanguages: languages)
 
         setupAmountInputAccessoryView(for: selectedLocale)
-    }
-
-    private func applyReferendumNumber() {
-        let languages = selectedLocale.rLanguages
-
-        rootView.titleLabel.text = R.string.localizable.govVoteSetupTitleFormat(
-            referendumNumber ?? "",
-            preferredLanguages: languages
-        )
     }
 
     private func setupAmountInputAccessoryView(for locale: Locale) {
@@ -119,12 +106,6 @@ class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
 }
 
 extension BaseReferendumVoteSetupViewController: BaseReferendumVoteSetupViewProtocol {
-    func didReceive(referendumNumber: String) {
-        self.referendumNumber = referendumNumber
-
-        applyReferendumNumber()
-    }
-
     func didReceiveBalance(viewModel: String) {
         rootView.amountView.detailsValueLabel.text = viewModel
     }

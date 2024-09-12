@@ -66,6 +66,11 @@ final class ReferendumVoteSetupViewLayout: UIView {
         view.numberOfLines = 0
     }
 
+    let detailsLabel: UILabel = .create { view in
+        view.apply(style: .regularSubhedlineSecondary)
+        view.numberOfLines = 0
+    }
+
     let amountView = TitleHorizontalMultiValueView()
 
     let amountInputView = NewAmountInputView()
@@ -252,7 +257,10 @@ extension ReferendumVoteSetupViewLayout {
         }
 
         containerView.stackView.addArrangedSubview(titleLabel)
-        containerView.stackView.setCustomSpacing(12.0, after: titleLabel)
+        containerView.stackView.setCustomSpacing(8.0, after: titleLabel)
+
+        containerView.stackView.addArrangedSubview(detailsLabel)
+        containerView.stackView.setCustomSpacing(12.0, after: detailsLabel)
 
         setupAmountViewsLayout()
 
@@ -294,6 +302,8 @@ extension ReferendumVoteSetupViewLayout {
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalTo(abstainButton.snp.centerY)
         }
+
+        containerView.stackView.removeArrangedSubview(detailsLabel)
     }
 
     func setupSingleButtonLayout() {

@@ -38,6 +38,14 @@ final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController 
         rootView.continueButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages
         )
+
+        rootView.detailsLabel.text = R.string.localizable.govVoteSetupDetailsTinderGov(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.titleLabel.text = R.string.localizable.govVotingPower(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
     @objc private func actionContinue() {

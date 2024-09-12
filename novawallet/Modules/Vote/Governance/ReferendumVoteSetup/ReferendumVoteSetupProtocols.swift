@@ -1,7 +1,6 @@
 import BigInt
 
 protocol BaseReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
-    func didReceive(referendumNumber: String)
     func didReceiveBalance(viewModel: String)
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
@@ -15,6 +14,7 @@ protocol BaseReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
 
 protocol ReferendumVoteSetupViewProtocol: BaseReferendumVoteSetupViewProtocol {
     func didReceive(abstainAvailable: Bool)
+    func didReceive(referendumNumber: String)
 }
 
 protocol BaseReferendumVoteSetupPresenterProtocol: AnyObject {

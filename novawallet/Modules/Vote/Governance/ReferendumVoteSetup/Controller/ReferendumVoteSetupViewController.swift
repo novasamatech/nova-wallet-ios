@@ -4,6 +4,8 @@ import SoraFoundation
 final class ReferendumVoteSetupViewController: BaseReferendumVoteSetupViewController {
     let presenter: ReferendumVoteSetupPresenterProtocol
 
+    private var referendumNumber: String?
+
     init(
         presenter: ReferendumVoteSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -44,16 +46,10 @@ final class ReferendumVoteSetupViewController: BaseReferendumVoteSetupViewContro
         )
     }
 
-    @objc private func actionVoteNay() {
-        presenter.proceedNay()
-    }
+    override func setupLocalization() {
+        applyReferendumNumber()
 
-    @objc private func actionVoteAye() {
-        presenter.proceedAye()
-    }
-
-    @objc private func actionVoteAbstain() {
-        presenter.proceedAbstain()
+        super.setupLocalization()
     }
 }
 
@@ -64,5 +60,36 @@ extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
         abstainAvailable
             ? rootView.showAbstain()
             : rootView.hideAbstain()
+    }
+
+    func didReceive(referendumNumber: String) {
+        self.referendumNumber = referendumNumber
+
+        applyReferendumNumber()
+    }
+}
+
+// MARK: Private
+
+private extension ReferendumVoteSetupViewController {
+    func applyReferendumNumber() {
+        let languages = selectedLocale.rLanguages
+
+        rootView.titleLabel.text = R.string.localizable.govVoteSetupTitleFormat(
+            referendumNumber ?? "",
+            preferredLanguages: languages
+        )
+    }
+
+    @objc func actionVoteNay() {
+        presenter.proceedNay()
+    }
+
+    @objc func actionVoteAye() {
+        presenter.proceedAye()
+    }
+
+    @objc func actionVoteAbstain() {
+        presenter.proceedAbstain()
     }
 }

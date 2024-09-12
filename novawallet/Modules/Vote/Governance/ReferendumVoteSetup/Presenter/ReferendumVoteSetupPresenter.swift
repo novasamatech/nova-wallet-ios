@@ -53,6 +53,7 @@ final class ReferendumVoteSetupPresenter: BaseReferendumVoteSetupPresenter {
 
     override func updateView() {
         provideAbstainAvailable()
+        provideReferendumIndex()
         super.updateView()
     }
 }
@@ -139,5 +140,10 @@ private extension ReferendumVoteSetupPresenter {
 
     func provideAbstainAvailable() {
         view?.didReceive(abstainAvailable: supportsAbstainVoting)
+    }
+
+    func provideReferendumIndex() {
+        let referendumString = referendumFormatter.value(for: selectedLocale).string(from: referendumIndex as NSNumber)
+        view?.didReceive(referendumNumber: referendumString ?? "")
     }
 }

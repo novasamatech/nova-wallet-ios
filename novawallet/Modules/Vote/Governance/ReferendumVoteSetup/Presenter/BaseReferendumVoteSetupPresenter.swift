@@ -66,7 +66,6 @@ class BaseReferendumVoteSetupPresenter {
     }
 
     func updateView() {
-        provideReferendumIndex()
         updateAvailableBalanceView()
         provideAmountInputViewModel()
         updateChainAssetViewModel()
@@ -137,11 +136,6 @@ extension BaseReferendumVoteSetupPresenter {
         } else {
             baseView?.didReceiveAmountInputPrice(viewModel: nil)
         }
-    }
-
-    private func provideReferendumIndex() {
-        let referendumString = referendumFormatter.value(for: selectedLocale).string(from: referendumIndex as NSNumber)
-        baseView?.didReceive(referendumNumber: referendumString ?? "")
     }
 
     private func provideAmountInputViewModelIfRate() {
