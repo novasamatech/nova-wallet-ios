@@ -50,20 +50,20 @@ final class VoteCardView: RoundedView {
 
     private(set) var viewModel: VoteCardViewModel?
 
-    var isLoading: Bool = false {
+    private var loadingState: LoadingState = .none {
         didSet {
-            isSummaryLoading = isLoading
-            isRequestedAmountLoading = isLoading
+            if loadingState == .none {
+                stopLoadingIfNeeded()
+            } else {
+                startLoadingIfNeeded()
+            }
         }
     }
-
-    private var isSummaryLoading: Bool = false
-    private var isRequestedAmountLoading: Bool = false
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        if isLoading {
+        if loadingState != .none {
             updateLoadingState()
         }
     }
@@ -126,45 +126,28 @@ extension VoteCardView: StackCardViewUpdatable {
     func setSummary(loadingState: LoadableViewModelState<String>) {
         switch loadingState {
         case .loading:
-            isSummaryLoading = true
-            startLoadingIfNeeded()
+            self.loadingState.formUnion(.summary)
         case let .cached(value), let .loaded(value):
-            isSummaryLoading = false
+            self.loadingState.remove(.summary)
             summaryLabel.text = value
-
-            stopLoading()
         }
     }
 
     func setRequestedAmount(loadingState: LoadableViewModelState<BalanceViewModelProtocol?>) {
         switch loadingState {
         case .loading:
-            isRequestedAmountLoading = true
-            startLoadingIfNeeded()
+            self.loadingState.formUnion(.amount)
         case let .cached(value), let .loaded(value):
             guard let requestedAmount = value else {
                 requestedView.isHidden = true
-                isRequestedAmountLoading = false
-                stopLoading()
-
+                self.loadingState.remove(.amount)
                 return
             }
 
-            isRequestedAmountLoading = false
-
             assetAmountLabel.text = requestedAmount.amount
             fiatAmountLabel.text = requestedAmount.price
-
-            stopLoading()
+            self.loadingState.remove(.amount)
         }
-    }
-
-    func stopLoading() {
-        guard !isRequestedAmountLoading, !isSummaryLoading else {
-            return
-        }
-
-        stopLoadingIfNeeded()
     }
 
     func setBackgroundGradient(model: GradientModel) {
@@ -253,14 +236,6 @@ extension VoteCardView: SkeletonableView {
     var hidingViews: [UIView] {
         [summaryLabel, requestedView]
     }
-
-    func didStartSkeleton() {
-        isLoading = true
-    }
-
-    func didStopSkeleton() {
-        isLoading = false
-    }
 }
 
 private extension VoteCardView {
@@ -289,6 +264,25 @@ private extension VoteCardView {
             make.leading.trailing.bottom.equalToSuperview().inset(Constants.contentInset)
             make.top.equalTo(content.snp.bottom).offset(Constants.buttonTopOffset)
             make.height.equalTo(UIConstants.actionHeight)
+        }
+    }
+}
+
+// MARK: Loading
+
+extension VoteCardView {
+    struct LoadingState: OptionSet {
+        typealias RawValue = UInt8
+
+        static let amount = LoadingState(rawValue: 1 << 0)
+        static let summary = LoadingState(rawValue: 1 << 1)
+        static let all: LoadingState = [.amount, .summary]
+        static let none: LoadingState = []
+
+        let rawValue: UInt8
+
+        init(rawValue: RawValue) {
+            self.rawValue = rawValue
         }
     }
 }
