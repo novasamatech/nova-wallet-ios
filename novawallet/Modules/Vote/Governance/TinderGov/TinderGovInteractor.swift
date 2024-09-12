@@ -6,7 +6,6 @@ class TinderGovInteractor {
 
     private let metaAccount: MetaAccountModel
     private let governanceState: GovernanceSharedState
-    private let observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
     private let sorting: ReferendumsSorting
     private let basketItemsRepository: AnyDataProviderRepository<VotingBasketItemLocal>
     private let operationQueue: OperationQueue
@@ -15,8 +14,11 @@ class TinderGovInteractor {
     private var votingPowerProvider: StreamableProvider<VotingPowerLocal>?
 
     private var modelBuilder: TinderGovModelBuilder?
-
     private var votingPower: VotingPowerLocal?
+    
+    private var observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>> {
+        governanceState.tinderGovObservableState
+    }
 
     private var chain: ChainModel {
         governanceState.settings.value.chain
@@ -27,7 +29,6 @@ class TinderGovInteractor {
 
     init(
         metaAccount: MetaAccountModel,
-        observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>,
         governanceState: GovernanceSharedState,
         sorting: ReferendumsSorting,
         basketItemsRepository: AnyDataProviderRepository<VotingBasketItemLocal>,
@@ -36,7 +37,6 @@ class TinderGovInteractor {
         operationQueue: OperationQueue
     ) {
         self.metaAccount = metaAccount
-        self.observableState = observableState
         self.governanceState = governanceState
         self.sorting = sorting
         self.basketItemsRepository = basketItemsRepository

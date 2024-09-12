@@ -4,7 +4,6 @@ import Operation_iOS
 
 struct TinderGovViewFactory {
     static func createView(
-        observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>,
         metaAccount: MetaAccountModel,
         sharedState: GovernanceSharedState
     ) -> TinderGovViewProtocol? {
@@ -51,7 +50,7 @@ struct TinderGovViewFactory {
 
         let interactor = TinderGovInteractor(
             metaAccount: metaAccount,
-            observableState: observableState,
+            observableState: sharedState.tinderGovObservableState,
             governanceState: sharedState,
             sorting: ReferendumsTimeSortingProvider(),
             basketItemsRepository: AnyDataProviderRepository(repository),

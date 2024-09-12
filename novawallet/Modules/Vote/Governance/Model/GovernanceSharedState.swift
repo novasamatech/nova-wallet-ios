@@ -4,6 +4,10 @@ import Operation_iOS
 import SubstrateSdk
 
 final class GovernanceSharedState {
+    let tinderGovObservableState = Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>(
+        state: .init(value: [:])
+    )
+    
     let settings: GovernanceChainSettings
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol

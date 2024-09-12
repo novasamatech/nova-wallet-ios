@@ -41,9 +41,7 @@ final class ReferendumsPresenter {
 
     private(set) var filter = ReferendumsFilter.all
 
-    let tinderGovObservableState = Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>(
-        state: .init(value: [:])
-    )
+    let tinderGovObservableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
     let observableViewState = Observable<ReferendumsViewState>(
         state: .init(cells: [], timeModels: nil)
     )
@@ -69,6 +67,7 @@ final class ReferendumsPresenter {
     init(
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
+        tinderGovObservableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>,
         viewModelFactory: ReferendumsModelFactoryProtocol,
         tinderGovViewModelFactory: TinderGovViewModelFactoryProtocol,
         activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol,
@@ -80,6 +79,7 @@ final class ReferendumsPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.tinderGovObservableState = tinderGovObservableState
         self.viewModelFactory = viewModelFactory
         self.tinderGovViewModelFactory = tinderGovViewModelFactory
         self.activityViewModelFactory = activityViewModelFactory
