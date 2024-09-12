@@ -14,6 +14,9 @@ protocol TinderGovSetupInteractorOutputProtocol: ReferendumVoteSetupInteractorOu
     func didProcessVotingPower()
 }
 
-protocol TinderGovSetupWireframeProtocol: BaseReferendumVoteSetupWireframeProtocol {
-    func showTinderGov(from view: ControllerBackedProtocol?)
+protocol TinderGovSetupWireframeProtocol: BaseReferendumVoteSetupWireframeProtocol, ModalAlertPresenting {
+    func showTinderGov(
+        from view: ControllerBackedProtocol?,
+        locale: Locale
+    )
 }

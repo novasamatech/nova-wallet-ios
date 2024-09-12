@@ -76,7 +76,10 @@ extension TinderGovSetupPresenter: TinderGovSetupPresenterProtocol {
 
 extension TinderGovSetupPresenter: TinderGovSetupInteractorOutputProtocol {
     func didProcessVotingPower() {
-        wireframe.showTinderGov(from: view)
+        wireframe.showTinderGov(
+            from: view,
+            locale: selectedLocale
+        )
     }
 }
 
