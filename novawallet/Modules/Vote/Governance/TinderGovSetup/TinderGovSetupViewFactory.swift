@@ -122,7 +122,7 @@ struct TinderGovSetupViewFactory {
         let chain = option.chain
 
         guard
-            let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
+            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
             let blockTimeService = state.blockTimeService,
@@ -163,7 +163,7 @@ struct TinderGovSetupViewFactory {
         )
 
         return TinderGovSetupInteractor(
-            repository: repository,
+            repository: AnyDataProviderRepository(repository),
             referendumIndex: referendum,
             selectedAccount: selectedAccount,
             chain: chain,

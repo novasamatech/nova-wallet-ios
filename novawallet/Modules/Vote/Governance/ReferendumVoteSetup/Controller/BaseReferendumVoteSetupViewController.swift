@@ -55,7 +55,7 @@ class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
         applyReferendumNumber()

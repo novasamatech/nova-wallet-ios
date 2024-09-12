@@ -25,15 +25,23 @@ final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController 
     override func setupHandlers() {
         super.setupHandlers()
 
-        rootView.nayButton.addTarget(
+        rootView.continueButton.addTarget(
             self,
             action: #selector(actionContinue),
             for: .touchUpInside
         )
     }
 
+    override func setupLocalization() {
+        super.setupLocalization()
+
+        rootView.continueButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+
     @objc private func actionContinue() {
-        // TODO: Implement
+        presenter.proceed()
     }
 }
 

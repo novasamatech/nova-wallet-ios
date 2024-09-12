@@ -14,6 +14,12 @@ final class ReferendumVoteSetupViewLayout: UIView {
         view.backgroundColor = .clear
     }
 
+    let continueButton: TriangularedButton = {
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+        return button
+    }()
+
     let ayeButton: RoundedButton = {
         let button = RoundedButton()
         button.applyIconWithBackgroundStyle()
@@ -235,7 +241,8 @@ extension ReferendumVoteSetupViewLayout {
     private func setupLayout() {
         addSubview(buttonContainer)
         buttonContainer.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
 
         addSubview(containerView)
@@ -290,7 +297,12 @@ extension ReferendumVoteSetupViewLayout {
     }
 
     func setupSingleButtonLayout() {
-        // TODO: Implement
+        buttonContainer.addSubview(continueButton)
+        continueButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.top.equalToSuperview()
+            make.height.equalTo(UIConstants.actionHeight)
+        }
     }
 
     private func setupAmountViewsLayout() {
