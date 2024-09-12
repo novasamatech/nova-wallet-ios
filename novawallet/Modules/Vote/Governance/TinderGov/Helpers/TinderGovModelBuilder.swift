@@ -10,12 +10,14 @@ protocol TinderGovModelBuilderProtocol {
 }
 
 final class TinderGovModelBuilder {
+    let validationAction: () -> Bool
+    var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
+
     private let sorting: ReferendumsSorting
     private let workingQueue: OperationQueue
     private let callbackQueue: DispatchQueue
     private let closure: (Result) -> Void
 
-    private var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
     private var votingList: [VotingBasketItemLocal] = []
 
     private var currentModel: Result.Model = .init()
@@ -24,8 +26,10 @@ final class TinderGovModelBuilder {
         sorting: ReferendumsSorting,
         workingQueue: OperationQueue,
         callbackQueue: DispatchQueue = .main,
+        validationAction: @escaping () -> Bool,
         closure: @escaping (Result) -> Void
     ) {
+        self.validationAction = validationAction
         self.sorting = sorting
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
@@ -84,7 +88,8 @@ private extension TinderGovModelBuilder {
         let model = Result.Model(
             referendums: sorted(Array(referendums.values)),
             referendumsChanges: changes,
-            votingList: votingList
+            votingList: votingList,
+            validationAction: validationAction
         )
 
         currentModel = model
@@ -158,22 +163,26 @@ extension TinderGovModelBuilder {
             let referendums: [ReferendumLocal]
             let referendumsChanges: ReferendumsListChanges
             let votingList: [VotingBasketItemLocal]
+            let validationAction: (() -> Bool)?
 
             init(
                 referendums: [ReferendumLocal] = [],
                 referendumsChanges: ReferendumsListChanges = .init(inserts: [], updates: [], deletes: []),
-                votingList: [VotingBasketItemLocal] = []
+                votingList: [VotingBasketItemLocal] = [],
+                validationAction: (() -> Bool)? = nil
             ) {
                 self.referendums = referendums
                 self.referendumsChanges = referendumsChanges
                 self.votingList = votingList
+                self.validationAction = validationAction
             }
 
             func replacing(_ votingList: [VotingBasketItemLocal]) -> Self {
                 .init(
                     referendums: referendums,
                     referendumsChanges: referendumsChanges,
-                    votingList: votingList
+                    votingList: votingList,
+                    validationAction: validationAction
                 )
             }
         }

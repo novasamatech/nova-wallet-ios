@@ -8,6 +8,11 @@ protocol CardStackable: AnyObject {
     func prepareForReuse()
 }
 
+struct CardsZStackViewModel {
+    let changeModel: CardsZStackChangeModel
+    let validationAction: ((VoteCardViewModel?) -> Bool)?
+}
+
 struct CardsZStackChangeModel {
     let inserts: [VoteCardViewModel]
     let updates: [VoteCardId: VoteCardViewModel]
@@ -28,6 +33,8 @@ final class CardsZStack: UIView {
     private var viewPool: [VoteCardView] = []
     private var viewModelsQueue: [VoteCardViewModel] = []
 
+    private var validateAction: ((VoteCardViewModel?) -> Bool)?
+
     init(maxCardsAlive: Int = 3) {
         self.maxCardsAlive = maxCardsAlive
         super.init(frame: .zero)
@@ -46,6 +53,10 @@ final class CardsZStack: UIView {
             return
         }
         topView.didBecomeTopView()
+    }
+
+    func setupValidationAction(_ closure: ((VoteCardViewModel?) -> Bool)?) {
+        validateAction = closure
     }
 
     func addCard(model: VoteCardViewModel) {
@@ -71,6 +82,14 @@ final class CardsZStack: UIView {
             return
         }
 
+        if let validateAction, !validateAction(topView.viewModel) {
+            createHapticFeedback(style: .heavy)
+            animateTransformIdentity(for: topView)
+
+            return
+        }
+
+        createHapticFeedback(style: .medium)
         animateCardDismiss(topView, direction: direction) { [weak self] in
             self?.processCardDidPop(
                 cardView: topView,
@@ -375,7 +394,7 @@ private extension CardsZStack {
     }
 
     @objc func actionPan(gestureRecognizer: UIPanGestureRecognizer) {
-        guard let view = gestureRecognizer.view else {
+        guard let view = (gestureRecognizer.view as? VoteCardView) else {
             return
         }
 
@@ -388,26 +407,43 @@ private extension CardsZStack {
                 y: translation.y
             )
         case .ended:
-            if translation.y <= Constants.topMostY {
-                dismissTopCard(to: .top)
-            } else if translation.x <= Constants.leftMostX {
-                dismissTopCard(to: .left)
-            } else if translation.x >= Constants.rightMostX {
-                dismissTopCard(to: .right)
-            } else {
-                UIView.animate(
-                    withDuration: Constants.CardIdentityAnimation.duration,
-                    delay: Constants.CardIdentityAnimation.delay,
-                    usingSpringWithDamping: Constants.CardIdentityAnimation.springDamping,
-                    initialSpringVelocity: Constants.CardIdentityAnimation.springVelocity,
-                    options: [.curveEaseInOut]
-                ) {
-                    view.transform = .identity
-                }
-            }
+            onPanGestureEnded(for: view, with: translation)
         default:
             break
         }
+    }
+
+    func onPanGestureEnded(
+        for view: VoteCardView,
+        with translation: CGPoint
+    ) {
+        if translation.y <= Constants.topMostY {
+            dismissTopCard(to: .top)
+        } else if translation.x <= Constants.leftMostX {
+            dismissTopCard(to: .left)
+        } else if translation.x >= Constants.rightMostX {
+            dismissTopCard(to: .right)
+        } else {
+            animateTransformIdentity(for: view)
+        }
+    }
+
+    func animateTransformIdentity(for view: UIView) {
+        UIView.animate(
+            withDuration: Constants.CardIdentityAnimation.duration,
+            delay: Constants.CardIdentityAnimation.delay,
+            usingSpringWithDamping: Constants.CardIdentityAnimation.springDamping,
+            initialSpringVelocity: Constants.CardIdentityAnimation.springVelocity,
+            options: [.curveEaseInOut]
+        ) {
+            view.transform = .identity
+        }
+    }
+    
+    func createHapticFeedback(style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.prepare()
+        generator.impactOccurred()
     }
 }
 

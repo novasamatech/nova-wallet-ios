@@ -41,17 +41,7 @@ extension TinderGovPresenter: TinderGovPresenterProtocol {
     }
 
     func actionSettings() {
-        guard let referendumId = model?.referendums.first?.index else {
-            return
-        }
-
-        let initData = ReferendumVotingInitData(presetVotingPower: votingPower)
-
-        wireframe.showVoteSetup(
-            from: view,
-            referendum: referendumId,
-            initData: initData
-        )
+        showVotingPower()
     }
 }
 
@@ -74,6 +64,10 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
 
     func didReceive(_ votingPower: VotingPowerLocal) {
         self.votingPower = votingPower
+    }
+
+    func didReceiveVotingPowerRequired() {
+        showVotingPower()
     }
 
     func didReceive(_ error: any Error) {
@@ -118,7 +112,14 @@ private extension TinderGovPresenter {
             deletes: deletes
         )
 
-        view?.updateCardsStack(with: stackChangeModel)
+        let viewModel = CardsZStackViewModel(
+            changeModel: stackChangeModel,
+            validationAction: { _ in
+                model.validationAction?() == true
+            }
+        )
+
+        view?.updateCardsStack(with: viewModel)
     }
 
     func createCardViewModel(from referendums: [ReferendumLocal]) -> [VoteCardViewModel] {
@@ -165,5 +166,19 @@ private extension TinderGovPresenter {
         }
 
         view?.updateCardsCounter(with: viewModel)
+    }
+
+    func showVotingPower() {
+        guard let referendumId = model?.referendums.first?.index else {
+            return
+        }
+
+        let initData = ReferendumVotingInitData(presetVotingPower: votingPower)
+
+        wireframe.showVoteSetup(
+            from: view,
+            referendum: referendumId,
+            initData: initData
+        )
     }
 }

@@ -1,7 +1,7 @@
 import Operation_iOS
 
 protocol TinderGovViewProtocol: ControllerBackedProtocol {
-    func updateCardsStack(with changeModel: CardsZStackChangeModel)
+    func updateCardsStack(with viewModel: CardsZStackViewModel)
     func skipCard()
     func updateVotingList(with viewModel: VotingListWidgetViewModel)
     func updateCardsCounter(with text: String)
@@ -24,6 +24,7 @@ protocol TinderGovInteractorInputProtocol: AnyObject {
 protocol TinderGovInteractorOutputProtocol: AnyObject {
     func didReceive(_ modelBuilderResult: TinderGovModelBuilder.Result)
     func didReceive(_ votingPower: VotingPowerLocal)
+    func didReceiveVotingPowerRequired()
     func didReceive(_ error: Error)
 }
 
