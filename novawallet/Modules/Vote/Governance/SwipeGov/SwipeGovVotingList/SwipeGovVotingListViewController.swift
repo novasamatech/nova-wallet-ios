@@ -43,7 +43,34 @@ final class SwipeGovVotingListViewController: UIViewController, ViewHolder {
 
 // MARK: SwipeGovVotingListViewProtocol
 
-extension SwipeGovVotingListViewController: SwipeGovVotingListViewProtocol {}
+extension SwipeGovVotingListViewController: SwipeGovVotingListViewProtocol {
+    func didReceive(_ viewModel: SwipeGovVotingListViewModel) {
+        self.viewModel = viewModel
+        rootView.tableView.reloadData()
+    }
+    
+    func didChangeViewModel(
+        _ viewModel: SwipeGovVotingListViewModel,
+        byRemovingItemWith referendumId: ReferendumIdLocal
+    ) {
+        guard let rowIndex = self.viewModel?.cellViewModels.firstIndex(where: {
+            $0.referendumIndex == referendumId
+        }) else {
+            return
+        }
+        
+        self.viewModel = viewModel
+        
+        let indexPath = IndexPath(row: rowIndex, section: 0)
+        rootView.tableView.deleteRows(at: [indexPath], with: .left)
+        
+        if viewModel.cellViewModels.isEmpty {
+            // TODO: Implement dismiss
+        }
+
+        updateVoteButton()
+    }
+}
 
 // MARK: UITableViewDataSource
 
