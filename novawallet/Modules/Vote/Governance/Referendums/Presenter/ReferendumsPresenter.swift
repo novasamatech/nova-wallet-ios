@@ -35,13 +35,19 @@ final class ReferendumsPresenter {
     var countdownTimer: CountdownTimer?
     var timeModels: [ReferendumIdLocal: StatusTimeViewModel?]? {
         didSet {
-            observableState.state.timeModels = timeModels
+            observableViewState.state.timeModels = timeModels
         }
     }
 
     private(set) var filter = ReferendumsFilter.all
 
-    let observableState = Observable<ReferendumsState>(state: .init(cells: [], timeModels: nil))
+    let tinderGovObservableState = Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>(
+        state: .init(value: [:])
+    )
+    let observableViewState = Observable<ReferendumsViewState>(
+        state: .init(cells: [], timeModels: nil)
+    )
+
     var referendumsInitState: ReferendumsInitState?
 
     var chain: ChainModel? {
@@ -101,10 +107,24 @@ final class ReferendumsPresenter {
         interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
     }
 
+    private func updateTinderGovState() {
+        guard let referendums else { return }
+
+        let voteAvailableFilter = ReferendumFilter.VoteAvailable(
+            referendums: referendums,
+            accountVotes: voting?.value?.votes
+        )
+
+        tinderGovObservableState.state = .init(
+            value: voteAvailableFilter().reduce(into: [:]) { $0[$1.index] = $1 }
+        )
+    }
+
     func clearState() {
         freeBalance = nil
         price = nil
         referendums = nil
+        tinderGovObservableState.state = .init(value: [:])
         filteredReferendums = [:]
         referendumsMetadata = nil
         voting = nil
@@ -165,7 +185,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     func showSearch() {
         wireframe.showSearch(
             from: view,
-            referendumsState: observableState,
+            referendumsState: observableViewState,
             delegate: self
         )
     }
@@ -214,18 +234,16 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func selectTinderGov() {
-        guard let referendums else {
+        guard
+            let referendums,
+            let chain
+        else {
             return
         }
 
-        let filter = TinderGovReferendumsFilter(
-            referendums: referendums,
-            accountVotes: voting?.value?.votes
-        )
-
         wireframe.showTinderGov(
             from: view,
-            referendums: filter()
+            observableState: tinderGovObservableState
         )
     }
 
@@ -262,6 +280,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
         self.voting = voting
         filterReferendums()
+        updateTinderGovState()
 
         if let tracksVoting = voting.value {
             interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: voting.blockHash)
@@ -304,7 +323,14 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     }
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
-        self.referendums = referendums.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
+        self.referendums = referendums.sorted {
+            sorting.compare(
+                referendum1: $0,
+                referendum2: $1
+            )
+        }
+
+        updateTinderGovState()
         filterReferendums()
         updateTimeModels()
         refreshUnlockSchedule()

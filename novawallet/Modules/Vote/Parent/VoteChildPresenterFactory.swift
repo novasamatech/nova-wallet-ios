@@ -170,7 +170,10 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
     ) -> VoteChildPresenterProtocol? {
         let state = GovernanceSharedState()
 
-        let interactor = createGovernanceInteractor(for: state, wallet: wallet)
+        let interactor = createGovernanceInteractor(
+            for: state,
+            wallet: wallet
+        )
         let wireframe = ReferendumsWireframe(state: state)
 
         let statusViewModelFactory = ReferendumStatusViewModelFactory()

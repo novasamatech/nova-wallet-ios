@@ -2,16 +2,9 @@ import Foundation
 
 protocol TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
-        using filter: TinderGovReferendumsFilter,
+        with referendums: [ReferendumLocal],
         locale: Locale
     ) -> ReferendumsSection?
-
-    func createVoteCardViewModels(
-        from referendums: [ReferendumLocal],
-        locale: Locale,
-        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
-    ) -> [VoteCardViewModel]
 
     func createVotingListViewModel(
         from votingList: [ReferendumIdLocal],
@@ -25,19 +18,13 @@ protocol TinderGovViewModelFactoryProtocol {
     ) -> String?
 }
 
-struct TinderGovViewModelFactory {
-    private let cardGradientFactory = TinderGovGradientFactory()
-}
-
-extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
+struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     func createTinderGovReferendumsSection(
-        using filter: TinderGovReferendumsFilter,
+        with referendums: [ReferendumLocal],
         locale: Locale
     ) -> ReferendumsSection? {
-        let tinderGovReferenda = filter()
-
         let section: ReferendumsSection? = {
-            guard !tinderGovReferenda.isEmpty else {
+            guard !referendums.isEmpty else {
                 return nil
             }
 
@@ -48,7 +35,7 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
                         preferredLanguages: locale.rLanguages
                     ),
                     referendumCounterText: R.string.localizable.commonCountedReferenda(
-                        tinderGovReferenda.count,
+                        referendums.count,
                         preferredLanguages: locale.rLanguages
                     )
                 )
@@ -56,25 +43,6 @@ extension TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
         }()
 
         return section
-    }
-
-    func createVoteCardViewModels(
-        from referendums: [ReferendumLocal],
-        locale: Locale,
-        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void
-    ) -> [VoteCardViewModel] {
-        referendums.enumerated().map { index, referendum in
-            let gradientModel = cardGradientFactory.createCardGradient(for: index)
-
-            return VoteCardViewModel(
-                referendum: referendum,
-                gradient: gradientModel,
-                locale: locale,
-                onVote: onVote,
-                onBecomeTop: onBecomeTop
-            )
-        }
     }
 
     func createVotingListViewModel(

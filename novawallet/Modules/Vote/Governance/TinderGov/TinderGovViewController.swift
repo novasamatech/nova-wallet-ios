@@ -82,12 +82,13 @@ final class TinderGovViewController: UIViewController, ViewHolder {
 // MARK: TinderGovViewProtocol
 
 extension TinderGovViewController: TinderGovViewProtocol {
-    func updateCards(with newModels: [VoteCardViewModel]) {
-        newModels.forEach { viewModel in
-            rootView.addCard(model: viewModel)
-        }
-
+    func updateCardsStack(with changeModel: CardsZStackChangeModel) {
+        rootView.cardsStack.updateStack(with: changeModel)
         rootView.finishedAddingCards()
+    }
+
+    func skipCard() {
+        rootView.cardsStack.skipCard()
     }
 
     func updateVotingList(with viewModel: VotingListWidgetViewModel) {

@@ -21,10 +21,7 @@ extension ReferendumsPresenter {
             chain: chainModel,
             currentBlock: currentBlock
         )
-        let tinderGovSection = createTinderGovSection(
-            for: referendums,
-            accountVotes: voting?.value?.votes
-        )
+        let tinderGovSection = createTinderGovSection()
         let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
         let filteredReferendumsSections = filteredReferendumsSections(for: referendumsSections)
 
@@ -35,7 +32,7 @@ extension ReferendumsPresenter {
         ].compactMap { $0 } + filteredReferendumsSections
 
         view.update(model: .init(sections: allSections))
-        observableState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)
+        observableViewState.state.cells = referendumsSections.flatMap(ReferendumsSection.Lens.referendums.get)
     }
 
     func updateTimerDisplay() {

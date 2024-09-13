@@ -1,13 +1,23 @@
 import Foundation
+import Operation_iOS
 
 class TinderGovInteractor {
     weak var presenter: TinderGovInteractorOutputProtocol?
 
-    // TODO: change to observable state
-    private let referendums: [ReferendumLocal]
+    private let observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
+    private let sorting: ReferendumsSorting
+    private let operationQueue: OperationQueue
 
-    init(referendums: [ReferendumLocal]) {
-        self.referendums = referendums
+    private var modelBuilder: TinderGovModelBuilder?
+
+    init(
+        observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>,
+        sorting: ReferendumsSorting,
+        operationQueue: OperationQueue
+    ) {
+        self.observableState = observableState
+        self.sorting = sorting
+        self.operationQueue = operationQueue
     }
 }
 
@@ -15,6 +25,32 @@ class TinderGovInteractor {
 
 extension TinderGovInteractor: TinderGovInteractorInputProtocol {
     func setup() {
-        presenter?.didReceive(referendums)
+        modelBuilder = .init(
+            sorting: sorting,
+            workingQueue: operationQueue
+        ) { [weak self] result in
+            self?.presenter?.didReceive(result)
+        }
+
+        modelBuilder?.buildOnSetup()
+        modelBuilder?.apply(observableState.state.value)
+        startObservingState()
+    }
+
+    func addVoting(for referendumId: ReferendumIdLocal) {
+        modelBuilder?.apply(voting: referendumId)
+    }
+}
+
+// MARK: Private
+
+extension TinderGovInteractor {
+    func startObservingState() {
+        observableState.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] _, new in
+            self?.modelBuilder?.apply(new.value)
+        }
     }
 }

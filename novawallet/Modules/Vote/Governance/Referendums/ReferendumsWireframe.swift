@@ -31,9 +31,12 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func showTinderGov(
         from view: ControllerBackedProtocol?,
-        referendums: [ReferendumLocal]
+        observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
     ) {
-        guard let tinderGovView = TinderGovViewFactory.createView(with: referendums) else {
+        guard let tinderGovView = TinderGovViewFactory.createView(
+            observableState: observableState,
+            sharedState: state
+        ) else {
             return
         }
 
@@ -108,7 +111,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func showSearch(
         from view: ControllerBackedProtocol?,
-        referendumsState: Observable<ReferendumsState>,
+        referendumsState: Observable<ReferendumsViewState>,
         delegate: ReferendumSearchDelegate?
     ) {
         guard let searchView = ReferendumSearchViewFactory.createView(

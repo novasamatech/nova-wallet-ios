@@ -8,11 +8,18 @@ protocol CardStackable: AnyObject {
     func prepareForReuse()
 }
 
+struct CardsZStackChangeModel {
+    let inserts: [VoteCardViewModel]
+    let updates: [VoteCardId: VoteCardViewModel]
+    let deletes: Set<VoteCardId>
+}
+
 final class CardsZStack: UIView {
     enum DismissalDirection {
         case left
         case right
         case top
+        case bottom
     }
 
     private let maxCardsAlive: Int
@@ -46,27 +53,6 @@ final class CardsZStack: UIView {
         manageStack()
     }
 
-    func addView(_ view: VoteCardView) {
-        stackedViews.insert(view, at: 0)
-
-        if let emptyStateView {
-            insertSubview(view, aboveSubview: emptyStateView)
-        } else {
-            insertSubview(view, at: 0)
-        }
-
-        view.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        layoutIfNeeded()
-
-        if stackedViews.count == 1 {
-            hideEmptyState()
-        }
-
-        animateCardAdd(view)
-    }
-
     func setEmptyStateView(_ view: UIView) {
         emptyStateView = view
         view.isHidden = true
@@ -86,21 +72,64 @@ final class CardsZStack: UIView {
         }
 
         animateCardDismiss(topView, direction: direction) { [weak self] in
-            guard let self else { return }
-
-            topView.didPopFromStack(direction: direction)
-
-            stackedViews.removeLast()
-            enqueueVoteCardView(topView)
-            notifyTopView()
-
-            if stackedViews.isEmpty {
-                showEmptyState()
-            }
-
-            manageStack()
-            completion?()
+            self?.processCardDidPop(
+                cardView: topView,
+                direction: direction,
+                completion: completion
+            )
         }
+    }
+
+    func skipCard() {
+        guard let topView = stackedViews.last else {
+            return
+        }
+
+        animateCardDismiss(topView, direction: .bottom) { [weak self] in
+            self?.processCardDidPop(
+                cardView: topView,
+                direction: .bottom
+            )
+        }
+    }
+
+    func removeCard(with id: UInt) {
+        if let index = viewModelsQueue.firstIndex(where: { $0.id == id }) {
+            viewModelsQueue.remove(at: index)
+        }
+
+        guard let cardView = stackedViews.first(where: { $0.viewModel?.id == id }) else {
+            return
+        }
+
+        let dismissDirection: DismissalDirection = .bottom
+        animateCardDismiss(cardView, direction: dismissDirection) { [weak self] in
+            self?.processCardDidPop(
+                cardView: cardView,
+                direction: dismissDirection,
+                completion: nil
+            )
+        }
+    }
+
+    func updateStack(with changeModel: CardsZStackChangeModel) {
+        if !changeModel.deletes.isEmpty || !changeModel.updates.isEmpty {
+            viewModelsQueue
+                .enumerated()
+                .forEach { index, viewModel in
+                    if changeModel.deletes.contains(viewModel.id) {
+                        viewModelsQueue.remove(at: index)
+                    } else if let updatedModel = changeModel.updates[viewModel.id] {
+                        viewModelsQueue[index] = updatedModel
+                    }
+                }
+        }
+
+        changeModel.inserts.forEach { viewModel in
+            viewModelsQueue.append(viewModel)
+        }
+
+        manageStack()
     }
 }
 
@@ -165,12 +194,14 @@ private extension CardsZStack {
         case .left: (-1.5 * bounds.width, 0)
         case .right: (1.5 * bounds.width, 0)
         case .top: (0, -1.5 * bounds.height)
+        case .bottom: (0, 1.5 * bounds.height)
         }
 
         let rotationDirection: CGFloat = switch direction {
         case .left: -1
         case .right: 1
         case .top: 0
+        case .bottom: 0
         }
 
         UIView.animate(
@@ -226,6 +257,46 @@ private extension CardsZStack {
 // MARK: Private
 
 private extension CardsZStack {
+    func addView(_ view: VoteCardView) {
+        stackedViews.insert(view, at: 0)
+
+        if let emptyStateView {
+            insertSubview(view, aboveSubview: emptyStateView)
+        } else {
+            insertSubview(view, at: 0)
+        }
+
+        view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        layoutIfNeeded()
+
+        if stackedViews.count == 1 {
+            hideEmptyState()
+        }
+
+        animateCardAdd(view)
+    }
+
+    func processCardDidPop(
+        cardView: VoteCardView,
+        direction: DismissalDirection,
+        completion: (() -> Void)? = nil
+    ) {
+        cardView.didPopFromStack(direction: direction)
+
+        stackedViews.removeLast()
+        enqueueVoteCardView(cardView)
+        notifyTopView()
+
+        if stackedViews.isEmpty {
+            showEmptyState()
+        }
+
+        manageStack()
+        completion?()
+    }
+
     func dequeueVoteCardView() -> VoteCardView {
         viewPool.popLast() ?? createCardView()
     }
