@@ -48,7 +48,7 @@ extension SwipeGovVotingListViewController: SwipeGovVotingListViewProtocol {
         self.viewModel = viewModel
         rootView.tableView.reloadData()
     }
-    
+
     func didChangeViewModel(
         _ viewModel: SwipeGovVotingListViewModel,
         byRemovingItemWith referendumId: ReferendumIdLocal
@@ -58,12 +58,12 @@ extension SwipeGovVotingListViewController: SwipeGovVotingListViewProtocol {
         }) else {
             return
         }
-        
+
         self.viewModel = viewModel
-        
+
         let indexPath = IndexPath(row: rowIndex, section: 0)
         rootView.tableView.deleteRows(at: [indexPath], with: .left)
-        
+
         if viewModel.cellViewModels.isEmpty {
             // TODO: Implement dismiss
         }

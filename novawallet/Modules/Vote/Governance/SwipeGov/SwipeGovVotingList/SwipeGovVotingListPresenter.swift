@@ -15,7 +15,9 @@ final class SwipeGovVotingListPresenter {
 }
 
 extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 
     func removeItem(with referendumId: ReferendumIdLocal) {
         print(referendumId)
@@ -26,4 +28,12 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 }
 
-extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtocol {}
+extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtocol {
+    func didReceive(_ votingBasketItems: [VotingBasketItemLocal]) {
+        print(votingBasketItems)
+    }
+
+    func didReceive(_ error: Error) {
+        print(error)
+    }
+}

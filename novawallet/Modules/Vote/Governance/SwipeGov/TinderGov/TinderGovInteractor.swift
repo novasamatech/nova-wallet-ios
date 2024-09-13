@@ -124,7 +124,7 @@ extension TinderGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketS
     }
 }
 
-// MARK: VotingBasketLocalStorageSubscriber
+// MARK: VotingPowerLocalStorageSubscriber
 
 extension TinderGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSubscriptionHandler {
     func handleVotingPowerChange(result: Result<[DataProviderChange<VotingPowerLocal>], any Error>) {
