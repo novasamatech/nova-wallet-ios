@@ -8,6 +8,18 @@ struct SwipeGovVotingListItemViewModel {
     let votesCountText: String
 }
 
+class SwipeGovVotingListItemCell: PlainBaseTableViewCell<SwipeGovVotingListItemView> {
+    override func setupStyle() {
+        super.setupStyle()
+
+        backgroundColor = .clear
+    }
+    
+    func bind(viewModel: SwipeGovVotingListItemViewModel) {
+        contentDisplayView.bind(viewModel: viewModel)
+    }
+}
+
 class SwipeGovVotingListItemView: GenericPairValueView<
     GenericPairValueView<
         BorderedLabelView,
