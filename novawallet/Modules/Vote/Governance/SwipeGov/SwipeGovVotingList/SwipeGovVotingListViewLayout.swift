@@ -4,7 +4,7 @@ final class SwipeGovVotingListViewLayout: UIView {
     let tableView: UITableView = .create { view in
         view.backgroundColor = .clear
         view.separatorStyle = .none
-        
+
         view.contentInset = UIEdgeInsets(
             top: 0.0,
             left: 0.0,
@@ -16,10 +16,10 @@ final class SwipeGovVotingListViewLayout: UIView {
     let voteButton: TriangularedButton = .create { view in
         view.applyDefaultStyle()
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
@@ -29,7 +29,7 @@ final class SwipeGovVotingListViewLayout: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in

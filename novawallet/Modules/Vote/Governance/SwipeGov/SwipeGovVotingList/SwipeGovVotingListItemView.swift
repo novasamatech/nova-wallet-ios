@@ -1,20 +1,13 @@
 import UIKit
 import SoraUI
 
-struct SwipeGovVotingListItemViewModel {
-    let indexText: String
-    let titleText: String
-    let voteTypeText: String
-    let votesCountText: String
-}
-
 class SwipeGovVotingListItemCell: PlainBaseTableViewCell<SwipeGovVotingListItemView> {
     override func setupStyle() {
         super.setupStyle()
 
         backgroundColor = .clear
     }
-    
+
     func bind(viewModel: SwipeGovVotingListItemViewModel) {
         contentDisplayView.bind(viewModel: viewModel)
     }
@@ -33,38 +26,38 @@ class SwipeGovVotingListItemView: GenericPairValueView<
     > {
         fView
     }
-    
+
     private var referendumIndexView: BorderedLabelView {
         mainContentView.fView
     }
-    
+
     private var titleLabel: UILabel {
         mainContentView.sView.valueTop
     }
-    
+
     private var voteValueView: TitleValueView {
         mainContentView.sView.valueBottom
     }
-    
+
     private var voteTypeLabel: UILabel {
         voteValueView.titleLabel
     }
-    
+
     private var votesCountLabel: UILabel {
         voteValueView.valueLabel
     }
-    
+
     private var accessoryView: UIImageView {
         sView
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         setupLayout()
         setupStyle()
     }
-    
+
     func bind(viewModel: SwipeGovVotingListItemViewModel) {
         referendumIndexView.titleLabel.text = viewModel.indexText
         titleLabel.text = viewModel.titleText
@@ -76,23 +69,22 @@ class SwipeGovVotingListItemView: GenericPairValueView<
 // MARK: Private
 
 private extension SwipeGovVotingListItemView {
-    
     func setupLayout() {
         setHorizontalAndSpacing(Constants.accessoryViewOffset)
         mainContentView.setHorizontalAndSpacing(Constants.mainContentInnerSpacing)
         mainContentView.sView.spacing = Constants.titleValueSpacing
     }
-    
+
     func setupStyle() {
         referendumIndexView.backgroundView.cornerRadius = Constants.indexViewCornerRadius
         referendumIndexView.backgroundView.fillColor = R.color.colorChipsBackground()!
         referendumIndexView.titleLabel.apply(style: .semiboldCaps1ChipText)
         referendumIndexView.contentInsets = Constants.indexViewInnerInsets
-        
+
         titleLabel.apply(style: .footnotePrimary)
         voteTypeLabel.apply(style: .caption1Secondary)
         votesCountLabel.apply(style: .caption1Secondary)
-        
+
         accessoryView.image = R.image.iconInfoFilled()
     }
 }

@@ -1,7 +1,9 @@
-protocol SwipeGovVotingListViewProtocol: AnyObject {}
+protocol SwipeGovVotingListViewProtocol: ControllerBackedProtocol {}
 
 protocol SwipeGovVotingListPresenterProtocol: AnyObject {
     func setup()
+    func removeItem(with referendumId: ReferendumIdLocal)
+    func selectVoting(for referendumId: ReferendumIdLocal)
 }
 
 protocol SwipeGovVotingListInteractorInputProtocol: AnyObject {}
