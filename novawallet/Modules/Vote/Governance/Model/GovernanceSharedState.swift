@@ -3,8 +3,6 @@ import SoraKeystore
 import Operation_iOS
 import SubstrateSdk
 
-typealias ReferendumsObservableState = Observable<NotEqualWrapper<ReferendumsState>>
-
 final class GovernanceSharedState {
     let observableState: ReferendumsObservableState
 

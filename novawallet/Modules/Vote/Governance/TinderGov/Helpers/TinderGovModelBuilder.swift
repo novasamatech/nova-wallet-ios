@@ -150,7 +150,7 @@ private extension TinderGovModelBuilder {
     func filteredReferendums(from referendumsState: ReferendumsState) -> [ReferendumIdLocal: ReferendumLocal] {
         ReferendumFilter.VoteAvailable(
             referendums: referendumsState.referendums,
-            accountVotes: referendumsState.accountVotes
+            accountVotes: referendumsState.voting?.value?.votes
         ).callAsFunction()
     }
 }

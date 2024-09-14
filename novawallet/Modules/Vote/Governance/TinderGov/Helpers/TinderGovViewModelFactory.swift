@@ -25,7 +25,7 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
     ) -> ReferendumsSection? {
         let filteredReferendums = ReferendumFilter.VoteAvailable(
             referendums: referendumsState.referendums,
-            accountVotes: referendumsState.accountVotes
+            accountVotes: referendumsState.voting?.value?.votes
         ).callAsFunction()
 
         let section: ReferendumsSection? = {
