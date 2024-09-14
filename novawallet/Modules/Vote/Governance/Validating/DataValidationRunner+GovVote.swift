@@ -116,7 +116,7 @@ extension DataValidationRunner {
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceVotePowerValidatingParams,
         selectedLocale: Locale,
-        handlers: GovernanceVoteValidatingHandlers,
+        handlers _: GovernanceVoteValidatingHandlers,
         successClosure: @escaping DataValidationRunnerCompletion
     ) {
         let runner = DataValidationRunner(validators: [
@@ -124,29 +124,6 @@ extension DataValidationRunner {
                 params.assetBalance,
                 votingAmount: params.votePower?.votingAmount,
                 assetInfo: params.assetInfo,
-                locale: selectedLocale
-            ),
-            factory.has(
-                fee: params.fee,
-                locale: selectedLocale,
-                onError: handlers.feeErrorClosure
-            ),
-            factory.enoughTokensForVotingAndFee(
-                params.assetBalance,
-                votingAmount: params.votePower?.votingAmount,
-                fee: params.fee,
-                assetInfo: params.assetInfo,
-                locale: selectedLocale
-            ),
-            factory.referendumNotEnded(params.referendum, locale: selectedLocale),
-            factory.notDelegating(
-                params.votes,
-                track: params.referendum?.trackId,
-                locale: selectedLocale
-            ),
-            factory.maxVotesNotReached(
-                params.votes,
-                track: params.referendum?.trackId,
                 locale: selectedLocale
             )
         ])

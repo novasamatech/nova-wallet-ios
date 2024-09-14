@@ -19,7 +19,6 @@ final class TinderGovSetupPresenter: BaseReferendumVoteSetupPresenter {
     init(
         chain: ChainModel,
         metaAccount: MetaAccountModel,
-        referendumIndex: ReferendumIdLocal,
         initData: ReferendumVotingInitData,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -38,7 +37,6 @@ final class TinderGovSetupPresenter: BaseReferendumVoteSetupPresenter {
 
         super.init(
             chain: chain,
-            referendumIndex: referendumIndex,
             initData: initData,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
@@ -46,11 +44,40 @@ final class TinderGovSetupPresenter: BaseReferendumVoteSetupPresenter {
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             referendumStringsViewModelFactory: referendumStringsViewModelFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
-            interactor: interactor,
+            baseInteractor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager,
             logger: logger
         )
+    }
+
+    override func refreshLockDiff() {
+        guard let trackVoting = votesResult?.value else {
+            return
+        }
+
+        baseInteractor.refreshLockDiff(
+            for: trackVoting,
+            newVote: nil,
+            blockHash: votesResult?.blockHash
+        )
+    }
+
+    override func updateVotesView() {
+        guard
+            let assetInfo = chain.utilityAssetDisplayInfo(),
+            let votingAmount = deriveVotePower(using: assetInfo)
+        else {
+            return
+        }
+
+        let voteString = referendumStringsViewModelFactory.createVotes(
+            from: votingAmount.votingAmount,
+            chain: chain,
+            locale: selectedLocale
+        )
+
+        baseView?.didReceiveVotes(viewModel: voteString ?? "")
     }
 }
 
@@ -95,11 +122,7 @@ private extension TinderGovSetupPresenter {
 
         let params = GovernanceVotePowerValidatingParams(
             assetBalance: assetBalance,
-            referendum: referendum,
             votePower: votePower,
-            selectedConviction: conviction,
-            fee: fee,
-            votes: votesResult?.value?.votes,
             assetInfo: assetInfo
         )
 
@@ -109,7 +132,7 @@ private extension TinderGovSetupPresenter {
                 self?.provideConviction()
             },
             feeErrorClosure: { [weak self] in
-                self?.refreshFee()
+                // TODO: Implement validation error processing
             }
         )
 

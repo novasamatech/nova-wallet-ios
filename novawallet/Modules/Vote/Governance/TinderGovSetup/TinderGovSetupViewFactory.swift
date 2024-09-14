@@ -57,7 +57,7 @@ struct TinderGovSetupViewFactory {
         metaAccount: MetaAccountModel,
         wireframe: TinderGovSetupWireframeProtocol,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
-        referendum: ReferendumIdLocal,
+        referendum _: ReferendumIdLocal,
         initData: ReferendumVotingInitData,
         state: GovernanceSharedState
     ) -> TinderGovSetupPresenter? {
@@ -91,7 +91,6 @@ struct TinderGovSetupViewFactory {
         return TinderGovSetupPresenter(
             chain: chain,
             metaAccount: metaAccount,
-            referendumIndex: referendum,
             initData: initData,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
