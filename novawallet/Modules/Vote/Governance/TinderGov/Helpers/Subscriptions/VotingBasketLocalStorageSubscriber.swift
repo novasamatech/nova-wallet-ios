@@ -26,22 +26,14 @@ extension VotingBasketLocalStorageSubscriber {
         )
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<VotingBasketItemLocal>]) in
-            let assetBalance = changes.reduceToLastChange()
-
             self?.subscriptionHandler.handleVotingBasketItems(result: .success(changes))
+            return
         }
 
         let failureClosure = { [weak self] (error: Error) in
             self?.subscriptionHandler.handleVotingBasketItems(result: .failure(error))
             return
         }
-
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
-        )
 
         provider.removeObserver(self)
 
