@@ -44,7 +44,6 @@ struct TinderGovSetupViewFactory {
                 metaAccount: SelectedWalletSettings.shared.value,
                 wireframe: wireframe,
                 dataValidatingFactory: dataValidatingFactory,
-                referendum: referendum,
                 initData: initData,
                 state: state
             ) else {
