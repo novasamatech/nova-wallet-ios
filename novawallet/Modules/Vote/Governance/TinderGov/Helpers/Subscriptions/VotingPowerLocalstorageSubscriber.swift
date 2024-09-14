@@ -45,12 +45,10 @@ extension VotingPowerLocalStorageSubscriber {
 
         provider.removeObserver(self)
 
-        provider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
+        addStreamableProviderObserver(
+            for: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure
         )
 
         return provider
