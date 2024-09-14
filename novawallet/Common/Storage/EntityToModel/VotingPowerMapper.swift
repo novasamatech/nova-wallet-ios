@@ -17,7 +17,7 @@ extension VotingPowerMapper: CoreDataMapperProtocol {
         return VotingPowerLocal(
             chainId: entity.chainId!,
             metaId: entity.metaId!,
-            conviction: ConvictionLocal(rawType: entity.conviction!),
+            conviction: VotingBasketConvictionLocal(rawType: entity.conviction!),
             amount: amount
         )
     }

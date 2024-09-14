@@ -114,7 +114,7 @@ enum ConvictionVoting {
             }
         }
 
-        init(from convictionLocal: ConvictionLocal) {
+        init(from convictionLocal: VotingBasketConvictionLocal) {
             switch convictionLocal {
             case .none:
                 self = .none

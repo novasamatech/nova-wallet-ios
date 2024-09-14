@@ -14,7 +14,7 @@ struct VotingBasketItemLocal: Equatable {
     let metaId: String
     let amount: BigUInt
     let voteType: VoteType
-    let conviction: ConvictionLocal
+    let conviction: VotingBasketConvictionLocal
 }
 
 extension VotingBasketItemLocal: Identifiable {
@@ -39,7 +39,7 @@ extension VotingBasketItemLocal: Identifiable {
     }
 }
 
-enum ConvictionLocal: String {
+enum VotingBasketConvictionLocal: String {
     /// 0.1x votes, unlocked.
     case none
     /// 1x votes, locked for an enactment period following a successful vote.
