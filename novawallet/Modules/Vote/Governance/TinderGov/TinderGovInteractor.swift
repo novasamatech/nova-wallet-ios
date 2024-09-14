@@ -52,10 +52,7 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
     func setup() {
         modelBuilder = TinderGovModelBuilder(
             sorting: sorting,
-            workingQueue: operationQueue,
-            validationAction: { [weak self] in
-                self?.validateReferendumAction() ?? false
-            }
+            workingQueue: operationQueue
         ) { [weak self] result in
             self?.presenter?.didReceive(result)
         }
@@ -164,16 +161,6 @@ private extension TinderGovInteractor {
         ) { [weak self] _, new in
             self?.modelBuilder?.apply(new.value)
         }
-    }
-
-    func validateReferendumAction() -> Bool {
-        let votingAvailable = votingPower != nil
-
-        if !votingAvailable {
-            presenter?.didReceiveVotingPowerRequired()
-        }
-
-        return votingAvailable
     }
 }
 

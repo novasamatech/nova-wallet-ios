@@ -2,13 +2,13 @@ import Foundation
 import SubstrateSdk
 
 protocol VoteCardViewModelFactoryProtocol {
-    func createVoteCardViewModels(
-        from referendums: [ReferendumLocal],
+    func createCardsStackViewModel(
+        from model: TinderGovModelBuilder.Result.Model,
         locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void,
-        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void
-    ) -> [VoteCardViewModel]
+        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void,
+        validationClosure: @escaping (VoteCardViewModel?) -> Bool
+    ) -> CardsZStackViewModel
 }
 
 struct VoteCardViewModelFactory {
@@ -44,11 +44,47 @@ struct VoteCardViewModelFactory {
 }
 
 extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
-    func createVoteCardViewModels(
+    func createCardsStackViewModel(
+        from model: TinderGovModelBuilder.Result.Model,
+        locale: Locale,
+        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
+        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void,
+        validationClosure: @escaping (VoteCardViewModel?) -> Bool
+    ) -> CardsZStackViewModel {
+        let inserts = createVoteCardViewModels(
+            from: model.referendumsChanges.inserts,
+            locale: locale,
+            onVote: onVote,
+            onLoadError: onLoadError
+        )
+
+        let updates = createVoteCardViewModels(
+            from: model.referendumsChanges.updates,
+            locale: locale,
+            onVote: onVote,
+            onLoadError: onLoadError
+        ).reduce(into: [:]) { $0[$1.id] = $1 }
+
+        let deletes = Set(model.referendumsChanges.deletes)
+
+        let stackChangeModel = CardsZStackChangeModel(
+            inserts: inserts,
+            updates: updates,
+            deletes: deletes
+        )
+
+        let viewModel = CardsZStackViewModel(
+            changeModel: stackChangeModel,
+            validationAction: validationClosure
+        )
+
+        return viewModel
+    }
+
+    private func createVoteCardViewModels(
         from referendums: [ReferendumLocal],
         locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void,
         onLoadError: @escaping (VoteCardLoadErrorActions) -> Void
     ) -> [VoteCardViewModel] {
         referendums.enumerated().map { index, referendum in
@@ -72,7 +108,7 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
                 gradient: gradientModel,
                 locale: locale,
                 onVote: onVote,
-                onBecomeTop: onBecomeTop,
+                onBecomeTop: { _ in },
                 onLoadError: onLoadError
             )
         }
