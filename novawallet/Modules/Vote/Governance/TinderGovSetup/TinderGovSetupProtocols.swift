@@ -6,7 +6,7 @@ protocol TinderGovSetupPresenterProtocol: BaseReferendumVoteSetupPresenterProtoc
     func proceed()
 }
 
-protocol TinderGovSetupInteractorInputProtocol: ReferendumVoteSetupInteractorInputProtocol {
+protocol TinderGovSetupInteractorInputProtocol: AnyObject {
     func process(votingPower: VotingPowerLocal)
 }
 

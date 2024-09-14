@@ -26,6 +26,7 @@ final class TinderGovSetupPresenter: BaseReferendumVoteSetupPresenter {
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
+        baseInteractor: ReferendumVoteSetupInteractorInputProtocol,
         interactor: TinderGovSetupInteractorInputProtocol,
         wireframe: TinderGovSetupWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -44,7 +45,7 @@ final class TinderGovSetupPresenter: BaseReferendumVoteSetupPresenter {
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             referendumStringsViewModelFactory: referendumStringsViewModelFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
-            baseInteractor: interactor,
+            baseInteractor: baseInteractor,
             wireframe: wireframe,
             localizationManager: localizationManager,
             logger: logger

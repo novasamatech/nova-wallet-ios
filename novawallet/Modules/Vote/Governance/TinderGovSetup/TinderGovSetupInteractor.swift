@@ -2,60 +2,18 @@ import SoraFoundation
 import SubstrateSdk
 import Operation_iOS
 
-final class TinderGovSetupInteractor: ReferendumVoteInteractor {
-    weak var presenter: TinderGovSetupInteractorOutputProtocol? {
-        get {
-            basePresenter as? TinderGovSetupInteractorOutputProtocol
-        }
-
-        set {
-            basePresenter = newValue
-        }
-    }
+final class TinderGovSetupInteractor {
+    weak var presenter: TinderGovSetupInteractorOutputProtocol?
 
     private let repository: AnyDataProviderRepository<VotingPowerLocal>
+    private let operationQueue: OperationQueue
 
     init(
         repository: AnyDataProviderRepository<VotingPowerLocal>,
-        referendumIndex: ReferendumIdLocal,
-        selectedAccount: MetaChainAccountResponse,
-        chain: ChainModel,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
-        extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
-        lockStateFactory: GovernanceLockStateFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.repository = repository
-
-        super.init(
-            referendumIndex: referendumIndex,
-            selectedAccount: selectedAccount,
-            chain: chain,
-            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            referendumsSubscriptionFactory: referendumsSubscriptionFactory,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeFactory,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            currencyManager: currencyManager,
-            extrinsicFactory: extrinsicFactory,
-            extrinsicService: extrinsicService,
-            feeProxy: feeProxy,
-            lockStateFactory: lockStateFactory,
-            operationQueue: operationQueue
-        )
+        self.operationQueue = operationQueue
     }
 }
 
