@@ -11,26 +11,34 @@ final class SwipeGovVotingListInteractor {
     private let chain: ChainModel
     private let metaAccount: MetaAccountModel
 
+    private let repository: AnyDataProviderRepository<VotingBasketItemLocal>
+
     private let selectedGovOption: GovernanceSelectedOption
 
     private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
+    private let operationQueue: OperationQueue
+
     init(
         chain: ChainModel,
         metaAccount: MetaAccountModel,
+        repository: AnyDataProviderRepository<VotingBasketItemLocal>,
         selectedGovOption: GovernanceSelectedOption,
         votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
+        govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.metaAccount = metaAccount
+        self.repository = repository
         self.selectedGovOption = selectedGovOption
         self.votingBasketSubscriptionFactory = votingBasketSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
+        self.operationQueue = operationQueue
     }
 }
 
@@ -40,6 +48,19 @@ extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtoco
     func setup() {
         subscribeToLocalStorages()
     }
+
+    func removeItem(with identifier: String) {
+        let deleteOperation = repository.saveOperation(
+            { [] },
+            { [identifier] }
+        )
+
+        execute(
+            operation: deleteOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { _ in }
+    }
 }
 
 // MARK: VotingBasketLocalStorageSubscriber
@@ -48,7 +69,7 @@ extension SwipeGovVotingListInteractor: VotingBasketLocalStorageSubscriber, Voti
     func handleVotingBasketItems(result: Result<[DataProviderChange<VotingBasketItemLocal>], any Error>) {
         switch result {
         case let .success(votingsChanges):
-            presenter?.didReceive(votingsChanges.allChangedItems())
+            presenter?.didReceive(votingsChanges)
         case let .failure(error):
             presenter?.didReceive(error)
         }

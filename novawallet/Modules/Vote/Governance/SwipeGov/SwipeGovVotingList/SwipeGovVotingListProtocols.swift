@@ -16,11 +16,12 @@ protocol SwipeGovVotingListPresenterProtocol: AnyObject {
 
 protocol SwipeGovVotingListInteractorInputProtocol: AnyObject {
     func setup()
+    func removeItem(with identifier: String)
 }
 
 protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
     func didReceive(_ referendumMetadataChanges: [DataProviderChange<ReferendumMetadataLocal>])
-    func didReceive(_ votingBasketItems: [VotingBasketItemLocal])
+    func didReceive(_ votingBasketChanges: [DataProviderChange<VotingBasketItemLocal>])
     func didReceive(_ assetBalance: AssetBalance?)
     func didReceive(_ error: Error)
 }

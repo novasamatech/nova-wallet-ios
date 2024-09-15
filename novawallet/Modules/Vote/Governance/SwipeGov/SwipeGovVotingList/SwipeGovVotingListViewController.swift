@@ -35,7 +35,7 @@ final class SwipeGovVotingListViewController: UIViewController, ViewHolder {
         setupNavigationBar()
         setupVoteButton()
 
-        applyLocalization()
+        setupLocalizables()
 
         presenter.setup()
     }
@@ -194,8 +194,17 @@ private extension SwipeGovVotingListViewController {
             rootView.voteButton.applyEnabledStyle()
         } else {
             rootView.voteButton.isUserInteractionEnabled = false
-            rootView.voteButton.applyTranslucentDisabledStyle()
+            rootView.voteButton.applyDisabledStyle()
         }
+    }
+
+    func setupLocalizables() {
+        navigationItem.title = R.string.localizable.votingListWidgetTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        rootView.voteButton.imageWithTitleView?.title = R.string.localizable.govVote(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 }
 

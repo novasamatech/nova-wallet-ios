@@ -39,11 +39,17 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func removeItem(with referendumId: ReferendumIdLocal) {
-        print(referendumId)
+        guard let itemIdentifier = votingListItems.first(
+            where: { $0.referendumId == referendumId }
+        )?.identifier else {
+            return
+        }
+
+        interactor.removeItem(with: itemIdentifier)
     }
 
-    func selectVoting(for referendumId: ReferendumIdLocal) {
-        print(referendumId)
+    func selectVoting(for _: ReferendumIdLocal) {
+        // TODO: Show referendum details
     }
 }
 
@@ -55,9 +61,16 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
         updateView()
     }
 
-    func didReceive(_ votingBasketItems: [VotingBasketItemLocal]) {
-        votingListItems = votingBasketItems
-        updateView()
+    func didReceive(_ votingBasketChanges: [DataProviderChange<VotingBasketItemLocal>]) {
+        let deletes = votingBasketChanges
+            .filter { $0.isDeletion }
+            .map(\.identifier)
+            .compactMap { identifier in
+                votingListItems.first(where: { $0.identifier == identifier })?.referendumId
+            }
+
+        votingListItems = votingListItems.applying(changes: votingBasketChanges)
+        updateView(with: deletes)
     }
 
     func didReceive(_ assetBalance: AssetBalance?) {
@@ -72,7 +85,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
 // MARK: Private
 
 private extension SwipeGovVotingListPresenter {
-    func updateView() {
+    func updateView(with deletes: [ReferendumIdLocal]? = nil) {
         guard
             !referendumsMetadata.isEmpty,
             !votingListItems.isEmpty
@@ -87,6 +100,12 @@ private extension SwipeGovVotingListPresenter {
             locale: localizationManager.selectedLocale
         )
 
-        view?.didReceive(viewModel)
+        if let deletes, !deletes.isEmpty {
+            deletes.forEach { referendumId in
+                view?.didChangeViewModel(viewModel, byRemovingItemWith: referendumId)
+            }
+        } else {
+            view?.didReceive(viewModel)
+        }
     }
 }

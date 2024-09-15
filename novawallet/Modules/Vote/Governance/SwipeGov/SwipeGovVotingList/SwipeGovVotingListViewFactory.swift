@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import Operation_iOS
 
 struct SwipeGovVotingListViewFactory {
     static func createView(
@@ -10,6 +11,7 @@ struct SwipeGovVotingListViewFactory {
         let substrateStorage = SubstrateDataStorageFacade.shared
         let operationManager = OperationManagerFacade.sharedManager
         let logger = Logger.shared
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let votingBasketSubscriptionFactory = VotingBasketLocalSubscriptionFactory(
             chainRegistry: sharedState.chainRegistry,
@@ -27,13 +29,27 @@ struct SwipeGovVotingListViewFactory {
 
         let govMetadataLocalSubscriptionFactory = sharedState.govMetadataLocalSubscriptionFactory
 
+        let mapper = VotingBasketItemMapper()
+
+        let filter = NSPredicate.votingBasketItems(
+            for: chain.chainId,
+            metaId: metaAccount.metaId
+        )
+        let repository = substrateStorage.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
         let interactor = SwipeGovVotingListInteractor(
             chain: chain,
             metaAccount: metaAccount,
+            repository: AnyDataProviderRepository(repository),
             selectedGovOption: sharedState.settings.value,
             votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            govMetadataLocalSubscriptionFactory: govMetadataLocalSubscriptionFactory
+            govMetadataLocalSubscriptionFactory: govMetadataLocalSubscriptionFactory,
+            operationQueue: operationQueue
         )
         let wireframe = SwipeGovVotingListWireframe()
 
