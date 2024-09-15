@@ -6,6 +6,7 @@ struct SwipeGovVotingListViewFactory {
         with sharedState: GovernanceSharedState,
         metaId: MetaAccountModel.Id
     ) -> SwipeGovVotingListViewProtocol? {
+        let chain = sharedState.settings.value.chain
         let substrateStorage = SubstrateDataStorageFacade.shared
 
         let votingBasketSubscriptionFactory = VotingBasketLocalSubscriptionFactory(
@@ -16,20 +17,27 @@ struct SwipeGovVotingListViewFactory {
         )
 
         let interactor = SwipeGovVotingListInteractor(
-            chainId: sharedState.settings.value.chain.chainId,
+            chain: chain,
             metaId: metaId,
             votingBasketSubscriptionFactory: votingBasketSubscriptionFactory
         )
         let wireframe = SwipeGovVotingListWireframe()
 
+        let localizationManager = LocalizationManager.shared
+        let referendumStringFactory = ReferendumDisplayStringFactory()
+        let viewModelfactory = SwipeGovVotingListViewModelFactory(votesStringFactory: referendumStringFactory)
+
         let presenter = SwipeGovVotingListPresenter(
             interactor: interactor,
-            wireframe: wireframe
+            wireframe: wireframe,
+            chain: chain,
+            viewModelFactory: viewModelfactory,
+            localizationManager: localizationManager
         )
 
         let view = SwipeGovVotingListViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager
         )
 
         presenter.view = view

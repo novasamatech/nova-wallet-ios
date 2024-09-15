@@ -126,6 +126,13 @@ extension SwipeGovVotingListViewController: UITableViewDelegate {
 
         presenter.selectVoting(for: cellModel.referendumIndex)
     }
+
+    func tableView(
+        _: UITableView,
+        heightForRowAt _: IndexPath
+    ) -> CGFloat {
+        44
+    }
 }
 
 // MARK: Localizable

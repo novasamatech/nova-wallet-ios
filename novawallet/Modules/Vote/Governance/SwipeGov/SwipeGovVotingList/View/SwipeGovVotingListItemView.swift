@@ -61,8 +61,17 @@ class SwipeGovVotingListItemView: GenericPairValueView<
     func bind(viewModel: SwipeGovVotingListItemViewModel) {
         referendumIndexView.titleLabel.text = viewModel.indexText
         titleLabel.text = viewModel.titleText
-        voteTypeLabel.text = viewModel.voteTypeText
         votesCountLabel.text = viewModel.votesCountText
+        voteTypeLabel.text = viewModel.voteType.text()
+
+        switch viewModel.voteType {
+        case .aye:
+            voteTypeLabel.textColor = R.color.colorTextPositive()
+        case .nay:
+            voteTypeLabel.textColor = R.color.colorTextNegative()
+        case .abstain:
+            voteTypeLabel.textColor = R.color.colorTextSecondary()
+        }
     }
 }
 
@@ -72,7 +81,11 @@ private extension SwipeGovVotingListItemView {
     func setupLayout() {
         setHorizontalAndSpacing(Constants.accessoryViewOffset)
         mainContentView.setHorizontalAndSpacing(Constants.mainContentInnerSpacing)
+        mainContentView.stackView.alignment = .center
+
         mainContentView.sView.spacing = Constants.titleValueSpacing
+        mainContentView.sView.stackView.alignment = .leading
+        mainContentView.sView.stackView.distribution = .fillEqually
     }
 
     func setupStyle() {
@@ -82,10 +95,13 @@ private extension SwipeGovVotingListItemView {
         referendumIndexView.contentInsets = Constants.indexViewInnerInsets
 
         titleLabel.apply(style: .footnotePrimary)
+        titleLabel.textAlignment = .left
+
         voteTypeLabel.apply(style: .caption1Secondary)
         votesCountLabel.apply(style: .caption1Secondary)
 
         accessoryView.image = R.image.iconInfoFilled()
+        accessoryView.contentMode = .scaleAspectFit
     }
 }
 
@@ -100,10 +116,10 @@ private extension SwipeGovVotingListItemView {
         static let indexViewCornerRadius: CGFloat = 8.0
 
         static let indexViewInnerInsets = UIEdgeInsets(
-            top: 4.5,
-            left: 11.5,
-            bottom: 4.5,
-            right: 11.5
+            top: 6,
+            left: 9,
+            bottom: 6,
+            right: 9
         )
     }
 }

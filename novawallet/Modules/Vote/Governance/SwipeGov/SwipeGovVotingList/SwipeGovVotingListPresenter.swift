@@ -1,18 +1,34 @@
 import Foundation
+import SoraFoundation
 
 final class SwipeGovVotingListPresenter {
     weak var view: SwipeGovVotingListViewProtocol?
-    let wireframe: SwipeGovVotingListWireframeProtocol
-    let interactor: SwipeGovVotingListInteractorInputProtocol
+
+    private let wireframe: SwipeGovVotingListWireframeProtocol
+    private let interactor: SwipeGovVotingListInteractorInputProtocol
+    private let localizationManager: LocalizationManagerProtocol
+    private let chain: ChainModel
+
+    private let viewModelFactory: SwipeGovVotingListViewModelFactory
+
+    private var votingListItems: [VotingBasketItemLocal] = []
 
     init(
         interactor: SwipeGovVotingListInteractorInputProtocol,
-        wireframe: SwipeGovVotingListWireframeProtocol
+        wireframe: SwipeGovVotingListWireframeProtocol,
+        chain: ChainModel,
+        viewModelFactory: SwipeGovVotingListViewModelFactory,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.chain = chain
+        self.viewModelFactory = viewModelFactory
+        self.localizationManager = localizationManager
     }
 }
+
+// MARK: SwipeGovVotingListPresenterProtocol
 
 extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     func setup() {
@@ -28,12 +44,29 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 }
 
+// MARK: SwipeGovVotingListInteractorOutputProtocol
+
 extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtocol {
     func didReceive(_ votingBasketItems: [VotingBasketItemLocal]) {
-        print(votingBasketItems)
+        votingListItems = votingBasketItems
+        updateView()
     }
 
     func didReceive(_ error: Error) {
         print(error)
+    }
+}
+
+// MARK: Private
+
+private extension SwipeGovVotingListPresenter {
+    func updateView() {
+        let viewModel = viewModelFactory.createListViewModel(
+            using: votingListItems,
+            chain: chain,
+            locale: localizationManager.selectedLocale
+        )
+
+        view?.didReceive(viewModel)
     }
 }
