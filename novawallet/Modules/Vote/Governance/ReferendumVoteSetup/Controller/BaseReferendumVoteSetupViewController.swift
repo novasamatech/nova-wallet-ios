@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 
 class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ReferendumVoteSetupViewLayout
+    typealias RootViewType = BaseReferendumVoteSetupViewLayout
 
     private let presenter: BaseReferendumVoteSetupPresenterProtocol
 
@@ -21,22 +21,13 @@ class BaseReferendumVoteSetupViewController: UIViewController, ViewHolder {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func loadView() {
-        view = ReferendumVoteSetupViewLayout()
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupView()
         setupHandlers()
         setupLocalization()
 
         presenter.setup()
-    }
-
-    func setupView() {
-        fatalError("Must be overriden by subsclass")
     }
 
     func setupHandlers() {

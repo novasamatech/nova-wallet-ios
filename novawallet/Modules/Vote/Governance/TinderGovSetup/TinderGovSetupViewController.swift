@@ -2,7 +2,13 @@ import UIKit
 import SoraFoundation
 
 final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController {
+    typealias RootViewType = TinderGovVoteSetupViewLayout
+
     let presenter: TinderGovSetupPresenterProtocol
+
+    var rootView: RootViewType? {
+        super.rootView as? RootViewType
+    }
 
     init(
         presenter: TinderGovSetupPresenterProtocol,
@@ -18,14 +24,14 @@ final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController 
         self.localizationManager = localizationManager
     }
 
-    override func setupView() {
-        rootView.setupSingleButtonLayout()
+    override func loadView() {
+        view = TinderGovVoteSetupViewLayout()
     }
 
     override func setupHandlers() {
         super.setupHandlers()
 
-        rootView.continueButton.addTarget(
+        rootView?.continueButton.addTarget(
             self,
             action: #selector(actionContinue),
             for: .touchUpInside
@@ -35,15 +41,15 @@ final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController 
     override func setupLocalization() {
         super.setupLocalization()
 
-        rootView.continueButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView?.continueButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.detailsLabel.text = R.string.localizable.govVoteSetupDetailsTinderGov(
+        rootView?.detailsLabel.text = R.string.localizable.govVoteSetupDetailsTinderGov(
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.titleLabel.text = R.string.localizable.govVotingPower(
+        rootView?.titleLabel.text = R.string.localizable.govVotingPower(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
