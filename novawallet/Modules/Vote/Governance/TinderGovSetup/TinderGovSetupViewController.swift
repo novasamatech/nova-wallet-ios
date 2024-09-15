@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 
 final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController {
-    typealias RootViewType = TinderGovVoteSetupViewLayout
+    typealias RootViewType = TinderGovSetupViewLayout
 
     let presenter: TinderGovSetupPresenterProtocol
 
@@ -25,7 +25,7 @@ final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController 
     }
 
     override func loadView() {
-        view = TinderGovVoteSetupViewLayout()
+        view = TinderGovSetupViewLayout()
     }
 
     override func setupHandlers() {

@@ -932,6 +932,8 @@
 		2D6287402C91ED5300060814 /* ReferendumVoteSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62873F2C91ED5300060814 /* ReferendumVoteSetupPresenter.swift */; };
 		2D6287422C91F20400060814 /* ReferendumVoteSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287412C91F20400060814 /* ReferendumVoteSetupViewController.swift */; };
 		2D62874F2C95C1F500060814 /* ReferendumsObservableState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62874E2C95C1F500060814 /* ReferendumsObservableState.swift */; };
+		2D6287512C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287502C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift */; };
+		2D6287532C96CA7100060814 /* TinderGovSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287522C96CA7100060814 /* TinderGovSetupViewLayout.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -5976,6 +5978,8 @@
 		2D62873F2C91ED5300060814 /* ReferendumVoteSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupPresenter.swift; sourceTree = "<group>"; };
 		2D6287412C91F20400060814 /* ReferendumVoteSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupViewController.swift; sourceTree = "<group>"; };
 		2D62874E2C95C1F500060814 /* ReferendumsObservableState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsObservableState.swift; sourceTree = "<group>"; };
+		2D6287502C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteSetupViewLayout.swift; sourceTree = "<group>"; };
+		2D6287522C96CA7100060814 /* TinderGovSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovSetupViewLayout.swift; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -12828,6 +12832,7 @@
 				88DF073F93EA9D62EB0E607D /* TinderGovSetupPresenter.swift */,
 				A60E944E00C53DD497B78677 /* TinderGovSetupInteractor.swift */,
 				20F9E5627F64332884633AED /* TinderGovSetupViewFactory.swift */,
+				2D6287522C96CA7100060814 /* TinderGovSetupViewLayout.swift */,
 				2D62873D2C919E4B00060814 /* TinderGovSetupViewController.swift */,
 			);
 			path = TinderGovSetup;
@@ -20525,6 +20530,7 @@
 			isa = PBXGroup;
 			children = (
 				84F76ED529006A0900D7206C /* ReferendumConvictionView.swift */,
+				2D6287502C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -26632,6 +26638,7 @@
 				0CC0F8272BB53376002C49F6 /* CloudBackupAvailabilityService.swift in Sources */,
 				A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */,
 				844C3E772A09228200C4305F /* WalletChoosePresentable.swift in Sources */,
+				2D6287532C96CA7100060814 /* TinderGovSetupViewLayout.swift in Sources */,
 				84AE7AB127D38C9400495267 /* DisplayAddressViewModel.swift in Sources */,
 				84282296289BC31300163031 /* AddAccount+ParitySignerAddConfirmWireframe.swift in Sources */,
 				84FB9E1E285C58FF00B42FC0 /* Xcm.swift in Sources */,
@@ -28580,6 +28587,7 @@
 				1EC3365D41DEC51394A1E78F /* GenericLedgerAccountSelectionPresenter.swift in Sources */,
 				D5E316A2D497F4E39D63A1FA /* GenericLedgerAccountSelectionInteractor.swift in Sources */,
 				FC012C2A281423D3FF430587 /* GenericLedgerAccountSelectionViewController.swift in Sources */,
+				2D6287512C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift in Sources */,
 				5A793BE4C54F2B2012A03DF3 /* GenericLedgerAccountSelectionViewLayout.swift in Sources */,
 				346DD413FBE3ACE47BE799B9 /* GenericLedgerAccountSelectionViewFactory.swift in Sources */,
 				49E9D296222D2E8418E0A4EA /* TinderGovProtocols.swift in Sources */,
