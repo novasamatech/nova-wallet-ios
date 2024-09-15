@@ -63,7 +63,7 @@ extension GradientModel {
         )
     }
 
-    static var tinderGovBackgroundGradient: GradientModel {
+    static var swipeGovBackgroundGradient: GradientModel {
         GradientModel(
             startPoint: .init(x: 0.5, y: 0),
             endPoint: .init(x: 0.5, y: 1),

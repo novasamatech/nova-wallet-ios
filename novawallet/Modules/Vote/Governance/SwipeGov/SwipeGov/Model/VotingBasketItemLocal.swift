@@ -17,6 +17,19 @@ struct VotingBasketItemLocal: Equatable {
     let conviction: VotingBasketConvictionLocal
 }
 
+extension VotingBasketItemLocal {
+    func replacing(_ votingPower: VotingPowerLocal) -> Self {
+        .init(
+            referendumId: referendumId,
+            chainId: chainId,
+            metaId: metaId,
+            amount: votingPower.amount,
+            voteType: voteType,
+            conviction: votingPower.conviction
+        )
+    }
+}
+
 extension VotingBasketItemLocal: Identifiable {
     static func identifier(
         from referendumId: ReferendumIdLocal,

@@ -5,7 +5,7 @@ final class ReferendumsViewManager: NSObject {
     private enum Constants {
         static let singleActivityCellHeight: CGFloat = 52
         static let firstOrLastActivityCellHeight: CGFloat = 50
-        static let tinderGovBannerHeight: CGFloat = 102
+        static let swipeGovBannerHeight: CGFloat = 102
         static let referendumCellMinimumHeight: CGFloat = 185
         static let headerMinimumHeight: CGFloat = 56
         static let settingsCellHeight: CGFloat = 32
@@ -44,7 +44,7 @@ extension ReferendumsViewManager: UITableViewDataSource {
         switch referendumsViewModel.sections[section] {
         case let .personalActivities(actions):
             return actions.count
-        case .settings, .tinderGov, .empty:
+        case .settings, .swipeGov, .empty:
             return 1
         case let .active(_, cells), let .completed(_, cells):
             return !cells.isEmpty ? cells.count : 1
@@ -72,12 +72,12 @@ extension ReferendumsViewManager: UITableViewDataSource {
         }
     }
 
-    func tinderGovBannerCell(
+    func swipeGovBannerCell(
         _ tableView: UITableView,
-        viewModel: TinderGovBannerViewModel,
+        viewModel: SwipeGovBannerViewModel,
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
-        let cell: TinderGovBannerTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+        let cell: SwipeGovBannerTableViewCell = tableView.dequeueReusableCell(for: indexPath)
         cell.contentDisplayView.bind(with: viewModel)
         cell.setupStyle()
 
@@ -148,8 +148,8 @@ extension ReferendumsViewManager: UITableViewDataSource {
                 activity: activity,
                 totalActivities: personalActivities.count
             )
-        case let .tinderGov(viewModel):
-            return tinderGovBannerCell(
+        case let .swipeGov(viewModel):
+            return swipeGovBannerCell(
                 tableView,
                 viewModel: viewModel,
                 cellForRowAt: indexPath
@@ -192,8 +192,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
             case .delegations:
                 presenter?.selectDelegations()
             }
-        case .tinderGov:
-            presenter?.selectTinderGov()
+        case .swipeGov:
+            presenter?.selectSwipeGov()
         case .settings, .empty:
             break
         case let .active(_, cells), let .completed(_, cells):
@@ -208,7 +208,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[section]
 
         switch section {
-        case .personalActivities, .tinderGov, .settings, .empty:
+        case .personalActivities, .swipeGov, .settings, .empty:
             return nil
         case let .active(title, cells), let .completed(title, cells):
             let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
@@ -228,7 +228,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[section]
 
         switch section {
-        case .personalActivities, .tinderGov, .settings, .empty:
+        case .personalActivities, .swipeGov, .settings, .empty:
             return 0
         case let .active(title, _), let .completed(title, _):
             switch title {
@@ -246,8 +246,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
         switch section {
         case let .personalActivities(activities):
             return activities.count > 1 ? Constants.firstOrLastActivityCellHeight : Constants.singleActivityCellHeight
-        case .tinderGov:
-            return Constants.tinderGovBannerHeight
+        case .swipeGov:
+            return Constants.swipeGovBannerHeight
         case .settings:
             return Constants.settingsCellHeight
         case let .active(_, cells), let .completed(_, cells):
@@ -290,7 +290,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
             let section = referendumsViewModel.sections[indexPath.section]
 
             switch section {
-            case .personalActivities, .tinderGov, .settings, .empty:
+            case .personalActivities, .swipeGov, .settings, .empty:
                 break
             case let .active(_, cells), let .completed(_, cells):
                 let cellModel = cells[indexPath.row]
@@ -319,7 +319,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.registerClassForCell(ReferendumTableViewCell.self)
         tableView.registerClassForCell(ReferendumsUnlocksTableViewCell.self)
         tableView.registerClassForCell(ReferendumsDelegationsTableViewCell.self)
-        tableView.registerClassForCell(TinderGovBannerTableViewCell.self)
+        tableView.registerClassForCell(SwipeGovBannerTableViewCell.self)
         tableView.registerClassForCell(ReferendumEmptySearchTableViewCell.self)
         tableView.registerClassForCell(ReferendumsSettingsCell.self)
         tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
@@ -332,7 +332,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.unregisterClassForCell(ReferendumTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsUnlocksTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsDelegationsTableViewCell.self)
-        tableView.unregisterClassForCell(TinderGovBannerTableViewCell.self)
+        tableView.unregisterClassForCell(SwipeGovBannerTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumEmptySearchTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsSettingsCell.self)
         tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)

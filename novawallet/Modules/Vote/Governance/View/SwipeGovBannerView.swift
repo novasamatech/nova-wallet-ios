@@ -2,9 +2,9 @@ import UIKit
 import SoraUI
 import SnapKit
 
-typealias TinderGovBannerTableViewCell = PlainBaseTableViewCell<TinderGovBannerView>
+typealias SwipeGovBannerTableViewCell = PlainBaseTableViewCell<SwipeGovBannerView>
 
-extension PlainBaseTableViewCell where C == TinderGovBannerView {
+extension PlainBaseTableViewCell where C == SwipeGovBannerView {
     func setupStyle() {
         backgroundColor = .clear
     }
@@ -12,7 +12,7 @@ extension PlainBaseTableViewCell where C == TinderGovBannerView {
 
 // MARK: Banner View
 
-final class TinderGovBannerView: UIView {
+final class SwipeGovBannerView: UIView {
     let gradientBackgroundView: RoundedGradientBackgroundView = .create { view in
         view.cornerRadius = 12
         view.strokeWidth = 2
@@ -20,10 +20,10 @@ final class TinderGovBannerView: UIView {
         view.shadowColor = UIColor.black
         view.shadowOpacity = 0.16
         view.shadowOffset = CGSize(width: 6, height: 4)
-        view.bind(model: .tinderGovCell())
+        view.bind(model: .swipeGovCell())
     }
 
-    let contentView = TinderGovBannerContentView()
+    let contentView = SwipeGovBannerContentView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -51,14 +51,14 @@ final class TinderGovBannerView: UIView {
         }
     }
 
-    func bind(with viewModel: TinderGovBannerViewModel) {
+    func bind(with viewModel: SwipeGovBannerViewModel) {
         contentView.bind(with: viewModel)
     }
 }
 
 // MARK: Content View
 
-final class TinderGovBannerContentView: GenericPairValueView<
+final class SwipeGovBannerContentView: GenericPairValueView<
     GenericPairValueView<
         UIImageView,
         GenericPairValueView<
@@ -138,11 +138,11 @@ final class TinderGovBannerContentView: GenericPairValueView<
         accessoryView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
         accessoryView.contentMode = .scaleAspectFit
 
-        iconView.image = R.image.iconTinderGov()
+        iconView.image = R.image.iconSwipeGov()
         iconView.contentMode = .scaleAspectFit
     }
 
-    func bind(with viewModel: TinderGovBannerViewModel) {
+    func bind(with viewModel: SwipeGovBannerViewModel) {
         titleLabel.text = viewModel.title
         valueLabel.text = viewModel.description
         counterLabel.titleLabel.text = viewModel.referendumCounterText

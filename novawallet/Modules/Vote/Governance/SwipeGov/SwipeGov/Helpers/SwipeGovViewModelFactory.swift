@@ -1,7 +1,7 @@
 import Foundation
 
-protocol TinderGovViewModelFactoryProtocol {
-    func createTinderGovReferendumsSection(
+protocol SwipeGovViewModelFactoryProtocol {
+    func createSwipeGovReferendumsSection(
         with referendumsState: ReferendumsState,
         locale: Locale
     ) -> ReferendumsSection?
@@ -18,8 +18,8 @@ protocol TinderGovViewModelFactoryProtocol {
     ) -> String?
 }
 
-struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
-    func createTinderGovReferendumsSection(
+struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
+    func createSwipeGovReferendumsSection(
         with referendumsState: ReferendumsState,
         locale: Locale
     ) -> ReferendumsSection? {
@@ -33,10 +33,10 @@ struct TinderGovViewModelFactory: TinderGovViewModelFactoryProtocol {
                 return nil
             }
 
-            return .tinderGov(
-                TinderGovBannerViewModel(
-                    title: R.string.localizable.commonTinderGov(preferredLanguages: locale.rLanguages),
-                    description: R.string.localizable.tinderGovBannerMessage(
+            return .swipeGov(
+                SwipeGovBannerViewModel(
+                    title: R.string.localizable.commonSwipeGov(preferredLanguages: locale.rLanguages),
+                    description: R.string.localizable.swipeGovBannerMessage(
                         preferredLanguages: locale.rLanguages
                     ),
                     referendumCounterText: R.string.localizable.commonCountedReferenda(

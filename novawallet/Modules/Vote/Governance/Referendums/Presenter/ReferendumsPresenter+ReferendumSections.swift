@@ -40,12 +40,12 @@ extension ReferendumsPresenter {
         }
     }
 
-    func createTinderGovSection() -> ReferendumsSection? {
-        guard supportsTinderGov == true else {
+    func createSwipeGovSection() -> ReferendumsSection? {
+        guard supportsSwipeGov == true else {
             return nil
         }
 
-        return tinderGovViewModelFactory.createTinderGovReferendumsSection(
+        return swipeGovViewModelFactory.createSwipeGovReferendumsSection(
             with: observableState.state.value,
             locale: selectedLocale
         )

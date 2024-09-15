@@ -2,11 +2,11 @@ import Foundation
 import SoraFoundation
 import Operation_iOS
 
-struct TinderGovViewFactory {
+struct SwipeGovViewFactory {
     static func createView(
         metaAccount: MetaAccountModel,
         sharedState: GovernanceSharedState
-    ) -> TinderGovViewProtocol? {
+    ) -> SwipeGovViewProtocol? {
         guard
             let option = sharedState.settings.value,
             let summaryApi = option.chain.externalApis?.referendumSummary()?.first?.url,
@@ -32,7 +32,7 @@ struct TinderGovViewFactory {
             mapper: AnyCoreDataMapper(mapper)
         )
 
-        let wireframe = TinderGovWireframe(
+        let wireframe = SwipeGovWireframe(
             sharedState: sharedState,
             metaAccount: metaAccount
         )
@@ -51,7 +51,7 @@ struct TinderGovViewFactory {
             logger: Logger.shared
         )
 
-        let interactor = TinderGovInteractor(
+        let interactor = SwipeGovInteractor(
             metaAccount: metaAccount,
             governanceState: sharedState,
             sorting: ReferendumsTimeSortingProvider(),
@@ -62,7 +62,7 @@ struct TinderGovViewFactory {
         )
 
         let localizationManager = LocalizationManager.shared
-        let viewModelFactory = TinderGovViewModelFactory()
+        let viewModelFactory = SwipeGovViewModelFactory()
 
         let summaryFetchOperationFactory = OpenGovSummaryOperationFactory(
             url: summaryApi,
@@ -85,7 +85,7 @@ struct TinderGovViewFactory {
             actionDetailsOperationFactory: sharedState.createActionsDetailsFactory(for: option)
         )
 
-        let presenter = TinderGovPresenter(
+        let presenter = SwipeGovPresenter(
             wireframe: wireframe,
             interactor: interactor,
             viewModelFactory: viewModelFactory,
@@ -93,7 +93,7 @@ struct TinderGovViewFactory {
             localizationManager: localizationManager
         )
 
-        let view = TinderGovViewController(
+        let view = SwipeGovViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )

@@ -1,8 +1,8 @@
 import Foundation
 import Operation_iOS
 
-class TinderGovInteractor {
-    weak var presenter: TinderGovInteractorOutputProtocol?
+class SwipeGovInteractor {
+    weak var presenter: SwipeGovInteractorOutputProtocol?
 
     private let metaAccount: MetaAccountModel
     private let governanceState: GovernanceSharedState
@@ -13,7 +13,7 @@ class TinderGovInteractor {
     private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
     private var votingPowerProvider: StreamableProvider<VotingPowerLocal>?
 
-    private var modelBuilder: TinderGovModelBuilderProtocol?
+    private var modelBuilder: SwipeGovModelBuilderProtocol?
     private var votingPower: VotingPowerLocal?
 
     private var observableState: ReferendumsObservableState {
@@ -46,11 +46,11 @@ class TinderGovInteractor {
     }
 }
 
-// MARK: TinderGovInteractorInputProtocol
+// MARK: SwipeGovInteractorInputProtocol
 
-extension TinderGovInteractor: TinderGovInteractorInputProtocol {
+extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
     func setup() {
-        modelBuilder = TinderGovModelBuilder(
+        modelBuilder = SwipeGovModelBuilder(
             sorting: sorting,
             workingQueue: operationQueue
         ) { [weak self] result in
@@ -107,7 +107,7 @@ extension TinderGovInteractor: TinderGovInteractorInputProtocol {
 
 // MARK: VotingBasketLocalStorageSubscriber
 
-extension TinderGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketSubscriptionHandler {
+extension SwipeGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketSubscriptionHandler {
     func handleVotingBasketItems(result: Result<[DataProviderChange<VotingBasketItemLocal>], any Error>) {
         switch result {
         case let .success(votingsChanges):
@@ -123,7 +123,7 @@ extension TinderGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketS
 
 // MARK: VotingPowerLocalStorageSubscriber
 
-extension TinderGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSubscriptionHandler {
+extension SwipeGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSubscriptionHandler {
     func handleVotingPowerChange(result: Result<[DataProviderChange<VotingPowerLocal>], any Error>) {
         switch result {
         case let .success(changes):
@@ -140,7 +140,7 @@ extension TinderGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSub
 
 // MARK: Private
 
-private extension TinderGovInteractor {
+private extension SwipeGovInteractor {
     func filter(
         referendums: [ReferendumIdLocal: ReferendumLocal],
         using basketItemsChanges: [DataProviderChange<VotingBasketItemLocal>]

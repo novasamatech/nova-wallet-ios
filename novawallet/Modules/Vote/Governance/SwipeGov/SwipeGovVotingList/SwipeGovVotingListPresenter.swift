@@ -53,6 +53,13 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func vote() {
+        guard let balance, validateBalanceIsSufficient(
+            balance,
+            for: votingListItems
+        ) else {
+            return
+        }
+
         // TODO: Show confirmation
     }
 }
@@ -133,5 +140,16 @@ private extension SwipeGovVotingListPresenter {
         } else {
             view?.didReceive(viewModel)
         }
+    }
+
+    func validateBalanceIsSufficient(
+        _ balance: AssetBalance,
+        for votingItems: [VotingBasketItemLocal]
+    ) -> Bool {
+        guard let maxLock = votingItems.map(\.amount).max() else {
+            return true
+        }
+
+        return maxLock <= balance.freeInPlank
     }
 }

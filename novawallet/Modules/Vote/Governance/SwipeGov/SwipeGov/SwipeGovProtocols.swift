@@ -1,20 +1,20 @@
 import Operation_iOS
 
-protocol TinderGovViewProtocol: ControllerBackedProtocol {
+protocol SwipeGovViewProtocol: ControllerBackedProtocol {
     func updateCardsStack(with viewModel: CardsZStackViewModel)
     func skipCard()
     func updateVotingList(with viewModel: VotingListWidgetViewModel)
     func updateCardsCounter(with text: String)
 }
 
-protocol TinderGovPresenterProtocol: AnyObject {
+protocol SwipeGovPresenterProtocol: AnyObject {
     func setup()
     func actionBack()
     func actionSettings()
     func actionVotingList()
 }
 
-protocol TinderGovInteractorInputProtocol: AnyObject {
+protocol SwipeGovInteractorInputProtocol: AnyObject {
     func setup()
     func addVoting(
         with result: VoteResult,
@@ -22,20 +22,19 @@ protocol TinderGovInteractorInputProtocol: AnyObject {
     )
 }
 
-protocol TinderGovInteractorOutputProtocol: AnyObject {
-    func didReceive(_ modelBuilderResult: TinderGovModelBuilder.Result)
+protocol SwipeGovInteractorOutputProtocol: AnyObject {
+    func didReceive(_ modelBuilderResult: SwipeGovModelBuilder.Result)
     func didReceive(_ votingPower: VotingPowerLocal)
     func didReceive(_ error: Error)
 }
 
-protocol TinderGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol SwipeGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func showVotingList(
         from view: ControllerBackedProtocol?,
         metaId: MetaAccountModel.Id
     )
     func showVoteSetup(
         from view: ControllerBackedProtocol?,
-        referendum: ReferendumIdLocal,
         initData: ReferendumVotingInitData
     )
     func back(from view: ControllerBackedProtocol?)

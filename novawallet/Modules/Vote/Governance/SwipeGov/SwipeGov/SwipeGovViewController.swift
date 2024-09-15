@@ -2,15 +2,15 @@ import UIKit
 import SoraUI
 import SoraFoundation
 
-final class TinderGovViewController: UIViewController, ViewHolder {
-    typealias RootViewType = TinderGovViewLayout
+final class SwipeGovViewController: UIViewController, ViewHolder {
+    typealias RootViewType = SwipeGovViewLayout
 
-    let presenter: TinderGovPresenterProtocol
+    let presenter: SwipeGovPresenterProtocol
 
     private lazy var titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldBodyPrimary)
         view.textAlignment = .center
-        view.text = R.string.localizable.commonTinderGov(
+        view.text = R.string.localizable.commonSwipeGov(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
@@ -28,7 +28,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     }
 
     init(
-        presenter: TinderGovPresenterProtocol,
+        presenter: SwipeGovPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -42,7 +42,7 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = TinderGovViewLayout()
+        view = SwipeGovViewLayout()
     }
 
     override func viewDidLoad() {
@@ -83,9 +83,9 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     }
 }
 
-// MARK: TinderGovViewProtocol
+// MARK: SwipeGovViewProtocol
 
-extension TinderGovViewController: TinderGovViewProtocol {
+extension SwipeGovViewController: SwipeGovViewProtocol {
     func updateCardsStack(with viewModel: CardsZStackViewModel) {
         rootView.cardsStack.updateStack(with: viewModel.changeModel)
         rootView.cardsStack.setupValidationAction(viewModel.validationAction)
@@ -107,7 +107,7 @@ extension TinderGovViewController: TinderGovViewProtocol {
 
 // MARK: Private
 
-private extension TinderGovViewController {
+private extension SwipeGovViewController {
     func setupNavigationBar() {
         let titleStackView = UIStackView.vStack(
             spacing: 2,
@@ -173,7 +173,7 @@ private extension TinderGovViewController {
 
 // MARK: Localizable
 
-extension TinderGovViewController: Localizable {
+extension SwipeGovViewController: Localizable {
     func applyLocalization() {
         guard isViewLoaded else {
             return
@@ -183,7 +183,7 @@ extension TinderGovViewController: Localizable {
 
 // MARK: Constants
 
-extension TinderGovViewController {
+extension SwipeGovViewController {
     enum Constants {
         static let navbarButtonSize: CGFloat = 40
     }

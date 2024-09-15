@@ -740,7 +740,7 @@
 		135E979B52DC1BD29A5FC389 /* ParaStkRedeemProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1179D4A18F46C75B19CAC2 /* ParaStkRedeemProtocols.swift */; };
 		13CF38563E1849EAF1B4E4B6 /* ParitySignerAddConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2CF76ABE7BC9A99724D393 /* ParitySignerAddConfirmViewFactory.swift */; };
 		13DE59F1804CD6761EBC26B9 /* NPoolsUnstakeConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793356FB65FB73CE7097C6F1 /* NPoolsUnstakeConfirmProtocols.swift */; };
-		1401103090F2DD8E6BB5B909 /* TinderGovSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF073F93EA9D62EB0E607D /* TinderGovSetupPresenter.swift */; };
+		1401103090F2DD8E6BB5B909 /* SwipeGovSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF073F93EA9D62EB0E607D /* SwipeGovSetupPresenter.swift */; };
 		141BF00B1B59940711773726 /* StakingSelectPoolWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6654DEA68D7ED47AE8E52206 /* StakingSelectPoolWireframe.swift */; };
 		143F6C9044429A337265DF39 /* SwapSlippageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F3BD600F80ED0426141843 /* SwapSlippageViewController.swift */; };
 		148748ACAE23B7D15144015B /* DAppAuthSettingsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23EDFB699CAEEADC9263A0D /* DAppAuthSettingsViewFactory.swift */; };
@@ -909,13 +909,13 @@
 		2D350D9E2C3827DA00F34E25 /* NetworkEnabledChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */; };
 		2D350DA02C38335300F34E25 /* ChainFilterStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */; };
 		2D367C0C2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */; };
-		2D389B082C8616F900256C7B /* TinderGovGradientFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */; };
+		2D389B082C8616F900256C7B /* SwipeGovGradientFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */; };
 		2D389B0C2C8631FD00256C7B /* VotingListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */; };
-		2D389B0E2C86E94A00256C7B /* TinderGovEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0D2C86E94A00256C7B /* TinderGovEmptyStateView.swift */; };
+		2D389B0E2C86E94A00256C7B /* SwipeGovEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0D2C86E94A00256C7B /* SwipeGovEmptyStateView.swift */; };
 		2D389B102C86FEFB00256C7B /* StackCardUpdatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0F2C86FEFB00256C7B /* StackCardUpdatable.swift */; };
 		2D389B132C86FF7300256C7B /* VoteCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */; };
 		2D389B152C87036100256C7B /* ReferendumFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B142C87036100256C7B /* ReferendumFilter.swift */; };
-		2D389B172C875B3200256C7B /* TinderGovInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B162C875B3200256C7B /* TinderGovInteractor.swift */; };
+		2D389B172C875B3200256C7B /* SwipeGovInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
@@ -928,15 +928,17 @@
 		2D6287372C917E3900060814 /* VotingPowerMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287362C917E3900060814 /* VotingPowerMapper.swift */; };
 		2D62873A2C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287392C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift */; };
 		2D62873C2C91812300060814 /* VotingPowerLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62873B2C91812300060814 /* VotingPowerLocalSubscriptionFactory.swift */; };
-		2D62873E2C919E4B00060814 /* TinderGovSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62873D2C919E4B00060814 /* TinderGovSetupViewController.swift */; };
+		2D62873E2C919E4B00060814 /* SwipeGovSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62873D2C919E4B00060814 /* SwipeGovSetupViewController.swift */; };
 		2D6287402C91ED5300060814 /* ReferendumVoteSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62873F2C91ED5300060814 /* ReferendumVoteSetupPresenter.swift */; };
 		2D6287422C91F20400060814 /* ReferendumVoteSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287412C91F20400060814 /* ReferendumVoteSetupViewController.swift */; };
 		2D6287472C941DFE00060814 /* SwipeGovVotingListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287462C941DFE00060814 /* SwipeGovVotingListItemView.swift */; };
 		2D6287492C94395600060814 /* SwipeGovVotingListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287482C94395600060814 /* SwipeGovVotingListViewModel.swift */; };
 		2D62874F2C95C1F500060814 /* ReferendumsObservableState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62874E2C95C1F500060814 /* ReferendumsObservableState.swift */; };
 		2D6287512C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287502C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift */; };
-		2D6287532C96CA7100060814 /* TinderGovSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287522C96CA7100060814 /* TinderGovSetupViewLayout.swift */; };
+		2D6287532C96CA7100060814 /* SwipeGovSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287522C96CA7100060814 /* SwipeGovSetupViewLayout.swift */; };
 		2D6287572C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287562C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift */; };
+		2D62875A2C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287592C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift */; };
+		2D62875C2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62875B2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -946,7 +948,7 @@
 		2D77487E2C8B41830059607B /* PolkassemblyKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487D2C8B41830059607B /* PolkassemblyKeys.swift */; };
 		2D7748802C8B48C40059607B /* CIKeys.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487F2C8B48C40059607B /* CIKeys.generated.swift */; };
 		2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */; };
-		2D7748862C8F799C0059607B /* TinderGovModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */; };
+		2D7748862C8F799C0059607B /* SwipeGovModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748852C8F799C0059607B /* SwipeGovModelBuilder.swift */; };
 		2D7748892C90368C0059607B /* VotingBasketItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748882C90368C0059607B /* VotingBasketItemMapper.swift */; };
 		2D77488C2C90428E0059607B /* VotingBasketItemLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */; };
 		2D77488E2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77488D2C9078800059607B /* VotingBasketLocalStorageSubscriber.swift */; };
@@ -969,9 +971,9 @@
 		2D95DF5D2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */; };
 		2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */; };
 		2D95DF612C74B79A009BB063 /* HydraFlowStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF602C74B79A009BB063 /* HydraFlowStateStore.swift */; };
-		2DA85A722C7F6E0900591900 /* TinderGovBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A712C7F6E0900591900 /* TinderGovBannerView.swift */; };
+		2DA85A722C7F6E0900591900 /* SwipeGovBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */; };
 		2DA85A742C7FC5D100591900 /* RoundedGradientBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */; };
-		2DA85A772C7FCCCE00591900 /* TinderGovViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A762C7FCCCE00591900 /* TinderGovViewModelFactory.swift */; };
+		2DA85A772C7FCCCE00591900 /* SwipeGovViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */; };
 		2DA85A792C8071A500591900 /* ReferendumsPresenter+ReferendumSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A782C8071A500591900 /* ReferendumsPresenter+ReferendumSections.swift */; };
 		2DA85A822C80775F00591900 /* ReferendumsPresenter+VoteChildPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A812C80775F00591900 /* ReferendumsPresenter+VoteChildPresenter.swift */; };
 		2DA85A842C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A832C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift */; };
@@ -1139,7 +1141,7 @@
 		48D5EFA462A597368024E9ED /* DAppAuthSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97612D61A441A32665C51D23 /* DAppAuthSettingsViewController.swift */; };
 		493A9637BE5A1BF4B0744A4C /* ChangeWatchOnlyInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4CD58A9006CEB045E8977 /* ChangeWatchOnlyInteractor.swift */; };
 		498B5BD31A9F4E45B3011C16 /* GovernanceNotificationsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8963C0A6A643F8ABD19AD6B3 /* GovernanceNotificationsInteractor.swift */; };
-		49E9D296222D2E8418E0A4EA /* TinderGovProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C972C86D5104BEB79598AC8 /* TinderGovProtocols.swift */; };
+		49E9D296222D2E8418E0A4EA /* SwipeGovProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C972C86D5104BEB79598AC8 /* SwipeGovProtocols.swift */; };
 		4A24646D497B26E51926BA52 /* StakingRebagConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74A26B3915B6E0C8C784423 /* StakingRebagConfirmViewFactory.swift */; };
 		4A520B7081BE2D7604B69354 /* AccountImportWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F45A5C6145F863760F4409 /* AccountImportWireframe.swift */; };
 		4AA446B2764D922E91641C03 /* OnboardingWalletReadyViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABE2920D4A1EE12866F4E76 /* OnboardingWalletReadyViewFactory.swift */; };
@@ -1191,7 +1193,7 @@
 		561F5B387B0A1682CE5DE7E4 /* ParitySignerTxScanViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEADC45D0C53E7A06A854DEB /* ParitySignerTxScanViewFactory.swift */; };
 		5628E716AB0D71B2DC6D3647 /* StakingSetupProxyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845FB5F69EE4029CDC9DF35B /* StakingSetupProxyViewLayout.swift */; };
 		5678BAE4B652C5C5E4284F28 /* AccountManagementViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B94164B49123E62FA60B7 /* AccountManagementViewFactory.swift */; };
-		56C840097B6B2E3D7133EE21 /* TinderGovWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE59E7D7D81AD155C08B477 /* TinderGovWireframe.swift */; };
+		56C840097B6B2E3D7133EE21 /* SwipeGovWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE59E7D7D81AD155C08B477 /* SwipeGovWireframe.swift */; };
 		575A729D07A6B984851E6DD0 /* DAppAuthConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F80D885306E1EFE4ABE321C /* DAppAuthConfirmPresenter.swift */; };
 		576010F6494B3E2A6CA0B444 /* CreateWatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39907750D40A8DD7FE1288C8 /* CreateWatchOnlyViewController.swift */; };
 		577918C3D4AA22D887F605B5 /* ParaStkStakeSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1AC788C6E0A621B6D88D1BC /* ParaStkStakeSetupPresenter.swift */; };
@@ -1209,7 +1211,7 @@
 		599CEA840B4E888B643AEB5E /* AssetsSettingsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FF46AB59967BF656E9EF1C /* AssetsSettingsViewFactory.swift */; };
 		59A0AF440ABAAA459EF7D993 /* GovernanceYourDelegationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E4462DCD832DB73AA78D44C /* GovernanceYourDelegationsViewController.swift */; };
 		59D03D8CB4AE60DE53130729 /* NPoolsRedeemViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EF6FA61F2B7E3B2ADD3200 /* NPoolsRedeemViewLayout.swift */; };
-		59E3304ED1BBA3CB2699C957 /* TinderGovPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BA4C5AB8F2334E97AEBAE9 /* TinderGovPresenter.swift */; };
+		59E3304ED1BBA3CB2699C957 /* SwipeGovPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BA4C5AB8F2334E97AEBAE9 /* SwipeGovPresenter.swift */; };
 		59F89408D66E20CE7E556D35 /* BackupAttentionWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C9CEA5DD3DE9EDEB77BDCF /* BackupAttentionWireframe.swift */; };
 		5A606743183D76BF10DDFACB /* NetworkDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35A1A031FD0131CB7F1B701 /* NetworkDetailsPresenter.swift */; };
 		5A793BE4C54F2B2012A03DF3 /* GenericLedgerAccountSelectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4FD0700F8EC0122323A3E5 /* GenericLedgerAccountSelectionViewLayout.swift */; };
@@ -1229,7 +1231,7 @@
 		5E6D69D84220119BA5362358 /* OperationDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F2670E15D23CF30931389E3 /* OperationDetailsProtocols.swift */; };
 		5E6F7AC179BE7C1FA1759270 /* StakingSetupAmountViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD71DD9CFF2B4BECCDEAF8C0 /* StakingSetupAmountViewFactory.swift */; };
 		5EA3B42C38C29448DCE093A6 /* OnboardingImportOptionsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C2C6656744FA89FA45B45E /* OnboardingImportOptionsWireframe.swift */; };
-		5EBDCC76C4957F83D1DACAD5 /* TinderGovSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A558807C44AE52D76B4EE875 /* TinderGovSetupProtocols.swift */; };
+		5EBDCC76C4957F83D1DACAD5 /* SwipeGovSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A558807C44AE52D76B4EE875 /* SwipeGovSetupProtocols.swift */; };
 		5ECC5F9E55FBC5CF2DD8664C /* GovernanceDelegateInfoWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C16637ADA10892106DD304 /* GovernanceDelegateInfoWireframe.swift */; };
 		5F107F52BCEF8BA940800F88 /* AssetDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A479F3338BE7DA2C846023FA /* AssetDetailsViewController.swift */; };
 		5FD7B3463822BC69AF5E3C72 /* ParaStkUnstakeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711415F7C805D43E83644C6 /* ParaStkUnstakeViewController.swift */; };
@@ -1328,7 +1330,7 @@
 		72EA1D180E99C6C78B87B820 /* LedgerInstructionsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6747B9F68F9E92845122D8D2 /* LedgerInstructionsViewLayout.swift */; };
 		72EF67BA5380D1CDBB73E23F /* ParaStkYieldBoostStartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6475F9C6C6B095B9C5026CE9 /* ParaStkYieldBoostStartViewController.swift */; };
 		7308DEA4955C03B95A214B8C /* DelegationListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC224725C0C1743FDFED5F6E /* DelegationListPresenter.swift */; };
-		735E83BE57E30FBFD1382474 /* TinderGovViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB6A7632DAA329CD5E4F8B /* TinderGovViewLayout.swift */; };
+		735E83BE57E30FBFD1382474 /* SwipeGovViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB6A7632DAA329CD5E4F8B /* SwipeGovViewLayout.swift */; };
 		73B9C322A5033A4534238B25 /* AssetsSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367393F8CA6157A999F69573 /* AssetsSearchViewLayout.swift */; };
 		7401E7CAEEE6890BE74ACCE1 /* CustomValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2956D0C69019DDCDAB2EB34 /* CustomValidatorListViewLayout.swift */; };
 		7489BDA1D23D8DF73E7EB9BC /* UsernameSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AD15693E21C869DE1FDD17 /* UsernameSetupWireframe.swift */; };
@@ -1732,7 +1734,7 @@
 		78E0B6963A8D0A07E742232C /* GovernanceEditDelegationTracksWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3B84FA1F22CC12B16C79AE /* GovernanceEditDelegationTracksWireframe.swift */; };
 		78E67009E5A7D4564172FD0B /* StakingProxyManagementViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBADD72EE1AFA6E549D779FB /* StakingProxyManagementViewLayout.swift */; };
 		790129F3CB6AEA611639E886 /* ParaStkUnstakeViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5467B9B6AEDB33F565D130A1 /* ParaStkUnstakeViewFactory.swift */; };
-		79BEBAECBC44DC1CC0D780C6 /* TinderGovSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60E944E00C53DD497B78677 /* TinderGovSetupInteractor.swift */; };
+		79BEBAECBC44DC1CC0D780C6 /* SwipeGovSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60E944E00C53DD497B78677 /* SwipeGovSetupInteractor.swift */; };
 		7A1E94D172008E4CB94E9797 /* KnownNetworksListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54BEBC631DCC1DF8AD0578E5 /* KnownNetworksListViewFactory.swift */; };
 		7A47B0731BC8B411CC01C3D1 /* TransferNetworkSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6106D11494F979A46F7B4C /* TransferNetworkSelectionViewController.swift */; };
 		7B0CCB3AAE9D4675CE6F0E6C /* ExportWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B6B5BC6580FB580D3CF2AE /* ExportWireframe.swift */; };
@@ -1740,7 +1742,7 @@
 		7C0135CA49EF6B535030643E /* ParaStkYieldBoostSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9EEC5FDEA7DAE42F2880C7 /* ParaStkYieldBoostSetupPresenter.swift */; };
 		7C42FEDE4DFA920154010F83 /* BackupAttentionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D67A4A418E0DEB44B713C7B8 /* BackupAttentionProtocols.swift */; };
 		7C4CB158ED48716626780F40 /* LedgerPerformOperationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4809C2DB0C15A9B2890C1AC6 /* LedgerPerformOperationInteractor.swift */; };
-		7C54DE318B0675170102B7AD /* TinderGovViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9332C701E51E9D4031BCE90D /* TinderGovViewController.swift */; };
+		7C54DE318B0675170102B7AD /* SwipeGovViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9332C701E51E9D4031BCE90D /* SwipeGovViewController.swift */; };
 		7C93FA82996A426E7B8CA06E /* AccountExportPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D5AF2F7609ADE855308089 /* AccountExportPasswordViewController.swift */; };
 		7C98D0A579FDC879CC5DBF2F /* GovernanceDelegateSearchInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5B6667F4FECDFD386F8FE3 /* GovernanceDelegateSearchInteractor.swift */; };
 		7CBE9FFAF8394786CA131D4D /* CustomValidatorListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28EDDF9277242505FDDECA1 /* CustomValidatorListProtocols.swift */; };
@@ -1756,7 +1758,6 @@
 		7DB7E81CC2F880E4736DE062 /* GovernanceUnlockConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE81AE154A736A93FF3812B /* GovernanceUnlockConfirmViewLayout.swift */; };
 		7E19F51E1D57ADE85DF0773B /* Pods_novawalletAll_novawalletIntegrationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BFDB14F6CA5755AC1C4FA67 /* Pods_novawalletAll_novawalletIntegrationTests.framework */; };
 		7E1A03082260E0D31AD394CA /* StakingRewardDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF891BE39D442C2D06DDF3BB /* StakingRewardDetailsProtocols.swift */; };
-		7E2800371BE3B166F3475E90 /* BaseReferendumVoteSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6CCACED8D5AFA6543845B7 /* BaseReferendumVoteSetupPresenter.swift */; };
 		7E5ACF8DDF17C054E6E1B3D5 /* ParaStkYieldBoostSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */; };
 		7E710E6BE9C41940ACFA3B8C /* CloudBackupSettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E39B6469E7FF5F830E6063 /* CloudBackupSettingsViewLayout.swift */; };
 		7F5B03517FD0144F7EDE1015 /* YourWalletsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7A019F89C6CD418AEEE79C /* YourWalletsPresenter.swift */; };
@@ -4342,7 +4343,7 @@
 		9E40464B7687006B1EE75C72 /* LocksProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F9944B0577EFF25A0643FE /* LocksProtocols.swift */; };
 		9E4E458C92D12B24D5EAD893 /* ControllerAccountInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748E0AF1A286016CB220155C /* ControllerAccountInteractor.swift */; };
 		9E757C72D330AE8ECC00B3F0 /* NetworkDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCD5C5B0CCF665B18B0E13A /* NetworkDetailsInteractor.swift */; };
-		9E7A0B1FD06370579F682FF3 /* TinderGovSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80105CECB120A716A0A3CE1D /* TinderGovSetupWireframe.swift */; };
+		9E7A0B1FD06370579F682FF3 /* SwipeGovSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80105CECB120A716A0A3CE1D /* SwipeGovSetupWireframe.swift */; };
 		9E9F61EA4C716C3768469845 /* StakingProxyManagementViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DDEB59CB3BDF9BDAAC4E3C5 /* StakingProxyManagementViewFactory.swift */; };
 		9ECB28EA7E1D2C79869ED54F /* TokenManageSinglePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48182DE3A1302757558031FD /* TokenManageSinglePresenter.swift */; };
 		9F3E2D64D77BF89B474BF1E3 /* DAppOperationConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FBC2EA83A121CEBD25549D /* DAppOperationConfirmViewController.swift */; };
@@ -4781,7 +4782,7 @@
 		E9625CE429290F5504728D62 /* NftListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0AFEA616FDDF846F3F3650 /* NftListWireframe.swift */; };
 		E9B2CD5127B700881A00EC1D /* TokensAddSelectNetworkInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA518E1D79D86360F145B428 /* TokensAddSelectNetworkInteractor.swift */; };
 		EA44FEB35901A8BD8B1A4B79 /* StakingDashboardWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3348E0824B8D42EC3850EBD5 /* StakingDashboardWireframe.swift */; };
-		EA5757C027BC51F64C28A4D3 /* TinderGovViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18417408E26CB3B36E57B5A /* TinderGovViewFactory.swift */; };
+		EA5757C027BC51F64C28A4D3 /* SwipeGovViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18417408E26CB3B36E57B5A /* SwipeGovViewFactory.swift */; };
 		EA7BA01C6745ABE0E1AF7E1D /* SwapConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB715B933FB8E34A553A80 /* SwapConfirmViewController.swift */; };
 		EAAB9E53189BC6394C5900D2 /* GovernanceSelectTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6962C8E51EB317DE3AAE4BDF /* GovernanceSelectTracksViewController.swift */; };
 		EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CDCB8CF3D8EBE5DA7A5A30 /* ReferendumFullDetailsViewLayout.swift */; };
@@ -4796,7 +4797,7 @@
 		EBC1107125C55A65D4E21417 /* DAppAuthSettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B213C270130EDCF51303BFBE /* DAppAuthSettingsPresenter.swift */; };
 		EBDC7FDF98C20154FA7ED595 /* OnboardingWalletReadyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5DC7B09332A26867340281 /* OnboardingWalletReadyViewLayout.swift */; };
 		EBDDDEE1BAB05E95DC720783 /* NftListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B7577593D1A0789B60FF70 /* NftListViewLayout.swift */; };
-		EC2775D458C653F7E7C949DF /* TinderGovSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F9E5627F64332884633AED /* TinderGovSetupViewFactory.swift */; };
+		EC2775D458C653F7E7C949DF /* SwipeGovSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F9E5627F64332884633AED /* SwipeGovSetupViewFactory.swift */; };
 		EC328560F66AA0F5CFB3FE58 /* AdvancedWalletPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B56202207DF8BB6684C6EF6C /* AdvancedWalletPresenter.swift */; };
 		EC59E978027A1DCBC2268A29 /* StakingRewardsNotificationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF2C8311B039705C804052E /* StakingRewardsNotificationsWireframe.swift */; };
 		EC606EEBC39CF643AB753ACD /* NotificationsSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB8E37A5FDB982C38A45DDA8 /* NotificationsSetupWireframe.swift */; };
@@ -5851,7 +5852,7 @@
 		20878E303E9332322655F008 /* ParaStkSelectCollatorsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkSelectCollatorsProtocols.swift; sourceTree = "<group>"; };
 		20BB15F2A86E47DE30AE8107 /* GovernanceRemoveVotesConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRemoveVotesConfirmProtocols.swift; sourceTree = "<group>"; };
 		20E4FF68D8A9AD54E4F089BC /* GovernanceDelegateInfoViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInfoViewLayout.swift; sourceTree = "<group>"; };
-		20F9E5627F64332884633AED /* TinderGovSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovSetupViewFactory.swift; sourceTree = "<group>"; };
+		20F9E5627F64332884633AED /* SwipeGovSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupViewFactory.swift; sourceTree = "<group>"; };
 		211CEE2D931F177676D280DC /* StakingProxyManagementInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingProxyManagementInteractor.swift; sourceTree = "<group>"; };
 		215C03EE9C9EE024F952CB1C /* ReferendumsFiltersWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumsFiltersWireframe.swift; sourceTree = "<group>"; };
 		21621DCC39234CC4B0A1433B /* GovernanceYourDelegationsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationsPresenter.swift; sourceTree = "<group>"; };
@@ -5967,13 +5968,13 @@
 		2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkEnabledChanged.swift; sourceTree = "<group>"; };
 		2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategy.swift; sourceTree = "<group>"; };
 		2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceVoteValidatingHandlers.swift; sourceTree = "<group>"; };
-		2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovGradientFactory.swift; sourceTree = "<group>"; };
+		2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovGradientFactory.swift; sourceTree = "<group>"; };
 		2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingListWidget.swift; sourceTree = "<group>"; };
-		2D389B0D2C86E94A00256C7B /* TinderGovEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovEmptyStateView.swift; sourceTree = "<group>"; };
+		2D389B0D2C86E94A00256C7B /* SwipeGovEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovEmptyStateView.swift; sourceTree = "<group>"; };
 		2D389B0F2C86FEFB00256C7B /* StackCardUpdatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackCardUpdatable.swift; sourceTree = "<group>"; };
 		2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardViewModel.swift; sourceTree = "<group>"; };
 		2D389B142C87036100256C7B /* ReferendumFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFilter.swift; sourceTree = "<group>"; };
-		2D389B162C875B3200256C7B /* TinderGovInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovInteractor.swift; sourceTree = "<group>"; };
+		2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovInteractor.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
@@ -5987,15 +5988,17 @@
 		2D6287362C917E3900060814 /* VotingPowerMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerMapper.swift; sourceTree = "<group>"; };
 		2D6287392C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerLocalstorageSubscriber.swift; sourceTree = "<group>"; };
 		2D62873B2C91812300060814 /* VotingPowerLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
-		2D62873D2C919E4B00060814 /* TinderGovSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovSetupViewController.swift; sourceTree = "<group>"; };
+		2D62873D2C919E4B00060814 /* SwipeGovSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupViewController.swift; sourceTree = "<group>"; };
 		2D62873F2C91ED5300060814 /* ReferendumVoteSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupPresenter.swift; sourceTree = "<group>"; };
 		2D6287412C91F20400060814 /* ReferendumVoteSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupViewController.swift; sourceTree = "<group>"; };
 		2D6287462C941DFE00060814 /* SwipeGovVotingListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListItemView.swift; sourceTree = "<group>"; };
 		2D6287482C94395600060814 /* SwipeGovVotingListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListViewModel.swift; sourceTree = "<group>"; };
 		2D62874E2C95C1F500060814 /* ReferendumsObservableState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsObservableState.swift; sourceTree = "<group>"; };
 		2D6287502C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteSetupViewLayout.swift; sourceTree = "<group>"; };
-		2D6287522C96CA7100060814 /* TinderGovSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovSetupViewLayout.swift; sourceTree = "<group>"; };
+		2D6287522C96CA7100060814 /* SwipeGovSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupViewLayout.swift; sourceTree = "<group>"; };
 		2D6287562C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D6287592C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovInvalidVotesSetupInteractor.swift; sourceTree = "<group>"; };
+		2D62875B2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSwipeGovSetupInteractor.swift; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -6005,7 +6008,7 @@
 		2D77487D2C8B41830059607B /* PolkassemblyKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkassemblyKeys.swift; sourceTree = "<group>"; };
 		2D77487F2C8B48C40059607B /* CIKeys.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIKeys.generated.swift; sourceTree = SOURCE_ROOT; };
 		2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumAmountOperationFactory.swift; sourceTree = "<group>"; };
-		2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovModelBuilder.swift; sourceTree = "<group>"; };
+		2D7748852C8F799C0059607B /* SwipeGovModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovModelBuilder.swift; sourceTree = "<group>"; };
 		2D7748872C9035550059607B /* SubstrateDataModel33.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel33.xcdatamodel; sourceTree = "<group>"; };
 		2D7748882C90368C0059607B /* VotingBasketItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketItemMapper.swift; sourceTree = "<group>"; };
 		2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingBasketItemLocal.swift; sourceTree = "<group>"; };
@@ -6029,9 +6032,9 @@
 		2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicFeeInstaller.swift; sourceTree = "<group>"; };
 		2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D95DF602C74B79A009BB063 /* HydraFlowStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraFlowStateStore.swift; sourceTree = "<group>"; };
-		2DA85A712C7F6E0900591900 /* TinderGovBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovBannerView.swift; sourceTree = "<group>"; };
+		2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovBannerView.swift; sourceTree = "<group>"; };
 		2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedGradientBackgroundView.swift; sourceTree = "<group>"; };
-		2DA85A762C7FCCCE00591900 /* TinderGovViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinderGovViewModelFactory.swift; sourceTree = "<group>"; };
+		2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA85A782C8071A500591900 /* ReferendumsPresenter+ReferendumSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsPresenter+ReferendumSections.swift"; sourceTree = "<group>"; };
 		2DA85A812C80775F00591900 /* ReferendumsPresenter+VoteChildPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsPresenter+VoteChildPresenter.swift"; sourceTree = "<group>"; };
 		2DA85A832C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsPresenter+ViewUpdate.swift"; sourceTree = "<group>"; };
@@ -6288,7 +6291,6 @@
 		5BCDAB970C17F9798AC79B08 /* DAppTxDetailsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsViewController.swift; sourceTree = "<group>"; };
 		5BE992187F6F3899568F3DAE /* TokensManageAddInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageAddInteractor.swift; sourceTree = "<group>"; };
 		5C4D750179BD034AC7300F38 /* TokensManageAddViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageAddViewFactory.swift; sourceTree = "<group>"; };
-		5C6CCACED8D5AFA6543845B7 /* BaseReferendumVoteSetupPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteSetupPresenter.swift; sourceTree = "<group>"; };
 		5C92E3ED704CB0BBAB3A669F /* CrowdloanContributionConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmViewLayout.swift; sourceTree = "<group>"; };
 		5C96E41F878ED0A0A6F469D3 /* CrowdloanContributionSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionSetupViewFactory.swift; sourceTree = "<group>"; };
 		5CCDB2256863350F2236C2C0 /* GenericLedgerWalletInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerWalletInteractor.swift; sourceTree = "<group>"; };
@@ -6352,7 +6354,7 @@
 		6C1179A25C22AF0875A1ADCD /* AssetReceiveWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetReceiveWireframe.swift; sourceTree = "<group>"; };
 		6C3AD523C06AD4FD58B7B3CC /* MessageSheetPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageSheetPresenter.swift; sourceTree = "<group>"; };
 		6C890ABA28180F1F93B7865C /* NetworksListViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworksListViewFactory.swift; sourceTree = "<group>"; };
-		6C972C86D5104BEB79598AC8 /* TinderGovProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovProtocols.swift; sourceTree = "<group>"; };
+		6C972C86D5104BEB79598AC8 /* SwipeGovProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovProtocols.swift; sourceTree = "<group>"; };
 		6CDC898FE48131F4FB8E64B8 /* DAppWalletAuthProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppWalletAuthProtocols.swift; sourceTree = "<group>"; };
 		6D9A2CF1016F4D5A7F075B69 /* GovernanceSelectTracksInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceSelectTracksInteractor.swift; sourceTree = "<group>"; };
 		6DA49EE64DC450755353E482 /* CloudBackupAddWalletViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupAddWalletViewFactory.swift; sourceTree = "<group>"; };
@@ -6759,7 +6761,7 @@
 		7F8B46E3BAB48A2D2E1D2EF4 /* ParitySignerTxScanWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanWireframe.swift; sourceTree = "<group>"; };
 		7FF467EBB295AC2A3DDA4492 /* GovernanceEditDelegationTracksPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceEditDelegationTracksPresenter.swift; sourceTree = "<group>"; };
 		8008E92C2E7ADCC92E57FE59 /* Pods-novawalletAll-novawallet.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.dev.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.dev.xcconfig"; sourceTree = "<group>"; };
-		80105CECB120A716A0A3CE1D /* TinderGovSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovSetupWireframe.swift; sourceTree = "<group>"; };
+		80105CECB120A716A0A3CE1D /* SwipeGovSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupWireframe.swift; sourceTree = "<group>"; };
 		812BCD9B7B25BCA02E32452E /* DAppAuthSettingsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsInteractor.swift; sourceTree = "<group>"; };
 		8145FD81205F06EB6B8B51DA /* StakingSetupAmountInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSetupAmountInteractor.swift; sourceTree = "<group>"; };
 		8167536168325942DA6892E1 /* LedgerWalletConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerWalletConfirmWireframe.swift; sourceTree = "<group>"; };
@@ -9246,7 +9248,7 @@
 		88DC3E20292CAA0100DBCE4D /* RoundedView+Style.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RoundedView+Style.swift"; sourceTree = "<group>"; };
 		88DC3E24292CAA9300DBCE4D /* IconDetailsView+Style.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "IconDetailsView+Style.swift"; sourceTree = "<group>"; };
 		88DC3E26292CABCB00DBCE4D /* AssetListStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyles.swift; sourceTree = "<group>"; };
-		88DF073F93EA9D62EB0E607D /* TinderGovSetupPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovSetupPresenter.swift; sourceTree = "<group>"; };
+		88DF073F93EA9D62EB0E607D /* SwipeGovSetupPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupPresenter.swift; sourceTree = "<group>"; };
 		88E1E895289C021F00C123A8 /* CurrencyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCollectionViewCell.swift; sourceTree = "<group>"; };
 		88E1E897289C024400C123A8 /* UIView+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Create.swift"; sourceTree = "<group>"; };
 		88E5E2A4295D8F8E001B1D41 /* DAppGlobalSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppGlobalSettingsViewModel.swift; sourceTree = "<group>"; };
@@ -9325,7 +9327,7 @@
 		92381CBE193B3317F477D377 /* GovernanceRevokeDelegationConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmViewController.swift; sourceTree = "<group>"; };
 		92BA384CCD3E8B6A4F9F99BB /* Pods_NovaPushNotificationServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NovaPushNotificationServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		932EBC486896C9ECB60977C4 /* NetworksListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworksListWireframe.swift; sourceTree = "<group>"; };
-		9332C701E51E9D4031BCE90D /* TinderGovViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovViewController.swift; sourceTree = "<group>"; };
+		9332C701E51E9D4031BCE90D /* SwipeGovViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovViewController.swift; sourceTree = "<group>"; };
 		935B5118367A118FC86B66C8 /* LedgerNetworkSelectionWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerNetworkSelectionWireframe.swift; sourceTree = "<group>"; };
 		939D6CB66B9D5B86FEE5256E /* StakingSelectPoolViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolViewLayout.swift; sourceTree = "<group>"; };
 		93B26AA9CB558F02F69FF59B /* ExportMnemonicConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportMnemonicConfirmWireframe.swift; sourceTree = "<group>"; };
@@ -9408,7 +9410,7 @@
 		A4C96F37D7166820D6C9CC62 /* ParaStkCollatorInfoPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkCollatorInfoPresenter.swift; sourceTree = "<group>"; };
 		A4F2B1A2A919663ABEE3367A /* MoonbeamTermsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoonbeamTermsWireframe.swift; sourceTree = "<group>"; };
 		A505A668A19249E64DD160FF /* ManualBackupWalletListViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualBackupWalletListViewLayout.swift; sourceTree = "<group>"; };
-		A558807C44AE52D76B4EE875 /* TinderGovSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovSetupProtocols.swift; sourceTree = "<group>"; };
+		A558807C44AE52D76B4EE875 /* SwipeGovSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupProtocols.swift; sourceTree = "<group>"; };
 		A56BF3382C2DAE9D00D3BC38 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A56BF3392C2DAE9D00D3BC38 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A56BF33A2C2DAE9D00D3BC38 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fr; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -9434,7 +9436,7 @@
 		A56BF34E2C2DAF5C00D3BC38 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ko; path = ko.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		A56BF34F2C2DAF5D00D3BC38 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A5F05632A6635A54A9CDA7FC /* OperationDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OperationDetailsViewFactory.swift; sourceTree = "<group>"; };
-		A60E944E00C53DD497B78677 /* TinderGovSetupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovSetupInteractor.swift; sourceTree = "<group>"; };
+		A60E944E00C53DD497B78677 /* SwipeGovSetupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupInteractor.swift; sourceTree = "<group>"; };
 		A6A61CD43EDD8791F6DA9581 /* GovernanceSelectTracksViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceSelectTracksViewFactory.swift; sourceTree = "<group>"; };
 		A6D59DCB2D2148A8DFF4F099 /* ManualBackupKeyListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListPresenter.swift; sourceTree = "<group>"; };
 		A71030ADF84393172807E434 /* StakingSetupAmountWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSetupAmountWireframe.swift; sourceTree = "<group>"; };
@@ -9649,7 +9651,7 @@
 		BC8958927F940B9B638EF89D /* ParaStkYieldBoostSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupViewFactory.swift; sourceTree = "<group>"; };
 		BCA363AE7B1C51E3B1F7DD07 /* StakingRewardFiltersPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardFiltersPresenter.swift; sourceTree = "<group>"; };
 		BCE26599B4E43DC4CE520528 /* AssetListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetListViewController.swift; sourceTree = "<group>"; };
-		BCE59E7D7D81AD155C08B477 /* TinderGovWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovWireframe.swift; sourceTree = "<group>"; };
+		BCE59E7D7D81AD155C08B477 /* SwipeGovWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovWireframe.swift; sourceTree = "<group>"; };
 		BD41B37A8DF2A83231F6B84D /* AssetsSettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetsSettingsViewController.swift; sourceTree = "<group>"; };
 		BD6328AE79C92A96D9E8C04B /* WalletImportOptionsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletImportOptionsPresenter.swift; sourceTree = "<group>"; };
 		BD70B47DF7F9DE75CE7AE33F /* ParitySignerTxQrProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxQrProtocols.swift; sourceTree = "<group>"; };
@@ -9665,7 +9667,7 @@
 		C08EC3664CC9CB0BFD5C6249 /* NetworkManageNodeViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkManageNodeViewController.swift; sourceTree = "<group>"; };
 		C09D09E9ED7911D0BF763184 /* WalletConnectSessionDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletConnectSessionDetailsWireframe.swift; sourceTree = "<group>"; };
 		C0A2F34329579E12A2836E77 /* MessageSheetViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageSheetViewController.swift; sourceTree = "<group>"; };
-		C18417408E26CB3B36E57B5A /* TinderGovViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovViewFactory.swift; sourceTree = "<group>"; };
+		C18417408E26CB3B36E57B5A /* SwipeGovViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovViewFactory.swift; sourceTree = "<group>"; };
 		C191A3875F3255B72E01FA92 /* CrowdloanListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanListWireframe.swift; sourceTree = "<group>"; };
 		C197897ED8B6E5547C64CD2D /* GovernanceDelegateSearchViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateSearchViewFactory.swift; sourceTree = "<group>"; };
 		C1B08ACC71BE679A48A7B66E /* LedgerInstructionsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerInstructionsPresenter.swift; sourceTree = "<group>"; };
@@ -9843,7 +9845,7 @@
 		E765FD856EB60BBF344205F3 /* TokensAddSelectNetworkWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkWireframe.swift; sourceTree = "<group>"; };
 		E7B01586B548A0AB92695B40 /* CommonDelegationTracksViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CommonDelegationTracksViewController.swift; sourceTree = "<group>"; };
 		E7B77D655A395946E9405285 /* GovernanceNotificationsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsProtocols.swift; sourceTree = "<group>"; };
-		E7BA4C5AB8F2334E97AEBAE9 /* TinderGovPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovPresenter.swift; sourceTree = "<group>"; };
+		E7BA4C5AB8F2334E97AEBAE9 /* SwipeGovPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovPresenter.swift; sourceTree = "<group>"; };
 		E7F38FDB907F69A26B93B4E6 /* StakingSelectPoolViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolViewController.swift; sourceTree = "<group>"; };
 		E825A1B4A886B1004C25AD8B /* StakingRewardsNotificationsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardsNotificationsViewController.swift; sourceTree = "<group>"; };
 		E83916DF00BA41516B94304E /* DelegationReferendumVotersViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegationReferendumVotersViewFactory.swift; sourceTree = "<group>"; };
@@ -10020,7 +10022,7 @@
 		F65C2DCBA74EBD7DE89CF02C /* CloudBackupRemindViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupRemindViewController.swift; sourceTree = "<group>"; };
 		F69908EEEDB9A392FF756E65 /* CreateWatchOnlyViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateWatchOnlyViewFactory.swift; sourceTree = "<group>"; };
 		F6A6E9A6472158C37D3A62F5 /* ParaStkYourCollatorsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYourCollatorsPresenter.swift; sourceTree = "<group>"; };
-		F6AB6A7632DAA329CD5E4F8B /* TinderGovViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TinderGovViewLayout.swift; sourceTree = "<group>"; };
+		F6AB6A7632DAA329CD5E4F8B /* SwipeGovViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovViewLayout.swift; sourceTree = "<group>"; };
 		F6B6B5BC6580FB580D3CF2AE /* ExportWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportWireframe.swift; sourceTree = "<group>"; };
 		F6FC364054546921FA6A5D2B /* NPoolsRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsRedeemProtocols.swift; sourceTree = "<group>"; };
 		F711415F7C805D43E83644C6 /* ParaStkUnstakeViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakeViewController.swift; sourceTree = "<group>"; };
@@ -11956,22 +11958,22 @@
 			path = ParaStkCollatorInfo;
 			sourceTree = "<group>";
 		};
-		22EC1C74711D9EF8A3277AF7 /* TinderGov */ = {
+		22EC1C74711D9EF8A3277AF7 /* SwipeGov */ = {
 			isa = PBXGroup;
 			children = (
 				2D77488A2C9042800059607B /* Model */,
 				2D77487C2C8B41720059607B /* Polkassembly */,
 				2D389B182C875E1B00256C7B /* Helpers */,
 				2DA85A852C8116FB00591900 /* Views */,
-				6C972C86D5104BEB79598AC8 /* TinderGovProtocols.swift */,
-				BCE59E7D7D81AD155C08B477 /* TinderGovWireframe.swift */,
-				E7BA4C5AB8F2334E97AEBAE9 /* TinderGovPresenter.swift */,
-				9332C701E51E9D4031BCE90D /* TinderGovViewController.swift */,
-				2D389B162C875B3200256C7B /* TinderGovInteractor.swift */,
-				F6AB6A7632DAA329CD5E4F8B /* TinderGovViewLayout.swift */,
-				C18417408E26CB3B36E57B5A /* TinderGovViewFactory.swift */,
+				6C972C86D5104BEB79598AC8 /* SwipeGovProtocols.swift */,
+				BCE59E7D7D81AD155C08B477 /* SwipeGovWireframe.swift */,
+				E7BA4C5AB8F2334E97AEBAE9 /* SwipeGovPresenter.swift */,
+				9332C701E51E9D4031BCE90D /* SwipeGovViewController.swift */,
+				2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */,
+				F6AB6A7632DAA329CD5E4F8B /* SwipeGovViewLayout.swift */,
+				C18417408E26CB3B36E57B5A /* SwipeGovViewFactory.swift */,
 			);
-			path = TinderGov;
+			path = SwipeGov;
 			sourceTree = "<group>";
 		};
 		249BACDEE5CB2B1ECDF470D9 /* AccountExportPassword */ = {
@@ -12242,11 +12244,11 @@
 			isa = PBXGroup;
 			children = (
 				2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */,
-				2DA85A762C7FCCCE00591900 /* TinderGovViewModelFactory.swift */,
-				2D389B072C8616F900256C7B /* TinderGovGradientFactory.swift */,
+				2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */,
+				2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */,
 				2D389B142C87036100256C7B /* ReferendumFilter.swift */,
 				2D6287382C91805B00060814 /* Subscriptions */,
-				2D7748852C8F799C0059607B /* TinderGovModelBuilder.swift */,
+				2D7748852C8F799C0059607B /* SwipeGovModelBuilder.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -12293,21 +12295,12 @@
 			path = Controller;
 			sourceTree = "<group>";
 		};
-		2D6287442C91F28500060814 /* Presenter */ = {
-			isa = PBXGroup;
-			children = (
-				5C6CCACED8D5AFA6543845B7 /* BaseReferendumVoteSetupPresenter.swift */,
-				2D62873F2C91ED5300060814 /* ReferendumVoteSetupPresenter.swift */,
-			);
-			path = Presenter;
-			sourceTree = "<group>";
-		};
 		2D6287452C941A2D00060814 /* SwipeGov */ = {
 			isa = PBXGroup;
 			children = (
 				004CB16144B71C42956A5D93 /* SwipeGovVotingList */,
-				52E57E961FA41BD3ABDDCDF0 /* TinderGovSetup */,
-				22EC1C74711D9EF8A3277AF7 /* TinderGov */,
+				52E57E961FA41BD3ABDDCDF0 /* SwipeGovSetup */,
+				22EC1C74711D9EF8A3277AF7 /* SwipeGov */,
 			);
 			path = SwipeGov;
 			sourceTree = "<group>";
@@ -12327,6 +12320,16 @@
 				2D6287462C941DFE00060814 /* SwipeGovVotingListItemView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		2D6287582C9774E800060814 /* Interactor */ = {
+			isa = PBXGroup;
+			children = (
+				A60E944E00C53DD497B78677 /* SwipeGovSetupInteractor.swift */,
+				2D6287592C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift */,
+				2D62875B2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift */,
+			);
+			path = Interactor;
 			sourceTree = "<group>";
 		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
@@ -12417,7 +12420,7 @@
 			children = (
 				2D389B112C86FF1C00256C7B /* CardsZStack */,
 				2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */,
-				2D389B0D2C86E94A00256C7B /* TinderGovEmptyStateView.swift */,
+				2D389B0D2C86E94A00256C7B /* SwipeGovEmptyStateView.swift */,
 				2D7748722C89B2FB0059607B /* OpenGovSummaryOperationFactory.swift */,
 			);
 			path = Views;
@@ -12887,18 +12890,18 @@
 			path = MoonbeamTerms;
 			sourceTree = "<group>";
 		};
-		52E57E961FA41BD3ABDDCDF0 /* TinderGovSetup */ = {
+		52E57E961FA41BD3ABDDCDF0 /* SwipeGovSetup */ = {
 			isa = PBXGroup;
 			children = (
-				A558807C44AE52D76B4EE875 /* TinderGovSetupProtocols.swift */,
-				80105CECB120A716A0A3CE1D /* TinderGovSetupWireframe.swift */,
-				88DF073F93EA9D62EB0E607D /* TinderGovSetupPresenter.swift */,
-				A60E944E00C53DD497B78677 /* TinderGovSetupInteractor.swift */,
-				20F9E5627F64332884633AED /* TinderGovSetupViewFactory.swift */,
-				2D6287522C96CA7100060814 /* TinderGovSetupViewLayout.swift */,
-				2D62873D2C919E4B00060814 /* TinderGovSetupViewController.swift */,
+				A558807C44AE52D76B4EE875 /* SwipeGovSetupProtocols.swift */,
+				80105CECB120A716A0A3CE1D /* SwipeGovSetupWireframe.swift */,
+				88DF073F93EA9D62EB0E607D /* SwipeGovSetupPresenter.swift */,
+				2D6287582C9774E800060814 /* Interactor */,
+				20F9E5627F64332884633AED /* SwipeGovSetupViewFactory.swift */,
+				2D6287522C96CA7100060814 /* SwipeGovSetupViewLayout.swift */,
+				2D62873D2C919E4B00060814 /* SwipeGovSetupViewController.swift */,
 			);
-			path = TinderGovSetup;
+			path = SwipeGovSetup;
 			sourceTree = "<group>";
 		};
 		54CA53FE46396489FDE213E0 /* DAppPhishing */ = {
@@ -20789,7 +20792,7 @@
 				880059E028EF0A5C00E87B9B /* VotingProgressView.swift */,
 				880059E228EF128000E87B9B /* ReferendumInfoView.swift */,
 				88B1862928EF30A600D49854 /* YourVoteView.swift */,
-				2DA85A712C7F6E0900591900 /* TinderGovBannerView.swift */,
+				2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */,
 				889D889428F01E5B00C4320F /* ReferendumTableViewCell.swift */,
 				88F34FDC28FFE6E400712BDE /* MultiValueView+Model.swift */,
 				84033056290FD8AB009C18E6 /* ReferendumsPersonalActivityView.swift */,
@@ -22515,10 +22518,10 @@
 				84F76ED4290069E900D7206C /* View */,
 				8425D0DE28FE736F003B782A /* Model */,
 				2D6287432C91F27700060814 /* Controller */,
-				2D6287442C91F28500060814 /* Presenter */,
 				5159EA2661A6CBE123CCF891 /* ReferendumVoteSetupProtocols.swift */,
 				55B2C456A80FA66E6F140814 /* ReferendumVoteSetupWireframe.swift */,
 				024B7E67C0603C53981EC394 /* ReferendumVoteSetupInteractor.swift */,
+				2D62873F2C91ED5300060814 /* ReferendumVoteSetupPresenter.swift */,
 				6A3105383F2825940D0105D5 /* ReferendumVoteSetupViewLayout.swift */,
 				FF755EE09598254BB5E59CC2 /* ReferendumVoteSetupViewFactory.swift */,
 			);
@@ -24500,7 +24503,7 @@
 				84EBC55B24F660F500459D15 /* SelectedWalletSwitched.swift in Sources */,
 				840B3D6A2899CD2900DA1DA9 /* ParitySignerAddressScan.swift in Sources */,
 				883DB178297A411300EFB7D8 /* AddDelegationStyles.swift in Sources */,
-				2D389B082C8616F900256C7B /* TinderGovGradientFactory.swift in Sources */,
+				2D389B082C8616F900256C7B /* SwipeGovGradientFactory.swift in Sources */,
 				777BD86429F979DA004969A2 /* SelectableFilterCell.swift in Sources */,
 				0C992C3F2B53AEF700ACC129 /* OperationSearchService.swift in Sources */,
 				8849AD6229C3532600F4F7FF /* String+Split.swift in Sources */,
@@ -24884,7 +24887,7 @@
 				845B811928F43D4C0040CE84 /* Treasury+CodingPath.swift in Sources */,
 				842876B224AE059700D91AD8 /* SupportData.swift in Sources */,
 				84D8754228EB5D66004065BD /* ChainBalanceViewModel.swift in Sources */,
-				2D62873E2C919E4B00060814 /* TinderGovSetupViewController.swift in Sources */,
+				2D62873E2C919E4B00060814 /* SwipeGovSetupViewController.swift in Sources */,
 				0C8AF7B82B38043400005AC9 /* Pdc20NftSyncService.swift in Sources */,
 				2D350D9E2C3827DA00F34E25 /* NetworkEnabledChanged.swift in Sources */,
 				84F1D66B29051A730050F4E3 /* ReferendumLockReuseViewModel.swift in Sources */,
@@ -25671,7 +25674,7 @@
 				847119CD262EF61F00716580 /* PayoutValidatorForValidatorFactory.swift in Sources */,
 				F40966E426B29919008CD244 /* Stacks.swift in Sources */,
 				848CCB502833D1D900A1FD00 /* StakingRelaychainStatics.swift in Sources */,
-				2DA85A722C7F6E0900591900 /* TinderGovBannerView.swift in Sources */,
+				2DA85A722C7F6E0900591900 /* SwipeGovBannerView.swift in Sources */,
 				AEA0C8AE267B818900F9666F /* SelectedValidatorListViewLayout.swift in Sources */,
 				2D1C5D242C25ACE200E2DBDD /* CustomNetworkAddPresenter.swift in Sources */,
 				84D8F15524D80CA100AF43E9 /* ModalPickerViewController.swift in Sources */,
@@ -26638,7 +26641,7 @@
 				7728E58F2A123B70007901E0 /* ReferendumsViewState.swift in Sources */,
 				77F1893E2A4996FC00E8B933 /* ParagraphView.swift in Sources */,
 				8422F2F328881C9B00C7B840 /* WatchOnlyWallet.swift in Sources */,
-				2D7748862C8F799C0059607B /* TinderGovModelBuilder.swift in Sources */,
+				2D7748862C8F799C0059607B /* SwipeGovModelBuilder.swift in Sources */,
 				8446F5F228172BBC00B7A86C /* StakingUnbonHintView.swift in Sources */,
 				F40966F526B299FC008CD244 /* SubqueryRewardsSource.swift in Sources */,
 				AF8193D9F818638254854232 /* StakingMainProtocols.swift in Sources */,
@@ -26701,7 +26704,7 @@
 				0CC0F8272BB53376002C49F6 /* CloudBackupAvailabilityService.swift in Sources */,
 				A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */,
 				844C3E772A09228200C4305F /* WalletChoosePresentable.swift in Sources */,
-				2D6287532C96CA7100060814 /* TinderGovSetupViewLayout.swift in Sources */,
+				2D6287532C96CA7100060814 /* SwipeGovSetupViewLayout.swift in Sources */,
 				84AE7AB127D38C9400495267 /* DisplayAddressViewModel.swift in Sources */,
 				84282296289BC31300163031 /* AddAccount+ParitySignerAddConfirmWireframe.swift in Sources */,
 				84FB9E1E285C58FF00B42FC0 /* Xcm.swift in Sources */,
@@ -27666,6 +27669,7 @@
 				97BF7157FE13F723BF4D5713 /* CreateWatchOnlyWireframe.swift in Sources */,
 				84770F25291F72D700852A33 /* ReferendumVotingInitData.swift in Sources */,
 				84E0C51E29CA40DA000B65C8 /* OperationContractCallModel.swift in Sources */,
+				2D62875A2C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift in Sources */,
 				846A835D28B8D09600D92892 /* LedgerMessageSheetViewFactory.swift in Sources */,
 				774092002ACC1BE400172516 /* SwapAmountInput.swift in Sources */,
 				60FFEE5B386E82D70333BE80 /* CreateWatchOnlyPresenter.swift in Sources */,
@@ -27941,7 +27945,6 @@
 				1F496969FEE3E160BABDAC66 /* ReferendumVoteSetupProtocols.swift in Sources */,
 				F1BED07F67119E1BD052952A /* ReferendumVoteSetupWireframe.swift in Sources */,
 				88E74E8E29539E18008031A3 /* QRCreationOperationFactory.swift in Sources */,
-				7E2800371BE3B166F3475E90 /* BaseReferendumVoteSetupPresenter.swift in Sources */,
 				04D86D5341406305E60F6D18 /* ReferendumVoteSetupInteractor.swift in Sources */,
 				2CEFF4C2574F0AABE0E9BF89 /* BaseReferendumVoteSetupViewController.swift in Sources */,
 				0C59E8CF2AA5D744001E11F3 /* PooledBalanceUpdatingState.swift in Sources */,
@@ -27991,7 +27994,7 @@
 				9DE1757D047A4D1E97913774 /* GovernanceUnlockConfirmProtocols.swift in Sources */,
 				2272FB0A01000A46D097634E /* GovernanceUnlockConfirmWireframe.swift in Sources */,
 				0CC2E56A2A6E6EBB004092E7 /* LocalStorageProviderObserving.swift in Sources */,
-				2D389B172C875B3200256C7B /* TinderGovInteractor.swift in Sources */,
+				2D389B172C875B3200256C7B /* SwipeGovInteractor.swift in Sources */,
 				A3BDFA01A32B6C7463E6EFFA /* GovernanceUnlockConfirmPresenter.swift in Sources */,
 				62649D3FB6AACB508872C67A /* GovernanceUnlockConfirmInteractor.swift in Sources */,
 				6D603098CCF0B65AA726AD38 /* GovernanceUnlockConfirmViewController.swift in Sources */,
@@ -28081,7 +28084,7 @@
 				C6E220DA6AD9A938083179CB /* AddDelegationInteractor.swift in Sources */,
 				8E74A13BA73160F88B2B0948 /* AddDelegationViewController.swift in Sources */,
 				CEED39FF1C586C00B56B1F0C /* AddDelegationViewLayout.swift in Sources */,
-				2D389B0E2C86E94A00256C7B /* TinderGovEmptyStateView.swift in Sources */,
+				2D389B0E2C86E94A00256C7B /* SwipeGovEmptyStateView.swift in Sources */,
 				7D3D51706CD51AA9101DCE42 /* AddDelegationViewFactory.swift in Sources */,
 				D938B2F0F1F17649A78BB5BC /* GovernanceDelegateInfoProtocols.swift in Sources */,
 				5ECC5F9E55FBC5CF2DD8664C /* GovernanceDelegateInfoWireframe.swift in Sources */,
@@ -28373,7 +28376,7 @@
 				19B35C4E96708405754B8EC5 /* NPoolsUnstakeSetupProtocols.swift in Sources */,
 				5103B0A6919721E7E1284829 /* NPoolsUnstakeSetupWireframe.swift in Sources */,
 				0C85FF322B6D4A3500FC0014 /* AssetConversionFlowState.swift in Sources */,
-				2DA85A772C7FCCCE00591900 /* TinderGovViewModelFactory.swift in Sources */,
+				2DA85A772C7FCCCE00591900 /* SwipeGovViewModelFactory.swift in Sources */,
 				594EA36463252924AB73475B /* NPoolsUnstakeSetupPresenter.swift in Sources */,
 				1E1B60AC1FBF11673A70955C /* NPoolsUnstakeSetupInteractor.swift in Sources */,
 				BF31A2900BA28194047D2219 /* NPoolsUnstakeSetupViewController.swift in Sources */,
@@ -28655,17 +28658,18 @@
 				2D6287512C96CA3B00060814 /* BaseReferendumVoteSetupViewLayout.swift in Sources */,
 				5A793BE4C54F2B2012A03DF3 /* GenericLedgerAccountSelectionViewLayout.swift in Sources */,
 				346DD413FBE3ACE47BE799B9 /* GenericLedgerAccountSelectionViewFactory.swift in Sources */,
-				49E9D296222D2E8418E0A4EA /* TinderGovProtocols.swift in Sources */,
-				56C840097B6B2E3D7133EE21 /* TinderGovWireframe.swift in Sources */,
-				59E3304ED1BBA3CB2699C957 /* TinderGovPresenter.swift in Sources */,
-				7C54DE318B0675170102B7AD /* TinderGovViewController.swift in Sources */,
-				735E83BE57E30FBFD1382474 /* TinderGovViewLayout.swift in Sources */,
-				EA5757C027BC51F64C28A4D3 /* TinderGovViewFactory.swift in Sources */,
-				5EBDCC76C4957F83D1DACAD5 /* TinderGovSetupProtocols.swift in Sources */,
-				9E7A0B1FD06370579F682FF3 /* TinderGovSetupWireframe.swift in Sources */,
-				1401103090F2DD8E6BB5B909 /* TinderGovSetupPresenter.swift in Sources */,
-				79BEBAECBC44DC1CC0D780C6 /* TinderGovSetupInteractor.swift in Sources */,
-				EC2775D458C653F7E7C949DF /* TinderGovSetupViewFactory.swift in Sources */,
+				49E9D296222D2E8418E0A4EA /* SwipeGovProtocols.swift in Sources */,
+				56C840097B6B2E3D7133EE21 /* SwipeGovWireframe.swift in Sources */,
+				59E3304ED1BBA3CB2699C957 /* SwipeGovPresenter.swift in Sources */,
+				7C54DE318B0675170102B7AD /* SwipeGovViewController.swift in Sources */,
+				735E83BE57E30FBFD1382474 /* SwipeGovViewLayout.swift in Sources */,
+				EA5757C027BC51F64C28A4D3 /* SwipeGovViewFactory.swift in Sources */,
+				5EBDCC76C4957F83D1DACAD5 /* SwipeGovSetupProtocols.swift in Sources */,
+				9E7A0B1FD06370579F682FF3 /* SwipeGovSetupWireframe.swift in Sources */,
+				1401103090F2DD8E6BB5B909 /* SwipeGovSetupPresenter.swift in Sources */,
+				79BEBAECBC44DC1CC0D780C6 /* SwipeGovSetupInteractor.swift in Sources */,
+				EC2775D458C653F7E7C949DF /* SwipeGovSetupViewFactory.swift in Sources */,
+				2D62875C2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift in Sources */,
 				BD8241356329A3FF53234EE6 /* SwipeGovVotingListProtocols.swift in Sources */,
 				CE2F94C2BD61FC48E221D4A7 /* SwipeGovVotingListWireframe.swift in Sources */,
 				D6B9C9345141D9463AF62C65 /* SwipeGovVotingListPresenter.swift in Sources */,

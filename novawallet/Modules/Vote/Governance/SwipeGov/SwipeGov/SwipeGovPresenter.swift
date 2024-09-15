@@ -2,22 +2,22 @@ import Foundation
 import SoraFoundation
 import Operation_iOS
 
-final class TinderGovPresenter {
-    weak var view: TinderGovViewProtocol?
-    let interactor: TinderGovInteractorInputProtocol
-    let wireframe: TinderGovWireframeProtocol
+final class SwipeGovPresenter {
+    weak var view: SwipeGovViewProtocol?
+    let interactor: SwipeGovInteractorInputProtocol
+    let wireframe: SwipeGovWireframeProtocol
 
-    private let viewModelFactory: TinderGovViewModelFactoryProtocol
+    private let viewModelFactory: SwipeGovViewModelFactoryProtocol
     private let cardsViewModelFactory: VoteCardViewModelFactoryProtocol
     private let localizationManager: LocalizationManagerProtocol
 
-    private var model: TinderGovModelBuilder.Result.Model?
+    private var model: SwipeGovModelBuilder.Result.Model?
     private var votingPower: VotingPowerLocal?
 
     init(
-        wireframe: TinderGovWireframeProtocol,
-        interactor: TinderGovInteractorInputProtocol,
-        viewModelFactory: TinderGovViewModelFactoryProtocol,
+        wireframe: SwipeGovWireframeProtocol,
+        interactor: SwipeGovInteractorInputProtocol,
+        viewModelFactory: SwipeGovViewModelFactoryProtocol,
         cardsViewModelFactory: VoteCardViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -29,9 +29,9 @@ final class TinderGovPresenter {
     }
 }
 
-// MARK: TinderGovPresenterProtocol
+// MARK: SwipeGovPresenterProtocol
 
-extension TinderGovPresenter: TinderGovPresenterProtocol {
+extension SwipeGovPresenter: SwipeGovPresenterProtocol {
     func setup() {
         interactor.setup()
     }
@@ -56,10 +56,10 @@ extension TinderGovPresenter: TinderGovPresenterProtocol {
     }
 }
 
-// MARK: TinderGovInteractorOutputProtocol
+// MARK: SwipeGovInteractorOutputProtocol
 
-extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
-    func didReceive(_ modelBuilderResult: TinderGovModelBuilder.Result) {
+extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
+    func didReceive(_ modelBuilderResult: SwipeGovModelBuilder.Result) {
         model = modelBuilderResult.model
 
         switch modelBuilderResult.changeKind {
@@ -88,7 +88,7 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
 
 // MARK: - Private
 
-private extension TinderGovPresenter {
+private extension SwipeGovPresenter {
     func onReferendumVote(
         voteResult: VoteResult,
         id: ReferendumIdLocal
@@ -174,7 +174,6 @@ private extension TinderGovPresenter {
 
         wireframe.showVoteSetup(
             from: view,
-            referendum: referendumId,
             initData: initData
         )
     }

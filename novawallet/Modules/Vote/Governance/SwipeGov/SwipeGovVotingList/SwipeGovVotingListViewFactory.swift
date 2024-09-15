@@ -52,7 +52,8 @@ struct SwipeGovVotingListViewFactory {
             govMetadataLocalSubscriptionFactory: govMetadataLocalSubscriptionFactory,
             operationQueue: operationQueue
         )
-        let wireframe = SwipeGovVotingListWireframe()
+
+        let wireframe = SwipeGovVotingListWireframe(sharedState: sharedState)
 
         let localizationManager = LocalizationManager.shared
         let referendumStringFactory = ReferendumDisplayStringFactory()

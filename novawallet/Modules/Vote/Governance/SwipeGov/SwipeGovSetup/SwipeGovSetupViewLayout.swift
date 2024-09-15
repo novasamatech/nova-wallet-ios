@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class TinderGovSetupViewLayout: BaseReferendumVoteSetupViewLayout {
+final class SwipeGovSetupViewLayout: BaseReferendumVoteSetupViewLayout {
     let detailsLabel: UILabel = .create { view in
         view.apply(style: .regularSubhedlineSecondary)
         view.numberOfLines = 0

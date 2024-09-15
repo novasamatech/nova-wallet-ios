@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol TinderGovModelBuilderProtocol {
+protocol SwipeGovModelBuilderProtocol {
     func apply(_ referendumsState: ReferendumsState)
     func apply(
         votingsChanges: [DataProviderChange<VotingBasketItemLocal>],
@@ -9,7 +9,7 @@ protocol TinderGovModelBuilderProtocol {
     )
 }
 
-final class TinderGovModelBuilder {
+final class SwipeGovModelBuilder {
     var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
 
     private let sorting: ReferendumsSorting
@@ -34,9 +34,9 @@ final class TinderGovModelBuilder {
     }
 }
 
-// MARK: TinderGovModelBuilderProtocol
+// MARK: SwipeGovModelBuilderProtocol
 
-extension TinderGovModelBuilder: TinderGovModelBuilderProtocol {
+extension SwipeGovModelBuilder: SwipeGovModelBuilderProtocol {
     func apply(_ referendumsState: ReferendumsState) {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
@@ -77,7 +77,7 @@ extension TinderGovModelBuilder: TinderGovModelBuilderProtocol {
 
 // MARK: Private
 
-private extension TinderGovModelBuilder {
+private extension SwipeGovModelBuilder {
     func rebuild(
         with changes: Result.ReferendumsListChanges,
         changeKind: Result.ChangeKind
@@ -155,7 +155,7 @@ private extension TinderGovModelBuilder {
 
 // MARK: Model
 
-extension TinderGovModelBuilder {
+extension SwipeGovModelBuilder {
     struct Result {
         struct Model {
             let referendums: [ReferendumLocal]

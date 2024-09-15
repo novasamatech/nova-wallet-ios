@@ -30,4 +30,9 @@ protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
 
 protocol SwipeGovVotingListWireframeProtocol: AlertPresentable {
     func close(view: ControllerBackedProtocol?)
+    func showSetup(
+        from view: ControllerBackedProtocol?,
+        initData: ReferendumVotingInitData,
+        changing invalidItems: [VotingBasketItemLocal]
+    )
 }

@@ -21,13 +21,13 @@ extension ReferendumsPresenter {
             chain: chainModel,
             currentBlock: currentBlock
         )
-        let tinderGovSection = createTinderGovSection()
+        let swipeGovSection = createSwipeGovSection()
         let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
         let filteredReferendumsSections = filteredReferendumsSections(for: referendumsSections)
 
         let allSections = [
             activitySection,
-            tinderGovSection,
+            swipeGovSection,
             settingsSection
         ].compactMap { $0 } + filteredReferendumsSections
 

@@ -1,7 +1,7 @@
 import SoraUI
 import UIKit
 
-struct TinderGovGradientFactory {
+struct SwipeGovGradientFactory {
     func createCardGradient(for cardIndex: Int) -> GradientModel {
         let gradientArray = [
             gradient1,
@@ -18,7 +18,7 @@ struct TinderGovGradientFactory {
     }
 }
 
-private extension TinderGovGradientFactory {
+private extension SwipeGovGradientFactory {
     var gradient1: GradientModel {
         GradientModel(
             startPoint: .init(x: 1.0, y: 0),

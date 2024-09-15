@@ -9,7 +9,7 @@ final class ReferendumsPresenter {
     let interactor: ReferendumsInteractorInputProtocol
     let wireframe: ReferendumsWireframeProtocol
     let viewModelFactory: ReferendumsModelFactoryProtocol
-    let tinderGovViewModelFactory: TinderGovViewModelFactoryProtocol
+    let swipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol
     let activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
@@ -51,8 +51,8 @@ final class ReferendumsPresenter {
         selectedOption?.chain
     }
 
-    var supportsTinderGov: Bool? {
-        selectedOption?.supportsTinderGov()
+    var supportsSwipeGov: Bool? {
+        selectedOption?.supportsSwipeGov()
     }
 
     var governanceType: GovernanceType? {
@@ -68,7 +68,7 @@ final class ReferendumsPresenter {
         wireframe: ReferendumsWireframeProtocol,
         observableState: ReferendumsObservableState,
         viewModelFactory: ReferendumsModelFactoryProtocol,
-        tinderGovViewModelFactory: TinderGovViewModelFactoryProtocol,
+        swipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol,
         activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
@@ -80,7 +80,7 @@ final class ReferendumsPresenter {
         self.wireframe = wireframe
         self.observableState = observableState
         self.viewModelFactory = viewModelFactory
-        self.tinderGovViewModelFactory = tinderGovViewModelFactory
+        self.swipeGovViewModelFactory = swipeGovViewModelFactory
         self.activityViewModelFactory = activityViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
@@ -222,8 +222,8 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         }
     }
 
-    func selectTinderGov() {
-        wireframe.showTinderGov(from: view)
+    func selectSwipeGov() {
+        wireframe.showSwipeGov(from: view)
     }
 
     func showReferendumDetailsIfNeeded() {

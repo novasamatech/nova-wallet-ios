@@ -1730,14 +1730,14 @@
 "gov.vote.conviction.alert.message" = "Abstain votes can only be done with 0.1x conviction. Vote with 0.1x conviction?";
 "cloud.backup.password.confirm.title" = "Confirm backup password";
 "cloud.backup.password.confirm.details" = "Please enter the password you created on the previous screen";
-"common.tinder.gov" = "TinderGov";
+"common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%d referenda";
-"tinder.gov.banner.message" = "A new way to easily distribute your votes across the Referenda";
+"swipe.gov.banner.message" = "A new way to easily distribute your votes across the Referenda";
 "common.counter" = "%d of %d";
 "voting.list.widget.title" = "Voting list";
 "voting.list.widget.title.empty" = "No votings";
 "vote.card.requested" = "Requested:";
-"gov.vote.setup.details.tinder.gov" = "Voting will be set for future votes in TinderGov";
+"gov.vote.setup.details.swipe.gov" = "Voting will be set for future votes in SwipeGov";
 "gov.voting.power" = "Voting power";
 "gov.voting.power.set.success.message" = "Voting power set successfully!";
 "gov.voting.list.item.unavailable.alert.title" = "Some of the referenda are no longer available";

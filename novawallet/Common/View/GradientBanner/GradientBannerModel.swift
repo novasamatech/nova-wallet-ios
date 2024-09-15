@@ -6,7 +6,7 @@ struct GradientBannerModel {
 }
 
 extension GradientBannerModel {
-    static func tinderGovCell() -> GradientBannerModel {
+    static func swipeGovCell() -> GradientBannerModel {
         let color = UIColor(
             red: 59.0 / 255.0,
             green: 61.0 / 255.0,

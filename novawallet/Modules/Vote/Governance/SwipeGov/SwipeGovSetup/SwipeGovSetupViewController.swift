@@ -1,17 +1,17 @@
 import UIKit
 import SoraFoundation
 
-final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController {
-    typealias RootViewType = TinderGovSetupViewLayout
+final class SwipeGovSetupViewController: BaseReferendumVoteSetupViewController {
+    typealias RootViewType = SwipeGovSetupViewLayout
 
-    let presenter: TinderGovSetupPresenterProtocol
+    let presenter: SwipeGovSetupPresenterProtocol
 
     var rootView: RootViewType? {
         super.rootView as? RootViewType
     }
 
     init(
-        presenter: TinderGovSetupPresenterProtocol,
+        presenter: SwipeGovSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -25,7 +25,7 @@ final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController 
     }
 
     override func loadView() {
-        view = TinderGovSetupViewLayout()
+        view = SwipeGovSetupViewLayout()
     }
 
     override func setupHandlers() {
@@ -45,7 +45,7 @@ final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController 
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView?.detailsLabel.text = R.string.localizable.govVoteSetupDetailsTinderGov(
+        rootView?.detailsLabel.text = R.string.localizable.govVoteSetupDetailsSwipeGov(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -59,4 +59,4 @@ final class TinderGovSetupViewController: BaseReferendumVoteSetupViewController 
     }
 }
 
-extension TinderGovSetupViewController: TinderGovSetupViewProtocol {}
+extension SwipeGovSetupViewController: SwipeGovSetupViewProtocol {}

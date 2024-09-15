@@ -1,6 +1,6 @@
 import Foundation
 
-final class TinderGovWireframe {
+final class SwipeGovWireframe {
     let sharedState: GovernanceSharedState
     let metaAccount: MetaAccountModel
 
@@ -13,9 +13,9 @@ final class TinderGovWireframe {
     }
 }
 
-// MARK: TinderGovWireframeProtocol
+// MARK: SwipeGovWireframeProtocol
 
-extension TinderGovWireframe: TinderGovWireframeProtocol {
+extension SwipeGovWireframe: SwipeGovWireframeProtocol {
     func back(from view: ControllerBackedProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }
@@ -40,12 +40,10 @@ extension TinderGovWireframe: TinderGovWireframeProtocol {
 
     func showVoteSetup(
         from view: ControllerBackedProtocol?,
-        referendum: ReferendumIdLocal,
         initData: ReferendumVotingInitData
     ) {
-        guard let setupView = TinderGovSetupViewFactory.createView(
+        guard let setupView = SwipeGovSetupViewFactory.createView(
             for: sharedState,
-            referendum: referendum,
             initData: initData
         ) else {
             return

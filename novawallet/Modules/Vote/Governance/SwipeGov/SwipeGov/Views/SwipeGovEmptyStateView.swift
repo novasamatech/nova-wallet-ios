@@ -1,10 +1,10 @@
 import SoraUI
 import UIKit
 
-class TinderGovEmptyStateView: UIView {
+class SwipeGovEmptyStateView: UIView {
     let imageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
-        view.image = R.image.imageSiriTinderGov()
+        view.image = R.image.imageSiriSwipeGov()
     }
 
     let textLabel: UILabel = .create { view in
@@ -44,7 +44,7 @@ class TinderGovEmptyStateView: UIView {
         }
     }
 
-    func bind(with viewModel: TinderGovEmptyStateViewModel) {
+    func bind(with viewModel: SwipeGovEmptyStateViewModel) {
         switch viewModel {
         case let .votings(votingsModel):
             textLabel.text = votingsModel.text
@@ -57,7 +57,7 @@ class TinderGovEmptyStateView: UIView {
     }
 }
 
-enum TinderGovEmptyStateViewModel {
+enum SwipeGovEmptyStateViewModel {
     struct VotingsModel {
         let text: String
         let buttonText: String

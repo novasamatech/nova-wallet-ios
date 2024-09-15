@@ -34,18 +34,18 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showTinderGov(from view: ControllerBackedProtocol?) {
-        guard let tinderGovView = TinderGovViewFactory.createView(
+    func showSwipeGov(from view: ControllerBackedProtocol?) {
+        guard let swipeGovView = SwipeGovViewFactory.createView(
             metaAccount: metaAccount,
             sharedState: state
         ) else {
             return
         }
 
-        tinderGovView.controller.hidesBottomBarWhenPushed = true
+        swipeGovView.controller.hidesBottomBarWhenPushed = true
 
         view?.controller.navigationController?.pushViewController(
-            tinderGovView.controller,
+            swipeGovView.controller,
             animated: true
         )
     }

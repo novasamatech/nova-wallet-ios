@@ -3,7 +3,7 @@ import SubstrateSdk
 
 protocol VoteCardViewModelFactoryProtocol {
     func createCardsStackViewModel(
-        from model: TinderGovModelBuilder.Result.Model,
+        from model: SwipeGovModelBuilder.Result.Model,
         locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
         onLoadError: @escaping (VoteCardLoadErrorActions) -> Void,
@@ -12,7 +12,7 @@ protocol VoteCardViewModelFactoryProtocol {
 }
 
 struct VoteCardViewModelFactory {
-    private let cardGradientFactory = TinderGovGradientFactory()
+    private let cardGradientFactory = SwipeGovGradientFactory()
     private let summaryFetchOperationFactory: OpenGovSummaryOperationFactoryProtocol
     private let chain: ChainModel
     private let currencyManager: CurrencyManagerProtocol
@@ -45,7 +45,7 @@ struct VoteCardViewModelFactory {
 
 extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
     func createCardsStackViewModel(
-        from model: TinderGovModelBuilder.Result.Model,
+        from model: SwipeGovModelBuilder.Result.Model,
         locale: Locale,
         onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
         onLoadError: @escaping (VoteCardLoadErrorActions) -> Void,

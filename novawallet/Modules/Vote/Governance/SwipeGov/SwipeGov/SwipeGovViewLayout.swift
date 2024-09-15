@@ -2,9 +2,9 @@ import UIKit
 import SnapKit
 import SoraUI
 
-final class TinderGovViewLayout: UIView {
+final class SwipeGovViewLayout: UIView {
     let gradientBackgroundView: MultigradientView = .create { view in
-        let gradient = GradientModel.tinderGovBackgroundGradient
+        let gradient = GradientModel.swipeGovBackgroundGradient
 
         view.colors = gradient.colors
         view.locations = gradient.locations
@@ -46,7 +46,7 @@ final class TinderGovViewLayout: UIView {
         return button
     }()
 
-    let emptyStateView = TinderGovEmptyStateView()
+    let emptyStateView = SwipeGovEmptyStateView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,7 +62,7 @@ final class TinderGovViewLayout: UIView {
 
 // MARK: Setup
 
-private extension TinderGovViewLayout {
+private extension SwipeGovViewLayout {
     func setupLayout() {
         addSubview(gradientBackgroundView)
         gradientBackgroundView.snp.makeConstraints { make in
@@ -114,7 +114,7 @@ private extension TinderGovViewLayout {
 
 // MARK: Cards
 
-extension TinderGovViewLayout {
+extension SwipeGovViewLayout {
     /// Should be called after adding batch of cards, to inform top card that it's presented and became top
     /// `cardsStack.notifyTopView` is called automatically on top card in stack after dismissal animation
     func finishedAddingCards() {
@@ -122,7 +122,7 @@ extension TinderGovViewLayout {
     }
 }
 
-extension TinderGovViewLayout {
+extension SwipeGovViewLayout {
     enum Constants {
         static let cardsStackBottomInset: CGFloat = -54
         static let cardsStackTopInset: CGFloat = -20

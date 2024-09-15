@@ -1,7 +1,7 @@
 import Foundation
 
-final class TinderGovSetupWireframe: TinderGovSetupWireframeProtocol {
-    func showTinderGov(
+final class SwipeGovSetupWireframe: SwipeGovSetupWireframeProtocol {
+    func showSwipeGov(
         from view: ControllerBackedProtocol?,
         locale: Locale
     ) {
