@@ -51,6 +51,10 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     func selectVoting(for _: ReferendumIdLocal) {
         // TODO: Show referendum details
     }
+
+    func vote() {
+        // TODO: Show confirmation
+    }
 }
 
 // MARK: SwipeGovVotingListInteractorOutputProtocol
@@ -70,7 +74,12 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
             }
 
         votingListItems = votingListItems.applying(changes: votingBasketChanges)
-        updateView(with: deletes)
+
+        if votingListItems.isEmpty {
+            wireframe.close(view: view)
+        } else {
+            updateView(with: deletes)
+        }
     }
 
     func didReceive(_ assetBalance: AssetBalance?) {

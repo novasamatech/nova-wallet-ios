@@ -64,10 +64,6 @@ extension SwipeGovVotingListViewController: SwipeGovVotingListViewProtocol {
         let indexPath = IndexPath(row: rowIndex, section: 0)
         rootView.tableView.deleteRows(at: [indexPath], with: .left)
 
-        if viewModel.cellViewModels.isEmpty {
-            // TODO: Implement dismiss
-        }
-
         updateVoteButton()
     }
 }
@@ -220,5 +216,7 @@ private extension SwipeGovVotingListViewController {
         updateVoteButton()
     }
 
-    @objc func tapVoteButton() {}
+    @objc func tapVoteButton() {
+        presenter.vote()
+    }
 }

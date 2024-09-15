@@ -12,6 +12,7 @@ protocol SwipeGovVotingListPresenterProtocol: AnyObject {
     func setup()
     func removeItem(with referendumId: ReferendumIdLocal)
     func selectVoting(for referendumId: ReferendumIdLocal)
+    func vote()
 }
 
 protocol SwipeGovVotingListInteractorInputProtocol: AnyObject {
@@ -26,4 +27,6 @@ protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
     func didReceive(_ error: Error)
 }
 
-protocol SwipeGovVotingListWireframeProtocol: AnyObject {}
+protocol SwipeGovVotingListWireframeProtocol: AnyObject {
+    func close(view: ControllerBackedProtocol?)
+}
