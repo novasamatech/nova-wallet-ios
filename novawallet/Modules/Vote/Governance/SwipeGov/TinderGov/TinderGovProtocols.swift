@@ -11,6 +11,7 @@ protocol TinderGovPresenterProtocol: AnyObject {
     func setup()
     func actionBack()
     func actionSettings()
+    func actionVotingList()
 }
 
 protocol TinderGovInteractorInputProtocol: AnyObject {
@@ -28,10 +29,14 @@ protocol TinderGovInteractorOutputProtocol: AnyObject {
 }
 
 protocol TinderGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
-    func back(from view: ControllerBackedProtocol?)
+    func showVotingList(
+        from view: ControllerBackedProtocol?,
+        metaId: MetaAccountModel.Id
+    )
     func showVoteSetup(
         from view: ControllerBackedProtocol?,
         referendum: ReferendumIdLocal,
         initData: ReferendumVotingInitData
     )
+    func back(from view: ControllerBackedProtocol?)
 }

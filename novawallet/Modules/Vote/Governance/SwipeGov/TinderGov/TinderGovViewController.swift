@@ -77,6 +77,10 @@ final class TinderGovViewController: UIViewController, ViewHolder {
     @objc private func actionSettings() {
         presenter.actionSettings()
     }
+
+    @objc private func actionVotingList() {
+        presenter.actionVotingList()
+    }
 }
 
 // MARK: TinderGovViewProtocol
@@ -119,6 +123,13 @@ private extension TinderGovViewController {
     }
 
     func setupActions() {
+        rootView.votingListWidget.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(actionVotingList)
+            )
+        )
+
         rootView.nayButton.addTarget(
             self,
             action: #selector(actionVoteNay),

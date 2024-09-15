@@ -7,17 +7,17 @@ final class SwipeGovVotingListInteractor {
     let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
 
     private let chainId: ChainModel.Id
-    private let metaAccount: MetaAccountModel
+    private let metaId: MetaAccountModel.Id
 
     private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
 
     init(
         chainId: ChainModel.Id,
-        metaAccount: MetaAccountModel,
+        metaId: MetaAccountModel.Id,
         votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
     ) {
         self.chainId = chainId
-        self.metaAccount = metaAccount
+        self.metaId = metaId
         self.votingBasketSubscriptionFactory = votingBasketSubscriptionFactory
     }
 }
@@ -26,7 +26,7 @@ extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtoco
     func setup() {
         basketItemsProvider = subscribeToVotingBasketItemProvider(
             for: chainId,
-            metaId: metaAccount.metaId
+            metaId: metaId
         )
     }
 }

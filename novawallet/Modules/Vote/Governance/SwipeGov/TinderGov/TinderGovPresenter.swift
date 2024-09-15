@@ -43,6 +43,17 @@ extension TinderGovPresenter: TinderGovPresenterProtocol {
     func actionSettings() {
         showVotingPower()
     }
+
+    func actionVotingList() {
+        guard let metaId = votingPower?.metaId else {
+            return
+        }
+
+        wireframe.showVotingList(
+            from: view,
+            metaId: metaId
+        )
+    }
 }
 
 // MARK: TinderGovInteractorOutputProtocol
