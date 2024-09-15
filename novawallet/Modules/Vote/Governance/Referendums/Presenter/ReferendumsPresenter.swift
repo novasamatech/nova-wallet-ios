@@ -21,10 +21,9 @@ final class ReferendumsPresenter {
     private(set) var freeBalance: BigUInt?
     private(set) var selectedOption: GovernanceSelectedOption?
     private(set) var price: PriceData?
-    private(set) var referendums: [ReferendumLocal]?
+    private(set) var sortedReferendums: [ReferendumLocal]?
     private(set) var filteredReferendums: [ReferendumIdLocal: ReferendumLocal] = [:]
     private(set) var referendumsMetadata: ReferendumMetadataMapping?
-    private(set) var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private(set) var offchainVoting: GovernanceOffchainVotesLocal?
     private(set) var unlockSchedule: GovernanceUnlockSchedule?
     private(set) var blockNumber: BlockNumber?
@@ -91,8 +90,12 @@ final class ReferendumsPresenter {
     }
 
     private func filterReferendums() {
-        filteredReferendums = referendums?.filter {
-            filter.match($0, voting: voting, offchainVoting: offchainVoting)
+        filteredReferendums = sortedReferendums?.filter {
+            filter.match(
+                $0,
+                voting: observableState.voting,
+                offchainVoting: offchainVoting
+            )
         }.reduce(into: [ReferendumIdLocal: ReferendumLocal]()) {
             $0[$1.index] = $1
         } ?? [:]
@@ -100,32 +103,20 @@ final class ReferendumsPresenter {
     }
 
     private func refreshUnlockSchedule() {
-        guard let tracksVoting = voting?.value else {
+        guard let tracksVoting = observableState.voting?.value else {
             return
         }
 
         interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
     }
 
-    private func updateReferendumsState() {
-        guard let referendums else { return }
-
-        let referendumsState = ReferendumsState(
-            referendums: referendums.reduce(into: [:]) { $0[$1.index] = $1 },
-            accountVotes: voting?.value?.votes
-        )
-
-        observableState.state = .init(value: referendumsState)
-    }
-
     func clearState() {
         freeBalance = nil
         price = nil
-        referendums = nil
+        sortedReferendums = nil
         observableState.state = .init(value: ReferendumsState())
         filteredReferendums = [:]
         referendumsMetadata = nil
-        voting = nil
         offchainVoting = nil
         unlockSchedule = nil
         blockNumber = nil
@@ -189,7 +180,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func select(referendumIndex: UInt) {
-        guard let referendum = referendums?.first(where: { $0.index == referendumIndex }) else {
+        guard let referendum = sortedReferendums?.first(where: { $0.index == referendumIndex }) else {
             return
         }
 
@@ -197,7 +188,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func showDetails(referendum: ReferendumLocal) {
-        let accountVotes = voting?.value?.votes.votes[referendum.index]
+        let accountVotes = observableState.voting?.value?.votes.votes[referendum.index]
         let initData = ReferendumDetailsInitData(
             referendum: referendum,
             offchainVoting: offchainVoting?.fetchVotes(for: referendum.index),
@@ -212,7 +203,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
 
     func selectUnlocks() {
         let initData = GovernanceUnlockInitData(
-            votingResult: voting,
+            votingResult: observableState.voting,
             unlockSchedule: unlockSchedule,
             blockNumber: blockNumber,
             blockTime: blockTime
@@ -222,7 +213,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func selectDelegations() {
-        let delegatings = voting?.value?.votes.delegatings ?? [:]
+        let delegatings = observableState.voting?.value?.votes.delegatings ?? [:]
 
         if delegatings.isEmpty {
             wireframe.showAddDelegation(from: view)
@@ -237,7 +228,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
 
     func showReferendumDetailsIfNeeded() {
         guard let referendumsState = referendumsInitState,
-              let referendums = referendums,
+              let referendums = sortedReferendums,
               !referendums.isEmpty else {
             return
         }
@@ -266,9 +257,9 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
-        self.voting = voting
+        observableState.update(with: voting)
+
         filterReferendums()
-        updateReferendumsState()
 
         if let tracksVoting = voting.value {
             interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: voting.blockHash)
@@ -311,14 +302,14 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     }
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
-        self.referendums = referendums.sorted {
+        sortedReferendums = referendums.sorted {
             sorting.compare(
                 referendum1: $0,
                 referendum2: $1
             )
         }
 
-        updateReferendumsState()
+        observableState.update(with: .init(from: referendums))
         filterReferendums()
         updateTimeModels()
         refreshUnlockSchedule()

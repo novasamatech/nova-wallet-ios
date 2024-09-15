@@ -26,9 +26,8 @@ extension VotingPowerLocalStorageSubscriber {
         )
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<VotingPowerLocal>]) in
-            let assetBalance = changes.reduceToLastChange()
-
             self?.subscriptionHandler.handleVotingPowerChange(result: .success(changes))
+            return
         }
 
         let failureClosure = { [weak self] (error: Error) in
@@ -36,21 +35,12 @@ extension VotingPowerLocalStorageSubscriber {
             return
         }
 
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
-        )
-
         provider.removeObserver(self)
 
-        provider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
+        addStreamableProviderObserver(
+            for: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure
         )
 
         return provider

@@ -2,6 +2,12 @@ import UIKit
 import SoraFoundation
 
 final class ReferendumVoteSetupViewController: BaseReferendumVoteSetupViewController {
+    typealias RootViewType = ReferendumVoteSetupViewLayout
+
+    var rootView: RootViewType? {
+        super.rootView as? RootViewType
+    }
+
     let presenter: ReferendumVoteSetupPresenterProtocol
 
     private var referendumNumber: String?
@@ -20,26 +26,26 @@ final class ReferendumVoteSetupViewController: BaseReferendumVoteSetupViewContro
         self.localizationManager = localizationManager
     }
 
-    override func setupView() {
-        rootView.setupVoteButtonsLayout()
+    override func loadView() {
+        view = ReferendumVoteSetupViewLayout()
     }
 
     override func setupHandlers() {
         super.setupHandlers()
 
-        rootView.nayButton.addTarget(
+        rootView?.nayButton.addTarget(
             self,
             action: #selector(actionVoteNay),
             for: .touchUpInside
         )
 
-        rootView.ayeButton.addTarget(
+        rootView?.ayeButton.addTarget(
             self,
             action: #selector(actionVoteAye),
             for: .touchUpInside
         )
 
-        rootView.abstainButton.addTarget(
+        rootView?.abstainButton.addTarget(
             self,
             action: #selector(actionVoteAbstain),
             for: .touchUpInside
@@ -58,8 +64,8 @@ final class ReferendumVoteSetupViewController: BaseReferendumVoteSetupViewContro
 extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
     func didReceive(abstainAvailable: Bool) {
         abstainAvailable
-            ? rootView.showAbstain()
-            : rootView.hideAbstain()
+            ? rootView?.showAbstain()
+            : rootView?.hideAbstain()
     }
 
     func didReceive(referendumNumber: String) {

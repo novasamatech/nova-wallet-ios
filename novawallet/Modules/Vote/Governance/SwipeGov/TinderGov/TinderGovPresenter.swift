@@ -66,10 +66,6 @@ extension TinderGovPresenter: TinderGovInteractorOutputProtocol {
         self.votingPower = votingPower
     }
 
-    func didReceiveVotingPowerRequired() {
-        showVotingPower()
-    }
-
     func didReceive(_ error: any Error) {
         wireframe.present(
             error: error,
@@ -96,41 +92,14 @@ private extension TinderGovPresenter {
         )
     }
 
-    func onTopCardAppear(referendumId _: ReferendumIdLocal) {}
-
     func updateCardsStackView() {
         guard let model else { return }
 
-        let inserts = createCardViewModel(from: model.referendumsChanges.inserts)
-        let updates = createCardViewModel(from: model.referendumsChanges.updates)
-            .reduce(into: [:]) { $0[$1.id] = $1 }
-        let deletes = Set(model.referendumsChanges.deletes)
-
-        let stackChangeModel = CardsZStackChangeModel(
-            inserts: inserts,
-            updates: updates,
-            deletes: deletes
-        )
-
-        let viewModel = CardsZStackViewModel(
-            changeModel: stackChangeModel,
-            validationAction: { _ in
-                model.validationAction?() == true
-            }
-        )
-
-        view?.updateCardsStack(with: viewModel)
-    }
-
-    func createCardViewModel(from referendums: [ReferendumLocal]) -> [VoteCardViewModel] {
-        cardsViewModelFactory.createVoteCardViewModels(
-            from: referendums,
+        let viewModel = cardsViewModelFactory.createCardsStackViewModel(
+            from: model,
             locale: localizationManager.selectedLocale,
             onVote: { [weak self] voteResult, id in
                 self?.onReferendumVote(voteResult: voteResult, id: id)
-            },
-            onBecomeTop: { [weak self] id in
-                self?.onTopCardAppear(referendumId: id)
             },
             onLoadError: { [weak self] handlers in
                 guard let self else { return }
@@ -140,8 +109,25 @@ private extension TinderGovPresenter {
                     retryAction: { handlers.retry() },
                     skipAction: { self.view?.skipCard() }
                 )
+            },
+            validationClosure: { [weak self] _ in
+                guard let self else { return false }
+
+                return validateVotingAvailable()
             }
         )
+
+        view?.updateCardsStack(with: viewModel)
+    }
+
+    func validateVotingAvailable() -> Bool {
+        let votingAvailable = votingPower != nil
+
+        if !votingAvailable {
+            showVotingPower()
+        }
+
+        return votingAvailable
     }
 
     func updateVotingListView() {

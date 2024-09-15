@@ -8,13 +8,24 @@ struct TinderGovSetupViewFactory {
         referendum: ReferendumIdLocal,
         initData: ReferendumVotingInitData
     ) -> TinderGovSetupViewProtocol? {
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let storageFacade = SubstrateDataStorageFacade.shared
+
         guard
             let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(
+            let baseInteractor = createBaseInteractor(
                 for: state,
                 referendum: referendum,
-                currencyManager: currencyManager
-            ) else {
+                currencyManager: currencyManager,
+                operationQueue: operationQueue,
+                storageFacade: storageFacade
+            ),
+            let tinderGovSetupInteractor = createInteractor(
+                for: state,
+                storageFacade: storageFacade,
+                operationQueue: operationQueue
+            )
+        else {
             return nil
         }
 
@@ -28,11 +39,11 @@ struct TinderGovSetupViewFactory {
 
         guard
             let presenter = createPresenter(
-                from: interactor,
+                baseInteractor: baseInteractor,
+                tinderGovSetupInteractor: tinderGovSetupInteractor,
                 metaAccount: SelectedWalletSettings.shared.value,
                 wireframe: wireframe,
                 dataValidatingFactory: dataValidatingFactory,
-                referendum: referendum,
                 initData: initData,
                 state: state
             ) else {
@@ -46,18 +57,20 @@ struct TinderGovSetupViewFactory {
 
         presenter.view = view
         dataValidatingFactory.view = view
-        interactor.presenter = presenter
+
+        tinderGovSetupInteractor.presenter = presenter
+        baseInteractor.presenter = presenter
 
         return view
     }
 
     // swiftlint:disable:next function_parameter_count
     private static func createPresenter(
-        from interactor: TinderGovSetupInteractor,
+        baseInteractor: ReferendumVoteSetupInteractor,
+        tinderGovSetupInteractor: TinderGovSetupInteractor,
         metaAccount: MetaAccountModel,
         wireframe: TinderGovSetupWireframeProtocol,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
-        referendum: ReferendumIdLocal,
         initData: ReferendumVotingInitData,
         state: GovernanceSharedState
     ) -> TinderGovSetupPresenter? {
@@ -91,7 +104,6 @@ struct TinderGovSetupViewFactory {
         return TinderGovSetupPresenter(
             chain: chain,
             metaAccount: metaAccount,
-            referendumIndex: referendum,
             initData: initData,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
@@ -99,19 +111,49 @@ struct TinderGovSetupViewFactory {
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
-            interactor: interactor,
+            baseInteractor: baseInteractor,
+            interactor: tinderGovSetupInteractor,
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
     }
 
-    // swiftlint:disable function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
-        referendum: ReferendumIdLocal,
-        currencyManager: CurrencyManagerProtocol
+        storageFacade: StorageFacadeProtocol,
+        operationQueue: OperationQueue
     ) -> TinderGovSetupInteractor? {
+        guard let wallet: MetaAccountModel = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
+        let mapper = VotingPowerMapper()
+
+        let filter = NSPredicate.votingPower(
+            for: state.settings.value.chain.chainId,
+            metaId: wallet.metaId
+        )
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        return TinderGovSetupInteractor(
+            repository: AnyDataProviderRepository(repository),
+            operationQueue: operationQueue
+        )
+    }
+
+    // swiftlint:disable function_body_length
+    private static func createBaseInteractor(
+        for state: GovernanceSharedState,
+        referendum: ReferendumIdLocal,
+        currencyManager: CurrencyManagerProtocol,
+        operationQueue: OperationQueue,
+        storageFacade: StorageFacadeProtocol
+    ) -> ReferendumVoteSetupInteractor? {
         guard
             let option = state.settings.value,
             let wallet: MetaAccountModel = SelectedWalletSettings.shared.value
@@ -139,9 +181,6 @@ struct TinderGovSetupViewFactory {
             return nil
         }
 
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared
-
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
@@ -150,20 +189,7 @@ struct TinderGovSetupViewFactory {
             substrateStorageFacade: storageFacade
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
-        let mapper = VotingPowerMapper()
-
-        let filter = NSPredicate.votingPower(
-            for: option.chain.chainId,
-            metaId: wallet.metaId
-        )
-        let repository = storageFacade.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
-
-        return TinderGovSetupInteractor(
-            repository: AnyDataProviderRepository(repository),
+        return ReferendumVoteSetupInteractor(
             referendumIndex: referendum,
             selectedAccount: selectedAccount,
             chain: chain,

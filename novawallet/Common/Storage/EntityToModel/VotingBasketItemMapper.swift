@@ -20,7 +20,7 @@ extension VotingBasketItemMapper: CoreDataMapperProtocol {
             metaId: entity.metaId!,
             amount: amount,
             voteType: VotingBasketItemLocal.VoteType(rawValue: entity.voteType!)!,
-            conviction: ConvictionLocal(rawType: entity.conviction!)
+            conviction: VotingBasketConvictionLocal(rawType: entity.conviction!)
         )
     }
 

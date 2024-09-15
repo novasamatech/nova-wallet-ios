@@ -5,7 +5,7 @@ import BigInt
 struct VotingPowerLocal {
     let chainId: ChainModel.Id
     let metaId: MetaAccountModel.Id
-    let conviction: ConvictionLocal
+    let conviction: VotingBasketConvictionLocal
     let amount: BigUInt
 
     var votingAmount: BigUInt {

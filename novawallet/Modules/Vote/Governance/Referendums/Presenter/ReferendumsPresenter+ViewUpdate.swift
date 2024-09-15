@@ -7,14 +7,14 @@ extension ReferendumsPresenter {
         }
         guard let currentBlock = blockNumber,
               let blockTime = blockTime,
-              let referendums = referendums,
+              let referendums = sortedReferendums,
               let chainModel = chain else {
             return
         }
 
         let referendumsSections = creaateReferendumsSections(
             for: referendums,
-            accountVotes: voting?.value?.votes,
+            accountVotes: observableState.voting?.value?.votes,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime)
         )
         let activitySection = createActivitySection(
@@ -82,7 +82,7 @@ extension ReferendumsPresenter {
         guard let view = view else {
             return
         }
-        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = referendums else {
+        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = sortedReferendums else {
             return
         }
 
