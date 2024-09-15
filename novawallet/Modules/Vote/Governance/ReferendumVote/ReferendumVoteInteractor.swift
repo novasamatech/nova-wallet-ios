@@ -228,7 +228,7 @@ extension ReferendumVoteInteractor: ReferendumVoteInteractorInputProtocol {
 
     func refreshLockDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
-        newVote: ReferendumNewVote?,
+        newVote: ReferendumNewVote,
         blockHash: Data?
     ) {
         clear(cancellable: &lockDiffCancellable)

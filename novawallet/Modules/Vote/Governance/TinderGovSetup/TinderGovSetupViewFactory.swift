@@ -5,7 +5,7 @@ import Operation_iOS
 struct TinderGovSetupViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        referendum: ReferendumIdLocal,
+        referendum _: ReferendumIdLocal,
         initData: ReferendumVotingInitData
     ) -> TinderGovSetupViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -13,15 +13,9 @@ struct TinderGovSetupViewFactory {
 
         guard
             let currencyManager = CurrencyManager.shared,
-            let baseInteractor = createBaseInteractor(
+            let interactor = createInteractor(
                 for: state,
-                referendum: referendum,
                 currencyManager: currencyManager,
-                operationQueue: operationQueue,
-                storageFacade: storageFacade
-            ),
-            let tinderGovSetupInteractor = createInteractor(
-                for: state,
                 storageFacade: storageFacade,
                 operationQueue: operationQueue
             )
@@ -39,8 +33,7 @@ struct TinderGovSetupViewFactory {
 
         guard
             let presenter = createPresenter(
-                baseInteractor: baseInteractor,
-                tinderGovSetupInteractor: tinderGovSetupInteractor,
+                interactor: interactor,
                 metaAccount: SelectedWalletSettings.shared.value,
                 wireframe: wireframe,
                 dataValidatingFactory: dataValidatingFactory,
@@ -58,16 +51,14 @@ struct TinderGovSetupViewFactory {
         presenter.view = view
         dataValidatingFactory.view = view
 
-        tinderGovSetupInteractor.presenter = presenter
-        baseInteractor.presenter = presenter
+        interactor.presenter = presenter
 
         return view
     }
 
     // swiftlint:disable:next function_parameter_count
     private static func createPresenter(
-        baseInteractor: ReferendumVoteSetupInteractor,
-        tinderGovSetupInteractor: TinderGovSetupInteractor,
+        interactor: BaseTinderGovSetupInteractor,
         metaAccount: MetaAccountModel,
         wireframe: TinderGovSetupWireframeProtocol,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
@@ -107,12 +98,10 @@ struct TinderGovSetupViewFactory {
             initData: initData,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            referendumFormatter: NumberFormatter.index.localizableResource(),
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
-            baseInteractor: baseInteractor,
-            interactor: tinderGovSetupInteractor,
+            interactor: interactor,
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
@@ -121,13 +110,52 @@ struct TinderGovSetupViewFactory {
 
     private static func createInteractor(
         for state: GovernanceSharedState,
+        currencyManager: CurrencyManagerProtocol,
         storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
-    ) -> TinderGovSetupInteractor? {
-        guard let wallet: MetaAccountModel = SelectedWalletSettings.shared.value else {
+    ) -> BaseTinderGovSetupInteractor? {
+        guard
+            let option = state.settings.value,
+            let wallet: MetaAccountModel = SelectedWalletSettings.shared.value,
+            let selectedAccount = wallet.fetchMetaChainAccount(for: option.chain.accountRequest()),
+            let lockStateFactory = state.locksOperationFactory,
+            let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory(),
+            let connection = state.chainRegistry.getConnection(for: option.chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: option.chain.chainId)
+        else {
             return nil
         }
 
+        let votingPowerRepository = createVotingPowerRepository(
+            for: state,
+            wallet: wallet,
+            storageFacade: storageFacade
+        )
+
+        return TinderGovSetupInteractor(
+            repository: votingPowerRepository,
+            selectedAccount: selectedAccount,
+            observableState: state.observableState,
+            chain: option.chain,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            currencyManager: currencyManager,
+            lockStateFactory: lockStateFactory,
+            operationQueue: operationQueue
+        )
+    }
+
+    private static func createVotingPowerRepository(
+        for state: GovernanceSharedState,
+        wallet: MetaAccountModel,
+        storageFacade: StorageFacadeProtocol
+    ) -> AnyDataProviderRepository<VotingPowerLocal> {
         let mapper = VotingPowerMapper()
 
         let filter = NSPredicate.votingPower(
@@ -140,73 +168,6 @@ struct TinderGovSetupViewFactory {
             mapper: AnyCoreDataMapper(mapper)
         )
 
-        return TinderGovSetupInteractor(
-            repository: AnyDataProviderRepository(repository),
-            operationQueue: operationQueue
-        )
-    }
-
-    // swiftlint:disable function_body_length
-    private static func createBaseInteractor(
-        for state: GovernanceSharedState,
-        referendum: ReferendumIdLocal,
-        currencyManager: CurrencyManagerProtocol,
-        operationQueue: OperationQueue,
-        storageFacade: StorageFacadeProtocol
-    ) -> ReferendumVoteSetupInteractor? {
-        guard
-            let option = state.settings.value,
-            let wallet: MetaAccountModel = SelectedWalletSettings.shared.value
-        else {
-            return nil
-        }
-
-        let chain = option.chain
-
-        guard
-            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
-            let subscriptionFactory = state.subscriptionFactory,
-            let lockStateFactory = state.locksOperationFactory,
-            let blockTimeService = state.blockTimeService,
-            let blockTimeFactory = state.createBlockTimeOperationFactory()
-        else {
-            return nil
-        }
-
-        let extrinsicFactory = state.createExtrinsicFactory(for: option)
-
-        guard
-            let connection = state.chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return nil
-        }
-
-        let extrinsicService = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            operationQueue: operationQueue,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: storageFacade
-        ).createService(account: selectedAccount.chainAccount, chain: chain)
-
-        return ReferendumVoteSetupInteractor(
-            referendumIndex: referendum,
-            selectedAccount: selectedAccount,
-            chain: chain,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            referendumsSubscriptionFactory: subscriptionFactory,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            blockTimeService: blockTimeService,
-            blockTimeFactory: blockTimeFactory,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            currencyManager: currencyManager,
-            extrinsicFactory: extrinsicFactory,
-            extrinsicService: extrinsicService,
-            feeProxy: ExtrinsicFeeProxy(),
-            lockStateFactory: lockStateFactory,
-            operationQueue: operationQueue
-        )
+        return AnyDataProviderRepository(repository)
     }
 }
