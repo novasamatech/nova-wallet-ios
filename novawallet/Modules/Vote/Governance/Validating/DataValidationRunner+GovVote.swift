@@ -122,7 +122,7 @@ extension DataValidationRunner {
         let runner = DataValidationRunner(validators: [
             factory.enoughTokensForVoting(
                 params.assetBalance,
-                votingAmount: params.votePower?.votingAmount,
+                votingAmount: params.votePower?.amount,
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             )
