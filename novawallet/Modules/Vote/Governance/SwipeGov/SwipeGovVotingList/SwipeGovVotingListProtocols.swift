@@ -1,3 +1,5 @@
+import Operation_iOS
+
 protocol SwipeGovVotingListViewProtocol: ControllerBackedProtocol {
     func didReceive(_ viewModel: SwipeGovVotingListViewModel)
     func didChangeViewModel(
@@ -17,7 +19,9 @@ protocol SwipeGovVotingListInteractorInputProtocol: AnyObject {
 }
 
 protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
+    func didReceive(_ referendumMetadataChanges: [DataProviderChange<ReferendumMetadataLocal>])
     func didReceive(_ votingBasketItems: [VotingBasketItemLocal])
+    func didReceive(_ assetBalance: AssetBalance?)
     func didReceive(_ error: Error)
 }
 

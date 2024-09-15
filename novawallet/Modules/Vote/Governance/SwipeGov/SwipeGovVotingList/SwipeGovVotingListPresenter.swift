@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import Operation_iOS
 
 final class SwipeGovVotingListPresenter {
     weak var view: SwipeGovVotingListViewProtocol?
@@ -12,6 +13,8 @@ final class SwipeGovVotingListPresenter {
     private let viewModelFactory: SwipeGovVotingListViewModelFactory
 
     private var votingListItems: [VotingBasketItemLocal] = []
+    private var referendumsMetadata: [ReferendumMetadataLocal] = []
+    private var balance: AssetBalance?
 
     init(
         interactor: SwipeGovVotingListInteractorInputProtocol,
@@ -47,9 +50,17 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
 // MARK: SwipeGovVotingListInteractorOutputProtocol
 
 extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtocol {
+    func didReceive(_ referendumMetadataChanges: [DataProviderChange<ReferendumMetadataLocal>]) {
+        referendumsMetadata = referendumsMetadata.applying(changes: referendumMetadataChanges)
+    }
+
     func didReceive(_ votingBasketItems: [VotingBasketItemLocal]) {
         votingListItems = votingBasketItems
         updateView()
+    }
+
+    func didReceive(_ assetBalance: AssetBalance?) {
+        balance = assetBalance
     }
 
     func didReceive(_ error: Error) {

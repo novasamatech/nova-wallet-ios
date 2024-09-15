@@ -25,11 +25,15 @@ struct SwipeGovVotingListViewFactory {
             logger: logger
         )
 
+        let govMetadataLocalSubscriptionFactory = sharedState.govMetadataLocalSubscriptionFactory
+
         let interactor = SwipeGovVotingListInteractor(
             chain: chain,
             metaAccount: metaAccount,
+            selectedGovOption: sharedState.settings.value,
             votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            govMetadataLocalSubscriptionFactory: govMetadataLocalSubscriptionFactory
         )
         let wireframe = SwipeGovVotingListWireframe()
 

@@ -6,23 +6,31 @@ final class SwipeGovVotingListInteractor {
 
     let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
 
     private let chain: ChainModel
     private let metaAccount: MetaAccountModel
 
+    private let selectedGovOption: GovernanceSelectedOption
+
     private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
+    private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
     init(
         chain: ChainModel,
         metaAccount: MetaAccountModel,
+        selectedGovOption: GovernanceSelectedOption,
         votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
     ) {
         self.chain = chain
         self.metaAccount = metaAccount
+        self.selectedGovOption = selectedGovOption
         self.votingBasketSubscriptionFactory = votingBasketSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
     }
 }
 
@@ -30,23 +38,7 @@ final class SwipeGovVotingListInteractor {
 
 extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtocol {
     func setup() {
-        guard
-            let accountId = metaAccount.fetch(for: chain.accountRequest())?.accountId,
-            let assetId = chain.utilityAsset()?.assetId
-        else {
-            return
-        }
-
-        subscribeAssetBalance(
-            for: accountId,
-            chainId: chain.chainId,
-            assetId: assetId
-        )
-
-        subscribeVotingBasketItems(
-            for: chain.chainId,
-            metaId: metaAccount.metaId
-        )
+        subscribeToLocalStorages()
     }
 }
 
@@ -72,13 +64,60 @@ extension SwipeGovVotingListInteractor: WalletLocalStorageSubscriber, WalletLoca
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        print(result)
+        switch result {
+        case let .success(balance):
+            presenter?.didReceive(balance)
+        case let .failure(error):
+            presenter?.didReceive(error)
+        }
+    }
+}
+
+// MARK: GovMetadataLocalStorageSubscriber
+
+extension SwipeGovVotingListInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
+    func handleGovernanceMetadataPreview(
+        result: Result<[DataProviderChange<ReferendumMetadataLocal>], any Error>,
+        option: GovernanceSelectedOption
+    ) {
+        guard selectedGovOption == option else {
+            return
+        }
+
+        switch result {
+        case let .success(changes):
+            presenter?.didReceive(changes)
+        case let .failure(error):
+            presenter?.didReceive(error)
+        }
     }
 }
 
 // MARK: Private
 
 private extension SwipeGovVotingListInteractor {
+    func subscribeToLocalStorages() {
+        guard
+            let accountId = metaAccount.fetch(for: chain.accountRequest())?.accountId,
+            let assetId = chain.utilityAsset()?.assetId
+        else {
+            return
+        }
+
+        subscribeAssetBalance(
+            for: accountId,
+            chainId: chain.chainId,
+            assetId: assetId
+        )
+
+        subscribeVotingBasketItems(
+            for: chain.chainId,
+            metaId: metaAccount.metaId
+        )
+
+        metadataProvider = subscribeGovernanceMetadata(for: selectedGovOption)
+    }
+
     func subscribeAssetBalance(
         for accountId: AccountId,
         chainId: ChainModel.Id,
