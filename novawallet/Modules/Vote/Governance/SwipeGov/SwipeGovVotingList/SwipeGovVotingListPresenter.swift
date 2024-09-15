@@ -52,6 +52,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
 extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtocol {
     func didReceive(_ referendumMetadataChanges: [DataProviderChange<ReferendumMetadataLocal>]) {
         referendumsMetadata = referendumsMetadata.applying(changes: referendumMetadataChanges)
+        updateView()
     }
 
     func didReceive(_ votingBasketItems: [VotingBasketItemLocal]) {
@@ -72,8 +73,16 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
 
 private extension SwipeGovVotingListPresenter {
     func updateView() {
+        guard
+            !referendumsMetadata.isEmpty,
+            !votingListItems.isEmpty
+        else {
+            return
+        }
+
         let viewModel = viewModelFactory.createListViewModel(
             using: votingListItems,
+            metadataItems: referendumsMetadata,
             chain: chain,
             locale: localizationManager.selectedLocale
         )
