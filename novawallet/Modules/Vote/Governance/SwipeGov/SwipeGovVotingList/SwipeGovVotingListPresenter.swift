@@ -86,6 +86,23 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
         balance = assetBalance
     }
 
+    func didReceiveUnavailableItems() {
+        let languages = localizationManager.selectedLocale.rLanguages
+
+        wireframe.present(
+            message: R.string.localizable.govVotingListItemUnavailableAlertMessage(
+                preferredLanguages: languages
+            ),
+            title: R.string.localizable.govVotingListItemUnavailableAlertTitle(
+                preferredLanguages: languages
+            ),
+            closeAction: R.string.localizable.commonOk(
+                preferredLanguages: languages
+            ),
+            from: view
+        )
+    }
+
     func didReceive(_ error: Error) {
         print(error)
     }

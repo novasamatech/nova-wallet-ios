@@ -42,6 +42,7 @@ struct SwipeGovVotingListViewFactory {
         )
 
         let interactor = SwipeGovVotingListInteractor(
+            observableState: sharedState.observableState,
             chain: chain,
             metaAccount: metaAccount,
             repository: AnyDataProviderRepository(repository),

@@ -24,9 +24,10 @@ protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
     func didReceive(_ referendumMetadataChanges: [DataProviderChange<ReferendumMetadataLocal>])
     func didReceive(_ votingBasketChanges: [DataProviderChange<VotingBasketItemLocal>])
     func didReceive(_ assetBalance: AssetBalance?)
+    func didReceiveUnavailableItems()
     func didReceive(_ error: Error)
 }
 
-protocol SwipeGovVotingListWireframeProtocol: AnyObject {
+protocol SwipeGovVotingListWireframeProtocol: AlertPresentable {
     func close(view: ControllerBackedProtocol?)
 }

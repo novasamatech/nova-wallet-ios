@@ -8,6 +8,8 @@ final class SwipeGovVotingListInteractor {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
 
+    private let observableState: ReferendumsObservableState
+
     private let chain: ChainModel
     private let metaAccount: MetaAccountModel
 
@@ -19,9 +21,12 @@ final class SwipeGovVotingListInteractor {
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
+    private var currentVotingItems: [VotingBasketItemLocal] = []
+
     private let operationQueue: OperationQueue
 
     init(
+        observableState: ReferendumsObservableState,
         chain: ChainModel,
         metaAccount: MetaAccountModel,
         repository: AnyDataProviderRepository<VotingBasketItemLocal>,
@@ -31,6 +36,7 @@ final class SwipeGovVotingListInteractor {
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
+        self.observableState = observableState
         self.chain = chain
         self.metaAccount = metaAccount
         self.repository = repository
@@ -47,19 +53,17 @@ final class SwipeGovVotingListInteractor {
 extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtocol {
     func setup() {
         subscribeToLocalStorages()
+
+        observableState.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] _, new in
+            self?.onReceiveObservableState(new.value)
+        }
     }
 
     func removeItem(with identifier: String) {
-        let deleteOperation = repository.saveOperation(
-            { [] },
-            { [identifier] }
-        )
-
-        execute(
-            operation: deleteOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { _ in }
+        deleteItem(with: identifier)
     }
 }
 
@@ -69,6 +73,7 @@ extension SwipeGovVotingListInteractor: VotingBasketLocalStorageSubscriber, Voti
     func handleVotingBasketItems(result: Result<[DataProviderChange<VotingBasketItemLocal>], any Error>) {
         switch result {
         case let .success(votingsChanges):
+            currentVotingItems = currentVotingItems.applying(changes: votingsChanges)
             presenter?.didReceive(votingsChanges)
         case let .failure(error):
             presenter?.didReceive(error)
@@ -117,6 +122,19 @@ extension SwipeGovVotingListInteractor: GovMetadataLocalStorageSubscriber, GovMe
 // MARK: Private
 
 private extension SwipeGovVotingListInteractor {
+    func deleteItem(with identifier: String) {
+        let deleteOperation = repository.saveOperation(
+            { [] },
+            { [identifier] }
+        )
+
+        execute(
+            operation: deleteOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { _ in }
+    }
+
     func subscribeToLocalStorages() {
         guard
             let accountId = metaAccount.fetch(for: chain.accountRequest())?.accountId,
@@ -159,5 +177,24 @@ private extension SwipeGovVotingListInteractor {
             for: chainId,
             metaId: metaId
         )
+    }
+
+    func onReceiveObservableState(_ state: ReferendumsState) {
+        let filteredReferendums = ReferendumFilter.VoteAvailable(
+            referendums: state.referendums,
+            accountVotes: state.voting?.value?.votes
+        ).callAsFunction()
+
+        let unavailableItems = currentVotingItems.filter { item in
+            filteredReferendums[item.referendumId] == nil
+        }
+
+        guard !unavailableItems.isEmpty else { return }
+
+        unavailableItems.forEach { item in
+            deleteItem(with: item.identifier)
+        }
+
+        presenter?.didReceiveUnavailableItems()
     }
 }

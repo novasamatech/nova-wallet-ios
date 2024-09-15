@@ -1740,3 +1740,5 @@
 "gov.vote.setup.details.tinder.gov" = "Voting will be set for future votes in TinderGov";
 "gov.voting.power" = "Voting power";
 "gov.voting.power.set.success.message" = "Voting power set successfully!";
+"gov.voting.list.item.unavailable.alert.title" = "Some of the referenda are no longer available";
+"gov.voting.list.item.unavailable.alert.message" = "They have been excluded from this list";
