@@ -7,7 +7,7 @@ protocol ReferendumVoteInteractorInputProtocol: AnyObject {
     func estimateFee(for vote: ReferendumVoteAction)
     func refreshLockDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
-        newVote: ReferendumNewVote?,
+        newVote: ReferendumNewVote,
         blockHash: Data?
     )
     func refreshBlockTime()
