@@ -4,22 +4,32 @@ import SoraFoundation
 struct SwipeGovVotingListViewFactory {
     static func createView(
         with sharedState: GovernanceSharedState,
-        metaId: MetaAccountModel.Id
+        metaAccount: MetaAccountModel
     ) -> SwipeGovVotingListViewProtocol? {
         let chain = sharedState.settings.value.chain
         let substrateStorage = SubstrateDataStorageFacade.shared
+        let operationManager = OperationManagerFacade.sharedManager
+        let logger = Logger.shared
 
         let votingBasketSubscriptionFactory = VotingBasketLocalSubscriptionFactory(
             chainRegistry: sharedState.chainRegistry,
             storageFacade: substrateStorage,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: Logger.shared
+            operationManager: operationManager,
+            logger: logger
+        )
+
+        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory(
+            chainRegistry: sharedState.chainRegistry,
+            storageFacade: substrateStorage,
+            operationManager: operationManager,
+            logger: logger
         )
 
         let interactor = SwipeGovVotingListInteractor(
             chain: chain,
-            metaId: metaId,
-            votingBasketSubscriptionFactory: votingBasketSubscriptionFactory
+            metaAccount: metaAccount,
+            votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory
         )
         let wireframe = SwipeGovVotingListWireframe()
 

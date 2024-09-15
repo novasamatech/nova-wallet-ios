@@ -2,9 +2,14 @@ import Foundation
 
 final class TinderGovWireframe {
     let sharedState: GovernanceSharedState
+    let metaAccount: MetaAccountModel
 
-    init(sharedState: GovernanceSharedState) {
+    init(
+        sharedState: GovernanceSharedState,
+        metaAccount: MetaAccountModel
+    ) {
         self.sharedState = sharedState
+        self.metaAccount = metaAccount
     }
 }
 
@@ -17,11 +22,11 @@ extension TinderGovWireframe: TinderGovWireframeProtocol {
 
     func showVotingList(
         from view: ControllerBackedProtocol?,
-        metaId: MetaAccountModel.Id
+        metaId _: MetaAccountModel.Id
     ) {
         guard let votingListView = SwipeGovVotingListViewFactory.createView(
             with: sharedState,
-            metaId: metaId
+            metaAccount: metaAccount
         ) else {
             return
         }

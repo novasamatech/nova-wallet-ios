@@ -5,28 +5,47 @@ final class SwipeGovVotingListInteractor {
     weak var presenter: SwipeGovVotingListInteractorOutputProtocol?
 
     let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
 
     private let chain: ChainModel
-    private let metaId: MetaAccountModel.Id
+    private let metaAccount: MetaAccountModel
 
     private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
+    private var assetBalanceProvider: StreamableProvider<AssetBalance>?
 
     init(
         chain: ChainModel,
-        metaId: MetaAccountModel.Id,
-        votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
+        metaAccount: MetaAccountModel,
+        votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     ) {
         self.chain = chain
-        self.metaId = metaId
+        self.metaAccount = metaAccount
         self.votingBasketSubscriptionFactory = votingBasketSubscriptionFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
     }
 }
 
+// MARK: SwipeGovVotingListInteractorInputProtocol
+
 extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtocol {
     func setup() {
-        basketItemsProvider = subscribeToVotingBasketItemProvider(
+        guard
+            let accountId = metaAccount.fetch(for: chain.accountRequest())?.accountId,
+            let assetId = chain.utilityAsset()?.assetId
+        else {
+            return
+        }
+
+        subscribeAssetBalance(
+            for: accountId,
+            chainId: chain.chainId,
+            assetId: assetId
+        )
+
+        subscribeVotingBasketItems(
             for: chain.chainId,
-            metaId: metaId
+            metaId: metaAccount.metaId
         )
     }
 }
@@ -41,5 +60,44 @@ extension SwipeGovVotingListInteractor: VotingBasketLocalStorageSubscriber, Voti
         case let .failure(error):
             presenter?.didReceive(error)
         }
+    }
+}
+
+// MARK: WalletLocalStorageSubscriber
+
+extension SwipeGovVotingListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAssetBalance(
+        result: Result<AssetBalance?, any Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
+        print(result)
+    }
+}
+
+// MARK: Private
+
+private extension SwipeGovVotingListInteractor {
+    func subscribeAssetBalance(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) {
+        assetBalanceProvider = subscribeToAssetBalanceProvider(
+            for: accountId,
+            chainId: chainId,
+            assetId: assetId
+        )
+    }
+
+    func subscribeVotingBasketItems(
+        for chainId: ChainModel.Id,
+        metaId: MetaAccountModel.Id
+    ) {
+        basketItemsProvider = subscribeToVotingBasketItemProvider(
+            for: chainId,
+            metaId: metaId
+        )
     }
 }

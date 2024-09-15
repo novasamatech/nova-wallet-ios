@@ -32,7 +32,10 @@ struct TinderGovViewFactory {
             mapper: AnyCoreDataMapper(mapper)
         )
 
-        let wireframe = TinderGovWireframe(sharedState: sharedState)
+        let wireframe = TinderGovWireframe(
+            sharedState: sharedState,
+            metaAccount: metaAccount
+        )
 
         let votingBasketSubscriptionFactory = VotingBasketLocalSubscriptionFactory(
             chainRegistry: sharedState.chainRegistry,
