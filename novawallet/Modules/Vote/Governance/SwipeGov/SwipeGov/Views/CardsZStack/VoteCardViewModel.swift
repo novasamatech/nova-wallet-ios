@@ -108,6 +108,8 @@ final class VoteCardViewModel {
     }
 }
 
+// MARK: Private
+
 private extension VoteCardViewModel {
     func loadContent() {
         loadSummary()

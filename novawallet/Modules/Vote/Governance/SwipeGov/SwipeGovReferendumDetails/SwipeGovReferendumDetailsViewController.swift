@@ -7,6 +7,13 @@ final class SwipeGovReferendumDetailsViewController: UIViewController, ViewHolde
     let presenter: SwipeGovReferendumDetailsPresenterProtocol
     let localizationManager: LocalizationManagerProtocol
 
+    let timeView: IconDetailsView = .create {
+        $0.mode = .detailsIcon
+        $0.detailsLabel.numberOfLines = 1
+        $0.spacing = 5
+        $0.apply(style: .timeView)
+    }
+
     init(
         presenter: SwipeGovReferendumDetailsPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -66,7 +73,17 @@ extension SwipeGovReferendumDetailsViewController: SwipeGovReferendumDetailsView
     }
 
     func didReceive(activeTimeViewModel: ReferendumInfoView.Time?) {
-        print(activeTimeViewModel)
+        guard let activeTimeViewModel else {
+            return
+        }
+
+        timeView.bind(viewModel: activeTimeViewModel.titleIcon)
+        timeView.apply(style: activeTimeViewModel.isUrgent ? .activeTimeView : .timeView)
+
+        if timeView.superview == nil {
+            let barButtonItem: UIBarButtonItem? = .init(customView: timeView)
+            navigationItem.setRightBarButton(barButtonItem, animated: true)
+        }
     }
 }
 

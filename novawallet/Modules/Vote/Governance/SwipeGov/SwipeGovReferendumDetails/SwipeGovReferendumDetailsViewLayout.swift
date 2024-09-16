@@ -113,6 +113,7 @@ extension SwipeGovReferendumDetailsViewLayout {
             view: trackTagsView,
             after: titleLabel
         )
+        containerView.stackView.setCustomSpacing(8.0, after: trackTagsView)
 
         trackTagsView.bind(viewModel: trackTagsModel)
     }
