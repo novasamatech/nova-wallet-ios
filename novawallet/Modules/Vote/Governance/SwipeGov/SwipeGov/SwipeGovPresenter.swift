@@ -106,27 +106,29 @@ private extension SwipeGovPresenter {
     func updateCardsStackView() {
         guard let model else { return }
 
+        let cardActions = VoteCardViewModel.Actions(
+            onAction: { [weak self] referendumId in
+                self?.showDetails(for: referendumId)
+            },
+            onVote: { [weak self] voteResult, id in
+                self?.onReferendumVote(voteResult: voteResult, id: id)
+            },
+            onBecomeTop: { _ in },
+            onLoadError: { [weak self] handlers in
+                guard let self else { return }
+                wireframe.presentRequestStatus(
+                    on: view,
+                    locale: localizationManager.selectedLocale,
+                    retryAction: { handlers.retry() },
+                    skipAction: { self.view?.skipCard() }
+                )
+            }
+        )
+        
         let viewModel = cardsViewModelFactory.createCardsStackViewModel(
             from: model,
             locale: localizationManager.selectedLocale,
-            actions: .init(
-                onAction: { [weak self] referendumId in
-                    self?.showDetails(for: referendumId)
-                },
-                onVote: { [weak self] voteResult, id in
-                    self?.onReferendumVote(voteResult: voteResult, id: id)
-                },
-                onBecomeTop: { _ in },
-                onLoadError: { [weak self] handlers in
-                    guard let self else { return }
-                    wireframe.presentRequestStatus(
-                        on: view,
-                        locale: localizationManager.selectedLocale,
-                        retryAction: { handlers.retry() },
-                        skipAction: { self.view?.skipCard() }
-                    )
-                }
-            ),
+            actions: cardActions,
             validationClosure: { [weak self] _ in
                 guard let self else { return false }
 
