@@ -59,7 +59,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
         guard let balance else {
             return
         }
-        
+
         validateBalanceSufficient {
             // TODO: Show confirmation
         }
@@ -95,7 +95,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
 
     func didReceive(_ assetBalance: AssetBalance?) {
         balance = assetBalance
-        
+
         validateBalanceSufficient()
     }
 
@@ -147,14 +147,14 @@ private extension SwipeGovVotingListPresenter {
             view?.didReceive(viewModel)
         }
     }
-    
+
     func validateBalanceSufficient(_ closure: (() -> Void)? = nil) {
         guard let balance else {
             return
         }
-        
+
         let invalidItems = lookForInvalidItems(in: votingListItems, for: balance)
-        
+
         if !invalidItems.isEmpty, let max = invalidItems.max(by: { $0.amount < $1.amount }) {
             let votingPower = VotingPowerLocal(
                 chainId: chain.chainId,
@@ -162,7 +162,7 @@ private extension SwipeGovVotingListPresenter {
                 conviction: max.conviction,
                 amount: max.amount
             )
-            
+
             wireframe.showSetup(
                 from: view,
                 initData: .init(presetVotingPower: votingPower),
@@ -177,6 +177,6 @@ private extension SwipeGovVotingListPresenter {
         in votingItems: [VotingBasketItemLocal],
         for balance: AssetBalance
     ) -> [VotingBasketItemLocal] {
-        return votingItems.filter { $0.amount > balance.freeInPlank }
+        votingItems.filter { $0.amount > balance.freeInPlank }
     }
 }

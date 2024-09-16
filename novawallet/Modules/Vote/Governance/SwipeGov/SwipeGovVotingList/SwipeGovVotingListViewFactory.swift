@@ -62,7 +62,8 @@ struct SwipeGovVotingListViewFactory {
         let presenter = SwipeGovVotingListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            chain: chain,
+            chain: chain, 
+            metaAccount: metaAccount,
             viewModelFactory: viewModelfactory,
             localizationManager: localizationManager
         )
