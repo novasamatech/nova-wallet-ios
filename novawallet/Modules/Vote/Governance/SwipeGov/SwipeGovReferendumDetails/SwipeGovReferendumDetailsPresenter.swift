@@ -121,6 +121,14 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsInteracto
         refreshIdentities()
     }
     
+    func didReceiveMetadata(_ referendumMetadata: ReferendumMetadataLocal?) {
+        self.referendumMetadata = referendumMetadata
+
+        provideTitleViewModel()
+
+        refreshIdentities()
+    }
+    
     func didReceiveError(_ error: ReferendumDetailsInteractorError) {
         logger.error("Did receive error: \(error)")
 

@@ -23,6 +23,7 @@ protocol SwipeGovReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal)
+    func didReceiveMetadata(_ referendumMetadata: ReferendumMetadataLocal?)
     func didReceiveError(_ error: ReferendumDetailsInteractorError)
 }
 
