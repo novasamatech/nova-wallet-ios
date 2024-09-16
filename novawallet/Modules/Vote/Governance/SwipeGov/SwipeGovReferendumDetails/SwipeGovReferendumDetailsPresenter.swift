@@ -35,7 +35,8 @@ final class SwipeGovReferendumDetailsPresenter {
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         initData: ReferendumDetailsInitData,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.chain = chain
         self.interactor = interactor
@@ -51,6 +52,8 @@ final class SwipeGovReferendumDetailsPresenter {
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
         referendumMetadata = initData.metadata
+        
+        self.localizationManager = localizationManager
     }
 }
 

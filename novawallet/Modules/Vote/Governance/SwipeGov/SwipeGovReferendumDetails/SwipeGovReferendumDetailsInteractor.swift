@@ -75,120 +75,9 @@ final class SwipeGovReferendumDetailsInteractor {
             referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: accountId)
         }
     }
-
-    private func subscribeReferendum() {
-        referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
-
-        referendumsSubscriptionFactory.subscribeToReferendum(
-            self,
-            referendumIndex: referendum.index
-        ) { [weak self] result in
-            switch result {
-            case let .success(referendumResult):
-                if let referendum = referendumResult.value {
-                    self?.referendum = referendum
-                    self?.presenter?.didReceiveReferendum(referendum)
-                }
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.referendumFailed(error))
-            case .none:
-                break
-            }
-        }
-    }
-
-    private func provideIdentities(for accountIds: Set<AccountId>) {
-        identitiesCancellable.cancel()
-
-        guard !accountIds.isEmpty else {
-            presenter?.didReceiveIdentities([:])
-            return
-        }
-
-        let accountIdsClosure: () throws -> [AccountId] = { Array(accountIds) }
-
-        let wrapper = identityProxyFactory.createIdentityWrapper(for: accountIdsClosure)
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: identitiesCancellable,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(identities):
-                self?.presenter?.didReceiveIdentities(identities)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.identitiesFailed(error))
-            }
-        }
-    }
-
-    private func provideBlockTime() {
-        guard !blockTimeCancellable.hasCall else {
-            return
-        }
-
-        let wrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
-            blockTimeEstimationService: blockTimeService
-        )
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: blockTimeCancellable,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(blockTimeModel):
-                self?.presenter?.didReceiveBlockTime(blockTimeModel)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.blockTimeFailed(error))
-            }
-        }
-    }
-
-    private func updateActionDetails() {
-        guard !actionDetailsCancellable.hasCall else {
-            return
-        }
-
-        let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
-            for: referendum,
-            connection: connection,
-            runtimeProvider: runtimeProvider
-        )
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: actionDetailsCancellable,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(actionDetails):
-                self?.presenter?.didReceiveActionDetails(actionDetails)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.actionDetailsFailed(error))
-            }
-        }
-    }
-
-    private func makeSubscriptions() {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
-
-        subscribeReferendum()
-
-        metadataProvider = subscribeGovernanceMetadata(for: option, referendumId: referendum.index)
-
-        if metadataProvider == nil {
-            presenter?.didReceiveMetadata(nil)
-        } else {
-            metadataProvider?.refresh()
-        }
-    }
 }
+
+// MARK: SwipeGovReferendumDetailsInteractorInputProtocol
 
 extension SwipeGovReferendumDetailsInteractor: SwipeGovReferendumDetailsInteractorInputProtocol {
     func setup() {
@@ -220,6 +109,8 @@ extension SwipeGovReferendumDetailsInteractor: SwipeGovReferendumDetailsInteract
     }
 }
 
+// MARK: GeneralLocalStorageSubscriber
+
 extension SwipeGovReferendumDetailsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
         switch result {
@@ -233,6 +124,8 @@ extension SwipeGovReferendumDetailsInteractor: GeneralLocalStorageSubscriber, Ge
     }
 }
 
+// MARK: GovMetadataLocalStorageSubscriber
+
 extension SwipeGovReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
     func handleGovernanceMetadataDetails(
         result: Result<ReferendumMetadataLocal?, Error>,
@@ -244,6 +137,124 @@ extension SwipeGovReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber
             presenter?.didReceiveMetadata(metadata)
         case let .failure(error):
             presenter?.didReceiveError(.metadataFailed(error))
+        }
+    }
+}
+
+
+// MARK: Private
+
+private extension SwipeGovReferendumDetailsInteractor {
+    func subscribeReferendum() {
+        referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
+
+        referendumsSubscriptionFactory.subscribeToReferendum(
+            self,
+            referendumIndex: referendum.index
+        ) { [weak self] result in
+            switch result {
+            case let .success(referendumResult):
+                if let referendum = referendumResult.value {
+                    self?.referendum = referendum
+                    self?.presenter?.didReceiveReferendum(referendum)
+                }
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.referendumFailed(error))
+            case .none:
+                break
+            }
+        }
+    }
+
+    func provideIdentities(for accountIds: Set<AccountId>) {
+        identitiesCancellable.cancel()
+
+        guard !accountIds.isEmpty else {
+            presenter?.didReceiveIdentities([:])
+            return
+        }
+
+        let accountIdsClosure: () throws -> [AccountId] = { Array(accountIds) }
+
+        let wrapper = identityProxyFactory.createIdentityWrapper(for: accountIdsClosure)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: identitiesCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(identities):
+                self?.presenter?.didReceiveIdentities(identities)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.identitiesFailed(error))
+            }
+        }
+    }
+
+    func provideBlockTime() {
+        guard !blockTimeCancellable.hasCall else {
+            return
+        }
+
+        let wrapper = blockTimeFactory.createBlockTimeOperation(
+            from: runtimeProvider,
+            blockTimeEstimationService: blockTimeService
+        )
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: blockTimeCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(blockTimeModel):
+                self?.presenter?.didReceiveBlockTime(blockTimeModel)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.blockTimeFailed(error))
+            }
+        }
+    }
+
+    func updateActionDetails() {
+        guard !actionDetailsCancellable.hasCall else {
+            return
+        }
+
+        let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
+            for: referendum,
+            connection: connection,
+            runtimeProvider: runtimeProvider
+        )
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: actionDetailsCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(actionDetails):
+                self?.presenter?.didReceiveActionDetails(actionDetails)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.actionDetailsFailed(error))
+            }
+        }
+    }
+
+    func makeSubscriptions() {
+        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+
+        subscribeReferendum()
+
+        metadataProvider = subscribeGovernanceMetadata(for: option, referendumId: referendum.index)
+
+        if metadataProvider == nil {
+            presenter?.didReceiveMetadata(nil)
+        } else {
+            metadataProvider?.refresh()
         }
     }
 }
