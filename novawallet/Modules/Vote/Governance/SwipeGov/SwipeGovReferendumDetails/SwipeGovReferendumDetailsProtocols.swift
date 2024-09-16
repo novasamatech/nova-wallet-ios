@@ -1,3 +1,5 @@
+import Foundation
+
 protocol SwipeGovReferendumDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(titleModel: ReferendumDetailsTitleView.Model)
     func didReceive(trackTagsModel: TrackTagsView.Model?)
@@ -7,6 +9,7 @@ protocol SwipeGovReferendumDetailsViewProtocol: ControllerBackedProtocol {
 protocol SwipeGovReferendumDetailsPresenterProtocol: AnyObject {
     func setup()
     func showProposerDetails()
+    func openURL(_ url: URL)
 }
 
 protocol SwipeGovReferendumDetailsInteractorInputProtocol: AnyObject {
@@ -28,6 +31,4 @@ protocol SwipeGovReferendumDetailsInteractorOutputProtocol: AnyObject {
 }
 
 protocol SwipeGovReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-                                                     AddressOptionsPresentable, WebPresentable, NoAccountSupportPresentable {
-    
-}
+    AddressOptionsPresentable, WebPresentable, NoAccountSupportPresentable {}

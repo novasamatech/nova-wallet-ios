@@ -5,8 +5,7 @@ protocol VoteCardViewModelFactoryProtocol {
     func createCardsStackViewModel(
         from model: SwipeGovModelBuilder.Result.Model,
         locale: Locale,
-        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void,
+        actions: VoteCardViewModel.Actions,
         validationClosure: @escaping (VoteCardViewModel?) -> Bool
     ) -> CardsZStackViewModel
 }
@@ -47,22 +46,19 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
     func createCardsStackViewModel(
         from model: SwipeGovModelBuilder.Result.Model,
         locale: Locale,
-        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void,
+        actions: VoteCardViewModel.Actions,
         validationClosure: @escaping (VoteCardViewModel?) -> Bool
     ) -> CardsZStackViewModel {
         let inserts = createVoteCardViewModels(
             from: model.referendumsChanges.inserts,
             locale: locale,
-            onVote: onVote,
-            onLoadError: onLoadError
+            actions: actions
         )
 
         let updates = createVoteCardViewModels(
             from: model.referendumsChanges.updates,
             locale: locale,
-            onVote: onVote,
-            onLoadError: onLoadError
+            actions: actions
         ).reduce(into: [:]) { $0[$1.id] = $1 }
 
         let deletes = Set(model.referendumsChanges.deletes)
@@ -84,8 +80,7 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
     private func createVoteCardViewModels(
         from referendums: [ReferendumLocal],
         locale: Locale,
-        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void
+        actions: VoteCardViewModel.Actions
     ) -> [VoteCardViewModel] {
         referendums.enumerated().map { index, referendum in
             let gradientModel = cardGradientFactory.createCardGradient(for: index)
@@ -107,9 +102,7 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
                 currencyManager: currencyManager,
                 gradient: gradientModel,
                 locale: locale,
-                onVote: onVote,
-                onBecomeTop: { _ in },
-                onLoadError: onLoadError
+                actions: actions
             )
         }
     }

@@ -37,5 +37,9 @@ protocol SwipeGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRe
         from view: ControllerBackedProtocol?,
         initData: ReferendumVotingInitData
     )
+    func showReferendumDetails(
+        from view: ControllerBackedProtocol?,
+        initData: ReferendumDetailsInitData
+    )
     func back(from view: ControllerBackedProtocol?)
 }

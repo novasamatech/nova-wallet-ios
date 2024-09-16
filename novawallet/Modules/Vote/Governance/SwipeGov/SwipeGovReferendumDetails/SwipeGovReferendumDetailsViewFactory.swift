@@ -3,7 +3,7 @@ import SoraFoundation
 import SubstrateSdk
 import Operation_iOS
 
-struct SwipeGovReferendumDetailsViewFactory {    
+struct SwipeGovReferendumDetailsViewFactory {
     static func createView(
         for state: GovernanceSharedState,
         initData: ReferendumDetailsInitData
@@ -38,7 +38,7 @@ struct SwipeGovReferendumDetailsViewFactory {
 
         return view
     }
-    
+
     private static func createPresenter(
         interactor: SwipeGovReferendumDetailsInteractor,
         wireframe: SwipeGovReferendumDetailsWireframe,
@@ -79,7 +79,7 @@ struct SwipeGovReferendumDetailsViewFactory {
             localizationManager: LocalizationManager.shared
         )
     }
-    
+
     private static func createInteractor(
         for referendum: ReferendumLocal,
         state: GovernanceSharedState

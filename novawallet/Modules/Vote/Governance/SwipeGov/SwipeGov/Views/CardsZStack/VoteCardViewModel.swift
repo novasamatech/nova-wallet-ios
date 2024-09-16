@@ -11,6 +11,13 @@ struct VoteCardLoadErrorActions {
 typealias VoteCardId = ReferendumIdLocal
 
 final class VoteCardViewModel {
+    struct Actions {
+        let onAction: (ReferendumIdLocal) -> Void
+        let onVote: (VoteResult, ReferendumIdLocal) -> Void
+        let onBecomeTop: (ReferendumIdLocal) -> Void
+        let onLoadError: (VoteCardLoadErrorActions) -> Void
+    }
+
     weak var view: StackCardViewUpdatable?
 
     var id: VoteCardId {
@@ -35,9 +42,7 @@ final class VoteCardViewModel {
 
     private let operationQueue: OperationQueue
 
-    private let onVote: (VoteResult, ReferendumIdLocal) -> Void
-    private let onBecomeTop: (ReferendumIdLocal) -> Void
-    private let onLoadError: (VoteCardLoadErrorActions) -> Void
+    private let actions: Actions
 
     private var actionDetailsCancellable = CancellableCallStore()
     private var summaryCancellable = CancellableCallStore()
@@ -57,9 +62,7 @@ final class VoteCardViewModel {
         currencyManager: CurrencyManagerProtocol,
         gradient: GradientModel,
         locale: Locale,
-        onVote: @escaping (VoteResult, ReferendumIdLocal) -> Void,
-        onBecomeTop: @escaping (ReferendumIdLocal) -> Void,
-        onLoadError: @escaping (VoteCardLoadErrorActions) -> Void
+        actions: Actions
     ) {
         self.operationQueue = operationQueue
         self.summaryFetchOperationFactory = summaryFetchOperationFactory
@@ -70,10 +73,12 @@ final class VoteCardViewModel {
         self.referendum = referendum
         self.gradient = gradient
         self.locale = locale
-        self.onVote = onVote
-        self.onBecomeTop = onBecomeTop
-        self.onLoadError = onLoadError
+        self.actions = actions
         self.currencyManager = currencyManager
+    }
+
+    func onActionReadMore() {
+        actions.onAction(referendum.index)
     }
 
     func onAddToStack() {
@@ -83,7 +88,7 @@ final class VoteCardViewModel {
     func onPop(direction: CardsZStack.DismissalDirection) {
         let voteResult = VoteResult(from: direction)
 
-        onVote(voteResult, referendum.index)
+        actions.onVote(voteResult, referendum.index)
     }
 
     func onBecomeTopView() {
@@ -93,7 +98,7 @@ final class VoteCardViewModel {
             loadContent()
         }
 
-        onBecomeTop(referendum.index)
+        actions.onBecomeTop(referendum.index)
     }
 
     func onSetup() {
@@ -203,7 +208,7 @@ private extension VoteCardViewModel {
             retry: { [weak self] in self?.loadContent() }
         )
 
-        onLoadError(handlers)
+        actions.onLoadError(handlers)
     }
 }
 

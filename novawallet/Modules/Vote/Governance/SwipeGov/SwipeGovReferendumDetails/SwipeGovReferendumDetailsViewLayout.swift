@@ -8,7 +8,7 @@ final class SwipeGovReferendumDetailsViewLayout: UIView {
         view.stackView.alignment = .leading
         return view
     }()
-    
+
     var accountIconSize: CGSize {
         let size = accountContainerView.rowContentView.detailsView.iconWidth
         return CGSize(width: size, height: size)
@@ -47,7 +47,7 @@ final class SwipeGovReferendumDetailsViewLayout: UIView {
     let descriptionView = MarkdownViewContainer(
         preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset
     )
-    
+
     let trackTagsView = TrackTagsView()
 
     override init(frame: CGRect) {
@@ -62,55 +62,45 @@ final class SwipeGovReferendumDetailsViewLayout: UIView {
 
     private func setupLayout() {
         addSubview(containerView)
-        
+
         containerView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        
+
         containerView.stackView.addArrangedSubview(accountContainerView)
         containerView.stackView.setCustomSpacing(0, after: accountContainerView)
-        
+
         containerView.stackView.addArrangedSubview(titleLabel)
         containerView.stackView.setCustomSpacing(8, after: titleLabel)
-        
+
         containerView.stackView.addArrangedSubview(descriptionView)
         containerView.stackView.setCustomSpacing(8, after: descriptionView)
     }
 }
 
 extension SwipeGovReferendumDetailsViewLayout {
-    struct Model {
-        let account: DisplayAddressViewModel?
-        let details: Details?
-    }
-    
-    struct Details {
-        let title: String
-        let description: String
-    }
-    
-    func bind(viewModel: Model, locale: Locale) {
+    func bind(viewModel: ReferendumDetailsTitleView.Model, locale: Locale) {
         addressImageViewModel?.cancel(on: accountImageView)
         addressImageViewModel = viewModel.account?.imageViewModel
-        
+
         if let account = viewModel.account {
             accountContainerView.isHidden = false
-            
+
             accountLabel.text = account.name ?? account.address.truncated
-            
+
             account.imageViewModel?.loadImage(
                 on: accountImageView,
                 targetSize: accountIconSize,
                 animated: true
             )
-            
+
         } else {
             accountContainerView.isHidden = true
         }
-        
+
         bind(details: viewModel.details, locale: locale)
     }
-    
+
     func bind(trackTagsModel: TrackTagsView.Model?) {
         guard
             let trackTagsModel,
@@ -118,16 +108,16 @@ extension SwipeGovReferendumDetailsViewLayout {
         else {
             return
         }
-        
+
         containerView.stackView.insertArranged(
             view: trackTagsView,
             after: titleLabel
         )
-        
+
         trackTagsView.bind(viewModel: trackTagsModel)
     }
-    
-    private func bind(details: Details?, locale: Locale) {
+
+    private func bind(details: ReferendumDetailsTitleView.Details?, locale _: Locale) {
         guard let details = details else {
             titleLabel.isHidden = true
             descriptionView.isHidden = true
@@ -135,7 +125,7 @@ extension SwipeGovReferendumDetailsViewLayout {
         }
         titleLabel.isHidden = false
         titleLabel.text = details.title
-        
+
         descriptionView.isHidden = false
         descriptionView.load(from: details.description) { _ in }
     }

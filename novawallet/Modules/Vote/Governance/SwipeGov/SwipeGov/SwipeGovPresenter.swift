@@ -109,18 +109,24 @@ private extension SwipeGovPresenter {
         let viewModel = cardsViewModelFactory.createCardsStackViewModel(
             from: model,
             locale: localizationManager.selectedLocale,
-            onVote: { [weak self] voteResult, id in
-                self?.onReferendumVote(voteResult: voteResult, id: id)
-            },
-            onLoadError: { [weak self] handlers in
-                guard let self else { return }
-                wireframe.presentRequestStatus(
-                    on: view,
-                    locale: localizationManager.selectedLocale,
-                    retryAction: { handlers.retry() },
-                    skipAction: { self.view?.skipCard() }
-                )
-            },
+            actions: .init(
+                onAction: { [weak self] referendumId in
+                    self?.showDetails(for: referendumId)
+                },
+                onVote: { [weak self] voteResult, id in
+                    self?.onReferendumVote(voteResult: voteResult, id: id)
+                },
+                onBecomeTop: { _ in },
+                onLoadError: { [weak self] handlers in
+                    guard let self else { return }
+                    wireframe.presentRequestStatus(
+                        on: view,
+                        locale: localizationManager.selectedLocale,
+                        retryAction: { handlers.retry() },
+                        skipAction: { self.view?.skipCard() }
+                    )
+                }
+            ),
             validationClosure: { [weak self] _ in
                 guard let self else { return false }
 
@@ -173,6 +179,21 @@ private extension SwipeGovPresenter {
         let initData = ReferendumVotingInitData(presetVotingPower: votingPower)
 
         wireframe.showVoteSetup(
+            from: view,
+            initData: initData
+        )
+    }
+
+    func showDetails(for referendumId: ReferendumIdLocal) {
+        guard let referendum = model?.referendums.first(
+            where: { $0.index == referendumId }
+        ) else {
+            return
+        }
+
+        let initData = ReferendumDetailsInitData(referendum: referendum)
+
+        wireframe.showReferendumDetails(
             from: view,
             initData: initData
         )

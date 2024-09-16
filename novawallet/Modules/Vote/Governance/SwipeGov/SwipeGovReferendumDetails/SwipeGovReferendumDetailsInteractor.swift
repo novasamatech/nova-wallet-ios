@@ -8,7 +8,7 @@ final class SwipeGovReferendumDetailsInteractor {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
-    
+
     private let option: GovernanceSelectedOption
     private let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     private let connection: JSONRPCEngine
@@ -16,13 +16,13 @@ final class SwipeGovReferendumDetailsInteractor {
     private let identityProxyFactory: IdentityProxyFactoryProtocol
     private let blockTimeService: BlockTimeEstimationServiceProtocol
     private let blockTimeFactory: BlockTimeOperationFactoryProtocol
-    
+
     private let operationQueue: OperationQueue
 
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
     private var selectedAccount: ChainAccountResponse?
-    
+
     private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 
@@ -85,7 +85,6 @@ extension SwipeGovReferendumDetailsInteractor: SwipeGovReferendumDetailsInteract
         updateActionDetails()
     }
 
-
     func refreshBlockTime() {
         provideBlockTime()
     }
@@ -140,7 +139,6 @@ extension SwipeGovReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber
         }
     }
 }
-
 
 // MARK: Private
 

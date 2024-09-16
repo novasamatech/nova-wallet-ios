@@ -53,4 +53,22 @@ extension SwipeGovWireframe: SwipeGovWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true)
     }
+
+    func showReferendumDetails(
+        from view: ControllerBackedProtocol?,
+        initData: ReferendumDetailsInitData
+    ) {
+        guard let detailsView = SwipeGovReferendumDetailsViewFactory.createView(
+            for: sharedState,
+            initData: initData
+        ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: detailsView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true)
+    }
 }

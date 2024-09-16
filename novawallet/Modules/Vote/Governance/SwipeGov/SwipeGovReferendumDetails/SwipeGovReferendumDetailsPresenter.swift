@@ -5,7 +5,7 @@ final class SwipeGovReferendumDetailsPresenter {
     weak var view: SwipeGovReferendumDetailsViewProtocol?
     let wireframe: SwipeGovReferendumDetailsWireframeProtocol
     let interactor: SwipeGovReferendumDetailsInteractorInputProtocol
-    
+
     let chain: ChainModel
     let logger: LoggerProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
@@ -13,14 +13,14 @@ final class SwipeGovReferendumDetailsPresenter {
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
-    
+
     private var referendum: ReferendumLocal
     private var referendumMetadata: ReferendumMetadataLocal?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var identities: [AccountAddress: AccountIdentity]?
     private var actionDetails: ReferendumActionLocal?
-    
+
     private var maxStatusTimeInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
     private var statusViewModel: StatusTimeViewModel?
@@ -47,12 +47,12 @@ final class SwipeGovReferendumDetailsPresenter {
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.logger = logger
-        
+
         referendum = initData.referendum
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
         referendumMetadata = initData.metadata
-        
+
         self.localizationManager = localizationManager
     }
 }
@@ -65,7 +65,7 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsPresenter
 
         interactor.setup()
     }
-    
+
     func showProposerDetails() {
         let referendumProposer = try? referendum.proposer?.toAddress(using: chain.chainFormat)
         let optAddress = referendumProposer ?? referendumMetadata?.proposer
@@ -83,6 +83,14 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsPresenter
             locale: selectedLocale
         )
     }
+
+    func openURL(_ url: URL) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.showWeb(url: url, from: view, style: .automatic)
+    }
 }
 
 // MARK: SwipeGovReferendumDetailsInteractorOutputProtocol
@@ -90,20 +98,20 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsPresenter
 extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsInteractorOutputProtocol {
     func didReceiveReferendum(_ referendum: ReferendumLocal) {
         self.referendum = referendum
- 
+
         provideReferendumInfoViewModel()
         provideTitleViewModel()
         updateTimerIfNeeded()
 
         refreshIdentities()
     }
-    
+
     func didReceiveIdentities(_ identities: [AccountAddress: AccountIdentity]) {
         self.identities = identities
 
         provideTitleViewModel()
     }
-    
+
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         self.blockNumber = blockNumber
 
@@ -115,7 +123,7 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsInteracto
 
         updateTimerIfNeeded()
     }
-    
+
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal) {
         self.actionDetails = actionDetails
 
@@ -123,7 +131,7 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsInteracto
 
         refreshIdentities()
     }
-    
+
     func didReceiveMetadata(_ referendumMetadata: ReferendumMetadataLocal?) {
         self.referendumMetadata = referendumMetadata
 
@@ -131,7 +139,7 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsInteracto
 
         refreshIdentities()
     }
-    
+
     func didReceiveError(_ error: ReferendumDetailsInteractorError) {
         logger.error("Did receive error: \(error)")
 
@@ -204,12 +212,12 @@ private extension SwipeGovReferendumDetailsPresenter {
 
         interactor.refreshIdentities(for: accountIds)
     }
-    
+
     func updateView() {
         provideReferendumInfoViewModel()
         provideTitleViewModel()
     }
-    
+
     private func invalidateTimer() {
         countdownTimer?.delegate = nil
         countdownTimer?.stop()
