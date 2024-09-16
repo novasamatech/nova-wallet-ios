@@ -1,6 +1,6 @@
 import UIKit
 
-final class SwipeGovReferendumDetailsViewController: UIViewController {
+final class SwipeGovReferendumDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = SwipeGovReferendumDetailsViewLayout
 
     let presenter: SwipeGovReferendumDetailsPresenterProtocol
