@@ -9,6 +9,7 @@ final class SwipeGovVotingListPresenter {
     private let interactor: SwipeGovVotingListInteractorInputProtocol
     private let localizationManager: LocalizationManagerProtocol
     private let chain: ChainModel
+    private let metaAccount: MetaAccountModel
 
     private let viewModelFactory: SwipeGovVotingListViewModelFactory
 
@@ -20,12 +21,14 @@ final class SwipeGovVotingListPresenter {
         interactor: SwipeGovVotingListInteractorInputProtocol,
         wireframe: SwipeGovVotingListWireframeProtocol,
         chain: ChainModel,
+        metaAccount: MetaAccountModel,
         viewModelFactory: SwipeGovVotingListViewModelFactory,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
+        self.metaAccount = metaAccount
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
@@ -53,14 +56,13 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func vote() {
-        guard let balance, validateBalanceIsSufficient(
-            balance,
-            for: votingListItems
-        ) else {
+        guard let balance else {
             return
         }
-
-        // TODO: Show confirmation
+        
+        validateBalanceSufficient {
+            // TODO: Show confirmation
+        }
     }
 }
 
@@ -85,12 +87,16 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
         if votingListItems.isEmpty {
             wireframe.close(view: view)
         } else {
-            updateView(with: deletes)
+            validateBalanceSufficient {
+                self.updateView(with: deletes)
+            }
         }
     }
 
     func didReceive(_ assetBalance: AssetBalance?) {
         balance = assetBalance
+        
+        validateBalanceSufficient()
     }
 
     func didReceiveUnavailableItems() {
@@ -141,15 +147,36 @@ private extension SwipeGovVotingListPresenter {
             view?.didReceive(viewModel)
         }
     }
-
-    func validateBalanceIsSufficient(
-        _ balance: AssetBalance,
-        for votingItems: [VotingBasketItemLocal]
-    ) -> Bool {
-        guard let maxLock = votingItems.map(\.amount).max() else {
-            return true
+    
+    func validateBalanceSufficient(_ closure: (() -> Void)? = nil) {
+        guard let balance else {
+            return
         }
+        
+        let invalidItems = lookForInvalidItems(in: votingListItems, for: balance)
+        
+        if !invalidItems.isEmpty, let max = invalidItems.max(by: { $0.amount < $1.amount }) {
+            let votingPower = VotingPowerLocal(
+                chainId: chain.chainId,
+                metaId: metaAccount.metaId,
+                conviction: max.conviction,
+                amount: max.amount
+            )
+            
+            wireframe.showSetup(
+                from: view,
+                initData: .init(presetVotingPower: votingPower),
+                changing: invalidItems
+            )
+        } else {
+            closure?()
+        }
+    }
 
-        return maxLock <= balance.freeInPlank
+    func lookForInvalidItems(
+        in votingItems: [VotingBasketItemLocal],
+        for balance: AssetBalance
+    ) -> [VotingBasketItemLocal] {
+        return votingItems.filter { $0.amount > balance.freeInPlank }
     }
 }

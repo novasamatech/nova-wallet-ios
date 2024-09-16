@@ -12332,15 +12332,6 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
-		2D62875D2C979FAF00060814 /* Interactor */ = {
-			isa = PBXGroup;
-			children = (
-				2D62875E2C979FC100060814 /* BaseTinderGovSetupInteractor.swift */,
-				A60E944E00C53DD497B78677 /* TinderGovSetupInteractor.swift */,
-			);
-			path = Interactor;
-			sourceTree = "<group>";
-		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -12902,10 +12893,10 @@
 		52E57E961FA41BD3ABDDCDF0 /* SwipeGovSetup */ = {
 			isa = PBXGroup;
 			children = (
+				2D6287582C9774E800060814 /* Interactor */,
 				A558807C44AE52D76B4EE875 /* SwipeGovSetupProtocols.swift */,
 				80105CECB120A716A0A3CE1D /* SwipeGovSetupWireframe.swift */,
 				88DF073F93EA9D62EB0E607D /* SwipeGovSetupPresenter.swift */,
-				2D6287582C9774E800060814 /* Interactor */,
 				20F9E5627F64332884633AED /* SwipeGovSetupViewFactory.swift */,
 				2D6287522C96CA7100060814 /* SwipeGovSetupViewLayout.swift */,
 				2D62873D2C919E4B00060814 /* SwipeGovSetupViewController.swift */,
@@ -27798,7 +27789,6 @@
 				779A8F9B2A050C4400BE31B3 /* StakingRewardDateCell.swift in Sources */,
 				7580D432F22904C8F71441FE /* ParitySignerTxScanInteractor.swift in Sources */,
 				0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */,
-				2D62875F2C979FC100060814 /* BaseTinderGovSetupInteractor.swift in Sources */,
 				83DCE6BEEAD957D9C7588DB5 /* ParitySignerTxScanViewController.swift in Sources */,
 				CDED41B125E1D5128736B933 /* ParitySignerTxScanViewLayout.swift in Sources */,
 				0CAC03062B4D86E000DDEC3A /* LocalizableControllerBackedView.swift in Sources */,
