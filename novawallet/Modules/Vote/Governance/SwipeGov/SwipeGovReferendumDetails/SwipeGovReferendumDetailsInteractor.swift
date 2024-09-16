@@ -111,7 +111,10 @@ extension SwipeGovReferendumDetailsInteractor: SwipeGovReferendumDetailsInteract
 // MARK: GeneralLocalStorageSubscriber
 
 extension SwipeGovReferendumDetailsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
+    func handleBlockNumber(
+        result: Result<BlockNumber?, Error>,
+        chainId _: ChainModel.Id
+    ) {
         switch result {
         case let .success(blockNumber):
             if let blockNumber = blockNumber {
@@ -145,7 +148,6 @@ extension SwipeGovReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber
 private extension SwipeGovReferendumDetailsInteractor {
     func subscribeReferendum() {
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
-
         referendumsSubscriptionFactory.subscribeToReferendum(
             self,
             referendumIndex: referendum.index

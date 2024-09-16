@@ -124,7 +124,7 @@ private extension SwipeGovPresenter {
                 )
             }
         )
-        
+
         let viewModel = cardsViewModelFactory.createCardsStackViewModel(
             from: model,
             locale: localizationManager.selectedLocale,
