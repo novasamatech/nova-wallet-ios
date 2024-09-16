@@ -71,6 +71,7 @@ final class VoteCardView: RoundedView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
+        setupAction()
 
         backgroundColor = .clear
     }
