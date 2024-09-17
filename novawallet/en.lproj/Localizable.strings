@@ -1742,3 +1742,5 @@
 "gov.voting.power.set.success.message" = "Voting power set successfully!";
 "gov.voting.list.item.unavailable.alert.title" = "Some of the referenda are no longer available";
 "gov.voting.list.item.unavailable.alert.message" = "They have been excluded from this list";
+"gov.voting.list.item.remove.alert.title" = "Remove referendum #%d from vote list?";
+"gov.voting.list.item.remove.alert.message" = "You always can vote for this referendum later";

@@ -46,13 +46,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func removeItem(with referendumId: ReferendumIdLocal) {
-        guard let itemIdentifier = votingListItems.first(
-            where: { $0.referendumId == referendumId }
-        )?.identifier else {
-            return
-        }
-
-        interactor.removeItem(with: itemIdentifier)
+        showRemoveAlert(for: referendumId)
     }
 
     func selectVoting(for referendumId: ReferendumIdLocal) {
@@ -215,5 +209,49 @@ private extension SwipeGovVotingListPresenter {
         for balance: AssetBalance
     ) -> [VotingBasketItemLocal] {
         votingItems.filter { $0.amount > balance.freeInPlank }
+    }
+
+    func showRemoveAlert(for referendumId: ReferendumIdLocal) {
+        guard let itemIdentifier = votingListItems.first(
+            where: { $0.referendumId == referendumId }
+        )?.identifier else {
+            return
+        }
+
+        let languages = localizationManager.selectedLocale.rLanguages
+
+        let alertViewModel = AlertPresentableViewModel(
+            title: R.string.localizable.govVotingListItemRemoveAlertTitle(
+                Int(referendumId),
+                preferredLanguages: languages
+            ),
+            message: R.string.localizable.govVotingListItemRemoveAlertMessage(
+                preferredLanguages: languages
+            ),
+            actions: [
+                .init(
+                    title: R.string.localizable.commonCancel(
+                        preferredLanguages: languages
+                    ),
+                    style: .cancel
+                ),
+                .init(
+                    title: R.string.localizable.commonRemove(
+                        preferredLanguages: languages
+                    ),
+                    style: .destructive,
+                    handler: {
+                        [weak self] in
+                        self?.interactor.removeItem(with: itemIdentifier)
+                    }
+                )
+            ],
+            closeAction: nil
+        )
+        wireframe.present(
+            viewModel: alertViewModel,
+            style: .alert,
+            from: view
+        )
     }
 }
