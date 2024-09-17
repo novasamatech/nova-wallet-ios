@@ -21,15 +21,10 @@ class VotingBasketLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory, V
 
         let source = EmptyStreamableSource<VotingBasketItemLocal>()
 
-        let mapper = VotingBasketItemMapper()
-        let filter = NSPredicate.votingBasketItems(
+        let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
             for: chainId,
-            metaId: metaId
-        )
-        let repository = storageFacade.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
+            metaId: metaId,
+            using: substrateStorage
         )
 
         let observable = CoreDataContextObservable(
@@ -48,7 +43,7 @@ class VotingBasketLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory, V
 
         let provider = StreamableProvider(
             source: AnyStreamableSource(source),
-            repository: AnyDataProviderRepository(repository),
+            repository: repository,
             observable: AnyDataProviderRepositoryObservable(observable),
             operationManager: operationManager
         )

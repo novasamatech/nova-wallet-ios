@@ -11,6 +11,8 @@ final class SwipeGovVotingListPresenter {
     private let chain: ChainModel
     private let metaAccount: MetaAccountModel
 
+    private let observableState: ReferendumsObservableState
+
     private let viewModelFactory: SwipeGovVotingListViewModelFactory
 
     private var votingListItems: [VotingBasketItemLocal] = []
@@ -21,6 +23,7 @@ final class SwipeGovVotingListPresenter {
         interactor: SwipeGovVotingListInteractorInputProtocol,
         wireframe: SwipeGovVotingListWireframeProtocol,
         chain: ChainModel,
+        observableState: ReferendumsObservableState,
         metaAccount: MetaAccountModel,
         viewModelFactory: SwipeGovVotingListViewModelFactory,
         localizationManager: LocalizationManagerProtocol
@@ -28,6 +31,7 @@ final class SwipeGovVotingListPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
+        self.observableState = observableState
         self.metaAccount = metaAccount
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
@@ -51,8 +55,17 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
         interactor.removeItem(with: itemIdentifier)
     }
 
-    func selectVoting(for _: ReferendumIdLocal) {
-        // TODO: Show referendum details
+    func selectVoting(for referendumId: ReferendumIdLocal) {
+        guard let referendum = observableState.referendums[referendumId] else {
+            return
+        }
+
+        let initData = ReferendumDetailsInitData(referendum: referendum)
+
+        wireframe.showReferendumDetails(
+            from: view,
+            initData: initData
+        )
     }
 
     func vote() {
@@ -116,8 +129,32 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
         )
     }
 
-    func didReceive(_ error: Error) {
-        print(error)
+    func didReceive(_ error: SwipeGovVotingListInteractorError) {
+        let selectedLocale = localizationManager.selectedLocale
+
+        switch error {
+        case .assetBalanceFailed:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.subscribeBalance()
+            }
+        case .metadataFailed:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.subscribeMetadata()
+            }
+        case .votingBasket:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.subscribeVotingItems()
+            }
+        }
     }
 }
 

@@ -524,8 +524,6 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshLockDiff()
             }
-        default:
-            break
         }
     }
 }

@@ -63,7 +63,19 @@ extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtoco
     }
 
     func removeItem(with identifier: String) {
-        deleteItem(with: identifier)
+        deleteItems(with: [identifier])
+    }
+
+    func subscribeMetadata() {
+        clearAndSubscribeMetadata()
+    }
+
+    func subscribeBalance() {
+        clearAndSubscribeBalance()
+    }
+
+    func subscribeVotingItems() {
+        clearAndSubscribeVotingItems()
     }
 }
 
@@ -76,7 +88,7 @@ extension SwipeGovVotingListInteractor: VotingBasketLocalStorageSubscriber, Voti
             currentVotingItems = currentVotingItems.applying(changes: votingsChanges)
             presenter?.didReceive(votingsChanges)
         case let .failure(error):
-            presenter?.didReceive(error)
+            presenter?.didReceive(.votingBasket(error))
         }
     }
 }
@@ -94,7 +106,7 @@ extension SwipeGovVotingListInteractor: WalletLocalStorageSubscriber, WalletLoca
         case let .success(balance):
             presenter?.didReceive(balance)
         case let .failure(error):
-            presenter?.didReceive(error)
+            presenter?.didReceive(.assetBalanceFailed(error))
         }
     }
 }
@@ -114,7 +126,7 @@ extension SwipeGovVotingListInteractor: GovMetadataLocalStorageSubscriber, GovMe
         case let .success(changes):
             presenter?.didReceive(changes)
         case let .failure(error):
-            presenter?.didReceive(error)
+            presenter?.didReceive(.metadataFailed(error))
         }
     }
 }
@@ -122,10 +134,10 @@ extension SwipeGovVotingListInteractor: GovMetadataLocalStorageSubscriber, GovMe
 // MARK: Private
 
 private extension SwipeGovVotingListInteractor {
-    func deleteItem(with identifier: String) {
+    func deleteItems(with identifiers: [String]) {
         let deleteOperation = repository.saveOperation(
             { [] },
-            { [identifier] }
+            { identifiers }
         )
 
         execute(
@@ -136,6 +148,12 @@ private extension SwipeGovVotingListInteractor {
     }
 
     func subscribeToLocalStorages() {
+        clearAndSubscribeBalance()
+        clearAndSubscribeMetadata()
+        clearAndSubscribeVotingItems()
+    }
+
+    func clearAndSubscribeBalance() {
         guard
             let accountId = metaAccount.fetch(for: chain.accountRequest())?.accountId,
             let assetId = chain.utilityAsset()?.assetId
@@ -143,40 +161,31 @@ private extension SwipeGovVotingListInteractor {
             return
         }
 
-        subscribeAssetBalance(
+        assetBalanceProvider?.removeObserver(self)
+        assetBalanceProvider = nil
+
+        assetBalanceProvider = subscribeToAssetBalanceProvider(
             for: accountId,
             chainId: chain.chainId,
             assetId: assetId
         )
+    }
 
-        subscribeVotingBasketItems(
+    func clearAndSubscribeVotingItems() {
+        basketItemsProvider?.removeObserver(self)
+        basketItemsProvider = nil
+
+        basketItemsProvider = subscribeToVotingBasketItemProvider(
             for: chain.chainId,
             metaId: metaAccount.metaId
         )
+    }
+
+    func clearAndSubscribeMetadata() {
+        metadataProvider?.removeObserver(self)
+        metadataProvider = nil
 
         metadataProvider = subscribeGovernanceMetadata(for: selectedGovOption)
-    }
-
-    func subscribeAssetBalance(
-        for accountId: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
-    ) {
-        assetBalanceProvider = subscribeToAssetBalanceProvider(
-            for: accountId,
-            chainId: chainId,
-            assetId: assetId
-        )
-    }
-
-    func subscribeVotingBasketItems(
-        for chainId: ChainModel.Id,
-        metaId: MetaAccountModel.Id
-    ) {
-        basketItemsProvider = subscribeToVotingBasketItemProvider(
-            for: chainId,
-            metaId: metaId
-        )
     }
 
     func onReceiveObservableState(_ state: ReferendumsState) {
@@ -191,9 +200,8 @@ private extension SwipeGovVotingListInteractor {
 
         guard !unavailableItems.isEmpty else { return }
 
-        unavailableItems.forEach { item in
-            deleteItem(with: item.identifier)
-        }
+        let deleteIds = unavailableItems.map(\.identifier)
+        deleteItems(with: deleteIds)
 
         presenter?.didReceiveUnavailableItems()
     }

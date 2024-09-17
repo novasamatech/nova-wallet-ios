@@ -29,23 +29,17 @@ struct SwipeGovVotingListViewFactory {
 
         let govMetadataLocalSubscriptionFactory = sharedState.govMetadataLocalSubscriptionFactory
 
-        let mapper = VotingBasketItemMapper()
-
-        let filter = NSPredicate.votingBasketItems(
+        let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
             for: chain.chainId,
-            metaId: metaAccount.metaId
-        )
-        let repository = substrateStorage.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
+            metaId: metaAccount.metaId,
+            using: substrateStorage
         )
 
         let interactor = SwipeGovVotingListInteractor(
             observableState: sharedState.observableState,
             chain: chain,
             metaAccount: metaAccount,
-            repository: AnyDataProviderRepository(repository),
+            repository: repository,
             selectedGovOption: sharedState.settings.value,
             votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
@@ -63,6 +57,7 @@ struct SwipeGovVotingListViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
+            observableState: sharedState.observableState,
             metaAccount: metaAccount,
             viewModelFactory: viewModelfactory,
             localizationManager: localizationManager

@@ -792,6 +792,7 @@
 		1EC3365D41DEC51394A1E78F /* GenericLedgerAccountSelectionPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3B19F26A3131B1B1828030 /* GenericLedgerAccountSelectionPresenter.swift */; };
 		1ECC51FC47422BF1450E0575 /* StakingSetupAmountInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8145FD81205F06EB6B8B51DA /* StakingSetupAmountInteractor.swift */; };
 		1EE4FBB79EE6015D7D3EBDC1 /* ParitySignerTxScanWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8B46E3BAB48A2D2E1D2EF4 /* ParitySignerTxScanWireframe.swift */; };
+		1EFDF68708E3A9D6B59E4EA2 /* Pods_novawalletAll_novawalletIntegrationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FEF6C4E1C42990F93140FE /* Pods_novawalletAll_novawalletIntegrationTests.framework */; };
 		1F205FE059A7099A1A7391EC /* GovernanceRevokeDelegationTracksViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36335FF0C6AEAB65EB46411A /* GovernanceRevokeDelegationTracksViewFactory.swift */; };
 		1F45D221E855D5340572C243 /* GovernanceUnavailableTracksProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BED0E6DBC4C21D9625740C /* GovernanceUnavailableTracksProtocols.swift */; };
 		1F496969FEE3E160BABDAC66 /* ReferendumVoteSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5159EA2661A6CBE123CCF891 /* ReferendumVoteSetupProtocols.swift */; };
@@ -941,6 +942,8 @@
 		2D6287572C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287562C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift */; };
 		2D62875A2C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287592C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift */; };
 		2D62875C2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62875B2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift */; };
+		2D62876A2C99A10000060814 /* SwipeGovRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */; };
+		2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -967,6 +970,8 @@
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
 		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
+		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
+		2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */; };
 		2D8EFB282C0728BC00866F90 /* AccountConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB272C0728BC00866F90 /* AccountConfirmViewLayout.swift */; };
 		2D8EFB2A2C08892300866F90 /* MnemonicViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB292C08892300866F90 /* MnemonicViewModelFactory.swift */; };
 		2D95DF5B2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */; };
@@ -1741,6 +1746,7 @@
 		7A1E94D172008E4CB94E9797 /* KnownNetworksListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54BEBC631DCC1DF8AD0578E5 /* KnownNetworksListViewFactory.swift */; };
 		7A47B0731BC8B411CC01C3D1 /* TransferNetworkSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6106D11494F979A46F7B4C /* TransferNetworkSelectionViewController.swift */; };
 		7B0CCB3AAE9D4675CE6F0E6C /* ExportWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B6B5BC6580FB580D3CF2AE /* ExportWireframe.swift */; };
+		7B72E35164417147B889A20F /* Pods_novawalletAll_novawallet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CB3C834CCCD632B6CB30BEB /* Pods_novawalletAll_novawallet.framework */; };
 		7BD09D3022967C4D90AB4693 /* DAppOperationConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859E0EF774DF0D498FEF8FCB /* DAppOperationConfirmViewLayout.swift */; };
 		7C0135CA49EF6B535030643E /* ParaStkYieldBoostSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9EEC5FDEA7DAE42F2880C7 /* ParaStkYieldBoostSetupPresenter.swift */; };
 		7C42FEDE4DFA920154010F83 /* BackupAttentionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D67A4A418E0DEB44B713C7B8 /* BackupAttentionProtocols.swift */; };
@@ -1759,7 +1765,6 @@
 		7DB180DB5D110075A7E92572 /* TokensAddSelectNetworkViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDCDDBF77A13891860416BB /* TokensAddSelectNetworkViewLayout.swift */; };
 		7DB5DEC4992ADBA0755E8F67 /* CloudBackupReviewChangesProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2AE82FB3A09A06A2CB1BF24 /* CloudBackupReviewChangesProtocols.swift */; };
 		7DB7E81CC2F880E4736DE062 /* GovernanceUnlockConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE81AE154A736A93FF3812B /* GovernanceUnlockConfirmViewLayout.swift */; };
-		7E19F51E1D57ADE85DF0773B /* Pods_novawalletAll_novawalletIntegrationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BFDB14F6CA5755AC1C4FA67 /* Pods_novawalletAll_novawalletIntegrationTests.framework */; };
 		7E1A03082260E0D31AD394CA /* StakingRewardDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF891BE39D442C2D06DDF3BB /* StakingRewardDetailsProtocols.swift */; };
 		7E5ACF8DDF17C054E6E1B3D5 /* ParaStkYieldBoostSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */; };
 		7E710E6BE9C41940ACFA3B8C /* CloudBackupSettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E39B6469E7FF5F830E6063 /* CloudBackupSettingsViewLayout.swift */; };
@@ -1775,6 +1780,7 @@
 		81ADC94E1CC47A2C6F0F1BEA /* GovernanceEditDelegationTracksProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32F1F0F6F985195CD19EDDB /* GovernanceEditDelegationTracksProtocols.swift */; };
 		821518375113295E41E0481C /* ParitySignerTxQrViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B56BDC7E6221DE292498D3A /* ParitySignerTxQrViewFactory.swift */; };
 		8217DCBEB74527D57AC82070 /* ParaStkStakeConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E27EB6FF31F9D247DEFABB /* ParaStkStakeConfirmViewLayout.swift */; };
+		8274BF44586FEA1424376B47 /* Pods_novawalletTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74990B6625BDACBBA87410A8 /* Pods_novawalletTests.framework */; };
 		830A27C5447348F1D202D996 /* CrowdloanContributionSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23E38DCBC74C528D7839B76 /* CrowdloanContributionSetupInteractor.swift */; };
 		831F4C7E463D374DEED577D5 /* ManualBackupKeyListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB02245B44D5D1036626E24 /* ManualBackupKeyListWireframe.swift */; };
 		8321399396FA5B25BC93A090 /* DAppPhishingViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22914482F786318D8F6C5E27 /* DAppPhishingViewLayout.swift */; };
@@ -4387,6 +4393,7 @@
 		A871B6ABACAE8A811010F792 /* StakingPayoutConfirmationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5ACCFD31E14AF4D30955288 /* StakingPayoutConfirmationWireframe.swift */; };
 		A8B288AA4F50470D691C72CE /* OnboardingWalletReadyProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2357844C36B321393772D5A3 /* OnboardingWalletReadyProtocols.swift */; };
 		A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B6244A9538B39AFCD3A6F3A /* SelectValidatorsStartPresenter.swift */; };
+		A9202F89B78BFE696090A89C /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 898367EDC2B21FB1FE84742A /* Pods_NovaPushNotificationServiceExtension.framework */; };
 		A97F32D057BFEFBCC478A09C /* DAppTxDetailsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A028BD1A81CA95BE0DB66031 /* DAppTxDetailsViewFactory.swift */; };
 		A99428A540CDA6B359220477 /* StartStakingConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB617C1637B277B83E4C4914 /* StartStakingConfirmViewController.swift */; };
 		A9A4846AB91BCB88E0416E38 /* CommonDelegationTracksViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A0E36C6D08351DFF7263E5 /* CommonDelegationTracksViewLayout.swift */; };
@@ -4572,7 +4579,6 @@
 		BAEBD54874957F0C78D01BE6 /* StakingDashboardInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879470FAF62A152E52DF4845 /* StakingDashboardInteractor.swift */; };
 		BAF044619C83E31EEEDA0BCB /* GovernanceRevokeDelegationConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92381CBE193B3317F477D377 /* GovernanceRevokeDelegationConfirmViewController.swift */; };
 		BB29490A4E8472A7DB781BC4 /* TransferOnChainConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D385A8FCB0E6F3F6B6872F01 /* TransferOnChainConfirmPresenter.swift */; };
-		BB38C94D59994EEA8C5F2C5C /* Pods_novawalletTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA0CF1031D2BBEFADE0D6713 /* Pods_novawalletTests.framework */; };
 		BB48754C001B791A6ACA16A4 /* StakingTypeViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E66B662DD15424D2B383A7 /* StakingTypeViewLayout.swift */; };
 		BBCDADFE12B41BCF0D076DF4 /* TokensManageAddInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE992187F6F3899568F3DAE /* TokensManageAddInteractor.swift */; };
 		BCC42525D716872B7E6CD72B /* TokenManageSingleProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674601F0C47EF05F7D35A592 /* TokenManageSingleProtocols.swift */; };
@@ -4743,7 +4749,6 @@
 		DD35DDD9114DF482D04F7498 /* GovernanceRevokeDelegationConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983BF144ACC64123AE37130D /* GovernanceRevokeDelegationConfirmPresenter.swift */; };
 		DD3EB45488B37F390718F407 /* WalletsChooseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3C7EFCD6663C736563688A /* WalletsChooseViewController.swift */; };
 		DD7554F36497B3CFA4D4E6AA /* CloudBackupCreateViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD26E02E5EA85D22062142CD /* CloudBackupCreateViewFactory.swift */; };
-		DD85C18291F7CBC63E427ED4 /* Pods_novawalletAll_novawallet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD49E1B5896197485CBB3C90 /* Pods_novawalletAll_novawallet.framework */; };
 		DDA07514BEF3E2FD6EE1BB4E /* InAppUpdatesViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06268C2A9EAC65722D6E8947 /* InAppUpdatesViewLayout.swift */; };
 		DE03CA5AD7F1D0B80DFF13B6 /* DAppBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1855972C88E512AED37FD312 /* DAppBrowserViewController.swift */; };
 		DE52F23521D54A07F558EB1B /* ReferendumVoteConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A35F4D82F97C9663F1CD4 /* ReferendumVoteConfirmInteractor.swift */; };
@@ -4832,7 +4837,6 @@
 		F0C3DCA3CD4F850C16406716 /* GovernanceDelegateSearchViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C197897ED8B6E5547C64CD2D /* GovernanceDelegateSearchViewFactory.swift */; };
 		F19BA6E8A9A7FDA269CA57DE /* ProxiedsUpdateInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C9DC692C37FEEBD9EDF67D /* ProxiedsUpdateInteractor.swift */; };
 		F1BED07F67119E1BD052952A /* ReferendumVoteSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B2C456A80FA66E6F140814 /* ReferendumVoteSetupWireframe.swift */; };
-		F1ED5E4A136752D9F053CCC9 /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92BA384CCD3E8B6A4F9F99BB /* Pods_NovaPushNotificationServiceExtension.framework */; };
 		F27AAD7BC84793FA63027F8C /* AssetsSettingsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA134C6DB56DE1DFBA1B88B4 /* AssetsSettingsInteractor.swift */; };
 		F332FA8C330A16C3894B6542 /* WalletConnectSessionDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA94E5B74194AABA482F2FD /* WalletConnectSessionDetailsProtocols.swift */; };
 		F35B520D7955A70588AB593C /* ReferendumVoteConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C784EDFB9227884E30FBE6E /* ReferendumVoteConfirmWireframe.swift */; };
@@ -5049,6 +5053,7 @@
 		01A9D9D13EC9D921A2C8FB6D /* DAppAuthConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmWireframe.swift; sourceTree = "<group>"; };
 		01B2EBE8C02491A06121705A /* GovernanceUnlockConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockConfirmViewController.swift; sourceTree = "<group>"; };
 		01D9C4A550C6DDF85491B8A0 /* NPoolsUnstakeSetupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeSetupInteractor.swift; sourceTree = "<group>"; };
+		0211E6978AF4D5702EB9F210 /* Pods-novawalletAll-novawallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.release.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.release.xcconfig"; sourceTree = "<group>"; };
 		024B7E67C0603C53981EC394 /* ReferendumVoteSetupInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupInteractor.swift; sourceTree = "<group>"; };
 		025FA616E9CFA2BC7C364B74 /* ReferendumsFiltersViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumsFiltersViewFactory.swift; sourceTree = "<group>"; };
 		02ACCC85B2CCF3D9392CA9B4 /* CrowdloanListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanListProtocols.swift; sourceTree = "<group>"; };
@@ -5064,7 +5069,6 @@
 		051CE89F0ABBE5EF58FC3566 /* NetworksListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworksListPresenter.swift; sourceTree = "<group>"; };
 		051D4C5F49FD0A4FAF5BFCC4 /* StakingRewardFiltersViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardFiltersViewController.swift; sourceTree = "<group>"; };
 		0533F9E531CDFB721D697769 /* YourValidatorListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = YourValidatorListPresenter.swift; sourceTree = "<group>"; };
-		05461DA7A9E6AC79837431C1 /* Pods-novawalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.release.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.release.xcconfig"; sourceTree = "<group>"; };
 		057EF626183878DD2C9E7BC7 /* DAppAddFavoriteViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAddFavoriteViewController.swift; sourceTree = "<group>"; };
 		05AA59AFC801F52B79DDBBCF /* TokensManageProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageProtocols.swift; sourceTree = "<group>"; };
 		060D52F9BFFB646BF9FCC968 /* StakingSelectPoolPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSelectPoolPresenter.swift; sourceTree = "<group>"; };
@@ -5798,6 +5802,7 @@
 		12BEE17030110A1531A231EE /* DelegationReferendumVotersPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegationReferendumVotersPresenter.swift; sourceTree = "<group>"; };
 		12C822BAC40271396E36ACBB /* NPoolsUnstakeConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeConfirmViewLayout.swift; sourceTree = "<group>"; };
 		13222F73DF179169827365D5 /* NetworkDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkDetailsWireframe.swift; sourceTree = "<group>"; };
+		133C4E00EEC4F3F67BBDD6E5 /* Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		1366336078BCA34EFB4C6FF9 /* CrowdloanContributionConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmInteractor.swift; sourceTree = "<group>"; };
 		1399884D5F4905DA0BD1E5C3 /* StakingSetupProxyWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSetupProxyWireframe.swift; sourceTree = "<group>"; };
 		13CDE9149C7FE2B31D708F65 /* GovernanceTracksSettingsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceTracksSettingsViewFactory.swift; sourceTree = "<group>"; };
@@ -5842,6 +5847,7 @@
 		1C52C6CD7112BF0E1E3A98CE /* PurchaseWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchaseWireframe.swift; sourceTree = "<group>"; };
 		1C56183BEA8453E1B0CC255A /* ManualBackupWalletListViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualBackupWalletListViewFactory.swift; sourceTree = "<group>"; };
 		1C5C524FD0E3E7E5113F325D /* AssetReceiveViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetReceiveViewFactory.swift; sourceTree = "<group>"; };
+		1C78A5C428F468C694463CC2 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; sourceTree = "<group>"; };
 		1C9EEC5FDEA7DAE42F2880C7 /* ParaStkYieldBoostSetupPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupPresenter.swift; sourceTree = "<group>"; };
 		1CC566D6EACB81469B926611 /* ExportMnemonicConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportMnemonicConfirmInteractor.swift; sourceTree = "<group>"; };
 		1CDBE81A72553F2198E446F7 /* LedgerTxConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerTxConfirmProtocols.swift; sourceTree = "<group>"; };
@@ -5865,6 +5871,7 @@
 		211CEE2D931F177676D280DC /* StakingProxyManagementInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingProxyManagementInteractor.swift; sourceTree = "<group>"; };
 		215C03EE9C9EE024F952CB1C /* ReferendumsFiltersWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumsFiltersWireframe.swift; sourceTree = "<group>"; };
 		21621DCC39234CC4B0A1433B /* GovernanceYourDelegationsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationsPresenter.swift; sourceTree = "<group>"; };
+		216F39937204DB47DEF4241D /* Pods-novawalletAll-novawallet.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.dev.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.dev.xcconfig"; sourceTree = "<group>"; };
 		219B9B1D97460F022D40D63E /* DAppTxDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsWireframe.swift; sourceTree = "<group>"; };
 		21A2FD02269432066884F5AF /* ParaStkYourCollatorsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYourCollatorsInteractor.swift; sourceTree = "<group>"; };
 		21BCBFCBE606A354CB652289 /* DAppAuthConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmViewController.swift; sourceTree = "<group>"; };
@@ -6008,6 +6015,8 @@
 		2D6287562C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D6287592C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovInvalidVotesSetupInteractor.swift; sourceTree = "<group>"; };
 		2D62875B2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSwipeGovSetupInteractor.swift; sourceTree = "<group>"; };
+		2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovRepositoryFactory.swift; sourceTree = "<group>"; };
+		2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupInteractorError.swift; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -6035,6 +6044,8 @@
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
 		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovDetailsInteractorError.swift; sourceTree = "<group>"; };
+		2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListInteractorError.swift; sourceTree = "<group>"; };
 		2D8EFB272C0728BC00866F90 /* AccountConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountConfirmViewLayout.swift; sourceTree = "<group>"; };
 		2D8EFB292C08892300866F90 /* MnemonicViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewModelFactory.swift; sourceTree = "<group>"; };
 		2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicAssetsCustomFeeEstimator.swift; sourceTree = "<group>"; };
@@ -6083,12 +6094,14 @@
 		2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmInteractor.swift; sourceTree = "<group>"; };
 		2DF6F5F52C5CE7D4000D9CDD /* ReferendmVotesViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendmVotesViewModelFactory.swift; sourceTree = "<group>"; };
 		2DF6F5F72C5D7DEE000D9CDD /* Decimal+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Rounding.swift"; sourceTree = "<group>"; };
+		2DFBA0E016605C11FA09A78F /* Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E800814C025B38C87CC282D /* TokensAddSelectNetworkViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkViewFactory.swift; sourceTree = "<group>"; };
 		2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageViewLayout.swift; sourceTree = "<group>"; };
 		2ECD8589BD30A8BE9492AD87 /* StakingRewardPayoutsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsPresenter.swift; sourceTree = "<group>"; };
 		2EEBEF25EE40804C383C0057 /* GenericLedgerAccountSelectionInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountSelectionInteractor.swift; sourceTree = "<group>"; };
 		2F10F130391C4B3652FE8F59 /* ParitySignerTxScanProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanProtocols.swift; sourceTree = "<group>"; };
+		2F39FB3D3BDA1F84D0C7CD32 /* Pods-novawalletAll-novawallet.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.staging.xcconfig"; sourceTree = "<group>"; };
 		2F5A8E5D1C5A7F0B5B1570B9 /* NominationPoolBondMoreConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreConfirmViewLayout.swift; sourceTree = "<group>"; };
 		2F83F91EC9B29C21D087D869 /* ExportInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportInteractor.swift; sourceTree = "<group>"; };
 		2F8A45125DF93218FC6C5119 /* ParaStkYourCollatorsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYourCollatorsViewFactory.swift; sourceTree = "<group>"; };
@@ -6103,7 +6116,6 @@
 		313B89948DC631DE61E01007 /* LedgerTxConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerTxConfirmInteractor.swift; sourceTree = "<group>"; };
 		313CDB5EB70518DEC1BDB392 /* MoonbeamTermsViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoonbeamTermsViewLayout.swift; sourceTree = "<group>"; };
 		3157288B4033B2264628C866 /* StakingMoreOptionsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsViewFactory.swift; sourceTree = "<group>"; };
-		3160539FC519CABC8C83A93C /* Pods-novawalletTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.staging.xcconfig"; sourceTree = "<group>"; };
 		31AC2847EB686A6B2A16D8DF /* TokensManageInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageInteractor.swift; sourceTree = "<group>"; };
 		31CD72DF2B9A73451090EA4B /* NetworksListViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworksListViewLayout.swift; sourceTree = "<group>"; };
 		3246115B53EFE9461CD2F68B /* NPoolsUnstakeSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeSetupViewFactory.swift; sourceTree = "<group>"; };
@@ -6170,6 +6182,7 @@
 		3D383344BEDAEDC76A6BE2CE /* DAppTxDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsProtocols.swift; sourceTree = "<group>"; };
 		3E09466B1FD637D4649D7CED /* DelegateVotedReferendaInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegateVotedReferendaInteractor.swift; sourceTree = "<group>"; };
 		3E10B8C50958D0184D89E1BD /* GenericLedgerAccountSelectionWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountSelectionWireframe.swift; sourceTree = "<group>"; };
+		3E3693AF7F9026713BBAB673 /* Pods-NovaPushNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.release.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
 		3E5EB48ADB08405BF51F087D /* GovernanceRemoveVotesConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRemoveVotesConfirmWireframe.swift; sourceTree = "<group>"; };
 		3E6E41F045986002E1E26C12 /* DAppListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppListWireframe.swift; sourceTree = "<group>"; };
 		3E894D4633D04AD4415CE1F2 /* GovernanceDelegateInfoViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInfoViewFactory.swift; sourceTree = "<group>"; };
@@ -6186,6 +6199,7 @@
 		408CF7752F4F638FA29DFE4A /* ParitySignerTxScanPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanPresenter.swift; sourceTree = "<group>"; };
 		40B1EE1E66B8325C47D8A404 /* GovernanceDelegateSearchProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateSearchProtocols.swift; sourceTree = "<group>"; };
 		40C01C724F616836BACFBE8B /* GovernanceTracksSettingsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceTracksSettingsInteractor.swift; sourceTree = "<group>"; };
+		4133FB009A3454E9D03DBC08 /* Pods-NovaPushNotificationServiceExtension.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.dev.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.dev.xcconfig"; sourceTree = "<group>"; };
 		4191E0055768541F6A3D8A61 /* StakingRewardPayoutsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsInteractor.swift; sourceTree = "<group>"; };
 		41DFB2757D029FB5DF3CEBC2 /* WalletHistoryFilterProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilterProtocols.swift; sourceTree = "<group>"; };
 		42787EE71C10AD13B8584EFC /* StakingConfirmProxyProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingConfirmProxyProtocols.swift; sourceTree = "<group>"; };
@@ -6224,7 +6238,7 @@
 		4BDB5CA76787B1D6EC83F07B /* StakingRebagConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRebagConfirmViewController.swift; sourceTree = "<group>"; };
 		4C602661DE4D6CAC482AF721 /* ParaStkCollatorsSearchViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkCollatorsSearchViewFactory.swift; sourceTree = "<group>"; };
 		4C71DEF78B69F017DF460AB7 /* CrowdloanContributionSetupViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionSetupViewController.swift; sourceTree = "<group>"; };
-		4CBDB48E3F9085291BB5670E /* Pods-novawalletAll-novawallet.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.staging.xcconfig"; sourceTree = "<group>"; };
+		4CB3C834CCCD632B6CB30BEB /* Pods_novawalletAll_novawallet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawallet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D8246CDA02F544AF9DA2B11 /* ParaStkStakeSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkStakeSetupProtocols.swift; sourceTree = "<group>"; };
 		4DAF102188EF43E4CFB62A5C /* SwipeGovReferendumDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovReferendumDetailsViewFactory.swift; sourceTree = "<group>"; };
 		4DEE72D9DC1D96CCF8123B70 /* CloudBackupReviewChangesViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupReviewChangesViewLayout.swift; sourceTree = "<group>"; };
@@ -6288,7 +6302,6 @@
 		597A3C3F2937333D0EC7ABD5 /* AdvancedWalletViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdvancedWalletViewController.swift; sourceTree = "<group>"; };
 		599FEDBD7E8B665F1A93BA70 /* AccountConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountConfirmWireframe.swift; sourceTree = "<group>"; };
 		59BED0E6DBC4C21D9625740C /* GovernanceUnavailableTracksProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnavailableTracksProtocols.swift; sourceTree = "<group>"; };
-		59C059E97F8C9718BAAF047A /* Pods-novawalletAll-novawallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.release.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.release.xcconfig"; sourceTree = "<group>"; };
 		5A05EB4FAF2FDE7DECEA93E4 /* StakingMainViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingMainViewController.swift; sourceTree = "<group>"; };
 		5AA3BF0C9C1E0E2C67D962F5 /* PurchaseViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchaseViewFactory.swift; sourceTree = "<group>"; };
 		5AD16D5FA4115F2A525BDE4F /* ParaStkRedeemViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRedeemViewController.swift; sourceTree = "<group>"; };
@@ -6331,6 +6344,7 @@
 		638A65DAC86BAF9EB4D2F2F8 /* StakingRewardDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsWireframe.swift; sourceTree = "<group>"; };
 		641067C2CF2998FD70FE27BE /* OnboardingWalletReadyInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingWalletReadyInteractor.swift; sourceTree = "<group>"; };
 		643A1F4D1EF091795EBB89EF /* ProxiedsUpdateViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProxiedsUpdateViewController.swift; sourceTree = "<group>"; };
+		646AC6DF35A062CEF81E4A5B /* Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig"; sourceTree = "<group>"; };
 		6475F9C6C6B095B9C5026CE9 /* ParaStkYieldBoostStartViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStartViewController.swift; sourceTree = "<group>"; };
 		64E66B662DD15424D2B383A7 /* StakingTypeViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingTypeViewLayout.swift; sourceTree = "<group>"; };
 		6589230FD54838BFCF6E3FD8 /* StartStakingConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingConfirmViewFactory.swift; sourceTree = "<group>"; };
@@ -6387,8 +6401,8 @@
 		7186BB5CB39B28A78D35D635 /* GovernanceYourDelegationsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationsWireframe.swift; sourceTree = "<group>"; };
 		71B7A8DF67B1A4953EF7E74F /* NetworksListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworksListProtocols.swift; sourceTree = "<group>"; };
 		71D3243E13077BFD9DAC8FFC /* NominationPoolBondMoreConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreConfirmPresenter.swift; sourceTree = "<group>"; };
-		71E3C2F8E4A1B8B8F53BE0AC /* Pods-novawalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.debug.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.debug.xcconfig"; sourceTree = "<group>"; };
 		722DC609FE13ACBEE4328873 /* MarkdownDescriptionProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownDescriptionProtocols.swift; sourceTree = "<group>"; };
+		724B19780B66F6DD7CCA1831 /* Pods-novawalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.debug.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.debug.xcconfig"; sourceTree = "<group>"; };
 		725529DC6B70BF5B091B3748 /* NominationPoolBondMoreSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreSetupProtocols.swift; sourceTree = "<group>"; };
 		7279B5EF846082A94136806F /* SwipeGovVotingListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListPresenter.swift; sourceTree = "<group>"; };
 		72EF3BEC3EA07548C10A87FD /* ReferendumSearchWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumSearchWireframe.swift; sourceTree = "<group>"; };
@@ -6401,6 +6415,7 @@
 		746121BFAC406EB179BD5A6C /* CloudBackupRemindInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupRemindInteractor.swift; sourceTree = "<group>"; };
 		7484BA696561262926D87FE5 /* CrowdloanContributionSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionSetupProtocols.swift; sourceTree = "<group>"; };
 		748E0AF1A286016CB220155C /* ControllerAccountInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountInteractor.swift; sourceTree = "<group>"; };
+		74990B6625BDACBBA87410A8 /* Pods_novawalletTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		74E4A8D1E4FEA5936AA38B24 /* StakingMoreOptionsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingMoreOptionsInteractor.swift; sourceTree = "<group>"; };
 		750C8C7940C944DA4C8CB95F /* DAppListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppListInteractor.swift; sourceTree = "<group>"; };
 		75247AFBEFD8347011098F69 /* GovernanceRemoveVotesConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRemoveVotesConfirmViewFactory.swift; sourceTree = "<group>"; };
@@ -6743,7 +6758,6 @@
 		793046EA14E4CAB096803BCD /* NftDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftDetailsWireframe.swift; sourceTree = "<group>"; };
 		793356FB65FB73CE7097C6F1 /* NPoolsUnstakeConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeConfirmProtocols.swift; sourceTree = "<group>"; };
 		796859464B823B60746C5DE5 /* SwapConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmProtocols.swift; sourceTree = "<group>"; };
-		7A087CBB30A70B7766230F7F /* Pods-NovaPushNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.release.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
 		7A092ADC09DA0429548EBC08 /* NftListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListPresenter.swift; sourceTree = "<group>"; };
 		7A34373D4CBAE0648DCCB75A /* StakingRewardsNotificationsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardsNotificationsPresenter.swift; sourceTree = "<group>"; };
 		7A55BBE51903C36DDE9A9907 /* CloudBackupReviewChangesPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupReviewChangesPresenter.swift; sourceTree = "<group>"; };
@@ -6752,12 +6766,10 @@
 		7B1A00299D9B50045E1A1983 /* DAppAddFavoriteProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAddFavoriteProtocols.swift; sourceTree = "<group>"; };
 		7B81B239BD9C150BFE9A82B0 /* LocksViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocksViewFactory.swift; sourceTree = "<group>"; };
 		7B9CC114CB6B28CDC59F99CF /* GovernanceUnlockSetupPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockSetupPresenter.swift; sourceTree = "<group>"; };
-		7BFDB14F6CA5755AC1C4FA67 /* Pods_novawalletAll_novawalletIntegrationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawalletIntegrationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C2883649A5E84DF9B861C83 /* DelegateVotedReferendaViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegateVotedReferendaViewController.swift; sourceTree = "<group>"; };
 		7C70EBF83B2547452417E588 /* StakingRewardDetailsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsViewController.swift; sourceTree = "<group>"; };
 		7CBA1296E4C6E04EC9C5CA98 /* ParaStkUnstakePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakePresenter.swift; sourceTree = "<group>"; };
 		7CD1FBC9C063951E2520265D /* SwapConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmWireframe.swift; sourceTree = "<group>"; };
-		7D5965CCC8CE8EF1519128CF /* Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig"; sourceTree = "<group>"; };
 		7D8A9948F319AD0D154D1EC4 /* DelegationListViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelegationListViewFactory.swift; sourceTree = "<group>"; };
 		7DDDB2B35CD3299F50613141 /* ReferralCrowdloanViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferralCrowdloanViewController.swift; sourceTree = "<group>"; };
 		7DDEB59CB3BDF9BDAAC4E3C5 /* StakingProxyManagementViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingProxyManagementViewFactory.swift; sourceTree = "<group>"; };
@@ -6770,8 +6782,8 @@
 		7F80D885306E1EFE4ABE321C /* DAppAuthConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmPresenter.swift; sourceTree = "<group>"; };
 		7F8B46E3BAB48A2D2E1D2EF4 /* ParitySignerTxScanWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanWireframe.swift; sourceTree = "<group>"; };
 		7FF467EBB295AC2A3DDA4492 /* GovernanceEditDelegationTracksPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceEditDelegationTracksPresenter.swift; sourceTree = "<group>"; };
-		8008E92C2E7ADCC92E57FE59 /* Pods-novawalletAll-novawallet.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.dev.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.dev.xcconfig"; sourceTree = "<group>"; };
 		80105CECB120A716A0A3CE1D /* SwipeGovSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupWireframe.swift; sourceTree = "<group>"; };
+		803A7BF1760C47CC9319C9B8 /* Pods-NovaPushNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		812BCD9B7B25BCA02E32452E /* DAppAuthSettingsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsInteractor.swift; sourceTree = "<group>"; };
 		8145FD81205F06EB6B8B51DA /* StakingSetupAmountInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingSetupAmountInteractor.swift; sourceTree = "<group>"; };
 		8167536168325942DA6892E1 /* LedgerWalletConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerWalletConfirmWireframe.swift; sourceTree = "<group>"; };
@@ -9295,6 +9307,7 @@
 		88FF5C7E29C8364500D1CB5D /* Caip2+ParseError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Caip2+ParseError.swift"; sourceTree = "<group>"; };
 		894A6BB613EA991A09976B30 /* NominationPoolBondMoreConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreConfirmProtocols.swift; sourceTree = "<group>"; };
 		8963C0A6A643F8ABD19AD6B3 /* GovernanceNotificationsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsInteractor.swift; sourceTree = "<group>"; };
+		898367EDC2B21FB1FE84742A /* Pods_NovaPushNotificationServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NovaPushNotificationServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		899686C7351A2600FFA08371 /* TransferConfirmOnChainViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransferConfirmOnChainViewFactory.swift; sourceTree = "<group>"; };
 		89AAAF09837D225A05769A7D /* ProxySignValidationPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProxySignValidationPresenter.swift; sourceTree = "<group>"; };
 		89CFED2E01AB638656E251AF /* NftListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListProtocols.swift; sourceTree = "<group>"; };
@@ -9325,6 +9338,7 @@
 		8EF1830DCCDBD01066DA50AE /* KnownNetworksListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KnownNetworksListInteractor.swift; sourceTree = "<group>"; };
 		8F96182151D003DF6789CB4B /* DAppSearchProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppSearchProtocols.swift; sourceTree = "<group>"; };
 		8FDF5963FA924F8C815F3BCF /* ParaStkRebondViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondViewController.swift; sourceTree = "<group>"; };
+		8FEEBD577559167D703C3F56 /* Pods-NovaPushNotificationServiceExtension.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.staging.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.staging.xcconfig"; sourceTree = "<group>"; };
 		902360B8577FAC9504F5854F /* LedgerAccountConfirmationPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerAccountConfirmationPresenter.swift; sourceTree = "<group>"; };
 		90681A889A40F7163CBE9B6B /* AssetsSettingsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetsSettingsProtocols.swift; sourceTree = "<group>"; };
 		906C55FC079AF6112AF0745B /* YourValidatorListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = YourValidatorListWireframe.swift; sourceTree = "<group>"; };
@@ -9335,7 +9349,6 @@
 		91C760EDD8CDD8073063D76D /* NominationPoolBondMoreSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreSetupViewFactory.swift; sourceTree = "<group>"; };
 		91D44421CCD7AD220A05CD0E /* PurchaseInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchaseInteractor.swift; sourceTree = "<group>"; };
 		92381CBE193B3317F477D377 /* GovernanceRevokeDelegationConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmViewController.swift; sourceTree = "<group>"; };
-		92BA384CCD3E8B6A4F9F99BB /* Pods_NovaPushNotificationServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NovaPushNotificationServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		932EBC486896C9ECB60977C4 /* NetworksListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworksListWireframe.swift; sourceTree = "<group>"; };
 		9332C701E51E9D4031BCE90D /* SwipeGovViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovViewController.swift; sourceTree = "<group>"; };
 		935B5118367A118FC86B66C8 /* LedgerNetworkSelectionWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerNetworkSelectionWireframe.swift; sourceTree = "<group>"; };
@@ -9480,7 +9493,6 @@
 		AD0186D779597EAA44B8B188 /* LedgerWalletAccountConfirmationInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerWalletAccountConfirmationInteractor.swift; sourceTree = "<group>"; };
 		AD1CAB4467C76E4139ECB1B7 /* ReferendumVoteConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteConfirmViewFactory.swift; sourceTree = "<group>"; };
 		AD26E02E5EA85D22062142CD /* CloudBackupCreateViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateViewFactory.swift; sourceTree = "<group>"; };
-		AD49E1B5896197485CBB3C90 /* Pods_novawalletAll_novawallet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawallet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD4A85869898653E7FF8BAA0 /* SwipeGovReferendumDetailsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovReferendumDetailsViewController.swift; sourceTree = "<group>"; };
 		ADBC3405EEB1F8941FB19BAA /* TokenManageSingleViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenManageSingleViewController.swift; sourceTree = "<group>"; };
 		ADD348E749EC6A7E3BB069DE /* StakingUnbondConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmProtocols.swift; sourceTree = "<group>"; };
@@ -9630,7 +9642,7 @@
 		B56202207DF8BB6684C6EF6C /* AdvancedWalletPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdvancedWalletPresenter.swift; sourceTree = "<group>"; };
 		B5AEEBB57E40B1FD4F7F354C /* NetworkNodeAddInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkNodeAddInteractor.swift; sourceTree = "<group>"; };
 		B5BC1402B34E341312ABB378 /* LedgerWalletConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerWalletConfirmPresenter.swift; sourceTree = "<group>"; };
-		B62FE33BE7D018D8658CCCB3 /* Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		B5FEF6C4E1C42990F93140FE /* Pods_novawalletAll_novawalletIntegrationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawalletIntegrationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6884DFC1AA1B995C21C274C /* WalletHistoryFilterViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilterViewController.swift; sourceTree = "<group>"; };
 		B6C9DC692C37FEEBD9EDF67D /* ProxiedsUpdateInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProxiedsUpdateInteractor.swift; sourceTree = "<group>"; };
 		B718CE9C51158F87D37894BB /* GovernanceDelegateConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateConfirmViewFactory.swift; sourceTree = "<group>"; };
@@ -9648,7 +9660,6 @@
 		B90CEC70F101AA25A4C00021 /* YourValidatorListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = YourValidatorListViewController.swift; sourceTree = "<group>"; };
 		B9D210D083060D19AFEB10F9 /* GovernanceNotificationsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsViewController.swift; sourceTree = "<group>"; };
 		B9D4A8C06D94C748124E6AA5 /* StartStakingInfoViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingInfoViewLayout.swift; sourceTree = "<group>"; };
-		B9F3C52856A964C167409FD5 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; sourceTree = "<group>"; };
 		BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletConnectSessionDetailsViewLayout.swift; sourceTree = "<group>"; };
 		BA518E1D79D86360F145B428 /* TokensAddSelectNetworkInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkInteractor.swift; sourceTree = "<group>"; };
 		BA7DAF20C447065DA5467696 /* TransactionHistoryViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransactionHistoryViewLayout.swift; sourceTree = "<group>"; };
@@ -9703,6 +9714,7 @@
 		C74A2166B054240BD5D925B6 /* UsernameSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UsernameSetupViewFactory.swift; sourceTree = "<group>"; };
 		C7F910E56C2CC7AA5224BD21 /* SwapSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSetupWireframe.swift; sourceTree = "<group>"; };
 		C80D934D47929D2331111AD7 /* ReferendumFullDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsWireframe.swift; sourceTree = "<group>"; };
+		C814C47595984FB77A161D8A /* Pods-novawalletAll-novawallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.debug.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.debug.xcconfig"; sourceTree = "<group>"; };
 		C8286382148354D2E7F68D32 /* NotificationWalletListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationWalletListInteractor.swift; sourceTree = "<group>"; };
 		C92B3D5B314FB3EAE65FA471 /* StartStakingInfoProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingInfoProtocols.swift; sourceTree = "<group>"; };
 		C96C3B5ABF4A8124848EFD17 /* ControllerAccountConfirmationWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountConfirmationWireframe.swift; sourceTree = "<group>"; };
@@ -9770,7 +9782,6 @@
 		D6C6573C52692E4A56E35FF9 /* RecommendedValidatorListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecommendedValidatorListProtocols.swift; sourceTree = "<group>"; };
 		D6E8ABCF1EB5064F40B697CC /* ParitySignerAddConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerAddConfirmPresenter.swift; sourceTree = "<group>"; };
 		D7280DD0C282CB1631C93DFB /* AssetsSettingsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetsSettingsPresenter.swift; sourceTree = "<group>"; };
-		D732BD7A3FED3AEB97E71B63 /* Pods-NovaPushNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		D74FF4FE525ADD8E7805481E /* AddDelegationViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDelegationViewLayout.swift; sourceTree = "<group>"; };
 		D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDelegationWireframe.swift; sourceTree = "<group>"; };
 		D790172C70C98CAE984F7183 /* NPoolsUnstakeConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeConfirmViewController.swift; sourceTree = "<group>"; };
@@ -9781,7 +9792,6 @@
 		D7FE5F01FC9364788A91EFA5 /* SelectValidatorsConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmProtocols.swift; sourceTree = "<group>"; };
 		D807220BDBBF997C9240E3C0 /* ProxySignValidationInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProxySignValidationInteractor.swift; sourceTree = "<group>"; };
 		D8511A3B5C31B73CDC794F63 /* TransactionHistoryInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransactionHistoryInteractor.swift; sourceTree = "<group>"; };
-		D85C4D73633343FACF503575 /* Pods-NovaPushNotificationServiceExtension.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.staging.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.staging.xcconfig"; sourceTree = "<group>"; };
 		D88BD92DF414EDD43D53954D /* KnownNetworksListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KnownNetworksListPresenter.swift; sourceTree = "<group>"; };
 		D88D7A2C9F9079EFF63E378B /* GovernanceEditDelegationTracksViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceEditDelegationTracksViewFactory.swift; sourceTree = "<group>"; };
 		D8A5632D4768BC5039EE8276 /* TokensManageAddViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageAddViewLayout.swift; sourceTree = "<group>"; };
@@ -9823,6 +9833,7 @@
 		DE767858B6CF5F6F7C7B418E /* ReferendumVoteConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteConfirmProtocols.swift; sourceTree = "<group>"; };
 		DE878F83551D3FD5FF2E21CC /* NotificationsManagementInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationsManagementInteractor.swift; sourceTree = "<group>"; };
 		DEE05ECCFE3DD11A2EAAF495 /* AssetDetailsViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetDetailsViewLayout.swift; sourceTree = "<group>"; };
+		DF23DA952767E510AFD829AC /* Pods-novawalletTests.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.dev.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.dev.xcconfig"; sourceTree = "<group>"; };
 		DF715CEF29477B59119520F1 /* ParitySignerAddressesInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerAddressesInteractor.swift; sourceTree = "<group>"; };
 		DFF58EC3A44E4DDDFB4B5C84 /* ParaStkYieldBoostStopViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStopViewLayout.swift; sourceTree = "<group>"; };
 		E0DB5EA5195D9433A4B90793 /* AdvancedWalletWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdvancedWalletWireframe.swift; sourceTree = "<group>"; };
@@ -9834,7 +9845,6 @@
 		E1E60EF37AC0A7646ED8FE64 /* AccountImportViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountImportViewFactory.swift; sourceTree = "<group>"; };
 		E20124142C4011901EF55AAA /* HardwareWalletAddressesViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HardwareWalletAddressesViewLayout.swift; sourceTree = "<group>"; };
 		E245CA0789F68382248F42C1 /* OnboardingWalletReadyViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingWalletReadyViewController.swift; sourceTree = "<group>"; };
-		E282BD1B62A47423D046C8E0 /* Pods-novawalletTests.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.dev.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.dev.xcconfig"; sourceTree = "<group>"; };
 		E283DABBC3BA910B8FC92271 /* NetworkManageNodeViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkManageNodeViewLayout.swift; sourceTree = "<group>"; };
 		E29DAC8F2DB0F7BF909812FA /* DAppTxDetailsViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsViewLayout.swift; sourceTree = "<group>"; };
 		E2E005960E331E8882A8C6FD /* StakingRebagConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRebagConfirmWireframe.swift; sourceTree = "<group>"; };
@@ -9871,10 +9881,10 @@
 		E8C13B77688FFF0FFBBB6612 /* ParaStkYourCollatorsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYourCollatorsWireframe.swift; sourceTree = "<group>"; };
 		E9636093217ABE05A7FAC9B9 /* AccountCreateViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountCreateViewFactory.swift; sourceTree = "<group>"; };
 		E9C562B800791237E371456F /* NotificationsSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationsSetupProtocols.swift; sourceTree = "<group>"; };
-		E9CE3E119CF96BC16B0A9264 /* Pods-NovaPushNotificationServiceExtension.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.dev.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.dev.xcconfig"; sourceTree = "<group>"; };
 		E9F49B3B261FBA0B568A5320 /* ParaStkRebondPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondPresenter.swift; sourceTree = "<group>"; };
 		E9FBF368FBB46AD4DE606DB1 /* ReferendumVotersWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVotersWireframe.swift; sourceTree = "<group>"; };
 		EAF2717F0CC0A4529C925814 /* NominationPoolBondMoreSetupViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreSetupViewLayout.swift; sourceTree = "<group>"; };
+		EB210DB540EE5A4D81B59FAA /* Pods-novawalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.release.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.release.xcconfig"; sourceTree = "<group>"; };
 		EB8605FD90D8C3553A9897B4 /* AccountImportPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountImportPresenter.swift; sourceTree = "<group>"; };
 		EB8E37A5FDB982C38A45DDA8 /* NotificationsSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationsSetupWireframe.swift; sourceTree = "<group>"; };
 		EC3B84FA1F22CC12B16C79AE /* GovernanceEditDelegationTracksWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceEditDelegationTracksWireframe.swift; sourceTree = "<group>"; };
@@ -9883,7 +9893,6 @@
 		ED010772D7CE0450BDF30707 /* ParaStkCollatorFiltersViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkCollatorFiltersViewFactory.swift; sourceTree = "<group>"; };
 		ED5CED3C58CD433B19978EC4 /* TransferOnChainConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransferOnChainConfirmInteractor.swift; sourceTree = "<group>"; };
 		ED66939D92756F608FA11520 /* DAppListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppListPresenter.swift; sourceTree = "<group>"; };
-		ED76EF9C0BF3B5E58FAAEB84 /* Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		EDB9EDB05686DF11958145E1 /* ControllerAccountWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountWireframe.swift; sourceTree = "<group>"; };
 		EDC320A5EC0D18B6F443BB2E /* ParaStkSelectCollatorsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkSelectCollatorsInteractor.swift; sourceTree = "<group>"; };
 		EE30B597680295FFB1B7220C /* ParaStkYieldBoostStartViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStartViewFactory.swift; sourceTree = "<group>"; };
@@ -10047,12 +10056,11 @@
 		F829E7F8B39EE7D977001510 /* ControllerAccountProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountProtocols.swift; sourceTree = "<group>"; };
 		F8C16637ADA10892106DD304 /* GovernanceDelegateInfoWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInfoWireframe.swift; sourceTree = "<group>"; };
 		F90A76631A8ED5D69C9F0A57 /* GovernanceNotificationsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceNotificationsViewFactory.swift; sourceTree = "<group>"; };
+		F9DE9E86B1B598C26CB9AA78 /* Pods-novawalletTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.staging.xcconfig"; sourceTree = "<group>"; };
 		F9F3BD600F80ED0426141843 /* SwapSlippageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageViewController.swift; sourceTree = "<group>"; };
-		FA0CF1031D2BBEFADE0D6713 /* Pods_novawalletTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA3F824117720D3CE65A195F /* LedgerDiscoverPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerDiscoverPresenter.swift; sourceTree = "<group>"; };
 		FA59CE2C7AE548ACA9D66FD7 /* CrowdloanContributionConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmWireframe.swift; sourceTree = "<group>"; };
 		FA8FE2D2EF1036543F55D410 /* OnboardingImportOptionsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingImportOptionsInteractor.swift; sourceTree = "<group>"; };
-		FAEB25D3316BB0B825C08FC7 /* Pods-novawalletAll-novawallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.debug.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.debug.xcconfig"; sourceTree = "<group>"; };
 		FB228B185ED9F6C20C66A6DE /* ProxySignValidationViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProxySignValidationViewFactory.swift; sourceTree = "<group>"; };
 		FB2EA5D52F51F03FBAB490FE /* ChainAddressDetailsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsViewController.swift; sourceTree = "<group>"; };
 		FB617C1637B277B83E4C4914 /* StartStakingConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingConfirmViewController.swift; sourceTree = "<group>"; };
@@ -10076,7 +10084,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1ED5E4A136752D9F053CCC9 /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */,
+				A9202F89B78BFE696090A89C /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10084,7 +10092,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E19F51E1D57ADE85DF0773B /* Pods_novawalletAll_novawalletIntegrationTests.framework in Frameworks */,
+				1EFDF68708E3A9D6B59E4EA2 /* Pods_novawalletAll_novawalletIntegrationTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10092,7 +10100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD85C18291F7CBC63E427ED4 /* Pods_novawalletAll_novawallet.framework in Frameworks */,
+				7B72E35164417147B889A20F /* Pods_novawalletAll_novawallet.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10100,7 +10108,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB38C94D59994EEA8C5F2C5C /* Pods_novawalletTests.framework in Frameworks */,
+				8274BF44586FEA1424376B47 /* Pods_novawalletTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10119,6 +10127,7 @@
 				F08E58D49C9B543CC9A16EE3 /* SwipeGovVotingListViewController.swift */,
 				0811515EC834B737A3536329 /* SwipeGovVotingListViewLayout.swift */,
 				6230966B7A56E78A30803DC2 /* SwipeGovVotingListViewFactory.swift */,
+				2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */,
 			);
 			path = SwipeGovVotingList;
 			sourceTree = "<group>";
@@ -10150,6 +10159,7 @@
 				AD4A85869898653E7FF8BAA0 /* SwipeGovReferendumDetailsViewController.swift */,
 				D7EB0E8209C17614CA861AD8 /* SwipeGovReferendumDetailsViewLayout.swift */,
 				4DAF102188EF43E4CFB62A5C /* SwipeGovReferendumDetailsViewFactory.swift */,
+				2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */,
 			);
 			path = SwipeGovReferendumDetails;
 			sourceTree = "<group>";
@@ -10251,6 +10261,17 @@
 				3BEEFB03BBA45F5143484398 /* ParaStkRedeemViewFactory.swift */,
 			);
 			path = ParaStkRedeem;
+			sourceTree = "<group>";
+		};
+		0858A31E5FB9DA8C618A248B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				898367EDC2B21FB1FE84742A /* Pods_NovaPushNotificationServiceExtension.framework */,
+				4CB3C834CCCD632B6CB30BEB /* Pods_novawalletAll_novawallet.framework */,
+				B5FEF6C4E1C42990F93140FE /* Pods_novawalletAll_novawalletIntegrationTests.framework */,
+				74990B6625BDACBBA87410A8 /* Pods_novawalletTests.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		0894ACC48B9E77D457DDA9E5 /* WalletReady */ = {
@@ -12022,22 +12043,22 @@
 		2698CD398B0412EB85D620AB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				D732BD7A3FED3AEB97E71B63 /* Pods-NovaPushNotificationServiceExtension.debug.xcconfig */,
-				E9CE3E119CF96BC16B0A9264 /* Pods-NovaPushNotificationServiceExtension.dev.xcconfig */,
-				7A087CBB30A70B7766230F7F /* Pods-NovaPushNotificationServiceExtension.release.xcconfig */,
-				D85C4D73633343FACF503575 /* Pods-NovaPushNotificationServiceExtension.staging.xcconfig */,
-				FAEB25D3316BB0B825C08FC7 /* Pods-novawalletAll-novawallet.debug.xcconfig */,
-				8008E92C2E7ADCC92E57FE59 /* Pods-novawalletAll-novawallet.dev.xcconfig */,
-				59C059E97F8C9718BAAF047A /* Pods-novawalletAll-novawallet.release.xcconfig */,
-				4CBDB48E3F9085291BB5670E /* Pods-novawalletAll-novawallet.staging.xcconfig */,
-				B62FE33BE7D018D8658CCCB3 /* Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig */,
-				7D5965CCC8CE8EF1519128CF /* Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig */,
-				ED76EF9C0BF3B5E58FAAEB84 /* Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig */,
-				B9F3C52856A964C167409FD5 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */,
-				71E3C2F8E4A1B8B8F53BE0AC /* Pods-novawalletTests.debug.xcconfig */,
-				E282BD1B62A47423D046C8E0 /* Pods-novawalletTests.dev.xcconfig */,
-				05461DA7A9E6AC79837431C1 /* Pods-novawalletTests.release.xcconfig */,
-				3160539FC519CABC8C83A93C /* Pods-novawalletTests.staging.xcconfig */,
+				803A7BF1760C47CC9319C9B8 /* Pods-NovaPushNotificationServiceExtension.debug.xcconfig */,
+				4133FB009A3454E9D03DBC08 /* Pods-NovaPushNotificationServiceExtension.dev.xcconfig */,
+				3E3693AF7F9026713BBAB673 /* Pods-NovaPushNotificationServiceExtension.release.xcconfig */,
+				8FEEBD577559167D703C3F56 /* Pods-NovaPushNotificationServiceExtension.staging.xcconfig */,
+				C814C47595984FB77A161D8A /* Pods-novawalletAll-novawallet.debug.xcconfig */,
+				216F39937204DB47DEF4241D /* Pods-novawalletAll-novawallet.dev.xcconfig */,
+				0211E6978AF4D5702EB9F210 /* Pods-novawalletAll-novawallet.release.xcconfig */,
+				2F39FB3D3BDA1F84D0C7CD32 /* Pods-novawalletAll-novawallet.staging.xcconfig */,
+				2DFBA0E016605C11FA09A78F /* Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig */,
+				646AC6DF35A062CEF81E4A5B /* Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig */,
+				133C4E00EEC4F3F67BBDD6E5 /* Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig */,
+				1C78A5C428F468C694463CC2 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */,
+				724B19780B66F6DD7CCA1831 /* Pods-novawalletTests.debug.xcconfig */,
+				DF23DA952767E510AFD829AC /* Pods-novawalletTests.dev.xcconfig */,
+				EB210DB540EE5A4D81B59FAA /* Pods-novawalletTests.release.xcconfig */,
+				F9DE9E86B1B598C26CB9AA78 /* Pods-novawalletTests.staging.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -12326,6 +12347,7 @@
 		2D6287452C941A2D00060814 /* SwipeGov */ = {
 			isa = PBXGroup;
 			children = (
+				2D6287682C99A0F700060814 /* Common */,
 				02562CD63D75F25A2D8B91DB /* SwipeGovReferendumDetails */,
 				004CB16144B71C42956A5D93 /* SwipeGovVotingList */,
 				52E57E961FA41BD3ABDDCDF0 /* SwipeGovSetup */,
@@ -12359,6 +12381,14 @@
 				2D62875B2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift */,
 			);
 			path = Interactor;
+			sourceTree = "<group>";
+		};
+		2D6287682C99A0F700060814 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
@@ -12751,17 +12781,6 @@
 			path = ExportMnemonic;
 			sourceTree = "<group>";
 		};
-		4068003DED0BF09DDE622BE5 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				92BA384CCD3E8B6A4F9F99BB /* Pods_NovaPushNotificationServiceExtension.framework */,
-				AD49E1B5896197485CBB3C90 /* Pods_novawalletAll_novawallet.framework */,
-				7BFDB14F6CA5755AC1C4FA67 /* Pods_novawalletAll_novawalletIntegrationTests.framework */,
-				FA0CF1031D2BBEFADE0D6713 /* Pods_novawalletTests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		4174E009EAC3176DD4DEB970 /* BackupMnemonicCard */ = {
 			isa = PBXGroup;
 			children = (
@@ -12929,6 +12948,7 @@
 				20F9E5627F64332884633AED /* SwipeGovSetupViewFactory.swift */,
 				2D6287522C96CA7100060814 /* SwipeGovSetupViewLayout.swift */,
 				2D62873D2C919E4B00060814 /* SwipeGovSetupViewController.swift */,
+				2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */,
 			);
 			path = SwipeGovSetup;
 			sourceTree = "<group>";
@@ -17064,7 +17084,7 @@
 				8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */,
 				77CAF4302B8E96A400E4297C /* NovaPushNotificationServiceExtension */,
 				2698CD398B0412EB85D620AB /* Pods */,
-				4068003DED0BF09DDE622BE5 /* Frameworks */,
+				0858A31E5FB9DA8C618A248B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -23393,7 +23413,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 77CAF43C2B8E96A400E4297C /* Build configuration list for PBXNativeTarget "NovaPushNotificationServiceExtension" */;
 			buildPhases = (
-				3B91611D6031BDD46E7F5CFE /* [CP] Check Pods Manifest.lock */,
+				449C2B56BCBCE44CAE993A75 /* [CP] Check Pods Manifest.lock */,
 				0CCD18A42BA15D900068D73A /* R.swift */,
 				77EDF9212B95F2E0003266B1 /* SwiftFormat */,
 				77CAF42B2B8E96A400E4297C /* Sources */,
@@ -23413,11 +23433,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8438E1D624BFAAD2001BDB13 /* Build configuration list for PBXNativeTarget "novawalletIntegrationTests" */;
 			buildPhases = (
-				D1003285E3EE56AAA9BDCDD8 /* [CP] Check Pods Manifest.lock */,
+				FF635D48E3205BBB46801CAC /* [CP] Check Pods Manifest.lock */,
 				8438E1CB24BFAAD2001BDB13 /* Sources */,
 				8438E1CC24BFAAD2001BDB13 /* Frameworks */,
 				8438E1CD24BFAAD2001BDB13 /* Resources */,
-				2B0FAE1DFF80D6663D54BA92 /* [CP] Embed Pods Frameworks */,
+				FCA07F92165C1A692E5D5838 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -23433,7 +23453,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 849013C724A80986008F705E /* Build configuration list for PBXNativeTarget "novawallet" */;
 			buildPhases = (
-				F2AB9D7A65284AC4E52433B1 /* [CP] Check Pods Manifest.lock */,
+				EB8DDB110DA1DDE8A9917DED /* [CP] Check Pods Manifest.lock */,
 				849013CD24A92260008F705E /* Swiftlint */,
 				849013CE24A92280008F705E /* R.swift */,
 				F472A8D6261758DE003C58BC /* SwiftFormat */,
@@ -23443,7 +23463,7 @@
 				849013A524A80984008F705E /* Frameworks */,
 				849013A624A80984008F705E /* Resources */,
 				77CAF4372B8E96A400E4297C /* Embed Foundation Extensions */,
-				6C6B3CB2EDE251AA4384289F /* [CP] Embed Pods Frameworks */,
+				72BD3DCA1749DE11CB244108 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -23459,13 +23479,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 849013CA24A80986008F705E /* Build configuration list for PBXNativeTarget "novawalletTests" */;
 			buildPhases = (
-				D8DD38982FDCE9FCF4AAEE5A /* [CP] Check Pods Manifest.lock */,
+				CD4561294E6AE17F89497DC3 /* [CP] Check Pods Manifest.lock */,
 				842D1E8824D207C700C30A7A /* Modules Mock */,
 				842D1E8924D207D900C30A7A /* Common Mock */,
 				849013BA24A80986008F705E /* Sources */,
 				849013BB24A80986008F705E /* Frameworks */,
 				849013BC24A80986008F705E /* Resources */,
-				6FB0714EDA8D85B6DB6BA23E /* [CP] Embed Pods Frameworks */,
+				A1C3F5F800C92B95813BF834 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -23664,30 +23684,13 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift,
+				"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift\"\n";
 		};
-		2B0FAE1DFF80D6663D54BA92 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3B91611D6031BDD46E7F5CFE /* [CP] Check Pods Manifest.lock */ = {
+		449C2B56BCBCE44CAE993A75 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -23709,7 +23712,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6C6B3CB2EDE251AA4384289F /* [CP] Embed Pods Frameworks */ = {
+		72BD3DCA1749DE11CB244108 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -23724,23 +23727,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6FB0714EDA8D85B6DB6BA23E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		77EDF9212B95F2E0003266B1 /* SwiftFormat */ = {
@@ -23829,11 +23815,28 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				$PROJECT_DIR/R.generated.swift,
+				"$PROJECT_DIR/R.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$PROJECT_DIR/R.generated.swift\"\n";
+		};
+		A1C3F5F800C92B95813BF834 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		AE2060202636DA5900357578 /* Inject keys */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -23850,35 +23853,13 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CIKeys.generated.swift",
-				$PROJECT_DIR/CIKeys.generated.swift,
+				"$PROJECT_DIR/CIKeys.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#check if env-vars.sh exists\nif [ -f $PROJECT_DIR/$PROJECT_NAME/env-vars.sh ]\nthen\nsource $PROJECT_DIR/$PROJECT_NAME/env-vars.sh\nfi\n#no `else` case needed if the CI works as expected\n\nWORK_DIR=\"$PROJECT_DIR/$PROJECT_NAME\"\necho \"Sourcery Work Directory = $WORK_DIR\"\n\nOUT_FILE=\"$PROJECT_DIR/CIKeys.generated.swift\"\necho \"Sourcery Output File = $OUT_FILE\"\n\n\"$PODS_ROOT/Sourcery/bin/sourcery\" --templates \"$WORK_DIR\" --sources \"$WORK_DIR\" --output \"$OUT_FILE\" --args mercuryoSecretKey=$MERCURYO_PRODUCTION_SECRET,mercuryoTestSecretKey=$MERCURYO_TEST_SECRET,acalaAuthToken=$ACALA_AUTH_TOKEN,moonbeamHistoryApiKey=$MOONBEAM_HISTORY_API_KEY,moonriverHistoryApiKey=$MOONRIVER_HISTORY_API_KEY,etherscanHistoryApiKey=$ETHERSCAN_HISTORY_API_KEY,acalaAuthTestToken=$ACALA_TEST_AUTH_TOKEN,moonbeamApiKey=$MOONBEAM_API_KEY,moonbeamApiTestKey=$MOONBEAM_TEST_API_KEY,infuraApiKey=$INFURA_API_KEY,wcProjectId=$WC_PROJECT_ID,dwellirApiKey=$DWELLIR_API_KEY,polkassemblySummaryApiKey=$POLKASSEMBLY_SUMMARY_API_KEY\n";
 		};
-		D1003285E3EE56AAA9BDCDD8 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-novawalletAll-novawalletIntegrationTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D8DD38982FDCE9FCF4AAEE5A /* [CP] Check Pods Manifest.lock */ = {
+		CD4561294E6AE17F89497DC3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -23900,7 +23881,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F2AB9D7A65284AC4E52433B1 /* [CP] Check Pods Manifest.lock */ = {
+		EB8DDB110DA1DDE8A9917DED /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -23939,6 +23920,45 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"$SRCROOT/novawallet\"\n";
+		};
+		FCA07F92165C1A692E5D5838 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FF635D48E3205BBB46801CAC /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-novawalletAll-novawalletIntegrationTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -24206,6 +24226,7 @@
 				D9D163662744F9BF00681C1F /* ExternalContributionSource.swift in Sources */,
 				77F033932A814296006BC67E /* GenericStakingTypeAccountView.swift in Sources */,
 				840DFF5528942CA9001B11EA /* ChainAddressDetailsPresentable.swift in Sources */,
+				2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */,
 				8407716428CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift in Sources */,
 				F477CD26262EAD30004DF739 /* StakingPayoutViewModelFactory.swift in Sources */,
 				7728E58B2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift in Sources */,
@@ -24433,6 +24454,7 @@
 				8428768824AE046300D91AD8 /* LanguageSelectionWireframe.swift in Sources */,
 				847F2D4227A96D9200AFD476 /* TokenGroupDecorationView.swift in Sources */,
 				849014E824AA925C008F705E /* ScrollsToTop.swift in Sources */,
+				2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */,
 				889D889528F01E5B00C4320F /* ReferendumTableViewCell.swift in Sources */,
 				F41CEB83272FF3DD00C06154 /* CrowdloanYourContributionsVMFactory.swift in Sources */,
 				8490146A24A9463B008F705E /* Locale+Localization.swift in Sources */,
@@ -27835,6 +27857,7 @@
 				30542C0BD486FD1583F36BA2 /* LedgerNetworkSelectionProtocols.swift in Sources */,
 				84F1D66D29051F240050F4E3 /* ReferendumReuseLockModel.swift in Sources */,
 				0C7CF4D42BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift in Sources */,
+				2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */,
 				8490111429E68FCB005D688B /* WalletConnectService.swift in Sources */,
 				84FBDBE128C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift in Sources */,
 				845B07F929162D24005785D3 /* Gov1LocalMappingFactory.swift in Sources */,
@@ -28456,6 +28479,7 @@
 				350B8A18C9C91DF07D2E53C5 /* SwapSetupViewLayout.swift in Sources */,
 				0C7104A42C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift in Sources */,
 				77F8A1982B73769C00B25F9B /* PushNotificationsFacadeFactory.swift in Sources */,
+				2D62876A2C99A10000060814 /* SwipeGovRepositoryFactory.swift in Sources */,
 				66531C7E2E0E99C89A89A35A /* SwapSetupViewFactory.swift in Sources */,
 				EB280B977471EA442D91395E /* SwapConfirmProtocols.swift in Sources */,
 				232B205831DF28B772515DF2 /* SwapConfirmWireframe.swift in Sources */,
@@ -29135,7 +29159,7 @@
 		};
 		77CAF43B2B8E96A400E4297C /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D85C4D73633343FACF503575 /* Pods-NovaPushNotificationServiceExtension.staging.xcconfig */;
+			baseConfigurationReference = 8FEEBD577559167D703C3F56 /* Pods-NovaPushNotificationServiceExtension.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -29172,7 +29196,7 @@
 		};
 		8438E1D724BFAAD2001BDB13 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B62FE33BE7D018D8658CCCB3 /* Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig */;
+			baseConfigurationReference = 2DFBA0E016605C11FA09A78F /* Pods-novawalletAll-novawalletIntegrationTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -29194,7 +29218,7 @@
 		};
 		8438E1D824BFAAD2001BDB13 /* Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D5965CCC8CE8EF1519128CF /* Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig */;
+			baseConfigurationReference = 646AC6DF35A062CEF81E4A5B /* Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -29216,7 +29240,7 @@
 		};
 		8438E1D924BFAAD2001BDB13 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ED76EF9C0BF3B5E58FAAEB84 /* Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig */;
+			baseConfigurationReference = 133C4E00EEC4F3F67BBDD6E5 /* Pods-novawalletAll-novawalletIntegrationTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -29423,7 +29447,7 @@
 		};
 		849013CB24A80986008F705E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 71E3C2F8E4A1B8B8F53BE0AC /* Pods-novawalletTests.debug.xcconfig */;
+			baseConfigurationReference = 724B19780B66F6DD7CCA1831 /* Pods-novawalletTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -29452,7 +29476,7 @@
 		};
 		849013CC24A80986008F705E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 05461DA7A9E6AC79837431C1 /* Pods-novawalletTests.release.xcconfig */;
+			baseConfigurationReference = EB210DB540EE5A4D81B59FAA /* Pods-novawalletTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -29572,7 +29596,7 @@
 		};
 		8490140024A92A27008F705E /* Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E282BD1B62A47423D046C8E0 /* Pods-novawalletTests.dev.xcconfig */;
+			baseConfigurationReference = DF23DA952767E510AFD829AC /* Pods-novawalletTests.dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -29685,7 +29709,7 @@
 		};
 		84AE11CE273C068700B294B7 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3160539FC519CABC8C83A93C /* Pods-novawalletTests.staging.xcconfig */;
+			baseConfigurationReference = F9DE9E86B1B598C26CB9AA78 /* Pods-novawalletTests.staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -29709,7 +29733,7 @@
 		};
 		84AE11CF273C068700B294B7 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B9F3C52856A964C167409FD5 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */;
+			baseConfigurationReference = 1C78A5C428F468C694463CC2 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;

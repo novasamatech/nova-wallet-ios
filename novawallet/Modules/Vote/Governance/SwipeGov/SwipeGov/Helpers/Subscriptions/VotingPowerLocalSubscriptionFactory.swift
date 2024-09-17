@@ -21,17 +21,6 @@ class VotingPowerLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory, Vo
 
         let source = EmptyStreamableSource<VotingPowerLocal>()
 
-        let mapper = VotingPowerMapper()
-        let filter = NSPredicate.votingPower(
-            for: chainId,
-            metaId: metaId
-        )
-        let repository = storageFacade.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
-
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
@@ -46,9 +35,15 @@ class VotingPowerLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory, Vo
             }
         }
 
+        let repository = SwipeGovRepositoryFactory.createVotingPowerRepository(
+            for: chainId,
+            metaId: metaId,
+            using: storageFacade
+        )
+
         let provider = StreamableProvider(
             source: AnyStreamableSource(source),
-            repository: AnyDataProviderRepository(repository),
+            repository: repository,
             observable: AnyDataProviderRepositoryObservable(observable),
             operationManager: operationManager
         )

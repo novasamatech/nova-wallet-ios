@@ -27,7 +27,7 @@ protocol SwipeGovSetupInteractorOutputProtocol: AnyObject {
     )
     func didReceiveBlockNumber(_ number: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
-    func didReceiveBaseError(_ error: ReferendumVoteInteractorError)
+    func didReceiveBaseError(_ error: SwipeGovSetupInteractorError)
 }
 
 protocol SwipeGovSetupWireframeProtocol: BaseReferendumVoteSetupWireframeProtocol, ModalAlertPresenting {

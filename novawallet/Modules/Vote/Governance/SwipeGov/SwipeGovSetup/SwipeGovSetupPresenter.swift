@@ -195,7 +195,7 @@ extension SwipeGovSetupPresenter: SwipeGovSetupInteractorOutputProtocol {
         updateAmountPriceView()
     }
 
-    func didReceiveBaseError(_ error: ReferendumVoteInteractorError) {
+    func didReceiveBaseError(_ error: SwipeGovSetupInteractorError) {
         logger.error("Did receive base error: \(error)")
 
         processError(error)
@@ -262,9 +262,10 @@ private extension SwipeGovSetupPresenter {
         provideReuseLocksViewModel()
     }
 
-    func processError(_ error: ReferendumVoteInteractorError) {
+    func processError(_ error: SwipeGovSetupInteractorError) {
         switch error {
-        case .assetBalanceFailed, .priceFailed, .votingReferendumFailed, .accountVotesFailed,
+        case .assetBalanceFailed,
+             .priceFailed,
              .blockNumberSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
@@ -283,8 +284,6 @@ private extension SwipeGovSetupPresenter {
                 from: view,
                 locale: selectedLocale
             )
-        default:
-            break
         }
     }
 
@@ -301,21 +300,10 @@ private extension SwipeGovSetupPresenter {
             assetInfo: assetInfo
         )
 
-        let handlers = GovernanceVoteValidatingHandlers(
-            convictionUpdateClosure: { [weak self] in
-                self?.selectConvictionValue(0)
-                self?.provideConviction()
-            },
-            feeErrorClosure: { [weak self] in
-                // TODO: Implement validation error processing
-            }
-        )
-
         DataValidationRunner.validateVotingPower(
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
-            handlers: handlers,
             successClosure: completionBlock
         )
     }

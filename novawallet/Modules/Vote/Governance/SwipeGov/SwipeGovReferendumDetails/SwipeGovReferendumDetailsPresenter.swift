@@ -140,7 +140,7 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsInteracto
         refreshIdentities()
     }
 
-    func didReceiveError(_ error: ReferendumDetailsInteractorError) {
+    func didReceiveError(_ error: SwipeGovDetailsInteractorError) {
         logger.error("Did receive error: \(error)")
 
         switch error {
@@ -160,8 +160,6 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsInteracto
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshBlockTime()
             }
-        default:
-            break
         }
     }
 }

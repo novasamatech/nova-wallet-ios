@@ -130,14 +130,14 @@ struct SwipeGovSetupViewFactory {
         }
 
         if invalidItems.isEmpty {
-            let votingPowerRepository = createVotingPowerRepository(
-                for: state,
-                wallet: wallet,
-                storageFacade: storageFacade
+            let repository = SwipeGovRepositoryFactory.createVotingPowerRepository(
+                for: option.chain.chainId,
+                metaId: wallet.metaId,
+                using: storageFacade
             )
 
             return SwipeGovSetupInteractor(
-                repository: votingPowerRepository,
+                repository: repository,
                 selectedAccount: selectedAccount,
                 observableState: state.observableState,
                 chain: option.chain,
@@ -153,14 +153,14 @@ struct SwipeGovSetupViewFactory {
                 operationQueue: operationQueue
             )
         } else {
-            let votingItemRepository = createVotingItemRepository(
-                for: state,
-                wallet: wallet,
-                storageFacade: storageFacade
+            let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
+                for: option.chain.chainId,
+                metaId: wallet.metaId,
+                using: storageFacade
             )
 
             return SwipeGovInvalidVotesSetupInteractor(
-                repository: votingItemRepository,
+                repository: repository,
                 invalidItems: invalidItems,
                 selectedAccount: selectedAccount,
                 observableState: state.observableState,
@@ -177,45 +177,5 @@ struct SwipeGovSetupViewFactory {
                 operationQueue: operationQueue
             )
         }
-    }
-
-    private static func createVotingPowerRepository(
-        for state: GovernanceSharedState,
-        wallet: MetaAccountModel,
-        storageFacade: StorageFacadeProtocol
-    ) -> AnyDataProviderRepository<VotingPowerLocal> {
-        let mapper = VotingPowerMapper()
-
-        let filter = NSPredicate.votingPower(
-            for: state.settings.value.chain.chainId,
-            metaId: wallet.metaId
-        )
-        let repository = storageFacade.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
-
-        return AnyDataProviderRepository(repository)
-    }
-
-    private static func createVotingItemRepository(
-        for state: GovernanceSharedState,
-        wallet: MetaAccountModel,
-        storageFacade: StorageFacadeProtocol
-    ) -> AnyDataProviderRepository<VotingBasketItemLocal> {
-        let mapper = VotingBasketItemMapper()
-
-        let filter = NSPredicate.votingPower(
-            for: state.settings.value.chain.chainId,
-            metaId: wallet.metaId
-        )
-        let repository = storageFacade.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
-
-        return AnyDataProviderRepository(repository)
     }
 }
