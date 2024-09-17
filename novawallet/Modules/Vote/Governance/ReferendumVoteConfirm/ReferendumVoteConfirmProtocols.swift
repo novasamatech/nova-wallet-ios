@@ -1,15 +1,18 @@
 import Foundation
 
-protocol ReferendumVoteConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
-    func didReceive(referendumNumber: String)
+protocol BaseReferendumVoteConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol)
     func didReceiveWallet(viewModel: StackCellViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didReceiveYourVote(viewModel: YourVoteRow.Model)
     func didReceiveTransferableAmount(viewModel: ReferendumLockTransitionViewModel)
     func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel)
     func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel)
+}
+
+protocol ReferendumVoteConfirmViewProtocol: BaseReferendumVoteConfirmViewProtocol {
+    func didReceive(referendumNumber: String)
+    func didReceiveYourVote(viewModel: YourVoteRow.Model)
 }
 
 protocol ReferendumVoteConfirmPresenterProtocol: AnyObject {

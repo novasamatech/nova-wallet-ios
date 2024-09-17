@@ -1,6 +1,6 @@
 import UIKit
 
-final class ReferendumVoteConfirmViewLayout: UIView {
+class BaseReferendumVoteConfirmViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
@@ -22,8 +22,6 @@ final class ReferendumVoteConfirmViewLayout: UIView {
     }()
 
     let feeCell = StackNetworkFeeCell()
-
-    let yourVoteView = YourVoteRow()
 
     let changesTableView = StackTableView()
 
@@ -68,7 +66,7 @@ final class ReferendumVoteConfirmViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(actionLoadableView)
         actionLoadableView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -91,9 +89,6 @@ final class ReferendumVoteConfirmViewLayout: UIView {
         senderTableView.addArrangedSubview(walletCell)
         senderTableView.addArrangedSubview(accountCell)
         senderTableView.addArrangedSubview(feeCell)
-
-        containerView.stackView.addArrangedSubview(yourVoteView)
-        containerView.stackView.setCustomSpacing(12.0, after: yourVoteView)
 
         containerView.stackView.addArrangedSubview(changesTableView)
 

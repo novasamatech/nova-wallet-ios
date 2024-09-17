@@ -1,14 +1,9 @@
 import UIKit
 
-final class SwipeGovVotingConfirmViewController: UIViewController {
+final class SwipeGovVotingConfirmViewController: BaseReferendumVoteConfirmViewController {
     typealias RootViewType = SwipeGovVotingConfirmViewLayout
 
     let presenter: SwipeGovVotingConfirmPresenterProtocol
-
-    init(presenter: SwipeGovVotingConfirmPresenterProtocol) {
-        self.presenter = presenter
-        super.init(nibName: nil, bundle: nil)
-    }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
