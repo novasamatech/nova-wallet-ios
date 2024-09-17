@@ -24,12 +24,12 @@ class VotingBasketLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory, V
         let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
             for: chainId,
             metaId: metaId,
-            using: substrateStorage
+            using: storageFacade
         )
 
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
-            mapper: AnyCoreDataMapper(mapper),
+            mapper: AnyCoreDataMapper(VotingBasketItemMapper()),
             predicate: { entity in
                 chainId == entity.chainId && metaId == entity.metaId
             }

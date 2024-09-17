@@ -23,7 +23,7 @@ class VotingPowerLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory, Vo
 
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
-            mapper: AnyCoreDataMapper(mapper),
+            mapper: AnyCoreDataMapper(VotingPowerMapper()),
             predicate: { entity in
                 chainId == entity.chainId && metaId == entity.metaId
             }
