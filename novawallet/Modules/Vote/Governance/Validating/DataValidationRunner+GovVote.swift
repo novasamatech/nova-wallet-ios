@@ -111,4 +111,22 @@ extension DataValidationRunner {
 
         runner.runValidation(notifyingOnSuccess: successClosure)
     }
+
+    static func validateVotingPower(
+        factory: GovernanceValidatorFactoryProtocol,
+        params: GovernanceVotePowerValidatingParams,
+        selectedLocale: Locale,
+        successClosure: @escaping DataValidationRunnerCompletion
+    ) {
+        let runner = DataValidationRunner(validators: [
+            factory.enoughTokensForVoting(
+                params.assetBalance,
+                votingAmount: params.votePower?.votingAmount,
+                assetInfo: params.assetInfo,
+                locale: selectedLocale
+            )
+        ])
+
+        runner.runValidation(notifyingOnSuccess: successClosure)
+    }
 }

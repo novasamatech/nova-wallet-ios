@@ -3,9 +3,14 @@ import UIKit
 
 final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     let state: GovernanceSharedState
+    let metaAccount: MetaAccountModel
 
-    init(state: GovernanceSharedState) {
+    init(
+        state: GovernanceSharedState,
+        metaAccount: MetaAccountModel
+    ) {
         self.state = state
+        self.metaAccount = metaAccount
     }
 
     func selectChain(
@@ -29,21 +34,18 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showTinderGov(
-        from view: ControllerBackedProtocol?,
-        observableState: Observable<NotEqualWrapper<[ReferendumIdLocal: ReferendumLocal]>>
-    ) {
-        guard let tinderGovView = TinderGovViewFactory.createView(
-            observableState: observableState,
+    func showSwipeGov(from view: ControllerBackedProtocol?) {
+        guard let swipeGovView = SwipeGovViewFactory.createView(
+            metaAccount: metaAccount,
             sharedState: state
         ) else {
             return
         }
 
-        tinderGovView.controller.hidesBottomBarWhenPushed = true
+        swipeGovView.controller.hidesBottomBarWhenPushed = true
 
         view?.controller.navigationController?.pushViewController(
-            tinderGovView.controller,
+            swipeGovView.controller,
             animated: true
         )
     }

@@ -24,7 +24,7 @@ extension ReferendumsPresenter {
         if supportsDelegations {
             activityViewModelFactory.createReferendumsActivitySection(
                 chain: chain,
-                voting: voting?.value,
+                voting: observableState.voting?.value,
                 blockNumber: currentBlock,
                 unlockSchedule: unlockSchedule,
                 locale: selectedLocale
@@ -32,7 +32,7 @@ extension ReferendumsPresenter {
         } else {
             activityViewModelFactory.createReferendumsActivitySectionWithoutDelegations(
                 chain: chain,
-                voting: voting?.value,
+                voting: observableState.voting?.value,
                 blockNumber: currentBlock,
                 unlockSchedule: unlockSchedule,
                 locale: selectedLocale
@@ -40,15 +40,13 @@ extension ReferendumsPresenter {
         }
     }
 
-    func createTinderGovSection() -> ReferendumsSection? {
-        guard supportsTinderGov == true else {
+    func createSwipeGovSection() -> ReferendumsSection? {
+        guard supportsSwipeGov == true else {
             return nil
         }
 
-        let referendums = Array(tinderGovObservableState.state.value.values)
-
-        return tinderGovViewModelFactory.createTinderGovReferendumsSection(
-            with: referendums,
+        return swipeGovViewModelFactory.createSwipeGovReferendumsSection(
+            with: observableState.state.value,
             locale: selectedLocale
         )
     }

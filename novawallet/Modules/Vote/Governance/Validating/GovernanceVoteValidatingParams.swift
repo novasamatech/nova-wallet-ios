@@ -10,3 +10,9 @@ struct GovernanceVoteValidatingParams {
     let votes: ReferendumAccountVotingDistribution?
     let assetInfo: AssetBalanceDisplayInfo
 }
+
+struct GovernanceVotePowerValidatingParams {
+    let assetBalance: AssetBalance?
+    let votePower: VotingPowerLocal?
+    let assetInfo: AssetBalanceDisplayInfo
+}

@@ -10,7 +10,7 @@ struct GovernanceSelectedOption: Equatable {
         lhs.chain.chainId == rhs.chain.chainId && lhs.type == rhs.type
     }
 
-    func supportsTinderGov() -> Bool {
+    func supportsSwipeGov() -> Bool {
         guard
             let summaryAPIs = chain.externalApis?.referendumSummary(),
             !summaryAPIs.isEmpty

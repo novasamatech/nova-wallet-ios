@@ -1,5 +1,4 @@
 import Foundation
-import BigInt
 import SoraFoundation
 
 final class ReferendumVoteSetupPresenter {

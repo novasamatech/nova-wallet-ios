@@ -4,6 +4,8 @@ import Operation_iOS
 import SubstrateSdk
 
 final class GovernanceSharedState {
+    let observableState: ReferendumsObservableState
+
     let settings: GovernanceChainSettings
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
@@ -21,6 +23,7 @@ final class GovernanceSharedState {
     }
 
     init(
+        observableState: ReferendumsObservableState = ReferendumsObservableState(state: .init(value: .init())),
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol? = nil,
@@ -33,6 +36,7 @@ final class GovernanceSharedState {
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
+        self.observableState = observableState
         self.chainRegistry = chainRegistry
         settings = GovernanceChainSettings(chainRegistry: chainRegistry, settings: internalSettings)
 

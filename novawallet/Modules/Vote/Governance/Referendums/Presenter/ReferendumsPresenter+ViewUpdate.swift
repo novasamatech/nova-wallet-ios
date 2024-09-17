@@ -7,27 +7,27 @@ extension ReferendumsPresenter {
         }
         guard let currentBlock = blockNumber,
               let blockTime = blockTime,
-              let referendums = referendums,
+              let referendums = sortedReferendums,
               let chainModel = chain else {
             return
         }
 
         let referendumsSections = creaateReferendumsSections(
             for: referendums,
-            accountVotes: voting?.value?.votes,
+            accountVotes: observableState.voting?.value?.votes,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime)
         )
         let activitySection = createActivitySection(
             chain: chainModel,
             currentBlock: currentBlock
         )
-        let tinderGovSection = createTinderGovSection()
+        let swipeGovSection = createSwipeGovSection()
         let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
         let filteredReferendumsSections = filteredReferendumsSections(for: referendumsSections)
 
         let allSections = [
             activitySection,
-            tinderGovSection,
+            swipeGovSection,
             settingsSection
         ].compactMap { $0 } + filteredReferendumsSections
 
@@ -82,7 +82,7 @@ extension ReferendumsPresenter {
         guard let view = view else {
             return
         }
-        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = referendums else {
+        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = sortedReferendums else {
             return
         }
 
