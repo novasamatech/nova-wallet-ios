@@ -71,6 +71,7 @@ final class VoteCardView: RoundedView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
+        setupAction()
 
         backgroundColor = .clear
     }
@@ -92,6 +93,18 @@ final class VoteCardView: RoundedView {
 
         viewModel.view = self
         viewModel.onSetup()
+    }
+
+    func setupAction() {
+        readMoreButton.actionButton.addTarget(
+            self,
+            action: #selector(actionReadMore),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionReadMore() {
+        viewModel?.onActionReadMore()
     }
 }
 

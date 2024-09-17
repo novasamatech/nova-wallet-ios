@@ -106,12 +106,14 @@ private extension SwipeGovPresenter {
     func updateCardsStackView() {
         guard let model else { return }
 
-        let viewModel = cardsViewModelFactory.createCardsStackViewModel(
-            from: model,
-            locale: localizationManager.selectedLocale,
+        let cardActions = VoteCardViewModel.Actions(
+            onAction: { [weak self] referendumId in
+                self?.showDetails(for: referendumId)
+            },
             onVote: { [weak self] voteResult, id in
                 self?.onReferendumVote(voteResult: voteResult, id: id)
             },
+            onBecomeTop: { _ in },
             onLoadError: { [weak self] handlers in
                 guard let self else { return }
                 wireframe.presentRequestStatus(
@@ -120,7 +122,13 @@ private extension SwipeGovPresenter {
                     retryAction: { handlers.retry() },
                     skipAction: { self.view?.skipCard() }
                 )
-            },
+            }
+        )
+
+        let viewModel = cardsViewModelFactory.createCardsStackViewModel(
+            from: model,
+            locale: localizationManager.selectedLocale,
+            actions: cardActions,
             validationClosure: { [weak self] _ in
                 guard let self else { return false }
 
@@ -173,6 +181,21 @@ private extension SwipeGovPresenter {
         let initData = ReferendumVotingInitData(presetVotingPower: votingPower)
 
         wireframe.showVoteSetup(
+            from: view,
+            initData: initData
+        )
+    }
+
+    func showDetails(for referendumId: ReferendumIdLocal) {
+        guard let referendum = model?.referendums.first(
+            where: { $0.index == referendumId }
+        ) else {
+            return
+        }
+
+        let initData = ReferendumDetailsInitData(referendum: referendum)
+
+        wireframe.showReferendumDetails(
             from: view,
             initData: initData
         )
