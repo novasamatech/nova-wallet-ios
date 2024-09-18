@@ -11,6 +11,8 @@ final class SwipeGovVotingListPresenter {
     private let chain: ChainModel
     private let metaAccount: MetaAccountModel
 
+    private let observableState: ReferendumsObservableState
+
     private let viewModelFactory: SwipeGovVotingListViewModelFactory
 
     private var votingListItems: [VotingBasketItemLocal] = []
@@ -21,6 +23,7 @@ final class SwipeGovVotingListPresenter {
         interactor: SwipeGovVotingListInteractorInputProtocol,
         wireframe: SwipeGovVotingListWireframeProtocol,
         chain: ChainModel,
+        observableState: ReferendumsObservableState,
         metaAccount: MetaAccountModel,
         viewModelFactory: SwipeGovVotingListViewModelFactory,
         localizationManager: LocalizationManagerProtocol
@@ -28,6 +31,7 @@ final class SwipeGovVotingListPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
+        self.observableState = observableState
         self.metaAccount = metaAccount
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
@@ -42,17 +46,20 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func removeItem(with referendumId: ReferendumIdLocal) {
-        guard let itemIdentifier = votingListItems.first(
-            where: { $0.referendumId == referendumId }
-        )?.identifier else {
+        showRemoveAlert(for: referendumId)
+    }
+
+    func selectVoting(for referendumId: ReferendumIdLocal) {
+        guard let referendum = observableState.referendums[referendumId] else {
             return
         }
 
-        interactor.removeItem(with: itemIdentifier)
-    }
+        let initData = ReferendumDetailsInitData(referendum: referendum)
 
-    func selectVoting(for _: ReferendumIdLocal) {
-        // TODO: Show referendum details
+        wireframe.showReferendumDetails(
+            from: view,
+            initData: initData
+        )
     }
 
     func vote() {
@@ -116,8 +123,32 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
         )
     }
 
-    func didReceive(_ error: Error) {
-        print(error)
+    func didReceive(_ error: SwipeGovVotingListInteractorError) {
+        let selectedLocale = localizationManager.selectedLocale
+
+        switch error {
+        case .assetBalanceFailed:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.subscribeBalance()
+            }
+        case .metadataFailed:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.subscribeMetadata()
+            }
+        case .votingBasket:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.subscribeVotingItems()
+            }
+        }
     }
 }
 
@@ -178,5 +209,49 @@ private extension SwipeGovVotingListPresenter {
         for balance: AssetBalance
     ) -> [VotingBasketItemLocal] {
         votingItems.filter { $0.amount > balance.freeInPlank }
+    }
+
+    func showRemoveAlert(for referendumId: ReferendumIdLocal) {
+        guard let itemIdentifier = votingListItems.first(
+            where: { $0.referendumId == referendumId }
+        )?.identifier else {
+            return
+        }
+
+        let languages = localizationManager.selectedLocale.rLanguages
+
+        let alertViewModel = AlertPresentableViewModel(
+            title: R.string.localizable.govVotingListItemRemoveAlertTitle(
+                Int(referendumId),
+                preferredLanguages: languages
+            ),
+            message: R.string.localizable.govVotingListItemRemoveAlertMessage(
+                preferredLanguages: languages
+            ),
+            actions: [
+                .init(
+                    title: R.string.localizable.commonCancel(
+                        preferredLanguages: languages
+                    ),
+                    style: .cancel
+                ),
+                .init(
+                    title: R.string.localizable.commonRemove(
+                        preferredLanguages: languages
+                    ),
+                    style: .destructive,
+                    handler: {
+                        [weak self] in
+                        self?.interactor.removeItem(with: itemIdentifier)
+                    }
+                )
+            ],
+            closeAction: nil
+        )
+        wireframe.present(
+            viewModel: alertViewModel,
+            style: .alert,
+            from: view
+        )
     }
 }

@@ -116,7 +116,6 @@ extension DataValidationRunner {
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceVotePowerValidatingParams,
         selectedLocale: Locale,
-        handlers _: GovernanceVoteValidatingHandlers,
         successClosure: @escaping DataValidationRunnerCompletion
     ) {
         let runner = DataValidationRunner(validators: [

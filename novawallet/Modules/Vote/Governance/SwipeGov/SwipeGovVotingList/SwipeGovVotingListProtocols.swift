@@ -18,6 +18,9 @@ protocol SwipeGovVotingListPresenterProtocol: AnyObject {
 protocol SwipeGovVotingListInteractorInputProtocol: AnyObject {
     func setup()
     func removeItem(with identifier: String)
+    func subscribeMetadata()
+    func subscribeBalance()
+    func subscribeVotingItems()
 }
 
 protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
@@ -25,14 +28,18 @@ protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
     func didReceive(_ votingBasketChanges: [DataProviderChange<VotingBasketItemLocal>])
     func didReceive(_ assetBalance: AssetBalance?)
     func didReceiveUnavailableItems()
-    func didReceive(_ error: Error)
+    func didReceive(_ error: SwipeGovVotingListInteractorError)
 }
 
-protocol SwipeGovVotingListWireframeProtocol: AlertPresentable {
+protocol SwipeGovVotingListWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func close(view: ControllerBackedProtocol?)
     func showSetup(
         from view: ControllerBackedProtocol?,
         initData: ReferendumVotingInitData,
         changing invalidItems: [VotingBasketItemLocal]
+    )
+    func showReferendumDetails(
+        from view: ControllerBackedProtocol?,
+        initData: ReferendumDetailsInitData
     )
 }

@@ -20,18 +20,6 @@ struct SwipeGovViewFactory {
 
         let storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared
 
-        let mapper = VotingBasketItemMapper()
-
-        let filter = NSPredicate.votingBasketItems(
-            for: option.chain.chainId,
-            metaId: metaAccount.metaId
-        )
-        let repository = storageFacade.createRepository(
-            filter: filter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
-
         let wireframe = SwipeGovWireframe(
             sharedState: sharedState,
             metaAccount: metaAccount
@@ -51,11 +39,17 @@ struct SwipeGovViewFactory {
             logger: Logger.shared
         )
 
+        let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
+            for: option.chain.chainId,
+            metaId: metaAccount.metaId,
+            using: storageFacade
+        )
+
         let interactor = SwipeGovInteractor(
             metaAccount: metaAccount,
             governanceState: sharedState,
             sorting: ReferendumsTimeSortingProvider(),
-            basketItemsRepository: AnyDataProviderRepository(repository),
+            basketItemsRepository: repository,
             votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
             votingPowerSubscriptionFactory: votingPowerSubscriptionFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
