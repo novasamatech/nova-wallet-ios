@@ -20,6 +20,7 @@ struct SwipeGovVotingConfirmViewFactory {
             let interactor = createInteractor(
                 for: state,
                 referendums: referendums,
+                votingItems: initData.votingItems ?? [],
                 currencyManager: currencyManager
             ),
             let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
@@ -86,9 +87,12 @@ struct SwipeGovVotingConfirmViewFactory {
     private static func createInteractor(
         for state: GovernanceSharedState,
         referendums: [ReferendumIdLocal],
+        votingItems: [VotingBasketItemLocal],
         currencyManager: CurrencyManagerProtocol
     ) -> SwipeGovVotingConfirmInteractor? {
-        let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
+        guard let wallet: MetaAccountModel = SelectedWalletSettings.shared.value else {
+            return nil
+        }
 
         guard let option = state.settings.value else {
             return nil
@@ -97,7 +101,7 @@ struct SwipeGovVotingConfirmViewFactory {
         let chain = option.chain
 
         guard
-            let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
+            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
             let blockTimeService = state.blockTimeService,
@@ -129,8 +133,19 @@ struct SwipeGovVotingConfirmViewFactory {
             accountResponse: selectedAccount.chainAccount
         )
 
+        let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
+            for: chain.chainId,
+            metaId: wallet.metaId,
+            using: SubstrateDataStorageFacade.shared
+        )
+
+        let votingItemsDict = votingItems.reduce(into: [:]) { $0[$1.referendumId] = $1 }
+
         return SwipeGovVotingConfirmInteractor(
+            observableState: state.observableState,
+            repository: repository,
             referendumIndexes: referendums,
+            votingItems: votingItemsDict,
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

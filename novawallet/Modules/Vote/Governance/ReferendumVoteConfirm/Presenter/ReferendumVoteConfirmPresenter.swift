@@ -10,7 +10,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
     let interactor: ReferendumVoteConfirmInteractorInputProtocol
     let wireframe: ReferendumVoteConfirmWireframeProtocol
-    
+
     let vote: ReferendumNewVote
 
     private var referendum: ReferendumLocal?
@@ -167,7 +167,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
                 }
 
                 view?.didStartLoading()
-                interactor.submit(votes: [vote])
+                interactor.submit(vote: vote)
             }
         )
     }
@@ -175,7 +175,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     override func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
         self.referendum = referendum
     }
-    
+
     override func didReceiveVotingHash(_: String) {
         view?.didStopLoading()
 

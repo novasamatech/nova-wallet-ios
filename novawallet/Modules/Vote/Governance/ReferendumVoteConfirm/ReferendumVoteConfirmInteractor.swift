@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
+final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
     var presenter: BaseReferendumVoteConfirmInteractorOutputProtocol? {
         get {
             basePresenter as? BaseReferendumVoteConfirmInteractorOutputProtocol
@@ -103,9 +103,11 @@ class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
     }
 }
 
+// MARK: ReferendumVoteConfirmInteractorInputProtocol
+
 extension ReferendumVoteConfirmInteractor: ReferendumVoteConfirmInteractorInputProtocol {
-    func submit(votes: [ReferendumNewVote]) {
-        let splitter = createExtrinsicSplitter(for: votes)
+    func submit(vote: ReferendumNewVote) {
+        let splitter = createExtrinsicSplitter(for: [vote])
 
         extrinsicService.submitWithTxSplitter(
             splitter,
@@ -115,7 +117,7 @@ extension ReferendumVoteConfirmInteractor: ReferendumVoteConfirmInteractorInputP
             if let error = result.errors().first {
                 self?.presenter?.didReceiveError(.submitVoteFailed(error))
             } else {
-                let result = result.results.compactMap({ try? $0.result.get() }).joined()
+                let result = result.results.compactMap { try? $0.result.get() }.joined()
                 self?.presenter?.didReceiveVotingHash(result)
             }
         }

@@ -14,19 +14,20 @@ final class SwipeGovVotingConfirmInteractor: ReferendumVoteInteractor {
         }
     }
 
-    let signer: SigningWrapperProtocol
+    private let signer: SigningWrapperProtocol
+    private let observableState: ReferendumsObservableState
+    private let repository: AnyDataProviderRepository<VotingBasketItemLocal>
+
+    private let votingItems: [ReferendumIdLocal: VotingBasketItemLocal]
+    private var itemsToClean: [ReferendumIdLocal: VotingBasketItemLocal] = [:]
 
     private var locksSubscription: StreamableProvider<AssetLock>?
-    
-    private let observableState: ReferendumsObservableState
-    
-    private var votingItemsIds: Set<ReferendumIdLocal>
-    
-    
+
     init(
         observableState: ReferendumsObservableState,
+        repository: AnyDataProviderRepository<VotingBasketItemLocal>,
         referendumIndexes: [ReferendumIdLocal],
-        votingItemsIds: Set<ReferendumIdLocal>,
+        votingItems: [ReferendumIdLocal: VotingBasketItemLocal],
         selectedAccount: MetaChainAccountResponse,
         chain: ChainModel,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -46,8 +47,9 @@ final class SwipeGovVotingConfirmInteractor: ReferendumVoteInteractor {
         operationQueue: OperationQueue
     ) {
         self.observableState = observableState
-        self.votingItemsIds = votingItemsIds
+        self.votingItems = votingItems
         self.signer = signer
+        self.repository = repository
 
         super.init(
             referendumIndexes: referendumIndexes,
@@ -69,29 +71,43 @@ final class SwipeGovVotingConfirmInteractor: ReferendumVoteInteractor {
             operationQueue: operationQueue
         )
     }
-    
+
     override func setup() {
         super.setup()
-        
-        observableState.addObserver(with: self) {[weak self] _, newState in
+
+        clearAndSubscribeLocks()
+
+        observableState.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] _, newState in
             self?.processNewState(newState.value)
         }
     }
-    
-    private func processNewState(_ newState: ReferendumsState) {
-        guard let votedReferendumsIds = newState.voting?.value?.votes.votes.keys else {
-            return
-        }
-        
-        votedReferendumsIds.forEach { index in
-            votingItemsIds.remove(index)
-        }
-        
-        if votingItemsIds.isEmpty {
-            presenter?.didReceiveSuccessBatchVoting()
+
+    override func remakeSubscriptions() {
+        super.remakeSubscriptions()
+
+        clearAndSubscribeLocks()
+    }
+
+    override func handleAccountLocks(
+        result: Result<[DataProviderChange<AssetLock>], Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
+        switch result {
+        case let .success(changes):
+            let locks = changes.mergeToDict([:]).values
+            presenter?.didReceiveLocks(Array(locks))
+        case let .failure(error):
+            presenter?.didReceiveError(.locksSubscriptionFailed(error))
         }
     }
 }
+
+// MARK: SwipeGovVotingConfirmInteractorInputProtocol
 
 extension SwipeGovVotingConfirmInteractor: SwipeGovVotingConfirmInteractorInputProtocol {
     func submit(votes: [ReferendumNewVote]) {
@@ -102,11 +118,78 @@ extension SwipeGovVotingConfirmInteractor: SwipeGovVotingConfirmInteractorInputP
             signer: signer,
             runningIn: .main
         ) { [weak self] result in
-            if let error = result.errors().first {
+            guard let error = result.errors().first else {
+                return
+            }
+
+            self?.cleanVotingList {
                 self?.presenter?.didReceiveError(.submitVoteFailed(error))
-            } else {
-                let result = result.results.compactMap({ try? $0.result.get() }).joined()
-                self?.presenter?.didReceiveVotingHash(result)
+            }
+        }
+    }
+}
+
+// MARK: Private
+
+private extension SwipeGovVotingConfirmInteractor {
+    func clearAndSubscribeLocks() {
+        locksSubscription?.removeObserver(self)
+        locksSubscription = nil
+
+        guard let asset = chain.utilityAsset() else {
+            return
+        }
+
+        locksSubscription = subscribeToLocksProvider(
+            for: selectedAccount.chainAccount.accountId,
+            chainId: chain.chainId,
+            assetId: asset.assetId
+        )
+    }
+
+    func processNewState(_ newState: ReferendumsState) {
+        guard let votedReferendumsIds = newState.voting?.value?.votes.votes.keys else {
+            return
+        }
+
+        votedReferendumsIds.forEach { index in
+            if let item = votingItems[index] {
+                itemsToClean[index] = item
+            }
+        }
+
+        guard itemsToClean.keys == votingItems.keys else {
+            return
+        }
+
+        cleanVotingList { [weak self] in
+            self?.presenter?.didReceiveSuccessBatchVoting()
+        }
+    }
+
+    func cleanVotingList(completion: @escaping () -> Void) {
+        let deleteIds = Array(itemsToClean.values.map(\.identifier))
+
+        guard !deleteIds.isEmpty else {
+            completion()
+            return
+        }
+
+        let deleteOperation = repository.saveOperation(
+            { [] },
+            { deleteIds }
+        )
+
+        execute(
+            operation: deleteOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                completion()
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.submitVoteFailed(error))
             }
         }
     }

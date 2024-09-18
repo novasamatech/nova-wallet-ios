@@ -180,7 +180,7 @@ class BaseReferendumVoteConfirmPresenter {
     func didReceiveVotingReferendum(_: ReferendumLocal) {
         fatalError("Must be overriden by subsclass")
     }
-    
+
     func didReceiveVotingHash(_: String) {
         fatalError("Must be overriden by subsclass")
     }

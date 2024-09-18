@@ -24,7 +24,7 @@ protocol BaseReferendumVoteConfirmPresenterProtocol: AnyObject {
 protocol ReferendumVoteConfirmPresenterProtocol: BaseReferendumVoteConfirmPresenterProtocol {}
 
 protocol ReferendumVoteConfirmInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
-    func submit(votes: [ReferendumNewVote])
+    func submit(vote: ReferendumNewVote)
 }
 
 protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {
@@ -35,6 +35,6 @@ protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteIntera
 
 protocol BaseReferendumVoteConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
     MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable, ExtrinsicSigningErrorHandling {}
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable, ExtrinsicSigningErrorHandling, ModalAlertPresenting {}
 
 protocol ReferendumVoteConfirmWireframeProtocol: BaseReferendumVoteConfirmWireframeProtocol {}

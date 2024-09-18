@@ -136,7 +136,11 @@ extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputP
     func didReceiveSuccessBatchVoting() {
         view?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: baseView, completionAction: .dismiss, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            completionAction: .dismiss,
+            locale: selectedLocale
+        )
     }
 }
 
