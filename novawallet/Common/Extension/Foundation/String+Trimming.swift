@@ -1,9 +1,11 @@
 import Foundation
 
 extension String {
-    func trimmingScreenQuotes() -> String {
-        let pattern = Self.screenQuote
+    func trimmingQuotes() -> String {
+        trimmingPattern(Self.quote)
+    }
 
+    func trimmingPattern(_ pattern: String) -> String {
         guard hasPrefix(pattern), hasSuffix(pattern), count > pattern.count else {
             return self
         }

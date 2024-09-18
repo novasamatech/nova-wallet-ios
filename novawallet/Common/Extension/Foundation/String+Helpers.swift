@@ -4,7 +4,7 @@ extension String {
     static var returnKey: String { "\n" }
     static var readMore: String { "..." }
     static var empty: String = ""
-    static var screenQuote: String { "\"" }
+    static var quote: String = "\""
 
     func firstLetterCapitalized() -> String {
         prefix(1).capitalized + dropFirst()

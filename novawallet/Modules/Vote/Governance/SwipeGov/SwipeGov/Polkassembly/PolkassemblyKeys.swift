@@ -5,6 +5,6 @@ enum PolkassemblyKeys {
         let remoteApiKey = EnviromentVariables.variable(named: "POLKASSEMBLY_SUMMARY_API_KEY") ??
             PolkassemblyApiKeys.summaryApi
 
-        return remoteApiKey.trimmingScreenQuotes()
+        return remoteApiKey.trimmingQuotes()
     }
 }
