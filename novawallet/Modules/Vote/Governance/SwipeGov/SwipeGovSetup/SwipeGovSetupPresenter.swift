@@ -10,6 +10,8 @@ final class SwipeGovSetupPresenter {
     let chain: ChainModel
     let metaAccount: MetaAccountModel
 
+    let observableState: ReferendumsObservableState
+
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
@@ -33,6 +35,7 @@ final class SwipeGovSetupPresenter {
     init(
         chain: ChainModel,
         metaAccount: MetaAccountModel,
+        observableState: ReferendumsObservableState,
         initData: ReferendumVotingInitData,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -46,6 +49,7 @@ final class SwipeGovSetupPresenter {
     ) {
         self.chain = chain
         self.metaAccount = metaAccount
+        self.observableState = observableState
         votesResult = initData.votesResult
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
@@ -246,7 +250,7 @@ private extension SwipeGovSetupPresenter {
     func refreshLockDiff() {
         guard
             let referendum,
-            let trackVoting = votesResult?.value,
+            let trackVoting = observableState.voting?.value,
             let assetPrecision = chain.utilityAssetDisplayInfo()?.assetPrecision,
             let amount = (inputResult?.absoluteValue(from: balance()) ?? 0).toSubstrateAmount(precision: assetPrecision)
         else {
@@ -265,7 +269,7 @@ private extension SwipeGovSetupPresenter {
         interactor.refreshLockDiff(
             for: trackVoting,
             newVotes: [newVote],
-            blockHash: votesResult?.blockHash
+            blockHash: observableState.voting?.blockHash
         )
     }
 

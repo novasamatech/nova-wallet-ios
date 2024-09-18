@@ -174,11 +174,14 @@ private extension SwipeGovPresenter {
     }
 
     func showVotingPower() {
-        guard let referendumId = model?.referendums.first?.index else {
+        guard let referendum = model?.referendums.first else {
             return
         }
 
-        let initData = ReferendumVotingInitData(presetVotingPower: votingPower)
+        let initData = ReferendumVotingInitData(
+            referendum: referendum,
+            presetVotingPower: votingPower
+        )
 
         wireframe.showVoteSetup(
             from: view,

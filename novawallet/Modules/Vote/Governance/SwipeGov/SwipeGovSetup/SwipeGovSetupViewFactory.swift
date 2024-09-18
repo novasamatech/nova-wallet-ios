@@ -96,6 +96,7 @@ struct SwipeGovSetupViewFactory {
         return SwipeGovSetupPresenter(
             chain: chain,
             metaAccount: metaAccount,
+            observableState: state.observableState,
             initData: initData,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,

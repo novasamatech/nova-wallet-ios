@@ -69,14 +69,14 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     }
 
     override func refreshLockDiff() {
-        guard let trackVoting = votesResult?.value else {
+        guard let trackVoting = observableState.voting?.value else {
             return
         }
 
         interactor.refreshLockDiff(
             for: trackVoting,
             newVotes: votingItems.mapToVotes(),
-            blockHash: votesResult?.blockHash
+            blockHash: observableState.voting?.blockHash
         )
     }
 
