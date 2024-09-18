@@ -286,7 +286,7 @@ extension ReferendumVoteSetupPresenter {
             return
         }
 
-        interactor.estimateFee(for: newVote.voteAction)
+        interactor.estimateFee(for: [newVote])
     }
 
     private func refreshLockDiff() {
@@ -296,7 +296,7 @@ extension ReferendumVoteSetupPresenter {
 
         interactor.refreshLockDiff(
             for: trackVoting,
-            newVote: newVote,
+            newVotes: [newVote],
             blockHash: votesResult?.blockHash
         )
     }

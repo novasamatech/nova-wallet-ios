@@ -11,6 +11,18 @@ final class ReferendumVoteConfirmViewController: BaseReferendumVoteConfirmViewCo
     let presenter: ReferendumVoteConfirmPresenterProtocol
 
     private var referendumNumber: String?
+    
+    init(
+        presenter: ReferendumVoteConfirmPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.presenter = presenter
+        
+        super.init(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+    }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {

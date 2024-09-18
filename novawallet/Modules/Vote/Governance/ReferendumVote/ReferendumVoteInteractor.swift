@@ -6,14 +6,14 @@ import SubstrateSdk
 class ReferendumVoteInteractor: AnyCancellableCleaning {
     weak var basePresenter: ReferendumVoteInteractorOutputProtocol?
 
-    let referendumIndex: ReferendumIdLocal
+    let referendumIndexes: [ReferendumIdLocal]
     let selectedAccount: MetaChainAccountResponse
     let chain: ChainModel
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
-    let feeProxy: ExtrinsicFeeProxyProtocol
+    let feeProxy: MultiExtrinsicFeeProxyProtocol
     let extrinsicFactory: GovernanceExtrinsicFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
@@ -31,7 +31,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
     private var lockDiffCancellable: CancellableCall?
 
     init(
-        referendumIndex: ReferendumIdLocal,
+        referendumIndexes: [ReferendumIdLocal],
         selectedAccount: MetaChainAccountResponse,
         chain: ChainModel,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -45,11 +45,11 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         currencyManager: CurrencyManagerProtocol,
         extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
+        feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         operationQueue: OperationQueue
     ) {
-        self.referendumIndex = referendumIndex
+        self.referendumIndexes = referendumIndexes
         self.selectedAccount = selectedAccount
         self.chain = chain
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
@@ -79,8 +79,10 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
     }
 
     private func clearReferendumSubscriptions() {
-        referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendumIndex)
-
+        referendumIndexes.forEach { index in
+            referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: index)
+        }
+        
         referendumsSubscriptionFactory.unsubscribeFromAccountVotes(
             self,
             accountId: selectedAccount.chainAccount.accountId
@@ -165,18 +167,21 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
     }
 
     private func subscribeReferendum() {
-        referendumsSubscriptionFactory.subscribeToReferendum(
-            self, referendumIndex: referendumIndex
-        ) { [weak self] result in
-            switch result {
-            case let .success(storageResult):
-                if let referendum = storageResult.value {
-                    self?.basePresenter?.didReceiveVotingReferendum(referendum)
+        referendumIndexes.forEach {
+            referendumsSubscriptionFactory.subscribeToReferendum(
+                self,
+                referendumIndex: $0
+            ) { [weak self] result in
+                switch result {
+                case let .success(storageResult):
+                    if let referendum = storageResult.value {
+                        self?.basePresenter?.didReceiveVotingReferendum(referendum)
+                    }
+                case let .failure(error):
+                    self?.basePresenter?.didReceiveBaseError(.votingReferendumFailed(error))
+                case .none:
+                    break
                 }
-            case let .failure(error):
-                self?.basePresenter?.didReceiveBaseError(.votingReferendumFailed(error))
-            case .none:
-                break
             }
         }
     }
@@ -207,35 +212,45 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {}
+    
+    func createExtrinsicSplitter(for votes: [ReferendumNewVote]) -> ExtrinsicSplitting {
+        let splitter = ExtrinsicSplitter(
+            chain: chain,
+            maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic
+        )
+        
+        return extrinsicFactory.vote(using: votes, splitter: splitter)
+    }
 }
 
 extension ReferendumVoteInteractor: ReferendumVoteInteractorInputProtocol {
-    func estimateFee(for vote: ReferendumVoteAction) {
-        let reuseIdentifier = "\(vote.hashValue)"
-
-        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: reuseIdentifier) { [weak self] builder in
-            guard let strongSelf = self else {
-                return builder
-            }
-
-            return try strongSelf.extrinsicFactory.vote(
-                vote,
-                referendum: strongSelf.referendumIndex,
-                builder: builder
-            )
+    func estimateFee(for votes: [ReferendumNewVote]) {
+        guard let actionHash = votes.first?.voteAction.hashValue else {
+            return
         }
+        
+        let reuseIdentifier = "\(actionHash)"
+
+        let splitter = createExtrinsicSplitter(for: votes)
+        
+        feeProxy.estimateFee(
+            from: splitter,
+            service: extrinsicService,
+            reuseIdentifier: reuseIdentifier,
+            payingIn: nil
+        )
     }
 
     func refreshLockDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
-        newVote: ReferendumNewVote,
+        newVotes: [ReferendumNewVote],
         blockHash: Data?
     ) {
         clear(cancellable: &lockDiffCancellable)
 
         let wrapper = lockStateFactory.calculateLockStateDiff(
             for: trackVoting,
-            newVote: newVote,
+            newVotes: newVotes,
             from: connection,
             runtimeProvider: runtimeProvider,
             blockHash: blockHash
@@ -295,8 +310,11 @@ extension ReferendumVoteInteractor: PriceLocalSubscriptionHandler, PriceLocalSto
     }
 }
 
-extension ReferendumVoteInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
+extension ReferendumVoteInteractor: MultiExtrinsicFeeProxyDelegate {
+    func didReceiveTotalFee(
+        result: Result<any ExtrinsicFeeProtocol, any Error>,
+        for identifier: TransactionFeeId
+    ) {
         switch result {
         case let .success(feeInfo):
             basePresenter?.didReceiveFee(feeInfo)

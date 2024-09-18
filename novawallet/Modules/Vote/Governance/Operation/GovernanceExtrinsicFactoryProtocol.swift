@@ -7,6 +7,11 @@ protocol GovernanceExtrinsicFactoryProtocol {
         referendum: ReferendumIdLocal,
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol
+    
+    func vote(
+        using votes: [ReferendumNewVote],
+        splitter: ExtrinsicSplitting
+    ) -> ExtrinsicSplitting
 
     func unlock(
         with actions: Set<GovernanceUnlockSchedule.Action>,

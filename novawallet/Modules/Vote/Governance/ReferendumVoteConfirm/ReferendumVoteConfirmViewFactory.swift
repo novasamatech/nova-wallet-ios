@@ -131,7 +131,7 @@ struct ReferendumVoteConfirmViewFactory {
         )
 
         return ReferendumVoteConfirmInteractor(
-            referendumIndex: referendum,
+            referendumIndexes: [referendum],
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
@@ -146,7 +146,7 @@ struct ReferendumVoteConfirmViewFactory {
             extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
             signer: signer,
-            feeProxy: ExtrinsicFeeProxy(),
+            feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
             operationQueue: operationQueue
         )

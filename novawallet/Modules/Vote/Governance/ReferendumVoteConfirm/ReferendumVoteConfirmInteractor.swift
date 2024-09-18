@@ -3,9 +3,9 @@ import SubstrateSdk
 import Operation_iOS
 
 final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
-    var presenter: ReferendumVoteConfirmInteractorOutputProtocol? {
+    var presenter: BaseReferendumVoteConfirmInteractorOutputProtocol? {
         get {
-            basePresenter as? ReferendumVoteConfirmInteractorOutputProtocol
+            basePresenter as? BaseReferendumVoteConfirmInteractorOutputProtocol
         }
 
         set {
@@ -18,7 +18,7 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
     private var locksSubscription: StreamableProvider<AssetLock>?
 
     init(
-        referendumIndex: ReferendumIdLocal,
+        referendumIndexes: [ReferendumIdLocal],
         selectedAccount: MetaChainAccountResponse,
         chain: ChainModel,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -33,14 +33,14 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
         extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         signer: SigningWrapperProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
+        feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.signer = signer
 
         super.init(
-            referendumIndex: referendumIndex,
+            referendumIndexes: referendumIndexes,
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
@@ -104,24 +104,17 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
 }
 
 extension ReferendumVoteConfirmInteractor: ReferendumVoteConfirmInteractorInputProtocol {
-    func submit(vote: ReferendumVoteAction) {
-        let closure: ExtrinsicBuilderClosure = { [weak self] builder in
-            guard let strongSelf = self else {
-                return builder
-            }
-
-            return try strongSelf.extrinsicFactory.vote(
-                vote,
-                referendum: strongSelf.referendumIndex,
-                builder: builder
-            )
-        }
-
-        extrinsicService.submit(closure, signer: signer, runningIn: .main) { [weak self] result in
-            switch result {
-            case let .success(hash):
-                self?.presenter?.didReceiveVotingHash(hash)
-            case let .failure(error):
+    func submit(vote: ReferendumNewVote) {
+        let splitter = createExtrinsicSplitter(for: [vote])
+        
+        extrinsicService.submitWithTxSplitter(
+            splitter,
+            signer: signer,
+            runningIn: .main
+        ) { [weak self] result in
+            if let result = result.results.compactMap({ try? $0.result.get() }).first {
+                self?.presenter?.didReceiveVotingHash(result)
+            } else if let error = result.errors().first {
                 self?.presenter?.didReceiveError(.submitVoteFailed(error))
             }
         }

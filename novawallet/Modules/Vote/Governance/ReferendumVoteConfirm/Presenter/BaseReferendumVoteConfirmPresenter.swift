@@ -3,14 +3,13 @@ import BigInt
 import SoraFoundation
 
 // swiftlint:disable file_length
-final class ReferendumVoteConfirmPresenter {
-    weak var view: ReferendumVoteConfirmViewProtocol?
-    let wireframe: ReferendumVoteConfirmWireframeProtocol
-    let interactor: ReferendumVoteConfirmInteractorInputProtocol
+class BaseReferendumVoteConfirmPresenter {
+    weak var baseView: BaseReferendumVoteConfirmViewProtocol?
+    private let wireframe: BaseReferendumVoteConfirmWireframeProtocol
+    private let interactor: ReferendumVoteInteractorInputProtocol
 
     let chain: ChainModel
     let selectedAccount: MetaChainAccountResponse
-    let vote: ReferendumNewVote
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
@@ -19,22 +18,20 @@ final class ReferendumVoteConfirmPresenter {
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
     let logger: LoggerProtocol
 
-    private var assetBalance: AssetBalance?
-    private var fee: ExtrinsicFeeProtocol?
-    private var priceData: PriceData?
-    private var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
-    private var blockNumber: BlockNumber?
-    private var blockTime: BlockTime?
-    private var referendum: ReferendumLocal?
-    private var lockDiff: GovernanceLockStateDiff?
-    private var assetLocks: AssetLocks?
+    private(set) var assetBalance: AssetBalance?
+    private(set) var fee: ExtrinsicFeeProtocol?
+    private(set) var priceData: PriceData?
+    private(set) var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private(set) var blockNumber: BlockNumber?
+    private(set) var blockTime: BlockTime?
+    private(set) var lockDiff: GovernanceLockStateDiff?
+    private(set) var assetLocks: AssetLocks?
 
-    private lazy var walletDisplayViewModelFactory = WalletAccountViewModelFactory()
-    private lazy var addressDisplayViewModelFactory = DisplayAddressViewModelFactory()
+    private(set) lazy var walletDisplayViewModelFactory = WalletAccountViewModelFactory()
+    private(set) lazy var addressDisplayViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
         initData: ReferendumVotingInitData,
-        vote: ReferendumNewVote,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
@@ -42,18 +39,16 @@ final class ReferendumVoteConfirmPresenter {
         referendumFormatter: LocalizableResource<NumberFormatter>,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
-        interactor: ReferendumVoteConfirmInteractorInputProtocol,
-        wireframe: ReferendumVoteConfirmWireframeProtocol,
+        interactor: ReferendumVoteInteractorInputProtocol,
+        wireframe: BaseReferendumVoteConfirmWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
-        self.vote = vote
         self.chain = chain
         self.selectedAccount = selectedAccount
         votesResult = initData.votesResult
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
-        referendum = initData.referendum
         lockDiff = initData.lockDiff
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -66,35 +61,12 @@ final class ReferendumVoteConfirmPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func provideReferendumIndex() {
-        let referendumString = referendumFormatter.value(for: selectedLocale).string(from: vote.index as NSNumber)
-        view?.didReceive(referendumNumber: referendumString ?? "")
-    }
-
-    private func provideAmountViewModel() {
-        guard
-            let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
-            let decimalAmount = Decimal.fromSubstrateAmount(
-                vote.voteAction.amount(),
-                precision: precision
-            ) else {
-            return
-        }
-
-        let viewModel = balanceViewModelFactory.balanceFromPrice(
-            decimalAmount,
-            priceData: priceData
-        ).value(for: selectedLocale)
-
-        view?.didReceiveAmount(viewModel: viewModel)
-    }
-
     private func provideWalletViewModel() {
         guard let viewModel = try? walletDisplayViewModelFactory.createDisplayViewModel(from: selectedAccount) else {
             return
         }
 
-        view?.didReceiveWallet(viewModel: viewModel.cellViewModel)
+        baseView?.didReceiveWallet(viewModel: viewModel.cellViewModel)
     }
 
     private func provideAccountViewModel() {
@@ -103,7 +75,7 @@ final class ReferendumVoteConfirmPresenter {
         }
 
         let viewModel = addressDisplayViewModelFactory.createViewModel(from: address)
-        view?.didReceiveAccount(viewModel: viewModel)
+        baseView?.didReceiveAccount(viewModel: viewModel)
     }
 
     private func provideFeeViewModel() {
@@ -120,49 +92,10 @@ final class ReferendumVoteConfirmPresenter {
             let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
                 .value(for: selectedLocale)
 
-            view?.didReceiveFee(viewModel: viewModel)
+            baseView?.didReceiveFee(viewModel: viewModel)
         } else {
-            view?.didReceiveFee(viewModel: nil)
+            baseView?.didReceiveFee(viewModel: nil)
         }
-    }
-
-    private func provideYourVoteViewModel() {
-        let votesString = referendumStringsViewModelFactory.createVotes(
-            from: vote.voteAction.conviction().votes(for: vote.voteAction.amount()) ?? 0,
-            chain: chain,
-            locale: selectedLocale
-        )
-
-        let convictionString = referendumStringsViewModelFactory.createVotesDetails(
-            from: vote.voteAction.amount(),
-            conviction: vote.voteAction.conviction().decimalValue,
-            chain: chain,
-            locale: selectedLocale
-        )
-
-        let voteSideString: String
-        let voteSideStyle: YourVoteView.Style
-
-        switch vote.voteAction {
-        case .aye:
-            voteSideString = R.string.localizable.governanceAye(preferredLanguages: selectedLocale.rLanguages)
-            voteSideStyle = .ayeInverse
-        case .nay:
-            voteSideString = R.string.localizable.governanceNay(preferredLanguages: selectedLocale.rLanguages)
-            voteSideStyle = .nayInverse
-        case .abstain:
-            voteSideString = R.string.localizable.governanceAbstain(preferredLanguages: selectedLocale.rLanguages)
-            voteSideStyle = .abstainInverse
-        }
-
-        let voteDescription = R.string.localizable.govYourVote(preferredLanguages: selectedLocale.rLanguages)
-
-        let viewModel = YourVoteRow.Model(
-            vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
-            amount: .init(topValue: votesString ?? "", bottomValue: convictionString)
-        )
-
-        view?.didReceiveYourVote(viewModel: viewModel)
     }
 
     private func provideTransferableAmountViewModel() {
@@ -179,7 +112,7 @@ final class ReferendumVoteConfirmPresenter {
             return
         }
 
-        view?.didReceiveTransferableAmount(viewModel: viewModel)
+        baseView?.didReceiveTransferableAmount(viewModel: viewModel)
     }
 
     private func provideLockedAmountViewModel() {
@@ -192,7 +125,7 @@ final class ReferendumVoteConfirmPresenter {
             return
         }
 
-        view?.didReceiveLockedAmount(viewModel: viewModel)
+        baseView?.didReceiveLockedAmount(viewModel: viewModel)
     }
 
     private func provideLockedPeriodViewModel() {
@@ -209,88 +142,51 @@ final class ReferendumVoteConfirmPresenter {
             return
         }
 
-        view?.didReceiveLockedPeriod(viewModel: viewModel)
+        baseView?.didReceiveLockedPeriod(viewModel: viewModel)
     }
 
-    private func refreshFee() {
-        interactor.estimateFee(for: vote.voteAction)
-    }
-
-    private func refreshLockDiff() {
-        guard let trackVoting = votesResult?.value else {
-            return
-        }
-
-        interactor.refreshLockDiff(
-            for: trackVoting,
-            newVote: vote,
-            blockHash: votesResult?.blockHash
-        )
-    }
-
-    private func updateView() {
-        provideReferendumIndex()
+    func updateView() {
         provideAmountViewModel()
         provideWalletViewModel()
         provideAccountViewModel()
         provideFeeViewModel()
-        provideYourVoteViewModel()
         provideTransferableAmountViewModel()
         provideLockedAmountViewModel()
         provideLockedPeriodViewModel()
     }
-}
-
-extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol {
+    
     func setup() {
         updateView()
-
         interactor.setup()
-
         refreshFee()
+    }
+    
+    func provideAmountViewModel() {
+        fatalError("Must be overriden by subsclass")
+    }
+    
+    func refreshFee() {
+        fatalError("Must be overriden by subsclass")
+    }
+    
+    func refreshLockDiff() {
+        fatalError("Must be overriden by subsclass")
     }
 
     func confirm() {
-        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
-            return
-        }
-
-        let params = GovernanceVoteValidatingParams(
-            assetBalance: assetBalance,
-            referendum: referendum,
-            newVote: vote,
-            selectedConviction: vote.voteAction.conviction(),
-            fee: fee,
-            votes: votesResult?.value?.votes,
-            assetInfo: assetInfo
-        )
-
-        let handlers = GovernanceVoteValidatingHandlers(
-            feeErrorClosure: { [weak self] in
-                self?.refreshFee()
-            }
-        )
-
-        DataValidationRunner.validateVote(
-            factory: dataValidatingFactory,
-            params: params,
-            selectedLocale: selectedLocale,
-            handlers: handlers,
-            successClosure: { [weak self] in
-                guard let self else {
-                    return
-                }
-
-                view?.didStartLoading()
-                interactor.submit(vote: vote.voteAction)
-            }
-        )
+        fatalError("Must be overriden by subsclass")
     }
+    
+    func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
+        fatalError("Must be overriden by subsclass")
+    }
+}
 
+extension BaseReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol {
     func presentSenderDetails() {
         guard
             let address = try? selectedAccount.chainAccount.accountId.toAddress(using: chain.chainFormat),
-            let view = view else {
+            let view = baseView else {
             return
         }
 
@@ -303,7 +199,7 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol
     }
 }
 
-extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputProtocol {
+extension BaseReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmInteractorOutputProtocol {
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?) {
         self.assetBalance = assetBalance
     }
@@ -313,10 +209,6 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputP
 
         provideAmountViewModel()
         provideFeeViewModel()
-    }
-
-    func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
-        self.referendum = referendum
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
@@ -365,28 +257,28 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputP
         switch error {
         case .assetBalanceFailed, .priceFailed, .votingReferendumFailed, .accountVotesFailed,
              .blockNumberSubscriptionFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
         case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+            wireframe.presentFeeStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             }
         case .blockTimeFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshBlockTime()
             }
         case .stateDiffFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.refreshLockDiff()
             }
         }
     }
 
     func didReceiveVotingHash(_: String) {
-        view?.didStopLoading()
+        baseView?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(from: baseView, completionAction: .dismiss, locale: selectedLocale)
     }
 
     func didReceiveError(_ error: ReferendumVoteConfirmError) {
@@ -394,15 +286,15 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputP
 
         switch error {
         case .locksSubscriptionFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            wireframe.presentRequestStatus(on: baseView, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
         case let .submitVoteFailed(internalError):
-            view?.didStopLoading()
+            baseView?.didStopLoading()
 
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 internalError,
-                view: view,
+                view: baseView,
                 closeAction: .dismiss,
                 locale: selectedLocale,
                 completionClosure: nil
@@ -411,9 +303,9 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputP
     }
 }
 
-extension ReferendumVoteConfirmPresenter: Localizable {
+extension BaseReferendumVoteConfirmPresenter: Localizable {
     func applyLocalization() {
-        if let view = view, view.isSetup {
+        if let view = baseView, view.isSetup {
             updateView()
         }
     }

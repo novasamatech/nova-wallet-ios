@@ -4,13 +4,14 @@ import SoraFoundation
 class BaseReferendumVoteConfirmViewController: UIViewController, ViewHolder {
     typealias RootViewType = BaseReferendumVoteConfirmViewLayout
 
-    private let presenter: ReferendumVoteConfirmPresenterProtocol
+    private let presenter: BaseReferendumVoteConfirmPresenterProtocol
 
     init(
-        presenter: ReferendumVoteConfirmPresenterProtocol,
+        presenter: BaseReferendumVoteConfirmPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager

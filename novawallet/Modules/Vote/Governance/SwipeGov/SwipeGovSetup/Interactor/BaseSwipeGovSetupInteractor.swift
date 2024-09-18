@@ -79,13 +79,14 @@ extension BaseSwipeGovSetupInteractor: SwipeGovSetupInteractorInputProtocol {
 
     func refreshLockDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
+        newVotes: [ReferendumNewVote],
         blockHash: Data?
     ) {
         clear(cancellable: &lockDiffCancellable)
 
         let wrapper = lockStateFactory.calculateLockStateDiff(
             for: trackVoting,
-            newVote: nil,
+            newVotes: newVotes,
             from: connection,
             runtimeProvider: runtimeProvider,
             blockHash: blockHash

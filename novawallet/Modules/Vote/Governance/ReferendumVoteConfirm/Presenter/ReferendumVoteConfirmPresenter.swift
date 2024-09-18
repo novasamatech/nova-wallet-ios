@@ -1,19 +1,20 @@
 import Foundation
+import BigInt
 import SoraFoundation
 
-final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
-    weak var view: SwipeGovVotingConfirmViewProtocol? {
-        get { baseView as? SwipeGovVotingConfirmViewProtocol }
+final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
+    weak var view: ReferendumVoteConfirmViewProtocol? {
+        get { baseView as? ReferendumVoteConfirmViewProtocol }
         set { baseView = newValue }
     }
+    let interactor: ReferendumVoteConfirmInteractorInputProtocol
+    let vote: ReferendumNewVote
     
-    private let interactor: SwipeGovVotingConfirmInteractorInputProtocol
-    private let wireframe: SwipeGovVotingConfirmWireframeProtocol
-    
-    private var votingItems: [VotingBasketItemLocal] = []
+    private var referendum: ReferendumLocal?
 
     init(
         initData: ReferendumVotingInitData,
+        vote: ReferendumNewVote,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
@@ -21,14 +22,14 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         referendumFormatter: LocalizableResource<NumberFormatter>,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
-        baseInteractor: ReferendumVoteConfirmInteractorInputProtocol,
-        interactor: SwipeGovVotingConfirmInteractorInputProtocol,
-        wireframe: SwipeGovVotingConfirmWireframeProtocol,
+        interactor: ReferendumVoteConfirmInteractorInputProtocol,
+        wireframe: ReferendumVoteConfirmWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
-        self.votingItems = initData.votingItems ?? []
+        self.referendum = initData.referendum
+        self.vote = vote
         
         super.init(
             initData: initData,
@@ -39,19 +40,62 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             referendumFormatter: referendumFormatter,
             referendumStringsViewModelFactory: referendumStringsViewModelFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
-            interactor: baseInteractor,
+            interactor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager,
             logger: logger
         )
     }
+
+    private func provideReferendumIndex() {
+        let referendumString = referendumFormatter.value(for: selectedLocale).string(from: vote.index as NSNumber)
+        view?.didReceive(referendumNumber: referendumString ?? "")
+    }
+    
+    private func provideYourVoteViewModel() {
+        let votesString = referendumStringsViewModelFactory.createVotes(
+            from: vote.voteAction.conviction().votes(for: vote.voteAction.amount()) ?? 0,
+            chain: chain,
+            locale: selectedLocale
+        )
+
+        let convictionString = referendumStringsViewModelFactory.createVotesDetails(
+            from: vote.voteAction.amount(),
+            conviction: vote.voteAction.conviction().decimalValue,
+            chain: chain,
+            locale: selectedLocale
+        )
+
+        let voteSideString: String
+        let voteSideStyle: YourVoteView.Style
+
+        switch vote.voteAction {
+        case .aye:
+            voteSideString = R.string.localizable.governanceAye(preferredLanguages: selectedLocale.rLanguages)
+            voteSideStyle = .ayeInverse
+        case .nay:
+            voteSideString = R.string.localizable.governanceNay(preferredLanguages: selectedLocale.rLanguages)
+            voteSideStyle = .nayInverse
+        case .abstain:
+            voteSideString = R.string.localizable.governanceAbstain(preferredLanguages: selectedLocale.rLanguages)
+            voteSideStyle = .abstainInverse
+        }
+
+        let voteDescription = R.string.localizable.govYourVote(preferredLanguages: selectedLocale.rLanguages)
+
+        let viewModel = YourVoteRow.Model(
+            vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
+            amount: .init(topValue: votesString ?? "", bottomValue: convictionString)
+        )
+
+        view?.didReceiveYourVote(viewModel: viewModel)
+    }
     
     override func provideAmountViewModel() {
         guard
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
-            let amount = votingItems.max(by: { $0.amount < $1.amount })?.amount,
             let decimalAmount = Decimal.fromSubstrateAmount(
-                amount,
+                vote.voteAction.amount(),
                 precision: precision
             ) else {
             return
@@ -72,13 +116,19 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
         interactor.refreshLockDiff(
             for: trackVoting,
-            newVotes: votingItems.mapToVotes(),
+            newVotes: [vote],
             blockHash: votesResult?.blockHash
         )
     }
     
     override func refreshFee() {
-        interactor.estimateFee(for: votingItems.mapToVotes())
+        interactor.estimateFee(for: [vote])
+    }
+
+    override func updateView() {
+        super.updateView()
+        provideReferendumIndex()
+        provideYourVoteViewModel()
     }
     
     override func confirm() {
@@ -113,16 +163,12 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
                 }
 
                 view?.didStartLoading()
-                interactor.submit(votingItems: votingItems)
+                interactor.submit(vote: vote)
             }
         )
     }
     
-    override func setup() {
-        super.setup()
-        
-        interactor.setup()
+    override func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
+        self.referendum = referendum
     }
 }
-
-extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmPresenterProtocol {}

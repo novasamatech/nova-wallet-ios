@@ -15,22 +15,26 @@ protocol ReferendumVoteConfirmViewProtocol: BaseReferendumVoteConfirmViewProtoco
     func didReceiveYourVote(viewModel: YourVoteRow.Model)
 }
 
-protocol ReferendumVoteConfirmPresenterProtocol: AnyObject {
+protocol BaseReferendumVoteConfirmPresenterProtocol: AnyObject {
     func setup()
     func confirm()
     func presentSenderDetails()
 }
 
+protocol ReferendumVoteConfirmPresenterProtocol: BaseReferendumVoteConfirmPresenterProtocol {}
+
 protocol ReferendumVoteConfirmInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
-    func submit(vote: ReferendumVoteAction)
+    func submit(vote: ReferendumNewVote)
 }
 
-protocol ReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {
+protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {
     func didReceiveLocks(_ locks: AssetLocks)
     func didReceiveVotingHash(_ hash: String)
     func didReceiveError(_ error: ReferendumVoteConfirmError)
 }
 
-protocol ReferendumVoteConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
+protocol BaseReferendumVoteConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
     MessageSheetPresentable, AddressOptionsPresentable,
     ExtrinsicSubmissionPresenting, GovernanceErrorPresentable, ExtrinsicSigningErrorHandling {}
+
+protocol ReferendumVoteConfirmWireframeProtocol: BaseReferendumVoteConfirmWireframeProtocol {}

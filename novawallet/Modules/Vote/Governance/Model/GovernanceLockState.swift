@@ -8,6 +8,6 @@ struct GovernanceLockState {
 
 struct GovernanceLockStateDiff {
     let before: GovernanceLockState
-    let vote: ReferendumNewVote?
+    let votes: [ReferendumIdLocal: ReferendumNewVote]?
     let after: GovernanceLockState?
 }

@@ -4,10 +4,10 @@ import BigInt
 protocol ReferendumVoteInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
-    func estimateFee(for vote: ReferendumVoteAction)
+    func estimateFee(for votes: [ReferendumNewVote])
     func refreshLockDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
-        newVote: ReferendumNewVote,
+        newVotes: [ReferendumNewVote],
         blockHash: Data?
     )
     func refreshBlockTime()

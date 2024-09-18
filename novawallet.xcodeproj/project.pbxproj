@@ -943,10 +943,10 @@
 		2D6287572C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287562C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift */; };
 		2D62875A2C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287592C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift */; };
 		2D62875C2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62875B2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift */; };
-		2D62876A2C99A10000060814 /* SwipeGovRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */; };
-		2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */; };
 		2D6287622C9955A400060814 /* BaseReferendumVoteConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287612C9955A400060814 /* BaseReferendumVoteConfirmViewLayout.swift */; };
 		2D6287652C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287642C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift */; };
+		2D62876A2C99A10000060814 /* SwipeGovRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */; };
+		2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -977,6 +977,7 @@
 		2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */; };
 		2D8EFB282C0728BC00866F90 /* AccountConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB272C0728BC00866F90 /* AccountConfirmViewLayout.swift */; };
 		2D8EFB2A2C08892300866F90 /* MnemonicViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB292C08892300866F90 /* MnemonicViewModelFactory.swift */; };
+		2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */; };
 		2D95DF5B2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */; };
 		2D95DF5D2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */; };
 		2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */; };
@@ -6026,10 +6027,10 @@
 		2D6287562C96F43500060814 /* SwipeGovVotingListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D6287592C9774FF00060814 /* SwipeGovInvalidVotesSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovInvalidVotesSetupInteractor.swift; sourceTree = "<group>"; };
 		2D62875B2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSwipeGovSetupInteractor.swift; sourceTree = "<group>"; };
-		2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovRepositoryFactory.swift; sourceTree = "<group>"; };
-		2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupInteractorError.swift; sourceTree = "<group>"; };
 		2D6287612C9955A400060814 /* BaseReferendumVoteConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmViewLayout.swift; sourceTree = "<group>"; };
 		2D6287642C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmViewController.swift; sourceTree = "<group>"; };
+		2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovRepositoryFactory.swift; sourceTree = "<group>"; };
+		2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupInteractorError.swift; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -6061,6 +6062,7 @@
 		2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListInteractorError.swift; sourceTree = "<group>"; };
 		2D8EFB272C0728BC00866F90 /* AccountConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountConfirmViewLayout.swift; sourceTree = "<group>"; };
 		2D8EFB292C08892300866F90 /* MnemonicViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewModelFactory.swift; sourceTree = "<group>"; };
+		2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmPresenter.swift; sourceTree = "<group>"; };
 		2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicAssetsCustomFeeEstimator.swift; sourceTree = "<group>"; };
 		2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicFeeInstaller.swift; sourceTree = "<group>"; };
 		2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimatingWrapperFactory.swift; sourceTree = "<group>"; };
@@ -12416,14 +12418,6 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
-		2D6287682C99A0F700060814 /* Common */ = {
-			isa = PBXGroup;
-			children = (
-				2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */,
-			);
-			path = Common;
-			sourceTree = "<group>";
-		};
 		2D6287602C99559A00060814 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -12440,6 +12434,14 @@
 				4E2C32A42B0084AFF2911F6E /* ReferendumVoteConfirmViewController.swift */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		2D6287682C99A0F700060814 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
@@ -12492,6 +12494,15 @@
 				2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */,
 				2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */,
 				8EB218244A61B9743D9ACF69 /* AdvancedExportPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		2D8FF9D12C9AA56A00089F53 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				CDB47990BC7A594E663DAC00 /* ReferendumVoteConfirmPresenter.swift */,
+				2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */,
 			);
 			path = Presenter;
 			sourceTree = "<group>";
@@ -22329,9 +22340,9 @@
 				845AADA42903B30400B5AE96 /* Model */,
 				2D6287632C995F7B00060814 /* Controller */,
 				2D6287602C99559A00060814 /* View */,
+				2D8FF9D12C9AA56A00089F53 /* Presenter */,
 				DE767858B6CF5F6F7C7B418E /* ReferendumVoteConfirmProtocols.swift */,
 				3C784EDFB9227884E30FBE6E /* ReferendumVoteConfirmWireframe.swift */,
-				CDB47990BC7A594E663DAC00 /* ReferendumVoteConfirmPresenter.swift */,
 				DD1A35F4D82F97C9663F1CD4 /* ReferendumVoteConfirmInteractor.swift */,
 				AD1CAB4467C76E4139ECB1B7 /* ReferendumVoteConfirmViewFactory.swift */,
 			);
@@ -23735,7 +23746,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift",
+				$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -23866,7 +23877,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/R.generated.swift",
+				$PROJECT_DIR/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -23904,7 +23915,7 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CIKeys.generated.swift",
-				"$PROJECT_DIR/CIKeys.generated.swift",
+				$PROJECT_DIR/CIKeys.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -25726,6 +25737,7 @@
 				84AF378A272349DA007408D6 /* SiDataTypeMapper.swift in Sources */,
 				848DAEF92822754D00D56F55 /* StorageCodingPath+ParachainStaking.swift in Sources */,
 				841AAC2726F6A2A500F0A25E /* ChainAccountFetching.swift in Sources */,
+				2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */,
 				8882FC6329E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift in Sources */,
 				847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */,
 				84F231E329B233F20070FC2F /* GovernanceDelegateListOperationFactoryProtocol+BlockNumber.swift in Sources */,

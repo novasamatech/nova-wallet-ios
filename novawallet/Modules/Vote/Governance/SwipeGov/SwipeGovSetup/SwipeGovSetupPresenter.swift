@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 final class SwipeGovSetupPresenter {
     weak var view: SwipeGovSetupViewProtocol?
@@ -26,6 +27,8 @@ final class SwipeGovSetupPresenter {
     private(set) var inputResult: AmountInputResult?
     private(set) var conviction: ConvictionVoting.Conviction = .none
     private(set) var initVotingPower: VotingPowerLocal?
+    private(set) var referendum: ReferendumLocal?
+    private(set) var votingItems: [VotingBasketItemLocal]?
 
     init(
         chain: ChainModel,
@@ -47,6 +50,7 @@ final class SwipeGovSetupPresenter {
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
         lockDiff = initData.lockDiff
+        referendum = initData.referendum
         initVotingPower = initData.presetVotingPower
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -240,12 +244,27 @@ private extension SwipeGovSetupPresenter {
     }
 
     func refreshLockDiff() {
-        guard let trackVoting = votesResult?.value else {
+        guard
+            let referendum,
+            let trackVoting = votesResult?.value,
+            let assetPrecision = chain.utilityAssetDisplayInfo()?.assetPrecision,
+            let amount = (inputResult?.absoluteValue(from: balance()) ?? 0).toSubstrateAmount(precision: assetPrecision)
+        else {
             return
         }
+        
+        let voteAction = ReferendumVoteActionModel(
+            amount: amount,
+            conviction: conviction
+        )
+        let newVote = ReferendumNewVote(
+            index: referendum.index,
+            voteAction: .aye(voteAction)
+        )
 
         interactor.refreshLockDiff(
             for: trackVoting,
+            newVotes: [newVote],
             blockHash: votesResult?.blockHash
         )
     }

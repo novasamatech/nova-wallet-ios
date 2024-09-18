@@ -1,11 +1,16 @@
-protocol SwipeGovVotingConfirmViewProtocol: AnyObject {}
+import Foundation
 
-protocol SwipeGovVotingConfirmPresenterProtocol: AnyObject {
-    func setup()
+protocol SwipeGovVotingConfirmViewProtocol: BaseReferendumVoteConfirmViewProtocol {
+    func didReceive(referendaCount: Int)
 }
 
-protocol SwipeGovVotingConfirmInteractorInputProtocol: AnyObject {}
+protocol SwipeGovVotingConfirmPresenterProtocol: BaseReferendumVoteConfirmPresenterProtocol {}
 
-protocol SwipeGovVotingConfirmInteractorOutputProtocol: AnyObject {}
 
-protocol SwipeGovVotingConfirmWireframeProtocol: AnyObject {}
+protocol SwipeGovVotingConfirmInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
+    func submit(votingItems: [VotingBasketItemLocal])
+}
+
+protocol SwipeGovVotingConfirmInteractorOutputProtocol: BaseReferendumVoteConfirmInteractorOutputProtocol {}
+
+protocol SwipeGovVotingConfirmWireframeProtocol: BaseReferendumVoteConfirmWireframeProtocol {}
