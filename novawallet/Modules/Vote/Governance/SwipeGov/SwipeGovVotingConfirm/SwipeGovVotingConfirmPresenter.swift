@@ -6,14 +6,16 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         get { baseView as? SwipeGovVotingConfirmViewProtocol }
         set { baseView = newValue }
     }
-    
+
     private let interactor: SwipeGovVotingConfirmInteractorInputProtocol
     private let wireframe: SwipeGovVotingConfirmWireframeProtocol
-    
+    private let observableState: ReferendumsObservableState
+
     private var votingItems: [VotingBasketItemLocal] = []
 
     init(
         initData: ReferendumVotingInitData,
+        observableState: ReferendumsObservableState,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
@@ -21,15 +23,16 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         referendumFormatter: LocalizableResource<NumberFormatter>,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
-        baseInteractor: ReferendumVoteConfirmInteractorInputProtocol,
         interactor: SwipeGovVotingConfirmInteractorInputProtocol,
         wireframe: SwipeGovVotingConfirmWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
+        self.observableState = observableState
         self.interactor = interactor
-        self.votingItems = initData.votingItems ?? []
-        
+        self.wireframe = wireframe
+        votingItems = initData.votingItems ?? []
+
         super.init(
             initData: initData,
             chain: chain,
@@ -39,13 +42,13 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             referendumFormatter: referendumFormatter,
             referendumStringsViewModelFactory: referendumStringsViewModelFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
-            interactor: baseInteractor,
+            interactor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager,
             logger: logger
         )
     }
-    
+
     override func provideAmountViewModel() {
         guard
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
@@ -64,7 +67,7 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
         baseView?.didReceiveAmount(viewModel: viewModel)
     }
-    
+
     override func refreshLockDiff() {
         guard let trackVoting = votesResult?.value else {
             return
@@ -76,23 +79,24 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             blockHash: votesResult?.blockHash
         )
     }
-    
+
     override func refreshFee() {
         interactor.estimateFee(for: votingItems.mapToVotes())
     }
-    
+
     override func confirm() {
         guard let assetInfo = chain.utilityAssetDisplayInfo() else {
             return
         }
 
-        let params = GovernanceVoteValidatingParams(
+        let referendums = votingItems.compactMap { observableState.referendums[$0.referendumId] }
+
+        let params = GovernanceVoteBatchValidatingParams(
             assetBalance: assetBalance,
-            referendum: referendum,
-            newVote: vote,
-            selectedConviction: vote.voteAction.conviction(),
-            fee: fee,
+            referendums: referendums,
             votes: votesResult?.value?.votes,
+            newVotes: votingItems.mapToVotes(),
+            fee: fee,
             assetInfo: assetInfo
         )
 
@@ -102,7 +106,7 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             }
         )
 
-        DataValidationRunner.validateVote(
+        DataValidationRunner.validateVotesBatch(
             factory: dataValidatingFactory,
             params: params,
             selectedLocale: selectedLocale,
@@ -117,12 +121,14 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             }
         )
     }
-    
+
     override func setup() {
         super.setup()
-        
+
         interactor.setup()
     }
 }
+
+extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputProtocol {}
 
 extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmPresenterProtocol {}

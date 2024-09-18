@@ -252,7 +252,7 @@ private extension SwipeGovSetupPresenter {
         else {
             return
         }
-        
+
         let voteAction = ReferendumVoteActionModel(
             amount: amount,
             conviction: conviction

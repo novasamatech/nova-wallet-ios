@@ -11,7 +11,7 @@ class BaseReferendumVoteConfirmViewController: UIViewController, ViewHolder {
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager

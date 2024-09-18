@@ -5,7 +5,7 @@ final class SwipeGovVotingConfirmViewController: BaseReferendumVoteConfirmViewCo
     typealias RootViewType = SwipeGovVotingConfirmViewLayout
 
     let presenter: SwipeGovVotingConfirmPresenterProtocol
-    
+
     private var referendaCount: Int?
 
     init(
@@ -13,13 +13,13 @@ final class SwipeGovVotingConfirmViewController: BaseReferendumVoteConfirmViewCo
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        
+
         super.init(
             presenter: presenter,
             localizationManager: localizationManager
         )
     }
-    
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -34,7 +34,7 @@ final class SwipeGovVotingConfirmViewController: BaseReferendumVoteConfirmViewCo
 
         presenter.setup()
     }
-    
+
     override func setupLocalization() {
         super.setupLocalization()
 
@@ -54,7 +54,7 @@ final class SwipeGovVotingConfirmViewController: BaseReferendumVoteConfirmViewCo
 extension SwipeGovVotingConfirmViewController: SwipeGovVotingConfirmViewProtocol {
     func didReceive(referendaCount: Int) {
         self.referendaCount = referendaCount
-        
+
         applyReferendaCount()
     }
 }

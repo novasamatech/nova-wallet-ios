@@ -49,6 +49,64 @@ extension DataValidationRunner {
         runner.runValidation(notifyingOnSuccess: successClosure)
     }
 
+    static func validateVotesBatch(
+        factory: GovernanceValidatorFactoryProtocol,
+        params: GovernanceVoteBatchValidatingParams,
+        selectedLocale: Locale,
+        handlers: GovernanceVoteValidatingHandlers,
+        successClosure: @escaping DataValidationRunnerCompletion
+    ) {
+        var validators: [DataValidating] = [
+            factory.enoughTokensForVoting(
+                params.assetBalance,
+                votingAmount: params.maxAmount,
+                assetInfo: params.assetInfo,
+                locale: selectedLocale
+            ),
+            factory.has(
+                fee: params.fee,
+                locale: selectedLocale,
+                onError: handlers.feeErrorClosure
+            ),
+            factory.enoughTokensForVotingAndFee(
+                params.assetBalance,
+                votingAmount: params.maxAmount,
+                fee: params.fee,
+                assetInfo: params.assetInfo,
+                locale: selectedLocale
+            )
+        ]
+
+        let notEndedValidations = params.referendums?.map {
+            factory.referendumNotEnded(
+                $0,
+                locale: selectedLocale
+            )
+        }
+        let notDelegatingValidations = params.referendums?.map {
+            factory.notDelegating(
+                params.votes,
+                track: $0.trackId,
+                locale: selectedLocale
+            )
+        }
+        let maxVotesNotReachedValidations = params.referendums?.map {
+            factory.maxVotesNotReached(
+                params.votes,
+                track: $0.trackId,
+                locale: selectedLocale
+            )
+        }
+
+        validators.append(contentsOf: notEndedValidations ?? [])
+        validators.append(contentsOf: notDelegatingValidations ?? [])
+        validators.append(contentsOf: maxVotesNotReachedValidations ?? [])
+
+        let runner = DataValidationRunner(validators: validators)
+
+        runner.runValidation(notifyingOnSuccess: successClosure)
+    }
+
     static func validateDelegate(
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceDelegateValidatingParams,

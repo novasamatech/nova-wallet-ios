@@ -7,9 +7,10 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         get { baseView as? ReferendumVoteConfirmViewProtocol }
         set { baseView = newValue }
     }
+
     let interactor: ReferendumVoteConfirmInteractorInputProtocol
     let vote: ReferendumNewVote
-    
+
     private var referendum: ReferendumLocal?
 
     init(
@@ -28,9 +29,9 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
-        self.referendum = initData.referendum
+        referendum = initData.referendum
         self.vote = vote
-        
+
         super.init(
             initData: initData,
             chain: chain,
@@ -51,7 +52,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         let referendumString = referendumFormatter.value(for: selectedLocale).string(from: vote.index as NSNumber)
         view?.didReceive(referendumNumber: referendumString ?? "")
     }
-    
+
     private func provideYourVoteViewModel() {
         let votesString = referendumStringsViewModelFactory.createVotes(
             from: vote.voteAction.conviction().votes(for: vote.voteAction.amount()) ?? 0,
@@ -90,7 +91,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
         view?.didReceiveYourVote(viewModel: viewModel)
     }
-    
+
     override func provideAmountViewModel() {
         guard
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
@@ -108,7 +109,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
         baseView?.didReceiveAmount(viewModel: viewModel)
     }
-    
+
     override func refreshLockDiff() {
         guard let trackVoting = votesResult?.value else {
             return
@@ -120,7 +121,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             blockHash: votesResult?.blockHash
         )
     }
-    
+
     override func refreshFee() {
         interactor.estimateFee(for: [vote])
     }
@@ -130,7 +131,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         provideReferendumIndex()
         provideYourVoteViewModel()
     }
-    
+
     override func confirm() {
         guard let assetInfo = chain.utilityAssetDisplayInfo() else {
             return
@@ -167,7 +168,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             }
         )
     }
-    
+
     override func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
         self.referendum = referendum
     }

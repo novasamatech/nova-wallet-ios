@@ -82,7 +82,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         referendumIndexes.forEach { index in
             referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: index)
         }
-        
+
         referendumsSubscriptionFactory.unsubscribeFromAccountVotes(
             self,
             accountId: selectedAccount.chainAccount.accountId
@@ -212,13 +212,13 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {}
-    
+
     func createExtrinsicSplitter(for votes: [ReferendumNewVote]) -> ExtrinsicSplitting {
         let splitter = ExtrinsicSplitter(
             chain: chain,
             maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic
         )
-        
+
         return extrinsicFactory.vote(using: votes, splitter: splitter)
     }
 }
@@ -228,11 +228,11 @@ extension ReferendumVoteInteractor: ReferendumVoteInteractorInputProtocol {
         guard let actionHash = votes.first?.voteAction.hashValue else {
             return
         }
-        
+
         let reuseIdentifier = "\(actionHash)"
 
         let splitter = createExtrinsicSplitter(for: votes)
-        
+
         feeProxy.estimateFee(
             from: splitter,
             service: extrinsicService,
@@ -313,7 +313,7 @@ extension ReferendumVoteInteractor: PriceLocalSubscriptionHandler, PriceLocalSto
 extension ReferendumVoteInteractor: MultiExtrinsicFeeProxyDelegate {
     func didReceiveTotalFee(
         result: Result<any ExtrinsicFeeProtocol, any Error>,
-        for identifier: TransactionFeeId
+        for _: TransactionFeeId
     ) {
         switch result {
         case let .success(feeInfo):

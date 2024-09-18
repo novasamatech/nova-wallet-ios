@@ -6,7 +6,6 @@ protocol SwipeGovVotingConfirmViewProtocol: BaseReferendumVoteConfirmViewProtoco
 
 protocol SwipeGovVotingConfirmPresenterProtocol: BaseReferendumVoteConfirmPresenterProtocol {}
 
-
 protocol SwipeGovVotingConfirmInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
     func submit(votingItems: [VotingBasketItemLocal])
 }

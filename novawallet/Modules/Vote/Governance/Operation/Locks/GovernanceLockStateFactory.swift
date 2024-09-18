@@ -104,10 +104,9 @@ class GovernanceLockStateFactory {
 
             let newState: GovernanceLockState?
 
-            if 
+            if
                 let newVotes = newVotes,
                 let newMaxAmountVote = newVotes.values.max(by: { $0.voteAction.amount() < $1.voteAction.amount() }) {
-                
                 let newAmount = max(
                     oldAmount,
                     newMaxAmountVote.voteAction.amount()
@@ -119,7 +118,7 @@ class GovernanceLockStateFactory {
                     trackVotes: trackVotes,
                     additions: additions
                 )
-                
+
                 newState = GovernanceLockState(
                     maxLockedAmount: newAmount,
                     lockedUntil: newPeriod
@@ -135,7 +134,7 @@ class GovernanceLockStateFactory {
             )
         }
     }
-    
+
     private func calculateNewMaxPeriod(
         using referendums: [ReferendumIdLocal: GovUnlockReferendumProtocol],
         newVotes: [ReferendumIdLocal: ReferendumNewVote],
@@ -145,7 +144,7 @@ class GovernanceLockStateFactory {
         // as we replacing the vote we can immediately claim previos one so don't take into account
         let filteredReferendums = referendums.filter { newVotes[$0.key] == nil }
 
-        let periodWithoutReferendum = self.calculateMaxLock(
+        let periodWithoutReferendum = calculateMaxLock(
             for: filteredReferendums,
             trackVotes: trackVotes,
             additions: additions
@@ -159,7 +158,7 @@ class GovernanceLockStateFactory {
                 ) else {
                     return nil
                 }
-                
+
                 return max(periodWithoutReferendum ?? period, period)
             }
             .max() ?? periodWithoutReferendum

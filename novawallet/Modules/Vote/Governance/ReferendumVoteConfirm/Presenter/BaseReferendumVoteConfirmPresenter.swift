@@ -154,21 +154,21 @@ class BaseReferendumVoteConfirmPresenter {
         provideLockedAmountViewModel()
         provideLockedPeriodViewModel()
     }
-    
+
     func setup() {
         updateView()
         interactor.setup()
         refreshFee()
     }
-    
+
     func provideAmountViewModel() {
         fatalError("Must be overriden by subsclass")
     }
-    
+
     func refreshFee() {
         fatalError("Must be overriden by subsclass")
     }
-    
+
     func refreshLockDiff() {
         fatalError("Must be overriden by subsclass")
     }
@@ -176,8 +176,8 @@ class BaseReferendumVoteConfirmPresenter {
     func confirm() {
         fatalError("Must be overriden by subsclass")
     }
-    
-    func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
+
+    func didReceiveVotingReferendum(_: ReferendumLocal) {
         fatalError("Must be overriden by subsclass")
     }
 }

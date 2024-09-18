@@ -106,7 +106,7 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
 extension ReferendumVoteConfirmInteractor: ReferendumVoteConfirmInteractorInputProtocol {
     func submit(vote: ReferendumNewVote) {
         let splitter = createExtrinsicSplitter(for: [vote])
-        
+
         extrinsicService.submitWithTxSplitter(
             splitter,
             signer: signer,

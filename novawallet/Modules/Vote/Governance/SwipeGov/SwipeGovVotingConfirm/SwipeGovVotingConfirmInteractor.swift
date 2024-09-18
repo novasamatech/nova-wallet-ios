@@ -4,9 +4,9 @@ import SubstrateSdk
 
 final class SwipeGovVotingConfirmInteractor: ReferendumVoteInteractor {
     weak var presenter: SwipeGovVotingConfirmInteractorOutputProtocol?
-    
+
     let signer: SigningWrapperProtocol
-    
+
     init(
         referendumIndexes: [ReferendumIdLocal],
         selectedAccount: MetaChainAccountResponse,
@@ -56,9 +56,9 @@ final class SwipeGovVotingConfirmInteractor: ReferendumVoteInteractor {
 extension SwipeGovVotingConfirmInteractor: SwipeGovVotingConfirmInteractorInputProtocol {
     func submit(votingItems: [VotingBasketItemLocal]) {
         let votes = votingItems.mapToVotes()
-        
+
         let splitter = createExtrinsicSplitter(for: votes)
-        
+
         extrinsicService.submitWithTxSplitter(
             splitter,
             signer: signer,

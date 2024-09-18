@@ -16,7 +16,7 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
 
         return try builder.adding(call: voteCall.runtimeCall)
     }
-    
+
     func vote(
         using votes: [ReferendumNewVote],
         splitter: ExtrinsicSplitting
@@ -27,10 +27,10 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
             return ConvictionVoting.VoteCall(
                 referendumIndex: Referenda.ReferendumIndex(vote.index),
                 vote: accountVote
-            ).runtimeCall
+            )
         }
 
-        return voteCalls.reduce(splitter) { $0.adding(call: $1) }
+        return voteCalls.reduce(splitter) { $0.adding(call: $1.runtimeCall) }
     }
 
     func unlock(

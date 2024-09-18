@@ -8,7 +8,7 @@ struct SwipeGovVotingConfirmViewFactory {
     ) -> SwipeGovVotingConfirmViewProtocol? {
         guard
             let option = state.settings.value,
-            let referendums = initData.votingItems?.map({ $0.referendumId })
+            let referendums = initData.votingItems?.map(\.referendumId)
         else {
             return nil
         }
@@ -45,7 +45,7 @@ struct SwipeGovVotingConfirmViewFactory {
         )
 
         let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
-        
+
         let wireframe = SwipeGovVotingConfirmWireframe()
 
         let dataValidatingFactory = GovernanceValidatorFactory(
@@ -56,6 +56,7 @@ struct SwipeGovVotingConfirmViewFactory {
 
         let presenter = SwipeGovVotingConfirmPresenter(
             initData: initData,
+            observableState: state.observableState,
             chain: chain,
             selectedAccount: selectedAccount,
             dataValidatingFactory: dataValidatingFactory,
@@ -69,7 +70,7 @@ struct SwipeGovVotingConfirmViewFactory {
             logger: Logger.shared
         )
 
-        let view = ReferendumVoteConfirmViewController(
+        let view = SwipeGovVotingConfirmViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )
@@ -80,7 +81,7 @@ struct SwipeGovVotingConfirmViewFactory {
 
         return view
     }
-    
+
     // swiftlint:disable:next function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,

@@ -148,7 +148,7 @@ struct ReferendumVoteSetupViewFactory {
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         return ReferendumVoteSetupInteractor(
-            referendumIndex: referendum,
+            referendumIndexes: [referendum],
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
@@ -162,7 +162,7 @@ struct ReferendumVoteSetupViewFactory {
             currencyManager: currencyManager,
             extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
-            feeProxy: ExtrinsicFeeProxy(),
+            feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
             operationQueue: operationQueue
         )
