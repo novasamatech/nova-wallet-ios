@@ -117,7 +117,7 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
                 }
 
                 view?.didStartLoading()
-                interactor.submit(votingItems: votingItems)
+                interactor.submit(votes: votingItems.mapToVotes())
             }
         )
     }

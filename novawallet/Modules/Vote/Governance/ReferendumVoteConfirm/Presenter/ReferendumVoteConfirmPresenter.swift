@@ -164,7 +164,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
                 }
 
                 view?.didStartLoading()
-                interactor.submit(vote: vote)
+                interactor.submit(votes: [vote])
             }
         )
     }

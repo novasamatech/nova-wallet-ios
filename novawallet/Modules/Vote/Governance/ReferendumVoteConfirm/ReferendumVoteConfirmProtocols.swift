@@ -24,7 +24,7 @@ protocol BaseReferendumVoteConfirmPresenterProtocol: AnyObject {
 protocol ReferendumVoteConfirmPresenterProtocol: BaseReferendumVoteConfirmPresenterProtocol {}
 
 protocol ReferendumVoteConfirmInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
-    func submit(vote: ReferendumNewVote)
+    func submit(votes: [ReferendumNewVote])
 }
 
 protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {
