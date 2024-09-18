@@ -129,8 +129,15 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     }
 
     override func didReceiveVotingReferendum(_: ReferendumLocal) {}
+    override func didReceiveVotingHash(_: String) {}
 }
 
-extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputProtocol {}
+extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputProtocol {
+    func didReceiveSuccessBatchVoting() {
+        view?.didStopLoading()
+
+        wireframe.presentExtrinsicSubmission(from: baseView, completionAction: .dismiss, locale: selectedLocale)
+    }
+}
 
 extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmPresenterProtocol {}

@@ -112,10 +112,11 @@ extension ReferendumVoteConfirmInteractor: ReferendumVoteConfirmInteractorInputP
             signer: signer,
             runningIn: .main
         ) { [weak self] result in
-            if let result = result.results.compactMap({ try? $0.result.get() }).first {
-                self?.presenter?.didReceiveVotingHash(result)
-            } else if let error = result.errors().first {
+            if let error = result.errors().first {
                 self?.presenter?.didReceiveError(.submitVoteFailed(error))
+            } else {
+                let result = result.results.compactMap({ try? $0.result.get() }).joined()
+                self?.presenter?.didReceiveVotingHash(result)
             }
         }
     }

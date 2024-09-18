@@ -180,6 +180,10 @@ class BaseReferendumVoteConfirmPresenter {
     func didReceiveVotingReferendum(_: ReferendumLocal) {
         fatalError("Must be overriden by subsclass")
     }
+    
+    func didReceiveVotingHash(_: String) {
+        fatalError("Must be overriden by subsclass")
+    }
 }
 
 extension BaseReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol {
@@ -273,12 +277,6 @@ extension BaseReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmInteracto
                 self?.refreshLockDiff()
             }
         }
-    }
-
-    func didReceiveVotingHash(_: String) {
-        baseView?.didStopLoading()
-
-        wireframe.presentExtrinsicSubmission(from: baseView, completionAction: .dismiss, locale: selectedLocale)
     }
 
     func didReceiveError(_ error: ReferendumVoteConfirmError) {

@@ -4,5 +4,7 @@ final class SwipeGovVotingConfirmWireframe: SwipeGovVotingConfirmWireframeProtoc
     func presentExtrinsicSubmission(
         from _: (any ControllerBackedProtocol)?,
         completionAction _: ExtrinsicSubmissionPresentingAction, locale _: Locale
-    ) {}
+    ) {
+        
+    }
 }

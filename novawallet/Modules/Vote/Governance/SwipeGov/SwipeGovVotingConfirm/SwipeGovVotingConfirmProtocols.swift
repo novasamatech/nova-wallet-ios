@@ -6,8 +6,12 @@ protocol SwipeGovVotingConfirmViewProtocol: BaseReferendumVoteConfirmViewProtoco
 
 protocol SwipeGovVotingConfirmPresenterProtocol: BaseReferendumVoteConfirmPresenterProtocol {}
 
-protocol SwipeGovVotingConfirmInteractorInputProtocol: ReferendumVoteConfirmInteractorInputProtocol {}
+protocol SwipeGovVotingConfirmInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
+    func submit(votes: [ReferendumNewVote])
+}
 
-protocol SwipeGovVotingConfirmInteractorOutputProtocol: BaseReferendumVoteConfirmInteractorOutputProtocol {}
+protocol SwipeGovVotingConfirmInteractorOutputProtocol: BaseReferendumVoteConfirmInteractorOutputProtocol {
+    func didReceiveSuccessBatchVoting()
+}
 
 protocol SwipeGovVotingConfirmWireframeProtocol: BaseReferendumVoteConfirmWireframeProtocol {}
