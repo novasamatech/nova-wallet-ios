@@ -3,7 +3,10 @@ import SoraFoundation
 import SubstrateSdk
 
 final class SwipeGovVotingConfirmInteractor: ReferendumVoteInteractor {
-    weak var presenter: SwipeGovVotingConfirmInteractorOutputProtocol?
+    weak var presenter: SwipeGovVotingConfirmInteractorOutputProtocol? {
+        get { basePresenter as? SwipeGovVotingConfirmInteractorOutputProtocol }
+        set { basePresenter = newValue }
+    }
 
     let signer: SigningWrapperProtocol
 

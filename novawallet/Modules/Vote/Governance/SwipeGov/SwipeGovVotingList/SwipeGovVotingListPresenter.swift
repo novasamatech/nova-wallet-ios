@@ -63,12 +63,17 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func vote() {
-        guard let balance else {
-            return
-        }
+        validateBalanceSufficient { [weak self] in
+            guard let self else { return }
 
-        validateBalanceSufficient {
-            // TODO: Show confirmation
+            let initData = ReferendumVotingInitData(
+                votingItems: votingListItems
+            )
+
+            wireframe.showConfirmation(
+                from: view,
+                initData: initData
+            )
         }
     }
 }

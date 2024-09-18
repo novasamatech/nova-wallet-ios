@@ -79,13 +79,20 @@ extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
             return
         }
 
+        let conviction: VotingBasketConvictionLocal = switch voteType {
+        case .abstain:
+            .none
+        case .aye, .nay:
+            votingPower.conviction
+        }
+
         let basketItem = VotingBasketItemLocal(
             referendumId: referendumId,
             chainId: chain.chainId,
             metaId: metaAccount.metaId,
             amount: votingPower.amount,
             voteType: voteType,
-            conviction: votingPower.conviction
+            conviction: conviction
         )
 
         let saveOperation = basketItemsRepository.saveOperation(

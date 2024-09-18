@@ -94,7 +94,7 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         let params = GovernanceVoteBatchValidatingParams(
             assetBalance: assetBalance,
             referendums: referendums,
-            votes: votesResult?.value?.votes,
+            votes: observableState.voting?.value?.votes,
             newVotes: votingItems.mapToVotes(),
             fee: fee,
             assetInfo: assetInfo
@@ -125,8 +125,10 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     override func setup() {
         super.setup()
 
-        interactor.setup()
+        view?.didReceive(referendaCount: votingItems.count)
     }
+
+    override func didReceiveVotingReferendum(_: ReferendumLocal) {}
 }
 
 extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputProtocol {}

@@ -42,4 +42,8 @@ protocol SwipeGovVotingListWireframeProtocol: AlertPresentable, ErrorPresentable
         from view: ControllerBackedProtocol?,
         initData: ReferendumDetailsInitData
     )
+    func showConfirmation(
+        from view: ControllerBackedProtocol?,
+        initData: ReferendumVotingInitData
+    )
 }
