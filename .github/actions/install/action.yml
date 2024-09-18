@@ -58,7 +58,7 @@ runs:
         restore-keys: |
           ${{ runner.os }}-pods-
 
-    - run: bundle exec pod install
+    - run: pod install --repo-update
       shell: bash
 
     # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
