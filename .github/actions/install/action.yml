@@ -37,7 +37,6 @@ runs:
           WC_PROJECT_ID,/dev/ios/WC_PROJECT_ID
           POLKASSEMBLY_SUMMARY_API_KEY,/dev/ios/POLKASSEMBLY_SUMMARY_API_KEY
           BUILD_CERTIFICATE_BASE64,/dev/ios/BUILD_CERTIFICATE_BASE64
-          P12_PASSWORD,/dev/ios/P12_PASSWORD
           BUILD_PROVISION_PROFILE_BASE64,/dev/ios/BUILD_PROVISION_PROFILE_BASE64
           PUSH_NOTIFICATIONS_EXT_PROFILE_BASE64,/dev/ios/PUSH_NOTIFICATIONS_EXT_PROFILE_BASE64
           KEYCHAIN_PASSWORD,/dev/ios/KEYCHAIN_PASSWORD
@@ -63,6 +62,8 @@ runs:
 
     # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
     - name: Install the Apple certificate and provisioning profile
+      env:
+        P12_PASSWORD: ""
       run: |
         # create variables
         CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
