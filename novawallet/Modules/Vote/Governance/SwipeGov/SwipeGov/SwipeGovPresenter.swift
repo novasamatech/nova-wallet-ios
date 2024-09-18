@@ -117,7 +117,7 @@ private extension SwipeGovPresenter {
             onLoadError: { [weak self] _ in
                 guard let self else { return }
                 wireframe.present(
-                    message: "Couldn't load summary with api key: \(PolkassemblyApiKeys.summaryApi)",
+                    message: "Couldn't load summary with api key: \(PolkassemblyKeys.getSummaryApiKey())",
                     title: R.string.localizable.connectionErrorTitle(
                         preferredLanguages: localizationManager.selectedLocale.rLanguages
                     ),
