@@ -54,6 +54,7 @@ class SwipeGovEmptyStateView: UIView {
 
             textLabel.text = votingsModel.text
             confirmVotesButton.setTitle(votingsModel.buttonText, for: .normal)
+            confirmVotesButton.setTitleColor(R.color.colorButtonTextAccent(), for: .normal)
             confirmVotesButton.isHidden = false
         case let .empty(text):
             confirmVotesButton.isHidden = true
