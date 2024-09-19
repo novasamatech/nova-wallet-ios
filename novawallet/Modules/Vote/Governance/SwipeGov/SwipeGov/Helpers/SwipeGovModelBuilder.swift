@@ -41,10 +41,9 @@ extension SwipeGovModelBuilder: SwipeGovModelBuilderProtocol {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
-            let filteredReferendums = filteredReferendums(from: referendumsState)
-            let changes = createReferendumsChange(from: filteredReferendums)
+            referendums = filteredReferendums(from: referendumsState)
 
-            referendums = filteredReferendums
+            let changes = createReferendumsChange(from: referendums)
 
             rebuild(
                 with: changes,
@@ -115,8 +114,10 @@ private extension SwipeGovModelBuilder {
         var updates: [ReferendumLocal] = []
         var deletes: [ReferendumIdLocal] = []
 
+        let lastDeletes = Set(currentModel.referendumsChanges.deletes)
+
         newReferendums.forEach { key, value in
-            if self.referendums[key] == nil {
+            if self.referendums[key] == nil || lastDeletes.contains(key) {
                 inserts.append(value)
             } else {
                 updates.append(value)
