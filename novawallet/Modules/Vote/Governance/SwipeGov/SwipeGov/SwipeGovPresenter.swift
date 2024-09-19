@@ -114,17 +114,13 @@ private extension SwipeGovPresenter {
                 self?.onReferendumVote(voteResult: voteResult, id: id)
             },
             onBecomeTop: { _ in },
-            onLoadError: { [weak self] _ in
+            onLoadError: { [weak self] handlers in
                 guard let self else { return }
-                wireframe.present(
-                    message: "Couldn't load summary with api key: \(PolkassemblyKeys.getSummaryApiKey()) _ \(WalletConnectSecret.getProjectId())",
-                    title: R.string.localizable.connectionErrorTitle(
-                        preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    ),
-                    closeAction: R.string.localizable.commonClose(
-                        preferredLanguages: localizationManager.selectedLocale.rLanguages
-                    ),
-                    from: view
+                wireframe.presentRequestStatus(
+                    on: view,
+                    locale: localizationManager.selectedLocale,
+                    retryAction: { handlers.retry() },
+                    skipAction: { self.view?.skipCard() }
                 )
             }
         )
