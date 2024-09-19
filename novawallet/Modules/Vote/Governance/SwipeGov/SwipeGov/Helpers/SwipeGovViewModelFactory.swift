@@ -74,7 +74,7 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
         votingList: [VotingBasketItemLocal],
         locale: Locale
     ) -> String? {
-        guard !votingList.isEmpty else {
+        guard !referendums.isEmpty else {
             return R.string.localizable.swipeGovReferendaCounterEmpty(
                 preferredLanguages: locale.rLanguages
             )
