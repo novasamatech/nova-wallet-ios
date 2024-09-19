@@ -365,6 +365,8 @@
 		0C7CF4D42BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4D32BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift */; };
 		0C7CF4D62BD4E5350015DD45 /* KeychainProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7CF4D52BD4E5350015DD45 /* KeychainProxy.swift */; };
 		0C7E7FAB2A9F27FB00596628 /* NominationPoolsRedeemCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E7FAA2A9F27FB00596628 /* NominationPoolsRedeemCall.swift */; };
+		0C803D092C9B7D8400AEB35B /* String+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C803D082C9B7D8400AEB35B /* String+Trimming.swift */; };
+		0C803D0B2C9B805800AEB35B /* StringTrimmingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C803D0A2C9B805800AEB35B /* StringTrimmingTests.swift */; };
 		0C80F0A42B3D7DBD00579E23 /* WalletIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C80F0A32B3D7DBD00579E23 /* WalletIconView.swift */; };
 		0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C83775C2A4EEB380072102D /* AssetListState.swift */; };
 		0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B862BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift */; };
@@ -5425,6 +5427,8 @@
 		0C7CF4D32BD4DD870015DD45 /* CloudBackupCreateInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateInteractorError.swift; sourceTree = "<group>"; };
 		0C7CF4D52BD4E5350015DD45 /* KeychainProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainProxy.swift; sourceTree = "<group>"; };
 		0C7E7FAA2A9F27FB00596628 /* NominationPoolsRedeemCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsRedeemCall.swift; sourceTree = "<group>"; };
+		0C803D082C9B7D8400AEB35B /* String+Trimming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Trimming.swift"; sourceTree = "<group>"; };
+		0C803D0A2C9B805800AEB35B /* StringTrimmingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTrimmingTests.swift; sourceTree = "<group>"; };
 		0C80F0A32B3D7DBD00579E23 /* WalletIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletIconView.swift; sourceTree = "<group>"; };
 		0C83775C2A4EEB380072102D /* AssetListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListState.swift; sourceTree = "<group>"; };
 		0C846B862BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPreferredValidatorsProvider.swift; sourceTree = "<group>"; };
@@ -16860,6 +16864,7 @@
 				84DD49F728EEAFFF00B804F3 /* DecimalTests.swift */,
 				887248072924F54900B0D2CC /* URL+Matchable.swift */,
 				0C1BE19F2A46F1F00010933C /* ScientificStringParsing.swift */,
+				0C803D0A2C9B805800AEB35B /* StringTrimmingTests.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -17658,6 +17663,7 @@
 				0C13DFDE2AFA89EF00E5F355 /* Decimal+Percents.swift */,
 				0C992C3C2B53ADF300ACC129 /* Array+Operations.swift */,
 				0C5FA9A62B8313950077934C /* String+Search.swift */,
+				0C803D082C9B7D8400AEB35B /* String+Trimming.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -23684,7 +23690,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift",
+				$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -23815,7 +23821,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/R.generated.swift",
+				$PROJECT_DIR/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -23853,7 +23859,7 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CIKeys.generated.swift",
-				"$PROJECT_DIR/CIKeys.generated.swift",
+				$PROJECT_DIR/CIKeys.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -28555,6 +28561,7 @@
 				498B5BD31A9F4E45B3011C16 /* GovernanceNotificationsInteractor.swift in Sources */,
 				B9023C7F525D1A43372850CC /* GovernanceNotificationsViewController.swift in Sources */,
 				188AE5B5729B576EB2AA5776 /* GovernanceNotificationsViewFactory.swift in Sources */,
+				0C803D092C9B7D8400AEB35B /* String+Trimming.swift in Sources */,
 				9CFA514776771FBBD64D18DB /* StakingRewardsNotificationsProtocols.swift in Sources */,
 				EC59E978027A1DCBC2268A29 /* StakingRewardsNotificationsWireframe.swift in Sources */,
 				0CDEF1662C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift in Sources */,
@@ -28859,6 +28866,7 @@
 				848DB998260639C70055DDE7 /* TotalRewardMock.swift in Sources */,
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,
 				84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */,
+				0C803D0B2C9B805800AEB35B /* StringTrimmingTests.swift in Sources */,
 				844DAAE428AD24FA008E11DA /* LedgerTransportTests.swift in Sources */,
 				0CE550B62A49741400F0A7AC /* StakingUnbondSetupTests.swift in Sources */,
 				8469936B26CD1BBE002CC786 /* RuntimePoolTests.swift in Sources */,
