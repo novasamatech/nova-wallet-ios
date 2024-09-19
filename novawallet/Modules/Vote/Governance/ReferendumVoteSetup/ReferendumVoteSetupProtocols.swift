@@ -34,7 +34,7 @@ protocol ReferendumVoteSetupPresenterProtocol: BaseReferendumVoteSetupPresenterP
 
 protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {}
 
-protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {}
+protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumObservingVoteInteractorOutputProtocol {}
 
 protocol BaseReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
     GovernanceErrorPresentable {}

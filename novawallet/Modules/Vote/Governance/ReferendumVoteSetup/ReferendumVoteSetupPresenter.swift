@@ -443,20 +443,19 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 }
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProtocol {
+    func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
+        votesResult = state.voting
+        referendum = state.referendums[referendumIndex]
+
+        refreshLockDiff()
+    }
+
     func didReceiveLockStateDiff(_ diff: GovernanceLockStateDiff) {
         lockDiff = diff
 
         updateLockedAmountView()
         updateLockedPeriodView()
         provideReuseLocksViewModel()
-    }
-
-    func didReceiveAccountVotes(
-        _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>
-    ) {
-        votesResult = votes
-
-        refreshLockDiff()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
@@ -490,10 +489,6 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         priceData = price
 
         updateAmountPriceView()
-    }
-
-    func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
-        self.referendum = referendum
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {

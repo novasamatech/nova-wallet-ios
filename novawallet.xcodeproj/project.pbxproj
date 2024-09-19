@@ -1016,6 +1016,7 @@
 		2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */; };
 		2DE302F12C32EAE80082FB5C /* SystemProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302F02C32EAE80082FB5C /* SystemProperties.swift */; };
 		2DE4EBCF2BFB515E005E2D81 /* ExportData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4EBCE2BFB515E005E2D81 /* ExportData.swift */; };
+		2DE668672C9C6FA9007883AF /* ReferendumObservingVoteInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE668662C9C6FA9007883AF /* ReferendumObservingVoteInteractor.swift */; };
 		2DEDF6882C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF6872C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift */; };
 		2DEDF68A2C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF6892C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift */; };
 		2DEDF68D2C36FDCB007D5F4A /* LightChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF68C2C36FDCB007D5F4A /* LightChainModel.swift */; };
@@ -6105,6 +6106,7 @@
 		2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPropertiesOperationFactory.swift; sourceTree = "<group>"; };
 		2DE302F02C32EAE80082FB5C /* SystemProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemProperties.swift; sourceTree = "<group>"; };
 		2DE4EBCE2BFB515E005E2D81 /* ExportData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportData.swift; sourceTree = "<group>"; };
+		2DE668662C9C6FA9007883AF /* ReferendumObservingVoteInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumObservingVoteInteractor.swift; sourceTree = "<group>"; };
 		2DEDF6872C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNetworkManuallyTableViewCell.swift; sourceTree = "<group>"; };
 		2DEDF6892C36EF8F007D5F4A /* KnownNetworksListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownNetworksListViewModelFactory.swift; sourceTree = "<group>"; };
 		2DEDF68C2C36FDCB007D5F4A /* LightChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainModel.swift; sourceTree = "<group>"; };
@@ -11972,6 +11974,7 @@
 				8D664781927E12007A28A971 /* SwipeGovVotingConfirmWireframe.swift */,
 				25666B9BBEA7F5086B37BE5A /* SwipeGovVotingConfirmPresenter.swift */,
 				206FE95C9FC6CBEA50D085D0 /* SwipeGovVotingConfirmInteractor.swift */,
+				2DE668662C9C6FA9007883AF /* ReferendumObservingVoteInteractor.swift */,
 				7942853232FD63C419EE62E3 /* SwipeGovVotingConfirmViewController.swift */,
 				B7E3690FAC10B76D6D7D5C5A /* SwipeGovVotingConfirmViewLayout.swift */,
 				E0B67F8F7D79D9546B1B92FA /* SwipeGovVotingConfirmViewFactory.swift */,
@@ -27589,6 +27592,7 @@
 				0D5245ED354CC52A842C85A0 /* TransferConfirmViewLayout.swift in Sources */,
 				0DF1E0D0CCEDC1340B7A47D7 /* TransferConfirmOnChainViewFactory.swift in Sources */,
 				779A8F992A04BAC000BE31B3 /* StakingRewardActionControl.swift in Sources */,
+				2DE668672C9C6FA9007883AF /* ReferendumObservingVoteInteractor.swift in Sources */,
 				8DA9BFE7774B292664FD843F /* DAppPhishingProtocols.swift in Sources */,
 				84EF8D3E288FDA2100265346 /* WalletListLocalStorageSubscriber.swift in Sources */,
 				0C9525E72A7AFA2C00BD724D /* ValueResolver.swift in Sources */,

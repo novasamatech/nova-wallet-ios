@@ -177,13 +177,13 @@ class BaseReferendumVoteConfirmPresenter {
         fatalError("Must be overriden by subsclass")
     }
 
-    func didReceiveVotingReferendum(_: ReferendumLocal) {
-        fatalError("Must be overriden by subsclass")
+    func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
+        votesResult = state.voting
+
+        refreshLockDiff()
     }
 
-    func didReceiveVotingHash(_: String) {
-        fatalError("Must be overriden by subsclass")
-    }
+    func didReceiveVotingHash(_: String) {}
 }
 
 extension BaseReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol {
@@ -227,12 +227,6 @@ extension BaseReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmInteracto
         provideTransferableAmountViewModel()
         provideLockedAmountViewModel()
         provideLockedPeriodViewModel()
-    }
-
-    func didReceiveAccountVotes(_ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
-        votesResult = votes
-
-        refreshLockDiff()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {

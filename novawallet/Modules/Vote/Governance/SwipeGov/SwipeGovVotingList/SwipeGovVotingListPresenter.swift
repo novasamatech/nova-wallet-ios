@@ -221,9 +221,7 @@ private extension SwipeGovVotingListPresenter {
         in votingItems: [VotingBasketItemLocal],
         for balance: AssetBalance
     ) -> [VotingBasketItemLocal] {
-        votingItems.filter {
-            $0.amount > balance.locked && $0.amount > balance.transferable
-        }
+        votingItems.filter { $0.amount > balance.freeInPlank }
     }
 }
 

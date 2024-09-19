@@ -148,19 +148,6 @@ extension SwipeGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSubs
 // MARK: Private
 
 private extension SwipeGovInteractor {
-    func filter(
-        referendums: [ReferendumIdLocal: ReferendumLocal],
-        using basketItemsChanges: [DataProviderChange<VotingBasketItemLocal>]
-    ) -> [ReferendumIdLocal: ReferendumLocal] {
-        var mutReferendums = referendums
-
-        basketItemsChanges
-            .compactMap(\.item)
-            .forEach { mutReferendums[$0.referendumId] = nil }
-
-        return mutReferendums
-    }
-
     func startObservingState() {
         observableState.addObserver(
             with: self,
