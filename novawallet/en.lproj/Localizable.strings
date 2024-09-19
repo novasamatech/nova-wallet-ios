@@ -1734,7 +1734,7 @@
 "common.counted.referenda" = "%d referenda";
 "swipe.gov.banner.message" = "A new way to easily distribute your votes across the Referenda";
 "common.counter" = "%d of %d";
-"voting.list.widget.title" = "Voting list";
+"voting.list.widget.title" = "Confirm votes";
 "voting.list.widget.title.empty" = "No votings";
 "vote.card.requested" = "Requested:";
 "gov.vote.setup.details.swipe.gov" = "Voting will be set for future votes in SwipeGov";
