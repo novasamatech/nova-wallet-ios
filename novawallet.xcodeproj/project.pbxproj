@@ -11975,7 +11975,6 @@
 				7942853232FD63C419EE62E3 /* SwipeGovVotingConfirmViewController.swift */,
 				B7E3690FAC10B76D6D7D5C5A /* SwipeGovVotingConfirmViewLayout.swift */,
 				E0B67F8F7D79D9546B1B92FA /* SwipeGovVotingConfirmViewFactory.swift */,
-				2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */,
 			);
 			path = SwipeGovVotingConfirm;
 			sourceTree = "<group>";
@@ -12442,6 +12441,7 @@
 		2D6287682C99A0F700060814 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */,
 				2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */,
 			);
 			path = Common;

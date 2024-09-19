@@ -2,6 +2,7 @@ import Foundation
 import SoraFoundation
 import SubstrateSdk
 import Operation_iOS
+import BigInt
 
 final class SwipeGovVotingConfirmInteractor: ReferendumVoteInteractor {
     var presenter: SwipeGovVotingConfirmInteractorOutputProtocol? {
@@ -111,6 +112,23 @@ final class SwipeGovVotingConfirmInteractor: ReferendumVoteInteractor {
 
 extension SwipeGovVotingConfirmInteractor: SwipeGovVotingConfirmInteractorInputProtocol {
     func submit(votes: [ReferendumNewVote]) {
+        submit(votes)
+    }
+
+    func submit(
+        votes: [ReferendumNewVote],
+        limitingBy amount: BigUInt
+    ) {
+        let limitedVotes = limitedVotes(votes, by: amount)
+
+        submit(limitedVotes)
+    }
+}
+
+// MARK: Private
+
+private extension SwipeGovVotingConfirmInteractor {
+    func submit(_ votes: [ReferendumNewVote]) {
         let splitter = createExtrinsicSplitter(for: votes)
 
         extrinsicService.submitWithTxSplitter(
@@ -127,11 +145,7 @@ extension SwipeGovVotingConfirmInteractor: SwipeGovVotingConfirmInteractorInputP
             }
         }
     }
-}
 
-// MARK: Private
-
-private extension SwipeGovVotingConfirmInteractor {
     func clearAndSubscribeLocks() {
         locksSubscription?.removeObserver(self)
         locksSubscription = nil
@@ -191,6 +205,31 @@ private extension SwipeGovVotingConfirmInteractor {
             case let .failure(error):
                 self?.presenter?.didReceiveError(.submitVoteFailed(error))
             }
+        }
+    }
+
+    func limitedVotes(
+        _ votes: [ReferendumNewVote],
+        by amount: BigUInt
+    ) -> [ReferendumNewVote] {
+        votes.map { vote in
+            guard vote.voteAction.amount() > amount else {
+                return vote
+            }
+
+            let action: ReferendumVoteAction = switch vote.voteAction {
+            case .abstain:
+                .abstain(amount: amount)
+            case let .aye(model):
+                .aye(.init(amount: amount, conviction: model.conviction))
+            case let .nay(model):
+                .nay(.init(amount: amount, conviction: model.conviction))
+            }
+
+            return ReferendumNewVote(
+                index: vote.index,
+                voteAction: action
+            )
         }
     }
 }

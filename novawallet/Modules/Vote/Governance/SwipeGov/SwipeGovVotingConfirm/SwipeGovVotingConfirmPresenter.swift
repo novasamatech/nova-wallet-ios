@@ -112,12 +112,17 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             selectedLocale: selectedLocale,
             handlers: handlers,
             successClosure: { [weak self] in
-                guard let self else {
-                    return
-                }
-
+                guard let self else { return }
                 view?.didStartLoading()
                 interactor.submit(votes: votingItems.mapToVotes())
+            },
+            maxAmountErrorClosure: { [weak self] in
+                guard let self, let assetBalance else { return }
+                view?.didStartLoading()
+                interactor.submit(
+                    votes: votingItems.mapToVotes(),
+                    limitingBy: assetBalance.freeInPlank
+                )
             }
         )
     }

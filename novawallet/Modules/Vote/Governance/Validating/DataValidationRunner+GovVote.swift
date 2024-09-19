@@ -54,14 +54,16 @@ extension DataValidationRunner {
         params: GovernanceVoteBatchValidatingParams,
         selectedLocale: Locale,
         handlers: GovernanceVoteValidatingHandlers,
-        successClosure: @escaping DataValidationRunnerCompletion
+        successClosure: @escaping DataValidationRunnerCompletion,
+        maxAmountErrorClosure: @escaping () -> Void
     ) {
         var validators: [DataValidating] = [
-            factory.enoughTokensForVoting(
+            factory.enoughTokensForBatchVoting(
                 params.assetBalance,
                 votingAmount: params.maxAmount,
                 assetInfo: params.assetInfo,
-                locale: selectedLocale
+                locale: selectedLocale,
+                maxAmountErrorClosure: maxAmountErrorClosure
             ),
             factory.has(
                 fee: params.fee,
@@ -121,7 +123,11 @@ extension DataValidationRunner {
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             ),
-            factory.has(fee: params.fee, locale: selectedLocale, onError: feeErrorClosure),
+            factory.has(
+                fee: params.fee,
+                locale: selectedLocale,
+                onError: feeErrorClosure
+            ),
             factory.enoughTokensForVotingAndFee(
                 params.assetBalance,
                 votingAmount: params.newDelegation?.balance,
