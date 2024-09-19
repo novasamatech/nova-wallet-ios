@@ -96,12 +96,21 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
 
         votingListItems = votingListItems.applying(changes: votingBasketChanges)
 
-        if votingListItems.isEmpty {
-            wireframe.close(view: view)
-        } else {
-            validateBalanceSufficient()
+        let proceedClosure: () -> Void = { [weak self] in
+            guard let self else { return }
+            if votingListItems.isEmpty {
+                wireframe.close(view: view)
+            } else {
+                validateBalanceSufficient()
 
-            updateView(with: deletes)
+                updateView(with: deletes)
+            }
+        }
+
+        if !deletes.isEmpty {
+            showReferendaExcluded(completion: proceedClosure)
+        } else {
+            proceedClosure()
         }
     }
 
@@ -265,19 +274,21 @@ private extension SwipeGovVotingListPresenter {
             }
         )
     }
-    
-    func showReferendaExcluded() {
+
+    func showReferendaExcluded(completion: @escaping () -> Void) {
         guard
             let balance,
             let assetInfo = chain.utilityAssetDisplayInfo()
         else {
             return
         }
-        
+
         wireframe.presentReferendaExcluded(
+            from: view,
             availableBalance: balance.transferable,
             assetInfo: assetInfo,
-            locale: localizationManager.selectedLocale
+            locale: localizationManager.selectedLocale,
+            action: completion
         )
     }
 }

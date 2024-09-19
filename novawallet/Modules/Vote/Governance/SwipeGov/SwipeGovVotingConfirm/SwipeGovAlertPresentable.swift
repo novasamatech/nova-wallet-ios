@@ -23,16 +23,11 @@ protocol SwipeGovAlertPresentable {
     )
 
     func presentReferendaExcluded(
-        availableBalance: BigUInt,
-        assetInfo: AssetBalanceDisplayInfo,
-        locale: Locale
-    )
-    
-    func presentReferendaExcluded(
         from view: ControllerBackedProtocol?,
         availableBalance: BigUInt,
         assetInfo: AssetBalanceDisplayInfo,
-        locale: Locale
+        locale: Locale,
+        action: @escaping () -> Void
     )
 }
 
@@ -123,10 +118,11 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
         from view: ControllerBackedProtocol?,
         availableBalance: BigUInt,
         assetInfo: AssetBalanceDisplayInfo,
-        locale: Locale
+        locale: Locale,
+        action: @escaping () -> Void
     ) {
         let languages = locale.rLanguages
-        
+
         let balance = NSDecimalNumber(
             decimal: availableBalance.decimal(assetInfo: assetInfo)
         )
@@ -140,10 +136,16 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
                 assetInfo.symbol,
                 preferredLanguages: languages
             ),
-            actions: [],
-            closeAction: R.string.localizable.commonOk(
-                preferredLanguages: languages
-            )
+            actions: [
+                .init(
+                    title: R.string.localizable.commonOk(
+                        preferredLanguages: languages
+                    ),
+                    style: .cancel,
+                    handler: { action() }
+                )
+            ],
+            closeAction: nil
         )
 
         present(
