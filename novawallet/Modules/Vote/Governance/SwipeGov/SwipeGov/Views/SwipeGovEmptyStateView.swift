@@ -16,11 +16,14 @@ class SwipeGovEmptyStateView: UIView {
         view.titleLabel?.apply(style: .semiboldSubheadlineAccent)
     }
 
+    private var votingsModel: SwipeGovEmptyStateViewModel.VotingsModel?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         backgroundColor = .clear
         setupLayout()
+        setupHandlers()
     }
 
     @available(*, unavailable)
@@ -47,6 +50,8 @@ class SwipeGovEmptyStateView: UIView {
     func bind(with viewModel: SwipeGovEmptyStateViewModel) {
         switch viewModel {
         case let .votings(votingsModel):
+            self.votingsModel = votingsModel
+
             textLabel.text = votingsModel.text
             confirmVotesButton.setTitle(votingsModel.buttonText, for: .normal)
             confirmVotesButton.isHidden = false
@@ -55,12 +60,25 @@ class SwipeGovEmptyStateView: UIView {
             textLabel.text = text
         }
     }
+
+    private func setupHandlers() {
+        confirmVotesButton.addTarget(
+            self,
+            action: #selector(confirmVotesAction),
+            for: .touchUpInside
+        )
+    }
+
+    @objc private func confirmVotesAction() {
+        votingsModel?.action()
+    }
 }
 
 enum SwipeGovEmptyStateViewModel {
     struct VotingsModel {
         let text: String
         let buttonText: String
+        let action: () -> Void
     }
 
     case votings(VotingsModel)

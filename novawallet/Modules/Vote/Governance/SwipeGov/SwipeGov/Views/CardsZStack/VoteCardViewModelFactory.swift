@@ -6,6 +6,7 @@ protocol VoteCardViewModelFactoryProtocol {
         from model: SwipeGovModelBuilder.Result.Model,
         locale: Locale,
         actions: VoteCardViewModel.Actions,
+        emptyViewAction: @escaping () -> Void,
         validationClosure: @escaping (VoteCardViewModel?) -> Bool
     ) -> CardsZStackViewModel
 }
@@ -47,6 +48,7 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
         from model: SwipeGovModelBuilder.Result.Model,
         locale: Locale,
         actions: VoteCardViewModel.Actions,
+        emptyViewAction: @escaping () -> Void,
         validationClosure: @escaping (VoteCardViewModel?) -> Bool
     ) -> CardsZStackViewModel {
         let inserts = createVoteCardViewModels(
@@ -69,12 +71,45 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
             deletes: deletes
         )
 
+        let emptyViewModel = createEmptyViewModel(
+            model: model,
+            locale: locale,
+            emptyViewAction: emptyViewAction
+        )
+
         let viewModel = CardsZStackViewModel(
             changeModel: stackChangeModel,
+            emptyViewModel: emptyViewModel,
             validationAction: validationClosure
         )
 
         return viewModel
+    }
+
+    private func createEmptyViewModel(
+        model: SwipeGovModelBuilder.Result.Model,
+        locale: Locale,
+        emptyViewAction: @escaping () -> Void
+    ) -> SwipeGovEmptyStateViewModel {
+        if model.votingList.isEmpty {
+            .empty(
+                text: R.string.localizable.swipeGovEmptyViewText(
+                    preferredLanguages: locale.rLanguages
+                )
+            )
+        } else {
+            .votings(
+                .init(
+                    text: R.string.localizable.swipeGovEmptyViewVotedText(
+                        preferredLanguages: locale.rLanguages
+                    ),
+                    buttonText: R.string.localizable.swipeGovEmptyViewButton(
+                        preferredLanguages: locale.rLanguages
+                    ),
+                    action: emptyViewAction
+                )
+            )
+        }
     }
 
     private func createVoteCardViewModels(

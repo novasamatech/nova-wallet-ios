@@ -1750,3 +1750,6 @@
 "swipe.gov.referenda.excluded.alert.title" = "Some of the referenda excluded from vote list";
 "swipe.gov.referenda.excluded.alert.message" = "Some of the referenda are no longer available for voting or you may not have enough tokens available to vote. Available to vote: %.2f %@.";
 "swipe.gov.amount.alert.use.max" = "Use max";
+"swipe.gov.empty.view.button" = "Confirm your votes";
+"swipe.gov.empty.view.voted.text" = "You have already voted for all available referenda";
+"swipe.gov.empty.view.text" = "You have already voted for all available referenda or there are no referenda to vote right now. Come back later.";
