@@ -6,7 +6,7 @@ extension String {
     }
 
     func trimmingPattern(_ pattern: String) -> String {
-        guard hasPrefix(pattern), hasSuffix(pattern), count > pattern.count else {
+        guard hasPrefix(pattern), hasSuffix(pattern), count >= 2 * pattern.count else {
             return self
         }
 
