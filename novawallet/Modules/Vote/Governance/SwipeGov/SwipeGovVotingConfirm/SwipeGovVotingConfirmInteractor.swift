@@ -70,6 +70,13 @@ final class SwipeGovVotingConfirmInteractor: ReferendumObservingVoteInteractor {
         super.setup()
 
         clearAndSubscribeLocks()
+
+        observableState.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] _, newState in
+            self?.processNewState(newState.value)
+        }
     }
 
     override func remakeSubscriptions() {
