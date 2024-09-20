@@ -27,10 +27,13 @@ protocol ReferendumVoteConfirmInteractorInputProtocol: ReferendumVoteInteractorI
     func submit(vote: ReferendumNewVote)
 }
 
-protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {
+protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol, ReferendumObservingVoteInteractorOutputProtocol {
     func didReceiveLocks(_ locks: AssetLocks)
-    func didReceiveVotingHash(_ hash: String)
     func didReceiveError(_ error: ReferendumVoteConfirmError)
+}
+
+protocol ReferendumVoteConfirmInteractorOutputProtocol: BaseReferendumVoteConfirmInteractorOutputProtocol {
+    func didReceiveVotingHash(_ hash: String)
 }
 
 protocol BaseReferendumVoteConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,

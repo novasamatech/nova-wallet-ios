@@ -9,13 +9,12 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
     private let interactor: SwipeGovVotingConfirmInteractorInputProtocol
     private let wireframe: SwipeGovVotingConfirmWireframeProtocol
-    private let observableState: ReferendumsObservableState
 
     private var votingItems: [VotingBasketItemLocal] = []
+    private var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
 
     init(
         initData: ReferendumVotingInitData,
-        observableState: ReferendumsObservableState,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
@@ -28,7 +27,6 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
-        self.observableState = observableState
         self.interactor = interactor
         self.wireframe = wireframe
         votingItems = initData.votingItems ?? []
@@ -69,14 +67,14 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     }
 
     override func refreshLockDiff() {
-        guard let trackVoting = observableState.voting?.value else {
+        guard let trackVoting = votesResult?.value else {
             return
         }
 
         interactor.refreshLockDiff(
             for: trackVoting,
             newVotes: votingItems.mapToVotes(),
-            blockHash: observableState.voting?.blockHash
+            blockHash: votesResult?.blockHash
         )
     }
 
@@ -89,12 +87,12 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             return
         }
 
-        let referendums = votingItems.compactMap { observableState.referendums[$0.referendumId] }
+        let referendums = votingItems.compactMap { self.referendums[$0.referendumId] }
 
         let params = GovernanceVoteBatchValidatingParams(
             assetBalance: assetBalance,
             referendums: referendums,
-            votes: observableState.voting?.value?.votes,
+            votes: votesResult?.value?.votes,
             newVotes: votingItems.mapToVotes(),
             fee: fee,
             assetInfo: assetInfo
@@ -133,8 +131,11 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         view?.didReceive(referendaCount: votingItems.count)
     }
 
-    override func didReceiveVotingReferendum(_: ReferendumLocal) {}
-    override func didReceiveVotingHash(_: String) {}
+    override func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
+        super.didReceiveVotingReferendumsState(state)
+
+        referendums = state.referendums
+    }
 }
 
 extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputProtocol {

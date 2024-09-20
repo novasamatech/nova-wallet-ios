@@ -250,6 +250,7 @@ extension BaseSwipeGovSetupInteractor {
         observableState.removeObserver(by: self)
         observableState.addObserver(
             with: self,
+            sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, new in
             guard let accountVotes = new.value.voting else {

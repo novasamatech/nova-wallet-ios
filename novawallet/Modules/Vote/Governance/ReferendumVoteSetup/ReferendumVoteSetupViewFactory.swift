@@ -13,7 +13,6 @@ struct ReferendumVoteSetupViewFactory {
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
-                referendum: referendum,
                 currencyManager: currencyManager
             ) else {
             return nil
@@ -108,7 +107,6 @@ struct ReferendumVoteSetupViewFactory {
     // swiftlint:disable function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
-        referendum: ReferendumIdLocal,
         currencyManager: CurrencyManagerProtocol
     ) -> ReferendumVoteSetupInteractor? {
         let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
@@ -121,7 +119,6 @@ struct ReferendumVoteSetupViewFactory {
 
         guard
             let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
-            let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
             let blockTimeService = state.blockTimeService,
             let blockTimeFactory = state.createBlockTimeOperationFactory()
@@ -148,11 +145,10 @@ struct ReferendumVoteSetupViewFactory {
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
         return ReferendumVoteSetupInteractor(
-            referendumIndexes: [referendum],
+            observableState: state.observableState,
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            referendumsSubscriptionFactory: subscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             blockTimeService: blockTimeService,

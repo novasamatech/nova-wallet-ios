@@ -6,10 +6,7 @@ struct SwipeGovVotingConfirmViewFactory {
         for state: GovernanceSharedState,
         initData: ReferendumVotingInitData
     ) -> SwipeGovVotingConfirmViewProtocol? {
-        guard
-            let option = state.settings.value,
-            let referendums = initData.votingItems?.map(\.referendumId)
-        else {
+        guard let option = state.settings.value else {
             return nil
         }
 
@@ -19,7 +16,6 @@ struct SwipeGovVotingConfirmViewFactory {
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
-                referendums: referendums,
                 votingItems: initData.votingItems ?? [],
                 currencyManager: currencyManager
             ),
@@ -57,7 +53,6 @@ struct SwipeGovVotingConfirmViewFactory {
 
         let presenter = SwipeGovVotingConfirmPresenter(
             initData: initData,
-            observableState: state.observableState,
             chain: chain,
             selectedAccount: selectedAccount,
             dataValidatingFactory: dataValidatingFactory,
@@ -86,7 +81,6 @@ struct SwipeGovVotingConfirmViewFactory {
     // swiftlint:disable:next function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
-        referendums: [ReferendumIdLocal],
         votingItems: [VotingBasketItemLocal],
         currencyManager: CurrencyManagerProtocol
     ) -> SwipeGovVotingConfirmInteractor? {
@@ -102,7 +96,6 @@ struct SwipeGovVotingConfirmViewFactory {
 
         guard
             let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
-            let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
             let blockTimeService = state.blockTimeService,
             let blockTimeFactory = state.createBlockTimeOperationFactory()
@@ -144,12 +137,10 @@ struct SwipeGovVotingConfirmViewFactory {
         return SwipeGovVotingConfirmInteractor(
             observableState: state.observableState,
             repository: repository,
-            referendumIndexes: referendums,
             votingItems: votingItemsDict,
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            referendumsSubscriptionFactory: subscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             blockTimeService: blockTimeService,
@@ -162,6 +153,7 @@ struct SwipeGovVotingConfirmViewFactory {
             signer: signer,
             feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
+            logger: Logger.shared,
             operationQueue: operationQueue
         )
     }

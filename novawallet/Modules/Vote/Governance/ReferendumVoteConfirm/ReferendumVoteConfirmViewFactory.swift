@@ -20,7 +20,6 @@ struct ReferendumVoteConfirmViewFactory {
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
-                referendum: newVote.index,
                 currencyManager: currencyManager
             ),
             let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
@@ -57,6 +56,7 @@ struct ReferendumVoteConfirmViewFactory {
 
         let presenter = ReferendumVoteConfirmPresenter(
             initData: initData,
+            referendumId: newVote.index,
             vote: newVote,
             chain: chain,
             selectedAccount: selectedAccount,
@@ -86,7 +86,6 @@ struct ReferendumVoteConfirmViewFactory {
     // swiftlint:disable:next function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
-        referendum: ReferendumIdLocal,
         currencyManager: CurrencyManagerProtocol
     ) -> ReferendumVoteConfirmInteractor? {
         let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
@@ -99,7 +98,6 @@ struct ReferendumVoteConfirmViewFactory {
 
         guard
             let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
-            let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
             let blockTimeService = state.blockTimeService,
             let blockTimeFactory = state.createBlockTimeOperationFactory()
@@ -131,11 +129,10 @@ struct ReferendumVoteConfirmViewFactory {
         )
 
         return ReferendumVoteConfirmInteractor(
-            referendumIndexes: [referendum],
+            observableState: state.observableState,
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            referendumsSubscriptionFactory: subscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             blockTimeService: blockTimeService,

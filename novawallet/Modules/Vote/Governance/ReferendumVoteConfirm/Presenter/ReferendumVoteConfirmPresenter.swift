@@ -15,8 +15,11 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
     private var referendum: ReferendumLocal?
 
+    private let referendumId: ReferendumIdLocal
+
     init(
         initData: ReferendumVotingInitData,
+        referendumId: ReferendumIdLocal,
         vote: ReferendumNewVote,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
@@ -32,8 +35,8 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        referendum = initData.referendum
         self.vote = vote
+        self.referendumId = referendumId
 
         super.init(
             initData: initData,
@@ -172,11 +175,17 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
         )
     }
 
-    override func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
-        self.referendum = referendum
-    }
+    override func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
+        super.didReceiveVotingReferendumsState(state)
 
-    override func didReceiveVotingHash(_: String) {
+        referendum = state.referendums[referendumId]
+    }
+}
+
+// MARK: ReferendumVoteConfirmInteractorOutputProtocol
+
+extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputProtocol {
+    func didReceiveVotingHash(_: String) {
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(from: baseView, completionAction: .dismiss, locale: selectedLocale)

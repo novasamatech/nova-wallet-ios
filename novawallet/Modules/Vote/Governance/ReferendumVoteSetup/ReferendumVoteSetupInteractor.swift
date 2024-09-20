@@ -2,15 +2,10 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class ReferendumVoteSetupInteractor: ReferendumVoteInteractor {
-    weak var presenter: ReferendumVoteSetupInteractorOutputProtocol? {
-        get {
-            basePresenter as? ReferendumVoteSetupInteractorOutputProtocol
-        }
-
-        set {
-            basePresenter = newValue
-        }
+final class ReferendumVoteSetupInteractor: ReferendumObservingVoteInteractor {
+    weak var presenter: ReferendumObservingVoteInteractorOutputProtocol? {
+        get { basePresenter as? ReferendumObservingVoteInteractorOutputProtocol }
+        set { basePresenter = newValue }
     }
 }
 

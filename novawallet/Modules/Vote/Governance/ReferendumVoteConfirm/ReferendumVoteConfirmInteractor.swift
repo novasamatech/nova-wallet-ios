@@ -2,15 +2,10 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
-    var presenter: BaseReferendumVoteConfirmInteractorOutputProtocol? {
-        get {
-            basePresenter as? BaseReferendumVoteConfirmInteractorOutputProtocol
-        }
-
-        set {
-            basePresenter = newValue
-        }
+final class ReferendumVoteConfirmInteractor: ReferendumObservingVoteInteractor {
+    var presenter: ReferendumVoteConfirmInteractorOutputProtocol? {
+        get { basePresenter as? ReferendumVoteConfirmInteractorOutputProtocol }
+        set { basePresenter = newValue }
     }
 
     let signer: SigningWrapperProtocol
@@ -18,11 +13,10 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
     private var locksSubscription: StreamableProvider<AssetLock>?
 
     init(
-        referendumIndexes: [ReferendumIdLocal],
+        observableState: ReferendumsObservableState,
         selectedAccount: MetaChainAccountResponse,
         chain: ChainModel,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
@@ -40,11 +34,10 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
         self.signer = signer
 
         super.init(
-            referendumIndexes: referendumIndexes,
+            observableState: observableState,
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            referendumsSubscriptionFactory: referendumsSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
