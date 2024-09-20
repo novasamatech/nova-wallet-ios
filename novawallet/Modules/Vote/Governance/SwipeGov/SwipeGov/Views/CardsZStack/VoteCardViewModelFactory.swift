@@ -71,16 +71,11 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
             emptyViewAction: emptyViewAction
         )
 
-        // we use <= instead of == to cover the case where there might be no
-        // loaded referendums yet, but we have voting items persisted
-        let stackIsEmpty = (model.referendums.count - model.votingList.count) <= 0
-
         let viewModel = CardsZStackViewModel(
             allCards: allCards,
             changeModel: changes,
             emptyViewModel: emptyViewModel,
-            validationAction: validationClosure,
-            stackIsEmpty: stackIsEmpty
+            validationAction: validationClosure
         )
 
         return viewModel

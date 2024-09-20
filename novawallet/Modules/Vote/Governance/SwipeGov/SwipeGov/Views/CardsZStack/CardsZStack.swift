@@ -14,7 +14,9 @@ struct CardsZStackViewModel {
     let emptyViewModel: SwipeGovEmptyStateViewModel
     let validationAction: ((VoteCardViewModel?) -> Bool)?
 
-    let stackIsEmpty: Bool
+    var stackIsEmpty: Bool {
+        allCards.isEmpty
+    }
 }
 
 struct CardsZStackChangeModel {
