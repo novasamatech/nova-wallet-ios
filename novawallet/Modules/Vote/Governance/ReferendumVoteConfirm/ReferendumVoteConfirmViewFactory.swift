@@ -10,10 +10,7 @@ struct ReferendumVoteConfirmViewFactory {
         newVote: ReferendumNewVote,
         initData: ReferendumVotingInitData
     ) -> ReferendumVoteConfirmViewProtocol? {
-        guard
-            let option = state.settings.value,
-            let referendumId = initData.referendum?.index
-        else {
+        guard let option = state.settings.value else {
             return nil
         }
 
@@ -23,7 +20,6 @@ struct ReferendumVoteConfirmViewFactory {
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
-                referendum: newVote.index,
                 currencyManager: currencyManager
             ),
             let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
@@ -60,7 +56,7 @@ struct ReferendumVoteConfirmViewFactory {
 
         let presenter = ReferendumVoteConfirmPresenter(
             initData: initData,
-            referendumId: referendumId,
+            referendumId: newVote.index,
             vote: newVote,
             chain: chain,
             selectedAccount: selectedAccount,
@@ -90,7 +86,6 @@ struct ReferendumVoteConfirmViewFactory {
     // swiftlint:disable:next function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
-        referendum _: ReferendumIdLocal,
         currencyManager: CurrencyManagerProtocol
     ) -> ReferendumVoteConfirmInteractor? {
         let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value

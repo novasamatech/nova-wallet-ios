@@ -180,8 +180,12 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
         referendum = state.referendums[referendumId]
     }
+}
 
-    override func didReceiveVotingHash(_: String) {
+// MARK: ReferendumVoteConfirmInteractorOutputProtocol
+
+extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputProtocol {
+    func didReceiveVotingHash(_: String) {
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(from: baseView, completionAction: .dismiss, locale: selectedLocale)

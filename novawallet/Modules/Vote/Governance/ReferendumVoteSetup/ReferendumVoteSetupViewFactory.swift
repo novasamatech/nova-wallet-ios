@@ -13,7 +13,6 @@ struct ReferendumVoteSetupViewFactory {
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
-                referendum: referendum,
                 currencyManager: currencyManager
             ) else {
             return nil
@@ -108,7 +107,6 @@ struct ReferendumVoteSetupViewFactory {
     // swiftlint:disable function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
-        referendum _: ReferendumIdLocal,
         currencyManager: CurrencyManagerProtocol
     ) -> ReferendumVoteSetupInteractor? {
         let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value

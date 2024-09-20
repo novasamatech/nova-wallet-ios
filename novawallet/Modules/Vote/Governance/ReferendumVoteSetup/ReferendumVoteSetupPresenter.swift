@@ -444,9 +444,19 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProtocol {
     func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
-        votesResult = state.voting
         referendum = state.referendums[referendumIndex]
 
+        guard
+            let newVoting = state.voting?.value,
+            let votesResult = votesResult?.value,
+            newVoting.hasDiff(from: votesResult)
+        else {
+            votesResult = state.voting
+
+            return
+        }
+
+        self.votesResult = state.voting
         refreshLockDiff()
     }
 

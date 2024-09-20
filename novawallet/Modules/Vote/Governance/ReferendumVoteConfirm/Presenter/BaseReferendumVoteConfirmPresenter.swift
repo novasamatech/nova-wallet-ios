@@ -178,12 +178,19 @@ class BaseReferendumVoteConfirmPresenter {
     }
 
     func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
-        votesResult = state.voting
+        guard
+            let newVoting = state.voting?.value,
+            let votesResult = votesResult?.value,
+            newVoting.hasDiff(from: votesResult)
+        else {
+            votesResult = state.voting
 
+            return
+        }
+
+        self.votesResult = state.voting
         refreshLockDiff()
     }
-
-    func didReceiveVotingHash(_: String) {}
 }
 
 extension BaseReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol {

@@ -3,8 +3,8 @@ import SubstrateSdk
 import Operation_iOS
 
 final class ReferendumVoteConfirmInteractor: ReferendumObservingVoteInteractor {
-    var presenter: BaseReferendumVoteConfirmInteractorOutputProtocol? {
-        get { basePresenter as? BaseReferendumVoteConfirmInteractorOutputProtocol }
+    var presenter: ReferendumVoteConfirmInteractorOutputProtocol? {
+        get { basePresenter as? ReferendumVoteConfirmInteractorOutputProtocol }
         set { basePresenter = newValue }
     }
 
