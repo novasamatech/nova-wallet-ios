@@ -144,7 +144,7 @@ extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputP
 
         wireframe.presentExtrinsicSubmission(
             from: view,
-            completionAction: .dismiss,
+            completionAction: .dismissAllModals,
             locale: selectedLocale
         )
     }
