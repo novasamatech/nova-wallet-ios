@@ -170,9 +170,26 @@ extension SwipeGovSetupPresenter: SwipeGovSetupInteractorOutputProtocol {
     func didReceiveAccountVotes(
         _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>
     ) {
-        votesResult = votes
+        let updateAndRefreshClosure: () -> Void = {
+            self.votesResult = votes
+            self.refreshLockDiff()
+        }
 
-        refreshLockDiff()
+        guard
+            let newVoting = votes.value,
+            let votesResult = votesResult?.value,
+            newVoting.hasDiff(from: votesResult)
+        else {
+            if votes.value == nil {
+                updateAndRefreshClosure()
+            } else {
+                votesResult = votes
+            }
+
+            return
+        }
+
+        updateAndRefreshClosure()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
