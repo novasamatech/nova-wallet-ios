@@ -172,11 +172,8 @@ private extension SwipeGovPresenter {
     }
 
     func updateReferendumsCounter() {
-        guard let model, !model.referendums.isEmpty else { return }
-
         guard let viewModel = viewModelFactory.createReferendumsCounterViewModel(
-            referendums: model.referendums,
-            votingList: model.votingList,
+            availableToVoteCount: currentCardStackViewModel?.allCards.count ?? 0,
             locale: localizationManager.selectedLocale
         ) else {
             return

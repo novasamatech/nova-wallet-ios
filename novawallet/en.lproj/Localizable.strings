@@ -1754,3 +1754,4 @@
 "swipe.gov.empty.view.voted.text" = "You have already voted for all available referenda";
 "swipe.gov.empty.view.text" = "You have already voted for all available referenda or there are no referenda to vote right now. Come back later.";
 "swipe.gov.referenda.counter.empty" = "No referenda to vote";
+"swipe.gov.referenda.counter" = "%d left";
