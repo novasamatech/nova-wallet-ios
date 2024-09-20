@@ -178,18 +178,26 @@ class BaseReferendumVoteConfirmPresenter {
     }
 
     func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
+        let updateAndRefreshClosure: () -> Void = {
+            self.votesResult = state.voting
+            self.refreshLockDiff()
+        }
+
         guard
             let newVoting = state.voting?.value,
             let votesResult = votesResult?.value,
             newVoting.hasDiff(from: votesResult)
         else {
-            votesResult = state.voting
+            if votesResult?.value == nil {
+                updateAndRefreshClosure()
+            } else {
+                votesResult = state.voting
+            }
 
             return
         }
 
-        self.votesResult = state.voting
-        refreshLockDiff()
+        updateAndRefreshClosure()
     }
 }
 
