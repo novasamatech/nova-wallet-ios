@@ -32,16 +32,22 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
                 return nil
             }
 
+            let titleText: String? = if !filteredReferendums.isEmpty {
+                R.string.localizable.commonCountedReferenda(
+                    filteredReferendums.count,
+                    preferredLanguages: locale.rLanguages
+                )
+            } else {
+                nil
+            }
+
             return .swipeGov(
                 SwipeGovBannerViewModel(
                     title: R.string.localizable.commonSwipeGov(preferredLanguages: locale.rLanguages),
                     description: R.string.localizable.swipeGovBannerMessage(
                         preferredLanguages: locale.rLanguages
                     ),
-                    referendumCounterText: R.string.localizable.commonCountedReferenda(
-                        filteredReferendums.count,
-                        preferredLanguages: locale.rLanguages
-                    )
+                    referendumCounterText: titleText
                 )
             )
         }()
