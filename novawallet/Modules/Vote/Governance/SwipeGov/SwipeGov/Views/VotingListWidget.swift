@@ -51,6 +51,8 @@ class VotingListWidget: UIView {
 
             counterView.titleLabel.text = value
             titleLabel.text = title
+
+            isUserInteractionEnabled = true
         case let .empty(value, title):
             counterView.backgroundView.fillColor = R.color.colorIconInactive()!
             counterView.titleLabel.apply(style: .semiboldCaps2Inactive)
@@ -58,6 +60,8 @@ class VotingListWidget: UIView {
 
             counterView.titleLabel.text = value
             titleLabel.text = title
+
+            isUserInteractionEnabled = false
         }
     }
 }
