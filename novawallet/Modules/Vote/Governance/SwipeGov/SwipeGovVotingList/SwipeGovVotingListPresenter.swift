@@ -103,7 +103,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
             } else {
                 validateBalanceSufficient()
 
-                updateView(with: deletes)
+                updateView()
             }
         }
 
@@ -169,7 +169,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
 // MARK: Private
 
 private extension SwipeGovVotingListPresenter {
-    func updateView(with deletes: [ReferendumIdLocal]? = nil) {
+    func updateView() {
         guard
             !referendumsMetadata.isEmpty,
             !votingListItems.isEmpty
@@ -184,13 +184,7 @@ private extension SwipeGovVotingListPresenter {
             locale: localizationManager.selectedLocale
         )
 
-        if let deletes, !deletes.isEmpty {
-            deletes.forEach { referendumId in
-                view?.didChangeViewModel(viewModel, byRemovingItemWith: referendumId)
-            }
-        } else {
-            view?.didReceive(viewModel)
-        }
+        view?.didReceive(viewModel)
     }
 
     func validateBalanceSufficient(_ closure: (() -> Void)? = nil) {
@@ -263,13 +257,16 @@ private extension SwipeGovVotingListPresenter {
             return
         }
 
+        let action: () -> Void = { [weak self] in
+            self?.votingListItems.removeAll(where: { $0.referendumId == referendumId })
+            self?.interactor.removeItem(with: removeItem.identifier)
+        }
+
         wireframe.presentRemoveListItem(
             from: view,
             for: removeItem,
             locale: localizationManager.selectedLocale,
-            action: { [weak self] in
-                self?.interactor.removeItem(with: removeItem.identifier)
-            }
+            action: action
         )
     }
 
