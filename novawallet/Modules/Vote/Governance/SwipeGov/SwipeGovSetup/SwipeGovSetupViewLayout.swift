@@ -4,6 +4,7 @@ import SoraUI
 final class SwipeGovSetupViewLayout: BaseReferendumVoteSetupViewLayout {
     let detailsLabel: UILabel = .create { view in
         view.apply(style: .regularSubhedlineSecondary)
+        view.textAlignment = .left
         view.numberOfLines = 0
     }
 

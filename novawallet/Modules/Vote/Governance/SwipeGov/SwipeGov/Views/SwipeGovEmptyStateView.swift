@@ -45,6 +45,10 @@ class SwipeGovEmptyStateView: UIView {
         stack.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
+
+        textLabel.snp.makeConstraints { make in
+            make.width.equalTo(220)
+        }
     }
 
     func bind(with viewModel: SwipeGovEmptyStateViewModel) {
