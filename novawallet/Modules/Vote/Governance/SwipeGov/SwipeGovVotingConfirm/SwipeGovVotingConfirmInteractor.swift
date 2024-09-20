@@ -183,7 +183,7 @@ private extension SwipeGovVotingConfirmInteractor {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard let _ = try? result.get() else {
+            guard case .success = result else {
                 return
             }
 
