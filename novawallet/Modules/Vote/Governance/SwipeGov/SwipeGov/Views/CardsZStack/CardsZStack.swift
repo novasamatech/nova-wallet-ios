@@ -511,9 +511,10 @@ private extension CardsZStack {
         static let cardCornerRadius: CGFloat = 16
         static let stackZScaling: CGFloat = 0.9
         static let lowerCardsOffset: CGFloat = 10.0
-        static let screenSizeDivider: CGFloat = 2.3
-        static let topMostY = -(UIScreen.main.bounds.height / Constants.screenSizeDivider)
-        static let leftMostX = -(UIScreen.main.bounds.width / Constants.screenSizeDivider)
-        static let rightMostX = UIScreen.main.bounds.width / Constants.screenSizeDivider
+        static let horizontalScreenSizeDivider: CGFloat = 3.15
+        static let verticalScreenSizeDivider: CGFloat = 3.8
+        static let topMostY = -(UIScreen.main.bounds.height / Constants.verticalScreenSizeDivider)
+        static let leftMostX = -(UIScreen.main.bounds.width / Constants.horizontalScreenSizeDivider)
+        static let rightMostX = UIScreen.main.bounds.width / Constants.horizontalScreenSizeDivider
     }
 }
