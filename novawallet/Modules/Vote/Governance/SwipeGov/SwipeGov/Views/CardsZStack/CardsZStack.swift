@@ -239,14 +239,23 @@ private extension CardsZStack {
     }
 
     func hideEmptyState() {
-        emptyStateView?.transform = CGAffineTransform(
+        guard let emptyStateView else { return }
+
+        let hiddenTransform = CGAffineTransform(
             scaleX: Constants.emptyStateHideScaling,
             y: Constants.emptyStateHideScaling
+        )
+
+        UIView.animate(
+            withDuration: 0.3,
+            animations: { emptyStateView.transform = hiddenTransform },
+            completion: { _ in emptyStateView.isHidden = true }
         )
     }
 
     func showEmptyState() {
-        guard let emptyStateView else { return }
+        guard let emptyStateView, emptyStateView.isHidden else { return }
+
         emptyStateView.isHidden = false
         UIView.animate(
             withDuration: Constants.EmptyStateAnimation.startDuration,
