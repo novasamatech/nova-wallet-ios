@@ -134,17 +134,21 @@ private extension SwipeGovPresenter {
             }
         )
 
-        let viewModel = cardsViewModelFactory.createCardsStackViewModel(
-            from: model,
-            currentViewModel: currentCardStackViewModel,
-            locale: localizationManager.selectedLocale,
-            actions: cardActions,
+        let stackActions = CardsZStack.Actions(
             emptyViewAction: { [weak self] in self?.showVotingList() },
             validationClosure: { [weak self] _ in
                 guard let self else { return false }
 
                 return validateVotingAvailable()
             }
+        )
+
+        let viewModel = cardsViewModelFactory.createCardsStackViewModel(
+            from: model,
+            currentViewModel: currentCardStackViewModel,
+            locale: localizationManager.selectedLocale,
+            cardActions: cardActions,
+            stackActions: stackActions
         )
         currentCardStackViewModel = viewModel
 

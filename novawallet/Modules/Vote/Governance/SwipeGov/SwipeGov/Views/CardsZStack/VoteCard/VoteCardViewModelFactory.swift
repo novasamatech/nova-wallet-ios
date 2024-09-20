@@ -6,9 +6,8 @@ protocol VoteCardViewModelFactoryProtocol {
         from model: SwipeGovModelBuilder.Result.Model,
         currentViewModel: CardsZStackViewModel?,
         locale: Locale,
-        actions: VoteCardViewModel.Actions,
-        emptyViewAction: @escaping () -> Void,
-        validationClosure: @escaping (VoteCardViewModel?) -> Bool
+        cardActions: VoteCardViewModel.Actions,
+        stackActions: CardsZStack.Actions
     ) -> CardsZStackViewModel
 }
 
@@ -49,15 +48,14 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
         from model: SwipeGovModelBuilder.Result.Model,
         currentViewModel: CardsZStackViewModel?,
         locale: Locale,
-        actions: VoteCardViewModel.Actions,
-        emptyViewAction: @escaping () -> Void,
-        validationClosure: @escaping (VoteCardViewModel?) -> Bool
+        cardActions: VoteCardViewModel.Actions,
+        stackActions: CardsZStack.Actions
     ) -> CardsZStackViewModel {
         let changes = createStackChangesModel(
             from: model.referendumsChanges,
             using: currentViewModel,
             locale: locale,
-            actions: actions
+            actions: cardActions
         )
 
         let allCards: [VoteCardId: VoteCardViewModel] = createAllCards(
@@ -68,14 +66,14 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
         let emptyViewModel = createEmptyViewModel(
             model: model,
             locale: locale,
-            emptyViewAction: emptyViewAction
+            emptyViewAction: stackActions.emptyViewAction
         )
 
         let viewModel = CardsZStackViewModel(
             allCards: allCards,
             changeModel: changes,
             emptyViewModel: emptyViewModel,
-            validationAction: validationClosure
+            validationAction: stackActions.validationClosure
         )
 
         return viewModel

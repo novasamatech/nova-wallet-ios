@@ -137,7 +137,7 @@ private extension VoteCardViewModel {
             case let .success(model):
                 let summary = processSummary(model?.summary)
                 view?.setSummary(loadingState: .loaded(value: summary))
-            case let .failure(error):
+            case .failure:
                 actionDetailsCancellable.cancel()
                 processLoadFailure()
             }
@@ -162,7 +162,7 @@ private extension VoteCardViewModel {
             switch result {
             case let .success(amount):
                 self?.updateRequestedAmount(amount: amount)
-            case let .failure(error):
+            case .failure:
                 self?.summaryCancellable.cancel()
                 self?.processLoadFailure()
             }
