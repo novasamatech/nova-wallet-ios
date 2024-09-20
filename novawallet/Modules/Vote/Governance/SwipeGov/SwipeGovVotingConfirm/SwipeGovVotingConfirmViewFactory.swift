@@ -1,24 +1,49 @@
 import Foundation
-import SubstrateSdk
-import Operation_iOS
 import SoraFoundation
 
-struct ReferendumVoteSetupViewFactory {
+struct SwipeGovVotingConfirmViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        referendum: ReferendumIdLocal,
         initData: ReferendumVotingInitData
-    ) -> ReferendumVoteSetupViewProtocol? {
+    ) -> SwipeGovVotingConfirmViewProtocol? {
+        guard let option = state.settings.value else {
+            return nil
+        }
+
+        let chain = option.chain
+
         guard
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
+                votingItems: initData.votingItems ?? [],
                 currencyManager: currencyManager
-            ) else {
+            ),
+            let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
+                for: chain.accountRequest()
+            )
+        else {
             return nil
         }
 
-        let wireframe = ReferendumVoteSetupWireframe(state: state)
+        let votingLockId = state.governanceId(for: option)
+
+        let localizationManager = LocalizationManager.shared
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
+            assetDisplayInfo: assetDisplayInfo,
+            votingLockId: votingLockId
+        )
+
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
+
+        let wireframe = SwipeGovVotingConfirmWireframe()
 
         let dataValidatingFactory = GovernanceValidatorFactory(
             presentable: wireframe,
@@ -26,21 +51,24 @@ struct ReferendumVoteSetupViewFactory {
             quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
-        guard
-            let presenter = createPresenter(
-                from: interactor,
-                wireframe: wireframe,
-                dataValidatingFactory: dataValidatingFactory,
-                referendum: referendum,
-                initData: initData,
-                state: state
-            ) else {
-            return nil
-        }
+        let presenter = SwipeGovVotingConfirmPresenter(
+            initData: initData,
+            chain: chain,
+            selectedAccount: selectedAccount,
+            dataValidatingFactory: dataValidatingFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            referendumFormatter: NumberFormatter.index.localizableResource(),
+            referendumStringsViewModelFactory: referendumDisplayStringFactory,
+            lockChangeViewModelFactory: lockChangeViewModelFactory,
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
 
-        let view = ReferendumVoteSetupViewController(
+        let view = SwipeGovVotingConfirmViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager
         )
 
         presenter.view = view
@@ -50,66 +78,15 @@ struct ReferendumVoteSetupViewFactory {
         return view
     }
 
-    // swiftlint:disable:next function_parameter_count
-    private static func createPresenter(
-        from interactor: ReferendumVoteSetupInteractor,
-        wireframe: ReferendumVoteSetupWireframeProtocol,
-        dataValidatingFactory: GovernanceValidatorFactoryProtocol,
-        referendum: ReferendumIdLocal,
-        initData: ReferendumVotingInitData,
-        state: GovernanceSharedState
-    ) -> ReferendumVoteSetupPresenter? {
-        guard
-            let option = state.settings.value,
-            let assetDisplayInfo = option.chain.utilityAssetDisplayInfo(),
-            let currencyManager = CurrencyManager.shared
-        else {
-            return nil
-        }
-
-        let chain = option.chain
-
-        let votingLockId = state.governanceId(for: option)
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetDisplayInfo,
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
-        )
-
-        let networkViewModelFactory = NetworkViewModelFactory()
-        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
-
-        let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
-            assetDisplayInfo: assetDisplayInfo,
-            votingLockId: votingLockId
-        )
-
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
-
-        return ReferendumVoteSetupPresenter(
-            chain: chain,
-            referendumIndex: referendum,
-            initData: initData,
-            supportsAbstainVoting: state.supportsAbstainVoting,
-            dataValidatingFactory: dataValidatingFactory,
-            balanceViewModelFactory: balanceViewModelFactory,
-            referendumFormatter: NumberFormatter.index.localizableResource(),
-            chainAssetViewModelFactory: chainAssetViewModelFactory,
-            referendumStringsViewModelFactory: referendumDisplayStringFactory,
-            lockChangeViewModelFactory: lockChangeViewModelFactory,
-            interactor: interactor,
-            wireframe: wireframe,
-            localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
-        )
-    }
-
-    // swiftlint:disable function_body_length
+    // swiftlint:disable:next function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
+        votingItems: [VotingBasketItemLocal],
         currencyManager: CurrencyManagerProtocol
-    ) -> ReferendumVoteSetupInteractor? {
-        let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
+    ) -> SwipeGovVotingConfirmInteractor? {
+        guard let wallet: MetaAccountModel = SelectedWalletSettings.shared.value else {
+            return nil
+        }
 
         guard let option = state.settings.value else {
             return nil
@@ -118,7 +95,7 @@ struct ReferendumVoteSetupViewFactory {
         let chain = option.chain
 
         guard
-            let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
+            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
             let lockStateFactory = state.locksOperationFactory,
             let blockTimeService = state.blockTimeService,
             let blockTimeFactory = state.createBlockTimeOperationFactory()
@@ -144,8 +121,23 @@ struct ReferendumVoteSetupViewFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
-        return ReferendumVoteSetupInteractor(
+        let signer = SigningWrapperFactory().createSigningWrapper(
+            for: selectedAccount.metaId,
+            accountResponse: selectedAccount.chainAccount
+        )
+
+        let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
+            for: chain.chainId,
+            metaId: wallet.metaId,
+            using: SubstrateDataStorageFacade.shared
+        )
+
+        let votingItemsDict = votingItems.reduce(into: [:]) { $0[$1.referendumId] = $1 }
+
+        return SwipeGovVotingConfirmInteractor(
             observableState: state.observableState,
+            repository: repository,
+            votingItems: votingItemsDict,
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
@@ -158,8 +150,10 @@ struct ReferendumVoteSetupViewFactory {
             currencyManager: currencyManager,
             extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
+            signer: signer,
             feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
+            logger: Logger.shared,
             operationQueue: operationQueue
         )
     }

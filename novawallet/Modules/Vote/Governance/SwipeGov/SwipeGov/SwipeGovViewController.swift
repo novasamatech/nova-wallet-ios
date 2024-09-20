@@ -89,6 +89,7 @@ extension SwipeGovViewController: SwipeGovViewProtocol {
     func updateCardsStack(with viewModel: CardsZStackViewModel) {
         rootView.cardsStack.updateStack(with: viewModel.changeModel)
         rootView.cardsStack.setupValidationAction(viewModel.validationAction)
+        rootView.emptyStateView.bind(with: viewModel.emptyViewModel)
         rootView.finishedAddingCards()
     }
 

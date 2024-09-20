@@ -74,6 +74,12 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
         votingList: [VotingBasketItemLocal],
         locale: Locale
     ) -> String? {
+        guard !referendums.isEmpty else {
+            return R.string.localizable.swipeGovReferendaCounterEmpty(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
         let currentNumber = referendums.count - votingList.count
 
         let counterString = R.string.localizable.commonCounter(

@@ -10,6 +10,14 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale?
     ) -> DataValidating
 
+    func enoughTokensForBatchVoting(
+        _ assetBalance: AssetBalance?,
+        votingAmount: BigUInt?,
+        assetInfo: AssetBalanceDisplayInfo,
+        locale: Locale?,
+        maxAmountErrorClosure: @escaping () -> Void
+    ) -> DataValidating
+
     func enoughTokensForVotingAndFee(
         _ assetBalance: AssetBalance?,
         votingAmount: BigUInt?,
@@ -82,6 +90,48 @@ final class GovernanceValidatorFactory {
 }
 
 extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
+    func enoughTokensForBatchVoting(
+        _ assetBalance: AssetBalance?,
+        votingAmount: BigUInt?,
+        assetInfo: AssetBalanceDisplayInfo,
+        locale: Locale?,
+        maxAmountErrorClosure: @escaping () -> Void
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            let amountFormatter = self?.assetBalanceFormatterFactory.createTokenFormatter(for: assetInfo)
+            let amountString: String
+            let freeInPlank = assetBalance?.freeInPlank ?? 0
+
+            if
+                let amountDecimal = Decimal.fromSubstrateAmount(freeInPlank, precision: assetInfo.assetPrecision) {
+                amountString = amountFormatter?.value(for: locale ?? Locale.current).stringFromDecimal(
+                    amountDecimal
+                ) ?? ""
+            } else {
+                amountString = ""
+            }
+
+            self?.presentable.presentNotEnoughTokensToBatchVote(
+                from: view,
+                available: amountString,
+                locale: locale,
+                action: maxAmountErrorClosure
+            )
+        }, preservesCondition: {
+            guard
+                let assetBalance = assetBalance,
+                let votingAmount = votingAmount else {
+                return false
+            }
+
+            return assetBalance.freeInPlank >= votingAmount
+        })
+    }
+
     func enoughTokensForVoting(
         _ assetBalance: AssetBalance?,
         votingAmount: BigUInt?,

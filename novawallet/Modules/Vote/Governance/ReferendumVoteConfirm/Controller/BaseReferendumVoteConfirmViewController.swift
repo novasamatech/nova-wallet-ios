@@ -1,15 +1,17 @@
 import UIKit
 import SoraFoundation
 
-final class ReferendumVoteConfirmViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ReferendumVoteConfirmViewLayout
+class BaseReferendumVoteConfirmViewController: UIViewController, ViewHolder {
+    typealias RootViewType = BaseReferendumVoteConfirmViewLayout
 
-    let presenter: ReferendumVoteConfirmPresenterProtocol
+    private let presenter: BaseReferendumVoteConfirmPresenterProtocol
 
-    private var referendumNumber: String?
-
-    init(presenter: ReferendumVoteConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: BaseReferendumVoteConfirmPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -21,7 +23,7 @@ final class ReferendumVoteConfirmViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ReferendumVoteConfirmViewLayout()
+        view = BaseReferendumVoteConfirmViewLayout()
     }
 
     override func viewDidLoad() {
@@ -47,10 +49,8 @@ final class ReferendumVoteConfirmViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         let languages = selectedLocale.rLanguages
-
-        applyReferendumNumber()
 
         rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
         rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: languages)
@@ -71,15 +71,6 @@ final class ReferendumVoteConfirmViewController: UIViewController, ViewHolder {
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
     }
 
-    private func applyReferendumNumber() {
-        let languages = selectedLocale.rLanguages
-
-        title = R.string.localizable.govVoteSetupTitleFormat(
-            referendumNumber ?? "",
-            preferredLanguages: languages
-        )
-    }
-
     @objc private func actionConfirm() {
         presenter.confirm()
     }
@@ -89,13 +80,9 @@ final class ReferendumVoteConfirmViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ReferendumVoteConfirmViewController: ReferendumVoteConfirmViewProtocol {
-    func didReceive(referendumNumber: String) {
-        self.referendumNumber = referendumNumber
+// MARK: BaseReferendumVoteConfirmViewProtocol
 
-        applyReferendumNumber()
-    }
-
+extension BaseReferendumVoteConfirmViewController: BaseReferendumVoteConfirmViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
     }
@@ -112,10 +99,6 @@ extension ReferendumVoteConfirmViewController: ReferendumVoteConfirmViewProtocol
         rootView.feeCell.rowContentView.bind(viewModel: viewModel)
     }
 
-    func didReceiveYourVote(viewModel: YourVoteRow.Model) {
-        rootView.yourVoteView.bind(viewModel: viewModel)
-    }
-
     func didReceiveTransferableAmount(viewModel: ReferendumLockTransitionViewModel) {
         rootView.transferableCell.bind(viewModel: viewModel)
     }
@@ -129,7 +112,9 @@ extension ReferendumVoteConfirmViewController: ReferendumVoteConfirmViewProtocol
     }
 }
 
-extension ReferendumVoteConfirmViewController: LoadableViewProtocol {
+// MARK: LoadableViewProtocol
+
+extension BaseReferendumVoteConfirmViewController: LoadableViewProtocol {
     func didStartLoading() {
         rootView.actionLoadableView.startLoading()
     }
@@ -139,7 +124,9 @@ extension ReferendumVoteConfirmViewController: LoadableViewProtocol {
     }
 }
 
-extension ReferendumVoteConfirmViewController: Localizable {
+// MARK: Localizable
+
+extension BaseReferendumVoteConfirmViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
@@ -147,4 +134,6 @@ extension ReferendumVoteConfirmViewController: Localizable {
     }
 }
 
-extension ReferendumVoteConfirmViewController: ImportantViewProtocol {}
+// MARK: ImportantViewProtocol
+
+extension BaseReferendumVoteConfirmViewController: ImportantViewProtocol {}

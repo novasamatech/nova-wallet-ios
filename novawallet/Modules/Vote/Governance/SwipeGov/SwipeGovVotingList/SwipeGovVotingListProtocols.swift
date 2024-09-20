@@ -31,7 +31,7 @@ protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
     func didReceive(_ error: SwipeGovVotingListInteractorError)
 }
 
-protocol SwipeGovVotingListWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol SwipeGovVotingListWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, SwipeGovAlertPresentable {
     func close(view: ControllerBackedProtocol?)
     func showSetup(
         from view: ControllerBackedProtocol?,
@@ -41,5 +41,9 @@ protocol SwipeGovVotingListWireframeProtocol: AlertPresentable, ErrorPresentable
     func showReferendumDetails(
         from view: ControllerBackedProtocol?,
         initData: ReferendumDetailsInitData
+    )
+    func showConfirmation(
+        from view: ControllerBackedProtocol?,
+        initData: ReferendumVotingInitData
     )
 }

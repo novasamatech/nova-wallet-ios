@@ -63,12 +63,17 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func vote() {
-        guard let balance else {
-            return
-        }
+        validateBalanceSufficient { [weak self] in
+            guard let self else { return }
 
-        validateBalanceSufficient {
-            // TODO: Show confirmation
+            let initData = ReferendumVotingInitData(
+                votingItems: votingListItems
+            )
+
+            wireframe.showConfirmation(
+                from: view,
+                initData: initData
+            )
         }
     }
 }
@@ -91,12 +96,21 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
 
         votingListItems = votingListItems.applying(changes: votingBasketChanges)
 
-        if votingListItems.isEmpty {
-            wireframe.close(view: view)
-        } else {
-            validateBalanceSufficient {
-                self.updateView(with: deletes)
+        let proceedClosure: () -> Void = { [weak self] in
+            guard let self else { return }
+            if votingListItems.isEmpty {
+                wireframe.close(view: view)
+            } else {
+                validateBalanceSufficient()
+
+                updateView(with: deletes)
             }
+        }
+
+        if !deletes.isEmpty {
+            showReferendaExcluded(completion: proceedClosure)
+        } else {
+            proceedClosure()
         }
     }
 
@@ -194,10 +208,9 @@ private extension SwipeGovVotingListPresenter {
                 amount: max.amount
             )
 
-            wireframe.showSetup(
-                from: view,
-                initData: .init(presetVotingPower: votingPower),
-                changing: invalidItems
+            showBalanceAlert(
+                for: votingPower,
+                invalidItems: invalidItems
             )
         } else {
             closure?()
@@ -210,48 +223,70 @@ private extension SwipeGovVotingListPresenter {
     ) -> [VotingBasketItemLocal] {
         votingItems.filter { $0.amount > balance.freeInPlank }
     }
+}
 
-    func showRemoveAlert(for referendumId: ReferendumIdLocal) {
-        guard let itemIdentifier = votingListItems.first(
-            where: { $0.referendumId == referendumId }
-        )?.identifier else {
+// MARK: Alerts
+
+private extension SwipeGovVotingListPresenter {
+    func showBalanceAlert(
+        for votingPower: VotingPowerLocal,
+        invalidItems: [VotingBasketItemLocal]
+    ) {
+        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
             return
         }
 
-        let languages = localizationManager.selectedLocale.rLanguages
-
-        let alertViewModel = AlertPresentableViewModel(
-            title: R.string.localizable.govVotingListItemRemoveAlertTitle(
-                Int(referendumId),
-                preferredLanguages: languages
-            ),
-            message: R.string.localizable.govVotingListItemRemoveAlertMessage(
-                preferredLanguages: languages
-            ),
-            actions: [
-                .init(
-                    title: R.string.localizable.commonCancel(
-                        preferredLanguages: languages
-                    ),
-                    style: .cancel
-                ),
-                .init(
-                    title: R.string.localizable.commonRemove(
-                        preferredLanguages: languages
-                    ),
-                    style: .destructive,
-                    handler: {
-                        [weak self] in
-                        self?.interactor.removeItem(with: itemIdentifier)
-                    }
+        let model = SwipeGovBalanceAlertModel(
+            votingPower: votingPower,
+            invalidItems: invalidItems,
+            assetInfo: assetInfo,
+            changeAction: { [weak self] in
+                self?.wireframe.showSetup(
+                    from: self?.view,
+                    initData: .init(presetVotingPower: votingPower),
+                    changing: invalidItems
                 )
-            ],
-            closeAction: nil
+            }
         )
-        wireframe.present(
-            viewModel: alertViewModel,
-            style: .alert,
-            from: view
+
+        wireframe.presentBalanceAlert(
+            from: view,
+            model: model,
+            locale: localizationManager.selectedLocale
+        )
+    }
+
+    func showRemoveAlert(for referendumId: ReferendumIdLocal) {
+        guard let removeItem = votingListItems.first(
+            where: { $0.referendumId == referendumId }
+        ) else {
+            return
+        }
+
+        wireframe.presentRemoveListItem(
+            from: view,
+            for: removeItem,
+            locale: localizationManager.selectedLocale,
+            action: { [weak self] in
+                self?.interactor.removeItem(with: removeItem.identifier)
+            }
+        )
+    }
+
+    func showReferendaExcluded(completion: @escaping () -> Void) {
+        guard
+            let balance,
+            let assetInfo = chain.utilityAssetDisplayInfo()
+        else {
+            return
+        }
+
+        wireframe.presentReferendaExcluded(
+            from: view,
+            availableBalance: balance.transferable,
+            assetInfo: assetInfo,
+            locale: localizationManager.selectedLocale,
+            action: completion
         )
     }
 }

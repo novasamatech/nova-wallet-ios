@@ -16,3 +16,19 @@ struct GovernanceVotePowerValidatingParams {
     let votePower: VotingPowerLocal?
     let assetInfo: AssetBalanceDisplayInfo
 }
+
+struct GovernanceVoteBatchValidatingParams {
+    let assetBalance: AssetBalance?
+    let referendums: [ReferendumLocal]?
+    let votes: ReferendumAccountVotingDistribution?
+    let newVotes: [ReferendumNewVote]?
+    let fee: ExtrinsicFeeProtocol?
+    let assetInfo: AssetBalanceDisplayInfo
+
+    var maxAmount: BigUInt? {
+        newVotes?
+            .max(by: { $0.voteAction.amount() < $1.voteAction.amount() })?
+            .voteAction
+            .amount()
+    }
+}

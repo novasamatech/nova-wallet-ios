@@ -10,6 +10,7 @@ protocol CardStackable: AnyObject {
 
 struct CardsZStackViewModel {
     let changeModel: CardsZStackChangeModel
+    let emptyViewModel: SwipeGovEmptyStateViewModel
     let validationAction: ((VoteCardViewModel?) -> Bool)?
 }
 

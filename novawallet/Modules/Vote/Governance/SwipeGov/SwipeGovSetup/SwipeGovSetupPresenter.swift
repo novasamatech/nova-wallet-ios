@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 final class SwipeGovSetupPresenter {
     weak var view: SwipeGovSetupViewProtocol?
@@ -8,6 +9,8 @@ final class SwipeGovSetupPresenter {
 
     let chain: ChainModel
     let metaAccount: MetaAccountModel
+
+    let observableState: ReferendumsObservableState
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
@@ -26,10 +29,13 @@ final class SwipeGovSetupPresenter {
     private(set) var inputResult: AmountInputResult?
     private(set) var conviction: ConvictionVoting.Conviction = .none
     private(set) var initVotingPower: VotingPowerLocal?
+    private(set) var referendum: ReferendumLocal?
+    private(set) var votingItems: [VotingBasketItemLocal]?
 
     init(
         chain: ChainModel,
         metaAccount: MetaAccountModel,
+        observableState: ReferendumsObservableState,
         initData: ReferendumVotingInitData,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -43,10 +49,12 @@ final class SwipeGovSetupPresenter {
     ) {
         self.chain = chain
         self.metaAccount = metaAccount
+        self.observableState = observableState
         votesResult = initData.votesResult
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
         lockDiff = initData.lockDiff
+        referendum = initData.referendum
         initVotingPower = initData.presetVotingPower
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -240,13 +248,28 @@ private extension SwipeGovSetupPresenter {
     }
 
     func refreshLockDiff() {
-        guard let trackVoting = votesResult?.value else {
+        guard
+            let referendum,
+            let trackVoting = observableState.voting?.value,
+            let assetPrecision = chain.utilityAssetDisplayInfo()?.assetPrecision,
+            let amount = (inputResult?.absoluteValue(from: balance()) ?? 0).toSubstrateAmount(precision: assetPrecision)
+        else {
             return
         }
 
+        let voteAction = ReferendumVoteActionModel(
+            amount: amount,
+            conviction: conviction
+        )
+        let newVote = ReferendumNewVote(
+            index: referendum.index,
+            voteAction: .aye(voteAction)
+        )
+
         interactor.refreshLockDiff(
             for: trackVoting,
-            blockHash: votesResult?.blockHash
+            newVotes: [newVote],
+            blockHash: observableState.voting?.blockHash
         )
     }
 

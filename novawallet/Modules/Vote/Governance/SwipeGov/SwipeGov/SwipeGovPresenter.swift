@@ -45,14 +45,7 @@ extension SwipeGovPresenter: SwipeGovPresenterProtocol {
     }
 
     func actionVotingList() {
-        guard let metaId = votingPower?.metaId else {
-            return
-        }
-
-        wireframe.showVotingList(
-            from: view,
-            metaId: metaId
-        )
+        showVotingList()
     }
 }
 
@@ -89,6 +82,17 @@ extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
 // MARK: - Private
 
 private extension SwipeGovPresenter {
+    func showVotingList() {
+        guard let metaId = votingPower?.metaId else {
+            return
+        }
+
+        wireframe.showVotingList(
+            from: view,
+            metaId: metaId
+        )
+    }
+
     func onReferendumVote(
         voteResult: VoteResult,
         id: ReferendumIdLocal
@@ -129,6 +133,7 @@ private extension SwipeGovPresenter {
             from: model,
             locale: localizationManager.selectedLocale,
             actions: cardActions,
+            emptyViewAction: { [weak self] in self?.showVotingList() },
             validationClosure: { [weak self] _ in
                 guard let self else { return false }
 
@@ -174,11 +179,14 @@ private extension SwipeGovPresenter {
     }
 
     func showVotingPower() {
-        guard let referendumId = model?.referendums.first?.index else {
+        guard let referendum = model?.referendums.first else {
             return
         }
 
-        let initData = ReferendumVotingInitData(presetVotingPower: votingPower)
+        let initData = ReferendumVotingInitData(
+            referendum: referendum,
+            presetVotingPower: votingPower
+        )
 
         wireframe.showVoteSetup(
             from: view,

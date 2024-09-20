@@ -43,6 +43,7 @@ final class ReferendumVoteSetupViewLayout: BaseReferendumVoteSetupViewLayout {
         abstainButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.smallButtonSize)
             make.centerX.equalToSuperview()
+            make.top.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.buttonsBottomInset)
         }
 

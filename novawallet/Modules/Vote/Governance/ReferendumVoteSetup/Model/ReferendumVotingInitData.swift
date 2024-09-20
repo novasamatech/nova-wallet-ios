@@ -7,6 +7,7 @@ struct ReferendumVotingInitData {
     let referendum: ReferendumLocal?
     let lockDiff: GovernanceLockStateDiff?
     let presetVotingPower: VotingPowerLocal?
+    let votingItems: [VotingBasketItemLocal]?
 
     init(
         votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>? = nil,
@@ -14,7 +15,8 @@ struct ReferendumVotingInitData {
         blockTime: BlockTime? = nil,
         referendum: ReferendumLocal? = nil,
         lockDiff: GovernanceLockStateDiff? = nil,
-        presetVotingPower: VotingPowerLocal? = nil
+        presetVotingPower: VotingPowerLocal? = nil,
+        votingItems: [VotingBasketItemLocal]? = nil
     ) {
         self.votesResult = votesResult
         self.blockNumber = blockNumber
@@ -22,5 +24,6 @@ struct ReferendumVotingInitData {
         self.referendum = referendum
         self.lockDiff = lockDiff
         self.presetVotingPower = presetVotingPower
+        self.votingItems = votingItems
     }
 }

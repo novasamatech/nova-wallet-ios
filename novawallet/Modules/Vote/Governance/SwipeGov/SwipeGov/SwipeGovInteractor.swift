@@ -79,13 +79,20 @@ extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
             return
         }
 
+        let conviction: VotingBasketConvictionLocal = switch voteType {
+        case .abstain:
+            .none
+        case .aye, .nay:
+            votingPower.conviction
+        }
+
         let basketItem = VotingBasketItemLocal(
             referendumId: referendumId,
             chainId: chain.chainId,
             metaId: metaAccount.metaId,
             amount: votingPower.amount,
             voteType: voteType,
-            conviction: votingPower.conviction
+            conviction: conviction
         )
 
         let saveOperation = basketItemsRepository.saveOperation(
@@ -141,19 +148,6 @@ extension SwipeGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSubs
 // MARK: Private
 
 private extension SwipeGovInteractor {
-    func filter(
-        referendums: [ReferendumIdLocal: ReferendumLocal],
-        using basketItemsChanges: [DataProviderChange<VotingBasketItemLocal>]
-    ) -> [ReferendumIdLocal: ReferendumLocal] {
-        var mutReferendums = referendums
-
-        basketItemsChanges
-            .compactMap(\.item)
-            .forEach { mutReferendums[$0.referendumId] = nil }
-
-        return mutReferendums
-    }
-
     func startObservingState() {
         observableState.addObserver(
             with: self,

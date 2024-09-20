@@ -15,6 +15,29 @@ struct VotingBasketItemLocal: Equatable {
     let amount: BigUInt
     let voteType: VoteType
     let conviction: VotingBasketConvictionLocal
+
+    func mapToVote() -> ReferendumNewVote {
+        let index = referendumId
+
+        let referendumVoteAction = ReferendumVoteActionModel(
+            amount: amount,
+            conviction: .init(from: conviction)
+        )
+
+        let voteAction: ReferendumVoteAction = switch voteType {
+        case .aye:
+            .aye(referendumVoteAction)
+        case .nay:
+            .nay(referendumVoteAction)
+        case .abstain:
+            .abstain(amount: amount)
+        }
+
+        return ReferendumNewVote(
+            index: index,
+            voteAction: voteAction
+        )
+    }
 }
 
 extension VotingBasketItemLocal {
@@ -49,6 +72,12 @@ extension VotingBasketItemLocal: Identifiable {
             metaId: metaId,
             chainId: chainId
         )
+    }
+}
+
+extension Array where Element == VotingBasketItemLocal {
+    func mapToVotes() -> [ReferendumNewVote] {
+        map { $0.mapToVote() }
     }
 }
 

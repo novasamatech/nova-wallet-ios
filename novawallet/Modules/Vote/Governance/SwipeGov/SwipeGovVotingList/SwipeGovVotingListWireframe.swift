@@ -46,4 +46,22 @@ final class SwipeGovVotingListWireframe: SwipeGovVotingListWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true)
     }
+
+    func showConfirmation(
+        from view: ControllerBackedProtocol?,
+        initData: ReferendumVotingInitData
+    ) {
+        guard let confirmationView = SwipeGovVotingConfirmViewFactory.createView(
+            for: sharedState,
+            initData: initData
+        ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: confirmationView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true)
+    }
 }
