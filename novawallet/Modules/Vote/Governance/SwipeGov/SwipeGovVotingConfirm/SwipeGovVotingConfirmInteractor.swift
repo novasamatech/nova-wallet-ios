@@ -153,17 +153,22 @@ private extension SwipeGovVotingConfirmInteractor {
             return
         }
 
-        votedReferendumsIds.forEach { index in
-            if let item = votingItems[index] {
-                clearVotingItem(item)
+        let itemsToClear: [VotingBasketItemLocal] = votedReferendumsIds.compactMap {
+            guard clearedItems[$0] == nil else {
+                return nil
             }
+
+            return votingItems[$0]
         }
+
+        clearVotingItems(itemsToClear)
     }
 
-    func clearVotingItem(_ item: VotingBasketItemLocal) {
+    func clearVotingItems(_ items: [VotingBasketItemLocal]) {
+        let deleteIds = items.map(\.identifier)
         let deleteOperation = repository.saveOperation(
             { [] },
-            { [item.identifier] }
+            { deleteIds }
         )
 
         execute(
@@ -175,7 +180,7 @@ private extension SwipeGovVotingConfirmInteractor {
                 return
             }
 
-            self?.clearedItems[item.referendumId] = item
+            items.forEach { self?.clearedItems[$0.referendumId] = $0 }
 
             if self?.clearedItems.keys == self?.votingItems.keys {
                 self?.presenter?.didReceiveSuccessBatchVoting()
