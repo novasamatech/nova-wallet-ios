@@ -9,6 +9,7 @@ protocol SwipeGovViewProtocol: ControllerBackedProtocol {
 
 protocol SwipeGovPresenterProtocol: AnyObject {
     func setup()
+    func cardsStackBecameEmpty()
     func actionBack()
     func actionSettings()
     func actionVotingList()

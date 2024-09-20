@@ -36,6 +36,10 @@ extension SwipeGovPresenter: SwipeGovPresenterProtocol {
         interactor.setup()
     }
 
+    func cardsStackBecameEmpty() {
+        showVotingList()
+    }
+
     func actionBack() {
         wireframe.back(from: view)
     }

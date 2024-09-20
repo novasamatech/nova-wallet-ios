@@ -23,6 +23,7 @@ final class SwipeGovViewLayout: UIView {
         button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundApprove()!
         button.roundedBackgroundView?.cornerRadius = Constants.bigButtonSize / 2
         button.imageWithTitleView?.iconImage = R.image.iconThumbsUpFilled()
+        button.alpha = 0
         return button
     }()
 
@@ -33,6 +34,7 @@ final class SwipeGovViewLayout: UIView {
         button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
         button.roundedBackgroundView?.cornerRadius = Constants.smallButtonSize / 2
         button.imageWithTitleView?.iconImage = R.image.iconAbstain()
+        button.alpha = 0
         return button
     }()
 
@@ -43,10 +45,29 @@ final class SwipeGovViewLayout: UIView {
         button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundReject()!
         button.roundedBackgroundView?.cornerRadius = Constants.bigButtonSize / 2
         button.imageWithTitleView?.iconImage = R.image.iconThumbsDownFilled()
+        button.alpha = 0
         return button
     }()
 
     let emptyStateView = SwipeGovEmptyStateView()
+
+    let buttonsHideAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 1.0,
+        to: 0.0,
+        duration: 0.3,
+        delay: 0.0,
+        options: .curveEaseInOut
+    )
+
+    let buttonsShowAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 0.0,
+        to: 1.0,
+        duration: 0.3,
+        delay: 0.0,
+        options: .curveEaseInOut
+    )
+
+    var voteButtonsAreHidden: Bool = true
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -57,6 +78,36 @@ final class SwipeGovViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func hideVoteButtons() {
+        guard !voteButtonsAreHidden else {
+            return
+        }
+
+        [nayButton, abstainButton, ayeButton].forEach {
+            buttonsHideAnimator.animate(
+                view: $0,
+                completionBlock: { [weak self] _ in
+                    self?.voteButtonsAreHidden = true
+                }
+            )
+        }
+    }
+
+    func showVoteButtons() {
+        guard voteButtonsAreHidden else {
+            return
+        }
+
+        [nayButton, abstainButton, ayeButton].forEach {
+            buttonsShowAnimator.animate(
+                view: $0,
+                completionBlock: { [weak self] _ in
+                    self?.voteButtonsAreHidden = false
+                }
+            )
+        }
     }
 }
 
