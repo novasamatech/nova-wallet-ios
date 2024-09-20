@@ -9,6 +9,7 @@ class SwipeGovEmptyStateView: UIView {
 
     let textLabel: UILabel = .create { view in
         view.textAlignment = .center
+        view.numberOfLines = 0
         view.apply(style: .footnoteSecondary)
     }
 
