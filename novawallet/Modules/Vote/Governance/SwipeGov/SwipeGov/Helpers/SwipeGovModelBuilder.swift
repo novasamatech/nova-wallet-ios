@@ -114,10 +114,8 @@ private extension SwipeGovModelBuilder {
         var updates: [ReferendumLocal] = []
         var deletes: [ReferendumIdLocal] = []
 
-        let lastDeletes = Set(currentModel.referendumsChanges.deletes)
-
         newReferendums.forEach { key, value in
-            if self.referendums[key] == nil || lastDeletes.contains(key) {
+            if self.referendums[key] == nil {
                 inserts.append(value)
             } else {
                 updates.append(value)
