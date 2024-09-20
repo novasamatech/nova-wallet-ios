@@ -12,7 +12,9 @@ final class SwipeGovViewLayout: UIView {
         view.endPoint = gradient.endPoint
     }
 
-    let votingListWidget = VotingListWidget()
+    let votingListWidget: VotingListWidget = .create { view in
+        view.alpha = 0
+    }
 
     let cardsStack = CardsZStack()
 
@@ -51,7 +53,7 @@ final class SwipeGovViewLayout: UIView {
 
     let emptyStateView = SwipeGovEmptyStateView()
 
-    let buttonsHideAnimator: ViewAnimatorProtocol = FadeAnimator(
+    let controlHideAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 1.0,
         to: 0.0,
         duration: 0.3,
@@ -59,7 +61,7 @@ final class SwipeGovViewLayout: UIView {
         options: .curveEaseInOut
     )
 
-    let buttonsShowAnimator: ViewAnimatorProtocol = FadeAnimator(
+    let controlShowAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 0.0,
         to: 1.0,
         duration: 0.3,
@@ -67,7 +69,8 @@ final class SwipeGovViewLayout: UIView {
         options: .curveEaseInOut
     )
 
-    var voteButtonsAreHidden: Bool = true
+    var controlsAreHidden: Bool = true
+    var votingWidgetIsHidden: Bool = true
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -81,33 +84,46 @@ final class SwipeGovViewLayout: UIView {
     }
 
     func hideVoteButtons() {
-        guard !voteButtonsAreHidden else {
+        guard !controlsAreHidden else {
             return
         }
 
         [nayButton, abstainButton, ayeButton].forEach {
-            buttonsHideAnimator.animate(
+            controlHideAnimator.animate(
                 view: $0,
                 completionBlock: { [weak self] _ in
-                    self?.voteButtonsAreHidden = true
+                    self?.controlsAreHidden = true
                 }
             )
         }
     }
 
     func showVoteButtons() {
-        guard voteButtonsAreHidden else {
+        guard controlsAreHidden else {
             return
         }
 
         [nayButton, abstainButton, ayeButton].forEach {
-            buttonsShowAnimator.animate(
+            controlShowAnimator.animate(
                 view: $0,
                 completionBlock: { [weak self] _ in
-                    self?.voteButtonsAreHidden = false
+                    self?.controlsAreHidden = false
                 }
             )
         }
+    }
+
+    func showVotingListWidget() {
+        guard votingWidgetIsHidden else {
+            return
+        }
+
+        controlShowAnimator.animate(
+            view: votingListWidget,
+            completionBlock: { [weak self] _ in
+                self?.votingWidgetIsHidden = false
+            }
+        )
     }
 }
 
