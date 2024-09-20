@@ -28,5 +28,7 @@ final class SwipeGovSetupViewLayout: BaseReferendumVoteSetupViewLayout {
 
         containerView.stackView.setCustomSpacing(8.0, after: titleLabel)
         containerView.stackView.setCustomSpacing(12.0, after: detailsLabel)
+
+        setupContentWidth()
     }
 }

@@ -7,6 +7,7 @@ typealias SwipeGovBannerTableViewCell = PlainBaseTableViewCell<SwipeGovBannerVie
 extension PlainBaseTableViewCell where C == SwipeGovBannerView {
     func setupStyle() {
         backgroundColor = .clear
+        selectionStyle = .none
     }
 }
 

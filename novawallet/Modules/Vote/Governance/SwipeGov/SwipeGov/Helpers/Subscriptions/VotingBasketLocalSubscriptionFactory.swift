@@ -9,7 +9,7 @@ protocol VotingBasketLocalSubscriptionFactoryProtocol {
 }
 
 class VotingBasketLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
-                                            VotingBasketLocalSubscriptionFactoryProtocol {
+    VotingBasketLocalSubscriptionFactoryProtocol {
     func getVotingBasketItemsProvider(
         for chainId: ChainModel.Id,
         metaId: MetaAccountModel.Id
