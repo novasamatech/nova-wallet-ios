@@ -13,6 +13,7 @@ final class SwipeGovPresenter {
 
     private var model: SwipeGovModelBuilder.Result.Model?
     private var votingPower: VotingPowerLocal?
+    private var currentCardStackViewModel: CardsZStackViewModel?
 
     init(
         wireframe: SwipeGovWireframeProtocol,
@@ -135,6 +136,7 @@ private extension SwipeGovPresenter {
 
         let viewModel = cardsViewModelFactory.createCardsStackViewModel(
             from: model,
+            currentViewModel: currentCardStackViewModel,
             locale: localizationManager.selectedLocale,
             actions: cardActions,
             emptyViewAction: { [weak self] in self?.showVotingList() },
@@ -144,6 +146,7 @@ private extension SwipeGovPresenter {
                 return validateVotingAvailable()
             }
         )
+        currentCardStackViewModel = viewModel
 
         view?.updateCardsStack(with: viewModel)
     }

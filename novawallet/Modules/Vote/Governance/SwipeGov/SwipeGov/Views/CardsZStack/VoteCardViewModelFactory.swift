@@ -4,6 +4,7 @@ import SubstrateSdk
 protocol VoteCardViewModelFactoryProtocol {
     func createCardsStackViewModel(
         from model: SwipeGovModelBuilder.Result.Model,
+        currentViewModel: CardsZStackViewModel?,
         locale: Locale,
         actions: VoteCardViewModel.Actions,
         emptyViewAction: @escaping () -> Void,
@@ -46,29 +47,22 @@ struct VoteCardViewModelFactory {
 extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
     func createCardsStackViewModel(
         from model: SwipeGovModelBuilder.Result.Model,
+        currentViewModel: CardsZStackViewModel?,
         locale: Locale,
         actions: VoteCardViewModel.Actions,
         emptyViewAction: @escaping () -> Void,
         validationClosure: @escaping (VoteCardViewModel?) -> Bool
     ) -> CardsZStackViewModel {
-        let inserts = createVoteCardViewModels(
-            from: model.referendumsChanges.inserts,
+        let changes = createStackChangesModel(
+            from: model.referendumsChanges,
+            using: currentViewModel,
             locale: locale,
             actions: actions
         )
 
-        let updates = createVoteCardViewModels(
-            from: model.referendumsChanges.updates,
-            locale: locale,
-            actions: actions
-        ).reduce(into: [:]) { $0[$1.id] = $1 }
-
-        let deletes = Set(model.referendumsChanges.deletes)
-
-        let stackChangeModel = CardsZStackChangeModel(
-            inserts: inserts,
-            updates: updates,
-            deletes: deletes
+        let allCards: [VoteCardId: VoteCardViewModel] = createAllCards(
+            using: currentViewModel,
+            changes: changes
         )
 
         let emptyViewModel = createEmptyViewModel(
@@ -82,7 +76,8 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
         let stackIsEmpty = (model.referendums.count - model.votingList.count) <= 0
 
         let viewModel = CardsZStackViewModel(
-            changeModel: stackChangeModel,
+            allCards: allCards,
+            changeModel: changes,
             emptyViewModel: emptyViewModel,
             validationAction: validationClosure,
             stackIsEmpty: stackIsEmpty
@@ -117,33 +112,91 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
         }
     }
 
-    private func createVoteCardViewModels(
-        from referendums: [ReferendumLocal],
+    private func createAllCards(
+        using currentViewModel: CardsZStackViewModel?,
+        changes: CardsZStackChangeModel
+    ) -> [VoteCardId: VoteCardViewModel] {
+        if let currentViewModel {
+            var current = currentViewModel.allCards
+
+            changes.inserts.forEach { current[$0.id] = $0 }
+            changes.updates.forEach { current[$0.key] = $0.value }
+            changes.deletes.forEach { current[$0] = nil }
+
+            return current
+        } else {
+            return changes.inserts.reduce(into: [:]) { $0[$1.id] = $1 }
+        }
+    }
+
+    private func createVoteCardViewModel(
+        for index: Int,
+        referendum: ReferendumLocal,
         locale: Locale,
         actions: VoteCardViewModel.Actions
-    ) -> [VoteCardViewModel] {
-        referendums.enumerated().map { index, referendum in
-            let gradientModel = cardGradientFactory.createCardGradient(for: index)
-            let requestedAmountFactory = ReferendumAmountOperationFactory(
-                referendum: referendum,
-                connection: connection,
-                runtimeProvider: runtimeProvider,
-                actionDetailsOperationFactory: actionDetailsOperationFactory
-            )
+    ) -> VoteCardViewModel {
+        let gradientModel = cardGradientFactory.createCardGradient(for: index)
+        let requestedAmountFactory = ReferendumAmountOperationFactory(
+            referendum: referendum,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            actionDetailsOperationFactory: actionDetailsOperationFactory
+        )
 
-            return VoteCardViewModel(
-                operationQueue: OperationManagerFacade.sharedDefaultQueue,
-                summaryFetchOperationFactory: summaryFetchOperationFactory,
-                amountOperationFactory: requestedAmountFactory,
-                priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-                balanceViewModelFactory: balanceViewModelFactory,
-                chain: chain,
+        return VoteCardViewModel(
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            summaryFetchOperationFactory: summaryFetchOperationFactory,
+            amountOperationFactory: requestedAmountFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            chain: chain,
+            referendum: referendum,
+            currencyManager: currencyManager,
+            gradient: gradientModel,
+            locale: locale,
+            actions: actions
+        )
+    }
+
+    private func createStackChangesModel(
+        from changesModel: SwipeGovModelBuilder.Result.ReferendumsListChanges,
+        using currentViewModel: CardsZStackViewModel?,
+        locale: Locale,
+        actions: VoteCardViewModel.Actions
+    ) -> CardsZStackChangeModel {
+        var inserts: [VoteCardViewModel] = []
+        var updates: [VoteCardId: VoteCardViewModel] = [:]
+
+        changesModel.inserts.enumerated().forEach { index, referendum in
+            inserts.append(
+                createVoteCardViewModel(
+                    for: index,
+                    referendum: referendum,
+                    locale: locale,
+                    actions: actions
+                )
+            )
+        }
+
+        changesModel.updates.enumerated().forEach { index, referendum in
+            let viewModel = createVoteCardViewModel(
+                for: index,
                 referendum: referendum,
-                currencyManager: currencyManager,
-                gradient: gradientModel,
                 locale: locale,
                 actions: actions
             )
+
+            if currentViewModel?.allCards[viewModel.id] == nil {
+                inserts.append(viewModel)
+            } else {
+                updates[viewModel.id] = viewModel
+            }
         }
+
+        return CardsZStackChangeModel(
+            inserts: inserts,
+            updates: updates,
+            deletes: Set(changesModel.deletes)
+        )
     }
 }
