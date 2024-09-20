@@ -12,6 +12,8 @@ struct CardsZStackViewModel {
     let changeModel: CardsZStackChangeModel
     let emptyViewModel: SwipeGovEmptyStateViewModel
     let validationAction: ((VoteCardViewModel?) -> Bool)?
+
+    let stackIsEmpty: Bool
 }
 
 struct CardsZStackChangeModel {
@@ -30,6 +32,7 @@ final class CardsZStack: UIView {
 
     private let maxCardsAlive: Int
     private var stackedViews: [VoteCardView] = []
+    private var dismissingIds = Set<VoteCardId>()
     private var emptyStateView: UIView?
     private var viewPool: [VoteCardView] = []
     private var viewModelsQueue: [VoteCardViewModel] = []
@@ -79,7 +82,10 @@ final class CardsZStack: UIView {
         to direction: DismissalDirection,
         completion: (() -> Void)? = nil
     ) {
-        guard let topView = stackedViews.last else {
+        guard
+            let topView = currentTopView(startionFrom: stackedViews.endIndex - 1),
+            let id = topView.viewModel?.id
+        else {
             return
         }
 
@@ -90,6 +96,8 @@ final class CardsZStack: UIView {
             return
         }
 
+        dismissingIds.insert(id)
+
         createHapticFeedback(style: .medium)
         animateCardDismiss(topView, direction: direction) { [weak self] in
             self?.processCardDidPop(
@@ -97,6 +105,20 @@ final class CardsZStack: UIView {
                 direction: direction,
                 completion: completion
             )
+        }
+    }
+
+    func currentTopView(startionFrom index: Int) -> VoteCardView? {
+        guard index < stackedViews.count, index >= 0 else {
+            return nil
+        }
+
+        let view = stackedViews[index]
+
+        if let id = view.viewModel?.id, dismissingIds.contains(id) {
+            return currentTopView(startionFrom: index - 1)
+        } else {
+            return view
         }
     }
 
@@ -304,9 +326,15 @@ private extension CardsZStack {
         direction: DismissalDirection,
         completion: (() -> Void)? = nil
     ) {
+        guard let id = cardView.viewModel?.id else {
+            return
+        }
+
         cardView.didPopFromStack(direction: direction)
 
-        stackedViews.removeLast()
+        stackedViews.removeAll(where: { $0.viewModel?.id == cardView.viewModel?.id })
+        dismissingIds.remove(id)
+
         enqueueVoteCardView(cardView)
         notifyTopView()
 
@@ -485,9 +513,10 @@ private extension CardsZStack {
         static let cardCornerRadius: CGFloat = 16
         static let stackZScaling: CGFloat = 0.9
         static let lowerCardsOffset: CGFloat = 10.0
-        static let screenSizeDivider: CGFloat = 2.3
-        static let topMostY = -(UIScreen.main.bounds.height / Constants.screenSizeDivider)
-        static let leftMostX = -(UIScreen.main.bounds.width / Constants.screenSizeDivider)
-        static let rightMostX = UIScreen.main.bounds.width / Constants.screenSizeDivider
+        static let horizontalScreenSizeDivider: CGFloat = 3.15
+        static let verticalScreenSizeDivider: CGFloat = 3.8
+        static let topMostY = -(UIScreen.main.bounds.height / Constants.verticalScreenSizeDivider)
+        static let leftMostX = -(UIScreen.main.bounds.width / Constants.horizontalScreenSizeDivider)
+        static let rightMostX = UIScreen.main.bounds.width / Constants.horizontalScreenSizeDivider
     }
 }

@@ -7,6 +7,8 @@ final class SwipeGovViewController: UIViewController, ViewHolder {
 
     let presenter: SwipeGovPresenterProtocol
 
+    var cardsStackViewModel: CardsZStackViewModel?
+
     private lazy var titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldBodyPrimary)
         view.textAlignment = .center
@@ -91,6 +93,16 @@ extension SwipeGovViewController: SwipeGovViewProtocol {
         rootView.cardsStack.setupValidationAction(viewModel.validationAction)
         rootView.emptyStateView.bind(with: viewModel.emptyViewModel)
         rootView.finishedAddingCards()
+
+        if viewModel.stackIsEmpty {
+            rootView.hideVoteButtons()
+        } else {
+            rootView.showVoteButtons()
+        }
+
+        notifyPresenterOnEmptyIfNeeded(using: viewModel)
+
+        cardsStackViewModel = viewModel
     }
 
     func skipCard() {
@@ -109,6 +121,18 @@ extension SwipeGovViewController: SwipeGovViewProtocol {
 // MARK: Private
 
 private extension SwipeGovViewController {
+    func notifyPresenterOnEmptyIfNeeded(using viewModel: CardsZStackViewModel) {
+        guard
+            let oldViewModel = cardsStackViewModel,
+            viewModel.stackIsEmpty,
+            !oldViewModel.stackIsEmpty
+        else {
+            return
+        }
+
+        presenter.cardsStackBecameEmpty()
+    }
+
     func setupNavigationBar() {
         let titleStackView = UIStackView.vStack(
             spacing: 2,

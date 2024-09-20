@@ -41,10 +41,9 @@ extension SwipeGovModelBuilder: SwipeGovModelBuilderProtocol {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
-            let filteredReferendums = filteredReferendums(from: referendumsState)
-            let changes = createReferendumsChange(from: filteredReferendums)
+            referendums = filteredReferendums(from: referendumsState)
 
-            referendums = filteredReferendums
+            let changes = createReferendumsChange(from: referendums)
 
             rebuild(
                 with: changes,

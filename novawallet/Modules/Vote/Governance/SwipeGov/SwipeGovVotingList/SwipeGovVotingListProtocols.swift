@@ -2,10 +2,6 @@ import Operation_iOS
 
 protocol SwipeGovVotingListViewProtocol: ControllerBackedProtocol {
     func didReceive(_ viewModel: SwipeGovVotingListViewModel)
-    func didChangeViewModel(
-        _ viewModel: SwipeGovVotingListViewModel,
-        byRemovingItemWith referendumId: ReferendumIdLocal
-    )
 }
 
 protocol SwipeGovVotingListPresenterProtocol: AnyObject {

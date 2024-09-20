@@ -48,24 +48,6 @@ extension SwipeGovVotingListViewController: SwipeGovVotingListViewProtocol {
         self.viewModel = viewModel
         rootView.tableView.reloadData()
     }
-
-    func didChangeViewModel(
-        _ viewModel: SwipeGovVotingListViewModel,
-        byRemovingItemWith referendumId: ReferendumIdLocal
-    ) {
-        guard let rowIndex = self.viewModel?.cellViewModels.firstIndex(where: {
-            $0.referendumIndex == referendumId
-        }) else {
-            return
-        }
-
-        self.viewModel = viewModel
-
-        let indexPath = IndexPath(row: rowIndex, section: 0)
-        rootView.tableView.deleteRows(at: [indexPath], with: .left)
-
-        updateVoteButton()
-    }
 }
 
 // MARK: UITableViewDataSource
