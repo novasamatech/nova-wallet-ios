@@ -167,6 +167,10 @@ private extension SwipeGovVotingConfirmInteractor {
 
             return votingItems[$0]
         }
+        
+        guard !itemsToClear.isEmpty else {
+            return
+        }
 
         clearVotingItems(itemsToClear)
     }
