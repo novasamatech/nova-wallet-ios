@@ -16,6 +16,7 @@ protocol GovernanceErrorPresentable: BaseErrorPresentable {
 
     func presentReferendumCompleted(
         from view: ControllerBackedProtocol,
+        referendumId: ReferendumIdLocal?,
         locale: Locale?
     )
 
@@ -106,10 +107,30 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
 
     func presentReferendumCompleted(
         from view: ControllerBackedProtocol,
+        referendumId: ReferendumIdLocal?,
         locale: Locale?
     ) {
-        let title = R.string.localizable.govReferendumCompletedTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.govReferendumCompletedMessage(preferredLanguages: locale?.rLanguages)
+        let title = if let referendumId {
+            R.string.localizable.govReferendumCompletedTitleWithIndex(
+                Int(referendumId),
+                preferredLanguages: locale?.rLanguages
+            )
+        } else {
+            R.string.localizable.govReferendumCompletedTitle(
+                preferredLanguages: locale?.rLanguages
+            )
+        }
+
+        let message = if let referendumId {
+            R.string.localizable.govReferendumCompletedMessageWithIndex(
+                Int(referendumId),
+                preferredLanguages: locale?.rLanguages
+            )
+        } else {
+            R.string.localizable.govReferendumCompletedMessage(
+                preferredLanguages: locale?.rLanguages
+            )
+        }
 
         let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
