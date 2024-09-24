@@ -22,6 +22,7 @@ final class SwipeGovVotingListInteractor {
     private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
     private var currentVotingItems: [VotingBasketItemLocal] = []
+    private var availableReferendums: [ReferendumIdLocal: ReferendumLocal] = [:]
 
     private let operationQueue: OperationQueue
 
@@ -56,6 +57,7 @@ extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtoco
 
         observableState.addObserver(
             with: self,
+            sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, new in
             self?.onReceiveObservableState(new.value)
@@ -90,6 +92,8 @@ extension SwipeGovVotingListInteractor: VotingBasketLocalStorageSubscriber, Voti
         case let .failure(error):
             presenter?.didReceive(.votingBasket(error))
         }
+
+        removeUnavailableIfNeeded()
     }
 }
 
@@ -194,8 +198,14 @@ private extension SwipeGovVotingListInteractor {
             accountVotes: state.voting?.value?.votes
         ).callAsFunction()
 
+        availableReferendums = filteredReferendums
+
+        removeUnavailableIfNeeded()
+    }
+
+    func removeUnavailableIfNeeded() {
         let unavailableItems = currentVotingItems.filter { item in
-            filteredReferendums[item.referendumId] == nil
+            availableReferendums[item.referendumId] == nil
         }
 
         guard !unavailableItems.isEmpty else { return }
