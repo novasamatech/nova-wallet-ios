@@ -23,8 +23,20 @@ extension Treasury {
         CallCodingPath(moduleName: "Treasury", callName: "spend_local")
     }
 
-    struct SpendCall: Decodable {
+    struct SpendLocalCall: Decodable {
         @StringCodable var amount: BigUInt
         let beneficiary: MultiAddress
+    }
+
+    struct SpendRemoteCall: Decodable {
+        enum CodingKeys: String, CodingKey {
+            case assetKind = "asset_kind"
+            case amount
+            case beneficiary
+        }
+
+        let assetKind: XcmVersionedLocatableAsset
+        @StringCodable var amount: BigUInt
+        let beneficiary: Xcm.VersionedMultilocation
     }
 }

@@ -18,9 +18,10 @@ struct VoteCardViewModelFactory {
     private let currencyManager: CurrencyManagerProtocol
     private let connection: JSONRPCEngine
     private let runtimeProvider: RuntimeProviderProtocol
-    private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    private let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     private let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     private let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
+    private let spendingAmountExtractor: GovSpendingExtracting
 
     init(
         summaryFetchOperationFactory: OpenGovSummaryOperationFactoryProtocol,
@@ -28,18 +29,20 @@ struct VoteCardViewModelFactory {
         currencyManager: CurrencyManagerProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
+        actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
+        spendingAmountExtractor: GovSpendingExtracting
     ) {
         self.summaryFetchOperationFactory = summaryFetchOperationFactory
         self.chain = chain
         self.currencyManager = currencyManager
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceViewModelFacade = balanceViewModelFacade
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
+        self.spendingAmountExtractor = spendingAmountExtractor
     }
 }
 
@@ -133,7 +136,8 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
             referendum: referendum,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            actionDetailsOperationFactory: actionDetailsOperationFactory
+            actionDetailsOperationFactory: actionDetailsOperationFactory,
+            spendAmountExtractor: spendingAmountExtractor
         )
 
         return VoteCardViewModel(
@@ -141,7 +145,7 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
             summaryFetchOperationFactory: summaryFetchOperationFactory,
             amountOperationFactory: requestedAmountFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
             referendum: referendum,
             currencyManager: currencyManager,

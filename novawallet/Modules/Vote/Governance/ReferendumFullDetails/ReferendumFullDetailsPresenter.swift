@@ -7,7 +7,7 @@ final class ReferendumFullDetailsPresenter {
     weak var view: ReferendumFullDetailsViewProtocol?
     let wireframe: ReferendumFullDetailsWireframeProtocol
     let interactor: ReferendumFullDetailsInteractorInputProtocol
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     let addressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let logger: LoggerProtocol
 
@@ -17,7 +17,8 @@ final class ReferendumFullDetailsPresenter {
     let metadata: ReferendumMetadataLocal?
     let identities: [AccountAddress: AccountIdentity]
 
-    private var price: PriceData?
+    private var requestedAmountPrice: PriceData?
+    private var utilityAssetPrice: PriceData?
     private var call: ReferendumActionLocal.Call<String>?
 
     init(
@@ -28,7 +29,7 @@ final class ReferendumFullDetailsPresenter {
         actionDetails: ReferendumActionLocal,
         metadata: ReferendumMetadataLocal?,
         identities: [AccountAddress: AccountIdentity],
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
         addressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -41,7 +42,7 @@ final class ReferendumFullDetailsPresenter {
         self.actionDetails = actionDetails
         self.identities = identities
         self.logger = logger
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceViewModelFacade = balanceViewModelFacade
         self.addressViewModelFactory = addressViewModelFactory
         self.localizationManager = localizationManager
     }
@@ -60,17 +61,22 @@ final class ReferendumFullDetailsPresenter {
         return addressViewModelFactory.createViewModel(from: displayAddress)
     }
 
-    private func getBalanceViewModel(_ amount: BigUInt?, locale: Locale) -> BalanceViewModelProtocol? {
+    private func getBalanceViewModel(
+        _ amount: BigUInt?,
+        chainAsset: ChainAsset?,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
         guard
-            let amount = amount,
-            let assetInfo = chain.utilityAsset()?.displayInfo,
-            let amountDecimal = Decimal.fromSubstrateAmount(amount, precision: assetInfo.assetPrecision) else {
+            let amount,
+            let assetInfo = chainAsset?.assetDisplayInfo else {
             return nil
         }
 
-        return balanceViewModelFactory.balanceFromPrice(
-            amountDecimal,
-            priceData: price
+        return balanceViewModelFacade.balanceFromPrice(
+            targetAssetInfo: assetInfo,
+            amount: amount.decimal(assetInfo: assetInfo),
+            priceData: priceData
         ).value(for: locale)
     }
 
@@ -81,17 +87,25 @@ final class ReferendumFullDetailsPresenter {
             return
         }
 
-        let deposit = getBalanceViewModel(referendum.deposit, locale: selectedLocale)
+        let deposit = getBalanceViewModel(
+            referendum.deposit,
+            chainAsset: chain.utilityChainAsset(),
+            priceData: utilityAssetPrice,
+            locale: selectedLocale
+        )
         view?.didReceive(proposer: .init(proposer: proposer, deposit: deposit))
     }
 
     private func provideBeneficiaryViewModel() {
         guard
             let beneficiary = getAccountViewModel(
-                actionDetails.beneficiary?.accountId
+                actionDetails.beneficiary
             ),
+            let requestedAmount = actionDetails.requestedAmount(),
             let amount = getBalanceViewModel(
-                actionDetails.spentAmount(),
+                requestedAmount.value,
+                chainAsset: requestedAmount.otherChainAssetOrCurrentUtility(from: chain),
+                priceData: requestedAmountPrice,
                 locale: selectedLocale
             ) else {
             view?.didReceive(beneficiary: nil)
@@ -106,8 +120,18 @@ final class ReferendumFullDetailsPresenter {
             let functionInfo = referendum.state.functionInfo(locale: selectedLocale),
             let turnout = referendum.state.turnout,
             let electorate = referendum.state.electorate,
-            let turnoutBalance = getBalanceViewModel(turnout, locale: selectedLocale),
-            let electorateBalance = getBalanceViewModel(electorate, locale: selectedLocale) else {
+            let turnoutBalance = getBalanceViewModel(
+                turnout,
+                chainAsset: chain.utilityChainAsset(),
+                priceData: utilityAssetPrice,
+                locale: selectedLocale
+            ),
+            let electorateBalance = getBalanceViewModel(
+                electorate,
+                chainAsset: chain.utilityChainAsset(),
+                priceData: utilityAssetPrice,
+                locale: selectedLocale
+            ) else {
             return
         }
 
@@ -172,7 +196,7 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol
 
     func presentBeneficiary() {
         guard
-            let address = try? actionDetails.beneficiary?.accountId?.toAddress(
+            let address = try? actionDetails.beneficiary?.toAddress(
                 using: chain.chainFormat
             ) else {
             return
@@ -191,8 +215,16 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol
 }
 
 extension ReferendumFullDetailsPresenter: ReferendumFullDetailsInteractorOutputProtocol {
-    func didReceive(price: PriceData?) {
-        self.price = price
+    func didReceiveRequestedAmount(price: PriceData?) {
+        requestedAmountPrice = price
+
+        provideProposerViewModel()
+        provideBeneficiaryViewModel()
+        provideCurveAndHashViewModel()
+    }
+
+    func didReceiveUtilityAsset(price: PriceData?) {
+        utilityAssetPrice = price
 
         provideProposerViewModel()
         provideBeneficiaryViewModel()

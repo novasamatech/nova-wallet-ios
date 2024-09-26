@@ -12,7 +12,6 @@ struct SwipeGovViewFactory {
             let summaryApi = option.chain.externalApis?.referendumSummary()?.first?.url,
             let connection = sharedState.chainRegistry.getConnection(for: option.chain.chainId),
             let runtimeProvider = sharedState.chainRegistry.getRuntimeProvider(for: option.chain.chainId),
-            let assetInfo = option.chain.utilityAsset()?.displayInfo,
             let currencyManager = CurrencyManager.shared
         else {
             return nil
@@ -63,8 +62,7 @@ struct SwipeGovViewFactory {
             chain: option.chain
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetInfo,
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
@@ -74,9 +72,10 @@ struct SwipeGovViewFactory {
             currencyManager: currencyManager,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFacade: balanceViewModelFacade,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            actionDetailsOperationFactory: sharedState.createActionsDetailsFactory(for: option)
+            actionDetailsOperationFactory: sharedState.createActionsDetailsFactory(for: option),
+            spendingAmountExtractor: sharedState.createReferendumSpendingExtractor(for: option)
         )
 
         let presenter = SwipeGovPresenter(

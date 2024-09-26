@@ -10,7 +10,7 @@ struct VoteCardLoadErrorActions {
 
 typealias VoteCardId = ReferendumIdLocal
 
-final class VoteCardViewModel {
+final class VoteCardViewModel: AnyProviderAutoCleaning {
     struct Actions {
         let onAction: (ReferendumIdLocal) -> Void
         let onVote: (VoteResult, ReferendumIdLocal) -> Void
@@ -32,7 +32,7 @@ final class VoteCardViewModel {
     private let summaryFetchOperationFactory: OpenGovSummaryOperationFactoryProtocol
     private let amountOperationFactory: ReferendumAmountOperationFactoryProtocol
 
-    private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    private let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
 
     private let chain: ChainModel
     private let referendum: ReferendumLocal
@@ -47,7 +47,7 @@ final class VoteCardViewModel {
     private var actionDetailsCancellable = CancellableCallStore()
     private var summaryCancellable = CancellableCallStore()
 
-    private var amount: BigUInt?
+    private var amount: ReferendumActionLocal.Amount?
     private var isTopMost: Bool = false
     private var needsRetryLoad: Bool = false
 
@@ -56,7 +56,7 @@ final class VoteCardViewModel {
         summaryFetchOperationFactory: OpenGovSummaryOperationFactoryProtocol,
         amountOperationFactory: ReferendumAmountOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
         chain: ChainModel,
         referendum: ReferendumLocal,
         currencyManager: CurrencyManagerProtocol,
@@ -68,7 +68,7 @@ final class VoteCardViewModel {
         self.summaryFetchOperationFactory = summaryFetchOperationFactory
         self.amountOperationFactory = amountOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceViewModelFacade = balanceViewModelFacade
         self.chain = chain
         self.referendum = referendum
         self.gradient = gradient
@@ -102,8 +102,6 @@ final class VoteCardViewModel {
     }
 
     func onSetup() {
-        makeSubscriptions()
-
         view?.setBackgroundGradient(model: gradient)
     }
 }
@@ -159,41 +157,47 @@ private extension VoteCardViewModel {
             backingCallIn: actionDetailsCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
             switch result {
             case let .success(amount):
-                self?.updateRequestedAmount(amount: amount)
+                self.amount = amount
+                self.updatePriceSubscription(
+                    for: amount?.otherChainAssetOrCurrentUtility(from: self.chain)
+                )
+                self.updateRequestedAmount()
             case .failure:
-                self?.summaryCancellable.cancel()
-                self?.processLoadFailure()
+                self.summaryCancellable.cancel()
+                self.processLoadFailure()
             }
         }
     }
 
-    func updateRequestedAmount(amount: BigUInt?) {
+    func updateRequestedAmount() {
         guard
             let amount,
-            let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
-            let decimalAmount = Decimal.fromSubstrateAmount(
-                amount,
-                precision: precision
-            )
+            let assetInfo = amount.otherChainAssetOrCurrentUtility(from: chain)?.assetDisplayInfo
         else {
             view?.setRequestedAmount(loadingState: .loaded(value: nil))
             return
         }
 
-        self.amount = amount
-
-        let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
-            decimalAmount,
+        let balanceViewModel = balanceViewModelFacade.balanceFromPrice(
+            targetAssetInfo: assetInfo,
+            amount: amount.value.decimal(assetInfo: assetInfo),
             priceData: price
         ).value(for: locale)
 
         view?.setRequestedAmount(loadingState: .loaded(value: balanceViewModel))
     }
 
-    func makeSubscriptions() {
-        if let priceId = chain.utilityAsset()?.priceId {
+    func updatePriceSubscription(for chainAsset: ChainAsset?) {
+        price = nil
+        clear(streamableProvider: &priceProvider)
+
+        if let priceId = chainAsset?.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
@@ -237,7 +241,7 @@ extension VoteCardViewModel: PriceLocalStorageSubscriber, PriceLocalSubscription
 
         self.price = price
 
-        updateRequestedAmount(amount: amount)
+        updateRequestedAmount()
     }
 }
 
@@ -245,8 +249,8 @@ extension VoteCardViewModel: PriceLocalStorageSubscriber, PriceLocalSubscription
 
 extension VoteCardViewModel: SelectedCurrencyDepending {
     func applyCurrency() {
-        if let priceId = chain.utilityAsset()?.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        if view != nil {
+            updateRequestedAmount()
         }
     }
 }
