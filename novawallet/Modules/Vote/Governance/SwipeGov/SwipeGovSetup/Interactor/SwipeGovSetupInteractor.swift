@@ -41,10 +41,7 @@ class SwipeGovSetupInteractor: BaseSwipeGovSetupInteractor {
     }
 
     override func process(votingPower: VotingPowerLocal) {
-        let saveOperation = repository.saveOperation(
-            { [votingPower] },
-            { [] }
-        )
+        let saveOperation = repository.saveOperation({ [votingPower] }, { [] })
 
         execute(
             operation: saveOperation,

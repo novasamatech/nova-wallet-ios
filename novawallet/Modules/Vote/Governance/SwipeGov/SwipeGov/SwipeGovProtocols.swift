@@ -5,6 +5,7 @@ protocol SwipeGovViewProtocol: ControllerBackedProtocol {
     func skipCard()
     func updateVotingList(with viewModel: VotingListWidgetViewModel)
     func updateCardsCounter(with text: String)
+    func didReceive(canOpenSettings: Bool)
 }
 
 protocol SwipeGovPresenterProtocol: AnyObject {

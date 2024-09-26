@@ -117,6 +117,10 @@ extension SwipeGovViewController: SwipeGovViewProtocol {
     func updateCardsCounter(with text: String) {
         titleReferendaCounterLabel.text = text
     }
+
+    func didReceive(canOpenSettings: Bool) {
+        settingsControl.isEnabled = canOpenSettings
+    }
 }
 
 // MARK: Private

@@ -69,6 +69,7 @@ extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
         }
 
         updateReferendumsCounter()
+        updateSettingsState()
     }
 
     func didReceive(_ votingPower: VotingPowerLocal) {
@@ -184,6 +185,11 @@ private extension SwipeGovPresenter {
         }
 
         view?.updateCardsCounter(with: viewModel)
+    }
+
+    func updateSettingsState() {
+        let isStackEmpty = currentCardStackViewModel?.stackIsEmpty ?? true
+        view?.didReceive(canOpenSettings: !isStackEmpty)
     }
 
     func showVotingPower() {
