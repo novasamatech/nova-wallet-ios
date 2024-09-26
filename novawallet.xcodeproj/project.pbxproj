@@ -925,6 +925,10 @@
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
+		2D57029D2C9E08D300673CB7 /* CardsZStack+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D57029C2C9E08D300673CB7 /* CardsZStack+Constants.swift */; };
+		2D57029F2C9E092500673CB7 /* CardStackable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D57029E2C9E092500673CB7 /* CardStackable.swift */; };
+		2D5702A12C9E094D00673CB7 /* CardsZStackViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5702A02C9E094D00673CB7 /* CardsZStackViewModel.swift */; };
+		2D5702A42C9E09CF00673CB7 /* CardsZStack+Animate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5702A32C9E09CF00673CB7 /* CardsZStack+Animate.swift */; };
 		2D5A61C72C0DF106006D58E3 /* NetworksListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61C62C0DF106006D58E3 /* NetworksListViewModelFactory.swift */; };
 		2D5A61C92C0E5C68006D58E3 /* NetworksListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */; };
 		2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */; };
@@ -6013,6 +6017,10 @@
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
+		2D57029C2C9E08D300673CB7 /* CardsZStack+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CardsZStack+Constants.swift"; sourceTree = "<group>"; };
+		2D57029E2C9E092500673CB7 /* CardStackable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStackable.swift; sourceTree = "<group>"; };
+		2D5702A02C9E094D00673CB7 /* CardsZStackViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsZStackViewModel.swift; sourceTree = "<group>"; };
+		2D5702A32C9E09CF00673CB7 /* CardsZStack+Animate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CardsZStack+Animate.swift"; sourceTree = "<group>"; };
 		2D5A61C52C09D34E006D58E3 /* SubstrateDataModel28.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel28.xcdatamodel; sourceTree = "<group>"; };
 		2D5A61C62C0DF106006D58E3 /* NetworksListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D5A61C82C0E5C68006D58E3 /* NetworksListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksListTableViewCell.swift; sourceTree = "<group>"; };
@@ -12326,10 +12334,11 @@
 			isa = PBXGroup;
 			children = (
 				2DA85A862C81170700591900 /* CardsZStack.swift */,
-				2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */,
-				2D389B0F2C86FEFB00256C7B /* StackCardUpdatable.swift */,
-				2DA85A882C81172F00591900 /* VoteCardView.swift */,
-				2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */,
+				2D5702A32C9E09CF00673CB7 /* CardsZStack+Animate.swift */,
+				2D57029C2C9E08D300673CB7 /* CardsZStack+Constants.swift */,
+				2D57029E2C9E092500673CB7 /* CardStackable.swift */,
+				2D5702A02C9E094D00673CB7 /* CardsZStackViewModel.swift */,
+				2D5702A22C9E099D00673CB7 /* VoteCard */,
 			);
 			path = CardsZStack;
 			sourceTree = "<group>";
@@ -12357,6 +12366,17 @@
 				2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */,
 			);
 			path = MnemonicCard;
+			sourceTree = "<group>";
+		};
+		2D5702A22C9E099D00673CB7 /* VoteCard */ = {
+			isa = PBXGroup;
+			children = (
+				2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */,
+				2D389B0F2C86FEFB00256C7B /* StackCardUpdatable.swift */,
+				2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */,
+				2DA85A882C81172F00591900 /* VoteCardView.swift */,
+			);
+			path = VoteCard;
 			sourceTree = "<group>";
 		};
 		2D5A61CE2C0FAC3D006D58E3 /* View */ = {
@@ -26430,6 +26450,7 @@
 				84981EE229D31A6900948306 /* TransactionHistorySyncService.swift in Sources */,
 				849ABE81262811CF00011A2A /* NominationsListReducer.swift in Sources */,
 				84EBFCF6285E955A0006327E /* XcmTransferReserve.swift in Sources */,
+				2D57029D2C9E08D300673CB7 /* CardsZStack+Constants.swift in Sources */,
 				843910CE253F7E8000E3C217 /* SubstrateDataStorageFacade.swift in Sources */,
 				84E731C326652B5C00D5B15A /* AttributedString+Crowdloan.swift in Sources */,
 				843125CF299B6FA20063745B /* GovernanceDelegationFlowType.swift in Sources */,
@@ -26474,6 +26495,7 @@
 				0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */,
 				849DEBDC25ED134A00C64C19 /* SelectValidatorsConfirmViewModelFactory.swift in Sources */,
 				84F1CB2F27CE50B50095D523 /* NftListMetadataViewModel.swift in Sources */,
+				2D57029F2C9E092500673CB7 /* CardStackable.swift in Sources */,
 				8496ADDA276AFF4600306B24 /* DAppBrowserScript.swift in Sources */,
 				77A0B2EF2A3B85B700CBF653 /* BlurBackgroundCollectionReusableView.swift in Sources */,
 				8445CC2728366578003B26CD /* ParaStkCalls.swift in Sources */,
@@ -27427,6 +27449,7 @@
 				84350AD4284580F50031EF24 /* StakingTotalStakePresentable.swift in Sources */,
 				6B393DCF67CF97FDA580C69B /* DAppSearchPresenter.swift in Sources */,
 				84540172292F907B00213402 /* BlurBackgroundView.swift in Sources */,
+				2D5702A12C9E094D00673CB7 /* CardsZStackViewModel.swift in Sources */,
 				771901B02AE97DA500D9C918 /* SwapConfirmViewModels.swift in Sources */,
 				DC682E96D056C069902B9C31 /* DAppSearchViewController.swift in Sources */,
 				0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */,
@@ -28339,6 +28362,7 @@
 				7D3A5862F4A8F757A091F422 /* GovernanceRevokeDelegationConfirmInteractor.swift in Sources */,
 				BAF044619C83E31EEEDA0BCB /* GovernanceRevokeDelegationConfirmViewController.swift in Sources */,
 				77DAFF682B297A9C00D4220C /* ProxyListLocalStorageSubscriptionHandler.swift in Sources */,
+				2D5702A42C9E09CF00673CB7 /* CardsZStack+Animate.swift in Sources */,
 				33991FF16853D0F885C520A5 /* GovernanceRevokeDelegationConfirmViewLayout.swift in Sources */,
 				844C3E692A07BC4500C4305F /* StackWalletAmountCell.swift in Sources */,
 				C29BA2F7EBAFED5D118E0C0C /* GovernanceRevokeDelegationConfirmViewFactory.swift in Sources */,

@@ -111,6 +111,7 @@ extension SwipeGovViewController: SwipeGovViewProtocol {
 
     func updateVotingList(with viewModel: VotingListWidgetViewModel) {
         rootView.votingListWidget.bind(with: viewModel)
+        rootView.showVotingListWidget()
     }
 
     func updateCardsCounter(with text: String) {

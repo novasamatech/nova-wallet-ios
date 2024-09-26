@@ -28,6 +28,7 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
 
     func referendumNotEnded(
         _ referendum: ReferendumLocal?,
+        includesIndex: Bool,
         locale: Locale?
     ) -> DataValidating
 
@@ -233,13 +234,21 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
         })
     }
 
-    func referendumNotEnded(_ referendum: ReferendumLocal?, locale: Locale?) -> DataValidating {
+    func referendumNotEnded(
+        _ referendum: ReferendumLocal?,
+        includesIndex: Bool,
+        locale: Locale?
+    ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
             }
 
-            self?.presentable.presentReferendumCompleted(from: view, locale: locale)
+            self?.presentable.presentReferendumCompleted(
+                from: view,
+                referendumId: includesIndex ? referendum?.index : nil,
+                locale: locale
+            )
         }, preservesCondition: {
             guard let referendum = referendum else {
                 return false

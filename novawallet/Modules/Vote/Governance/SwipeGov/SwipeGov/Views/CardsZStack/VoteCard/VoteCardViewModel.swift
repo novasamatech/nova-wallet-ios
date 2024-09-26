@@ -131,16 +131,15 @@ private extension VoteCardViewModel {
             backingCallIn: summaryCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
+            guard let self else { return }
+
             switch result {
             case let .success(model):
-                guard let summary = model?.summary else {
-                    return
-                }
-
-                self?.view?.setSummary(loadingState: .loaded(value: summary))
-            case let .failure(error):
-                self?.actionDetailsCancellable.cancel()
-                self?.processLoadFailure()
+                let summary = processSummary(model?.summary)
+                view?.setSummary(loadingState: .loaded(value: summary))
+            case .failure:
+                actionDetailsCancellable.cancel()
+                processLoadFailure()
             }
         }
     }
@@ -163,7 +162,7 @@ private extension VoteCardViewModel {
             switch result {
             case let .success(amount):
                 self?.updateRequestedAmount(amount: amount)
-            case let .failure(error):
+            case .failure:
                 self?.summaryCancellable.cancel()
                 self?.processLoadFailure()
             }
@@ -211,6 +210,17 @@ private extension VoteCardViewModel {
         )
 
         actions.onLoadError(handlers)
+    }
+
+    func processSummary(_ summary: String?) -> String {
+        if let summary, !summary.isEmpty {
+            summary
+        } else {
+            R.string.localizable.govReferendumTitleFallback(
+                "\(id)",
+                preferredLanguages: locale.rLanguages
+            )
+        }
     }
 }
 

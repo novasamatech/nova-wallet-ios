@@ -8,7 +8,7 @@ class ReferendumObservingVoteInteractor: ReferendumVoteInteractor {
         set { super.basePresenter = newValue }
     }
 
-    private let observableState: ReferendumsObservableState
+    let observableState: ReferendumsObservableState
 
     init(
         observableState: ReferendumsObservableState,

@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     weak var view: SwipeGovVotingConfirmViewProtocol? {
@@ -83,6 +84,42 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
     }
 
     override func confirm() {
+        confirm(with: votingItems.mapToVotes())
+    }
+
+    override func setup() {
+        super.setup()
+
+        view?.didReceive(referendaCount: votingItems.count)
+    }
+
+    override func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
+        super.didReceiveVotingReferendumsState(state)
+
+        referendums = state.referendums
+    }
+}
+
+// MARK: SwipeGovVotingConfirmInteractorOutputProtocol
+
+extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputProtocol {
+    func didReceiveSuccessBatchVoting() {
+        view?.didStopLoading()
+
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            completionAction: .dismissAllModals,
+            locale: selectedLocale
+        )
+    }
+}
+
+extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmPresenterProtocol {}
+
+// MARK: Private
+
+private extension SwipeGovVotingConfirmPresenter {
+    func confirm(with votes: [ReferendumNewVote]) {
         guard let assetInfo = chain.utilityAssetDisplayInfo() else {
             return
         }
@@ -112,42 +149,43 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
             successClosure: { [weak self] in
                 guard let self else { return }
                 view?.didStartLoading()
-                interactor.submit(votes: votingItems.mapToVotes())
+                interactor.submit(votes: votes)
             },
             maxAmountErrorClosure: { [weak self] in
                 guard let self, let assetBalance else { return }
-                view?.didStartLoading()
-                interactor.submit(
-                    votes: votingItems.mapToVotes(),
-                    limitingBy: assetBalance.freeInPlank
+
+                let limitedVotes = limitedVotes(
+                    votingItems.mapToVotes(),
+                    by: assetBalance.freeInPlank
                 )
+                view?.didStartLoading()
+                confirm(with: limitedVotes)
             }
         )
     }
 
-    override func setup() {
-        super.setup()
+    func limitedVotes(
+        _ votes: [ReferendumNewVote],
+        by amount: BigUInt
+    ) -> [ReferendumNewVote] {
+        votes.map { vote in
+            guard vote.voteAction.amount() > amount else {
+                return vote
+            }
 
-        view?.didReceive(referendaCount: votingItems.count)
-    }
+            let action: ReferendumVoteAction = switch vote.voteAction {
+            case .abstain:
+                .abstain(amount: amount)
+            case let .aye(model):
+                .aye(.init(amount: amount, conviction: model.conviction))
+            case let .nay(model):
+                .nay(.init(amount: amount, conviction: model.conviction))
+            }
 
-    override func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
-        super.didReceiveVotingReferendumsState(state)
-
-        referendums = state.referendums
+            return ReferendumNewVote(
+                index: vote.index,
+                voteAction: action
+            )
+        }
     }
 }
-
-extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputProtocol {
-    func didReceiveSuccessBatchVoting() {
-        view?.didStopLoading()
-
-        wireframe.presentExtrinsicSubmission(
-            from: view,
-            completionAction: .dismiss,
-            locale: selectedLocale
-        )
-    }
-}
-
-extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmPresenterProtocol {}

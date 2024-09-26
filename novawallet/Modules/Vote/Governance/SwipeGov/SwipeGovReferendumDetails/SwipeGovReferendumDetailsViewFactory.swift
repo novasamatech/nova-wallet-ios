@@ -45,7 +45,7 @@ struct SwipeGovReferendumDetailsViewFactory {
         state: GovernanceSharedState,
         initData: ReferendumDetailsInitData
     ) -> SwipeGovReferendumDetailsPresenter? {
-        guard let stateOption = state.settings.value, let wallet = SelectedWalletSettings.shared.value else {
+        guard let stateOption = state.settings.value else {
             return nil
         }
 

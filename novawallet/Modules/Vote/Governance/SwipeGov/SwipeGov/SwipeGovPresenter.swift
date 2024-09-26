@@ -13,6 +13,7 @@ final class SwipeGovPresenter {
 
     private var model: SwipeGovModelBuilder.Result.Model?
     private var votingPower: VotingPowerLocal?
+    private var currentCardStackViewModel: CardsZStackViewModel?
 
     init(
         wireframe: SwipeGovWireframeProtocol,
@@ -133,10 +134,7 @@ private extension SwipeGovPresenter {
             }
         )
 
-        let viewModel = cardsViewModelFactory.createCardsStackViewModel(
-            from: model,
-            locale: localizationManager.selectedLocale,
-            actions: cardActions,
+        let stackActions = CardsZStack.Actions(
             emptyViewAction: { [weak self] in self?.showVotingList() },
             validationClosure: { [weak self] _ in
                 guard let self else { return false }
@@ -144,6 +142,15 @@ private extension SwipeGovPresenter {
                 return validateVotingAvailable()
             }
         )
+
+        let viewModel = cardsViewModelFactory.createCardsStackViewModel(
+            from: model,
+            currentViewModel: currentCardStackViewModel,
+            locale: localizationManager.selectedLocale,
+            cardActions: cardActions,
+            stackActions: stackActions
+        )
+        currentCardStackViewModel = viewModel
 
         view?.updateCardsStack(with: viewModel)
     }
@@ -169,11 +176,8 @@ private extension SwipeGovPresenter {
     }
 
     func updateReferendumsCounter() {
-        guard let model, !model.referendums.isEmpty else { return }
-
         guard let viewModel = viewModelFactory.createReferendumsCounterViewModel(
-            referendums: model.referendums,
-            votingList: model.votingList,
+            availableToVoteCount: currentCardStackViewModel?.allCards.count ?? 0,
             locale: localizationManager.selectedLocale
         ) else {
             return

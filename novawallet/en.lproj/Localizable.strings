@@ -1735,7 +1735,8 @@
 "swipe.gov.banner.message" = "A new way to easily distribute your votes across the Referenda";
 "common.counter" = "%d of %d";
 "voting.list.widget.title" = "Confirm votes";
-"voting.list.widget.title.empty" = "No votings";
+"voting.list.widget.title.empty" = "No votes";
+"voting.list.title" = "Vote list";
 "vote.card.requested" = "Requested:";
 "gov.vote.setup.details.swipe.gov" = "Voting will be set for future votes in SwipeGov";
 "gov.voting.power" = "Voting power";
@@ -1754,3 +1755,6 @@
 "swipe.gov.empty.view.voted.text" = "You have already voted for all available referenda";
 "swipe.gov.empty.view.text" = "You have already voted for all available referenda or there are no referenda to vote right now. Come back later.";
 "swipe.gov.referenda.counter.empty" = "No referenda to vote";
+"swipe.gov.referenda.counter" = "%d left";
+"gov.referendum.completed.title.with.index" = "Referendum #%d completed";
+"gov.referendum.completed.message.with.index" = "Referendum #%d has been completed and voting is finished";

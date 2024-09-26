@@ -89,9 +89,8 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
     func didReceive(_ votingBasketChanges: [DataProviderChange<VotingBasketItemLocal>]) {
         let deletes = votingBasketChanges
             .filter { $0.isDeletion }
-            .map(\.identifier)
-            .compactMap { identifier in
-                votingListItems.first(where: { $0.identifier == identifier })?.referendumId
+            .compactMap { deletion in
+                votingListItems.first(where: { $0.identifier == deletion.identifier })?.referendumId
             }
 
         votingListItems = votingListItems.applying(changes: votingBasketChanges)
@@ -101,9 +100,8 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
             if votingListItems.isEmpty {
                 wireframe.close(view: view)
             } else {
-                validateBalanceSufficient()
-
                 updateView()
+                validateBalanceSufficient()
             }
         }
 

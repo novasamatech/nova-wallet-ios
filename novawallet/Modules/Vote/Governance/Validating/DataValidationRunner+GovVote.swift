@@ -27,7 +27,11 @@ extension DataValidationRunner {
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             ),
-            factory.referendumNotEnded(params.referendum, locale: selectedLocale),
+            factory.referendumNotEnded(
+                params.referendum,
+                includesIndex: false,
+                locale: selectedLocale
+            ),
             factory.notDelegating(
                 params.votes,
                 track: params.referendum?.trackId,
@@ -82,6 +86,7 @@ extension DataValidationRunner {
         let notEndedValidations = params.referendums?.map {
             factory.referendumNotEnded(
                 $0,
+                includesIndex: true,
                 locale: selectedLocale
             )
         }

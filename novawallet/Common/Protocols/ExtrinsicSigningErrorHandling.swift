@@ -50,6 +50,12 @@ extension ExtrinsicSigningErrorHandling where Self: MessageSheetPresentable {
             presenter?.dismiss(animated: true) {
                 completionClosure?(true)
             }
+        case .dismissAllModals:
+            var root = view.controller.view.window?.rootViewController
+
+            root?.dismiss(animated: true) {
+                completionClosure?(true)
+            }
         case .pop:
             let presenter = view.controller.navigationController
             presenter?.popToRootViewController(animated: true)

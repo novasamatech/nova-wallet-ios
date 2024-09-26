@@ -70,6 +70,13 @@ final class SwipeGovVotingConfirmInteractor: ReferendumObservingVoteInteractor {
         super.setup()
 
         clearAndSubscribeLocks()
+
+        observableState.addObserver(
+            with: self,
+            queue: .main
+        ) { [weak self] _, newState in
+            self?.processNewState(newState.value)
+        }
     }
 
     override func remakeSubscriptions() {
@@ -98,23 +105,6 @@ final class SwipeGovVotingConfirmInteractor: ReferendumObservingVoteInteractor {
 
 extension SwipeGovVotingConfirmInteractor: SwipeGovVotingConfirmInteractorInputProtocol {
     func submit(votes: [ReferendumNewVote]) {
-        submit(votes)
-    }
-
-    func submit(
-        votes: [ReferendumNewVote],
-        limitingBy amount: BigUInt
-    ) {
-        let limitedVotes = limitedVotes(votes, by: amount)
-
-        submit(limitedVotes)
-    }
-}
-
-// MARK: Private
-
-private extension SwipeGovVotingConfirmInteractor {
-    func submit(_ votes: [ReferendumNewVote]) {
         let splitter = createExtrinsicSplitter(for: votes)
 
         extrinsicService.submitWithTxSplitter(
@@ -132,7 +122,11 @@ private extension SwipeGovVotingConfirmInteractor {
             self?.presenter?.didReceiveError(.submitVoteFailed(error))
         }
     }
+}
 
+// MARK: Private
+
+private extension SwipeGovVotingConfirmInteractor {
     func clearAndSubscribeLocks() {
         locksSubscription?.removeObserver(self)
         locksSubscription = nil
@@ -161,6 +155,10 @@ private extension SwipeGovVotingConfirmInteractor {
             return votingItems[$0]
         }
 
+        guard !itemsToClear.isEmpty else {
+            return
+        }
+
         clearVotingItems(itemsToClear)
     }
 
@@ -176,7 +174,7 @@ private extension SwipeGovVotingConfirmInteractor {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard let _ = try? result.get() else {
+            guard case .success = result else {
                 return
             }
 
@@ -185,31 +183,6 @@ private extension SwipeGovVotingConfirmInteractor {
             if self?.clearedItems.keys == self?.votingItems.keys {
                 self?.presenter?.didReceiveSuccessBatchVoting()
             }
-        }
-    }
-
-    func limitedVotes(
-        _ votes: [ReferendumNewVote],
-        by amount: BigUInt
-    ) -> [ReferendumNewVote] {
-        votes.map { vote in
-            guard vote.voteAction.amount() > amount else {
-                return vote
-            }
-
-            let action: ReferendumVoteAction = switch vote.voteAction {
-            case .abstain:
-                .abstain(amount: amount)
-            case let .aye(model):
-                .aye(.init(amount: amount, conviction: model.conviction))
-            case let .nay(model):
-                .nay(.init(amount: amount, conviction: model.conviction))
-            }
-
-            return ReferendumNewVote(
-                index: vote.index,
-                voteAction: action
-            )
         }
     }
 }
