@@ -95,10 +95,7 @@ extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
             conviction: conviction
         )
 
-        let saveOperation = basketItemsRepository.saveOperation(
-            { [basketItem] },
-            { [] }
-        )
+        let saveOperation = basketItemsRepository.saveOperation({ [basketItem] }, { [] })
 
         execute(
             operation: saveOperation,
