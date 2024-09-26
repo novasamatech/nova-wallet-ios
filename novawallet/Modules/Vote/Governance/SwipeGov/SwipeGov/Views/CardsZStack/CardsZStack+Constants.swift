@@ -39,7 +39,7 @@ extension CardsZStack {
         static let stackZScaling: CGFloat = 0.9
         static let lowerCardsOffset: CGFloat = 10.0
         static let horizontalScreenSizeDivider: CGFloat = 3.14
-        static let verticalScreenSizeDivider: CGFloat = 3.14
+        static let verticalScreenSizeDivider: CGFloat = 6.14
         static let topMostY = -(UIScreen.main.bounds.height / Constants.verticalScreenSizeDivider)
         static let leftMostX = -(UIScreen.main.bounds.width / Constants.horizontalScreenSizeDivider)
         static let rightMostX = UIScreen.main.bounds.width / Constants.horizontalScreenSizeDivider

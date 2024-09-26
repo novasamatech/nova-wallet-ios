@@ -1732,7 +1732,7 @@
 "cloud.backup.password.confirm.details" = "Please enter the password you created on the previous screen";
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%d referenda";
-"swipe.gov.banner.message" = "A new way to easily distribute your votes across the Referenda";
+"swipe.gov.banner.message" = "Swipe to vote on referenda with our AI summaries. Fast & easy!";
 "common.counter" = "%d of %d";
 "voting.list.widget.title" = "Confirm votes";
 "voting.list.widget.title.empty" = "No votes";

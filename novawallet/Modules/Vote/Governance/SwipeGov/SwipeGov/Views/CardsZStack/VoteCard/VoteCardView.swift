@@ -9,6 +9,8 @@ final class VoteCardView: RoundedView {
 
     private var summaryLabel: UILabel = .create { view in
         view.apply(style: .title3Primary)
+        view.adjustsFontSizeToFitWidth = true
+        view.minimumScaleFactor = 0.7
         view.numberOfLines = 0
         view.textAlignment = .left
     }
@@ -266,11 +268,18 @@ private extension VoteCardView {
             make.edges.equalToSuperview()
         }
 
+        let summaryContentView = UIView()
+
+        summaryContentView.addSubview(summaryLabel)
+        summaryLabel.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.height.lessThanOrEqualToSuperview().multipliedBy(0.8)
+        }
+
         let content = UIView.vStack(
             spacing: Constants.contentSpacing,
             [
-                summaryLabel,
-                FlexibleSpaceView(),
+                summaryContentView,
                 requestedView
             ]
         )
