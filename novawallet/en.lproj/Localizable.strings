@@ -1736,11 +1736,11 @@
 "common.counter" = "%d of %d";
 "voting.list.widget.title" = "Confirm votes";
 "voting.list.widget.title.empty" = "No votes";
-"voting.list.title" = "Vote list";
 "vote.card.requested" = "Requested:";
 "gov.vote.setup.details.swipe.gov" = "Voting will be set for future votes in SwipeGov";
 "gov.voting.power" = "Voting power";
 "gov.voting.power.set.success.message" = "Voting power set successfully!";
+"gov.voting.list.title" = "Vote list";
 "gov.voting.list.item.unavailable.alert.title" = "Some of the referenda are no longer available";
 "gov.voting.list.item.unavailable.alert.message" = "They have been excluded from this list";
 "gov.voting.list.item.remove.alert.title" = "Remove referendum #%d from vote list?";
