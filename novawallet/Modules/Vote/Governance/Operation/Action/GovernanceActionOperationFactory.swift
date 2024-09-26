@@ -8,7 +8,10 @@ class GovernanceActionOperationFactory {
     let requestFactory: StorageRequestFactoryProtocol
     let operationQueue: OperationQueue
 
-    init(requestFactory: StorageRequestFactoryProtocol, operationQueue: OperationQueue) {
+    init(
+        requestFactory: StorageRequestFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
         self.requestFactory = requestFactory
         self.operationQueue = operationQueue
     }
@@ -99,7 +102,8 @@ class GovernanceActionOperationFactory {
         dependingOn callOperation: BaseOperation<ReferendumActionLocal.Call<RuntimeCall<JSON>>?>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         connection: JSONRPCEngine,
-        requestFactory: StorageRequestFactoryProtocol
+        requestFactory: StorageRequestFactoryProtocol,
+        spendAmountExtractor: GovSpendingExtracting
     ) -> CompoundOperationWrapper<[ReferendumActionLocal.AmountSpendDetails]> {
         let operationManager = OperationManager(operationQueue: operationQueue)
         let fetchService = OperationCombiningService<ReferendumActionLocal.AmountSpendDetails?>(
@@ -116,7 +120,7 @@ class GovernanceActionOperationFactory {
                 requestFactory: requestFactory
             )
 
-            return try GovSpentAmount.Extractor.defaultExtractor.createExtractionWrappers(
+            return try spendAmountExtractor.createExtractionWrappers(
                 from: call,
                 context: context
             ) ?? []
@@ -140,7 +144,8 @@ extension GovernanceActionOperationFactory: ReferendumActionOperationFactoryProt
     func fetchActionWrapper(
         for referendum: ReferendumLocal,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol
+        runtimeProvider: RuntimeProviderProtocol,
+        spendAmountExtractor: GovSpendingExtracting
     ) -> CompoundOperationWrapper<ReferendumActionLocal> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -156,7 +161,8 @@ extension GovernanceActionOperationFactory: ReferendumActionOperationFactoryProt
             dependingOn: callFetchWrapper.targetOperation,
             codingFactoryOperation: codingFactoryOperation,
             connection: connection,
-            requestFactory: requestFactory
+            requestFactory: requestFactory,
+            spendAmountExtractor: spendAmountExtractor
         )
 
         amountDetailsWrapper.addDependency(wrapper: callFetchWrapper)

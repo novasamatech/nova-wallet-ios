@@ -200,7 +200,7 @@ private extension SwipeGovReferendumDetailsPresenter {
             accountIds.insert(proposer)
         }
 
-        if let beneficiary = actionDetails?.beneficiary?.accountId {
+        if let beneficiary = actionDetails?.beneficiary {
             accountIds.insert(beneficiary)
         }
 

@@ -21,6 +21,7 @@ struct VoteCardViewModelFactory {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     private let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
+    private let spendingAmountExtractor: GovSpendingExtracting
 
     init(
         summaryFetchOperationFactory: OpenGovSummaryOperationFactoryProtocol,
@@ -30,7 +31,8 @@ struct VoteCardViewModelFactory {
         runtimeProvider: RuntimeProviderProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
+        actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
+        spendingAmountExtractor: GovSpendingExtracting
     ) {
         self.summaryFetchOperationFactory = summaryFetchOperationFactory
         self.chain = chain
@@ -40,6 +42,7 @@ struct VoteCardViewModelFactory {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
+        self.spendingAmountExtractor = spendingAmountExtractor
     }
 }
 
@@ -128,7 +131,8 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
                 referendum: referendum,
                 connection: connection,
                 runtimeProvider: runtimeProvider,
-                actionDetailsOperationFactory: actionDetailsOperationFactory
+                actionDetailsOperationFactory: actionDetailsOperationFactory,
+                spendAmountExtractor: spendingAmountExtractor
             )
 
             return VoteCardViewModel(

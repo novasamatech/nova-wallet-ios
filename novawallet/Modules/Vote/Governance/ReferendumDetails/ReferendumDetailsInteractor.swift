@@ -22,6 +22,7 @@ final class ReferendumDetailsInteractor {
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
     let totalVotesFactory: GovernanceTotalVotesFactoryProtocol?
     let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
+    let spendingAmountExtractor: GovSpendingExtracting
     let operationQueue: OperationQueue
 
     private var priceProvider: StreamableProvider<PriceData>?
@@ -43,6 +44,7 @@ final class ReferendumDetailsInteractor {
         selectedAccount: ChainAccountResponse?,
         option: GovernanceSelectedOption,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
+        spendingAmountExtractor: GovSpendingExtracting,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
@@ -61,6 +63,7 @@ final class ReferendumDetailsInteractor {
         self.selectedAccount = selectedAccount
         self.option = option
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
+        self.spendingAmountExtractor = spendingAmountExtractor
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.identityProxyFactory = identityProxyFactory
@@ -240,7 +243,8 @@ final class ReferendumDetailsInteractor {
         let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
             for: referendum,
             connection: connection,
-            runtimeProvider: runtimeProvider
+            runtimeProvider: runtimeProvider,
+            spendAmountExtractor: spendingAmountExtractor
         )
 
         executeCancellable(

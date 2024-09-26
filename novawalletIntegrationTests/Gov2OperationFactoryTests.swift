@@ -4,7 +4,7 @@ import SubstrateSdk
 import Operation_iOS
 
 class Gov2OperationFactoryTests: XCTestCase {
-    let chainId = "a2ee5a1f55a23dccd0c35e36512f9009e6e50a5654e8e5e469445d0748632aa8"
+    let chainId = KnowChainId.polkadot
 
     var chainRegistry: ChainRegistryProtocol!
     var connection: JSONRPCEngine!

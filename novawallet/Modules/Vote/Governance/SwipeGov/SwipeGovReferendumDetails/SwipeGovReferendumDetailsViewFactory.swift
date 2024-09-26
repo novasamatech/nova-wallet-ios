@@ -104,6 +104,7 @@ struct SwipeGovReferendumDetailsViewFactory {
         }
 
         let actionDetailsFactory = state.createActionsDetailsFactory(for: option)
+        let spendingExtractor = state.createReferendumSpendingExtractor(for: option)
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let requestFactory = StorageRequestFactory(
@@ -127,6 +128,7 @@ struct SwipeGovReferendumDetailsViewFactory {
             selectedAccount: selectedAccount,
             option: option,
             actionDetailsOperationFactory: actionDetailsFactory,
+            spendingAmountExtractor: spendingExtractor,
             connection: connection,
             runtimeProvider: runtimeProvider,
             blockTimeService: blockTimeService,

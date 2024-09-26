@@ -3,10 +3,10 @@ import SubstrateSdk
 import Operation_iOS
 
 extension GovSpentAmount {
-    final class TreasurySpentHandler {}
+    final class TreasurySpendLocalHandler {}
 }
 
-extension GovSpentAmount.TreasurySpentHandler: GovSpentAmountHandling {
+extension GovSpentAmount.TreasurySpendLocalHandler: GovSpentAmountHandling {
     func handle(
         call: RuntimeCall<JSON>,
         internalHandlers _: [GovSpentAmountHandling],
@@ -14,7 +14,7 @@ extension GovSpentAmount.TreasurySpentHandler: GovSpentAmountHandling {
     ) throws -> [CompoundOperationWrapper<ReferendumActionLocal.AmountSpendDetails?>]? {
         let path = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
-        let spendPaths = [Treasury.spendCallPath, Treasury.spendLocalCallPath]
+        let spendPaths = [Treasury.spendLocalCallPath]
 
         guard spendPaths.contains(path) else {
             return nil
@@ -25,12 +25,13 @@ extension GovSpentAmount.TreasurySpentHandler: GovSpentAmountHandling {
 
             if
                 let spentCall = try? call.args.map(
-                    to: Treasury.SpendCall.self,
+                    to: Treasury.SpendLocalCall.self,
                     with: runtimeContext.toRawContext()
-                ) {
+                ),
+                let beneficiary = spentCall.beneficiary.accountId {
                 return ReferendumActionLocal.AmountSpendDetails(
-                    amount: spentCall.amount,
-                    beneficiary: spentCall.beneficiary
+                    benefiary: beneficiary,
+                    amount: .init(value: spentCall.amount, asset: .current)
                 )
             } else {
                 return nil

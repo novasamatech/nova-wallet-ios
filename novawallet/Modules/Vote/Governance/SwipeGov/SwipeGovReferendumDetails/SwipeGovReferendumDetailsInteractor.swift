@@ -11,6 +11,7 @@ final class SwipeGovReferendumDetailsInteractor {
 
     private let option: GovernanceSelectedOption
     private let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
+    private let spendingAmountExtractor: GovSpendingExtracting
     private let connection: JSONRPCEngine
     private let runtimeProvider: RuntimeProviderProtocol
     private let identityProxyFactory: IdentityProxyFactoryProtocol
@@ -39,6 +40,7 @@ final class SwipeGovReferendumDetailsInteractor {
         selectedAccount: ChainAccountResponse?,
         option: GovernanceSelectedOption,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
+        spendingAmountExtractor: GovSpendingExtracting,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
@@ -53,6 +55,7 @@ final class SwipeGovReferendumDetailsInteractor {
         self.selectedAccount = selectedAccount
         self.option = option
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
+        self.spendingAmountExtractor = spendingAmountExtractor
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.identityProxyFactory = identityProxyFactory
@@ -226,7 +229,8 @@ private extension SwipeGovReferendumDetailsInteractor {
         let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
             for: referendum,
             connection: connection,
-            runtimeProvider: runtimeProvider
+            runtimeProvider: runtimeProvider,
+            spendAmountExtractor: spendingAmountExtractor
         )
 
         executeCancellable(

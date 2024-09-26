@@ -154,7 +154,7 @@ final class ReferendumDetailsPresenter {
             accountIds.insert(proposer)
         }
 
-        if let beneficiary = actionDetails?.beneficiary?.accountId {
+        if let beneficiary = actionDetails?.beneficiary {
             accountIds.insert(beneficiary)
         }
 
@@ -217,10 +217,15 @@ extension ReferendumDetailsPresenter {
     }
 
     private func provideRequestedAmount() {
+        let optRequestedAmount = actionDetails?.requestedAmount()
+
         guard
-            let requestedAmount = actionDetails?.spentAmount(),
-            let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
-            let decimalAmount = Decimal.fromSubstrateAmount(requestedAmount, precision: precision) else {
+            let chainAssetInfo = optRequestedAmount?.asset?.assetDisplayInfo ?? chain.utilityAssetDisplayInfo(),
+            let amount = optRequestedAmount?.value,
+            let decimalAmount = Decimal.fromSubstrateAmount(
+                amount,
+                precision: chainAssetInfo.assetPrecision
+            ) else {
             view?.didReceive(requestedAmount: nil)
             return
         }

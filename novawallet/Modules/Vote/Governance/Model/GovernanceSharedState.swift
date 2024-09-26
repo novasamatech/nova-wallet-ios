@@ -156,6 +156,14 @@ final class GovernanceSharedState {
         }
     }
 
+    func createReferendumSpendingExtractor(for option: GovernanceSelectedOption) -> GovSpendingExtracting {
+        GovSpentAmount.Extractor.createDefaultExtractor(
+            for: option.chain,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+    }
+
     func governanceId(for option: GovernanceSelectedOption) -> String {
         switch option.type {
         case .governanceV2:

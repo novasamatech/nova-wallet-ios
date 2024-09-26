@@ -10,6 +10,13 @@ protocol GovSpentAmountHandling {
     ) throws -> [CompoundOperationWrapper<ReferendumActionLocal.AmountSpendDetails?>]?
 }
 
+protocol GovSpendingExtracting {
+    func createExtractionWrappers(
+        from call: RuntimeCall<JSON>,
+        context: GovSpentAmount.Context
+    ) throws -> [CompoundOperationWrapper<ReferendumActionLocal.AmountSpendDetails?>]?
+}
+
 enum GovSpentAmount {
     struct Context {
         let codingFactory: RuntimeCoderFactoryProtocol
@@ -17,7 +24,7 @@ enum GovSpentAmount {
         let requestFactory: StorageRequestFactoryProtocol
     }
 
-    final class Extractor {
+    final class Extractor: GovSpendingExtracting {
         let handlers: [GovSpentAmountHandling]
 
         init(handlers: [GovSpentAmountHandling]) {
@@ -44,12 +51,24 @@ enum GovSpentAmount {
 }
 
 extension GovSpentAmount.Extractor {
-    static var defaultExtractor: GovSpentAmount.Extractor {
+    static func createDefaultExtractor(
+        for chain: ChainModel,
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue
+    ) -> GovSpentAmount.Extractor {
         .init(
             handlers: [
                 GovSpentAmount.BatchHandler(),
-                GovSpentAmount.TreasurySpentHandler(),
-                GovSpentAmount.TreasuryApproveHandler()
+                GovSpentAmount.TreasurySpendLocalHandler(),
+                GovSpentAmount.TreasuryApproveHandler(),
+                GovSpentAmount.TreasurySpendRemoteHandler(
+                    assetConversionFactory: CrosschainAssetConversionFactory(
+                        baseChain: chain,
+                        chainRegistry: chainRegistry,
+                        operationQueue: operationQueue
+                    ),
+                    operationQueue: operationQueue
+                )
             ]
         )
     }

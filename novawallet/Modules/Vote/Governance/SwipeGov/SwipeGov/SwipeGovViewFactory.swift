@@ -76,7 +76,8 @@ struct SwipeGovViewFactory {
             runtimeProvider: runtimeProvider,
             balanceViewModelFactory: balanceViewModelFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            actionDetailsOperationFactory: sharedState.createActionsDetailsFactory(for: option)
+            actionDetailsOperationFactory: sharedState.createActionsDetailsFactory(for: option),
+            spendingAmountExtractor: sharedState.createReferendumSpendingExtractor(for: option)
         )
 
         let presenter = SwipeGovPresenter(

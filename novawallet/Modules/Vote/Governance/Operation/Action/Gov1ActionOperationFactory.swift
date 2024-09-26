@@ -13,7 +13,10 @@ final class Gov1ActionOperationFactory: GovernanceActionOperationFactory {
     ) {
         self.gov2OperationFactory = gov2OperationFactory
 
-        super.init(requestFactory: requestFactory, operationQueue: operationQueue)
+        super.init(
+            requestFactory: requestFactory,
+            operationQueue: operationQueue
+        )
     }
 
     private func createDemocracyPreimageWrapper(

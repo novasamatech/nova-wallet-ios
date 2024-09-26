@@ -138,7 +138,7 @@ private extension VoteCardViewModel {
                 }
 
                 self?.view?.setSummary(loadingState: .loaded(value: summary))
-            case let .failure(error):
+            case .failure:
                 self?.actionDetailsCancellable.cancel()
                 self?.processLoadFailure()
             }
@@ -163,14 +163,14 @@ private extension VoteCardViewModel {
             switch result {
             case let .success(amount):
                 self?.updateRequestedAmount(amount: amount)
-            case let .failure(error):
+            case .failure:
                 self?.summaryCancellable.cancel()
                 self?.processLoadFailure()
             }
         }
     }
 
-    func updateRequestedAmount(amount: BigUInt?) {
+    func updateRequestedAmount(amount: ReferendumActionLocal.Amount?) {
         guard
             let amount,
             let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
