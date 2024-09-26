@@ -700,6 +700,7 @@
 		0CEB6B3C2CA459C500609DC2 /* XcmV3Multilocation+AccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B3B2CA459C500609DC2 /* XcmV3Multilocation+AccountId.swift */; };
 		0CEB6B3E2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B3D2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift */; };
 		0CEB6B432CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */; };
+		0CEB6B492CA561AC00609DC2 /* ParachainResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */; };
 		0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */; };
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
@@ -5790,6 +5791,7 @@
 		0CEB6B3B2CA459C500609DC2 /* XcmV3Multilocation+AccountId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmV3Multilocation+AccountId.swift"; sourceTree = "<group>"; };
 		0CEB6B3D2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainAssetConversionFactory.swift; sourceTree = "<group>"; };
 		0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainRegistry+AsyncWait.swift"; sourceTree = "<group>"; };
+		0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainResolver.swift; sourceTree = "<group>"; };
 		0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsExporting.swift; sourceTree = "<group>"; };
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
@@ -11793,6 +11795,7 @@
 			isa = PBXGroup;
 			children = (
 				0CEB6B3D2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift */,
+				0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */,
 			);
 			path = AssetConverters;
 			sourceTree = "<group>";
@@ -26208,6 +26211,7 @@
 				4448B591D4A193DBC9E2E3BF /* AccountCreateInteractor.swift in Sources */,
 				84E6D57C262E2CE8000EA3F5 /* OperationCombiningService.swift in Sources */,
 				8407716228CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift in Sources */,
+				0CEB6B492CA561AC00609DC2 /* ParachainResolver.swift in Sources */,
 				88DC3E25292CAA9300DBCE4D /* IconDetailsView+Style.swift in Sources */,
 				88D1F1B4298127F600316A1A /* InAppUpdatesInteractorError.swift in Sources */,
 				846C372E26B199D10098F303 /* BabeStakingDurationFactory.swift in Sources */,

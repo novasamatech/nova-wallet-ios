@@ -56,20 +56,26 @@ extension GovSpentAmount.Extractor {
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) -> GovSpentAmount.Extractor {
-        .init(
-            handlers: [
-                GovSpentAmount.BatchHandler(),
-                GovSpentAmount.TreasurySpendLocalHandler(),
-                GovSpentAmount.TreasuryApproveHandler(),
+        var handlers: [GovSpentAmountHandling] = [
+            GovSpentAmount.BatchHandler(),
+            GovSpentAmount.TreasurySpendLocalHandler(),
+            GovSpentAmount.TreasuryApproveHandler()
+        ]
+
+        if chain.isRelaychain {
+            handlers.append(
                 GovSpentAmount.TreasurySpendRemoteHandler(
                     assetConversionFactory: CrosschainAssetConversionFactory(
-                        baseChain: chain,
+                        relayChain: chain,
                         chainRegistry: chainRegistry,
+                        parachainResolver: ParachainResolver(),
                         operationQueue: operationQueue
                     ),
                     operationQueue: operationQueue
                 )
-            ]
-        )
+            )
+        }
+
+        return .init(handlers: handlers)
     }
 }

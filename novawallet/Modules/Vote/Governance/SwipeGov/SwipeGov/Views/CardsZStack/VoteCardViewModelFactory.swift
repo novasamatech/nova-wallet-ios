@@ -18,7 +18,7 @@ struct VoteCardViewModelFactory {
     private let currencyManager: CurrencyManagerProtocol
     private let connection: JSONRPCEngine
     private let runtimeProvider: RuntimeProviderProtocol
-    private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    private let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     private let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     private let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     private let spendingAmountExtractor: GovSpendingExtracting
@@ -29,7 +29,7 @@ struct VoteCardViewModelFactory {
         currencyManager: CurrencyManagerProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
         spendingAmountExtractor: GovSpendingExtracting
@@ -39,7 +39,7 @@ struct VoteCardViewModelFactory {
         self.currencyManager = currencyManager
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceViewModelFacade = balanceViewModelFacade
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
         self.spendingAmountExtractor = spendingAmountExtractor
@@ -140,7 +140,7 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
                 summaryFetchOperationFactory: summaryFetchOperationFactory,
                 amountOperationFactory: requestedAmountFactory,
                 priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-                balanceViewModelFactory: balanceViewModelFactory,
+                balanceViewModelFacade: balanceViewModelFacade,
                 chain: chain,
                 referendum: referendum,
                 currencyManager: currencyManager,

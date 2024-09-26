@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class ReferendumFullDetailsInteractor {
+final class ReferendumFullDetailsInteractor: AnyProviderAutoCleaning {
     weak var presenter: ReferendumFullDetailsInteractorOutputProtocol?
     let chain: ChainModel
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -10,7 +10,18 @@ final class ReferendumFullDetailsInteractor {
     let processingOperationFactory: PrettyPrintedJSONOperationFactoryProtocol
     let referendumAction: ReferendumActionLocal
 
-    private var priceProvider: StreamableProvider<PriceData>?
+    private var utilityPriceProvider: StreamableProvider<PriceData>?
+    private var actionPriceProvider: StreamableProvider<PriceData>?
+
+    var utilityAssetPriceId: AssetModel.PriceId? {
+        chain.utilityAsset()?.priceId
+    }
+
+    var actionAssetPriceId: AssetModel.PriceId? {
+        referendumAction.requestedAmount()?.otherChainAssetOrCurrentUtility(
+            from: chain
+        )?.asset.priceId
+    }
 
     init(
         chain: ChainModel,
@@ -28,15 +39,29 @@ final class ReferendumFullDetailsInteractor {
         self.currencyManager = currencyManager
     }
 
-    private func makeSubscriptions() {
-        priceProvider?.removeObserver(self)
-        priceProvider = nil
+    private func updateUtilityPriceSubscription() {
+        clear(streamableProvider: &utilityPriceProvider)
 
-        guard let priceId = chain.utilityAsset()?.priceId else {
+        guard let priceId = utilityAssetPriceId else {
             return
         }
 
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        utilityPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+    }
+
+    private func updateActionPriceSubscription() {
+        clear(streamableProvider: &actionPriceProvider)
+
+        guard let priceId = actionAssetPriceId, priceId != utilityAssetPriceId else {
+            return
+        }
+
+        actionPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+    }
+
+    private func makeSubscriptions() {
+        updateUtilityPriceSubscription()
+        updateActionPriceSubscription()
     }
 
     private func formatJSON() {
@@ -86,10 +111,17 @@ extension ReferendumFullDetailsInteractor: ReferendumFullDetailsInteractorInputP
 }
 
 extension ReferendumFullDetailsInteractor: PriceLocalSubscriptionHandler, PriceLocalStorageSubscriber {
-    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
+    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
         switch result {
         case let .success(price):
-            presenter?.didReceive(price: price)
+            if priceId == utilityAssetPriceId {
+                presenter?.didReceiveUtilityAsset(price: price)
+            }
+
+            if priceId == actionAssetPriceId {
+                presenter?.didReceiveRequestedAmount(price: price)
+            }
+
         case let .failure(error):
             presenter?.didReceive(error: .priceFailed(error))
         }
@@ -99,9 +131,8 @@ extension ReferendumFullDetailsInteractor: PriceLocalSubscriptionHandler, PriceL
 extension ReferendumFullDetailsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         if presenter != nil {
-            if let priceId = chain.utilityAsset()?.priceId {
-                priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-            }
+            updateUtilityPriceSubscription()
+            updateActionPriceSubscription()
         }
     }
 }

@@ -40,13 +40,13 @@ extension GovSpentAmount.TreasurySpendRemoteHandler: GovSpentAmountHandling {
                     with: runtimeContext.toRawContext()
                 )
 
-                guard
-                    let beneficiary = spendCall.beneficiary.accountId,
-                    let remoteLocation = spendCall.assetKind.toMultilocation() else {
+                guard let beneficiary = spendCall.beneficiary.accountId else {
                     return CompoundOperationWrapper.createWithResult(nil)
                 }
 
-                let conversionWrapper = self.assetConversionFactory.createConversionWrapper(from: remoteLocation)
+                let conversionWrapper = self.assetConversionFactory.createConversionWrapper(
+                    from: spendCall.assetKind
+                )
 
                 let mappingOperation = ClosureOperation<ReferendumActionLocal.AmountSpendDetails?> {
                     guard let asset = try conversionWrapper.targetOperation.extractNoCancellableResultData() else {

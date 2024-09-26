@@ -42,7 +42,16 @@ enum XcmVersionedLocatableAsset: Equatable, Codable {
 }
 
 extension XcmVersionedLocatableAsset {
-    func toMultilocation() -> XcmV3.Multilocation? {
+    var location: XcmV3.Multilocation {
+        switch self {
+        case let .V3(locatableAsset):
+            return locatableAsset.location
+        case let .V4(locatableAsset):
+            return locatableAsset.location
+        }
+    }
+
+    var assetId: XcmV3.Multilocation? {
         switch self {
         case let .V3(locatableAsset):
             return locatableAsset.assetId.toMultilocation()

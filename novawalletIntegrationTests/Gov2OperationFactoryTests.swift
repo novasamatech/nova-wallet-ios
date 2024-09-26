@@ -113,6 +113,10 @@ class Gov2OperationFactoryTests: XCTestCase {
 
     func testActionDetails() {
         do {
+            guard let chain = chainRegistry.getChain(for: chainId) else {
+                throw ChainRegistryError.noChain(chainId)
+            }
+            
             let referendums = try fetchAllReferendums(for: chainRegistry)
 
             let operationFactory = Gov2ActionOperationFactory(
@@ -124,7 +128,12 @@ class Gov2OperationFactoryTests: XCTestCase {
                 operationFactory.fetchActionWrapper(
                     for: referendum,
                     connection: connection,
-                    runtimeProvider: runtimeProvider
+                    runtimeProvider: runtimeProvider,
+                    spendAmountExtractor: GovSpentAmount.Extractor.createDefaultExtractor(
+                        for: chain,
+                        chainRegistry: chainRegistry,
+                        operationQueue: operationQueue
+                    )
                 )
             }
 

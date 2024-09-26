@@ -11,6 +11,15 @@ struct ReferendumActionLocal {
     struct Amount {
         let value: BigUInt
         let asset: Asset
+
+        func otherChainAssetOrCurrentUtility(from chain: ChainModel) -> ChainAsset? {
+            switch asset {
+            case .current:
+                chain.utilityChainAsset()
+            case let .other(chainAsset):
+                chainAsset
+            }
+        }
     }
 
     struct AmountSpendDetails {

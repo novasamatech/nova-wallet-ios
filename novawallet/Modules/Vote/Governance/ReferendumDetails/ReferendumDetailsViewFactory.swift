@@ -56,12 +56,7 @@ struct ReferendumDetailsViewFactory {
 
         let chain = stateOption.chain
 
-        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
-            return nil
-        }
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetInfo,
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
@@ -110,7 +105,7 @@ struct ReferendumDetailsViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             referendumViewModelFactory: referendumViewModelFactory,
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFacade: balanceViewModelFacade,
             referendumFormatter: indexFormatter,
             referendumVotesFactory: referendumVotesFactory,
             referendumTimelineViewModelFactory: timelineViewModelFactory,

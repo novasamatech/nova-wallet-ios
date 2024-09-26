@@ -3,7 +3,7 @@ import Operation_iOS
 
 protocol CrosschainAssetConversionFactoryProtocol {
     func createConversionWrapper(
-        from assetLocation: XcmV3.Multilocation
+        from locatableAsset: XcmVersionedLocatableAsset
     ) -> CompoundOperationWrapper<ChainAsset?>
 }
 
@@ -14,23 +14,45 @@ enum CrosschainAssetConversionError: Error {
 
 final class CrosschainAssetConversionFactory {
     let chainRegistry: ChainRegistryProtocol
-    let baseChain: ChainModel
+    let relayChain: ChainModel
     let operationQueue: OperationQueue
+    let parachainResolver: ParachainResolving
 
-    init(baseChain: ChainModel, chainRegistry: ChainRegistryProtocol, operationQueue: OperationQueue) {
+    init(
+        relayChain: ChainModel,
+        chainRegistry: ChainRegistryProtocol,
+        parachainResolver: ParachainResolving,
+        operationQueue: OperationQueue
+    ) {
         self.chainRegistry = chainRegistry
-        self.baseChain = baseChain
+        self.relayChain = relayChain
+        self.parachainResolver = parachainResolver
         self.operationQueue = operationQueue
     }
 
     private func createAssetsPalletWrapper(
-        for _: ParaId,
-        assetId: AssetConversionPallet.AssetId
+        for paraId: ParaId,
+        assetId: AssetConversionPallet.AssetId,
+        chainRegistry: ChainRegistryProtocol
     ) -> CompoundOperationWrapper<ChainAsset?> {
-        let chainWrapper = chainRegistry.asyncWaitChainWrapper(for: KnowChainId.statemint)
+        let paraResolutionWrapper = parachainResolver.resolveChainId(
+            by: paraId,
+            relaychainId: relayChain.chainId
+        )
 
-        let coderFactoryWrapper: CompoundOperationWrapper<RuntimeCoderFactoryProtocol>
-        coderFactoryWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+        let chainWrapper = OperationCombiningService<ChainModel?>.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            guard let chainId = try paraResolutionWrapper.targetOperation.extractNoCancellableResultData() else {
+                return .createWithResult(nil)
+            }
+
+            return chainRegistry.asyncWaitChainWrapper(for: chainId)
+        }
+
+        chainWrapper.addDependency(wrapper: paraResolutionWrapper)
+
+        let coderFactoryWrapper = OperationCombiningService<RuntimeCoderFactoryProtocol>.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             guard let chain = try chainWrapper.targetOperation.extractNoCancellableResultData() else {
@@ -68,24 +90,31 @@ final class CrosschainAssetConversionFactory {
         assetConversionOperation.addDependency(coderFactoryWrapper.targetOperation)
 
         return coderFactoryWrapper
-            .insertingHead(operations: chainWrapper.allOperations)
+            .insertingHead(operations: paraResolutionWrapper.allOperations + chainWrapper.allOperations)
             .insertingTail(operation: assetConversionOperation)
     }
 }
 
 extension CrosschainAssetConversionFactory: CrosschainAssetConversionFactoryProtocol {
     func createConversionWrapper(
-        from assetLocation: XcmV3.Multilocation
+        from locatableAsset: XcmVersionedLocatableAsset
     ) -> CompoundOperationWrapper<ChainAsset?> {
-        switch assetLocation.interior.items.first {
+        // only relaychain relative resolution supported
+        guard
+            locatableAsset.location.parents == 0,
+            let assetId = locatableAsset.assetId else {
+            return .createWithResult(nil)
+        }
+
+        switch locatableAsset.location.interior.items.first {
         case let .parachain(paraId):
-            let assetId = XcmV3.Multilocation(
-                parents: 0,
-                interior: .init(items: Array(assetLocation.interior.items.dropFirst(1)))
+            return createAssetsPalletWrapper(
+                for: paraId,
+                assetId: assetId,
+                chainRegistry: chainRegistry
             )
-            return createAssetsPalletWrapper(for: paraId, assetId: assetId)
         case nil:
-            guard let asset = baseChain.utilityChainAsset() else {
+            guard let asset = relayChain.utilityChainAsset() else {
                 return .createWithResult(nil)
             }
 
