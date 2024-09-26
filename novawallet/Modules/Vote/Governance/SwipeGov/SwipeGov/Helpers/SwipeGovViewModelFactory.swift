@@ -12,8 +12,7 @@ protocol SwipeGovViewModelFactoryProtocol {
     ) -> VotingListWidgetViewModel
 
     func createReferendumsCounterViewModel(
-        referendums: [ReferendumLocal],
-        votingList: [VotingBasketItemLocal],
+        availableToVoteCount: Int,
         locale: Locale
     ) -> String?
 }
@@ -33,16 +32,22 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
                 return nil
             }
 
+            let titleText: String? = if !filteredReferendums.isEmpty {
+                R.string.localizable.commonCountedReferenda(
+                    filteredReferendums.count,
+                    preferredLanguages: locale.rLanguages
+                )
+            } else {
+                nil
+            }
+
             return .swipeGov(
                 SwipeGovBannerViewModel(
                     title: R.string.localizable.commonSwipeGov(preferredLanguages: locale.rLanguages),
                     description: R.string.localizable.swipeGovBannerMessage(
                         preferredLanguages: locale.rLanguages
                     ),
-                    referendumCounterText: R.string.localizable.commonCountedReferenda(
-                        filteredReferendums.count,
-                        preferredLanguages: locale.rLanguages
-                    )
+                    referendumCounterText: titleText
                 )
             )
         }()
@@ -70,27 +75,18 @@ struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
     }
 
     func createReferendumsCounterViewModel(
-        referendums: [ReferendumLocal],
-        votingList: [VotingBasketItemLocal],
+        availableToVoteCount: Int,
         locale: Locale
     ) -> String? {
-        guard
-            !referendums.isEmpty,
-            referendums.count - votingList.count > 0
-        else {
-            return R.string.localizable.swipeGovReferendaCounterEmpty(
+        if availableToVoteCount > 0 {
+            R.string.localizable.swipeGovReferendaCounter(
+                availableToVoteCount,
+                preferredLanguages: locale.rLanguages
+            )
+        } else {
+            R.string.localizable.swipeGovReferendaCounterEmpty(
                 preferredLanguages: locale.rLanguages
             )
         }
-
-        let currentNumber = votingList.count + 1
-
-        let counterString = R.string.localizable.commonCounter(
-            currentNumber,
-            referendums.count,
-            preferredLanguages: locale.rLanguages
-        )
-
-        return counterString
     }
 }

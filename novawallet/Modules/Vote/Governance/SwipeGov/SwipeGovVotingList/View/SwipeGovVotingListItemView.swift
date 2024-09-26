@@ -100,6 +100,8 @@ private extension SwipeGovVotingListItemView {
         voteTypeLabel.apply(style: .caption1Secondary)
         votesCountLabel.apply(style: .caption1Secondary)
 
+        voteValueView.borderView.borderType = .none
+
         accessoryView.image = R.image.iconInfoFilled()
         accessoryView.contentMode = .scaleAspectFit
     }

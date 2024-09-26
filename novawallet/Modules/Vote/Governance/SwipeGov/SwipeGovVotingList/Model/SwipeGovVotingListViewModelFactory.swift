@@ -31,10 +31,16 @@ class SwipeGovVotingListViewModelFactory {
             case .nay: .nay(text: voteTypeText)
             }
 
+            let titleText = metadataDict[item.referendumId]?.title
+                ?? R.string.localizable.govReferendumTitleFallback(
+                    "\(item.referendumId)",
+                    preferredLanguages: locale.rLanguages
+                )
+
             return SwipeGovVotingListItemViewModel(
                 referendumIndex: item.referendumId,
                 indexText: "#\(item.referendumId)",
-                titleText: metadataDict[item.referendumId]?.title ?? "",
+                titleText: titleText,
                 voteType: voteType,
                 votesCountText: votesString
             )

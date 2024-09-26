@@ -8,7 +8,8 @@ protocol VotingPowerLocalSubscriptionFactoryProtocol {
     ) -> StreamableProvider<VotingPowerLocal>
 }
 
-class VotingPowerLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory, VotingPowerLocalSubscriptionFactoryProtocol {
+class VotingPowerLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
+    VotingPowerLocalSubscriptionFactoryProtocol {
     func getVotingPowerProvider(
         for chainId: ChainModel.Id,
         metaId: MetaAccountModel.Id

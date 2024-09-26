@@ -9,10 +9,6 @@ protocol SwipeGovVotingConfirmPresenterProtocol: BaseReferendumVoteConfirmPresen
 
 protocol SwipeGovVotingConfirmInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
     func submit(votes: [ReferendumNewVote])
-    func submit(
-        votes: [ReferendumNewVote],
-        limitingBy amount: BigUInt
-    )
 }
 
 protocol SwipeGovVotingConfirmInteractorOutputProtocol: BaseReferendumVoteConfirmInteractorOutputProtocol {

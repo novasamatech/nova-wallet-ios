@@ -241,6 +241,16 @@ extension RoundedView.Style {
         fillColor: .clear,
         highlightedFillColor: .clear
     )
+
+    static let divider = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 0,
+        strokeColor: R.color.colorDivider(),
+        highlightedStrokeColor: .clear,
+        fillColor: .clear,
+        highlightedFillColor: .clear,
+        rounding: .init(radius: 0, corners: .allCorners)
+    )
 }
 
 extension RoundedView.Style {

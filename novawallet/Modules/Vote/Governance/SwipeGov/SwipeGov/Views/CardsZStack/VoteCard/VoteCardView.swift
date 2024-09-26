@@ -15,6 +15,12 @@ final class VoteCardView: RoundedView {
 
     var skeletonView: SkrullableView?
 
+    let dividerView: BorderedContainerView = .create { view in
+        view.strokeWidth = 1.0
+        view.strokeColor = R.color.colorDivider()!
+        view.borderType = .top
+    }
+
     private lazy var requestedView: GenericPairValueView<
         MultiValueView,
         UILabel
@@ -129,6 +135,7 @@ extension VoteCardView: CardStackable {
         assetAmountLabel.text = nil
         fiatAmountLabel.text = nil
         requestedView.isHidden = false
+        dividerView.isHidden = false
         viewModel = nil
     }
 }
@@ -153,6 +160,7 @@ extension VoteCardView: StackCardViewUpdatable {
         case let .cached(value), let .loaded(value):
             guard let requestedAmount = value else {
                 requestedView.isHidden = true
+                dividerView.isHidden = true
                 self.loadingState.remove(.amount)
                 return
             }
@@ -270,6 +278,12 @@ private extension VoteCardView {
         addSubview(content)
         content.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview().inset(Constants.contentInset)
+        }
+
+        addSubview(dividerView)
+        dividerView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalTo(requestedView)
+            make.top.equalTo(requestedView.snp.top).offset(-Constants.contentSpacing)
         }
 
         addSubview(readMoreButton)

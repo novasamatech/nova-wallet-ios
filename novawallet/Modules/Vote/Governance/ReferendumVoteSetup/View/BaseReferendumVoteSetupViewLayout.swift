@@ -161,6 +161,16 @@ class BaseReferendumVoteSetupViewLayout: UIView {
 
         setupContentWidth()
     }
+
+    func setupContentWidth() {
+        containerView.stackView.arrangedSubviews
+            .filter { $0 !== lockReuseContainerView }
+            .forEach {
+                $0.snp.makeConstraints { make in
+                    make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
+                }
+            }
+    }
 }
 
 // MARK: Private
@@ -211,16 +221,6 @@ private extension BaseReferendumVoteSetupViewLayout {
         }
 
         containerView.stackView.setCustomSpacing(16.0, after: lockReuseContainerView)
-    }
-
-    func setupContentWidth() {
-        containerView.stackView.arrangedSubviews
-            .filter { $0 !== lockReuseContainerView }
-            .forEach {
-                $0.snp.makeConstraints { make in
-                    make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
-                }
-            }
     }
 }
 

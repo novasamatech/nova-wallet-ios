@@ -7,6 +7,7 @@ typealias SwipeGovBannerTableViewCell = PlainBaseTableViewCell<SwipeGovBannerVie
 extension PlainBaseTableViewCell where C == SwipeGovBannerView {
     func setupStyle() {
         backgroundColor = .clear
+        selectionStyle = .none
     }
 }
 
@@ -145,6 +146,12 @@ final class SwipeGovBannerContentView: GenericPairValueView<
     func bind(with viewModel: SwipeGovBannerViewModel) {
         titleLabel.text = viewModel.title
         valueLabel.text = viewModel.description
-        counterLabel.titleLabel.text = viewModel.referendumCounterText
+
+        if let counterText = viewModel.referendumCounterText {
+            counterLabel.titleLabel.text = counterText
+            counterLabel.isHidden = false
+        } else {
+            counterLabel.isHidden = true
+        }
     }
 }
