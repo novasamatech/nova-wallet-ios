@@ -49,7 +49,7 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
             message: R.string.localizable.swipeGovInsufficientBalanceAlertMessage(
                 amountDecimal.doubleValue,
                 model.assetInfo.symbol,
-                model.votingPower.conviction.rawValue,
+                model.votingPower.conviction.displayValue,
                 preferredLanguages: languages
             ),
             actions: [

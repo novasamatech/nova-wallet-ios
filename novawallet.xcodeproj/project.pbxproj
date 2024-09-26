@@ -701,6 +701,7 @@
 		0CEB6B3E2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B3D2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift */; };
 		0CEB6B432CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */; };
 		0CEB6B492CA561AC00609DC2 /* ParachainResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */; };
+		0CEB6B4B2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B4A2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift */; };
 		0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */; };
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
@@ -5796,6 +5797,7 @@
 		0CEB6B3D2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainAssetConversionFactory.swift; sourceTree = "<group>"; };
 		0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainRegistry+AsyncWait.swift"; sourceTree = "<group>"; };
 		0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainResolver.swift; sourceTree = "<group>"; };
+		0CEB6B4A2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VotingBasketItemLocal+Display.swift"; sourceTree = "<group>"; };
 		0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsExporting.swift; sourceTree = "<group>"; };
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
@@ -12542,6 +12544,7 @@
 			children = (
 				2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */,
 				2D6287342C917A2B00060814 /* VotingPowerLocal.swift */,
+				0CEB6B4A2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -28424,6 +28427,7 @@
 				77DAFF682B297A9C00D4220C /* ProxyListLocalStorageSubscriptionHandler.swift in Sources */,
 				2D5702A42C9E09CF00673CB7 /* CardsZStack+Animate.swift in Sources */,
 				33991FF16853D0F885C520A5 /* GovernanceRevokeDelegationConfirmViewLayout.swift in Sources */,
+				0CEB6B4B2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift in Sources */,
 				844C3E692A07BC4500C4305F /* StackWalletAmountCell.swift in Sources */,
 				C29BA2F7EBAFED5D118E0C0C /* GovernanceRevokeDelegationConfirmViewFactory.swift in Sources */,
 				642FDAC7A745ECC92BFF0CC0 /* DelegationReferendumVotersProtocols.swift in Sources */,
