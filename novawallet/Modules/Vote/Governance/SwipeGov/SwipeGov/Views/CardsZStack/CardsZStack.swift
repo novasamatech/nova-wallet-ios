@@ -64,7 +64,7 @@ final class CardsZStack: UIView {
 
         if let validateAction, !validateAction(topView.viewModel) {
             createHapticFeedback(style: .heavy)
-            animateTransformIdentity(for: topView)
+            resetPanCardState(for: topView)
 
             return
         }

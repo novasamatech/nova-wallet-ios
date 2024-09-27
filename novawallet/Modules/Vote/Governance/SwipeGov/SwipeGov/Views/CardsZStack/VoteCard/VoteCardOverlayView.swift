@@ -23,8 +23,6 @@ final class VoteCardOverlayView: GenericBorderedView<UIImageView> {
     }
 
     func configure() {
-        backgroundView.alpha = 0.64
-        contentView.alpha = 0.64
         backgroundView.applyFilledBackgroundStyle()
     }
 
