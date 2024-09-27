@@ -9,7 +9,7 @@ final class CardsZStack: UIView {
     private(set) var viewPool: [VoteCardView] = []
     private(set) var viewModelsQueue: [VoteCardViewModel] = []
 
-    private var validateAction: ((VoteCardViewModel?) -> Bool)?
+    private var validateAction: VoteCardValidationClosure?
     private var panState = VoteCardPanState()
 
     init(maxCardsAlive: Int = 3) {
@@ -32,7 +32,7 @@ final class CardsZStack: UIView {
         topView.didBecomeTopView()
     }
 
-    func setupValidationAction(_ closure: ((VoteCardViewModel?) -> Bool)?) {
+    func setupValidationAction(_ closure: VoteCardValidationClosure?) {
         validateAction = closure
     }
 
@@ -57,19 +57,21 @@ final class CardsZStack: UIView {
     ) {
         guard
             let topView = currentTopView(startionFrom: stackedViews.endIndex - 1),
-            let id = topView.viewModel?.id
+            let viewModel = topView.viewModel
         else {
             return
         }
 
-        if let validateAction, !validateAction(topView.viewModel) {
+        if let validateAction, !validateAction(viewModel, VoteResult(from: direction)) {
             createHapticFeedback(style: .heavy)
             resetPanCardState(for: topView)
 
             return
         }
 
-        dismissingIds.insert(id)
+        topView.didPredict(vote: .init(from: direction))
+
+        dismissingIds.insert(viewModel.id)
 
         createHapticFeedback(style: .medium)
         animateCardDismiss(topView, direction: direction) { [weak self] in
@@ -146,6 +148,17 @@ final class CardsZStack: UIView {
         }
 
         manageStack()
+    }
+
+    func dismissTopIf(cardId: VoteCardId, voteResult: VoteResult) {
+        guard
+            let topView = currentTopView(startionFrom: stackedViews.endIndex - 1),
+            topView.viewModel?.id == cardId
+        else {
+            return
+        }
+
+        dismissTopCard(to: voteResult.dismissalDirection)
     }
 }
 
@@ -363,6 +376,6 @@ extension CardsZStack {
 
     struct Actions {
         let emptyViewAction: () -> Void
-        let validationClosure: (VoteCardViewModel?) -> Bool
+        let validationClosure: VoteCardValidationClosure
     }
 }

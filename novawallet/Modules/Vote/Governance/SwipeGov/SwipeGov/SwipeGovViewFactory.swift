@@ -51,7 +51,9 @@ struct SwipeGovViewFactory {
             basketItemsRepository: repository,
             votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
             votingPowerSubscriptionFactory: votingPowerSubscriptionFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         let localizationManager = LocalizationManager.shared

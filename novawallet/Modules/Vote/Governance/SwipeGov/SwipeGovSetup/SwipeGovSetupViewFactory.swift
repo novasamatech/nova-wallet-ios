@@ -6,7 +6,8 @@ struct SwipeGovSetupViewFactory {
     static func createView(
         for state: GovernanceSharedState,
         initData: ReferendumVotingInitData,
-        changing invalidItems: [VotingBasketItemLocal] = []
+        changing invalidItems: [VotingBasketItemLocal] = [],
+        newVotingPowerClosure: VotingPowerLocalSetClosure?
     ) -> SwipeGovSetupViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let storageFacade = SubstrateDataStorageFacade.shared
@@ -24,7 +25,7 @@ struct SwipeGovSetupViewFactory {
             return nil
         }
 
-        let wireframe = SwipeGovSetupWireframe()
+        let wireframe = SwipeGovSetupWireframe(newVotingPowerClosure: newVotingPowerClosure)
 
         let dataValidatingFactory = GovernanceValidatorFactory(
             presentable: wireframe,

@@ -19,7 +19,8 @@ final class SwipeGovVotingListWireframe: SwipeGovVotingListWireframeProtocol {
         guard let setupView = SwipeGovSetupViewFactory.createView(
             for: sharedState,
             initData: initData,
-            changing: invalidItems
+            changing: invalidItems,
+            newVotingPowerClosure: nil
         ) else {
             return
         }

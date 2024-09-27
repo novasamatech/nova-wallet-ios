@@ -705,6 +705,7 @@
 		0CEB6B4D2CA6676900609DC2 /* VoteCardPanState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B4C2CA6676900609DC2 /* VoteCardPanState.swift */; };
 		0CEB6B4F2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */; };
 		0CEB6B512CA6B31800609DC2 /* VoteCardOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */; };
+		0CEB6B532CA6E92700609DC2 /* VotingPowerSetClosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */; };
 		0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */; };
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
@@ -5804,6 +5805,7 @@
 		0CEB6B4C2CA6676900609DC2 /* VoteCardPanState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardPanState.swift; sourceTree = "<group>"; };
 		0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIEdgeInsets+Init.swift"; sourceTree = "<group>"; };
 		0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardOverlayView.swift; sourceTree = "<group>"; };
+		0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerSetClosure.swift; sourceTree = "<group>"; };
 		0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsExporting.swift; sourceTree = "<group>"; };
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
@@ -12553,6 +12555,7 @@
 				2D77488B2C90428E0059607B /* VotingBasketItemLocal.swift */,
 				2D6287342C917A2B00060814 /* VotingPowerLocal.swift */,
 				0CEB6B4A2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift */,
+				0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -25076,6 +25079,7 @@
 				0C154A0E2A45995500932C3F /* CompoundComparator.swift in Sources */,
 				88A0E10028A284C700A9C940 /* CurrencyManager.swift in Sources */,
 				848DE76826D64F7F0045CD29 /* UserStorageVersion.swift in Sources */,
+				0CEB6B532CA6E92700609DC2 /* VotingPowerSetClosure.swift in Sources */,
 				7719018E2AE0E71F00D9C918 /* SwapErrorPresentable.swift in Sources */,
 				84DB9E982640A49E00F23DD3 /* StakingRedeemViewModelFactory.swift in Sources */,
 				84FBECFD292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift in Sources */,

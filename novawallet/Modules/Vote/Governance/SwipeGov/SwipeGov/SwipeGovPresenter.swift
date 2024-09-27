@@ -14,6 +14,7 @@ final class SwipeGovPresenter {
     private var model: SwipeGovModelBuilder.Result.Model?
     private var votingPower: VotingPowerLocal?
     private var currentCardStackViewModel: CardsZStackViewModel?
+    private var balance: AssetBalance?
 
     init(
         wireframe: SwipeGovWireframeProtocol,
@@ -46,7 +47,7 @@ extension SwipeGovPresenter: SwipeGovPresenterProtocol {
     }
 
     func actionSettings() {
-        showVotingPower()
+        showVotingPower(nil)
     }
 
     func actionVotingList() {
@@ -57,7 +58,7 @@ extension SwipeGovPresenter: SwipeGovPresenterProtocol {
 // MARK: SwipeGovInteractorOutputProtocol
 
 extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
-    func didReceive(_ modelBuilderResult: SwipeGovModelBuilder.Result) {
+    func didReceiveState(_ modelBuilderResult: SwipeGovModelBuilder.Result) {
         model = modelBuilderResult.model
 
         switch modelBuilderResult.changeKind {
@@ -72,16 +73,12 @@ extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
         updateSettingsState()
     }
 
-    func didReceive(_ votingPower: VotingPowerLocal) {
+    func didReceiveVotingPower(_ votingPower: VotingPowerLocal) {
         self.votingPower = votingPower
     }
 
-    func didReceive(_ error: any Error) {
-        wireframe.present(
-            error: error,
-            from: view,
-            locale: localizationManager.selectedLocale
-        )
+    func didReceiveBalace(_ assetBalance: AssetBalance?) {
+        balance = assetBalance
     }
 }
 
@@ -89,28 +86,18 @@ extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
 
 private extension SwipeGovPresenter {
     func showVotingList() {
-        guard let metaId = votingPower?.metaId else {
-            return
-        }
-
-        wireframe.showVotingList(
-            from: view,
-            metaId: metaId
-        )
+        wireframe.showVotingList(from: view)
     }
 
     func onReferendumVote(
         voteResult: VoteResult,
         id: ReferendumIdLocal
     ) {
-        guard voteResult != .skip else {
+        guard voteResult != .skip, let votingPower else {
             return
         }
 
-        interactor.addVoting(
-            with: voteResult,
-            for: id
-        )
+        interactor.addVoting(with: voteResult, for: id, votingPower: votingPower)
     }
 
     func updateCardsStackView() {
@@ -137,10 +124,13 @@ private extension SwipeGovPresenter {
 
         let stackActions = CardsZStack.Actions(
             emptyViewAction: { [weak self] in self?.showVotingList() },
-            validationClosure: { [weak self] _ in
+            validationClosure: { [weak self] cardViewModel, voteResult in
                 guard let self else { return false }
 
-                return validateVotingAvailable()
+                return validateVotingAvailable(
+                    for: cardViewModel,
+                    voteResult: voteResult
+                )
             }
         )
 
@@ -156,11 +146,18 @@ private extension SwipeGovPresenter {
         view?.updateCardsStack(with: viewModel)
     }
 
-    func validateVotingAvailable() -> Bool {
+    func validateVotingAvailable(
+        for cardViewModel: VoteCardViewModel,
+        voteResult: VoteResult
+    ) -> Bool {
+        guard voteResult != .skip else {
+            return true
+        }
+
         let votingAvailable = votingPower != nil
 
         if !votingAvailable {
-            showVotingPower()
+            interruptAndSetVotingPower(for: cardViewModel.id, voteResult: voteResult)
         }
 
         return votingAvailable
@@ -192,7 +189,14 @@ private extension SwipeGovPresenter {
         view?.didReceive(canOpenSettings: !isStackEmpty)
     }
 
-    func showVotingPower() {
+    func interruptAndSetVotingPower(for cardId: VoteCardId, voteResult: VoteResult) {
+        showVotingPower { [weak self] newVotingPower in
+            self?.votingPower = newVotingPower
+            self?.view?.didUpdateVotingPower(for: cardId, voteResult: voteResult)
+        }
+    }
+
+    func showVotingPower(_ completionClosure: VotingPowerLocalSetClosure?) {
         guard let referendum = model?.referendums.first else {
             return
         }
@@ -204,7 +208,8 @@ private extension SwipeGovPresenter {
 
         wireframe.showVoteSetup(
             from: view,
-            initData: initData
+            initData: initData,
+            newVotingPowerClosure: completionClosure
         )
     }
 

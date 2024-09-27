@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-class SwipeGovInteractor {
+class SwipeGovInteractor: AnyProviderAutoCleaning {
     weak var presenter: SwipeGovInteractorOutputProtocol?
 
     private let metaAccount: MetaAccountModel
@@ -12,9 +12,9 @@ class SwipeGovInteractor {
 
     private var basketItemsProvider: StreamableProvider<VotingBasketItemLocal>?
     private var votingPowerProvider: StreamableProvider<VotingPowerLocal>?
+    private var assetBalanceProvider: StreamableProvider<AssetBalance>?
 
     private var modelBuilder: SwipeGovModelBuilderProtocol?
-    private var votingPower: VotingPowerLocal?
 
     private var observableState: ReferendumsObservableState {
         governanceState.observableState
@@ -26,6 +26,9 @@ class SwipeGovInteractor {
 
     let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
     let votingPowerSubscriptionFactory: VotingPowerLocalSubscriptionFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+
+    let logger: LoggerProtocol
 
     init(
         metaAccount: MetaAccountModel,
@@ -34,7 +37,9 @@ class SwipeGovInteractor {
         basketItemsRepository: AnyDataProviderRepository<VotingBasketItemLocal>,
         votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol,
         votingPowerSubscriptionFactory: VotingPowerLocalSubscriptionFactoryProtocol,
-        operationQueue: OperationQueue
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.metaAccount = metaAccount
         self.governanceState = governanceState
@@ -42,7 +47,9 @@ class SwipeGovInteractor {
         self.basketItemsRepository = basketItemsRepository
         self.votingBasketSubscriptionFactory = votingBasketSubscriptionFactory
         self.votingPowerSubscriptionFactory = votingPowerSubscriptionFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }
 
@@ -54,7 +61,7 @@ extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
             sorting: sorting,
             workingQueue: operationQueue
         ) { [weak self] result in
-            self?.presenter?.didReceive(result)
+            self?.presenter?.didReceiveState(result)
         }
         startObservingState()
 
@@ -70,12 +77,10 @@ extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
 
     func addVoting(
         with result: VoteResult,
-        for referendumId: ReferendumIdLocal
+        for referendumId: ReferendumIdLocal,
+        votingPower: VotingPowerLocal
     ) {
-        guard
-            let voteType = VotingBasketItemLocal.VoteType(from: result),
-            let votingPower
-        else {
+        guard let voteType = VotingBasketItemLocal.VoteType(from: result) else {
             return
         }
 
@@ -103,7 +108,7 @@ extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
             runningCallbackIn: .main
         ) { [weak self] result in
             if case let .failure(error) = result {
-                self?.presenter?.didReceive(error)
+                self?.logger.error("Unexpected voting error: \(error)")
             }
         }
     }
@@ -120,7 +125,7 @@ extension SwipeGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketSu
                 observableState.state.value
             )
         case let .failure(error):
-            presenter?.didReceive(error)
+            logger.error("Unexpected voting basket error: \(error)")
         }
     }
 }
@@ -134,10 +139,28 @@ extension SwipeGovInteractor: VotingPowerLocalStorageSubscriber, VotingPowerSubs
             guard let votingPower = changes.allChangedItems().first else {
                 return
             }
-            self.votingPower = votingPower
-            presenter?.didReceive(votingPower)
+
+            presenter?.didReceiveVotingPower(votingPower)
         case let .failure(error):
-            presenter?.didReceive(error)
+            logger.error("Unexpected voting power error: \(error)")
+        }
+    }
+}
+
+// MARK: Wallet Storage Subscription
+
+extension SwipeGovInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
+        switch result {
+        case let .success(balance):
+            presenter?.didReceiveBalace(balance)
+        case let .failure(error):
+            logger.error("Unexpected balance error: \(error)")
         }
     }
 }
@@ -152,6 +175,23 @@ private extension SwipeGovInteractor {
         ) { [weak self] _, new in
             self?.modelBuilder?.apply(new.value)
         }
+    }
+
+    func clearAndSubscribeBalance() {
+        guard
+            let accountId = metaAccount.fetch(for: chain.accountRequest())?.accountId,
+            let assetId = chain.utilityAsset()?.assetId
+        else {
+            return
+        }
+
+        clear(streamableProvider: &assetBalanceProvider)
+
+        assetBalanceProvider = subscribeToAssetBalanceProvider(
+            for: accountId,
+            chainId: chain.chainId,
+            assetId: assetId
+        )
     }
 }
 

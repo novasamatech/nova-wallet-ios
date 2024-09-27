@@ -50,7 +50,7 @@ class SwipeGovSetupInteractor: BaseSwipeGovSetupInteractor {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didProcessVotingPower()
+                self?.presenter?.didProcessVotingPower(votingPower)
             case let .failure(error):
                 self?.presenter?.didReceiveBaseError(.votingPowerSaveFailed(error))
             }

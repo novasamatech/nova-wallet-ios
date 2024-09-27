@@ -20,10 +20,7 @@ extension SwipeGovWireframe: SwipeGovWireframeProtocol {
         view?.controller.navigationController?.popViewController(animated: true)
     }
 
-    func showVotingList(
-        from view: ControllerBackedProtocol?,
-        metaId _: MetaAccountModel.Id
-    ) {
+    func showVotingList(from view: ControllerBackedProtocol?) {
         guard let votingListView = SwipeGovVotingListViewFactory.createView(
             with: sharedState,
             metaAccount: metaAccount
@@ -40,11 +37,13 @@ extension SwipeGovWireframe: SwipeGovWireframeProtocol {
 
     func showVoteSetup(
         from view: ControllerBackedProtocol?,
-        initData: ReferendumVotingInitData
+        initData: ReferendumVotingInitData,
+        newVotingPowerClosure: VotingPowerLocalSetClosure?
     ) {
         guard let setupView = SwipeGovSetupViewFactory.createView(
             for: sharedState,
-            initData: initData
+            initData: initData,
+            newVotingPowerClosure: newVotingPowerClosure
         ) else {
             return
         }

@@ -152,9 +152,10 @@ extension SwipeGovSetupPresenter: SwipeGovSetupPresenterProtocol {
 // MARK: SwipeGovSetupInteractorOutputProtocol
 
 extension SwipeGovSetupPresenter: SwipeGovSetupInteractorOutputProtocol {
-    func didProcessVotingPower() {
+    func didProcessVotingPower(_ votingPower: VotingPowerLocal) {
         wireframe.showSwipeGov(
             from: view,
+            newVotingPower: votingPower,
             locale: selectedLocale
         )
     }

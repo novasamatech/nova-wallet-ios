@@ -121,6 +121,10 @@ extension SwipeGovViewController: SwipeGovViewProtocol {
     func didReceive(canOpenSettings: Bool) {
         settingsControl.isEnabled = canOpenSettings
     }
+
+    func didUpdateVotingPower(for modelId: VoteCardId, voteResult: VoteResult) {
+        rootView.cardsStack.dismissTopIf(cardId: modelId, voteResult: voteResult)
+    }
 }
 
 // MARK: Private
