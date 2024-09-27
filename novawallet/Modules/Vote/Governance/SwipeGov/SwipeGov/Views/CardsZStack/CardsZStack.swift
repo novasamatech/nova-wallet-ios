@@ -10,6 +10,7 @@ final class CardsZStack: UIView {
     private(set) var viewModelsQueue: [VoteCardViewModel] = []
 
     private var validateAction: ((VoteCardViewModel?) -> Bool)?
+    private var panState = VoteCardPanState()
 
     init(maxCardsAlive: Int = 3) {
         self.maxCardsAlive = maxCardsAlive
@@ -297,31 +298,40 @@ private extension CardsZStack {
         let translation = gestureRecognizer.translation(in: view)
 
         switch gestureRecognizer.state {
+        case .began:
+            panState.onPanBegin(point: translation)
         case .changed:
+            panState.onPanChange(point: translation)
+
             view.transform = CGAffineTransform(
                 translationX: translation.x,
                 y: translation.y
             )
+
+            if let direction = panState.predictDirection() {
+                view.didPredict(vote: .init(from: direction))
+            } else {
+                view.didResetVote()
+            }
         case .ended:
-            onPanGestureEnded(for: view, with: translation)
+            panState.onPanChange(point: translation)
+
+            if let direction = panState.predictDirection() {
+                dismissTopCard(to: direction)
+            } else {
+                resetPanCardState(for: view)
+            }
+        case .failed, .cancelled, .possible:
+            resetPanCardState(for: view)
         default:
             break
         }
     }
 
-    func onPanGestureEnded(
-        for view: VoteCardView,
-        with translation: CGPoint
-    ) {
-        if translation.y <= Constants.topMostY {
-            dismissTopCard(to: .top)
-        } else if translation.x <= Constants.leftMostX {
-            dismissTopCard(to: .left)
-        } else if translation.x >= Constants.rightMostX {
-            dismissTopCard(to: .right)
-        } else {
-            animateTransformIdentity(for: view)
-        }
+    func resetPanCardState(for view: VoteCardView) {
+        view.didResetVote()
+
+        animateTransformIdentity(for: view)
     }
 
     func animateTransformIdentity(for view: UIView) {

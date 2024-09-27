@@ -8,9 +8,9 @@ final class VoteCardView: RoundedView {
     }
 
     private var summaryLabel: UILabel = .create { view in
-        view.apply(style: .title3Primary)
+        view.apply(style: .init(textColor: R.color.colorTextPrimary(), font: .swipeGovMax))
         view.adjustsFontSizeToFitWidth = true
-        view.minimumScaleFactor = 0.7
+        view.minimumScaleFactor = 0.3
         view.numberOfLines = 0
         view.textAlignment = .left
     }
@@ -48,6 +48,10 @@ final class VoteCardView: RoundedView {
     private var fiatAmountLabel: UILabel {
         requestedView.sView
     }
+
+    private var voteOverlayView: VoteCardOverlayView?
+    private var voteInAnimator = FadeAnimator(from: 0, to: 1, duration: 0.2, delay: 0, options: .curveLinear)
+    private var voteOutAnimator = FadeAnimator(from: 1, to: 0, duration: 0.2, delay: 0, options: .curveLinear)
 
     private lazy var readMoreButton: LoadableActionView = .create { view in
         view.actionButton.applyEnabledStyle(colored: R.color.colorButtonBackgroundSecondary()!)
@@ -131,6 +135,31 @@ extension VoteCardView: CardStackable {
         viewModel?.onPop(direction: direction)
     }
 
+    func didPredict(vote: VoteResult) {
+        guard vote != voteOverlayView?.vote else {
+            return
+        }
+
+        let optVoteView = voteOverlayView
+        let newVoteView = setupOverlay(for: vote)
+
+        animateOverlayIn(view: newVoteView)
+
+        if let oldVoteView = optVoteView {
+            animateOverlayOut(view: oldVoteView)
+        }
+    }
+
+    func didResetVote() {
+        guard let voteOverlayView else {
+            return
+        }
+
+        self.voteOverlayView = nil
+
+        animateOverlayOut(view: voteOverlayView)
+    }
+
     func prepareForReuse() {
         transform = .identity
         summaryLabel.text = nil
@@ -139,6 +168,9 @@ extension VoteCardView: CardStackable {
         requestedView.isHidden = false
         dividerView.isHidden = false
         viewModel = nil
+
+        voteOverlayView?.removeFromSuperview()
+        voteOverlayView = nil
     }
 }
 
@@ -302,6 +334,45 @@ private extension VoteCardView {
             make.height.equalTo(UIConstants.actionHeight)
         }
     }
+
+    private func setupOverlay(for vote: VoteResult) -> VoteCardOverlayView {
+        let voteView = VoteCardOverlayView()
+        addSubview(voteView)
+
+        voteOverlayView = voteView
+
+        switch vote {
+        case .aye:
+            voteView.snp.remakeConstraints { make in
+                make.leading.equalToSuperview().inset(Constants.voteOverlayHorizontalInset)
+                make.bottom.equalTo(dividerView.snp.top).offset(-Constants.voteOverlayBottomInset)
+            }
+        case .nay:
+            voteView.snp.remakeConstraints { make in
+                make.trailing.equalToSuperview().inset(Constants.voteOverlayHorizontalInset)
+                make.bottom.equalTo(dividerView.snp.top).offset(-Constants.voteOverlayBottomInset)
+            }
+        case .abstain, .skip:
+            voteView.snp.remakeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.bottom.equalTo(dividerView.snp.top).offset(-Constants.voteOverlayBottomInset)
+            }
+        }
+
+        voteOverlayView?.bind(vote: vote)
+
+        return voteView
+    }
+
+    private func animateOverlayIn(view: VoteCardOverlayView) {
+        voteInAnimator.animate(view: view, completionBlock: nil)
+    }
+
+    private func animateOverlayOut(view: VoteCardOverlayView) {
+        voteOutAnimator.animate(view: view) { [weak view] _ in
+            view?.removeFromSuperview()
+        }
+    }
 }
 
 // MARK: Loading
@@ -334,10 +405,12 @@ private extension VoteCardView {
         static let skeletonSummaryLineHeight: CGFloat = 12
         static let skeletonRequestedLineHeights: [CGFloat] = [10.0, 16.0, 8.0]
         static let skeletonRequestedLineWidths: [CGFloat] = [69, 118, 53]
+        static let voteOverlayHorizontalInset = 16
+        static let voteOverlayBottomInset = 30
     }
 }
 
-enum VoteResult {
+enum VoteResult: Equatable {
     case aye
     case nay
     case abstain

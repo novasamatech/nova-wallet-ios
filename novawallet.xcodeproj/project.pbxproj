@@ -702,6 +702,9 @@
 		0CEB6B432CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */; };
 		0CEB6B492CA561AC00609DC2 /* ParachainResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */; };
 		0CEB6B4B2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B4A2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift */; };
+		0CEB6B4D2CA6676900609DC2 /* VoteCardPanState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B4C2CA6676900609DC2 /* VoteCardPanState.swift */; };
+		0CEB6B4F2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */; };
+		0CEB6B512CA6B31800609DC2 /* VoteCardOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */; };
 		0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */; };
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
@@ -5798,6 +5801,9 @@
 		0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainRegistry+AsyncWait.swift"; sourceTree = "<group>"; };
 		0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainResolver.swift; sourceTree = "<group>"; };
 		0CEB6B4A2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VotingBasketItemLocal+Display.swift"; sourceTree = "<group>"; };
+		0CEB6B4C2CA6676900609DC2 /* VoteCardPanState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardPanState.swift; sourceTree = "<group>"; };
+		0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIEdgeInsets+Init.swift"; sourceTree = "<group>"; };
+		0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardOverlayView.swift; sourceTree = "<group>"; };
 		0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsExporting.swift; sourceTree = "<group>"; };
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
@@ -12385,6 +12391,7 @@
 				2D57029E2C9E092500673CB7 /* CardStackable.swift */,
 				2D5702A02C9E094D00673CB7 /* CardsZStackViewModel.swift */,
 				2D5702A22C9E099D00673CB7 /* VoteCard */,
+				0CEB6B4C2CA6676900609DC2 /* VoteCardPanState.swift */,
 			);
 			path = CardsZStack;
 			sourceTree = "<group>";
@@ -12421,6 +12428,7 @@
 				2D389B0F2C86FEFB00256C7B /* StackCardUpdatable.swift */,
 				2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */,
 				2DA85A882C81172F00591900 /* VoteCardView.swift */,
+				0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */,
 			);
 			path = VoteCard;
 			sourceTree = "<group>";
@@ -17678,6 +17686,7 @@
 				0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */,
 				77CC82A42A984EDA002D022F /* UINavigaionController+Pop.swift */,
 				0CD846262BDDF43A0026B5CA /* UIImage+Resize.swift */,
+				0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -24616,6 +24625,7 @@
 				773B2E432B756F8600A3BC11 /* Web3AlertLocalModel.swift in Sources */,
 				0C13DFCD2AF8A5A300E5F355 /* SwapMaxModel.swift in Sources */,
 				0CA719892B78AACD000B086E /* HydraRouter+Call.swift in Sources */,
+				0CEB6B512CA6B31800609DC2 /* VoteCardOverlayView.swift in Sources */,
 				0C0E0AA32B3F01FD00865F10 /* UniquesPallet.swift in Sources */,
 				0C495B922B429BCC00B8D339 /* ProxySigningWrapper.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
@@ -26410,6 +26420,7 @@
 				0CCD18D02BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift in Sources */,
 				848B3000286EDE3800465BA2 /* ParaIdOperationFactory.swift in Sources */,
 				84F47D4B2666EF1C00F7647A /* KaruraStatementData.swift in Sources */,
+				0CEB6B4D2CA6676900609DC2 /* VoteCardPanState.swift in Sources */,
 				84D8753A28EB0A93004065BD /* GovernanceChainSettings.swift in Sources */,
 				8443FE24255586230092893D /* ExportMnemonicConfirmProtocols.swift in Sources */,
 				77DF404B2B7FFBA400ABDB53 /* ChainNotificationsSettingsProtocols.swift in Sources */,
@@ -27166,6 +27177,7 @@
 				843E9B2827C83985009C143A /* AssetListNftsCell.swift in Sources */,
 				3E1462D9E1C0D490E81FD288 /* StakingUnbondConfirmViewFactory.swift in Sources */,
 				9B4BE26140C63E07C256CC97 /* StakingRedeemProtocols.swift in Sources */,
+				0CEB6B4F2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift in Sources */,
 				0C13DFD12AF8AE3E00E5F355 /* SwapBasePresenter.swift in Sources */,
 				88FB7DD12950720800784E08 /* ContainerProtocols.swift in Sources */,
 				840AE2E529C9AF9C008FF665 /* EtherscanWalletHistoryDecodable.swift in Sources */,
