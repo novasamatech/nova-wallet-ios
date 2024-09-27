@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SwipeGovVotingListInteractor {
+final class SwipeGovVotingListInteractor: AnyProviderAutoCleaning {
     weak var presenter: SwipeGovVotingListInteractorOutputProtocol?
 
     let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
@@ -22,7 +22,8 @@ final class SwipeGovVotingListInteractor {
     private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
     private var currentVotingItems: [VotingBasketItemLocal] = []
-    private var availableReferendums: [ReferendumIdLocal: ReferendumLocal] = [:]
+    private var availableReferendumsStore: UncertainStorage<[ReferendumIdLocal: ReferendumLocal]> = .undefined
+    private var balanceStore: UncertainStorage<AssetBalance?> = .undefined
 
     private let operationQueue: OperationQueue
 
@@ -108,6 +109,8 @@ extension SwipeGovVotingListInteractor: WalletLocalStorageSubscriber, WalletLoca
     ) {
         switch result {
         case let .success(balance):
+            balanceStore = .defined(balance)
+
             presenter?.didReceive(balance)
         case let .failure(error):
             presenter?.didReceive(.assetBalanceFailed(error))
@@ -139,16 +142,13 @@ extension SwipeGovVotingListInteractor: GovMetadataLocalStorageSubscriber, GovMe
 
 private extension SwipeGovVotingListInteractor {
     func deleteItems(with identifiers: [String]) {
-        let deleteOperation = repository.saveOperation(
-            { [] },
-            { identifiers }
-        )
+        let deleteOperation = repository.saveOperation({
+            []
+        }, {
+            identifiers
+        })
 
-        execute(
-            operation: deleteOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { _ in }
+        operationQueue.addOperation(deleteOperation)
     }
 
     func subscribeToLocalStorages() {
@@ -165,8 +165,7 @@ private extension SwipeGovVotingListInteractor {
             return
         }
 
-        assetBalanceProvider?.removeObserver(self)
-        assetBalanceProvider = nil
+        clear(streamableProvider: &assetBalanceProvider)
 
         assetBalanceProvider = subscribeToAssetBalanceProvider(
             for: accountId,
@@ -176,8 +175,7 @@ private extension SwipeGovVotingListInteractor {
     }
 
     func clearAndSubscribeVotingItems() {
-        basketItemsProvider?.removeObserver(self)
-        basketItemsProvider = nil
+        clear(streamableProvider: &basketItemsProvider)
 
         basketItemsProvider = subscribeToVotingBasketItemProvider(
             for: chain.chainId,
@@ -186,8 +184,7 @@ private extension SwipeGovVotingListInteractor {
     }
 
     func clearAndSubscribeMetadata() {
-        metadataProvider?.removeObserver(self)
-        metadataProvider = nil
+        clear(streamableProvider: &metadataProvider)
 
         metadataProvider = subscribeGovernanceMetadata(for: selectedGovOption)
     }
@@ -198,21 +195,40 @@ private extension SwipeGovVotingListInteractor {
             accountVotes: state.voting?.value?.votes
         ).callAsFunction()
 
-        availableReferendums = filteredReferendums
+        availableReferendumsStore = .defined(filteredReferendums)
 
         removeUnavailableIfNeeded()
     }
 
     func removeUnavailableIfNeeded() {
         let unavailableItems = currentVotingItems.filter { item in
-            availableReferendums[item.referendumId] == nil
+            !checkAvailability(for: item) ||
+                !checkAmount(for: item)
         }
 
         guard !unavailableItems.isEmpty else { return }
 
         let deleteIds = unavailableItems.map(\.identifier)
         deleteItems(with: deleteIds)
+    }
 
-        presenter?.didReceiveUnavailableItems()
+    func checkAvailability(for votingItem: VotingBasketItemLocal) -> Bool {
+        guard case let .defined(availableReferendums) = availableReferendumsStore else {
+            return true
+        }
+
+        return availableReferendums[votingItem.referendumId] != nil
+    }
+
+    func checkAmount(for votingItem: VotingBasketItemLocal) -> Bool {
+        guard case let .defined(optBalance) = balanceStore else {
+            return true
+        }
+
+        guard let balance = optBalance else {
+            return false
+        }
+
+        return votingItem.amount <= balance.availableForOpenGov
     }
 }

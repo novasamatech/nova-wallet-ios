@@ -63,18 +63,8 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func vote() {
-        validateBalanceSufficient { [weak self] in
-            guard let self else { return }
-
-            let initData = ReferendumVotingInitData(
-                votingItems: votingListItems
-            )
-
-            wireframe.showConfirmation(
-                from: view,
-                initData: initData
-            )
-        }
+        let initData = ReferendumVotingInitData(votingItems: votingListItems)
+        wireframe.showConfirmation(from: view, initData: initData)
     }
 }
 
@@ -101,7 +91,6 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
                 wireframe.close(view: view)
             } else {
                 updateView()
-                validateBalanceSufficient()
             }
         }
 
@@ -114,8 +103,6 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
 
     func didReceive(_ assetBalance: AssetBalance?) {
         balance = assetBalance
-
-        validateBalanceSufficient()
     }
 
     func didReceiveUnavailableItems() {
@@ -183,37 +170,6 @@ private extension SwipeGovVotingListPresenter {
         )
 
         view?.didReceive(viewModel)
-    }
-
-    func validateBalanceSufficient(_ closure: (() -> Void)? = nil) {
-        guard let balance else {
-            return
-        }
-
-        let invalidItems = lookForInvalidItems(in: votingListItems, for: balance)
-
-        if !invalidItems.isEmpty, let max = invalidItems.max(by: { $0.amount < $1.amount }) {
-            let votingPower = VotingPowerLocal(
-                chainId: chain.chainId,
-                metaId: metaAccount.metaId,
-                conviction: max.conviction,
-                amount: max.amount
-            )
-
-            showBalanceAlert(
-                for: votingPower,
-                invalidItems: invalidItems
-            )
-        } else {
-            closure?()
-        }
-    }
-
-    func lookForInvalidItems(
-        in votingItems: [VotingBasketItemLocal],
-        for balance: AssetBalance
-    ) -> [VotingBasketItemLocal] {
-        votingItems.filter { $0.amount > balance.freeInPlank }
     }
 }
 
