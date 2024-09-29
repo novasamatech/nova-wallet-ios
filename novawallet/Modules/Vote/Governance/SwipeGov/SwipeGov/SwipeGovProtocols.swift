@@ -32,7 +32,7 @@ protocol SwipeGovInteractorOutputProtocol: AnyObject {
     func didReceiveBalace(_ assetBalance: AssetBalance?)
 }
 
-protocol SwipeGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol SwipeGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, SwipeGovAlertPresentable {
     func showVotingList(from view: ControllerBackedProtocol?)
 
     func showVoteSetup(

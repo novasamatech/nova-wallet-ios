@@ -3,14 +3,9 @@ import UIKit
 
 final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     let state: GovernanceSharedState
-    let metaAccount: MetaAccountModel
 
-    init(
-        state: GovernanceSharedState,
-        metaAccount: MetaAccountModel
-    ) {
+    init(state: GovernanceSharedState) {
         self.state = state
-        self.metaAccount = metaAccount
     }
 
     func selectChain(
@@ -35,10 +30,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     }
 
     func showSwipeGov(from view: ControllerBackedProtocol?) {
-        guard let swipeGovView = SwipeGovViewFactory.createView(
-            metaAccount: metaAccount,
-            sharedState: state
-        ) else {
+        guard let swipeGovView = SwipeGovViewFactory.createView(sharedState: state) else {
             return
         }
 

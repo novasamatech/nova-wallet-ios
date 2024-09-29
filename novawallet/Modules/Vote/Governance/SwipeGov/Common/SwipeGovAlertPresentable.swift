@@ -2,17 +2,16 @@ import Foundation
 import BigInt
 
 struct SwipeGovBalanceAlertModel {
-    let votingPower: VotingPowerLocal
-    let invalidItems: [VotingBasketItemLocal]
-    let assetInfo: AssetBalanceDisplayInfo
-    let changeAction: () -> Void
+    let votingAmount: String
+    let votingConviction: String
 }
 
 protocol SwipeGovAlertPresentable {
     func presentBalanceAlert(
         from view: ControllerBackedProtocol?,
         model: SwipeGovBalanceAlertModel,
-        locale: Locale
+        locale: Locale,
+        action: @escaping () -> Void
     )
 
     func presentRemoveListItem(
@@ -24,8 +23,7 @@ protocol SwipeGovAlertPresentable {
 
     func presentReferendaExcluded(
         from view: ControllerBackedProtocol?,
-        availableBalance: BigUInt,
-        assetInfo: AssetBalanceDisplayInfo,
+        availableBalance: String,
         locale: Locale,
         action: @escaping () -> Void
     )
@@ -35,21 +33,18 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
     func presentBalanceAlert(
         from view: ControllerBackedProtocol?,
         model: SwipeGovBalanceAlertModel,
-        locale: Locale
+        locale: Locale,
+        action: @escaping () -> Void
     ) {
         let languages = locale.rLanguages
-        let amountDecimal = NSDecimalNumber(
-            decimal: model.votingPower.amount.decimal(assetInfo: model.assetInfo)
-        )
 
         let alertViewModel = AlertPresentableViewModel(
             title: R.string.localizable.swipeGovInsufficientBalanceAlertTitle(
                 preferredLanguages: languages
             ),
             message: R.string.localizable.swipeGovInsufficientBalanceAlertMessage(
-                amountDecimal.doubleValue,
-                model.assetInfo.symbol,
-                model.votingPower.conviction.displayValue,
+                model.votingAmount,
+                model.votingConviction,
                 preferredLanguages: languages
             ),
             actions: [
@@ -58,7 +53,7 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
                         preferredLanguages: languages
                     ),
                     style: .normal,
-                    handler: { model.changeAction() }
+                    handler: action
                 )
             ],
             closeAction: R.string.localizable.commonClose(
@@ -116,24 +111,18 @@ extension SwipeGovAlertPresentable where Self: AlertPresentable {
 
     func presentReferendaExcluded(
         from view: ControllerBackedProtocol?,
-        availableBalance: BigUInt,
-        assetInfo: AssetBalanceDisplayInfo,
+        availableBalance: String,
         locale: Locale,
         action: @escaping () -> Void
     ) {
         let languages = locale.rLanguages
-
-        let balance = NSDecimalNumber(
-            decimal: availableBalance.decimal(assetInfo: assetInfo)
-        )
 
         let alertViewModel = AlertPresentableViewModel(
             title: R.string.localizable.swipeGovReferendaExcludedAlertTitle(
                 preferredLanguages: languages
             ),
             message: R.string.localizable.swipeGovReferendaExcludedAlertMessage(
-                balance.doubleValue,
-                assetInfo.symbol,
+                availableBalance,
                 preferredLanguages: languages
             ),
             actions: [

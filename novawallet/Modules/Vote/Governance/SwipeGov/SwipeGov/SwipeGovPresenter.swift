@@ -9,7 +9,9 @@ final class SwipeGovPresenter {
 
     private let viewModelFactory: SwipeGovViewModelFactoryProtocol
     private let cardsViewModelFactory: VoteCardViewModelFactoryProtocol
+    private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let localizationManager: LocalizationManagerProtocol
+    private let utilityAssetInfo: AssetBalanceDisplayInfo
 
     private var model: SwipeGovModelBuilder.Result.Model?
     private var votingPower: VotingPowerLocal?
@@ -21,12 +23,16 @@ final class SwipeGovPresenter {
         interactor: SwipeGovInteractorInputProtocol,
         viewModelFactory: SwipeGovViewModelFactoryProtocol,
         cardsViewModelFactory: VoteCardViewModelFactoryProtocol,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        utilityAssetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
         self.interactor = interactor
         self.viewModelFactory = viewModelFactory
         self.cardsViewModelFactory = cardsViewModelFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.utilityAssetInfo = utilityAssetInfo
         self.localizationManager = localizationManager
     }
 }
@@ -154,13 +160,26 @@ private extension SwipeGovPresenter {
             return true
         }
 
-        let votingAvailable = votingPower != nil
-
-        if !votingAvailable {
+        guard let votingPower else {
             interruptAndSetVotingPower(for: cardViewModel.id, voteResult: voteResult)
+            return false
         }
 
-        return votingAvailable
+        guard let balance else {
+            return false
+        }
+
+        if votingPower.amount > balance.availableForOpenGov {
+            interruptAndOfferChangeVotingPower(
+                from: votingPower,
+                cardViewModel: cardViewModel,
+                voteResult: voteResult
+            )
+
+            return false
+        }
+
+        return true
     }
 
     func updateVotingListView() {
@@ -226,5 +245,28 @@ private extension SwipeGovPresenter {
             from: view,
             initData: initData
         )
+    }
+
+    func interruptAndOfferChangeVotingPower(
+        from oldVotingPower: VotingPowerLocal,
+        cardViewModel: VoteCardViewModel,
+        voteResult: VoteResult
+    ) {
+        let voteAmount = balanceViewModelFactory.amountFromValue(
+            oldVotingPower.amount.decimal(assetInfo: utilityAssetInfo)
+        ).value(for: localizationManager.selectedLocale)
+
+        let model = SwipeGovBalanceAlertModel(
+            votingAmount: voteAmount,
+            votingConviction: oldVotingPower.conviction.displayValue
+        )
+
+        wireframe.presentBalanceAlert(
+            from: view,
+            model: model,
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.interruptAndSetVotingPower(for: cardViewModel.id, voteResult: voteResult)
+        }
     }
 }

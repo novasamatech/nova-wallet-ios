@@ -2,14 +2,9 @@ import Foundation
 
 final class SwipeGovWireframe {
     let sharedState: GovernanceSharedState
-    let metaAccount: MetaAccountModel
 
-    init(
-        sharedState: GovernanceSharedState,
-        metaAccount: MetaAccountModel
-    ) {
+    init(sharedState: GovernanceSharedState) {
         self.sharedState = sharedState
-        self.metaAccount = metaAccount
     }
 }
 
@@ -21,10 +16,7 @@ extension SwipeGovWireframe: SwipeGovWireframeProtocol {
     }
 
     func showVotingList(from view: ControllerBackedProtocol?) {
-        guard let votingListView = SwipeGovVotingListViewFactory.createView(
-            with: sharedState,
-            metaAccount: metaAccount
-        ) else {
+        guard let votingListView = SwipeGovVotingListViewFactory.createView(with: sharedState) else {
             return
         }
 
