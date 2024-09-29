@@ -73,6 +73,8 @@ extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
             for: chain.chainId,
             metaId: metaAccount.metaId
         )
+
+        clearAndSubscribeBalance()
     }
 
     func addVoting(
