@@ -68,18 +68,16 @@ struct SwipeGovViewFactory {
             return nil
         }
 
-        let storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared
-
         let votingBasketSubscriptionFactory = VotingBasketLocalSubscriptionFactory(
             chainRegistry: state.chainRegistry,
-            storageFacade: storageFacade,
+            storageFacade: UserDataStorageFacade.shared,
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared
         )
 
         let votingPowerSubscriptionFactory = VotingPowerLocalSubscriptionFactory(
             chainRegistry: state.chainRegistry,
-            storageFacade: storageFacade,
+            storageFacade: UserDataStorageFacade.shared,
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared
         )
@@ -87,7 +85,7 @@ struct SwipeGovViewFactory {
         let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
             for: option.chain.chainId,
             metaId: metaAccount.metaId,
-            using: storageFacade
+            using: UserDataStorageFacade.shared
         )
 
         return SwipeGovInteractor(

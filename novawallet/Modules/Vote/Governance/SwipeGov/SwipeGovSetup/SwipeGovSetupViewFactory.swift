@@ -8,16 +8,11 @@ struct SwipeGovSetupViewFactory {
         initData: ReferendumVotingInitData,
         newVotingPowerClosure: VotingPowerLocalSetClosure?
     ) -> SwipeGovSetupViewProtocol? {
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let storageFacade = SubstrateDataStorageFacade.shared
-
         guard
             let currencyManager = CurrencyManager.shared,
             let swipeGovSetupInteractor = createInteractor(
                 for: state,
-                currencyManager: currencyManager,
-                storageFacade: storageFacade,
-                operationQueue: operationQueue
+                currencyManager: currencyManager
             )
         else {
             return nil
@@ -111,9 +106,7 @@ struct SwipeGovSetupViewFactory {
 
     private static func createInteractor(
         for state: GovernanceSharedState,
-        currencyManager: CurrencyManagerProtocol,
-        storageFacade: StorageFacadeProtocol,
-        operationQueue: OperationQueue
+        currencyManager: CurrencyManagerProtocol
     ) -> BaseSwipeGovSetupInteractor? {
         guard
             let option = state.settings.value,
@@ -131,7 +124,7 @@ struct SwipeGovSetupViewFactory {
         let repository = SwipeGovRepositoryFactory.createVotingPowerRepository(
             for: option.chain.chainId,
             metaId: wallet.metaId,
-            using: storageFacade
+            using: UserDataStorageFacade.shared
         )
 
         return SwipeGovSetupInteractor(
@@ -148,7 +141,7 @@ struct SwipeGovSetupViewFactory {
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,
             lockStateFactory: lockStateFactory,
-            operationQueue: operationQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

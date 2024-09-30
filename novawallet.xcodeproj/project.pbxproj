@@ -5396,6 +5396,8 @@
 		0C6941C52B1F51FE00A7CF6D /* RawDataStorageSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataStorageSubscription.swift; sourceTree = "<group>"; };
 		0C6941C92B203E2F00A7CF6D /* SubstrateDataModel23.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel23.xcdatamodel; sourceTree = "<group>"; };
 		0C6941CA2B203F3300A7CF6D /* ChainSyncMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainSyncMode.swift; sourceTree = "<group>"; };
+		0C6C47D32CA96C67000ADA96 /* SubstrateDataModel34.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel34.xcdatamodel; sourceTree = "<group>"; };
+		0C6C47D42CA96C8A000ADA96 /* MultiassetUserDataModel13.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel13.xcdatamodel; sourceTree = "<group>"; };
 		0C6D66AA2A8C0B6700AAB988 /* BaseSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSigner.swift; sourceTree = "<group>"; };
 		0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingStateProtocol.swift; sourceTree = "<group>"; };
 		0C7071282C1F600F0080DDCD /* OnLauchAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLauchAction.swift; sourceTree = "<group>"; };
@@ -30013,6 +30015,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				0C6C47D32CA96C67000ADA96 /* SubstrateDataModel34.xcdatamodel */,
 				2D7748872C9035550059607B /* SubstrateDataModel33.xcdatamodel */,
 				2D32BE1E2C6CB9290047F520 /* SubstrateDataModel32.xcdatamodel */,
 				2DCC87582C57DE260028C3CA /* SubstrateDataModel31.xcdatamodel */,
@@ -30047,7 +30050,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 2D7748872C9035550059607B /* SubstrateDataModel33.xcdatamodel */;
+			currentVersion = 0C6C47D32CA96C67000ADA96 /* SubstrateDataModel34.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
@@ -30055,6 +30058,7 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				0C6C47D42CA96C8A000ADA96 /* MultiassetUserDataModel13.xcdatamodel */,
 				771DA4542B7383BD003C07DD /* MultiassetUserDataModel12.xcdatamodel */,
 				0C37AFC62B597FB500009ECA /* MultiassetUserDataModel11.xcdatamodel */,
 				77D2ED692B19CE4F00A0E58C /* MultiassetUserDataModel10.xcdatamodel */,
@@ -30069,7 +30073,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 771DA4542B7383BD003C07DD /* MultiassetUserDataModel12.xcdatamodel */;
+			currentVersion = 0C6C47D42CA96C8A000ADA96 /* MultiassetUserDataModel13.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

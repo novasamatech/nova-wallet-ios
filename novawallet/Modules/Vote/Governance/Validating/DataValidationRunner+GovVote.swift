@@ -57,29 +57,24 @@ extension DataValidationRunner {
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceVoteBatchValidatingParams,
         selectedLocale: Locale,
-        handlers: GovernanceVoteValidatingHandlers,
-        successClosure: @escaping DataValidationRunnerCompletion,
-        maxAmountErrorClosure: @escaping () -> Void
+        handlers: GovBatchVoteValidatingHandlers,
+        successClosure: @escaping DataValidationRunnerCompletion
     ) {
         var validators: [DataValidating] = [
-            factory.enoughTokensForBatchVoting(
-                params.assetBalance,
-                votingAmount: params.maxAmount,
-                assetInfo: params.assetInfo,
-                locale: selectedLocale,
-                maxAmountErrorClosure: maxAmountErrorClosure
-            ),
             factory.has(
                 fee: params.fee,
                 locale: selectedLocale,
                 onError: handlers.feeErrorClosure
             ),
-            factory.enoughTokensForVotingAndFee(
-                params.assetBalance,
-                votingAmount: params.maxAmount,
-                fee: params.fee,
-                assetInfo: params.assetInfo,
-                locale: selectedLocale
+            factory.enoughTokensForBatchVoting(
+                .init(
+                    assetBalance: params.assetBalance,
+                    votingAmount: params.maxAmount,
+                    fee: params.fee,
+                    assetInfo: params.assetInfo
+                ),
+                locale: selectedLocale,
+                maxAmountErrorClosure: handlers.maxAmountUpdateClosure
             )
         ]
 
