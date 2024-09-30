@@ -27,8 +27,8 @@ protocol ReferendumVoteConfirmInteractorInputProtocol: ReferendumVoteInteractorI
     func submit(vote: ReferendumNewVote)
 }
 
-protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol, 
-                                                                ReferendumObservingVoteInteractorOutputProtocol {
+protocol BaseReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol,
+    ReferendumObservingVoteInteractorOutputProtocol {
     func didReceiveLocks(_ locks: AssetLocks)
     func didReceiveError(_ error: ReferendumVoteConfirmError)
 }
