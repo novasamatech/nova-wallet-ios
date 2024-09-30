@@ -2,7 +2,6 @@ import Foundation
 import BigInt
 import SoraFoundation
 
-// swiftlint:disable file_length
 class BaseReferendumVoteConfirmPresenter {
     weak var baseView: BaseReferendumVoteConfirmViewProtocol?
     private let wireframe: BaseReferendumVoteConfirmWireframeProtocol
