@@ -33,7 +33,7 @@ extension ExtrinsicSubmissionPresenting where Self: ModalAlertPresenting {
                 self?.presentSuccessNotification(title, from: presenter, completion: nil)
             }
         case .dismissAllModals:
-            var root = view?.controller.view.window?.rootViewController
+            let root = view?.controller.view.window?.rootViewController
 
             root?.dismiss(animated: true) { [weak self] in
                 self?.presentSuccessNotification(title, from: root, completion: nil)

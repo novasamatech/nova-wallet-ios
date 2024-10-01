@@ -10,20 +10,18 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale?
     ) -> DataValidating
 
-    func enoughTokensForBatchVoting(
-        _ assetBalance: AssetBalance?,
-        votingAmount: BigUInt?,
-        assetInfo: AssetBalanceDisplayInfo,
-        locale: Locale?,
-        maxAmountErrorClosure: @escaping () -> Void
-    ) -> DataValidating
-
     func enoughTokensForVotingAndFee(
         _ assetBalance: AssetBalance?,
         votingAmount: BigUInt?,
         fee: ExtrinsicFeeProtocol?,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale?
+    ) -> DataValidating
+
+    func enoughTokensForBatchVoting(
+        _ params: GovMaxAmountValidatingParams,
+        locale: Locale?,
+        maxAmountErrorClosure: @escaping (BigUInt) -> Void
     ) -> DataValidating
 
     func referendumNotEnded(
@@ -92,44 +90,67 @@ final class GovernanceValidatorFactory {
 
 extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
     func enoughTokensForBatchVoting(
-        _ assetBalance: AssetBalance?,
-        votingAmount: BigUInt?,
-        assetInfo: AssetBalanceDisplayInfo,
+        _ params: GovMaxAmountValidatingParams,
         locale: Locale?,
-        maxAmountErrorClosure: @escaping () -> Void
+        maxAmountErrorClosure: @escaping (BigUInt) -> Void
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
             }
 
-            let amountFormatter = self?.assetBalanceFormatterFactory.createTokenFormatter(for: assetInfo)
-            let amountString: String
-            let freeInPlank = assetBalance?.freeInPlank ?? 0
+            let amountFormatter = self?.assetBalanceFormatterFactory.createTokenFormatter(
+                for: params.assetInfo
+            ).value(for: locale ?? Locale.current)
+
+            let transferrable = params.assetBalance?.transferable ?? 0
+
+            let fee = params.fee?.amountForCurrentAccount ?? 0
+
+            let feeString = amountFormatter?.stringFromDecimal(
+                fee.decimal(assetInfo: params.assetInfo)
+            ) ?? ""
+
+            if transferrable >= fee {
+                let availableForOpenGov = params.assetBalance?.availableForOpenGov ?? 0
+                let availableToVote = availableForOpenGov.subtractOrZero(fee)
+
+                let maxString = amountFormatter?.stringFromDecimal(
+                    availableToVote.decimal(assetInfo: params.assetInfo)
+                ) ?? ""
+
+                self?.presentable.presentNotEnoughTokensToBatchVote(
+                    from: view,
+                    maxAvailable: maxString,
+                    fee: feeString,
+                    locale: locale
+                ) {
+                    maxAmountErrorClosure(availableToVote)
+                }
+            } else {
+                let maxString = amountFormatter?.stringFromDecimal(
+                    transferrable.decimal(assetInfo: params.assetInfo)
+                ) ?? ""
+
+                self?.presentable.presentFeeTooHigh(from: view, balance: maxString, fee: feeString, locale: locale)
+            }
+        }, preservesCondition: {
+            let availableForFee: BigUInt
 
             if
-                let amountDecimal = Decimal.fromSubstrateAmount(freeInPlank, precision: assetInfo.assetPrecision) {
-                amountString = amountFormatter?.value(for: locale ?? Locale.current).stringFromDecimal(
-                    amountDecimal
-                ) ?? ""
+                let assetBalance = params.assetBalance,
+                let votingAmount = params.votingAmount,
+                assetBalance.availableForOpenGov >= votingAmount {
+                availableForFee = min(assetBalance.availableForOpenGov - votingAmount, assetBalance.transferable)
             } else {
-                amountString = ""
+                availableForFee = 0
             }
 
-            self?.presentable.presentNotEnoughTokensToBatchVote(
-                from: view,
-                available: amountString,
-                locale: locale,
-                action: maxAmountErrorClosure
-            )
-        }, preservesCondition: {
-            guard
-                let assetBalance = assetBalance,
-                let votingAmount = votingAmount else {
+            guard let fee = params.fee?.amountForCurrentAccount else {
                 return false
             }
 
-            return assetBalance.freeInPlank >= votingAmount
+            return availableForFee >= fee
         })
     }
 

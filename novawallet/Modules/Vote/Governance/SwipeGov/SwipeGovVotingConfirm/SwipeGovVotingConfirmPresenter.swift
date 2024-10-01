@@ -130,12 +130,22 @@ private extension SwipeGovVotingConfirmPresenter {
             assetBalance: assetBalance,
             referendums: referendums,
             votes: votesResult?.value?.votes,
-            newVotes: votingItems.mapToVotes(),
+            newVotes: votes,
             fee: fee,
             assetInfo: assetInfo
         )
 
-        let handlers = GovernanceVoteValidatingHandlers(
+        let handlers = GovBatchVoteValidatingHandlers(
+            maxAmountUpdateClosure: { [weak self] maxAmount in
+                guard let self else { return }
+
+                let limitedVotes = limitedVotes(
+                    votingItems.mapToVotes(),
+                    by: maxAmount
+                )
+
+                confirm(with: limitedVotes)
+            },
             feeErrorClosure: { [weak self] in
                 self?.refreshFee()
             }
@@ -150,16 +160,6 @@ private extension SwipeGovVotingConfirmPresenter {
                 guard let self else { return }
                 view?.didStartLoading()
                 interactor.submit(votes: votes)
-            },
-            maxAmountErrorClosure: { [weak self] in
-                guard let self, let assetBalance else { return }
-
-                let limitedVotes = limitedVotes(
-                    votingItems.mapToVotes(),
-                    by: assetBalance.freeInPlank
-                )
-                view?.didStartLoading()
-                confirm(with: limitedVotes)
             }
         )
     }
@@ -182,10 +182,7 @@ private extension SwipeGovVotingConfirmPresenter {
                 .nay(.init(amount: amount, conviction: model.conviction))
             }
 
-            return ReferendumNewVote(
-                index: vote.index,
-                voteAction: action
-            )
+            return ReferendumNewVote(index: vote.index, voteAction: action)
         }
     }
 }

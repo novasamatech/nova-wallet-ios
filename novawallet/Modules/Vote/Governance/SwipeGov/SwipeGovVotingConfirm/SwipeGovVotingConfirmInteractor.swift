@@ -164,10 +164,11 @@ private extension SwipeGovVotingConfirmInteractor {
 
     func clearVotingItems(_ items: [VotingBasketItemLocal]) {
         let deleteIds = items.map(\.identifier)
-        let deleteOperation = repository.saveOperation(
-            { [] },
-            { deleteIds }
-        )
+        let deleteOperation = repository.saveOperation({
+            []
+        }, {
+            deleteIds
+        })
 
         execute(
             operation: deleteOperation,

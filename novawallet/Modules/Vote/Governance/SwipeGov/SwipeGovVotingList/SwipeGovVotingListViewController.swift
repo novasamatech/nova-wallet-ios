@@ -177,7 +177,7 @@ private extension SwipeGovVotingListViewController {
     }
 
     func setupLocalizables() {
-        navigationItem.title = R.string.localizable.votingListWidgetTitle(
+        navigationItem.title = R.string.localizable.govVotingListTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
         rootView.voteButton.imageWithTitleView?.title = R.string.localizable.govVote(

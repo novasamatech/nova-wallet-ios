@@ -6,25 +6,19 @@ struct SwipeGovSetupViewFactory {
     static func createView(
         for state: GovernanceSharedState,
         initData: ReferendumVotingInitData,
-        changing invalidItems: [VotingBasketItemLocal] = []
+        newVotingPowerClosure: VotingPowerLocalSetClosure?
     ) -> SwipeGovSetupViewProtocol? {
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let storageFacade = SubstrateDataStorageFacade.shared
-
         guard
             let currencyManager = CurrencyManager.shared,
             let swipeGovSetupInteractor = createInteractor(
                 for: state,
-                changing: invalidItems,
-                currencyManager: currencyManager,
-                storageFacade: storageFacade,
-                operationQueue: operationQueue
+                currencyManager: currencyManager
             )
         else {
             return nil
         }
 
-        let wireframe = SwipeGovSetupWireframe()
+        let wireframe = SwipeGovSetupWireframe(newVotingPowerClosure: newVotingPowerClosure)
 
         let dataValidatingFactory = GovernanceValidatorFactory(
             presentable: wireframe,
@@ -112,10 +106,7 @@ struct SwipeGovSetupViewFactory {
 
     private static func createInteractor(
         for state: GovernanceSharedState,
-        changing invalidItems: [VotingBasketItemLocal],
-        currencyManager: CurrencyManagerProtocol,
-        storageFacade: StorageFacadeProtocol,
-        operationQueue: OperationQueue
+        currencyManager: CurrencyManagerProtocol
     ) -> BaseSwipeGovSetupInteractor? {
         guard
             let option = state.settings.value,
@@ -130,53 +121,27 @@ struct SwipeGovSetupViewFactory {
             return nil
         }
 
-        if invalidItems.isEmpty {
-            let repository = SwipeGovRepositoryFactory.createVotingPowerRepository(
-                for: option.chain.chainId,
-                metaId: wallet.metaId,
-                using: storageFacade
-            )
+        let repository = SwipeGovRepositoryFactory.createVotingPowerRepository(
+            for: option.chain.chainId,
+            metaId: wallet.metaId,
+            using: UserDataStorageFacade.shared
+        )
 
-            return SwipeGovSetupInteractor(
-                repository: repository,
-                selectedAccount: selectedAccount,
-                observableState: state.observableState,
-                chain: option.chain,
-                generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-                walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-                priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-                blockTimeService: blockTimeService,
-                blockTimeFactory: blockTimeFactory,
-                connection: connection,
-                runtimeProvider: runtimeProvider,
-                currencyManager: currencyManager,
-                lockStateFactory: lockStateFactory,
-                operationQueue: operationQueue
-            )
-        } else {
-            let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
-                for: option.chain.chainId,
-                metaId: wallet.metaId,
-                using: storageFacade
-            )
-
-            return SwipeGovInvalidVotesSetupInteractor(
-                repository: repository,
-                invalidItems: invalidItems,
-                selectedAccount: selectedAccount,
-                observableState: state.observableState,
-                chain: option.chain,
-                generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-                walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-                priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-                blockTimeService: blockTimeService,
-                blockTimeFactory: blockTimeFactory,
-                connection: connection,
-                runtimeProvider: runtimeProvider,
-                currencyManager: currencyManager,
-                lockStateFactory: lockStateFactory,
-                operationQueue: operationQueue
-            )
-        }
+        return SwipeGovSetupInteractor(
+            repository: repository,
+            selectedAccount: selectedAccount,
+            observableState: state.observableState,
+            chain: option.chain,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            currencyManager: currencyManager,
+            lockStateFactory: lockStateFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
     }
 }

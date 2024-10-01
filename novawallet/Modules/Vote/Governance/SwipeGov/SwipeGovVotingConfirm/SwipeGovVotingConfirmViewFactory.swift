@@ -129,7 +129,7 @@ struct SwipeGovVotingConfirmViewFactory {
         let repository = SwipeGovRepositoryFactory.createVotingItemsRepository(
             for: chain.chainId,
             metaId: wallet.metaId,
-            using: SubstrateDataStorageFacade.shared
+            using: UserDataStorageFacade.shared
         )
 
         let votingItemsDict = votingItems.reduce(into: [:]) { $0[$1.referendumId] = $1 }

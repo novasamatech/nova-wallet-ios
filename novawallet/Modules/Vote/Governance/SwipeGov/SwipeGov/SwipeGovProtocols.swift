@@ -5,6 +5,8 @@ protocol SwipeGovViewProtocol: ControllerBackedProtocol {
     func skipCard()
     func updateVotingList(with viewModel: VotingListWidgetViewModel)
     func updateCardsCounter(with text: String)
+    func didReceive(canOpenSettings: Bool)
+    func didUpdateVotingPower(for modelId: VoteCardId, voteResult: VoteResult)
 }
 
 protocol SwipeGovPresenterProtocol: AnyObject {
@@ -19,28 +21,30 @@ protocol SwipeGovInteractorInputProtocol: AnyObject {
     func setup()
     func addVoting(
         with result: VoteResult,
-        for referendumId: ReferendumIdLocal
+        for referendumId: ReferendumIdLocal,
+        votingPower: VotingPowerLocal
     )
 }
 
 protocol SwipeGovInteractorOutputProtocol: AnyObject {
-    func didReceive(_ modelBuilderResult: SwipeGovModelBuilder.Result)
-    func didReceive(_ votingPower: VotingPowerLocal)
-    func didReceive(_ error: Error)
+    func didReceiveState(_ modelBuilderResult: SwipeGovModelBuilder.Result)
+    func didReceiveVotingPower(_ votingPower: VotingPowerLocal)
+    func didReceiveBalace(_ assetBalance: AssetBalance?)
 }
 
-protocol SwipeGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
-    func showVotingList(
-        from view: ControllerBackedProtocol?,
-        metaId: MetaAccountModel.Id
-    )
+protocol SwipeGovWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, SwipeGovAlertPresentable {
+    func showVotingList(from view: ControllerBackedProtocol?)
+
     func showVoteSetup(
         from view: ControllerBackedProtocol?,
-        initData: ReferendumVotingInitData
+        initData: ReferendumVotingInitData,
+        newVotingPowerClosure: VotingPowerLocalSetClosure?
     )
+
     func showReferendumDetails(
         from view: ControllerBackedProtocol?,
         initData: ReferendumDetailsInitData
     )
+
     func back(from view: ControllerBackedProtocol?)
 }

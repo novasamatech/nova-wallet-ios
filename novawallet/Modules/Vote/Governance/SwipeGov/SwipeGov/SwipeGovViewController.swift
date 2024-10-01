@@ -117,6 +117,14 @@ extension SwipeGovViewController: SwipeGovViewProtocol {
     func updateCardsCounter(with text: String) {
         titleReferendaCounterLabel.text = text
     }
+
+    func didReceive(canOpenSettings: Bool) {
+        settingsControl.isEnabled = canOpenSettings
+    }
+
+    func didUpdateVotingPower(for modelId: VoteCardId, voteResult: VoteResult) {
+        rootView.cardsStack.dismissTopIf(cardId: modelId, voteResult: voteResult)
+    }
 }
 
 // MARK: Private

@@ -9,11 +9,11 @@ final class SwipeGovVotingListPresenter {
     private let interactor: SwipeGovVotingListInteractorInputProtocol
     private let localizationManager: LocalizationManagerProtocol
     private let chain: ChainModel
-    private let metaAccount: MetaAccountModel
 
     private let observableState: ReferendumsObservableState
 
-    private let viewModelFactory: SwipeGovVotingListViewModelFactory
+    private let votingListViewModelFactory: SwipeGovVotingListViewModelFactory
+    private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private var votingListItems: [VotingBasketItemLocal] = []
     private var referendumsMetadata: [ReferendumMetadataLocal] = []
@@ -24,16 +24,16 @@ final class SwipeGovVotingListPresenter {
         wireframe: SwipeGovVotingListWireframeProtocol,
         chain: ChainModel,
         observableState: ReferendumsObservableState,
-        metaAccount: MetaAccountModel,
-        viewModelFactory: SwipeGovVotingListViewModelFactory,
+        votingListViewModelFactory: SwipeGovVotingListViewModelFactory,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
         self.observableState = observableState
-        self.metaAccount = metaAccount
-        self.viewModelFactory = viewModelFactory
+        self.votingListViewModelFactory = votingListViewModelFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
         self.localizationManager = localizationManager
     }
 }
@@ -63,18 +63,8 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func vote() {
-        validateBalanceSufficient { [weak self] in
-            guard let self else { return }
-
-            let initData = ReferendumVotingInitData(
-                votingItems: votingListItems
-            )
-
-            wireframe.showConfirmation(
-                from: view,
-                initData: initData
-            )
-        }
+        let initData = ReferendumVotingInitData(votingItems: votingListItems)
+        wireframe.showConfirmation(from: view, initData: initData)
     }
 }
 
@@ -101,7 +91,6 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
                 wireframe.close(view: view)
             } else {
                 updateView()
-                validateBalanceSufficient()
             }
         }
 
@@ -114,25 +103,6 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
 
     func didReceive(_ assetBalance: AssetBalance?) {
         balance = assetBalance
-
-        validateBalanceSufficient()
-    }
-
-    func didReceiveUnavailableItems() {
-        let languages = localizationManager.selectedLocale.rLanguages
-
-        wireframe.present(
-            message: R.string.localizable.govVotingListItemUnavailableAlertMessage(
-                preferredLanguages: languages
-            ),
-            title: R.string.localizable.govVotingListItemUnavailableAlertTitle(
-                preferredLanguages: languages
-            ),
-            closeAction: R.string.localizable.commonOk(
-                preferredLanguages: languages
-            ),
-            from: view
-        )
     }
 
     func didReceive(_ error: SwipeGovVotingListInteractorError) {
@@ -175,7 +145,7 @@ private extension SwipeGovVotingListPresenter {
             return
         }
 
-        let viewModel = viewModelFactory.createListViewModel(
+        let viewModel = votingListViewModelFactory.createListViewModel(
             using: votingListItems,
             metadataItems: referendumsMetadata,
             chain: chain,
@@ -184,70 +154,11 @@ private extension SwipeGovVotingListPresenter {
 
         view?.didReceive(viewModel)
     }
-
-    func validateBalanceSufficient(_ closure: (() -> Void)? = nil) {
-        guard let balance else {
-            return
-        }
-
-        let invalidItems = lookForInvalidItems(in: votingListItems, for: balance)
-
-        if !invalidItems.isEmpty, let max = invalidItems.max(by: { $0.amount < $1.amount }) {
-            let votingPower = VotingPowerLocal(
-                chainId: chain.chainId,
-                metaId: metaAccount.metaId,
-                conviction: max.conviction,
-                amount: max.amount
-            )
-
-            showBalanceAlert(
-                for: votingPower,
-                invalidItems: invalidItems
-            )
-        } else {
-            closure?()
-        }
-    }
-
-    func lookForInvalidItems(
-        in votingItems: [VotingBasketItemLocal],
-        for balance: AssetBalance
-    ) -> [VotingBasketItemLocal] {
-        votingItems.filter { $0.amount > balance.freeInPlank }
-    }
 }
 
 // MARK: Alerts
 
 private extension SwipeGovVotingListPresenter {
-    func showBalanceAlert(
-        for votingPower: VotingPowerLocal,
-        invalidItems: [VotingBasketItemLocal]
-    ) {
-        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
-            return
-        }
-
-        let model = SwipeGovBalanceAlertModel(
-            votingPower: votingPower,
-            invalidItems: invalidItems,
-            assetInfo: assetInfo,
-            changeAction: { [weak self] in
-                self?.wireframe.showSetup(
-                    from: self?.view,
-                    initData: .init(presetVotingPower: votingPower),
-                    changing: invalidItems
-                )
-            }
-        )
-
-        wireframe.presentBalanceAlert(
-            from: view,
-            model: model,
-            locale: localizationManager.selectedLocale
-        )
-    }
-
     func showRemoveAlert(for referendumId: ReferendumIdLocal) {
         guard let removeItem = votingListItems.first(
             where: { $0.referendumId == referendumId }
@@ -269,17 +180,17 @@ private extension SwipeGovVotingListPresenter {
     }
 
     func showReferendaExcluded(completion: @escaping () -> Void) {
-        guard
-            let balance,
-            let assetInfo = chain.utilityAssetDisplayInfo()
-        else {
+        guard let balance, let assetInfo = chain.utilityAssetDisplayInfo() else {
             return
         }
 
+        let availableBalance = balanceViewModelFactory.amountFromValue(
+            balance.availableForOpenGov.decimal(assetInfo: assetInfo)
+        ).value(for: localizationManager.selectedLocale)
+
         wireframe.presentReferendaExcluded(
             from: view,
-            availableBalance: balance.transferable,
-            assetInfo: assetInfo,
+            availableBalance: availableBalance,
             locale: localizationManager.selectedLocale,
             action: completion
         )

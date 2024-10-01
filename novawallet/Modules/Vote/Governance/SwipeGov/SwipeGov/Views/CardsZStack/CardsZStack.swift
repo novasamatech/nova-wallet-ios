@@ -9,7 +9,8 @@ final class CardsZStack: UIView {
     private(set) var viewPool: [VoteCardView] = []
     private(set) var viewModelsQueue: [VoteCardViewModel] = []
 
-    private var validateAction: ((VoteCardViewModel?) -> Bool)?
+    private var validateAction: VoteCardValidationClosure?
+    private var panState = VoteCardPanState()
 
     init(maxCardsAlive: Int = 3) {
         self.maxCardsAlive = maxCardsAlive
@@ -31,7 +32,7 @@ final class CardsZStack: UIView {
         topView.didBecomeTopView()
     }
 
-    func setupValidationAction(_ closure: ((VoteCardViewModel?) -> Bool)?) {
+    func setupValidationAction(_ closure: VoteCardValidationClosure?) {
         validateAction = closure
     }
 
@@ -56,19 +57,21 @@ final class CardsZStack: UIView {
     ) {
         guard
             let topView = currentTopView(startionFrom: stackedViews.endIndex - 1),
-            let id = topView.viewModel?.id
+            let viewModel = topView.viewModel
         else {
             return
         }
 
-        if let validateAction, !validateAction(topView.viewModel) {
+        if let validateAction, !validateAction(viewModel, VoteResult(from: direction)) {
             createHapticFeedback(style: .heavy)
-            animateTransformIdentity(for: topView)
+            resetPanCardState(for: topView)
 
             return
         }
 
-        dismissingIds.insert(id)
+        topView.didPredict(vote: .init(from: direction))
+
+        dismissingIds.insert(viewModel.id)
 
         createHapticFeedback(style: .medium)
         animateCardDismiss(topView, direction: direction) { [weak self] in
@@ -145,6 +148,17 @@ final class CardsZStack: UIView {
         }
 
         manageStack()
+    }
+
+    func dismissTopIf(cardId: VoteCardId, voteResult: VoteResult) {
+        guard
+            let topView = currentTopView(startionFrom: stackedViews.endIndex - 1),
+            topView.viewModel?.id == cardId
+        else {
+            return
+        }
+
+        dismissTopCard(to: voteResult.dismissalDirection)
     }
 }
 
@@ -297,31 +311,40 @@ private extension CardsZStack {
         let translation = gestureRecognizer.translation(in: view)
 
         switch gestureRecognizer.state {
+        case .began:
+            panState.onPanBegin(point: translation)
         case .changed:
+            panState.onPanChange(point: translation)
+
             view.transform = CGAffineTransform(
                 translationX: translation.x,
                 y: translation.y
             )
+
+            if let direction = panState.predictDirection() {
+                view.didPredict(vote: .init(from: direction))
+            } else {
+                view.didResetVote()
+            }
         case .ended:
-            onPanGestureEnded(for: view, with: translation)
+            panState.onPanChange(point: translation)
+
+            if let direction = panState.predictDirection() {
+                dismissTopCard(to: direction)
+            } else {
+                resetPanCardState(for: view)
+            }
+        case .failed, .cancelled, .possible:
+            resetPanCardState(for: view)
         default:
             break
         }
     }
 
-    func onPanGestureEnded(
-        for view: VoteCardView,
-        with translation: CGPoint
-    ) {
-        if translation.y <= Constants.topMostY {
-            dismissTopCard(to: .top)
-        } else if translation.x <= Constants.leftMostX {
-            dismissTopCard(to: .left)
-        } else if translation.x >= Constants.rightMostX {
-            dismissTopCard(to: .right)
-        } else {
-            animateTransformIdentity(for: view)
-        }
+    func resetPanCardState(for view: VoteCardView) {
+        view.didResetVote()
+
+        animateTransformIdentity(for: view)
     }
 
     func animateTransformIdentity(for view: UIView) {
@@ -353,6 +376,6 @@ extension CardsZStack {
 
     struct Actions {
         let emptyViewAction: () -> Void
-        let validationClosure: (VoteCardViewModel?) -> Bool
+        let validationClosure: VoteCardValidationClosure
     }
 }

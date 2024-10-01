@@ -174,10 +174,8 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             for: state,
             wallet: wallet
         )
-        let wireframe = ReferendumsWireframe(
-            state: state,
-            metaAccount: wallet
-        )
+
+        let wireframe = ReferendumsWireframe(state: state)
 
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
 

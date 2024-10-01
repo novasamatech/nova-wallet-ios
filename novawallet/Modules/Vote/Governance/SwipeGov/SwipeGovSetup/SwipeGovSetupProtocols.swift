@@ -19,7 +19,7 @@ protocol SwipeGovSetupInteractorInputProtocol: AnyObject {
 }
 
 protocol SwipeGovSetupInteractorOutputProtocol: AnyObject {
-    func didProcessVotingPower()
+    func didProcessVotingPower(_ votingPower: VotingPowerLocal)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveLockStateDiff(_ stateDiff: GovernanceLockStateDiff)
@@ -34,6 +34,7 @@ protocol SwipeGovSetupInteractorOutputProtocol: AnyObject {
 protocol SwipeGovSetupWireframeProtocol: BaseReferendumVoteSetupWireframeProtocol, ModalAlertPresenting {
     func showSwipeGov(
         from view: ControllerBackedProtocol?,
+        newVotingPower: VotingPowerLocal,
         locale: Locale
     )
 }

@@ -41,10 +41,7 @@ class SwipeGovSetupInteractor: BaseSwipeGovSetupInteractor {
     }
 
     override func process(votingPower: VotingPowerLocal) {
-        let saveOperation = repository.saveOperation(
-            { [votingPower] },
-            { [] }
-        )
+        let saveOperation = repository.saveOperation({ [votingPower] }, { [] })
 
         execute(
             operation: saveOperation,
@@ -53,7 +50,7 @@ class SwipeGovSetupInteractor: BaseSwipeGovSetupInteractor {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didProcessVotingPower()
+                self?.presenter?.didProcessVotingPower(votingPower)
             case let .failure(error):
                 self?.presenter?.didReceiveBaseError(.votingPowerSaveFailed(error))
             }

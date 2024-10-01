@@ -32,3 +32,10 @@ struct GovernanceVoteBatchValidatingParams {
             .amount()
     }
 }
+
+struct GovMaxAmountValidatingParams {
+    let assetBalance: AssetBalance?
+    let votingAmount: BigUInt?
+    let fee: ExtrinsicFeeProtocol?
+    let assetInfo: AssetBalanceDisplayInfo
+}

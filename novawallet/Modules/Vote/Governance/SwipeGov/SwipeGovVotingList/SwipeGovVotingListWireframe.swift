@@ -14,12 +14,12 @@ final class SwipeGovVotingListWireframe: SwipeGovVotingListWireframeProtocol {
     func showSetup(
         from view: ControllerBackedProtocol?,
         initData: ReferendumVotingInitData,
-        changing invalidItems: [VotingBasketItemLocal]
+        changing _: [VotingBasketItemLocal]
     ) {
         guard let setupView = SwipeGovSetupViewFactory.createView(
             for: sharedState,
             initData: initData,
-            changing: invalidItems
+            newVotingPowerClosure: nil
         ) else {
             return
         }

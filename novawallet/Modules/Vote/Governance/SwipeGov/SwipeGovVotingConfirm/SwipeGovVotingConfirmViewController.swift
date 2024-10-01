@@ -29,12 +29,6 @@ final class SwipeGovVotingConfirmViewController: BaseReferendumVoteConfirmViewCo
         view = SwipeGovVotingConfirmViewLayout()
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        presenter.setup()
-    }
-
     override func setupLocalization() {
         super.setupLocalization()
 

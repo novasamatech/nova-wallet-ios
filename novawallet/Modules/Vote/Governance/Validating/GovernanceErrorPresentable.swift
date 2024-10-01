@@ -9,7 +9,8 @@ protocol GovernanceErrorPresentable: BaseErrorPresentable {
 
     func presentNotEnoughTokensToBatchVote(
         from view: ControllerBackedProtocol,
-        available: String,
+        maxAvailable: String,
+        fee: String,
         locale: Locale?,
         action: @escaping () -> Void
     )
@@ -69,15 +70,18 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
 
     func presentNotEnoughTokensToBatchVote(
         from view: ControllerBackedProtocol,
-        available: String,
+        maxAvailable: String,
+        fee: String,
         locale: Locale?,
         action: @escaping () -> Void
     ) {
-        let title = R.string.localizable.commonAmountTooBig(
+        let title = R.string.localizable.commonInsufficientBalance(
             preferredLanguages: locale?.rLanguages
         )
-        let message = R.string.localizable.govNotEnoughVoteTokens(
-            available,
+
+        let message = R.string.localizable.commonUseMaxDueFeeMessage(
+            maxAvailable,
+            fee,
             preferredLanguages: locale?.rLanguages
         )
 
