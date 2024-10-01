@@ -1749,7 +1749,6 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li referendos";
 "swipe.gov.banner.message" = "Deslize para votar nos referendos com nossos resumos de IA. Rápido e fácil!";
-"common.counter" = "%li de %li";
 "gov.voting.power.set.success.message" = "Poder de voto ajustado com sucesso!";
 "gov.voting.list.item.remove.alert.title" = "Remover referendo #%d da lista de votos?";
 "swipe.gov.insufficient.balance.alert.message" = "Você não tem saldo suficiente para votar com o poder de voto atual %@ (%@). Por favor, altere o poder de voto ou adicione mais fundos à sua carteira.";
@@ -1757,3 +1756,4 @@
 "gov.referendum.completed.title.with.index" = "Referendo #%li completado";
 "gov.referendum.completed.message.with.index" = "Referendo #%li foi completado e a votação está encerrada";
 "common.use.max.due.fee.message" = "Você pode usar até %@ pois você precisa pagar %@ pela taxa de rede.";
+"common.counter" = "%d de %d";

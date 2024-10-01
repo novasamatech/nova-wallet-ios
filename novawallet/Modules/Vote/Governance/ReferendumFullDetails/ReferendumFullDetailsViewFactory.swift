@@ -31,8 +31,7 @@ struct ReferendumFullDetailsViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetInfo,
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
@@ -44,7 +43,7 @@ struct ReferendumFullDetailsViewFactory {
             actionDetails: actionDetails,
             metadata: metadata,
             identities: identities,
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFacade: balanceViewModelFacade,
             addressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared

@@ -1749,7 +1749,6 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li 개 국민투표";
 "swipe.gov.banner.message" = "우리의 AI 요약으로 국민투표에 투표하려면 스와이프하세요. 빠르고 쉬움!";
-"common.counter" = "%li 중 %li";
 "gov.voting.power.set.success.message" = "투표 권한이 성공적으로 설정되었습니다!";
 "gov.voting.list.item.remove.alert.title" = "투표 목록에서 국민투표 #%d 제거?";
 "swipe.gov.insufficient.balance.alert.message" = "현재 투표 권한 %@ (%@)으로 투표하기에 잔액이 충분하지 않습니다. 투표 권한을 변경하거나 지갑에 더 많은 자금을 추가하세요.";
@@ -1757,3 +1756,4 @@
 "gov.referendum.completed.title.with.index" = "국민투표 #%li 완료";
 "gov.referendum.completed.message.with.index" = "국민투표 #%li이 완료되었고 투표가 종료되었습니다";
 "common.use.max.due.fee.message" = "네트워크 수수료로 %@를 지불해야 하므로 %@까지 사용할 수 있습니다.";
+"common.counter" = "%d 중 %d";

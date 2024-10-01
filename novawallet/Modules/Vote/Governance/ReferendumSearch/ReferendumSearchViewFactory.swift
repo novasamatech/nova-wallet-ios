@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct ReferendumSearchViewFactory {
     static func createView(
-        state: Observable<ReferendumsState>,
+        state: Observable<ReferendumsViewState>,
         governanceState: GovernanceSharedState,
         delegate: ReferendumSearchDelegate?
     ) -> ReferendumSearchViewProtocol? {

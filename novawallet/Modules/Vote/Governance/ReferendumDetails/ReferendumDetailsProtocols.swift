@@ -44,7 +44,7 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     )
     func didReceiveMetadata(_ referendumMetadata: ReferendumMetadataLocal?)
     func didReceiveIdentities(_ identities: [AccountAddress: AccountIdentity])
-    func didReceivePrice(_ price: PriceData?)
+    func didReceiveRequestedAmountPrice(_ price: PriceData?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveDApps(_ dApps: [GovernanceDApps.DApp])

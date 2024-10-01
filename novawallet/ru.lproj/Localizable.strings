@@ -1749,7 +1749,6 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li референдума";
 "swipe.gov.banner.message" = "Свайпайте, чтобы проголосовать за референдумы с нашим резюме от AI. Быстро и легко!";
-"common.counter" = "%li из %li";
 "gov.voting.power.set.success.message" = "Мощность голосования успешно установлена!";
 "gov.voting.list.item.remove.alert.title" = "Удалить референдум #%d из списка голосований?";
 "swipe.gov.insufficient.balance.alert.message" = "У вас недостаточно баланса для голосования с текущей мощностью голосования %@ (%@). Пожалуйста, измените мощность голосования или добавьте больше средств на ваш кошелек.";
@@ -1757,3 +1756,7 @@
 "gov.referendum.completed.title.with.index" = "Референдум #%li завершен";
 "gov.referendum.completed.message.with.index" = "Референдум №%li завершен, голосование окончено";
 "common.use.max.due.fee.message" = "Вы можете использовать до %@, так как вам нужно заплатить %@ комиссию сети.";
+"common.counter" = "%d из %d";
+"voting.list.widget.title" = "Список голосований";
+"voting.list.widget.title.empty" = "Нет голосований";
+"vote.card.requested" = "Запрошено:";

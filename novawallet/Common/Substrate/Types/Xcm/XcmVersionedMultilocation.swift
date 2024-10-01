@@ -5,6 +5,7 @@ extension Xcm {
     enum VersionedMultilocation: Codable {
         case V1(Xcm.Multilocation)
         case V2(Xcm.Multilocation)
+        case V3(XcmV3.Multilocation)
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -16,11 +17,35 @@ extension Xcm {
             case let .V2(multilocation):
                 try container.encode("V2")
                 try container.encode(multilocation)
+            case let .V3(multilocation):
+                try container.encode("V3")
+                try container.encode(multilocation)
             }
         }
 
-        init(from _: Decoder) throws {
-            fatalError("Decoding unsupported")
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "V1":
+                let multilocation = try container.decode(Xcm.Multilocation.self)
+                self = .V1(multilocation)
+            case "V2":
+                let multilocation = try container.decode(Xcm.Multilocation.self)
+                self = .V2(multilocation)
+            case "V3":
+                let multilocation = try container.decode(XcmV3.Multilocation.self)
+                self = .V3(multilocation)
+            default:
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: container.codingPath,
+                        debugDescription: "Unexpected version: \(type)"
+                    )
+                )
+            }
         }
 
         private func getDestinationAndBeneficiary(
@@ -40,7 +65,24 @@ extension Xcm {
             return (destination, benefiary)
         }
 
-        func separatingDestinationBenifiary() -> (VersionedMultilocation, VersionedMultilocation) {
+        private func getV3DestinationAndBeneficiary(
+            from fullMultilocation: XcmV3.Multilocation
+        ) -> (XcmV3.Multilocation, XcmV3.Multilocation) {
+            let (destinationInterior, beneficiaryInterior) = fullMultilocation.interior.lastComponent()
+            let destination = XcmV3.Multilocation(
+                parents: fullMultilocation.parents,
+                interior: destinationInterior
+            )
+
+            let benefiary = XcmV3.Multilocation(
+                parents: 0,
+                interior: beneficiaryInterior
+            )
+
+            return (destination, benefiary)
+        }
+
+        func separatingDestinationBenificiary() -> (VersionedMultilocation, VersionedMultilocation) {
             switch self {
             case let .V1(fullMultilocation):
                 let (destination, beneficiary) = getDestinationAndBeneficiary(from: fullMultilocation)
@@ -48,6 +90,9 @@ extension Xcm {
             case let .V2(fullMultilocation):
                 let (destination, beneficiary) = getDestinationAndBeneficiary(from: fullMultilocation)
                 return (.V2(destination), .V2(beneficiary))
+            case let .V3(fullMultilocation):
+                let (destination, beneficiary) = getV3DestinationAndBeneficiary(from: fullMultilocation)
+                return (.V3(destination), .V3(beneficiary))
             }
         }
     }

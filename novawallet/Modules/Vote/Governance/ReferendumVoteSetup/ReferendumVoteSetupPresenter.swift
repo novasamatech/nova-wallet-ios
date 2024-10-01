@@ -1,5 +1,4 @@
 import Foundation
-import BigInt
 import SoraFoundation
 
 final class ReferendumVoteSetupPresenter {
@@ -287,7 +286,7 @@ extension ReferendumVoteSetupPresenter {
             return
         }
 
-        interactor.estimateFee(for: newVote.voteAction)
+        interactor.estimateFee(for: [newVote])
     }
 
     private func refreshLockDiff() {
@@ -297,7 +296,7 @@ extension ReferendumVoteSetupPresenter {
 
         interactor.refreshLockDiff(
             for: trackVoting,
-            newVote: newVote,
+            newVotes: [newVote],
             blockHash: votesResult?.blockHash
         )
     }
@@ -444,20 +443,37 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 }
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProtocol {
+    func didReceiveVotingReferendumsState(_ state: ReferendumsState) {
+        referendum = state.referendums[referendumIndex]
+
+        let updateAndRefreshClosure: () -> Void = {
+            self.votesResult = state.voting
+            self.refreshLockDiff()
+        }
+
+        guard
+            let newVoting = state.voting?.value,
+            let votesResult = votesResult?.value,
+            newVoting.hasDiff(from: votesResult)
+        else {
+            if votesResult?.value == nil {
+                updateAndRefreshClosure()
+            } else {
+                votesResult = state.voting
+            }
+
+            return
+        }
+
+        updateAndRefreshClosure()
+    }
+
     func didReceiveLockStateDiff(_ diff: GovernanceLockStateDiff) {
         lockDiff = diff
 
         updateLockedAmountView()
         updateLockedPeriodView()
         provideReuseLocksViewModel()
-    }
-
-    func didReceiveAccountVotes(
-        _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>
-    ) {
-        votesResult = votes
-
-        refreshLockDiff()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
@@ -491,10 +507,6 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         priceData = price
 
         updateAmountPriceView()
-    }
-
-    func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
-        self.referendum = referendum
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {

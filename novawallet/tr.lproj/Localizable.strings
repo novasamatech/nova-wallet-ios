@@ -1749,7 +1749,6 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li referandum";
 "swipe.gov.banner.message" = "Referandumlarda oy vermek için AI özetlerimizle kaydırın. Hızlı ve kolay!";
-"common.counter" = "%li / %li";
 "gov.voting.power.set.success.message" = "Oylama gücü başarıyla ayarlandı!";
 "gov.voting.list.item.remove.alert.title" = "Referandum #%d oy listesinden kaldırılsın mı?";
 "swipe.gov.insufficient.balance.alert.message" = "Mevcut oylama gücü %@ (%@) ile oy vermek için yeterli bakiyeniz yok. Lütfen oylama gücünü değiştirin veya cüzdanınıza daha fazla fon ekleyin.";
@@ -1757,3 +1756,4 @@
 "gov.referendum.completed.title.with.index" = "Referandum #%li tamamlandı";
 "gov.referendum.completed.message.with.index" = "Referandum #%li tamamlandı ve oylama sona erdi";
 "common.use.max.due.fee.message" = "%@ kadar kullanabilirsiniz çünkü ağ ücreti için %@ ödemeniz gerekiyor.";
+"common.counter" = "%d / %d";

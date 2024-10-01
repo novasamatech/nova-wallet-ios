@@ -1749,7 +1749,6 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li レファレンダ";
 "swipe.gov.banner.message" = "AIサマリーを使用して国民投票にすばやく簡単に投票しましょう！";
-"common.counter" = "%li の %li";
 "gov.voting.power.set.success.message" = "投票力が正常に設定されました！";
 "gov.voting.list.item.remove.alert.title" = "投票リストからレファレンダ #%d を削除しますか？";
 "swipe.gov.insufficient.balance.alert.message" = "現在の投票力 %@ (%@) で投票するのに十分な残高がありません。投票力を変更するか、ウォレットに追加の資金を入れてください。";
@@ -1757,3 +1756,4 @@
 "gov.referendum.completed.title.with.index" = "国民投票 #%li 完了";
 "gov.referendum.completed.message.with.index" = "国民投票 #%li は完了し、投票が終了しました。";
 "common.use.max.due.fee.message" = "ネットワーク手数料として %@ が必要なので、最大 %@ まで使用できます。";
+"common.counter" = "%d の %d";

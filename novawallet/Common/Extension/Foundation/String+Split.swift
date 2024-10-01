@@ -6,6 +6,7 @@ extension String {
         case space = " "
         case comma = ","
         case dot = "."
+        case dash = "-"
     }
 
     enum CompoundSeparator: String {

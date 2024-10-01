@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class ReferendumDetailsInteractor {
+final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
     weak var presenter: ReferendumDetailsInteractorOutputProtocol?
 
     private(set) var referendum: ReferendumLocal
@@ -22,9 +22,10 @@ final class ReferendumDetailsInteractor {
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
     let totalVotesFactory: GovernanceTotalVotesFactoryProtocol?
     let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
+    let spendingAmountExtractor: GovSpendingExtracting
     let operationQueue: OperationQueue
 
-    private var priceProvider: StreamableProvider<PriceData>?
+    private var actionPriceProvider: StreamableProvider<PriceData>?
     private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 
@@ -43,6 +44,7 @@ final class ReferendumDetailsInteractor {
         selectedAccount: ChainAccountResponse?,
         option: GovernanceSelectedOption,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
+        spendingAmountExtractor: GovSpendingExtracting,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
@@ -61,6 +63,7 @@ final class ReferendumDetailsInteractor {
         self.selectedAccount = selectedAccount
         self.option = option
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
+        self.spendingAmountExtractor = spendingAmountExtractor
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.identityProxyFactory = identityProxyFactory
@@ -143,6 +146,16 @@ final class ReferendumDetailsInteractor {
                 break
             }
         }
+    }
+
+    private func updatePriceSubscription(for chainAsset: ChainAsset?) {
+        clear(streamableProvider: &actionPriceProvider)
+
+        guard let priceId = chainAsset?.asset.priceId else {
+            return
+        }
+
+        actionPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
     private func handleDAppsUpdate(_ updatedDApps: GovernanceDAppList) {
@@ -240,7 +253,8 @@ final class ReferendumDetailsInteractor {
         let wrapper = actionDetailsOperationFactory.fetchActionWrapper(
             for: referendum,
             connection: connection,
-            runtimeProvider: runtimeProvider
+            runtimeProvider: runtimeProvider,
+            spendAmountExtractor: spendingAmountExtractor
         )
 
         executeCancellable(
@@ -249,11 +263,21 @@ final class ReferendumDetailsInteractor {
             backingCallIn: actionDetailsCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
             switch result {
             case let .success(actionDetails):
-                self?.presenter?.didReceiveActionDetails(actionDetails)
+                if let actionAsset = actionDetails.requestedAmount()?.otherChainAssetOrCurrentUtility(
+                    from: self.chain
+                ) {
+                    updatePriceSubscription(for: actionAsset)
+                }
+
+                self.presenter?.didReceiveActionDetails(actionDetails)
             case let .failure(error):
-                self?.presenter?.didReceiveError(.actionDetailsFailed(error))
+                self.presenter?.didReceiveError(.actionDetailsFailed(error))
             }
         }
     }
@@ -263,10 +287,6 @@ final class ReferendumDetailsInteractor {
     }
 
     private func makeSubscriptions() {
-        if let priceId = chain.utilityAsset()?.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-        }
-
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
 
         subscribeReferendum()
@@ -363,9 +383,6 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
     }
 
     func remakeSubscriptions() {
-        priceProvider?.removeObserver(self)
-        priceProvider = nil
-
         metadataProvider?.removeObserver(self)
         metadataProvider = nil
 
@@ -393,7 +410,7 @@ extension ReferendumDetailsInteractor: PriceLocalSubscriptionHandler, PriceLocal
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         switch result {
         case let .success(price):
-            presenter?.didReceivePrice(price)
+            presenter?.didReceiveRequestedAmountPrice(price)
         case let .failure(error):
             presenter?.didReceiveError(.priceFailed(error))
         }
@@ -418,9 +435,7 @@ extension ReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber, GovMet
 extension ReferendumDetailsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         if presenter != nil {
-            if let priceId = chain.utilityAsset()?.priceId {
-                priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-            }
+            updateActionDetails()
         }
     }
 }

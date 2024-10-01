@@ -2,6 +2,7 @@ import UIKit
 
 enum ExtrinsicSubmissionPresentingAction {
     case dismiss
+    case dismissAllModals
     case pop
     case popBack
     case popBaseAndDismiss
@@ -30,6 +31,12 @@ extension ExtrinsicSubmissionPresenting where Self: ModalAlertPresenting {
 
             presenter?.dismiss(animated: true) { [weak self] in
                 self?.presentSuccessNotification(title, from: presenter, completion: nil)
+            }
+        case .dismissAllModals:
+            let root = view?.controller.view.window?.rootViewController
+
+            root?.dismiss(animated: true) { [weak self] in
+                self?.presentSuccessNotification(title, from: root, completion: nil)
             }
         case .pop:
             let presenter = view?.controller.navigationController
