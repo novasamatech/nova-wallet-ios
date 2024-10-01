@@ -1609,7 +1609,7 @@
 "cloud.backup.not.available.title" = "iCloud 인증 실패";
 "cloud.backup.not.available.message" = "iCloud 계정에 로그인했는지 확인하십시오";
 "cloud.backup.not.enough.storage.message" = "사용할 수 있는 iCloud 저장 공간이 충분한지 확인하십시오. 설정에서 저장 공간을 관리할 수 있습니다.";
-"ledger.instructions.step4.highlighted" = "계정을 선택";
+"ledger.instructions.step4.highlighted" = "<font>계정을 선택</font>";
 "cloud.backup.create.title" = "백업 비밀번호 생성";
 "cloud.backup.create.hint.min.char" = "최소 %@ 문자";
 "cloud.backup.create.hint.numbers" = "숫자";
