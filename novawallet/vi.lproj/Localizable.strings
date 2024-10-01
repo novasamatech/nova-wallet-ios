@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "Không vượt quá hạn mức";
 "staking.recommended.hint3" = "Có danh tính trên chuỗi";
 "staking.recommended.hint4" = "Không bị slashed";
-"staking.recommended.validators.counter" = "%@ của %@";
 "staking.recommended.custom.title" = "Chọn người xác thực khác";
 "fee.not.yet.loaded.title" = "Đang tính toán phí";
 "fee.not.yet.loaded.message" = "Vui lòng chờ cho đến khi phí được tính toán";
@@ -1731,3 +1730,4 @@
 "gov.vote.conviction.hint.title" = "Độ xác tín sẽ được đặt là 0.1x khi <font>bỏ phiếu Abstain</font>";
 "cloud.backup.password.confirm.title" = "Xác nhận mật khẩu sao lưu";
 "cloud.backup.password.confirm.details" = "Vui lòng nhập mật khẩu bạn đã tạo ở màn hình trước";
+"common.counter" = "%d của %d";

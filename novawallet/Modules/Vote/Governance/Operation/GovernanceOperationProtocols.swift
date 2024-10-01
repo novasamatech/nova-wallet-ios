@@ -36,14 +36,15 @@ protocol ReferendumActionOperationFactoryProtocol {
     func fetchActionWrapper(
         for referendum: ReferendumLocal,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol
+        runtimeProvider: RuntimeProviderProtocol,
+        spendAmountExtractor: GovSpendingExtracting
     ) -> CompoundOperationWrapper<ReferendumActionLocal>
 }
 
 protocol GovernanceLockStateFactoryProtocol {
     func calculateLockStateDiff(
         for trackVotes: ReferendumTracksVotingDistribution,
-        newVote: ReferendumNewVote?,
+        newVotes: [ReferendumNewVote]?,
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data?

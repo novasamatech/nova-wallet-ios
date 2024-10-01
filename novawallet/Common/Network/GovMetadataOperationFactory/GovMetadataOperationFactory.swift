@@ -10,3 +10,11 @@ protocol GovMetadataOperationFactoryProtocol {
         parameters: JSON?
     ) -> BaseOperation<ReferendumMetadataLocal?>
 }
+
+protocol OpenGovSummaryOperationFactoryProtocol {
+    func createSummaryOperation(for referendumId: ReferendumIdLocal) -> BaseOperation<ReferendumSummary?>
+}
+
+struct ReferendumSummary: Decodable {
+    let summary: String
+}

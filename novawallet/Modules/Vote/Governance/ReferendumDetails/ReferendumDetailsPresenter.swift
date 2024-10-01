@@ -6,7 +6,7 @@ final class ReferendumDetailsPresenter {
     weak var view: ReferendumDetailsViewProtocol?
     let wireframe: ReferendumDetailsWireframeProtocol
     let interactor: ReferendumDetailsInteractorInputProtocol
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
     let referendumViewModelFactory: ReferendumsModelFactoryProtocol
     let referendumVotesFactory: ReferendumVotesViewModelFactoryProtocol
@@ -29,7 +29,7 @@ final class ReferendumDetailsPresenter {
     private var offchainVoting: GovernanceOffchainVotesLocal.Single?
     private var referendumMetadata: ReferendumMetadataLocal?
     private var identities: [AccountAddress: AccountIdentity]?
-    private var price: PriceData?
+    private var requestedAmountPrice: PriceData?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var dApps: [GovernanceDApps.DApp]?
@@ -50,7 +50,7 @@ final class ReferendumDetailsPresenter {
         interactor: ReferendumDetailsInteractorInputProtocol,
         wireframe: ReferendumDetailsWireframeProtocol,
         referendumViewModelFactory: ReferendumsModelFactoryProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
         referendumVotesFactory: ReferendumVotesViewModelFactoryProtocol,
         referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol,
@@ -68,7 +68,7 @@ final class ReferendumDetailsPresenter {
         self.accountManagementFilter = accountManagementFilter
         self.referendumViewModelFactory = referendumViewModelFactory
         self.referendumVotesFactory = referendumVotesFactory
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceViewModelFacade = balanceViewModelFacade
         self.referendumFormatter = referendumFormatter
         self.referendumTimelineViewModelFactory = referendumTimelineViewModelFactory
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
@@ -154,7 +154,7 @@ final class ReferendumDetailsPresenter {
             accountIds.insert(proposer)
         }
 
-        if let beneficiary = actionDetails?.beneficiary?.accountId {
+        if let beneficiary = actionDetails?.beneficiary {
             accountIds.insert(beneficiary)
         }
 
@@ -218,16 +218,17 @@ extension ReferendumDetailsPresenter {
 
     private func provideRequestedAmount() {
         guard
-            let requestedAmount = actionDetails?.spentAmount(),
-            let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
-            let decimalAmount = Decimal.fromSubstrateAmount(requestedAmount, precision: precision) else {
+            let requestedAmount = actionDetails?.requestedAmount(),
+            let chainAssetInfo = requestedAmount.otherChainAssetOrCurrentUtility(from: chain)?.assetDisplayInfo else {
             view?.didReceive(requestedAmount: nil)
             return
         }
 
-        let balanceViewModel = balanceViewModelFactory.balanceFromPrice(decimalAmount, priceData: price).value(
-            for: selectedLocale
-        )
+        let balanceViewModel = balanceViewModelFacade.balanceFromPrice(
+            targetAssetInfo: chainAssetInfo,
+            amount: requestedAmount.value.decimal(assetInfo: chainAssetInfo),
+            priceData: requestedAmountPrice
+        ).value(for: selectedLocale)
 
         let viewModel: RequestedAmountRow.Model = .init(
             title: R.string.localizable.commonRequestedAmount(preferredLanguages: selectedLocale.rLanguages),
@@ -568,8 +569,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         provideTitleViewModel()
     }
 
-    func didReceivePrice(_ price: PriceData?) {
-        self.price = price
+    func didReceiveRequestedAmountPrice(_ price: PriceData?) {
+        requestedAmountPrice = price
 
         provideRequestedAmount()
     }

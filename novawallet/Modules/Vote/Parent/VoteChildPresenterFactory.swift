@@ -170,7 +170,11 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
     ) -> VoteChildPresenterProtocol? {
         let state = GovernanceSharedState()
 
-        let interactor = createGovernanceInteractor(for: state, wallet: wallet)
+        let interactor = createGovernanceInteractor(
+            for: state,
+            wallet: wallet
+        )
+
         let wireframe = ReferendumsWireframe(state: state)
 
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
@@ -195,10 +199,14 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             assetBalanceFormatterFactory: assetBalanceFormatterFactory
         )
 
+        let swipeGovViewModelFactory = SwipeGovViewModelFactory()
+
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            observableState: state.observableState,
             viewModelFactory: viewModelFactory,
+            swipeGovViewModelFactory: swipeGovViewModelFactory,
             activityViewModelFactory: activityViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,

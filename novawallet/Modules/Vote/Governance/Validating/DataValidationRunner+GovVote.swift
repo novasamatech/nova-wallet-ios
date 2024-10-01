@@ -27,7 +27,11 @@ extension DataValidationRunner {
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             ),
-            factory.referendumNotEnded(params.referendum, locale: selectedLocale),
+            factory.referendumNotEnded(
+                params.referendum,
+                includesIndex: false,
+                locale: selectedLocale
+            ),
             factory.notDelegating(
                 params.votes,
                 track: params.referendum?.trackId,
@@ -49,6 +53,62 @@ extension DataValidationRunner {
         runner.runValidation(notifyingOnSuccess: successClosure)
     }
 
+    static func validateVotesBatch(
+        factory: GovernanceValidatorFactoryProtocol,
+        params: GovernanceVoteBatchValidatingParams,
+        selectedLocale: Locale,
+        handlers: GovBatchVoteValidatingHandlers,
+        successClosure: @escaping DataValidationRunnerCompletion
+    ) {
+        var validators: [DataValidating] = [
+            factory.has(
+                fee: params.fee,
+                locale: selectedLocale,
+                onError: handlers.feeErrorClosure
+            ),
+            factory.enoughTokensForBatchVoting(
+                .init(
+                    assetBalance: params.assetBalance,
+                    votingAmount: params.maxAmount,
+                    fee: params.fee,
+                    assetInfo: params.assetInfo
+                ),
+                locale: selectedLocale,
+                maxAmountErrorClosure: handlers.maxAmountUpdateClosure
+            )
+        ]
+
+        let notEndedValidations = params.referendums?.map {
+            factory.referendumNotEnded(
+                $0,
+                includesIndex: true,
+                locale: selectedLocale
+            )
+        }
+        let notDelegatingValidations = params.referendums?.map {
+            factory.notDelegating(
+                params.votes,
+                track: $0.trackId,
+                locale: selectedLocale
+            )
+        }
+        let maxVotesNotReachedValidations = params.referendums?.map {
+            factory.maxVotesNotReached(
+                params.votes,
+                track: $0.trackId,
+                locale: selectedLocale
+            )
+        }
+
+        validators.append(contentsOf: notEndedValidations ?? [])
+        validators.append(contentsOf: notDelegatingValidations ?? [])
+        validators.append(contentsOf: maxVotesNotReachedValidations ?? [])
+
+        let runner = DataValidationRunner(validators: validators)
+
+        runner.runValidation(notifyingOnSuccess: successClosure)
+    }
+
     static func validateDelegate(
         factory: GovernanceValidatorFactoryProtocol,
         params: GovernanceDelegateValidatingParams,
@@ -63,7 +123,11 @@ extension DataValidationRunner {
                 assetInfo: params.assetInfo,
                 locale: selectedLocale
             ),
-            factory.has(fee: params.fee, locale: selectedLocale, onError: feeErrorClosure),
+            factory.has(
+                fee: params.fee,
+                locale: selectedLocale,
+                onError: feeErrorClosure
+            ),
             factory.enoughTokensForVotingAndFee(
                 params.assetBalance,
                 votingAmount: params.newDelegation?.balance,
@@ -105,6 +169,24 @@ extension DataValidationRunner {
                 params.votes,
                 tracks: params.selectedTracks,
                 delegateId: params.delegateId,
+                locale: selectedLocale
+            )
+        ])
+
+        runner.runValidation(notifyingOnSuccess: successClosure)
+    }
+
+    static func validateVotingPower(
+        factory: GovernanceValidatorFactoryProtocol,
+        params: GovernanceVotePowerValidatingParams,
+        selectedLocale: Locale,
+        successClosure: @escaping DataValidationRunnerCompletion
+    ) {
+        let runner = DataValidationRunner(validators: [
+            factory.enoughTokensForVoting(
+                params.assetBalance,
+                votingAmount: params.votePower?.amount,
+                assetInfo: params.assetInfo,
                 locale: selectedLocale
             )
         ])

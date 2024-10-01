@@ -108,11 +108,14 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     private func switchFeeChainAssetIfNecessary() {
         guard
             let fee,
+            feeAssetChangeAvailable,
             !isManualFeeSet,
             !chainAsset.isUtilityAsset,
             feeAsset.isUtilityAsset,
             let utilityAssetMinBalance,
-            let senderUtilityAssetBalance
+            let senderUtilityAssetBalance,
+            let senderSendingAssetBalance,
+            senderSendingAssetBalance.transferable > 0
         else {
             return
         }
@@ -271,6 +274,13 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         super.didReceiveSendingAssetSenderBalance(balance)
 
         updateTransferableBalance()
+        switchFeeChainAssetIfNecessary()
+    }
+
+    override func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance) {
+        super.didReceiveUtilityAssetSenderBalance(balance)
+
+        switchFeeChainAssetIfNecessary()
     }
 
     override func didReceiveFee(result: Result<FeeOutputModel, Error>) {

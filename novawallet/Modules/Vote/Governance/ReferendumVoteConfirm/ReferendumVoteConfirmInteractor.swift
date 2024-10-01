@@ -2,15 +2,10 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
+final class ReferendumVoteConfirmInteractor: ReferendumObservingVoteInteractor {
     var presenter: ReferendumVoteConfirmInteractorOutputProtocol? {
-        get {
-            basePresenter as? ReferendumVoteConfirmInteractorOutputProtocol
-        }
-
-        set {
-            basePresenter = newValue
-        }
+        get { basePresenter as? ReferendumVoteConfirmInteractorOutputProtocol }
+        set { basePresenter = newValue }
     }
 
     let signer: SigningWrapperProtocol
@@ -18,11 +13,10 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
     private var locksSubscription: StreamableProvider<AssetLock>?
 
     init(
-        referendumIndex: ReferendumIdLocal,
+        observableState: ReferendumsObservableState,
         selectedAccount: MetaChainAccountResponse,
         chain: ChainModel,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
@@ -33,18 +27,17 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
         extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         signer: SigningWrapperProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
+        feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.signer = signer
 
         super.init(
-            referendumIndex: referendumIndex,
+            observableState: observableState,
             selectedAccount: selectedAccount,
             chain: chain,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            referendumsSubscriptionFactory: referendumsSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
@@ -103,26 +96,22 @@ final class ReferendumVoteConfirmInteractor: ReferendumVoteInteractor {
     }
 }
 
+// MARK: ReferendumVoteConfirmInteractorInputProtocol
+
 extension ReferendumVoteConfirmInteractor: ReferendumVoteConfirmInteractorInputProtocol {
-    func submit(vote: ReferendumVoteAction) {
-        let closure: ExtrinsicBuilderClosure = { [weak self] builder in
-            guard let strongSelf = self else {
-                return builder
-            }
+    func submit(vote: ReferendumNewVote) {
+        let splitter = createExtrinsicSplitter(for: [vote])
 
-            return try strongSelf.extrinsicFactory.vote(
-                vote,
-                referendum: strongSelf.referendumIndex,
-                builder: builder
-            )
-        }
-
-        extrinsicService.submit(closure, signer: signer, runningIn: .main) { [weak self] result in
-            switch result {
-            case let .success(hash):
-                self?.presenter?.didReceiveVotingHash(hash)
-            case let .failure(error):
+        extrinsicService.submitWithTxSplitter(
+            splitter,
+            signer: signer,
+            runningIn: .main
+        ) { [weak self] result in
+            if let error = result.errors().first {
                 self?.presenter?.didReceiveError(.submitVoteFailed(error))
+            } else {
+                let result = result.results.compactMap { try? $0.result.get() }.joined()
+                self?.presenter?.didReceiveVotingHash(result)
             }
         }
     }

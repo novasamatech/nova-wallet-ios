@@ -9,6 +9,17 @@ struct GovernanceSelectedOption: Equatable {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.chain.chainId == rhs.chain.chainId && lhs.type == rhs.type
     }
+
+    func supportsSwipeGov() -> Bool {
+        guard
+            let summaryAPIs = chain.externalApis?.referendumSummary(),
+            !summaryAPIs.isEmpty
+        else {
+            return false
+        }
+
+        return true
+    }
 }
 
 final class GovernanceChainSettings: PersistentValueSettings<GovernanceSelectedOption> {

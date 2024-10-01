@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "Brak przekroczenia limitu nominacji";
 "staking.recommended.hint3" = "Posiada onchain identity";
 "staking.recommended.hint4" = "Nie został zaslashowany";
-"staking.recommended.validators.counter" = "%@ z %@";
 "staking.recommended.custom.title" = "Wybierz innych walidatorów";
 "fee.not.yet.loaded.title" = "Trwa obliczanie prowizji";
 "fee.not.yet.loaded.message" = "Proszę czekać, aż prowizja zostanie obliczona";
@@ -1731,3 +1730,4 @@
 "gov.vote.conviction.hint.title" = "Conviction zostanie ustawione na 0.1x podczas Wstrzymania się";
 "cloud.backup.password.confirm.title" = "Potwierdź hasło do kopii zapasowej";
 "cloud.backup.password.confirm.details" = "Proszę wprowadzić hasło, które utworzyłeś na poprzednim ekranie";
+"common.counter" = "%d z %d";

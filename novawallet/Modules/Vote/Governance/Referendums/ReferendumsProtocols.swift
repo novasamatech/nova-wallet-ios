@@ -13,6 +13,7 @@ protocol ReferendumsPresenterProtocol: AnyObject {
     func select(referendumIndex: ReferendumIdLocal)
     func selectUnlocks()
     func selectDelegations()
+    func selectSwipeGov()
     func showFilters()
     func showSearch()
 }
@@ -52,6 +53,8 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         governanceType: GovernanceType?
     )
 
+    func showSwipeGov(from view: ControllerBackedProtocol?)
+
     func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)
 
     func showUnlocksDetails(from view: ControllerBackedProtocol?, initData: GovernanceUnlockInitData)
@@ -66,7 +69,7 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
 
     func showSearch(
         from view: ControllerBackedProtocol?,
-        referendumsState: Observable<ReferendumsState>,
+        referendumsState: Observable<ReferendumsViewState>,
         delegate: ReferendumSearchDelegate?
     )
 }

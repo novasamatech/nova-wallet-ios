@@ -219,7 +219,6 @@
 "staking.recommended.hint2" = "Не превышен лимит номинаторов";
 "staking.recommended.hint3" = "Идентифицирован в сети";
 "staking.recommended.hint4" = "Не был заслешан";
-"staking.recommended.validators.counter" = "%@ из %@";
 "staking.recommended.custom.title" = "Выбрать других валидаторов";
 "fee.not.yet.loaded.title" = "Расчет комиссии в процессе";
 "fee.not.yet.loaded.message" = "Подождите, пока будет рассчитана комиссия";
@@ -1734,3 +1733,7 @@
 "common.pay" = "Оплата";
 "common.card.issued" = "Карта выпущена";
 "card.top.up.dot.setup.title" = "Пополнить карту, используя DOT";
+"common.counter" = "%d из %d";
+"voting.list.widget.title" = "Список голосований";
+"voting.list.widget.title.empty" = "Нет голосований";
+"vote.card.requested" = "Запрошено:";
