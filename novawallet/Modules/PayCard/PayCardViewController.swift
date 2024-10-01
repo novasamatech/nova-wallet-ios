@@ -34,6 +34,10 @@ final class PayCardViewController: UIViewController, ViewHolder {
         view.scrollView.contentInsetAdjustmentBehavior = .always
         view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
 
+        if #available(iOS 16.4, *) {
+            view.isInspectable = true
+        }
+
         return view
     }()
 
@@ -96,12 +100,13 @@ extension PayCardViewController {
         let script = WebViewScript(
             content: """
             mercuryoWidget.run({
-                widgetId: '',
+                widgetId: '4ce98182-ed76-4933-ba1b-b85e4a51d75a',
                 host: document.getElementById('widget-container'),
                 type: 'sell',
                 currency: 'DOT',
                 fiatCurrency: 'EUR',
                 paymentMethod: 'fiat_card_open',
+                theme: 'nova',
                 showSpendCardDetails: true,
                 width: '100%',
                 fixPaymentMethod: true,
@@ -109,6 +114,7 @@ extension PayCardViewController {
                 hideRefundAddress: true,
                 refundAddress: '14iKGFDp5EBXe3sdX765ngrERMrYUdxmFfayNCGkq7f6tm9w',
                 onStatusChange: data => {
+                    window.webkit.messageHandlers.onSellTransferEnabled.postMessage(JSON.stringify(data))
                 },
                 onSellTransferEnabled: data => {
                     window.webkit.messageHandlers.onSellTransferEnabled.postMessage(JSON.stringify(data))
