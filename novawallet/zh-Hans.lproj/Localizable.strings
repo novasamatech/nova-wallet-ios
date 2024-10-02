@@ -1749,11 +1749,11 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = " %li 个公投";
 "swipe.gov.banner.message" = "滑动即可查看 AI 摘要并进行公投。快速又简单！";
+"common.counter" = "%d / %d";
 "gov.voting.power.set.success.message" = "投票权已成功设置！";
 "gov.voting.list.item.remove.alert.title" = "从投票列表中移除公投 #%d ？";
 "swipe.gov.insufficient.balance.alert.message" = "您当前的投票权 %@（%@）余额不足。请更改投票权或向钱包添加更多资金。";
-"swipe_gov_basket_removed_items_message_copy" = "某些公投不再可供投票或您的代币不足。可投票的：%@。";
+"swipe.gov.referenda.excluded.alert.message" = "某些公投不再可供投票或您的代币不足。可投票的：%@。";
 "gov.referendum.completed.title.with.index" = "公投 #%li 完成";
 "gov.referendum.completed.message.with.index" = "公投 #%li 已完成，投票结束";
 "common.use.max.due.fee.message" = "您最多可以使用 %@，因为您需要支付 %@ 的网络费用。";
-"common.counter" = "%d / %d";
