@@ -90,11 +90,11 @@ extension SwipeGovVotingListInteractor: VotingBasketLocalStorageSubscriber, Voti
         case let .success(votingsChanges):
             currentVotingItems = currentVotingItems.applying(changes: votingsChanges)
             presenter?.didReceive(votingsChanges)
+            
+            removeUnavailableIfNeeded()
         case let .failure(error):
             presenter?.didReceive(.votingBasket(error))
         }
-
-        removeUnavailableIfNeeded()
     }
 }
 
@@ -112,6 +112,8 @@ extension SwipeGovVotingListInteractor: WalletLocalStorageSubscriber, WalletLoca
             balanceStore = .defined(balance)
 
             presenter?.didReceive(balance)
+            
+            removeUnavailableIfNeeded()
         case let .failure(error):
             presenter?.didReceive(.assetBalanceFailed(error))
         }
