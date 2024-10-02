@@ -185,7 +185,7 @@ final class GovernanceUnlockSetupPresenter {
             return
         }
 
-        interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
+        interactor.refreshUnlockSchedule(for: tracksVoting)
     }
 
     private func invalidateTimer() {
@@ -282,7 +282,7 @@ extension GovernanceUnlockSetupPresenter: GovernanceUnlockSetupInteractorOutputP
         updateView()
 
         if let tracksVoting = result.value {
-            interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: result.blockHash)
+            interactor.refreshUnlockSchedule(for: tracksVoting)
         }
     }
 

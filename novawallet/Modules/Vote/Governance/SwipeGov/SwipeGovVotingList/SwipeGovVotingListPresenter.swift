@@ -66,6 +66,14 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
         let initData = ReferendumVotingInitData(votingItems: votingListItems)
         wireframe.showConfirmation(from: view, initData: initData)
     }
+
+    func becomeActive() {
+        interactor.becomeActive()
+    }
+
+    func becomeInactive() {
+        interactor.becomeInactive()
+    }
 }
 
 // MARK: SwipeGovVotingListInteractorOutputProtocol

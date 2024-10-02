@@ -9,6 +9,8 @@ protocol SwipeGovVotingListPresenterProtocol: AnyObject {
     func removeItem(with referendumId: ReferendumIdLocal)
     func selectVoting(for referendumId: ReferendumIdLocal)
     func vote()
+    func becomeActive()
+    func becomeInactive()
 }
 
 protocol SwipeGovVotingListInteractorInputProtocol: AnyObject {
@@ -17,6 +19,8 @@ protocol SwipeGovVotingListInteractorInputProtocol: AnyObject {
     func subscribeMetadata()
     func subscribeBalance()
     func subscribeVotingItems()
+    func becomeActive()
+    func becomeInactive()
 }
 
 protocol SwipeGovVotingListInteractorOutputProtocol: AnyObject {
@@ -31,15 +35,12 @@ protocol SwipeGovVotingListWireframeProtocol: AlertPresentable,
     CommonRetryable,
     SwipeGovAlertPresentable {
     func close(view: ControllerBackedProtocol?)
-    func showSetup(
-        from view: ControllerBackedProtocol?,
-        initData: ReferendumVotingInitData,
-        changing invalidItems: [VotingBasketItemLocal]
-    )
+
     func showReferendumDetails(
         from view: ControllerBackedProtocol?,
         initData: ReferendumDetailsInitData
     )
+
     func showConfirmation(
         from view: ControllerBackedProtocol?,
         initData: ReferendumVotingInitData
