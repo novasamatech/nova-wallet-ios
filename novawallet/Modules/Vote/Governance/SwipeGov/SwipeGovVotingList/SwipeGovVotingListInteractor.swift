@@ -24,6 +24,7 @@ final class SwipeGovVotingListInteractor: AnyProviderAutoCleaning {
     private var currentVotingItems: [VotingBasketItemLocal] = []
     private var availableReferendumsStore: UncertainStorage<[ReferendumIdLocal: ReferendumLocal]> = .undefined
     private var balanceStore: UncertainStorage<AssetBalance?> = .undefined
+    private var isActive: Bool = false
 
     private let operationQueue: OperationQueue
 
@@ -79,6 +80,16 @@ extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtoco
 
     func subscribeVotingItems() {
         clearAndSubscribeVotingItems()
+    }
+
+    func becomeActive() {
+        isActive = true
+
+        removeUnavailableIfNeeded()
+    }
+
+    func becomeInactive() {
+        isActive = false
     }
 }
 
@@ -203,6 +214,10 @@ private extension SwipeGovVotingListInteractor {
     }
 
     func removeUnavailableIfNeeded() {
+        guard isActive else {
+            return
+        }
+
         let unavailableItems = currentVotingItems.filter { item in
             !checkAvailability(for: item) ||
                 !checkAmount(for: item)
