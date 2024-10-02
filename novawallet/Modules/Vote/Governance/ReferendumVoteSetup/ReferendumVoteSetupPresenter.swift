@@ -296,8 +296,7 @@ extension ReferendumVoteSetupPresenter {
 
         interactor.refreshLockDiff(
             for: trackVoting,
-            newVotes: [newVote],
-            blockHash: votesResult?.blockHash
+            newVotes: [newVote]
         )
     }
 

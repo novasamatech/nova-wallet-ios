@@ -286,8 +286,7 @@ private extension SwipeGovSetupPresenter {
 
         interactor.refreshLockDiff(
             for: trackVoting,
-            newVotes: [newVote],
-            blockHash: observableState.voting?.blockHash
+            newVotes: [newVote]
         )
     }
 

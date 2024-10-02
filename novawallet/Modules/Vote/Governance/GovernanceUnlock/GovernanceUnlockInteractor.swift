@@ -93,14 +93,14 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    func provideUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?) {
+    func provideUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution) {
         clear(cancellable: &unlockScheduleCancellable)
 
         let wrapper = lockStateFactory.buildUnlockScheduleWrapper(
             for: tracksVoting,
             from: connection,
             runtimeProvider: runtimeProvider,
-            blockHash: blockHash
+            blockHash: nil
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
@@ -177,8 +177,8 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         provideBlockTime()
     }
 
-    func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?) {
-        provideUnlockSchedule(for: tracksVoting, blockHash: blockHash)
+    func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution) {
+        provideUnlockSchedule(for: tracksVoting)
     }
 
     func remakeSubscriptions() {

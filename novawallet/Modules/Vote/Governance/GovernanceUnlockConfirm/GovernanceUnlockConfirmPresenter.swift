@@ -181,7 +181,7 @@ final class GovernanceUnlockConfirmPresenter {
             return
         }
 
-        interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
+        interactor.refreshUnlockSchedule(for: tracksVoting)
     }
 }
 
@@ -318,7 +318,7 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
         votingResult = result
 
         if let tracksVoting = result.value {
-            interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: result.blockHash)
+            interactor.refreshUnlockSchedule(for: tracksVoting)
         }
 
         provideChangesViewModels()
