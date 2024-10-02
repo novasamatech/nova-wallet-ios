@@ -1749,11 +1749,11 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li referendum";
 "swipe.gov.banner.message" = "Geser untuk memberikan suara pada referendum dengan ringkasan AI kami. Cepat &  mudah!";
+"common.counter" = "%d dari %d";
 "gov.voting.power.set.success.message" = "Kekuatan voting berhasil diatur!";
 "gov.voting.list.item.remove.alert.title" = "Hapus referendum #%d dari daftar suara?";
 "swipe.gov.insufficient.balance.alert.message" = "Anda tidak memiliki saldo yang cukup untuk memberikan suara dengan kekuatan voting saat ini %@ (%@). Harap ubah kekuatan voting atau tambahkan dana ke dompet Anda.";
-"swipe_gov_basket_removed_items_message_copy" = "Beberapa referendum tidak lagi tersedia untuk pemungutan suara atau Anda mungkin tidak memiliki cukup token yang tersedia untuk memberikan suara. Tersedia untuk memberikan suara: %@.";
+"swipe.gov.referenda.excluded.alert.message" = "Beberapa referendum tidak lagi tersedia untuk pemungutan suara atau Anda mungkin tidak memiliki cukup token yang tersedia untuk memberikan suara. Tersedia untuk memberikan suara: %@.";
 "gov.referendum.completed.title.with.index" = "Referendum #%li selesai";
 "gov.referendum.completed.message.with.index" = "Referendum #%li telah selesai dan pemungutan suara sudah selesai";
 "common.use.max.due.fee.message" = "Anda dapat menggunakan hingga %@ karena Anda perlu membayar %@ untuk biaya jaringan.";
-"common.counter" = "%d dari %d";

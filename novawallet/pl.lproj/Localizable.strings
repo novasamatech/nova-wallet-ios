@@ -1749,11 +1749,11 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li referenda";
 "swipe.gov.banner.message" = "Przesuń, aby zagłosować na referenda z naszymi podsumowaniami AI. Szybko i łatwo!";
+"common.counter" = "%d z %d";
 "gov.voting.power.set.success.message" = "Moc głosowania ustawiona pomyślnie!";
 "gov.voting.list.item.remove.alert.title" = "Usuń referendum #%d z listy głosów?";
 "swipe.gov.insufficient.balance.alert.message" = "Nie masz wystarczającego salda, aby zagłosować z obecną mocą głosowania %@ (%@). Proszę zmienić moc głosowania lub dodać więcej środków do portfela.";
-"swipe_gov_basket_removed_items_message_copy" = "Niektóre z referendów nie są już dostępne do głosowania lub możesz nie mieć wystarczającej liczby tokenów do głosowania. Dostępne do głosowania: %@.";
+"swipe.gov.referenda.excluded.alert.message" = "Niektóre z referendów nie są już dostępne do głosowania lub możesz nie mieć wystarczającej liczby tokenów do głosowania. Dostępne do głosowania: %@.";
 "gov.referendum.completed.title.with.index" = "Referendum #%li zakończone";
 "gov.referendum.completed.message.with.index" = "Referendum #%li zostało zakończone i głosowanie jest zakończone";
 "common.use.max.due.fee.message" = "Możesz użyć do %@, ponieważ musisz zapłacić %@ za opłatę sieciową.";
-"common.counter" = "%d z %d";

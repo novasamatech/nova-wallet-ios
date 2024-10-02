@@ -1749,11 +1749,11 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li cuộc trưng cầu";
 "swipe.gov.banner.message" = "Vuốt để bỏ phiếu về các đề xuất với tóm tắt từ AI của chúng tôi. Nhanh chóng &  dễ dàng!";
+"common.counter" = "%d của %d";
 "gov.voting.power.set.success.message" = "Quyền bỏ phiếu đã được đặt thành công!";
 "gov.voting.list.item.remove.alert.title" = "Xóa cuộc trưng cầu #%d khỏi danh sách bỏ phiếu?";
 "swipe.gov.insufficient.balance.alert.message" = "Bạn không có đủ số dư để bỏ phiếu với quyền bỏ phiếu hiện tại %@ (%@). Vui lòng thay đổi quyền bỏ phiếu hoặc thêm thêm tài khoản vào ví của bạn.";
-"swipe_gov_basket_removed_items_message_copy" = "Một số cuộc trưng cầu không còn khả dụng để bỏ phiếu hoặc bạn có thể không có đủ token để bỏ phiếu. Khả dụng để bỏ phiếu: %@.";
+"swipe.gov.referenda.excluded.alert.message" = "Một số cuộc trưng cầu không còn khả dụng để bỏ phiếu hoặc bạn có thể không có đủ token để bỏ phiếu. Khả dụng để bỏ phiếu: %@.";
 "gov.referendum.completed.title.with.index" = "Cuộc trưng cầu #%li đã hoàn thành";
 "gov.referendum.completed.message.with.index" = "Cuộc trưng cầu #%li đã hoàn thành và việc bỏ phiếu đã kết thúc";
 "common.use.max.due.fee.message" = "Bạn có thể sử dụng tối đa %@ vì bạn cần trả %@ cho phí mạng.";
-"common.counter" = "%d của %d";

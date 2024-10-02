@@ -1609,7 +1609,7 @@
 "cloud.backup.not.available.title" = "iCloud 인증 실패";
 "cloud.backup.not.available.message" = "iCloud 계정에 로그인했는지 확인하십시오";
 "cloud.backup.not.enough.storage.message" = "사용할 수 있는 iCloud 저장 공간이 충분한지 확인하십시오. 설정에서 저장 공간을 관리할 수 있습니다.";
-"ledger.instructions.step4.highlighted" = "<font>계정을 선택</font>";
+"ledger.instructions.step4.highlighted" = "계정을 선택";
 "cloud.backup.create.title" = "백업 비밀번호 생성";
 "cloud.backup.create.hint.min.char" = "최소 %@ 문자";
 "cloud.backup.create.hint.numbers" = "숫자";
@@ -1749,11 +1749,11 @@
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li 개 국민투표";
 "swipe.gov.banner.message" = "우리의 AI 요약으로 국민투표에 투표하려면 스와이프하세요. 빠르고 쉬움!";
+"common.counter" = "%d 중 %d";
 "gov.voting.power.set.success.message" = "투표 권한이 성공적으로 설정되었습니다!";
 "gov.voting.list.item.remove.alert.title" = "투표 목록에서 국민투표 #%d 제거?";
 "swipe.gov.insufficient.balance.alert.message" = "현재 투표 권한 %@ (%@)으로 투표하기에 잔액이 충분하지 않습니다. 투표 권한을 변경하거나 지갑에 더 많은 자금을 추가하세요.";
-"swipe_gov_basket_removed_items_message_copy" = "일부 국민투표는 더 이상 투표할 수 없거나 투표에 충분한 토큰이 없을 수 있습니다. 투표 가능: %@.";
+"swipe.gov.referenda.excluded.alert.message" = "일부 국민투표는 더 이상 투표할 수 없거나 투표에 충분한 토큰이 없을 수 있습니다. 투표 가능: %@.";
 "gov.referendum.completed.title.with.index" = "국민투표 #%li 완료";
 "gov.referendum.completed.message.with.index" = "국민투표 #%li이 완료되었고 투표가 종료되었습니다";
 "common.use.max.due.fee.message" = "네트워크 수수료로 %@를 지불해야 하므로 %@까지 사용할 수 있습니다.";
-"common.counter" = "%d 중 %d";
