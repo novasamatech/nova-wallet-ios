@@ -407,6 +407,9 @@
 		0C8B0EC02B84A4D600A2A53F /* URLLocalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8B0EBF2B84A4D600A2A53F /* URLLocalRouter.swift */; };
 		0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA02CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
+		0C8FDBA32CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA22CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift */; };
+		0C8FDBA52CADA8DD00775D7F /* SwipeGovSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA42CADA8DD00775D7F /* SwipeGovSummary.swift */; };
+		0C8FDBA92CAE539900775D7F /* SwipeGovSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */; };
 		0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */; };
 		0C90C6C22B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */; };
 		0C90C6C42B503D990084B5C2 /* WalletUpdateMediatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */; };
@@ -5527,6 +5530,9 @@
 		0C8FDB9C2CAD022700775D7F /* SubstrateDataModel30.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel30.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB9D2CAD022700775D7F /* SubstrateDataModel25.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel25.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB9E2CAD022700775D7F /* SubstrateDataModel17.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel17.xcdatamodel; sourceTree = "<group>"; };
+		0C8FDBA22CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSummaryOperationFactory.swift; sourceTree = "<group>"; };
+		0C8FDBA42CADA8DD00775D7F /* SwipeGovSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSummary.swift; sourceTree = "<group>"; };
+		0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSummaryTests.swift; sourceTree = "<group>"; };
 		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsUpdateMediator.swift; sourceTree = "<group>"; };
 		0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletUpdateMediatorTests.swift; sourceTree = "<group>"; };
@@ -11121,6 +11127,23 @@
 			path = Pdc20;
 			sourceTree = "<group>";
 		};
+		0C8FDBA62CAE4E6B00775D7F /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				0C8FDBA22CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift */,
+				0C8FDBA42CADA8DD00775D7F /* SwipeGovSummary.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		0C8FDBA72CAE537800775D7F /* SwipeGov */ = {
+			isa = PBXGroup;
+			children = (
+				0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */,
+			);
+			path = SwipeGov;
+			sourceTree = "<group>";
+		};
 		0C962F842AA859DE00C0B551 /* LocalFilter */ = {
 			isa = PBXGroup;
 			children = (
@@ -12468,6 +12491,7 @@
 		2D6287452C941A2D00060814 /* SwipeGov */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FDBA62CAE4E6B00775D7F /* Service */,
 				2D6287682C99A0F700060814 /* Common */,
 				1678418EF2E30240E5A2575E /* SwipeGovVotingConfirm */,
 				02562CD63D75F25A2D8B91DB /* SwipeGovReferendumDetails */,
@@ -15257,6 +15281,7 @@
 		8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FDBA72CAE537800775D7F /* SwipeGov */,
 				0C71046E2C29B60D00487E64 /* MetadataShortener */,
 				0CA26D8E2BBBBD9A0086748F /* CloudBackup */,
 				0CA7198A2B78FDC5000B086E /* HydraDx */,
@@ -24277,6 +24302,7 @@
 				0C992C432B54F5D900ACC129 /* EraStakersPagedSearchOperationFactoryTests.swift in Sources */,
 				0C3205C22A868236002EB914 /* EvmGasPriceIntegrationTests.swift in Sources */,
 				0CCCDF862B64CCC100473D42 /* HydraOmnipoolSwapTests.swift in Sources */,
+				0C8FDBA92CAE539900775D7F /* SwipeGovSummaryTests.swift in Sources */,
 				84C3420F2831A67200156569 /* BlockTimeEstimationServiceTests.swift in Sources */,
 				0CA7197B2B773172000B086E /* HydraStableswapTests.swift in Sources */,
 				84FACB6A25F5759C00F32ED4 /* AccountCreationHelper.swift in Sources */,
@@ -25896,6 +25922,7 @@
 				2D1C5D242C25ACE200E2DBDD /* CustomNetworkAddPresenter.swift in Sources */,
 				84D8F15524D80CA100AF43E9 /* ModalPickerViewController.swift in Sources */,
 				84EE780427C4CF9E0027357F /* DAppListItemsLoadingView.swift in Sources */,
+				0C8FDBA32CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift in Sources */,
 				84F43BAA25DEB75000AEDA56 /* StakingMainViewModel.swift in Sources */,
 				778215BF2B91421C006C7D13 /* CurrencyManager+shared.swift in Sources */,
 				84DD5F35263D86EF00425ACF /* AccountFetching.swift in Sources */,
@@ -26099,6 +26126,7 @@
 				84AE7AA727D36E4D00495267 /* IconDetailsGenericView.swift in Sources */,
 				0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */,
 				84E0C52029CA413C000B65C8 /* OperationContractCallViewModel.swift in Sources */,
+				0C8FDBA52CADA8DD00775D7F /* SwipeGovSummary.swift in Sources */,
 				0C992C482B55303600ACC129 /* StakingLedgerUnclaimedRewardsFactory.swift in Sources */,
 				840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */,
 				843461E8290BF14400379936 /* ReferendumsSorting.swift in Sources */,
