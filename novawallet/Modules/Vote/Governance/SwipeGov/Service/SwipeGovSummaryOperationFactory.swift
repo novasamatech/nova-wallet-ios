@@ -12,11 +12,11 @@ protocol SwipeGovSummaryOperationFactoryProtocol {
 }
 
 final class SwipeGovSummaryOperationFactory {
-    let baseUrl: URL
+    let url: URL
     let timeout: TimeInterval
 
-    init(baseUrl: URL, timeout: TimeInterval = 60) {
-        self.baseUrl = baseUrl
+    init(url: URL, timeout: TimeInterval = 60) {
+        self.url = url
         self.timeout = timeout
     }
 
@@ -61,7 +61,6 @@ extension SwipeGovSummaryOperationFactory: SwipeGovSummaryOperationFactoryProtoc
             referendumIds: requestIds
         )
 
-        let url = baseUrl.appendingPathComponent(SwipeGovSummary.Api.listPath)
         let requestOperation = createFetchOperation(for: request, url: url, timeout: timeout)
 
         let mapOperation = ClosureOperation<SwipeGovSummaryById> {

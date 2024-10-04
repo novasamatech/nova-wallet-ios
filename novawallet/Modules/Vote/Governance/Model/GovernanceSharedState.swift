@@ -133,14 +133,12 @@ final class GovernanceSharedState {
 
         let chainId = option.chain.chainId
 
-        // TODO: Refactor to get url from chain
-
-        guard let url = URL(string: "https://opengov-backend-dev.novasama-tech.org") else {
+        guard let url = option.chain.externalApis?.referendumSummary()?.first?.url else {
             return
         }
 
         let service = SwipeGovService(
-            operationFactory: SwipeGovSummaryOperationFactory(baseUrl: url),
+            operationFactory: SwipeGovSummaryOperationFactory(url: url),
             chainId: chainId,
             language: language,
             operationQueue: operationQueue,
