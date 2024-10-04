@@ -190,6 +190,14 @@ extension ReferendumsInteractor: SelectedCurrencyDepending {
     }
 }
 
+extension ReferendumsInteractor: Localizable {
+    func applyLocalization() {
+        if presenter != nil, let option = governanceState.settings.value {
+            setupSwipeGovService(for: option)
+        }
+    }
+}
+
 extension ReferendumsInteractor: ApplicationHandlerDelegate {
     func didReceiveDidEnterBackground(notification _: Notification) {
         clearCancellable()

@@ -1,6 +1,7 @@
 import SnapKit
 import UIKit
 import SoraUI
+import CDMarkdownKit
 
 final class VoteCardView: RoundedView {
     private let gradientView: RoundedGradientBackgroundView = .create { view in
@@ -8,7 +9,7 @@ final class VoteCardView: RoundedView {
     }
 
     private var summaryLabel: UILabel = .create { view in
-        view.apply(style: .init(textColor: R.color.colorTextPrimary(), font: .swipeGovMax))
+        view.apply(style: .init(textColor: R.color.colorSwipeGovSecondary(), font: .swipeGovMaxRegular))
         view.adjustsFontSizeToFitWidth = true
         view.minimumScaleFactor = 0.3
         view.numberOfLines = 0
@@ -172,6 +173,21 @@ extension VoteCardView: CardStackable {
         voteOverlayView?.removeFromSuperview()
         voteOverlayView = nil
     }
+
+    private func displayCustomStyledMarkdown(on label: UILabel, markdownText: String) {
+        let parser = CDMarkdownParser(
+            font: UIFont.swipeGovMaxRegular,
+            boldFont: UIFont.swipeGovMaxEmphasized,
+            italicFont: UIFont.swipeGovMaxEmphasized,
+            fontColor: R.color.colorSwipeGovSecondary()!,
+            imageDetectionEnabled: false
+        )
+
+        parser.bold.color = R.color.colorTextPrimary()!
+        parser.bold.backgroundColor = nil
+
+        label.attributedText = parser.parse(markdownText)
+    }
 }
 
 // MARK: StackCardViewUpdatable
@@ -183,7 +199,7 @@ extension VoteCardView: StackCardViewUpdatable {
             self.loadingState.formUnion(.summary)
         case let .cached(value), let .loaded(value):
             self.loadingState.remove(.summary)
-            summaryLabel.text = value
+            displayCustomStyledMarkdown(on: summaryLabel, markdownText: value)
         }
     }
 

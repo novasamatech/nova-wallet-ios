@@ -344,6 +344,10 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         updateReferendumsView()
     }
 
+    func didReceiveSwipeGovEligible(_ referendums: Set<ReferendumIdLocal>) {
+        logger.debug("Swipe Gov eligible: \(referendums)")
+    }
+
     func didReceiveError(_ error: ReferendumsInteractorError) {
         logger.error("Did receive error: \(error)")
 
