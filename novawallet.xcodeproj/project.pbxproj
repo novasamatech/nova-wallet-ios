@@ -980,9 +980,7 @@
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
 		2D6AED5F2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */; };
-		2D7748732C89B2FB0059607B /* OpenGovSummaryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748722C89B2FB0059607B /* OpenGovSummaryOperationFactory.swift */; };
 		2D7748772C89B5450059607B /* VoteCardViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */; };
-		2D77487E2C8B41830059607B /* PolkassemblyKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487D2C8B41830059607B /* PolkassemblyKeys.swift */; };
 		2D7748802C8B48C40059607B /* CIKeys.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487F2C8B48C40059607B /* CIKeys.generated.swift */; };
 		2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */; };
 		2D7748862C8F799C0059607B /* SwipeGovModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748852C8F799C0059607B /* SwipeGovModelBuilder.swift */; };
@@ -6114,9 +6112,7 @@
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
 		2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListViewModelFactory.swift; sourceTree = "<group>"; };
-		2D7748722C89B2FB0059607B /* OpenGovSummaryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGovSummaryOperationFactory.swift; sourceTree = "<group>"; };
 		2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardViewModelFactory.swift; sourceTree = "<group>"; };
-		2D77487D2C8B41830059607B /* PolkassemblyKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkassemblyKeys.swift; sourceTree = "<group>"; };
 		2D77487F2C8B48C40059607B /* CIKeys.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIKeys.generated.swift; sourceTree = SOURCE_ROOT; };
 		2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumAmountOperationFactory.swift; sourceTree = "<group>"; };
 		2D7748852C8F799C0059607B /* SwipeGovModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovModelBuilder.swift; sourceTree = "<group>"; };
@@ -12146,7 +12142,6 @@
 			isa = PBXGroup;
 			children = (
 				2D77488A2C9042800059607B /* Model */,
-				2D77487C2C8B41720059607B /* Polkassembly */,
 				2D389B182C875E1B00256C7B /* Helpers */,
 				2DA85A852C8116FB00591900 /* Views */,
 				6C972C86D5104BEB79598AC8 /* SwipeGovProtocols.swift */,
@@ -12570,14 +12565,6 @@
 			path = CheckboxListPresenter;
 			sourceTree = "<group>";
 		};
-		2D77487C2C8B41720059607B /* Polkassembly */ = {
-			isa = PBXGroup;
-			children = (
-				2D77487D2C8B41830059607B /* PolkassemblyKeys.swift */,
-			);
-			path = Polkassembly;
-			sourceTree = "<group>";
-		};
 		2D77488A2C9042800059607B /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -12661,7 +12648,6 @@
 				2D389B112C86FF1C00256C7B /* CardsZStack */,
 				2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */,
 				2D389B0D2C86E94A00256C7B /* SwipeGovEmptyStateView.swift */,
-				2D7748722C89B2FB0059607B /* OpenGovSummaryOperationFactory.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -24506,7 +24492,6 @@
 				844DAAE128AD106B008E11DA /* UInt+Serialization.swift in Sources */,
 				84981EE429D3352600948306 /* TransactionHistoryFetching.swift in Sources */,
 				8428765224ADDE0200D91AD8 /* SettingsPresenter.swift in Sources */,
-				2D77487E2C8B41830059607B /* PolkassemblyKeys.swift in Sources */,
 				F4F22987260DC4F300ACFDB8 /* StakingRewardDetailsSimpleLabelViewModel.swift in Sources */,
 				84B5DE56283F7C8500193ED3 /* CollatorSelectionCell.swift in Sources */,
 				84DD5F77263DFD9C00425ACF /* WarningConditionViolation.swift in Sources */,
@@ -27479,7 +27464,6 @@
 				8448D5B6277D717400FAEEBC /* DAppListDecorationView.swift in Sources */,
 				0C13D3112A80CA9A0054BB6F /* StakingDataValidatorFactory+Plank.swift in Sources */,
 				84CC986B287D7BAA0085431C /* RMRKV2Collection.swift in Sources */,
-				2D7748732C89B2FB0059607B /* OpenGovSummaryOperationFactory.swift in Sources */,
 				844384B0285391D800611CE2 /* RewardCalculatorEngineFactory.swift in Sources */,
 				849E07F22849E70C00DE0440 /* ParaStkScheduledRequestsUpdater.swift in Sources */,
 				84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */,
