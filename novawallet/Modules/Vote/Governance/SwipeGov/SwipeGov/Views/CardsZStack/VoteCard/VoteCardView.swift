@@ -9,9 +9,6 @@ final class VoteCardView: RoundedView {
     }
 
     private var summaryLabel: UILabel = .create { view in
-        view.apply(style: .init(textColor: R.color.colorSwipeGovSecondary(), font: .swipeGovMaxRegular))
-        view.adjustsFontSizeToFitWidth = true
-        view.minimumScaleFactor = 0.3
         view.numberOfLines = 0
         view.textAlignment = .left
     }
@@ -54,6 +51,8 @@ final class VoteCardView: RoundedView {
     private var voteInAnimator = FadeAnimator(from: 0, to: 1, duration: 0.2, delay: 0, options: .curveLinear)
     private var voteOutAnimator = FadeAnimator(from: 1, to: 0, duration: 0.2, delay: 0, options: .curveLinear)
 
+    let summaryContentView = UIView()
+
     private lazy var readMoreButton: LoadableActionView = .create { view in
         view.actionButton.applyEnabledStyle(colored: R.color.colorButtonBackgroundSecondary()!)
         view.actionButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
@@ -62,6 +61,7 @@ final class VoteCardView: RoundedView {
     }
 
     private(set) var viewModel: VoteCardViewModel?
+    private var isOnStack = false
 
     private var loadingState: LoadingState = .none {
         didSet {
@@ -73,11 +73,22 @@ final class VoteCardView: RoundedView {
         }
     }
 
+    var summaryMaxSize: CGSize {
+        CGSize(
+            width: summaryContentView.frame.width,
+            height: summaryContentView.frame.height * Constants.summaryHeightMultiplier
+        )
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
         if loadingState != .none {
             updateLoadingState()
+        }
+
+        if isOnStack {
+            viewModel?.onResize(for: summaryMaxSize)
         }
     }
 
@@ -130,10 +141,14 @@ extension VoteCardView: CardStackable {
 
     func didAddToStack() {
         viewModel?.onAddToStack()
+
+        isOnStack = true
+        viewModel?.onResize(for: summaryMaxSize)
     }
 
     func didPopFromStack(direction: CardsZStack.DismissalDirection) {
         viewModel?.onPop(direction: direction)
+        isOnStack = false
     }
 
     func didPredict(vote: VoteResult) {
@@ -169,37 +184,23 @@ extension VoteCardView: CardStackable {
         requestedView.isHidden = false
         dividerView.isHidden = false
         viewModel = nil
+        isOnStack = false
 
         voteOverlayView?.removeFromSuperview()
         voteOverlayView = nil
-    }
-
-    private func displayCustomStyledMarkdown(on label: UILabel, markdownText: String) {
-        let parser = CDMarkdownParser(
-            font: UIFont.swipeGovMaxRegular,
-            boldFont: UIFont.swipeGovMaxEmphasized,
-            italicFont: UIFont.swipeGovMaxEmphasized,
-            fontColor: R.color.colorSwipeGovSecondary()!,
-            imageDetectionEnabled: false
-        )
-
-        parser.bold.color = R.color.colorTextPrimary()!
-        parser.bold.backgroundColor = nil
-
-        label.attributedText = parser.parse(markdownText)
     }
 }
 
 // MARK: StackCardViewUpdatable
 
 extension VoteCardView: StackCardViewUpdatable {
-    func setSummary(loadingState: LoadableViewModelState<String>) {
+    func setSummary(loadingState: LoadableViewModelState<NSAttributedString>) {
         switch loadingState {
         case .loading:
             self.loadingState.formUnion(.summary)
         case let .cached(value), let .loaded(value):
             self.loadingState.remove(.summary)
-            displayCustomStyledMarkdown(on: summaryLabel, markdownText: value)
+            summaryLabel.attributedText = value
         }
     }
 
@@ -316,12 +317,10 @@ private extension VoteCardView {
             make.edges.equalToSuperview()
         }
 
-        let summaryContentView = UIView()
-
         summaryContentView.addSubview(summaryLabel)
         summaryLabel.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
-            make.height.lessThanOrEqualToSuperview().multipliedBy(0.8)
+            make.height.lessThanOrEqualToSuperview().multipliedBy(Constants.summaryHeightMultiplier)
         }
 
         let content = UIView.vStack(
@@ -423,6 +422,7 @@ private extension VoteCardView {
         static let skeletonRequestedLineWidths: [CGFloat] = [69, 118, 53]
         static let voteOverlayHorizontalInset = 16
         static let voteOverlayBottomInset = 30
+        static let summaryHeightMultiplier = 0.8
     }
 }
 

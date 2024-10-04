@@ -411,6 +411,7 @@
 		0C8FDBA52CADA8DD00775D7F /* SwipeGovSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA42CADA8DD00775D7F /* SwipeGovSummary.swift */; };
 		0C8FDBA92CAE539900775D7F /* SwipeGovSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */; };
 		0C8FDBAB2CAE58DF00775D7F /* SwipeGovService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBAA2CAE58DF00775D7F /* SwipeGovService.swift */; };
+		0C8FDBB22CAFDC6000775D7F /* VoteCardSummaryProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB12CAFDC6000775D7F /* VoteCardSummaryProcessing.swift */; };
 		0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */; };
 		0C90C6C22B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */; };
 		0C90C6C42B503D990084B5C2 /* WalletUpdateMediatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */; };
@@ -5535,6 +5536,7 @@
 		0C8FDBA42CADA8DD00775D7F /* SwipeGovSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSummary.swift; sourceTree = "<group>"; };
 		0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSummaryTests.swift; sourceTree = "<group>"; };
 		0C8FDBAA2CAE58DF00775D7F /* SwipeGovService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovService.swift; sourceTree = "<group>"; };
+		0C8FDBB12CAFDC6000775D7F /* VoteCardSummaryProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardSummaryProcessing.swift; sourceTree = "<group>"; };
 		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsUpdateMediator.swift; sourceTree = "<group>"; };
 		0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletUpdateMediatorTests.swift; sourceTree = "<group>"; };
@@ -12457,6 +12459,7 @@
 				2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */,
 				2DA85A882C81172F00591900 /* VoteCardView.swift */,
 				0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */,
+				0C8FDBB12CAFDC6000775D7F /* VoteCardSummaryProcessing.swift */,
 			);
 			path = VoteCard;
 			sourceTree = "<group>";
@@ -24410,6 +24413,7 @@
 				841E553E282D469F00C8438F /* ParachainStakingDelegator.swift in Sources */,
 				846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */,
 				0C7C886E2A962B0D00DD96A1 /* StackAddressCell.swift in Sources */,
+				0C8FDBB22CAFDC6000775D7F /* VoteCardSummaryProcessing.swift in Sources */,
 				843612C92790109100DC739E /* SigningWrapperFactory.swift in Sources */,
 				88FF5C7F29C8364500D1CB5D /* Caip2+ParseError.swift in Sources */,
 				8473D40D2657E9DC00B394B2 /* MultiSigner.swift in Sources */,
