@@ -208,16 +208,18 @@ extension VoteCardView: StackCardViewUpdatable {
         case .loading:
             self.loadingState.formUnion(.amount)
         case let .cached(value), let .loaded(value):
-            guard let requestedAmount = value else {
+            if let requestedAmount = value {
+                assetAmountLabel.text = requestedAmount.amount
+                fiatAmountLabel.text = requestedAmount.price
+                self.loadingState.remove(.amount)
+            } else {
                 requestedView.isHidden = true
                 dividerView.isHidden = true
                 self.loadingState.remove(.amount)
-                return
             }
 
-            assetAmountLabel.text = requestedAmount.amount
-            fiatAmountLabel.text = requestedAmount.price
-            self.loadingState.remove(.amount)
+            layoutIfNeeded()
+            viewModel?.onResize(for: summaryMaxSize)
         }
     }
 
