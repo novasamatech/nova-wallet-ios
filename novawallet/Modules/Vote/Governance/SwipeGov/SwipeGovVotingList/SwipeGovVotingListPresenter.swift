@@ -18,6 +18,7 @@ final class SwipeGovVotingListPresenter {
     private var votingListItems: [VotingBasketItemLocal] = []
     private var referendumsMetadata: [ReferendumMetadataLocal] = []
     private var balance: AssetBalance?
+    private var isActive: Bool = false
 
     init(
         interactor: SwipeGovVotingListInteractorInputProtocol,
@@ -68,10 +69,14 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
     }
 
     func becomeActive() {
+        isActive = true
+
         interactor.becomeActive()
     }
 
     func becomeInactive() {
+        isActive = false
+
         interactor.becomeInactive()
     }
 }
@@ -102,7 +107,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
             }
         }
 
-        if !deletes.isEmpty {
+        if !deletes.isEmpty, isActive {
             showReferendaExcluded(completion: proceedClosure)
         } else {
             proceedClosure()
