@@ -2,7 +2,7 @@ import XCTest
 @testable import novawallet
 
 final class SwipeGovSummaryTests: XCTestCase {
-    let url = URL(string: "https://opengov-backend-dev.novasama-tech.org")!
+    let url = URL(string: "https://opengov-backend-dev.novasama-tech.org/not-secure/api/v1/referendum-summaries/list")!
     
     func testSummaryFetch() {
         do {
@@ -27,7 +27,7 @@ final class SwipeGovSummaryTests: XCTestCase {
         language: String,
         referendums: Set<ReferendumIdLocal>
     ) throws -> SwipeGovSummaryById {
-        let factory = SwipeGovSummaryOperationFactory(baseUrl: url)
+        let factory = SwipeGovSummaryOperationFactory(url: url)
         let operationQueue = OperationQueue()
         
         let wrapper = factory.createFetchWrapper(
