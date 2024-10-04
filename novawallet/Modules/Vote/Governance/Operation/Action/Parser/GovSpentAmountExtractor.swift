@@ -10,6 +10,13 @@ protocol GovSpentAmountHandling {
     ) throws -> [CompoundOperationWrapper<ReferendumActionLocal.AmountSpendDetails?>]?
 }
 
+protocol GovSpendingExtracting {
+    func createExtractionWrappers(
+        from call: RuntimeCall<JSON>,
+        context: GovSpentAmount.Context
+    ) throws -> [CompoundOperationWrapper<ReferendumActionLocal.AmountSpendDetails?>]?
+}
+
 enum GovSpentAmount {
     struct Context {
         let codingFactory: RuntimeCoderFactoryProtocol
@@ -17,7 +24,7 @@ enum GovSpentAmount {
         let requestFactory: StorageRequestFactoryProtocol
     }
 
-    final class Extractor {
+    final class Extractor: GovSpendingExtracting {
         let handlers: [GovSpentAmountHandling]
 
         init(handlers: [GovSpentAmountHandling]) {
@@ -44,13 +51,31 @@ enum GovSpentAmount {
 }
 
 extension GovSpentAmount.Extractor {
-    static var defaultExtractor: GovSpentAmount.Extractor {
-        .init(
-            handlers: [
-                GovSpentAmount.BatchHandler(),
-                GovSpentAmount.TreasurySpentHandler(),
-                GovSpentAmount.TreasuryApproveHandler()
-            ]
-        )
+    static func createDefaultExtractor(
+        for chain: ChainModel,
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue
+    ) -> GovSpentAmount.Extractor {
+        var handlers: [GovSpentAmountHandling] = [
+            GovSpentAmount.BatchHandler(),
+            GovSpentAmount.TreasurySpendLocalHandler(),
+            GovSpentAmount.TreasuryApproveHandler()
+        ]
+
+        if chain.isRelaychain {
+            handlers.append(
+                GovSpentAmount.TreasurySpendRemoteHandler(
+                    assetConversionFactory: CrosschainAssetConversionFactory(
+                        relayChain: chain,
+                        chainRegistry: chainRegistry,
+                        parachainResolver: ParachainResolver(),
+                        operationQueue: operationQueue
+                    ),
+                    operationQueue: operationQueue
+                )
+            )
+        }
+
+        return .init(handlers: handlers)
     }
 }

@@ -29,6 +29,19 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
+    func showSwipeGov(from view: ControllerBackedProtocol?) {
+        guard let swipeGovView = SwipeGovViewFactory.createView(sharedState: state) else {
+            return
+        }
+
+        swipeGovView.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.pushViewController(
+            swipeGovView.controller,
+            animated: true
+        )
+    }
+
     func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData) {
         guard
             let detailsView = ReferendumDetailsViewFactory.createView(
@@ -92,7 +105,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func showSearch(
         from view: ControllerBackedProtocol?,
-        referendumsState: Observable<ReferendumsState>,
+        referendumsState: Observable<ReferendumsViewState>,
         delegate: ReferendumSearchDelegate?
     ) {
         guard let searchView = ReferendumSearchViewFactory.createView(
