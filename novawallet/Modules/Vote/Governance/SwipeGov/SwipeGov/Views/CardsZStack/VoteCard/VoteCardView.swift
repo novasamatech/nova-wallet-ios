@@ -197,9 +197,8 @@ extension VoteCardView: StackCardViewUpdatable {
     func setSummary(loadingState: LoadableViewModelState<NSAttributedString>) {
         switch loadingState {
         case .loading:
-            self.loadingState.formUnion(.summary)
+            break
         case let .cached(value), let .loaded(value):
-            self.loadingState.remove(.summary)
             summaryLabel.attributedText = value
         }
     }
@@ -231,10 +230,9 @@ extension VoteCardView: StackCardViewUpdatable {
 
 extension VoteCardView: SkeletonableView {
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        let summaryRows = createSummarySkeletons(for: spaceSize)
         let requestedRows = createRequestedSkeletons(for: spaceSize)
 
-        return summaryRows + requestedRows
+        return requestedRows
     }
 
     func createRequestedSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
@@ -271,42 +269,12 @@ extension VoteCardView: SkeletonableView {
         return rows
     }
 
-    func createSummarySkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        let baseWidth = bounds.width - Constants.contentInset * 2
-
-        let rows: [Skeletonable] = (0 ... 2).map { index in
-            let scale = NSDecimalNumber(
-                decimal: pow(Decimal(0.65), index)
-            ).doubleValue
-
-            let size = CGSize(
-                width: baseWidth * scale,
-                height: Constants.skeletonSummaryLineHeight
-            )
-
-            let offset = CGPoint(
-                x: Constants.contentInset,
-                y: Constants.contentInset + (size.height + Constants.contentSpacing) * CGFloat(index)
-            )
-
-            return SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
-                spaceSize: spaceSize,
-                offset: offset,
-                size: size
-            )
-        }
-
-        return rows
-    }
-
     var skeletonSuperview: UIView {
         self
     }
 
     var hidingViews: [UIView] {
-        [summaryLabel, requestedView]
+        [requestedView]
     }
 }
 
@@ -397,8 +365,7 @@ extension VoteCardView {
         typealias RawValue = UInt8
 
         static let amount = LoadingState(rawValue: 1 << 0)
-        static let summary = LoadingState(rawValue: 1 << 1)
-        static let all: LoadingState = [.amount, .summary]
+        static let all: LoadingState = [.amount]
         static let none: LoadingState = []
 
         let rawValue: UInt8
