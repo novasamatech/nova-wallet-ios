@@ -37,6 +37,9 @@ final class VoteCardViewModel: AnyProviderAutoCleaning {
     private let chain: ChainModel
     private let referendum: ReferendumLocal
 
+    private let summaryProcessor = VoteCardSummaryProcessor()
+    private var cardSize: CGSize?
+
     private var priceProvider: StreamableProvider<PriceData>?
     private var price: PriceData?
 
@@ -77,8 +80,20 @@ final class VoteCardViewModel: AnyProviderAutoCleaning {
         self.currencyManager = currencyManager
     }
 
+    deinit {
+        actionDetailsCancellable.cancel()
+        summaryCancellable.cancel()
+    }
+
     func onActionReadMore() {
         actions.onAction(referendum.index)
+    }
+
+    func onResize(for size: CGSize) {
+        if cardSize != size, size.width > 0, size.height > 0 {
+            cardSize = size
+            loadSummary(for: size)
+        }
     }
 
     func onAddToStack() {
@@ -110,31 +125,44 @@ final class VoteCardViewModel: AnyProviderAutoCleaning {
 
 private extension VoteCardViewModel {
     func loadContent() {
-        loadSummary()
+        if let cardSize {
+            loadSummary(for: cardSize)
+        }
+
         loadRequestedAmount()
     }
 
-    func loadSummary() {
-        guard !summaryCancellable.hasCall else {
-            return
-        }
+    func loadSummary(for size: CGSize) {
+        summaryCancellable.cancel()
 
         view?.setSummary(loadingState: .loading)
 
         let summaryFetchOperation = summaryFetchOperationFactory.createSummaryOperation(for: referendum.index)
 
-        execute(
-            operation: summaryFetchOperation,
+        let processingSummaryWrapper = summaryProcessor.createSummaryProcessingWrapper(
+            for: {
+                let optSummary = try summaryFetchOperation.extractNoCancellableResultData()
+                return self.processSummary(optSummary?.summary)
+            },
+            size: size
+        )
+
+        processingSummaryWrapper.addDependency(operations: [summaryFetchOperation])
+
+        let wrapper = processingSummaryWrapper.insertingHead(operations: [summaryFetchOperation])
+
+        executeCancellable(
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             backingCallIn: summaryCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
+
             guard let self else { return }
 
             switch result {
             case let .success(model):
-                let summary = processSummary(model?.summary)
-                view?.setSummary(loadingState: .loaded(value: summary))
+                view?.setSummary(loadingState: .loaded(value: model))
             case .failure:
                 actionDetailsCancellable.cancel()
                 processLoadFailure()

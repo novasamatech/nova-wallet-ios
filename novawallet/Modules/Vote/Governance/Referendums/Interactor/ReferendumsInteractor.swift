@@ -127,6 +127,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         setupSubscriptionFactory(for: option)
 
+        setupSwipeGovService(for: option)
+
         subscribeToBlockNumber(for: option.chain)
         subscribeToMetadata(for: option)
 
@@ -151,6 +153,36 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     private func setupSubscriptionFactory(for option: GovernanceSelectedOption) {
         governanceState.replaceGovernanceFactory(for: option)
+    }
+
+    func setupSwipeGovService(for option: GovernanceSelectedOption) {
+        guard let localizationManager else {
+            return
+        }
+
+        let languageCode = localizationManager.selectedLocale.languageCodeOrEn
+
+        governanceState.replaceSwipeGovService(for: option, language: languageCode)
+
+        guard let swipeGovService = governanceState.swipeGovService else {
+            presenter?.didReceiveSwipeGovEligible([])
+            return
+        }
+
+        governanceState.observableState.addObserver(
+            with: swipeGovService,
+            sendStateOnSubscription: true,
+            queue: .global()
+        ) { [weak swipeGovService] _, newState in
+            swipeGovService?.update(referendums: Set(newState.value.referendums.keys))
+        }
+
+        swipeGovService.subscribeReferendums(
+            for: self,
+            notifyingIn: .main
+        ) { [weak self] _, eligibleReferendums in
+            self?.presenter?.didReceiveSwipeGovEligible(eligibleReferendums)
+        }
     }
 
     func subscribeToBlockNumber(for chain: ChainModel) {

@@ -1,5 +1,7 @@
+import Foundation
+
 protocol StackCardViewTextProtocol: AnyObject {
-    func setSummary(loadingState: LoadableViewModelState<String>)
+    func setSummary(loadingState: LoadableViewModelState<NSAttributedString>)
     func setRequestedAmount(loadingState: LoadableViewModelState<BalanceViewModelProtocol?>)
 }
 

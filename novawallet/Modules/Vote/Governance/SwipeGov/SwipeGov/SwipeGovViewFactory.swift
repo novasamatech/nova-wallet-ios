@@ -8,7 +8,7 @@ struct SwipeGovViewFactory {
             let option = sharedState.settings.value,
             let assetInfo = option.chain.utilityAssetDisplayInfo(),
             let currencyManager = CurrencyManager.shared,
-            let summaryApi = option.chain.externalApis?.referendumSummary()?.first?.url,
+            let summaryService = sharedState.swipeGovService,
             let connection = sharedState.chainRegistry.getConnection(for: option.chain.chainId),
             let runtimeProvider = sharedState.chainRegistry.getRuntimeProvider(for: option.chain.chainId),
             let interactor = createInteractor(for: sharedState)
@@ -21,13 +21,11 @@ struct SwipeGovViewFactory {
         let localizationManager = LocalizationManager.shared
         let viewModelFactory = SwipeGovViewModelFactory()
 
-        let summaryFetchOperationFactory = OpenGovSummaryOperationFactory(url: summaryApi, chain: option.chain)
-
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let cardsViewModelFactory = VoteCardViewModelFactory(
-            summaryFetchOperationFactory: summaryFetchOperationFactory,
+            summaryFetchOperationFactory: summaryService,
             chain: option.chain,
             currencyManager: currencyManager,
             connection: connection,

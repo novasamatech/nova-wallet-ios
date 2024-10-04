@@ -12,7 +12,7 @@ extension ReferendumsPresenter {
             return
         }
 
-        let referendumsSections = creaateReferendumsSections(
+        let referendumsSections = createReferendumsSections(
             for: referendums,
             accountVotes: observableState.voting?.value?.votes,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime)
