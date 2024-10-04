@@ -67,14 +67,8 @@ extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
     func didReceiveState(_ modelBuilderResult: SwipeGovModelBuilder.Result) {
         model = modelBuilderResult.model
 
-        switch modelBuilderResult.changeKind {
-        case .referendums:
-            updateCardsStackView()
-        case .full:
-            updateVotingListView()
-            updateCardsStackView()
-        }
-
+        updateVotingListView()
+        updateCardsStackView()
         updateReferendumsCounter()
         updateSettingsState()
     }

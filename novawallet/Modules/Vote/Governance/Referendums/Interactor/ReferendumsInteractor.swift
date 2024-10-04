@@ -156,8 +156,11 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     func setupSwipeGovService(for option: GovernanceSelectedOption) {
-        // TODO: Refactor this part
-        let languageCode = localizationManager?.selectedLocale.languageCode ?? "en"
+        guard let localizationManager else {
+            return
+        }
+
+        let languageCode = localizationManager.selectedLocale.languageCodeOrEn
 
         governanceState.replaceSwipeGovService(for: option, language: languageCode)
 

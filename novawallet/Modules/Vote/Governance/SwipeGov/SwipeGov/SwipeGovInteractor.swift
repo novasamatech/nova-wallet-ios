@@ -57,18 +57,15 @@ class SwipeGovInteractor: AnyProviderAutoCleaning {
 
 extension SwipeGovInteractor: SwipeGovInteractorInputProtocol {
     func setup() {
-        modelBuilder = SwipeGovModelBuilder(
-            sorting: sorting,
-            workingQueue: operationQueue
-        ) { [weak self] result in
-            self?.presenter?.didReceiveState(result)
-        }
-        startObservingState()
+        setupModelBuilder()
+
+        setupServiceSubscription()
 
         votingPowerProvider = subscribeToVotingPowerProvider(
             for: chain.chainId,
             metaId: metaAccount.metaId
         )
+
         basketItemsProvider = subscribeToVotingBasketItemProvider(
             for: chain.chainId,
             metaId: metaAccount.metaId
@@ -122,10 +119,7 @@ extension SwipeGovInteractor: VotingBasketLocalStorageSubscriber, VotingBasketSu
     func handleVotingBasketItems(result: Result<[DataProviderChange<VotingBasketItemLocal>], any Error>) {
         switch result {
         case let .success(votingsChanges):
-            modelBuilder?.apply(
-                votingsChanges: votingsChanges,
-                observableState.state.value
-            )
+            modelBuilder?.apply(votingsChanges: votingsChanges)
         case let .failure(error):
             logger.error("Unexpected voting basket error: \(error)")
         }
@@ -170,12 +164,27 @@ extension SwipeGovInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
 // MARK: Private
 
 private extension SwipeGovInteractor {
-    func startObservingState() {
+    func setupModelBuilder() {
+        modelBuilder = SwipeGovModelBuilder(sorting: sorting) { [weak self] result in
+            self?.presenter?.didReceiveState(result)
+        }
+
         observableState.addObserver(
             with: self,
             queue: .main
         ) { [weak self] _, new in
             self?.modelBuilder?.apply(new.value)
+        }
+
+        modelBuilder?.apply(observableState.value)
+    }
+
+    func setupServiceSubscription() {
+        governanceState.swipeGovService?.subscribeReferendums(
+            for: self,
+            notifyingIn: .main
+        ) { [weak self] _, eligibleReferendums in
+            self?.modelBuilder?.applyEligible(referendums: eligibleReferendums)
         }
     }
 
