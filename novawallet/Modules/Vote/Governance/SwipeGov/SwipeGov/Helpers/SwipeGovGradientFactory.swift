@@ -1,8 +1,10 @@
 import SoraUI
 import UIKit
 
-struct SwipeGovGradientFactory {
-    func createCardGradient(for cardIndex: Int) -> GradientModel {
+final class SwipeGovGradientFactory {
+    private var currentIndex: Int = 0
+
+    func createCardGradient() -> GradientModel {
         let gradientArray = [
             gradient1,
             gradient2,
@@ -12,7 +14,12 @@ struct SwipeGovGradientFactory {
             gradient6,
             gradient7
         ]
-        let gradientIndex = cardIndex % gradientArray.count
+
+        let gradientIndex = currentIndex % gradientArray.count
+
+        currentIndex = (currentIndex + 1) % gradientArray.count
+
+        Logger.shared.info("Gradient index: \(gradientIndex)")
 
         return gradientArray[gradientIndex]
     }

@@ -123,8 +123,7 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
         interactor.refreshLockDiff(
             for: trackVoting,
-            newVotes: [vote],
-            blockHash: votesResult?.blockHash
+            newVotes: [vote]
         )
     }
 

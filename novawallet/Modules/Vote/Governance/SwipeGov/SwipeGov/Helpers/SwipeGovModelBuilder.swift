@@ -3,32 +3,32 @@ import Operation_iOS
 
 protocol SwipeGovModelBuilderProtocol {
     func apply(_ referendumsState: ReferendumsState)
-    func apply(
-        votingsChanges: [DataProviderChange<VotingBasketItemLocal>],
-        _ referendumsState: ReferendumsState
-    )
+    func apply(votingsChanges: [DataProviderChange<VotingBasketItemLocal>])
+    func applyEligible(referendums: Set<ReferendumIdLocal>)
 }
 
 final class SwipeGovModelBuilder {
-    var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
-
     private let sorting: ReferendumsSorting
     private let workingQueue: OperationQueue
     private let callbackQueue: DispatchQueue
     private let closure: (Result) -> Void
 
-    private var votingList: [VotingBasketItemLocal] = []
-
-    private var currentModel: Result.Model = .init()
+    private var referendumsStateStore: UncertainStorage<ReferendumsState> = .undefined
+    private var votingListStore: UncertainStorage<[VotingBasketItemLocal]> = .undefined
+    private var eligibleReferendumsStore: UncertainStorage<Set<ReferendumIdLocal>> = .undefined
+    private var lastSeenReferendums: [ReferendumIdLocal: ReferendumLocal] = [:]
 
     init(
         sorting: ReferendumsSorting,
-        workingQueue: OperationQueue,
         callbackQueue: DispatchQueue = .main,
         closure: @escaping (Result) -> Void
     ) {
         self.sorting = sorting
-        self.workingQueue = workingQueue
+
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 1
+        workingQueue = operationQueue
+
         self.callbackQueue = callbackQueue
         self.closure = closure
     }
@@ -41,35 +41,36 @@ extension SwipeGovModelBuilder: SwipeGovModelBuilderProtocol {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
-            referendums = filteredReferendums(from: referendumsState)
+            referendumsStateStore = .defined(referendumsState)
 
-            let changes = createReferendumsChange(from: referendums)
-
-            rebuild(
-                with: changes,
-                changeKind: .referendums
-            )
+            rebuild()
         }
     }
 
-    func apply(
-        votingsChanges: [DataProviderChange<VotingBasketItemLocal>],
-        _ referendumsState: ReferendumsState
-    ) {
+    func apply(votingsChanges: [DataProviderChange<VotingBasketItemLocal>]) {
         workingQueue.addOperation { [weak self] in
             guard let self else { return }
 
-            votingList = votingList.applying(changes: votingsChanges)
+            switch votingListStore {
+            case let .defined(votingList):
+                let newList = votingList.applying(changes: votingsChanges)
+                votingListStore = .defined(newList)
+            case .undefined:
+                let newList = [].applying(changes: votingsChanges)
+                votingListStore = .defined(newList)
+            }
 
-            let filteredReferendums = filteredReferendums(from: referendumsState)
-            let changes = createReferendumsChange(from: filteredReferendums)
+            rebuild()
+        }
+    }
 
-            self.referendums = filteredReferendums
+    func applyEligible(referendums: Set<ReferendumIdLocal>) {
+        workingQueue.addOperation { [weak self] in
+            guard let self else { return }
 
-            rebuild(
-                with: changes,
-                changeKind: .full
-            )
+            eligibleReferendumsStore = .defined(referendums)
+
+            rebuild()
         }
     }
 }
@@ -77,52 +78,52 @@ extension SwipeGovModelBuilder: SwipeGovModelBuilderProtocol {
 // MARK: Private
 
 private extension SwipeGovModelBuilder {
-    func rebuild(
-        with changes: Result.ReferendumsListChanges,
-        changeKind: Result.ChangeKind
-    ) {
+    func rebuild() {
+        guard
+            case let .defined(referendumsState) = referendumsStateStore,
+            case let .defined(votingList) = votingListStore,
+            case let .defined(eligibleReferendums) = eligibleReferendumsStore else {
+            return
+        }
+
+        let filteredReferendums = filteredReferendums(
+            from: referendumsState,
+            eligibleReferendums: eligibleReferendums,
+            votingList: votingList
+        )
+
+        let changes = findReferendumChanges(for: filteredReferendums, prevReferendums: lastSeenReferendums)
+
+        lastSeenReferendums = filteredReferendums
+
         let model = Result.Model(
-            referendums: sorted(Array(referendums.values)),
+            referendums: sorted(Array(filteredReferendums.values)),
             referendumsChanges: changes,
             votingList: votingList
         )
 
-        currentModel = model
-
-        let result = Result(
-            model: model,
-            changeKind: changeKind
-        )
+        let result = Result(model: model)
 
         callbackQueue.async { [weak self] in self?.closure(result) }
     }
 
-    func createReferendumsChange(
-        from referendums: [ReferendumIdLocal: ReferendumLocal]
-    ) -> Result.ReferendumsListChanges {
-        var referendumsToChange = referendums
-
-        votingList.forEach { referendumsToChange.removeValue(forKey: $0.referendumId) }
-
-        return findReferendumChanges(for: referendumsToChange)
-    }
-
     func findReferendumChanges(
-        for newReferendums: [ReferendumIdLocal: ReferendumLocal]
+        for newReferendums: [ReferendumIdLocal: ReferendumLocal],
+        prevReferendums: [ReferendumIdLocal: ReferendumLocal]
     ) -> Result.ReferendumsListChanges {
         var inserts: [ReferendumLocal] = []
         var updates: [ReferendumLocal] = []
         var deletes: [ReferendumIdLocal] = []
 
         newReferendums.forEach { key, value in
-            if self.referendums[key] == nil {
+            if prevReferendums[key] == nil {
                 inserts.append(value)
             } else {
                 updates.append(value)
             }
         }
 
-        referendums.forEach { key, value in
+        prevReferendums.forEach { key, value in
             if newReferendums[key] == nil {
                 deletes.append(value.index)
             }
@@ -136,19 +137,23 @@ private extension SwipeGovModelBuilder {
     }
 
     func sorted(_ referendums: [ReferendumLocal]) -> [ReferendumLocal] {
-        referendums.sorted {
-            sorting.compare(
-                referendum1: $0,
-                referendum2: $1
-            )
-        }
+        referendums.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
     }
 
-    func filteredReferendums(from referendumsState: ReferendumsState) -> [ReferendumIdLocal: ReferendumLocal] {
-        ReferendumFilter.VoteAvailable(
+    func filteredReferendums(
+        from referendumsState: ReferendumsState,
+        eligibleReferendums: Set<ReferendumIdLocal>,
+        votingList: [VotingBasketItemLocal]
+    ) -> [ReferendumIdLocal: ReferendumLocal] {
+        let remoteFiltered = ReferendumFilter.EligibleForSwipeGov(
             referendums: referendumsState.referendums,
-            accountVotes: referendumsState.voting?.value?.votes
+            accountVotes: referendumsState.voting?.value?.votes,
+            elegibleReferendums: eligibleReferendums
         ).callAsFunction()
+
+        let votingListIds = Set(votingList.map(\.referendumId))
+
+        return remoteFiltered.filter { !votingListIds.contains($0.key) }
     }
 }
 
@@ -186,12 +191,6 @@ extension SwipeGovModelBuilder {
             let deletes: [ReferendumIdLocal]
         }
 
-        enum ChangeKind {
-            case referendums
-            case full
-        }
-
         let model: Model
-        let changeKind: ChangeKind
     }
 }

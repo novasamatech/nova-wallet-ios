@@ -1,6 +1,7 @@
 import SnapKit
 import UIKit
 import SoraUI
+import CDMarkdownKit
 
 final class VoteCardView: RoundedView {
     private let gradientView: RoundedGradientBackgroundView = .create { view in
@@ -8,9 +9,6 @@ final class VoteCardView: RoundedView {
     }
 
     private var summaryLabel: UILabel = .create { view in
-        view.apply(style: .init(textColor: R.color.colorTextPrimary(), font: .swipeGovMax))
-        view.adjustsFontSizeToFitWidth = true
-        view.minimumScaleFactor = 0.3
         view.numberOfLines = 0
         view.textAlignment = .left
     }
@@ -53,6 +51,8 @@ final class VoteCardView: RoundedView {
     private var voteInAnimator = FadeAnimator(from: 0, to: 1, duration: 0.2, delay: 0, options: .curveLinear)
     private var voteOutAnimator = FadeAnimator(from: 1, to: 0, duration: 0.2, delay: 0, options: .curveLinear)
 
+    let summaryContentView = UIView()
+
     private lazy var readMoreButton: LoadableActionView = .create { view in
         view.actionButton.applyEnabledStyle(colored: R.color.colorButtonBackgroundSecondary()!)
         view.actionButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
@@ -61,6 +61,7 @@ final class VoteCardView: RoundedView {
     }
 
     private(set) var viewModel: VoteCardViewModel?
+    private var isOnStack = false
 
     private var loadingState: LoadingState = .none {
         didSet {
@@ -72,11 +73,22 @@ final class VoteCardView: RoundedView {
         }
     }
 
+    var summaryMaxSize: CGSize {
+        CGSize(
+            width: summaryContentView.frame.width,
+            height: summaryContentView.frame.height * Constants.summaryHeightMultiplier
+        )
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
         if loadingState != .none {
             updateLoadingState()
+        }
+
+        if isOnStack {
+            viewModel?.onResize(for: summaryMaxSize)
         }
     }
 
@@ -129,10 +141,14 @@ extension VoteCardView: CardStackable {
 
     func didAddToStack() {
         viewModel?.onAddToStack()
+
+        isOnStack = true
+        viewModel?.onResize(for: summaryMaxSize)
     }
 
     func didPopFromStack(direction: CardsZStack.DismissalDirection) {
         viewModel?.onPop(direction: direction)
+        isOnStack = false
     }
 
     func didPredict(vote: VoteResult) {
@@ -168,6 +184,7 @@ extension VoteCardView: CardStackable {
         requestedView.isHidden = false
         dividerView.isHidden = false
         viewModel = nil
+        isOnStack = false
 
         voteOverlayView?.removeFromSuperview()
         voteOverlayView = nil
@@ -177,13 +194,12 @@ extension VoteCardView: CardStackable {
 // MARK: StackCardViewUpdatable
 
 extension VoteCardView: StackCardViewUpdatable {
-    func setSummary(loadingState: LoadableViewModelState<String>) {
+    func setSummary(loadingState: LoadableViewModelState<NSAttributedString>) {
         switch loadingState {
         case .loading:
-            self.loadingState.formUnion(.summary)
+            break
         case let .cached(value), let .loaded(value):
-            self.loadingState.remove(.summary)
-            summaryLabel.text = value
+            summaryLabel.attributedText = value
         }
     }
 
@@ -192,16 +208,18 @@ extension VoteCardView: StackCardViewUpdatable {
         case .loading:
             self.loadingState.formUnion(.amount)
         case let .cached(value), let .loaded(value):
-            guard let requestedAmount = value else {
+            if let requestedAmount = value {
+                assetAmountLabel.text = requestedAmount.amount
+                fiatAmountLabel.text = requestedAmount.price
+                self.loadingState.remove(.amount)
+            } else {
                 requestedView.isHidden = true
                 dividerView.isHidden = true
                 self.loadingState.remove(.amount)
-                return
             }
 
-            assetAmountLabel.text = requestedAmount.amount
-            fiatAmountLabel.text = requestedAmount.price
-            self.loadingState.remove(.amount)
+            layoutIfNeeded()
+            viewModel?.onResize(for: summaryMaxSize)
         }
     }
 
@@ -214,10 +232,9 @@ extension VoteCardView: StackCardViewUpdatable {
 
 extension VoteCardView: SkeletonableView {
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        let summaryRows = createSummarySkeletons(for: spaceSize)
         let requestedRows = createRequestedSkeletons(for: spaceSize)
 
-        return summaryRows + requestedRows
+        return requestedRows
     }
 
     func createRequestedSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
@@ -254,42 +271,12 @@ extension VoteCardView: SkeletonableView {
         return rows
     }
 
-    func createSummarySkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        let baseWidth = bounds.width - Constants.contentInset * 2
-
-        let rows: [Skeletonable] = (0 ... 2).map { index in
-            let scale = NSDecimalNumber(
-                decimal: pow(Decimal(0.65), index)
-            ).doubleValue
-
-            let size = CGSize(
-                width: baseWidth * scale,
-                height: Constants.skeletonSummaryLineHeight
-            )
-
-            let offset = CGPoint(
-                x: Constants.contentInset,
-                y: Constants.contentInset + (size.height + Constants.contentSpacing) * CGFloat(index)
-            )
-
-            return SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
-                spaceSize: spaceSize,
-                offset: offset,
-                size: size
-            )
-        }
-
-        return rows
-    }
-
     var skeletonSuperview: UIView {
         self
     }
 
     var hidingViews: [UIView] {
-        [summaryLabel, requestedView]
+        [requestedView]
     }
 }
 
@@ -300,12 +287,10 @@ private extension VoteCardView {
             make.edges.equalToSuperview()
         }
 
-        let summaryContentView = UIView()
-
         summaryContentView.addSubview(summaryLabel)
         summaryLabel.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
-            make.height.lessThanOrEqualToSuperview().multipliedBy(0.8)
+            make.height.lessThanOrEqualToSuperview().multipliedBy(Constants.summaryHeightMultiplier)
         }
 
         let content = UIView.vStack(
@@ -382,8 +367,7 @@ extension VoteCardView {
         typealias RawValue = UInt8
 
         static let amount = LoadingState(rawValue: 1 << 0)
-        static let summary = LoadingState(rawValue: 1 << 1)
-        static let all: LoadingState = [.amount, .summary]
+        static let all: LoadingState = [.amount]
         static let none: LoadingState = []
 
         let rawValue: UInt8
@@ -407,6 +391,7 @@ private extension VoteCardView {
         static let skeletonRequestedLineWidths: [CGFloat] = [69, 118, 53]
         static let voteOverlayHorizontalInset = 16
         static let voteOverlayBottomInset = 30
+        static let summaryHeightMultiplier = 0.8
     }
 }
 

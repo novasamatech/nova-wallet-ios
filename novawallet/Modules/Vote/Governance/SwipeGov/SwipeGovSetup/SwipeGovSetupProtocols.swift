@@ -11,8 +11,7 @@ protocol SwipeGovSetupInteractorInputProtocol: AnyObject {
     func remakeSubscriptions()
     func refreshLockDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
-        newVotes: [ReferendumNewVote],
-        blockHash: Data?
+        newVotes: [ReferendumNewVote]
     )
     func refreshBlockTime()
     func process(votingPower: VotingPowerLocal)

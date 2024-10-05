@@ -74,8 +74,7 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
         interactor.refreshLockDiff(
             for: trackVoting,
-            newVotes: votingItems.mapToVotes(),
-            blockHash: votesResult?.blockHash
+            newVotes: votingItems.mapToVotes()
         )
     }
 

@@ -39,6 +39,18 @@ final class SwipeGovVotingListViewController: UIViewController, ViewHolder {
 
         presenter.setup()
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        presenter.becomeActive()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        presenter.becomeInactive()
+    }
 }
 
 // MARK: SwipeGovVotingListViewProtocol
