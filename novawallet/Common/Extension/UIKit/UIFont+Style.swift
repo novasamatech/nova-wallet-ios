@@ -69,6 +69,4 @@ extension UIFont {
     static var boldTitle2: UIFont { R.font.publicSansBold(size: 24)! }
     static var boldTitle3: UIFont { R.font.publicSansBold(size: 22)! }
     static var boldLargeTitle: UIFont { R.font.publicSansBold(size: 34)! }
-
-    static var swipeGovMax: UIFont { R.font.publicSansSemiBold(size: 40)! }
 }

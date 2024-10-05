@@ -126,12 +126,11 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
     }
 
     private func createVoteCardViewModel(
-        for index: Int,
-        referendum: ReferendumLocal,
+        for referendum: ReferendumLocal,
         locale: Locale,
         actions: VoteCardViewModel.Actions
     ) -> VoteCardViewModel {
-        let gradientModel = cardGradientFactory.createCardGradient(for: index)
+        let gradientModel = cardGradientFactory.createCardGradient()
         let requestedAmountFactory = ReferendumAmountOperationFactory(
             referendum: referendum,
             connection: connection,
@@ -164,21 +163,19 @@ extension VoteCardViewModelFactory: VoteCardViewModelFactoryProtocol {
         var inserts: [VoteCardViewModel] = []
         var updates: [VoteCardId: VoteCardViewModel] = [:]
 
-        changesModel.inserts.enumerated().forEach { index, referendum in
+        changesModel.inserts.forEach { referendum in
             inserts.append(
                 createVoteCardViewModel(
-                    for: index,
-                    referendum: referendum,
+                    for: referendum,
                     locale: locale,
                     actions: actions
                 )
             )
         }
 
-        changesModel.updates.enumerated().forEach { index, referendum in
+        changesModel.updates.forEach { referendum in
             let viewModel = createVoteCardViewModel(
-                for: index,
-                referendum: referendum,
+                for: referendum,
                 locale: locale,
                 actions: actions
             )

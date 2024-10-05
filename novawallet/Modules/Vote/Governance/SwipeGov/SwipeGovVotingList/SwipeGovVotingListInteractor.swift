@@ -24,6 +24,7 @@ final class SwipeGovVotingListInteractor: AnyProviderAutoCleaning {
     private var currentVotingItems: [VotingBasketItemLocal] = []
     private var availableReferendumsStore: UncertainStorage<[ReferendumIdLocal: ReferendumLocal]> = .undefined
     private var balanceStore: UncertainStorage<AssetBalance?> = .undefined
+    private var isActive: Bool = false
 
     private let operationQueue: OperationQueue
 
@@ -80,6 +81,16 @@ extension SwipeGovVotingListInteractor: SwipeGovVotingListInteractorInputProtoco
     func subscribeVotingItems() {
         clearAndSubscribeVotingItems()
     }
+
+    func becomeActive() {
+        isActive = true
+
+        removeUnavailableIfNeeded()
+    }
+
+    func becomeInactive() {
+        isActive = false
+    }
 }
 
 // MARK: VotingBasketLocalStorageSubscriber
@@ -90,11 +101,11 @@ extension SwipeGovVotingListInteractor: VotingBasketLocalStorageSubscriber, Voti
         case let .success(votingsChanges):
             currentVotingItems = currentVotingItems.applying(changes: votingsChanges)
             presenter?.didReceive(votingsChanges)
+
+            removeUnavailableIfNeeded()
         case let .failure(error):
             presenter?.didReceive(.votingBasket(error))
         }
-
-        removeUnavailableIfNeeded()
     }
 }
 
@@ -112,6 +123,8 @@ extension SwipeGovVotingListInteractor: WalletLocalStorageSubscriber, WalletLoca
             balanceStore = .defined(balance)
 
             presenter?.didReceive(balance)
+
+            removeUnavailableIfNeeded()
         case let .failure(error):
             presenter?.didReceive(.assetBalanceFailed(error))
         }
@@ -201,6 +214,10 @@ private extension SwipeGovVotingListInteractor {
     }
 
     func removeUnavailableIfNeeded() {
+        guard isActive else {
+            return
+        }
+
         let unavailableItems = currentVotingItems.filter { item in
             !checkAvailability(for: item) ||
                 !checkAmount(for: item)

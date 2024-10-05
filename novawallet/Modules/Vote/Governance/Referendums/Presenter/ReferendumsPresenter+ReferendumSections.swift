@@ -1,7 +1,7 @@
 import Foundation
 
 extension ReferendumsPresenter {
-    func creaateReferendumsSections(
+    func createReferendumsSections(
         for referendums: [ReferendumLocal],
         accountVotes: ReferendumAccountVotingDistribution?,
         chainInfo: ReferendumsModelFactoryInput.ChainInformation
@@ -47,6 +47,7 @@ extension ReferendumsPresenter {
 
         return swipeGovViewModelFactory.createSwipeGovReferendumsSection(
             with: observableState.state.value,
+            eligibleReferendums: swipeGovEligibleReferendums ?? [],
             locale: selectedLocale
         )
     }

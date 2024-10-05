@@ -185,8 +185,7 @@ extension ReferendumVoteInteractor: ReferendumVoteInteractorInputProtocol {
 
     func refreshLockDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
-        newVotes: [ReferendumNewVote],
-        blockHash: Data?
+        newVotes: [ReferendumNewVote]
     ) {
         clear(cancellable: &lockDiffCancellable)
 
@@ -195,7 +194,7 @@ extension ReferendumVoteInteractor: ReferendumVoteInteractorInputProtocol {
             newVotes: newVotes,
             from: connection,
             runtimeProvider: runtimeProvider,
-            blockHash: blockHash
+            blockHash: nil
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in

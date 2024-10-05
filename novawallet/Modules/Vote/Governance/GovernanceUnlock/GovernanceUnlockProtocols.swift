@@ -3,7 +3,7 @@ import Foundation
 protocol GovernanceUnlockInteractorInputProtocol: AnyObject {
     func setup()
     func refreshBlockTime()
-    func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?)
+    func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution)
     func remakeSubscriptions()
 }
 

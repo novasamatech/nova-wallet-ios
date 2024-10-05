@@ -24,6 +24,7 @@ final class ReferendumsPresenter {
     private(set) var sortedReferendums: [ReferendumLocal]?
     private(set) var filteredReferendums: [ReferendumIdLocal: ReferendumLocal] = [:]
     private(set) var referendumsMetadata: ReferendumMetadataMapping?
+    private(set) var swipeGovEligibleReferendums: Set<ReferendumIdLocal>?
     private(set) var offchainVoting: GovernanceOffchainVotesLocal?
     private(set) var unlockSchedule: GovernanceUnlockSchedule?
     private(set) var blockNumber: BlockNumber?
@@ -124,6 +125,7 @@ final class ReferendumsPresenter {
         maxStatusTimeInterval = nil
         timeModels = nil
         supportsDelegations = false
+        swipeGovEligibleReferendums = nil
     }
 
     func updateTimeModels(
@@ -340,6 +342,14 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveSupportDelegations(_ supportsDelegations: Bool) {
         self.supportsDelegations = supportsDelegations
+
+        updateReferendumsView()
+    }
+
+    func didReceiveSwipeGovEligible(_ referendums: Set<ReferendumIdLocal>) {
+        logger.debug("Swipe Gov eligible: \(referendums)")
+
+        swipeGovEligibleReferendums = referendums
 
         updateReferendumsView()
     }

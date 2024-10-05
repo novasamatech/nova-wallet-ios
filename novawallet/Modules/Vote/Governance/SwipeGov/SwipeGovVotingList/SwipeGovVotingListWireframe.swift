@@ -11,24 +11,6 @@ final class SwipeGovVotingListWireframe: SwipeGovVotingListWireframeProtocol {
         view?.controller.dismiss(animated: true)
     }
 
-    func showSetup(
-        from view: ControllerBackedProtocol?,
-        initData: ReferendumVotingInitData,
-        changing _: [VotingBasketItemLocal]
-    ) {
-        guard let setupView = SwipeGovSetupViewFactory.createView(
-            for: sharedState,
-            initData: initData,
-            newVotingPowerClosure: nil
-        ) else {
-            return
-        }
-
-        let navigationController = ImportantFlowViewFactory.createNavigation(from: setupView.controller)
-
-        view?.controller.present(navigationController, animated: true)
-    }
-
     func showReferendumDetails(
         from view: ControllerBackedProtocol?,
         initData: ReferendumDetailsInitData
@@ -58,10 +40,9 @@ final class SwipeGovVotingListWireframe: SwipeGovVotingListWireframeProtocol {
             return
         }
 
-        let navigationController = NovaNavigationController(
-            rootViewController: confirmationView.controller
+        view?.controller.navigationController?.pushViewController(
+            confirmationView.controller,
+            animated: true
         )
-
-        view?.controller.present(navigationController, animated: true)
     }
 }

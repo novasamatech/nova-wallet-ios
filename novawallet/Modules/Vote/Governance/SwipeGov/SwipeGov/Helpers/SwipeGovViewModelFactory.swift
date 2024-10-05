@@ -3,6 +3,7 @@ import Foundation
 protocol SwipeGovViewModelFactoryProtocol {
     func createSwipeGovReferendumsSection(
         with referendumsState: ReferendumsState,
+        eligibleReferendums: Set<ReferendumIdLocal>,
         locale: Locale
     ) -> ReferendumsSection?
 
@@ -20,39 +21,33 @@ protocol SwipeGovViewModelFactoryProtocol {
 struct SwipeGovViewModelFactory: SwipeGovViewModelFactoryProtocol {
     func createSwipeGovReferendumsSection(
         with referendumsState: ReferendumsState,
+        eligibleReferendums: Set<ReferendumIdLocal>,
         locale: Locale
     ) -> ReferendumsSection? {
-        let filteredReferendums = ReferendumFilter.VoteAvailable(
+        let filteredReferendums = ReferendumFilter.EligibleForSwipeGov(
             referendums: referendumsState.referendums,
-            accountVotes: referendumsState.voting?.value?.votes
+            accountVotes: referendumsState.voting?.value?.votes,
+            elegibleReferendums: eligibleReferendums
         ).callAsFunction()
 
-        let section: ReferendumsSection? = {
-            guard !referendumsState.referendums.isEmpty else {
-                return nil
-            }
+        guard !filteredReferendums.isEmpty else {
+            return nil
+        }
 
-            let titleText: String? = if !filteredReferendums.isEmpty {
-                R.string.localizable.commonCountedReferenda(
-                    filteredReferendums.count,
+        let titleText = R.string.localizable.commonCountedReferenda(
+            filteredReferendums.count,
+            preferredLanguages: locale.rLanguages
+        )
+
+        return .swipeGov(
+            SwipeGovBannerViewModel(
+                title: R.string.localizable.commonSwipeGov(preferredLanguages: locale.rLanguages),
+                description: R.string.localizable.swipeGovBannerMessage(
                     preferredLanguages: locale.rLanguages
-                )
-            } else {
-                nil
-            }
-
-            return .swipeGov(
-                SwipeGovBannerViewModel(
-                    title: R.string.localizable.commonSwipeGov(preferredLanguages: locale.rLanguages),
-                    description: R.string.localizable.swipeGovBannerMessage(
-                        preferredLanguages: locale.rLanguages
-                    ),
-                    referendumCounterText: titleText
-                )
+                ),
+                referendumCounterText: titleText
             )
-        }()
-
-        return section
+        )
     }
 
     func createVotingListViewModel(

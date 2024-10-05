@@ -18,6 +18,7 @@ final class SwipeGovVotingListPresenter {
     private var votingListItems: [VotingBasketItemLocal] = []
     private var referendumsMetadata: [ReferendumMetadataLocal] = []
     private var balance: AssetBalance?
+    private var isActive: Bool = false
 
     init(
         interactor: SwipeGovVotingListInteractorInputProtocol,
@@ -66,6 +67,18 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListPresenterProtocol {
         let initData = ReferendumVotingInitData(votingItems: votingListItems)
         wireframe.showConfirmation(from: view, initData: initData)
     }
+
+    func becomeActive() {
+        isActive = true
+
+        interactor.becomeActive()
+    }
+
+    func becomeInactive() {
+        isActive = false
+
+        interactor.becomeInactive()
+    }
 }
 
 // MARK: SwipeGovVotingListInteractorOutputProtocol
@@ -94,7 +107,7 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
             }
         }
 
-        if !deletes.isEmpty {
+        if !deletes.isEmpty, isActive {
             showReferendaExcluded(completion: proceedClosure)
         } else {
             proceedClosure()
@@ -180,17 +193,20 @@ private extension SwipeGovVotingListPresenter {
     }
 
     func showReferendaExcluded(completion: @escaping () -> Void) {
-        guard let balance, let assetInfo = chain.utilityAssetDisplayInfo() else {
+        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
+            completion()
             return
         }
 
-        let availableBalance = balanceViewModelFactory.amountFromValue(
-            balance.availableForOpenGov.decimal(assetInfo: assetInfo)
+        let availableBalance = balance?.availableForOpenGov ?? 0
+
+        let availableBalanceString = balanceViewModelFactory.amountFromValue(
+            availableBalance.decimal(assetInfo: assetInfo)
         ).value(for: localizationManager.selectedLocale)
 
         wireframe.presentReferendaExcluded(
             from: view,
-            availableBalance: availableBalance,
+            availableBalance: availableBalanceString,
             locale: localizationManager.selectedLocale,
             action: completion
         )

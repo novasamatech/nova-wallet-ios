@@ -17,6 +17,7 @@ final class GovernanceSharedState {
     private(set) var referendumsOperationFactory: ReferendumsOperationFactoryProtocol?
     private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
+    private(set) var swipeGovService: SwipeGovServicePrototocol?
 
     var supportsAbstainVoting: Bool {
         settings.settings.governanceType == .governanceV2
@@ -120,6 +121,33 @@ final class GovernanceSharedState {
                 unlocksCalculator: GovUnlocksCalculator()
             )
         }
+    }
+
+    func replaceSwipeGovService(for option: GovernanceSelectedOption?, language: String) {
+        swipeGovService?.stopSyncUp()
+        swipeGovService = nil
+
+        guard let option = option else {
+            return
+        }
+
+        let chainId = option.chain.chainId
+
+        guard let url = option.chain.externalApis?.referendumSummary()?.first?.url else {
+            return
+        }
+
+        let service = SwipeGovService(
+            operationFactory: SwipeGovSummaryOperationFactory(url: url),
+            chainId: chainId,
+            language: language,
+            operationQueue: operationQueue,
+            workQueue: .global()
+        )
+
+        service.setup()
+
+        swipeGovService = service
     }
 
     func createExtrinsicFactory(

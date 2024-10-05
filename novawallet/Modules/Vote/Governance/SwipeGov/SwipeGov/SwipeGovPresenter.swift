@@ -16,7 +16,7 @@ final class SwipeGovPresenter {
     private var model: SwipeGovModelBuilder.Result.Model?
     private var votingPower: VotingPowerLocal?
     private var currentCardStackViewModel: CardsZStackViewModel?
-    private var balance: AssetBalance?
+    private var balanceStore: UncertainStorage<AssetBalance?> = .undefined
 
     init(
         wireframe: SwipeGovWireframeProtocol,
@@ -67,14 +67,8 @@ extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
     func didReceiveState(_ modelBuilderResult: SwipeGovModelBuilder.Result) {
         model = modelBuilderResult.model
 
-        switch modelBuilderResult.changeKind {
-        case .referendums:
-            updateCardsStackView()
-        case .full:
-            updateVotingListView()
-            updateCardsStackView()
-        }
-
+        updateVotingListView()
+        updateCardsStackView()
         updateReferendumsCounter()
         updateSettingsState()
     }
@@ -84,7 +78,7 @@ extension SwipeGovPresenter: SwipeGovInteractorOutputProtocol {
     }
 
     func didReceiveBalace(_ assetBalance: AssetBalance?) {
-        balance = assetBalance
+        balanceStore = .defined(assetBalance)
     }
 }
 
@@ -165,11 +159,13 @@ private extension SwipeGovPresenter {
             return false
         }
 
-        guard let balance else {
+        guard case let .defined(optBalance) = balanceStore else {
             return false
         }
 
-        if votingPower.amount > balance.availableForOpenGov {
+        let availableBalance = optBalance?.availableForOpenGov ?? 0
+
+        if availableBalance == 0 || votingPower.amount > availableBalance {
             interruptAndOfferChangeVotingPower(
                 from: votingPower,
                 cardViewModel: cardViewModel,
