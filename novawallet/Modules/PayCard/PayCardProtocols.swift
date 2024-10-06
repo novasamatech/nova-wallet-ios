@@ -1,21 +1,21 @@
 import Foundation
 
 protocol PayCardViewProtocol: ControllerBackedProtocol {
-    func didReceiveRefundAddress(_ refundAddress: String)
+    func didReceive(model: PayCardModel)
 }
 
 protocol PayCardPresenterProtocol: AnyObject {
     func setup()
-    func processTransferData(data: Data)
-    func processWidgetState(data: Data)
+    func processMessage(body: Any, of name: String)
 }
 
 protocol PayCardInteractorInputProtocol: AnyObject {
-    func process(_ data: Data)
+    func setup()
+    func processMessage(body: Any, of name: String)
 }
 
 protocol PayCardInteractorOutputProtocol: AnyObject {
-    func didReceive(_ transferModel: MercuryoTransferModel)
+    func didReceive(model: PayCardModel)
 }
 
 protocol PayCardWireframeProtocol: AnyObject {

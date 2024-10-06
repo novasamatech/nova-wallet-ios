@@ -45,12 +45,16 @@ final class DAppBrowserScriptHandler: NSObject {
             contentController.addUserScript(wkScript)
         }
 
-        contentController.add(self, name: viewModel.name)
+        viewModel.handlerNames.forEach { handlerName in
+            contentController.add(self, name: handlerName)
+        }
     }
 
     private func clearScript() {
         if let oldViewModel = viewModel {
-            contentController.removeScriptMessageHandler(forName: oldViewModel.name)
+            oldViewModel.handlerNames.forEach { handler in
+                contentController.removeScriptMessageHandler(forName: handler)
+            }
         }
     }
 }
@@ -60,7 +64,7 @@ extension DAppBrowserScriptHandler: WKScriptMessageHandler {
         _: WKUserContentController,
         didReceive message: WKScriptMessage
     ) {
-        guard viewModel?.name == message.name else {
+        guard let viewModel, viewModel.handlerNames.contains(message.name) else {
             return
         }
 

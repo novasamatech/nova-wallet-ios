@@ -326,10 +326,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 }
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
-    func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
+    func browserScriptHandler(_ handler: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
         let host = rootView.webView.url?.host ?? ""
 
-        presenter.process(message: message.body, host: host, transport: message.name)
+        if let transportName = handler.viewModel?.name {
+            presenter.process(message: message.body, host: host, transport: transportName)
+        }
     }
 }
 

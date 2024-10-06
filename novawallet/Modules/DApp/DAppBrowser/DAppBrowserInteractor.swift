@@ -129,6 +129,7 @@ final class DAppBrowserInteractor {
 
                 return DAppTransportModel(
                     name: transportName,
+                    handlerNames: [transportName],
                     scripts: [bridgeScript, subscriptionScript]
                 )
             }

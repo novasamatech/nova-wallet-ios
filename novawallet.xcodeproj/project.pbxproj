@@ -414,6 +414,18 @@
 		0C8FDBA92CAE539900775D7F /* SwipeGovSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */; };
 		0C8FDBAB2CAE58DF00775D7F /* SwipeGovService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBAA2CAE58DF00775D7F /* SwipeGovService.swift */; };
 		0C8FDBB22CAFDC6000775D7F /* VoteCardSummaryProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB12CAFDC6000775D7F /* VoteCardSummaryProcessing.swift */; };
+		0C8FDBB62CB0FC8A00775D7F /* PayCardMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB52CB0FC8A00775D7F /* PayCardMessageHandler.swift */; };
+		0C8FDBB82CB0FD3200775D7F /* MercuryoMessageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */; };
+		0C8FDBBA2CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */; };
+		0C8FDBBC2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */; };
+		0C8FDBBE2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBD2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift */; };
+		0C8FDBC02CB1001A00775D7F /* PayCardHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */; };
+		0C8FDBC22CB1011C00775D7F /* MercuryoCardHookFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */; };
+		0C8FDBC42CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */; };
+		0C8FDBC62CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */; };
+		0C8FDBC82CB10C5400775D7F /* PayCardResourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */; };
+		0C8FDBCA2CB10CB100775D7F /* MercuryoCardResourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */; };
+		0C8FDBCD2CB10E5800775D7F /* PayCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */; };
 		0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */; };
 		0C90C6C22B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */; };
 		0C90C6C42B503D990084B5C2 /* WalletUpdateMediatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */; };
@@ -5549,6 +5561,18 @@
 		0C8FDBA82CAE539900775D7F /* SwipeGovSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSummaryTests.swift; sourceTree = "<group>"; };
 		0C8FDBAA2CAE58DF00775D7F /* SwipeGovService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovService.swift; sourceTree = "<group>"; };
 		0C8FDBB12CAFDC6000775D7F /* VoteCardSummaryProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardSummaryProcessing.swift; sourceTree = "<group>"; };
+		0C8FDBB52CB0FC8A00775D7F /* PayCardMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardMessageHandler.swift; sourceTree = "<group>"; };
+		0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoMessageName.swift; sourceTree = "<group>"; };
+		0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardsResponseHandler.swift; sourceTree = "<group>"; };
+		0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardStatusHandler.swift; sourceTree = "<group>"; };
+		0C8FDBBD2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardTopupHandler.swift; sourceTree = "<group>"; };
+		0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardHook.swift; sourceTree = "<group>"; };
+		0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardHookFactory.swift; sourceTree = "<group>"; };
+		0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MercuryoCardHookFactory+ResponseIntercept.swift"; sourceTree = "<group>"; };
+		0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MercuryoCardHookFactory+Widget.swift"; sourceTree = "<group>"; };
+		0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardResourceProvider.swift; sourceTree = "<group>"; };
+		0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardResourceProvider.swift; sourceTree = "<group>"; };
+		0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardModel.swift; sourceTree = "<group>"; };
 		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsUpdateMediator.swift; sourceTree = "<group>"; };
 		0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletUpdateMediatorTests.swift; sourceTree = "<group>"; };
@@ -11171,6 +11195,23 @@
 			path = SwipeGov;
 			sourceTree = "<group>";
 		};
+		0C8FDBCB2CB10E2C00775D7F /* Mercuryo */ = {
+			isa = PBXGroup;
+			children = (
+				2DA85A6D2C7F3F2F00591900 /* MercuryoTransferData.swift */,
+				2DA85A6F2C7F3F4B00591900 /* MercuryoTransferModel.swift */,
+				0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */,
+				0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */,
+				0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */,
+				0C8FDBBD2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift */,
+				0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */,
+				0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */,
+				0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */,
+				0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */,
+			);
+			path = Mercuryo;
+			sourceTree = "<group>";
+		};
 		0C962F842AA859DE00C0B551 /* LocalFilter */ = {
 			isa = PBXGroup;
 			children = (
@@ -12661,8 +12702,10 @@
 		2DA85A6C2C7F3F2300591900 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2DA85A6D2C7F3F2F00591900 /* MercuryoTransferData.swift */,
-				2DA85A6F2C7F3F4B00591900 /* MercuryoTransferModel.swift */,
+				0C8FDBB52CB0FC8A00775D7F /* PayCardMessageHandler.swift */,
+				0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */,
+				0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */,
+				0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -22647,6 +22690,7 @@
 		C0549656153BA1D4E114DCDA /* PayCard */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FDBCB2CB10E2C00775D7F /* Mercuryo */,
 				2DA85A6C2C7F3F2300591900 /* Model */,
 				0325A4A30102D3583ED09CEF /* PayCardProtocols.swift */,
 				FCC9E55522C1D33C353A9A08 /* PayCardWireframe.swift */,
@@ -24858,6 +24902,7 @@
 				0CB261F72A9E2D8400287305 /* StackSwitchCell.swift in Sources */,
 				AEAC690426EB891900346599 /* Logger+Substrate.swift in Sources */,
 				84FF268228494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift in Sources */,
+				0C8FDBCD2CB10E5800775D7F /* PayCardModel.swift in Sources */,
 				848E6BE32763346800C91022 /* СhainAssetSelectionControl.swift in Sources */,
 				842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */,
 				8466781627EC9B90007935D3 /* PersistExtrinsicFactory.swift in Sources */,
@@ -25803,6 +25848,7 @@
 				0CC0F7F72BB0710E002C49F6 /* ActionLoadingView+Style.swift in Sources */,
 				846A2C4525271F0100731018 /* DateFormatter.swift in Sources */,
 				0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */,
+				0C8FDBBC2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift in Sources */,
 				0CD54E4B2BCE306C007B58E7 /* CloudBackupCryptoManager.swift in Sources */,
 				8858917A29A700F000320896 /* DelegationReferendumVotersViewModelFactory.swift in Sources */,
 				8441007C28A3CD5900DCCA11 /* ParitySignerScanInteractor.swift in Sources */,
@@ -26003,6 +26049,7 @@
 				84EBC54324F656D100459D15 /* SortDescriptor+Storage.swift in Sources */,
 				845532D02684690D00C2645D /* ParachainSlotLease.swift in Sources */,
 				840874DE29782DD400ACFA55 /* GovernanceDelegateMetadataFactory.swift in Sources */,
+				0C8FDBC82CB10C5400775D7F /* PayCardResourceProvider.swift in Sources */,
 				77E0DC9E2A6940C400D03724 /* Calendar+Helpers.swift in Sources */,
 				0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */,
 				7779D1132B5EEE46008966A8 /* StakingRemoveProxyViewFactory.swift in Sources */,
@@ -26499,6 +26546,7 @@
 				848EAEB02659310A00676CEA /* CrowdloanStatus.swift in Sources */,
 				7796C7052A17859300D56094 /* ReferendumEmptySearchTableViewCell.swift in Sources */,
 				84F18D4E27A18C1400CA7554 /* OrmlAccountSubscription.swift in Sources */,
+				0C8FDBC62CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift in Sources */,
 				7726CD552A9728D700CE9064 /* StakingTypeSelectedStakingViewModelFactory.swift in Sources */,
 				8499FED427BFAA0000712589 /* BaseNftSyncService.swift in Sources */,
 				F419FD7A273D05B00061652C /* SettingsSection.swift in Sources */,
@@ -26559,6 +26607,7 @@
 				84FB29942639ABD700BE0FCD /* YourValidatorList+SelectionStart.swift in Sources */,
 				84DB9E8A26409E8200F23DD3 /* StakingRedeemLayout.swift in Sources */,
 				84F3B27627F4175500D64CF5 /* PhishingSite.swift in Sources */,
+				0C8FDBB82CB0FD3200775D7F /* MercuryoMessageName.swift in Sources */,
 				84644A2B2567222A004EAA4B /* TriangularedBlurButton.swift in Sources */,
 				F41CEB7B272FF34400C06154 /* CrowdloanYourContributionsViewModel.swift in Sources */,
 				843E9B3D27C8E8F1009C143A /* NftMediaView.swift in Sources */,
@@ -26890,6 +26939,7 @@
 				88F34FD428FFE64400712BDE /* ReferendumDAppCellView.swift in Sources */,
 				0CA7821C2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift in Sources */,
 				8430AB1226023C9F005B1066 /* PendingBondedState.swift in Sources */,
+				0C8FDBB62CB0FC8A00775D7F /* PayCardMessageHandler.swift in Sources */,
 				0C38B5102B7DCADF00882A8B /* KodaDotNftSyncService.swift in Sources */,
 				88421059289BBA8D00306F2C /* CurrencyViewFactory.swift in Sources */,
 				0C7104852C2B26A100487E64 /* NewSubstrateLedgerApplication.swift in Sources */,
@@ -27145,6 +27195,7 @@
 				846B749828B4BA0500C39B93 /* LedgerAccountsStore.swift in Sources */,
 				844ADE7728CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift in Sources */,
 				8499FED627BFB12600712589 /* UniquesSyncService.swift in Sources */,
+				0C8FDBBE2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift in Sources */,
 				841E556B282EAC3600C8438F /* ParachainStakingDelegatorState.swift in Sources */,
 				880E40FF298CF1ED0077B18B /* VotesProtocols.swift in Sources */,
 				774A980D2B0D0873009146CA /* OpenScreenUrlParsingService.swift in Sources */,
@@ -27806,6 +27857,7 @@
 				84033057290FD8AB009C18E6 /* ReferendumsPersonalActivityView.swift in Sources */,
 				433A3C2B0D1E4BA5974D681B /* DAppAddFavoriteWireframe.swift in Sources */,
 				0C7104832C2B176100487E64 /* LedgerCommonApplication.swift in Sources */,
+				0C8FDBC02CB1001A00775D7F /* PayCardHook.swift in Sources */,
 				77C9BCCC2ACD576B00022EA2 /* SwapAssetsOperationProtocols.swift in Sources */,
 				F5CA222FA684AAC8B556E667 /* DAppAddFavoritePresenter.swift in Sources */,
 				77C9F7612B8455E10099A465 /* GovernanceNotificationsModel.swift in Sources */,
@@ -27894,6 +27946,7 @@
 				BFC8C5A2C95D6EDF97D73732 /* ParaStkCollatorsSearchPresenter.swift in Sources */,
 				25993E2E536DE682E1DFC9AD /* ParaStkCollatorsSearchInteractor.swift in Sources */,
 				842643BF28785CFC0031B5B5 /* TuringStaking.swift in Sources */,
+				0C8FDBBA2CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift in Sources */,
 				0CB64E5E2B00AA8F008F268F /* GetTokenOptionsResult.swift in Sources */,
 				688F73AFD5FF20F77242B57E /* ParaStkCollatorsSearchViewController.swift in Sources */,
 				3BFD635E852E4D395025BEE8 /* ParaStkCollatorsSearchViewFactory.swift in Sources */,
@@ -27977,6 +28030,7 @@
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
 				84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */,
 				0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */,
+				0C8FDBC22CB1011C00775D7F /* MercuryoCardHookFactory.swift in Sources */,
 				84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */,
 				8434B602298D363C00FACF4C /* GovernanceAddDelegationTracksViewController.swift in Sources */,
 				2F21134DE157A4B98ED309E2 /* AssetsSearchViewController.swift in Sources */,
@@ -28534,6 +28588,7 @@
 				0CEB6B4B2CA5B13F00609DC2 /* VotingBasketItemLocal+Display.swift in Sources */,
 				844C3E692A07BC4500C4305F /* StackWalletAmountCell.swift in Sources */,
 				C29BA2F7EBAFED5D118E0C0C /* GovernanceRevokeDelegationConfirmViewFactory.swift in Sources */,
+				0C8FDBCA2CB10CB100775D7F /* MercuryoCardResourceProvider.swift in Sources */,
 				642FDAC7A745ECC92BFF0CC0 /* DelegationReferendumVotersProtocols.swift in Sources */,
 				AD877F7F77F9CB862DC7D5B3 /* DelegationReferendumVotersWireframe.swift in Sources */,
 				0DD3DB85B0E7FD5692F58787 /* DelegationReferendumVotersPresenter.swift in Sources */,
@@ -28567,6 +28622,7 @@
 				0C59E8DA2AA6085B001E11F3 /* ExternalAssetBalanceLocalSubscriptionFactory.swift in Sources */,
 				F5AADF461ED043EAF04A50DE /* ReferendumsFiltersProtocols.swift in Sources */,
 				A44CA3E6BB506841948AB2D1 /* ReferendumsFiltersWireframe.swift in Sources */,
+				0C8FDBC42CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift in Sources */,
 				77DF40422B7FE07D00ABDB53 /* SwitchTitleIconViewModel.swift in Sources */,
 				32428875321BF68F5DC47D52 /* ReferendumsFiltersPresenter.swift in Sources */,
 				165FD10F3329A67373DA78C6 /* ReferendumsFiltersViewController.swift in Sources */,
