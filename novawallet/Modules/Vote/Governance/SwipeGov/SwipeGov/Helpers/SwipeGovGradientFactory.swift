@@ -19,8 +19,6 @@ final class SwipeGovGradientFactory {
 
         currentIndex = (currentIndex + 1) % gradientArray.count
 
-        Logger.shared.info("Gradient index: \(gradientIndex)")
-
         return gradientArray[gradientIndex]
     }
 }
