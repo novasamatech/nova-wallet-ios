@@ -174,7 +174,12 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
             sendStateOnSubscription: true,
             queue: .global()
         ) { [weak swipeGovService] _, newState in
-            swipeGovService?.update(referendums: Set(newState.value.referendums.keys))
+            let filteredReferendums = ReferendumFilter.VoteAvailable(
+                referendums: newState.value.referendums,
+                accountVotes: newState.value.voting?.value?.votes
+            ).callAsFunction()
+
+            swipeGovService?.update(referendums: Set(filteredReferendums.keys))
         }
 
         swipeGovService.subscribeReferendums(
