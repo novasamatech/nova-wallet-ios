@@ -52,7 +52,7 @@ final class MercuryoCardHookFactory {
                 refundAccountId: selectedAccount.accountId
             )
 
-            let responseHook = try self.createCardsResponseInterceptingHook(for: delegate)
+            let responseHook = self.createCardsResponseInterceptingHook(for: delegate)
             let widgetHooks = try self.createWidgetHooks(for: delegate, params: params)
 
             return widgetHooks + [responseHook]

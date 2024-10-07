@@ -62,6 +62,8 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
     }
 
     func processMessage(body: Any, of name: String) {
+        logger.debug("New message \(name): \(body)")
+
         guard let handler = messageHandlers.first(where: { $0.canHandleMessageOf(name: name) }) else {
             logger.warning("No handler registered to process \(name)")
             return
@@ -72,7 +74,9 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
 }
 
 extension PayCardInteractor: PayCardHookDelegate {
-    func didRequestTopup() {}
+    func didRequestTopup(from model: PayCardTopupModel) {
+        presenter?.didRequestTopup(for: model)
+    }
 
     func didOpenCard() {}
 

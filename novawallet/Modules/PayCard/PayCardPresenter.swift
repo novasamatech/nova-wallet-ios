@@ -28,4 +28,9 @@ extension PayCardPresenter: PayCardInteractorOutputProtocol {
     func didReceive(model: PayCardModel) {
         view?.didReceive(model: model)
     }
+
+    func didRequestTopup(for model: PayCardTopupModel) {
+        wireframe.showSend(from: view, with: model) { [weak self] _ in
+        }
+    }
 }

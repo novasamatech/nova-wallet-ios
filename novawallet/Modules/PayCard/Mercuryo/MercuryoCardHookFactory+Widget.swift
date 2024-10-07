@@ -2,7 +2,7 @@ import Foundation
 
 extension MercuryoCardHookFactory {
     func createWidgetHooks(
-        for _: PayCardHookDelegate,
+        for delegate: PayCardHookDelegate,
         params: MercuryoCardParams
     ) throws -> [PayCardHook] {
         let refundAddress = try params.refundAccountId.toAddress(
@@ -43,8 +43,12 @@ extension MercuryoCardHookFactory {
             ),
             messageNames: [statusAction, topupAction],
             handlers: [
-                MercuryoCardStatusHandler(logger: logger),
-                MercuryoCardTopupHandler(logger: logger)
+                MercuryoCardStatusHandler(delegate: delegate, logger: logger),
+                MercuryoCardTopupHandler(
+                    delegate: delegate,
+                    chainAsset: params.chainAsset,
+                    logger: Logger.shared
+                )
             ]
         )]
     }

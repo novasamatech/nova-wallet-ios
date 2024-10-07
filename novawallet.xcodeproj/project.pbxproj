@@ -426,6 +426,9 @@
 		0C8FDBC82CB10C5400775D7F /* PayCardResourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */; };
 		0C8FDBCA2CB10CB100775D7F /* MercuryoCardResourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */; };
 		0C8FDBCD2CB10E5800775D7F /* PayCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */; };
+		0C8FDBCF2CB25D7400775D7F /* MercuryoStatusChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */; };
+		0C8FDBD12CB25E0400775D7F /* MercuryoGenericResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */; };
+		0C8FDBD32CB30DDE00775D7F /* PayCardTopupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */; };
 		0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */; };
 		0C90C6C22B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */; };
 		0C90C6C42B503D990084B5C2 /* WalletUpdateMediatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */; };
@@ -1029,7 +1032,6 @@
 		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
 		2DA85A6B2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */; };
 		2DA85A6E2C7F3F2F00591900 /* MercuryoTransferData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6D2C7F3F2F00591900 /* MercuryoTransferData.swift */; };
-		2DA85A702C7F3F4B00591900 /* MercuryoTransferModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6F2C7F3F4B00591900 /* MercuryoTransferModel.swift */; };
 		2DA85A722C7F6E0900591900 /* SwipeGovBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */; };
 		2DA85A742C7FC5D100591900 /* RoundedGradientBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */; };
 		2DA85A772C7FCCCE00591900 /* SwipeGovViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */; };
@@ -5573,6 +5575,9 @@
 		0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardResourceProvider.swift; sourceTree = "<group>"; };
 		0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardResourceProvider.swift; sourceTree = "<group>"; };
 		0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardModel.swift; sourceTree = "<group>"; };
+		0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoStatusChange.swift; sourceTree = "<group>"; };
+		0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoGenericResponse.swift; sourceTree = "<group>"; };
+		0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardTopupModel.swift; sourceTree = "<group>"; };
 		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsUpdateMediator.swift; sourceTree = "<group>"; };
 		0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletUpdateMediatorTests.swift; sourceTree = "<group>"; };
@@ -6186,7 +6191,6 @@
 		2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewLayout.swift; sourceTree = "<group>"; };
 		2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupProtocols.swift; sourceTree = "<group>"; };
 		2DA85A6D2C7F3F2F00591900 /* MercuryoTransferData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoTransferData.swift; sourceTree = "<group>"; };
-		2DA85A6F2C7F3F4B00591900 /* MercuryoTransferModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoTransferModel.swift; sourceTree = "<group>"; };
 		2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovBannerView.swift; sourceTree = "<group>"; };
 		2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedGradientBackgroundView.swift; sourceTree = "<group>"; };
 		2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovViewModelFactory.swift; sourceTree = "<group>"; };
@@ -11198,8 +11202,8 @@
 		0C8FDBCB2CB10E2C00775D7F /* Mercuryo */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */,
 				2DA85A6D2C7F3F2F00591900 /* MercuryoTransferData.swift */,
-				2DA85A6F2C7F3F4B00591900 /* MercuryoTransferModel.swift */,
 				0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */,
 				0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */,
 				0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */,
@@ -11208,6 +11212,7 @@
 				0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */,
 				0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */,
 				0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */,
+				0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */,
 			);
 			path = Mercuryo;
 			sourceTree = "<group>";
@@ -12706,6 +12711,7 @@
 				0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */,
 				0C8FDBC72CB10C5400775D7F /* PayCardResourceProvider.swift */,
 				0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */,
+				0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -26407,6 +26413,7 @@
 				846042C02666E2C800CFFCFC /* KaruraResultData.swift in Sources */,
 				84BE20A825E8D93E00B4748C /* Data+StorageKey.swift in Sources */,
 				84B24FAE2A2F6BEB00F9BF59 /* StakingDashboardInactiveCell.swift in Sources */,
+				0C8FDBD12CB25E0400775D7F /* MercuryoGenericResponse.swift in Sources */,
 				84F0D9FC299D87A700F82CBC /* GovernanceBalanceConviction.swift in Sources */,
 				84BAD211293A2FB100C55C49 /* TokensManageViewModel.swift in Sources */,
 				84EBC55224F660A700459D15 /* EventProtocols.swift in Sources */,
@@ -28002,6 +28009,7 @@
 				88F34FDD28FFE6E400712BDE /* MultiValueView+Model.swift in Sources */,
 				54D334605E9A7C71A4873CFC /* ParaStkRedeemWireframe.swift in Sources */,
 				413CCB7C7B22831147B8E815 /* ParaStkRedeemPresenter.swift in Sources */,
+				0C8FDBCF2CB25D7400775D7F /* MercuryoStatusChange.swift in Sources */,
 				35F9157CAA182493B2F0E1D3 /* ParaStkRedeemInteractor.swift in Sources */,
 				771901A22AE7E34D00D9C918 /* SwapBaseInteractor.swift in Sources */,
 				C729BF3E60E6825AEED11383 /* ParaStkRedeemViewController.swift in Sources */,
@@ -28378,6 +28386,7 @@
 				7DB7E81CC2F880E4736DE062 /* GovernanceUnlockConfirmViewLayout.swift in Sources */,
 				84B8AA8D29FA41F600347A37 /* WalletConnectStateNewMessage.swift in Sources */,
 				0C38B5122B7DCB4400882A8B /* KodaDotNftModelConverter.swift in Sources */,
+				0C8FDBD32CB30DDE00775D7F /* PayCardTopupModel.swift in Sources */,
 				D5BB3A36DB9ADD25EE43109F /* GovernanceUnlockConfirmViewFactory.swift in Sources */,
 				65CD159259A06EC3E92FD4B0 /* AssetDetailsProtocols.swift in Sources */,
 				AE87017F784657CBEBF49C45 /* AssetDetailsWireframe.swift in Sources */,
@@ -28466,7 +28475,6 @@
 				D938B2F0F1F17649A78BB5BC /* GovernanceDelegateInfoProtocols.swift in Sources */,
 				5ECC5F9E55FBC5CF2DD8664C /* GovernanceDelegateInfoWireframe.swift in Sources */,
 				D591F555544FB6329BFA835C /* GovernanceDelegateInfoPresenter.swift in Sources */,
-				2DA85A702C7F3F4B00591900 /* MercuryoTransferModel.swift in Sources */,
 				0CE5BF4A6BC02563113DFDB8 /* GovernanceDelegateInfoInteractor.swift in Sources */,
 				2A0FBBB56C88EB36B5CAE317 /* GovernanceDelegateInfoViewController.swift in Sources */,
 				77ED167C2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift in Sources */,

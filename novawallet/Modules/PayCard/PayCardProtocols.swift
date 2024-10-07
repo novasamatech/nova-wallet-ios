@@ -16,11 +16,13 @@ protocol PayCardInteractorInputProtocol: AnyObject {
 
 protocol PayCardInteractorOutputProtocol: AnyObject {
     func didReceive(model: PayCardModel)
+    func didRequestTopup(for model: PayCardTopupModel)
 }
 
 protocol PayCardWireframeProtocol: AnyObject {
     func showSend(
         from view: ControllerBackedProtocol?,
-        with transferModel: MercuryoTransferModel
+        with transferModel: PayCardTopupModel,
+        transferCompletion: @escaping TransferCompletionClosure
     )
 }

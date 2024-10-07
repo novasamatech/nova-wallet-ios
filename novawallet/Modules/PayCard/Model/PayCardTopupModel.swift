@@ -1,7 +1,7 @@
 import Foundation
 
-struct MercuryoTransferModel {
+struct PayCardTopupModel {
     let chainAsset: ChainAsset
     let amount: Decimal
-    let address: AccountAddress
+    let recipientAddress: AccountAddress
 }
