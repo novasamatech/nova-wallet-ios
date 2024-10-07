@@ -1760,3 +1760,5 @@
 "gov.referendum.completed.title.with.index" = "Referendum #%d completed";
 "gov.referendum.completed.message.with.index" = "Referendum #%d has been completed and voting is finished";
 "common.use.max.due.fee.message" = "You can use up to %@ since you need to pay %@ for network fee.";
+"common.pay.anywhere" = "Pay anywhere";
+"common.nova.card" = "Nova Card";

@@ -3,13 +3,14 @@ import Foundation
 final class PayCardWireframe: PayCardWireframeProtocol {
     func showSend(
         from view: ControllerBackedProtocol?,
-        with transferModel: MercuryoTransferModel
+        with transferModel: PayCardTopupModel,
+        transferCompletion: @escaping TransferCompletionClosure
     ) {
         guard let sendTransferView = TransferSetupViewFactory.createCardTopUpView(
             from: transferModel.chainAsset,
-            recepient: DisplayAddress(address: transferModel.address, username: ""),
+            recepient: DisplayAddress(address: transferModel.recipientAddress, username: ""),
             amount: transferModel.amount,
-            transferCompletion: nil
+            transferCompletion: transferCompletion
         ) else {
             return
         }

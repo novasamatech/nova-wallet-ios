@@ -209,4 +209,13 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func showCard(from view: AssetListViewProtocol?) {
+        guard let payCardView = PayCardViewFactory.createView() else {
+            return
+        }
+
+        payCardView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
+    }
 }

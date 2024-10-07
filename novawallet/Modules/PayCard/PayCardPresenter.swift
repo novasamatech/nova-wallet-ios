@@ -15,22 +15,22 @@ final class PayCardPresenter {
 }
 
 extension PayCardPresenter: PayCardPresenterProtocol {
-    func setup() {}
-
-    func processTransferData(data: Data) {
-        interactor.process(data)
+    func setup() {
+        interactor.setup()
     }
 
-    func processWidgetState(data _: Data) {
-        // TODO: Implement when design will be ready
+    func processMessage(body: Any, of name: String) {
+        interactor.processMessage(body: body, of: name)
     }
 }
 
 extension PayCardPresenter: PayCardInteractorOutputProtocol {
-    func didReceive(_ transferModel: MercuryoTransferModel) {
-        wireframe.showSend(
-            from: view,
-            with: transferModel
-        )
+    func didReceive(model: PayCardModel) {
+        view?.didReceive(model: model)
+    }
+
+    func didRequestTopup(for model: PayCardTopupModel) {
+        wireframe.showSend(from: view, with: model) { [weak self] _ in
+        }
     }
 }

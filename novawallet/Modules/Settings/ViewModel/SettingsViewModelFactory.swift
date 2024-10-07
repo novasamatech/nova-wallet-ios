@@ -40,7 +40,6 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         [
             (.general, [
                 createCommonViewViewModel(row: .wallets, locale: locale),
-                createCommonViewViewModel(row: .pay, locale: locale),
                 createWalletConnectViewModel(from: parameters.walletConnectSessionsCount, locale: locale),
                 createCommonViewViewModel(row: .networks, locale: locale)
             ]),

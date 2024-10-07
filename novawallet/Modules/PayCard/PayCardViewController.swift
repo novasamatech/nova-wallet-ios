@@ -1,6 +1,5 @@
 import UIKit
 import WebKit
-import SnapKit
 
 private struct WebViewScript {
     enum InsertionPoint {
@@ -15,27 +14,13 @@ private struct WebViewScript {
 private enum CallbackNames: String {
     case onStatusChange
     case onSellTransferEnabled
+    case onRequestIntercept
 }
 
 final class PayCardViewController: UIViewController, ViewHolder {
     typealias RootViewType = PayCardViewLayout
 
-    lazy var webView: WKWebView = {
-        let configuration = WKWebViewConfiguration()
-
-        configuration.userContentController = userContentController
-
-        let preferences = WKWebpagePreferences()
-        preferences.preferredContentMode = .mobile
-        configuration.defaultWebpagePreferences = preferences
-
-        let view = WKWebView(frame: .zero, configuration: configuration)
-
-        view.scrollView.contentInsetAdjustmentBehavior = .always
-        view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
-
-        return view
-    }()
+    private var scriptsHandler: DAppBrowserScriptHandler?
 
     let presenter: PayCardPresenterProtocol
 
@@ -56,94 +41,29 @@ final class PayCardViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        presenter.setup()
-
         setupWebView()
-        startWebView()
+
+        presenter.setup()
     }
 
     func setupWebView() {
-        rootView.addSubview(webView)
-        webView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        scriptsHandler = DAppBrowserScriptHandler(
+            contentController: rootView.webView.configuration.userContentController,
+            delegate: self
+        )
 
-        webView.navigationDelegate = self
-        webView.uiDelegate = self
+        rootView.webView.navigationDelegate = self
+        rootView.webView.uiDelegate = self
     }
 
-    func startWebView() {
-        guard
-            let htmlFile = Bundle.main.path(forResource: "mercuryoWidget", ofType: "html"),
-            let htmlString = try? String(contentsOfFile: htmlFile, encoding: .utf8)
-        else {
-            return
-        }
-
-        webView.loadHTMLString(
-            htmlString,
-            baseURL: URL(string: "https://exchange.mercuryo.io")!
-        )
+    func load(resource: PayCardHtmlResource) {
+        rootView.webView.loadHTMLString(resource.content, baseURL: resource.url)
     }
 }
 
-extension PayCardViewController {
-    var userContentController: WKUserContentController {
-        let userController = WKUserContentController()
-        userController.add(self, name: CallbackNames.onSellTransferEnabled.rawValue)
-        userController.add(self, name: CallbackNames.onStatusChange.rawValue)
-
-        let script = WebViewScript(
-            content: """
-            mercuryoWidget.run({
-                widgetId: '',
-                host: document.getElementById('widget-container'),
-                type: 'sell',
-                currency: 'DOT',
-                fiatCurrency: 'EUR',
-                paymentMethod: 'fiat_card_open',
-                showSpendCardDetails: true,
-                width: '100%',
-                fixPaymentMethod: true,
-                height: window.innerHeight,
-                hideRefundAddress: true,
-                refundAddress: '14iKGFDp5EBXe3sdX765ngrERMrYUdxmFfayNCGkq7f6tm9w',
-                onStatusChange: data => {
-                },
-                onSellTransferEnabled: data => {
-                    window.webkit.messageHandlers.onSellTransferEnabled.postMessage(JSON.stringify(data))
-                }
-            });
-            """,
-            insertionPoint: .atDocEnd
-        )
-
-        let wkScript = WKUserScript(
-            source: script.content,
-            injectionTime: .atDocumentEnd,
-            forMainFrameOnly: false
-        )
-        userController.addUserScript(wkScript)
-
-        return userController
-    }
-}
-
-extension PayCardViewController: WKScriptMessageHandler {
-    func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard
-            let data = "\(message.body)".data(using: .utf8),
-            let callbackName = CallbackNames(rawValue: message.name)
-        else {
-            return
-        }
-
-        switch callbackName {
-        case .onStatusChange:
-            presenter.processWidgetState(data: data)
-        case .onSellTransferEnabled:
-            presenter.processTransferData(data: data)
-        }
+extension PayCardViewController: DAppBrowserScriptHandlerDelegate {
+    func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
+        presenter.processMessage(body: message.body, of: message.name)
     }
 }
 
@@ -154,7 +74,7 @@ extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
         if navigationAction.targetFrame == nil {
-            webView.load(navigationAction.request)
+            rootView.webView.load(navigationAction.request)
             decisionHandler(.cancel)
         } else {
             decisionHandler(.allow)
@@ -162,13 +82,13 @@ extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
     }
 
     func webView(
-        _ webView: WKWebView,
+        _: WKWebView,
         createWebViewWith _: WKWebViewConfiguration,
         for navigationAction: WKNavigationAction,
         windowFeatures _: WKWindowFeatures
     ) -> WKWebView? {
         if navigationAction.targetFrame == nil {
-            webView.load(navigationAction.request)
+            rootView.webView.load(navigationAction.request)
         }
 
         return nil
@@ -176,5 +96,15 @@ extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
 }
 
 extension PayCardViewController: PayCardViewProtocol {
-    func didReceiveRefundAddress(_: String) {}
+    func didReceive(model: PayCardModel) {
+        let transport = DAppTransportModel(
+            name: "PayCard",
+            handlerNames: model.messageNames,
+            scripts: model.scripts
+        )
+
+        scriptsHandler?.bind(viewModel: transport)
+
+        load(resource: model.resource)
+    }
 }

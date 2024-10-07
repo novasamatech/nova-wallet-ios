@@ -138,27 +138,6 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         )
     }
 
-    func showCardFlow(from view: ControllerBackedProtocol?) {
-        guard let payCardView = PayCardViewFactory.createView() else {
-            return
-        }
-
-        let navigationController = NovaNavigationController(rootViewController: payCardView.controller)
-
-        view?.controller.present(
-            navigationController,
-            animated: true
-        )
-    }
-
-    func showCardIssueDidComplete(from view: ControllerBackedProtocol?, locale: Locale) {
-        let languages = locale.rLanguages
-        let message = R.string.localizable.commonCardIssued(preferredLanguages: locale.rLanguages)
-
-        let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
-        view?.controller.present(alertController, animated: true)
-    }
-
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {
