@@ -429,6 +429,8 @@
 		0C8FDBCF2CB25D7400775D7F /* MercuryoStatusChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */; };
 		0C8FDBD12CB25E0400775D7F /* MercuryoGenericResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */; };
 		0C8FDBD32CB30DDE00775D7F /* PayCardTopupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */; };
+		0C8FDBD52CB397C100775D7F /* AssetListCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD42CB397C100775D7F /* AssetListCardCell.swift */; };
+		0C8FDBD72CB39D7000775D7F /* AssetListTotalBalanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBD62CB39D7000775D7F /* AssetListTotalBalanceView.swift */; };
 		0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */; };
 		0C90C6C22B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */; };
 		0C90C6C42B503D990084B5C2 /* WalletUpdateMediatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */; };
@@ -5578,6 +5580,8 @@
 		0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoStatusChange.swift; sourceTree = "<group>"; };
 		0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoGenericResponse.swift; sourceTree = "<group>"; };
 		0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardTopupModel.swift; sourceTree = "<group>"; };
+		0C8FDBD42CB397C100775D7F /* AssetListCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCardCell.swift; sourceTree = "<group>"; };
+		0C8FDBD62CB39D7000775D7F /* AssetListTotalBalanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListTotalBalanceView.swift; sourceTree = "<group>"; };
 		0C90C6BF2B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedExtrinsicCallMapper.swift; sourceTree = "<group>"; };
 		0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsUpdateMediator.swift; sourceTree = "<group>"; };
 		0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletUpdateMediatorTests.swift; sourceTree = "<group>"; };
@@ -20525,6 +20529,7 @@
 		84E493202731BAA5000534F2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				0C8FDBD62CB39D7000775D7F /* AssetListTotalBalanceView.swift */,
 				84D6D7F527A7D3060094FC33 /* AssetListTotalBalanceCell.swift */,
 				84D6D7F927A7EC810094FC33 /* AssetListAssetCell.swift */,
 				84D6D7FB27A7F4B40094FC33 /* AssetListNetworkView.swift */,
@@ -20537,6 +20542,7 @@
 				88DC3E26292CABCB00DBCE4D /* AssetListStyles.swift */,
 				0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */,
 				0C9951C92AE2ABA400B65615 /* AssetListBannerCell.swift */,
+				0C8FDBD42CB397C100775D7F /* AssetListCardCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -27514,6 +27520,7 @@
 				0C37AFBD2B55732100009ECA /* NMapKeyEncodingOperation.swift in Sources */,
 				840D92A3278EDB2E0007B979 /* DAppParsedCall.swift in Sources */,
 				90A3F46EF181DC2B821CC80C /* CrowdloanContributionConfirmViewFactory.swift in Sources */,
+				0C8FDBD72CB39D7000775D7F /* AssetListTotalBalanceView.swift in Sources */,
 				8407715628CB7D6B007DBD24 /* ParaStkYieldBoostScheduleInteractor.swift in Sources */,
 				84E2ABCA2992891300A5D3C1 /* GovernanceDelegateInteractor.swift in Sources */,
 				84D1ABDC27E1B4FE0073C631 /* ChainAssetViewModel.swift in Sources */,
@@ -27887,6 +27894,7 @@
 				8857E02F28A4FA6000260BA2 /* Currency+usd.swift in Sources */,
 				84BFE8AA28C3881800140F1F /* StorageCodingPath+AutomationTime.swift in Sources */,
 				88FB7DCD2950715E00784E08 /* AssetDetailsContainerProtocols.swift in Sources */,
+				0C8FDBD52CB397C100775D7F /* AssetListCardCell.swift in Sources */,
 				77D2ED6B2B1DD78100A0E58C /* ProxyAccountModel.swift in Sources */,
 				2B682D343F75EBEB8A1E65BD /* DAppAuthSettingsViewLayout.swift in Sources */,
 				0CE9338A2C00538D000F3EFE /* RuntimeTypeRegistryFactory.swift in Sources */,

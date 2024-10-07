@@ -216,8 +216,6 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             wireframe.showBackup(from: view)
         case .networks:
             wireframe.showNetworks(from: view)
-        case .pay:
-            wireframe.showCardFlow(from: view)
         }
     }
 
@@ -330,11 +328,5 @@ extension SettingsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
-    }
-}
-
-extension SettingsPresenter: PurchaseDelegate {
-    func purchaseDidComplete() {
-        wireframe.showCardIssueDidComplete(from: view, locale: selectedLocale)
     }
 }
