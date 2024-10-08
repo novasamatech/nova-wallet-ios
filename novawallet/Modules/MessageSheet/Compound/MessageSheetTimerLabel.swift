@@ -35,7 +35,7 @@ class MessageSheetTimerLabel: UILabel, MessageSheetContentProtocol {
     private var locale: Locale?
 
     private lazy var viewModelFactory: EstimatedCountdownViewModelFactoryProtocol = {
-        EstimatedCountdownViewModelFactory()
+        EstimatedCountdownViewModelFactory(timeFormatter: MinuteSecondFormatter())
     }()
 
     func updateView() {

@@ -53,9 +53,17 @@ final class PayCardPresenter {
             return
         }
 
+        let timeRemained = Date().timeIntervalSince1970 - openCardTimestamp
+        
+        guard timeRemained < 60*5 else {
+            showFailAlert()
+            
+            return
+        }
+
         let timer = CountdownTimerMediator()
         timer.addObserver(self)
-        timer.start(with: openCardTimestamp)
+        timer.start(with: timeRemained)
 
         wireframe.showCardOpenPending(
             from: view,
