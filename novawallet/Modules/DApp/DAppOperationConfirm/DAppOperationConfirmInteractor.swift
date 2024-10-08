@@ -9,7 +9,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         let signature: Data
         let modifiedExtrinsic: Data?
     }
-    
+
     let request: DAppOperationRequest
     let chain: ChainModel
 
@@ -24,8 +24,8 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     var extrinsicFactory: DAppExtrinsicBuilderOperationFactory?
 
     var priceProvider: StreamableProvider<PriceData>?
-    var feeWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>?
-    var signWrapper: CompoundOperationWrapper<Data>?
+    let feeCancellable = CancellableCallStore()
+    var signCancellable = CancellableCallStore()
 
     init(
         request: DAppOperationRequest,
@@ -125,7 +125,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
 
             let scaleEncoder = codingFactory.createEncoder()
 
-            let rawSignature = signatureResult.signedExtrinsic
+            let rawSignature = signatureResult.signature
 
             switch extrinsicFactory.processedResult.account.cryptoType {
             case .sr25519:
@@ -159,8 +159,8 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
             }
 
             let signature = try scaleEncoder.encode()
-            
-            return SignatureResult(signature: signature, modifiedExtrinsic: signatureResult.signedExtrinsic)
+
+            return SignatureResult(signature: signature, modifiedExtrinsic: signatureResult.modifiedExtrinsic)
         }
 
         signatureOperation.addDependency(codingFactoryOperation)

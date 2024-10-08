@@ -54,9 +54,7 @@ final class DAppExtrinsicBuilderOperationFactory {
         do {
             let optMetadataHash = try result.extrinsic.metadataHash.map { try Data(hexString: $0) }
 
-            /**
-             *  If a dapp haven't declared a permission to modify extrinsic - return whatever metadataHash present in payload
-             */
+            // If a dapp haven't declared a permission to modify extrinsic - return metadataHash from payload
             if !result.extrinsic.withSignedTransaction {
                 return .createWithResult(
                     .init(
@@ -172,7 +170,7 @@ final class DAppExtrinsicBuilderOperationFactory {
 
         builderWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let payloadOperation = ClosureOperation<DAppExtrinsicRawSignatureResult> {
+        let payloadOperation = ClosureOperation<DAppExtrinsicRawExtrinsicResult> {
             let builderResult = try builderWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
@@ -251,23 +249,21 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             let builder = builderResult.builder
-            let context = ExtrinsicSigningContext.substrateExtrinsic(
-                .init(
-                    senderResolution: builderResult.sender,
-                    extrinsicMemo: builder.makeMemo(),
-                    codingFactory: codingFactory
-                )
+            let context = ExtrinsicSigningContext.Substrate(
+                senderResolution: builderResult.sender,
+                extrinsicMemo: builder.makeMemo(),
+                codingFactory: codingFactory
             )
 
             let rawSignature = try builder.buildRawSignature(
                 using: { data in
-                    try signingClosure(data, context)
+                    try signingClosure(data, .substrateExtrinsic(context))
                 },
                 encoder: codingFactory.createEncoder(),
                 metadata: codingFactory.metadata
             )
-            
-            let modifiedExtrinsic = if builderResult.modifiedOriginalExtrinsic {
+
+            let modifiedExtrinsic: Data? = if builderResult.modifiedOriginalExtrinsic {
                 try builder.signing(
                     with: { _, _ in rawSignature },
                     context: context,
