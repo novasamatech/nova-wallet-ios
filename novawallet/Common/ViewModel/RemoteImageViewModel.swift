@@ -76,7 +76,7 @@ final class RemoteImageSerializer: CacheSerializer {
             return uiImage
         } else {
             let imsvg = SVGKImage(data: data)
-            return imsvg?.uiImage ?? UIImage()
+            return imsvg?.uiImage
         }
     }
 }
