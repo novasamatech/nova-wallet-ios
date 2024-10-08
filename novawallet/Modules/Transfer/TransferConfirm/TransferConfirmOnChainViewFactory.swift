@@ -85,6 +85,7 @@ struct TransferConfirmOnChainViewFactory {
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             utilityAssetInfo: utilityAssetInfo,
+            destUtilityAssetInfo: utilityAssetInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
