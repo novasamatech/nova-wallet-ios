@@ -1763,3 +1763,10 @@
 "gov.referendum.completed.title.with.index" = "Референдум #%li завершен";
 "gov.referendum.completed.message.with.index" = "Референдум №%li завершен, голосование окончено";
 "common.use.max.due.fee.message" = "Вы можете использовать до %@, так как вам нужно заплатить %@ комиссию сети.";
+"common.pay.anywhere" = "Платите везде";
+"common.nova.card" = "Карта Nova";
+"common.estimated.timer" = "Ожидаемое ~%@";
+"card.open.pending.sheet.title" = "Ваша карта выпускается!";
+"card.open.pending.sheet.message" = "Это может занять до 5 минут.\nЭто окно закроется автоматически.";
+"card.open.failed.alert.title" = "Свяжитесь с поддержкой";
+"card.open.failed.alert.message" = "Пожалуйста, свяжитесь с support@novawallet.io. Укажите адрес электронной почты, который вы использовали для выпуска карты.";
