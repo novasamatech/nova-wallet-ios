@@ -67,7 +67,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
             return
         }
 
-        let response = DAppOperationResponse(signature: nil)
+        let response = DAppOperationResponse(signature: nil, modifiedTransaction: nil)
         presenter?.didReceive(responseResult: .success(response), for: request)
     }
 

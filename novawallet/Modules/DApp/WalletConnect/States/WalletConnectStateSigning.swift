@@ -33,7 +33,8 @@ extension WalletConnectStateSigning: WalletConnectStateProtocol {
             let method = WalletConnectMethod(rawValue: request.method) {
             let result = WalletConnectSignModelFactory.createSigningResponse(
                 for: method,
-                signature: signature
+                signature: signature,
+                modifiedTransaction: response.modifiedTransaction
             )
 
             stateMachine.emit(

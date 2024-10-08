@@ -4,6 +4,12 @@ import Operation_iOS
 
 struct DAppExtrinsicRawSignatureResult {
     let sender: ExtrinsicSenderResolution
+    let signature: Data
+    let modifiedExtrinsic: Data?
+}
+
+struct DAppExtrinsicRawExtrinsicResult {
+    let sender: ExtrinsicSenderResolution
     let signedExtrinsic: Data
 }
 
@@ -11,25 +17,99 @@ final class DAppExtrinsicBuilderOperationFactory {
     struct ExtrinsicSenderBuilderResult {
         let sender: ExtrinsicSenderResolution
         let builder: ExtrinsicBuilderProtocol
+        let modifiedOriginalExtrinsic: Bool
+    }
+
+    struct MetadataHashResult {
+        let modifiedOriginal: Bool
+        let metadataHash: Data?
     }
 
     let processedResult: DAppOperationProcessedResult
+    let chain: ChainModel
     let runtimeProvider: RuntimeCodingServiceProtocol
+    let connection: JSONRPCEngine
+    let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
         processedResult: DAppOperationProcessedResult,
-        runtimeProvider: RuntimeCodingServiceProtocol
+        chain: ChainModel,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        connection: JSONRPCEngine,
+        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
     ) {
+        self.chain = chain
         self.processedResult = processedResult
         self.runtimeProvider = runtimeProvider
+        self.connection = connection
+        self.metadataHashOperationFactory = metadataHashOperationFactory
+    }
+
+    private func createActualMetadataHashWrapper(
+        for result: DAppOperationProcessedResult,
+        chain: ChainModel,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<MetadataHashResult> {
+        do {
+            let optMetadataHash = try result.extrinsic.metadataHash.map { try Data(hexString: $0) }
+
+            /**
+             *  If a dapp haven't declared a permission to modify extrinsic - return whatever metadataHash present in payload
+             */
+            if !result.extrinsic.withSignedTransaction {
+                return .createWithResult(
+                    .init(
+                        modifiedOriginal: false,
+                        metadataHash: optMetadataHash
+                    )
+                )
+            }
+
+            // If a dapp have specified metadata hash explicitly - use it
+            if let metadataHash = optMetadataHash {
+                return .createWithResult(
+                    .init(
+                        modifiedOriginal: false,
+                        metadataHash: metadataHash
+                    )
+                )
+            }
+
+            let metadataHashWrapper = metadataHashOperationFactory.createCheckMetadataHashWrapper(
+                for: chain,
+                connection: connection,
+                runtimeProvider: runtimeProvider
+            )
+
+            let mappingOperation = ClosureOperation<MetadataHashResult> {
+                let metadataHash = try metadataHashWrapper.targetOperation.extractNoCancellableResultData()
+
+                return MetadataHashResult(modifiedOriginal: true, metadataHash: metadataHash)
+            }
+
+            mappingOperation.addDependency(metadataHashWrapper.targetOperation)
+
+            return metadataHashWrapper.insertingTail(operation: mappingOperation)
+        } catch {
+            return .createWithError(error)
+        }
     }
 
     private func createBaseBuilderWrapper(
         for result: DAppOperationProcessedResult,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<ExtrinsicSenderBuilderResult> {
+        let metadataHashWrapper = createActualMetadataHashWrapper(
+            for: processedResult,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider
+        )
+
         let builderOperation = ClosureOperation<ExtrinsicSenderBuilderResult> {
             let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
+            let metadataHashResult = try metadataHashWrapper.targetOperation.extractNoCancellableResultData()
 
             let extrinsic = result.extrinsic
 
@@ -53,6 +133,10 @@ final class DAppExtrinsicBuilderOperationFactory {
             .with(nonce: UInt32(extrinsic.nonce))
             .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
 
+            if let metadataHash = metadataHashResult.metadataHash {
+                builder = builder.with(metadataHash: metadataHash)
+            }
+
             for signedExtension in signedExtensionFactory.createExtensions() {
                 builder = builder.adding(extrinsicSignedExtension: signedExtension)
             }
@@ -63,16 +147,22 @@ final class DAppExtrinsicBuilderOperationFactory {
                 builder = builder.with(tip: extrinsic.tip)
             }
 
-            return ExtrinsicSenderBuilderResult(sender: sender, builder: builder)
+            return ExtrinsicSenderBuilderResult(
+                sender: sender,
+                builder: builder,
+                modifiedOriginalExtrinsic: metadataHashResult.modifiedOriginal
+            )
         }
 
-        return CompoundOperationWrapper(targetOperation: builderOperation)
+        builderOperation.addDependency(metadataHashWrapper.targetOperation)
+
+        return metadataHashWrapper.insertingTail(operation: builderOperation)
     }
 
     private func createRawSignatureOperation(
         for result: DAppOperationProcessedResult,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
-    ) -> CompoundOperationWrapper<DAppExtrinsicRawSignatureResult> {
+    ) -> CompoundOperationWrapper<DAppExtrinsicRawExtrinsicResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let builderWrapper = createBaseBuilderWrapper(
@@ -100,7 +190,7 @@ final class DAppExtrinsicBuilderOperationFactory {
             )
             .build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
 
-            return DAppExtrinsicRawSignatureResult(sender: builderResult.sender, signedExtrinsic: signedExtrinsic)
+            return DAppExtrinsicRawExtrinsicResult(sender: builderResult.sender, signedExtrinsic: signedExtrinsic)
         }
 
         payloadOperation.addDependency(codingFactoryOperation)
@@ -176,8 +266,22 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
                 encoder: codingFactory.createEncoder(),
                 metadata: codingFactory.metadata
             )
+            
+            let modifiedExtrinsic = if builderResult.modifiedOriginalExtrinsic {
+                try builder.signing(
+                    with: { _, _ in rawSignature },
+                    context: context,
+                    codingFactory: codingFactory
+                ).build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+            } else {
+                nil
+            }
 
-            return DAppExtrinsicRawSignatureResult(sender: builderResult.sender, signedExtrinsic: rawSignature)
+            return DAppExtrinsicRawSignatureResult(
+                sender: builderResult.sender,
+                signature: rawSignature,
+                modifiedExtrinsic: modifiedExtrinsic
+            )
         }
 
         signOperation.addDependency(builderWrapper.targetOperation)

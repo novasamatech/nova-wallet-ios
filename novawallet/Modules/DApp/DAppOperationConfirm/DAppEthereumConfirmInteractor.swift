@@ -202,7 +202,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
                 switch result {
                 case let .success(txHash):
                     let txHashData = try Data(hexString: txHash)
-                    let response = DAppOperationResponse(signature: txHashData)
+                    let response = DAppOperationResponse(signature: txHashData, modifiedTransaction: nil)
                     let result: Result<DAppOperationResponse, Error> = .success(response)
                     self.presenter?.didReceive(responseResult: result, for: self.request)
                 case let .failure(error):
@@ -234,7 +234,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             do {
                 switch result {
                 case let .success(signedTransaction):
-                    let response = DAppOperationResponse(signature: signedTransaction)
+                    let response = DAppOperationResponse(signature: signedTransaction, modifiedTransaction: nil)
                     let result: Result<DAppOperationResponse, Error> = .success(response)
                     self.presenter?.didReceive(responseResult: result, for: self.request)
                 case let .failure(error):
@@ -304,7 +304,7 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
     }
 
     func reject() {
-        let response = DAppOperationResponse(signature: nil)
+        let response = DAppOperationResponse(signature: nil, modifiedTransaction: nil)
         presenter?.didReceive(responseResult: .success(response), for: request)
     }
 

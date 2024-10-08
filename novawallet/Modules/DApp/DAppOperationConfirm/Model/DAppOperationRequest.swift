@@ -13,4 +13,5 @@ struct DAppOperationRequest {
 
 struct DAppOperationResponse {
     let signature: Data?
+    let modifiedTransaction: Data?
 }
