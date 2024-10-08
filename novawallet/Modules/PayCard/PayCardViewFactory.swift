@@ -1,11 +1,17 @@
 import Foundation
+import SoraFoundation
+import SoraKeystore
 
 struct PayCardViewFactory {
     static func createView() -> PayCardViewProtocol? {
         let interactor = createInteractor()
         let wireframe = PayCardWireframe()
 
-        let presenter = PayCardPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = PayCardPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: LocalizationManager.shared
+        )
 
         let view = PayCardViewController(presenter: presenter)
 
@@ -26,8 +32,9 @@ struct PayCardViewFactory {
         )
 
         return PayCardInteractor(
-            payCardModelFactory: hooksFactory,
+            payCardHookFactory: hooksFactory,
             payCardResourceProvider: MercuryoCardResourceProvider(),
+            settingsManager: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )

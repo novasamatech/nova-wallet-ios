@@ -1,23 +1,27 @@
 import Foundation
+import SoraKeystore
 
 final class PayCardInteractor {
     weak var presenter: PayCardInteractorOutputProtocol?
 
-    let payCardModelFactory: PayCardHookFactoryProtocol
+    let payCardHookFactory: PayCardHookFactoryProtocol
     let payCardResourceProvider: PayCardResourceProviding
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private let settingsManager: SettingsManagerProtocol
     private var messageHandlers: [PayCardMessageHandling] = []
 
     init(
-        payCardModelFactory: PayCardHookFactoryProtocol,
+        payCardHookFactory: PayCardHookFactoryProtocol,
         payCardResourceProvider: PayCardResourceProviding,
+        settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.payCardModelFactory = payCardModelFactory
+        self.payCardHookFactory = payCardHookFactory
         self.payCardResourceProvider = payCardResourceProvider
+        self.settingsManager = settingsManager
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -38,10 +42,18 @@ final class PayCardInteractor {
 
 extension PayCardInteractor: PayCardInteractorInputProtocol {
     func setup() {
+        if let cardOpenStartTimestamp = settingsManager.novaCardOpenTimeStamp {
+            presenter?.didReceiveCardOpenTimestamp(cardOpenStartTimestamp.timeInterval)
+        }
+
+        if let cardStatus = settingsManager.novaCardStatus {
+            presenter?.didReceiveCardStatus(cardStatus)
+        }
+
         do {
             let resource = try payCardResourceProvider.loadResource()
 
-            let hooksWrapper = payCardModelFactory.createHooks(for: self)
+            let hooksWrapper = payCardHookFactory.createHooks(for: self)
 
             execute(
                 wrapper: hooksWrapper,
@@ -61,6 +73,19 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
         }
     }
 
+    func processSuccessTopup() {
+        guard settingsManager.novaCardStatus != .created else {
+            return
+        }
+
+        let pendingStatus = PayCardStatus.pending
+
+        settingsManager.novaCardOpenTimeStamp = UInt64(Date().timeIntervalSince1970)
+        settingsManager.novaCardStatus = pendingStatus
+
+        presenter?.didReceiveCardStatus(pendingStatus)
+    }
+
     func processMessage(body: Any, of name: String) {
         logger.debug("New message \(name): \(body)")
 
@@ -78,7 +103,19 @@ extension PayCardInteractor: PayCardHookDelegate {
         presenter?.didRequestTopup(for: model)
     }
 
-    func didOpenCard() {}
+    func didOpenCard() {
+        let createdStatus = PayCardStatus.created
 
-    func didFailToOpenCard() {}
+        settingsManager.novaCardStatus = createdStatus
+
+        presenter?.didReceiveCardStatus(createdStatus)
+    }
+
+    func didFailToOpenCard() {
+        let failedStatus = PayCardStatus.failed
+
+        settingsManager.novaCardStatus = failedStatus
+
+        presenter?.didReceiveCardStatus(failedStatus)
+    }
 }

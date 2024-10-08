@@ -22,4 +22,33 @@ final class PayCardWireframe: PayCardWireframeProtocol {
             animated: true
         )
     }
+
+    func showCardOpenPending(
+        from view: ControllerBackedProtocol?,
+        timerMediator: CountdownTimerMediator,
+        locale: Locale?
+    ) {
+        guard let sheetView = PayCardSheetViewFactory.createCardPendingSheet(
+            timerMediator: timerMediator,
+            locale: locale
+        ) else {
+            return
+        }
+
+        view?.controller.present(sheetView.controller, animated: true)
+    }
+
+    func closeCardOpenSheet(
+        from view: ControllerBackedProtocol?,
+        completion: (() -> Void)?
+    ) {
+        view?.controller.dismiss(
+            animated: true,
+            completion: completion
+        )
+    }
+
+    func close(from view: ControllerBackedProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
+    }
 }
