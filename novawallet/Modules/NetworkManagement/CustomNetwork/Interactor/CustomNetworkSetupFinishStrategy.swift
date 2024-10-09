@@ -16,9 +16,10 @@ struct CustomNetworkSetupFinishStrategyFactory {
         self.operationQueue = operationQueue
     }
 
-    func createAddNewStrategy() -> CustomNetworkSetupFinishStrategy {
+    func createAddNewStrategy(preConfiguredNetwork: ChainModel? = nil) -> CustomNetworkSetupFinishStrategy {
         CustomNetworkAddNewStrategy(
             repository: repository,
+            preConfiguredNetwork: preConfiguredNetwork,
             operationQueue: operationQueue,
             chainRegistry: chainRegistry
         )
@@ -90,6 +91,7 @@ extension CustomNetworkSetupFinishStrategy {
 
 struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
     let repository: AnyDataProviderRepository<ChainModel>
+    let preConfiguredNetwork: ChainModel?
     let operationQueue: OperationQueue
 
     let chainRegistry: ChainRegistryProtocol
@@ -99,8 +101,14 @@ struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
         output: CustomNetworkBaseInteractorOutputProtocol?
     ) {
         processWithCheck(network, output: output) {
+            let networkToSave = if let preConfiguredNetwork {
+                updatePreConfigured(network: preConfiguredNetwork, using: network)
+            } else {
+                network
+            }
+
             let saveOperation = repository.saveOperation(
-                { [network] },
+                { [networkToSave] },
                 { [] }
             )
 
@@ -119,6 +127,49 @@ struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
                 }
             }
         }
+    }
+
+    private func updatePreConfigured(
+        network: ChainModel,
+        using setUpNetwork: ChainModel
+    ) -> ChainModel {
+        let explorers: [ChainModel.Explorer]? = if let newExplorers = setUpNetwork.explorers, !newExplorers.isEmpty {
+            newExplorers
+        } else {
+            network.explorers
+        }
+
+        let assets: Set<AssetModel> = {
+            if
+                let asset = setUpNetwork.assets.first,
+                !network.assets.contains(where: { $0.assetId == asset.assetId }) {
+                [asset]
+            } else {
+                network.assets
+            }
+        }()
+
+        let nodes: Set<ChainNodeModel> = setUpNetwork.nodes.union(network.nodes)
+
+        return ChainModel(
+            chainId: network.chainId,
+            parentId: network.parentId,
+            name: setUpNetwork.name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: network.nodeSwitchStrategy,
+            addressPrefix: network.addressPrefix,
+            types: network.types,
+            icon: network.icon,
+            options: network.options,
+            externalApis: network.externalApis,
+            explorers: explorers,
+            order: network.order,
+            additional: network.additional,
+            syncMode: network.syncMode,
+            source: .user,
+            connectionMode: network.connectionMode
+        )
     }
 }
 
