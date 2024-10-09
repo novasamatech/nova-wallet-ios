@@ -79,19 +79,13 @@ extension DAppOperationConfirmInteractor {
                 )
             }
 
-            // TODO: Find out whether to return this validation
-
             guard
-                let specVersion = BigUInt.fromHexString(extrinsic.specVersion) /* ,
-                 codingFactory.specVersion == specVersion */ else {
+                let specVersion = BigUInt.fromHexString(extrinsic.specVersion) else {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "specVersion")
             }
 
-            // TODO: Find out whether to return this validation
-
             guard
-                let transactionVersion = BigUInt.fromHexString(extrinsic.transactionVersion) /* ,
-                 codingFactory.txVersion == transactionVersion */ else {
+                let transactionVersion = BigUInt.fromHexString(extrinsic.transactionVersion) else {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "transactionVersion")
             }
 
@@ -135,6 +129,8 @@ extension DAppOperationConfirmInteractor {
                 specVersion: UInt32(specVersion),
                 tip: tip,
                 transactionVersion: UInt32(transactionVersion),
+                metadataHash: extrinsic.metadataHash,
+                withSignedTransaction: extrinsic.withSignedTransaction ?? false,
                 signedExtensions: expectedSignedExtensions,
                 version: extrinsic.version
             )
