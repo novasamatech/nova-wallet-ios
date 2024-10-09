@@ -47,8 +47,4 @@ final class PayCardWireframe: PayCardWireframeProtocol {
             completion: completion
         )
     }
-
-    func close(from view: ControllerBackedProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
-    }
 }

@@ -42,14 +42,6 @@ final class PayCardInteractor {
 
 extension PayCardInteractor: PayCardInteractorInputProtocol {
     func setup() {
-        if let cardOpenStartTimestamp = settingsManager.novaCardOpenTimeStamp {
-            presenter?.didReceiveCardOpenTimestamp(cardOpenStartTimestamp.timeInterval)
-        }
-
-        if let cardStatus = settingsManager.novaCardStatus {
-            presenter?.didReceiveCardStatus(cardStatus)
-        }
-
         do {
             let resource = try payCardResourceProvider.loadResource()
 
@@ -73,16 +65,13 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
         }
     }
 
-    func processSuccessTopup() {
-        guard settingsManager.novaCardStatus != .created else {
-            return
-        }
-
+    func processIssueInit() {
         let pendingStatus = PayCardStatus.pending
 
-        settingsManager.novaCardOpenTimeStamp = UInt64(Date().timeIntervalSince1970)
-        settingsManager.novaCardStatus = pendingStatus
+        let timestamp = Date().timeIntervalSince1970
+        settingsManager.novaCardOpenTimestamp = UInt64(timestamp)
 
+        presenter?.didReceiveCardOpenTimestamp(timestamp)
         presenter?.didReceiveCardStatus(pendingStatus)
     }
 
@@ -103,10 +92,17 @@ extension PayCardInteractor: PayCardHookDelegate {
         presenter?.didRequestTopup(for: model)
     }
 
+    func didReceiveNoCard() {
+        if let cardOpenedTimestamp = settingsManager.novaCardOpenTimestamp {
+            presenter?.didReceiveCardOpenTimestamp(TimeInterval(cardOpenedTimestamp))
+            presenter?.didReceiveCardStatus(.pending)
+        }
+    }
+
     func didOpenCard() {
         let createdStatus = PayCardStatus.created
 
-        settingsManager.novaCardStatus = createdStatus
+        settingsManager.novaCardOpenTimestamp = nil
 
         presenter?.didReceiveCardStatus(createdStatus)
     }
@@ -114,7 +110,7 @@ extension PayCardInteractor: PayCardHookDelegate {
     func didFailToOpenCard() {
         let failedStatus = PayCardStatus.failed
 
-        settingsManager.novaCardStatus = failedStatus
+        settingsManager.novaCardOpenTimestamp = nil
 
         presenter?.didReceiveCardStatus(failedStatus)
     }

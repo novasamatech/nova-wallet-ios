@@ -5,6 +5,7 @@ final class PayCardPresenter {
     weak var view: PayCardViewProtocol?
     let wireframe: PayCardWireframeProtocol
     let interactor: PayCardInteractorInputProtocol
+    let logger: LoggerProtocol
 
     private let localizationManager: LocalizationManagerProtocol
 
@@ -14,11 +15,13 @@ final class PayCardPresenter {
     init(
         interactor: PayCardInteractorInputProtocol,
         wireframe: PayCardWireframeProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.localizationManager = localizationManager
+        self.logger = logger
     }
 
     private func showFailAlert() {
@@ -29,9 +32,7 @@ final class PayCardPresenter {
 
         let closeAction = AlertPresentableAction(
             title: R.string.localizable.commonOk(preferredLanguages: languages),
-            handler: { [weak self] in
-                self?.wireframe.close(from: self?.view)
-            }
+            handler: {}
         )
 
         let viewModel = AlertPresentableViewModel(
@@ -53,17 +54,19 @@ final class PayCardPresenter {
             return
         }
 
-        let timeRemained = Date().timeIntervalSince1970 - openCardTimestamp
-        
-        guard timeRemained < 60*5 else {
+        let timeElapsed = Date().timeIntervalSince1970 - openCardTimestamp
+        let waitingTime = 5.secondsFromMinutes
+
+        guard timeElapsed < waitingTime else {
             showFailAlert()
-            
+
             return
         }
 
+        let remainedTime = waitingTime - timeElapsed
         let timer = CountdownTimerMediator()
         timer.addObserver(self)
-        timer.start(with: timeRemained)
+        timer.start(with: remainedTime)
 
         wireframe.showCardOpenPending(
             from: view,
@@ -90,15 +93,27 @@ extension PayCardPresenter: PayCardInteractorOutputProtocol {
 
     func didRequestTopup(for model: PayCardTopupModel) {
         wireframe.showSend(from: view, with: model) { [weak self] _ in
-            self?.interactor.processSuccessTopup()
+            guard let self else {
+                return
+            }
+
+            let isCardCreated = cardStatus?.isCreated ?? false
+
+            if !isCardCreated {
+                interactor.processIssueInit()
+            }
         }
     }
 
     func didReceiveCardOpenTimestamp(_ timestamp: TimeInterval) {
         openCardTimestamp = timestamp
+
+        logger.debug("Card open timestamp \(timestamp)")
     }
 
     func didReceiveCardStatus(_ cardStatus: PayCardStatus) {
+        logger.debug("Card status \(cardStatus)")
+
         switch (self.cardStatus, cardStatus) {
         case (.failed, .created), (.pending, .created):
             wireframe.closeCardOpenSheet(

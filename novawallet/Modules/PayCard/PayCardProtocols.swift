@@ -11,7 +11,7 @@ protocol PayCardPresenterProtocol: AnyObject {
 
 protocol PayCardInteractorInputProtocol: AnyObject {
     func setup()
-    func processSuccessTopup()
+    func processIssueInit()
     func processMessage(body: Any, of name: String)
 }
 
@@ -39,6 +39,4 @@ protocol PayCardWireframeProtocol: AlertPresentable {
         from view: ControllerBackedProtocol?,
         completion: (() -> Void)?
     )
-
-    func close(from view: ControllerBackedProtocol?)
 }
