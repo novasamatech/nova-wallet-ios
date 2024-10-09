@@ -25,6 +25,15 @@ struct CustomNetworkSetupFinishStrategyFactory {
         )
     }
 
+    func createModifyStrategy(networkToModify: ChainModel) -> CustomNetworkSetupFinishStrategy {
+        CustomNetworkModifyStrategy(
+            repository: repository,
+            networkToModify: networkToModify,
+            operationQueue: operationQueue,
+            chainRegistry: chainRegistry
+        )
+    }
+
     func createProvideStrategy() -> CustomNetworkSetupFinishStrategy {
         CustomNetworkProvideStrategy(chainRegistry: chainRegistry)
     }
@@ -53,6 +62,61 @@ protocol CustomNetworkSetupFinishStrategy {
 }
 
 extension CustomNetworkSetupFinishStrategy {
+    func updatePreConfigured(
+        network: ChainModel,
+        using setUpNetwork: ChainModel
+    ) -> ChainModel {
+        let explorers: [ChainModel.Explorer]? = {
+            if
+                let newExplorers = setUpNetwork.explorers,
+                !newExplorers.isEmpty {
+                newExplorers
+            } else {
+                network.explorers
+            }
+        }()
+
+        let assets: Set<AssetModel> = {
+            if
+                let asset = setUpNetwork.assets.first,
+                !network.assets.contains(where: { $0.assetId == asset.assetId }) {
+                [asset]
+            } else {
+                network.assets
+            }
+        }()
+
+        let nodes: Set<ChainNodeModel> = {
+            if
+                let node = setUpNetwork.nodes.first,
+                !network.nodes.contains(where: { $0.url == node.url }) {
+                setUpNetwork.nodes.union(network.nodes)
+            } else {
+                network.nodes
+            }
+        }()
+
+        return ChainModel(
+            chainId: network.chainId,
+            parentId: network.parentId,
+            name: setUpNetwork.name,
+            assets: assets,
+            nodes: nodes,
+            nodeSwitchStrategy: network.nodeSwitchStrategy,
+            addressPrefix: network.addressPrefix,
+            types: network.types,
+            icon: network.icon,
+            options: network.options,
+            externalApis: network.externalApis,
+            explorers: explorers,
+            order: network.order,
+            additional: network.additional,
+            syncMode: network.syncMode,
+            source: .user,
+            connectionMode: network.connectionMode
+        )
+    }
+
     func processWithCheck(
         _ network: ChainModel,
         output: CustomNetworkBaseInteractorOutputProtocol?,
@@ -128,49 +192,6 @@ struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
             }
         }
     }
-
-    private func updatePreConfigured(
-        network: ChainModel,
-        using setUpNetwork: ChainModel
-    ) -> ChainModel {
-        let explorers: [ChainModel.Explorer]? = if let newExplorers = setUpNetwork.explorers, !newExplorers.isEmpty {
-            newExplorers
-        } else {
-            network.explorers
-        }
-
-        let assets: Set<AssetModel> = {
-            if
-                let asset = setUpNetwork.assets.first,
-                !network.assets.contains(where: { $0.assetId == asset.assetId }) {
-                [asset]
-            } else {
-                network.assets
-            }
-        }()
-
-        let nodes: Set<ChainNodeModel> = setUpNetwork.nodes.union(network.nodes)
-
-        return ChainModel(
-            chainId: network.chainId,
-            parentId: network.parentId,
-            name: setUpNetwork.name,
-            assets: assets,
-            nodes: nodes,
-            nodeSwitchStrategy: network.nodeSwitchStrategy,
-            addressPrefix: network.addressPrefix,
-            types: network.types,
-            icon: network.icon,
-            options: network.options,
-            externalApis: network.externalApis,
-            explorers: explorers,
-            order: network.order,
-            additional: network.additional,
-            syncMode: network.syncMode,
-            source: .user,
-            connectionMode: network.connectionMode
-        )
-    }
 }
 
 // MARK: - Provide
@@ -182,14 +203,12 @@ struct CustomNetworkProvideStrategy: CustomNetworkSetupFinishStrategy {
         for network: ChainModel,
         output: CustomNetworkBaseInteractorOutputProtocol?
     ) {
-        processWithCheck(network, output: output) {
-            guard let selectedNode = network.nodes.first else { return }
+        guard let selectedNode = network.nodes.first else { return }
 
-            output?.didReceive(
-                chain: network,
-                selectedNode: selectedNode
-            )
-        }
+        output?.didReceive(
+            chain: network,
+            selectedNode: selectedNode
+        )
     }
 }
 
@@ -243,6 +262,46 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
                         .common(innerError: .dataCorruption)
                     )
                 }
+            }
+        }
+    }
+}
+
+// MARK: - Modify
+
+struct CustomNetworkModifyStrategy: CustomNetworkSetupFinishStrategy {
+    let repository: AnyDataProviderRepository<ChainModel>
+    let networkToModify: ChainModel
+    let operationQueue: OperationQueue
+
+    let chainRegistry: ChainRegistryProtocol
+
+    func handleSetupFinished(
+        for network: ChainModel,
+        output: CustomNetworkBaseInteractorOutputProtocol?
+    ) {
+        let networkToSave = updatePreConfigured(
+            network: networkToModify,
+            using: network
+        )
+
+        let saveOperation = repository.saveOperation(
+            { [networkToSave] },
+            { [] }
+        )
+
+        execute(
+            operation: saveOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            switch result {
+            case .success:
+                output?.didFinishWorkWithNetwork()
+            case .failure:
+                output?.didReceive(
+                    .common(innerError: .dataCorruption)
+                )
             }
         }
     }
