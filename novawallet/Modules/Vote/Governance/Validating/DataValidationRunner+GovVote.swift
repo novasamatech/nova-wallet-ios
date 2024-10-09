@@ -13,6 +13,7 @@ extension DataValidationRunner {
                 params.assetBalance,
                 votingAmount: params.newVote?.voteAction.amount(),
                 assetInfo: params.assetInfo,
+                maxAmountErrorClosure: nil,
                 locale: selectedLocale
             ),
             factory.has(
@@ -61,20 +62,24 @@ extension DataValidationRunner {
         successClosure: @escaping DataValidationRunnerCompletion
     ) {
         var validators: [DataValidating] = [
+            factory.enoughTokensForVoting(
+                params.assetBalance,
+                votingAmount: params.maxAmount,
+                assetInfo: params.assetInfo,
+                maxAmountErrorClosure: handlers.maxAmountUpdateClosure,
+                locale: selectedLocale
+            ),
             factory.has(
                 fee: params.fee,
                 locale: selectedLocale,
                 onError: handlers.feeErrorClosure
             ),
-            factory.enoughTokensForBatchVoting(
-                .init(
-                    assetBalance: params.assetBalance,
-                    votingAmount: params.maxAmount,
-                    fee: params.fee,
-                    assetInfo: params.assetInfo
-                ),
-                locale: selectedLocale,
-                maxAmountErrorClosure: handlers.maxAmountUpdateClosure
+            factory.enoughTokensForVotingAndFee(
+                params.assetBalance,
+                votingAmount: params.maxAmount,
+                fee: params.fee,
+                assetInfo: params.assetInfo,
+                locale: selectedLocale
             )
         ]
 
@@ -121,6 +126,7 @@ extension DataValidationRunner {
                 params.assetBalance,
                 votingAmount: params.newDelegation?.balance,
                 assetInfo: params.assetInfo,
+                maxAmountErrorClosure: nil,
                 locale: selectedLocale
             ),
             factory.has(
@@ -187,6 +193,7 @@ extension DataValidationRunner {
                 params.assetBalance,
                 votingAmount: params.votePower?.amount,
                 assetInfo: params.assetInfo,
+                maxAmountErrorClosure: nil,
                 locale: selectedLocale
             )
         ])
