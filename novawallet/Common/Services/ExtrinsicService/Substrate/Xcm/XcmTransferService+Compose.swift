@@ -168,7 +168,7 @@ extension XcmTransferService {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
             let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
 
-            let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
+            let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenificiary()
             let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
 
             let callPath = callPathFactory(module)

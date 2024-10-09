@@ -7,8 +7,17 @@ protocol GovernanceErrorPresentable: BaseErrorPresentable {
         locale: Locale?
     )
 
+    func presentNotEnoughTokensToBatchVote(
+        from view: ControllerBackedProtocol,
+        maxAvailable: String,
+        fee: String,
+        locale: Locale?,
+        action: @escaping () -> Void
+    )
+
     func presentReferendumCompleted(
         from view: ControllerBackedProtocol,
+        referendumId: ReferendumIdLocal?,
         locale: Locale?
     )
 
@@ -59,12 +68,73 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
         present(message: message, title: title, closeAction: close, from: view)
     }
 
+    func presentNotEnoughTokensToBatchVote(
+        from view: ControllerBackedProtocol,
+        maxAvailable: String,
+        fee: String,
+        locale: Locale?,
+        action: @escaping () -> Void
+    ) {
+        let title = R.string.localizable.commonInsufficientBalance(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let message = R.string.localizable.commonUseMaxDueFeeMessage(
+            maxAvailable,
+            fee,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let action = AlertPresentableAction(
+            title: R.string.localizable.swipeGovAmountAlertUseMax(
+                preferredLanguages: locale?.rLanguages
+            ),
+            style: .normal,
+            handler: action
+        )
+
+        let closeAction: String = R.string.localizable.commonOk(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        present(
+            viewModel: .init(
+                title: title,
+                message: message,
+                actions: [action],
+                closeAction: closeAction
+            ),
+            style: .alert,
+            from: view
+        )
+    }
+
     func presentReferendumCompleted(
         from view: ControllerBackedProtocol,
+        referendumId: ReferendumIdLocal?,
         locale: Locale?
     ) {
-        let title = R.string.localizable.govReferendumCompletedTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.govReferendumCompletedMessage(preferredLanguages: locale?.rLanguages)
+        let title = if let referendumId {
+            R.string.localizable.govReferendumCompletedTitleWithIndex(
+                Int(referendumId),
+                preferredLanguages: locale?.rLanguages
+            )
+        } else {
+            R.string.localizable.govReferendumCompletedTitle(
+                preferredLanguages: locale?.rLanguages
+            )
+        }
+
+        let message = if let referendumId {
+            R.string.localizable.govReferendumCompletedMessageWithIndex(
+                Int(referendumId),
+                preferredLanguages: locale?.rLanguages
+            )
+        } else {
+            R.string.localizable.govReferendumCompletedMessage(
+                preferredLanguages: locale?.rLanguages
+            )
+        }
 
         let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 

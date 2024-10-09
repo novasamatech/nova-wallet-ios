@@ -4,6 +4,8 @@ import Operation_iOS
 import SubstrateSdk
 
 final class GovernanceSharedState {
+    let observableState: ReferendumsObservableState
+
     let settings: GovernanceChainSettings
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
@@ -15,12 +17,14 @@ final class GovernanceSharedState {
     private(set) var referendumsOperationFactory: ReferendumsOperationFactoryProtocol?
     private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
+    private(set) var swipeGovService: SwipeGovServicePrototocol?
 
     var supportsAbstainVoting: Bool {
         settings.settings.governanceType == .governanceV2
     }
 
     init(
+        observableState: ReferendumsObservableState = ReferendumsObservableState(state: .init(value: .init())),
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol? = nil,
@@ -33,6 +37,7 @@ final class GovernanceSharedState {
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
+        self.observableState = observableState
         self.chainRegistry = chainRegistry
         settings = GovernanceChainSettings(chainRegistry: chainRegistry, settings: internalSettings)
 
@@ -118,6 +123,33 @@ final class GovernanceSharedState {
         }
     }
 
+    func replaceSwipeGovService(for option: GovernanceSelectedOption?, language: String) {
+        swipeGovService?.stopSyncUp()
+        swipeGovService = nil
+
+        guard let option = option else {
+            return
+        }
+
+        let chainId = option.chain.chainId
+
+        guard let url = option.chain.externalApis?.referendumSummary()?.first?.url else {
+            return
+        }
+
+        let service = SwipeGovService(
+            operationFactory: SwipeGovSummaryOperationFactory(url: url),
+            chainId: chainId,
+            language: language,
+            operationQueue: operationQueue,
+            workQueue: .global()
+        )
+
+        service.setup()
+
+        swipeGovService = service
+    }
+
     func createExtrinsicFactory(
         for option: GovernanceSelectedOption
     ) -> GovernanceExtrinsicFactoryProtocol {
@@ -150,6 +182,14 @@ final class GovernanceSharedState {
                 operationQueue: operationQueue
             )
         }
+    }
+
+    func createReferendumSpendingExtractor(for option: GovernanceSelectedOption) -> GovSpendingExtracting {
+        GovSpentAmount.Extractor.createDefaultExtractor(
+            for: option.chain,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
     }
 
     func governanceId(for option: GovernanceSelectedOption) -> String {

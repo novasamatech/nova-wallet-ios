@@ -20,7 +20,8 @@ protocol ReferendumFullDetailsInteractorInputProtocol: AnyObject {
 }
 
 protocol ReferendumFullDetailsInteractorOutputProtocol: AnyObject {
-    func didReceive(price: PriceData?)
+    func didReceiveRequestedAmount(price: PriceData?)
+    func didReceiveUtilityAsset(price: PriceData?)
     func didReceive(call: ReferendumActionLocal.Call<String>?)
     func didReceive(error: ReferendumFullDetailsError)
 }

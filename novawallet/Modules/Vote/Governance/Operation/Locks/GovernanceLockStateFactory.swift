@@ -84,17 +84,17 @@ class GovernanceLockStateFactory {
 
     func createStateDiffOperation(
         for trackVotes: ReferendumTracksVotingDistribution,
-        newVote: ReferendumNewVote?,
+        newVotes: [ReferendumIdLocal: ReferendumNewVote]?,
         referendumsOperation: BaseOperation<[ReferendumIdLocal: GovUnlockReferendumProtocol]>,
         additionalInfoOperation: BaseOperation<GovUnlockCalculationInfo>
     ) -> BaseOperation<GovernanceLockStateDiff> {
-        ClosureOperation<GovernanceLockStateDiff> {
+        ClosureOperation<GovernanceLockStateDiff> { [weak self] in
             let referendums = try referendumsOperation.extractNoCancellableResultData()
             let additions = try additionalInfoOperation.extractNoCancellableResultData()
 
             let oldAmount = trackVotes.trackLocks.map(\.amount).max() ?? 0
 
-            let oldPeriod: Moment? = self.calculateMaxLock(
+            let oldPeriod: Moment? = self?.calculateMaxLock(
                 for: referendums,
                 trackVotes: trackVotes,
                 additions: additions
@@ -104,38 +104,66 @@ class GovernanceLockStateFactory {
 
             let newState: GovernanceLockState?
 
-            if let newVote = newVote {
-                let newAmount = max(oldAmount, newVote.voteAction.amount())
+            if
+                let newVotes = newVotes,
+                let newMaxAmountVote = newVotes.values.max(by: { $0.voteAction.amount() < $1.voteAction.amount() }) {
+                let newAmount = max(
+                    oldAmount,
+                    newMaxAmountVote.voteAction.amount()
+                )
 
-                // as we replacing the vote we can immediately claim previos one so don't take into account
-                let filteredReferendums = referendums.filter { $0.key != newVote.index }
-
-                let periodWithoutReferendum = self.calculateMaxLock(
-                    for: filteredReferendums,
+                let newPeriod = self?.calculateNewMaxPeriod(
+                    using: referendums,
+                    newVotes: newVotes,
                     trackVotes: trackVotes,
                     additions: additions
                 )
 
-                let newPeriod: Moment?
-
-                if
-                    let referendum = referendums[newVote.index],
-                    let periodWithNewVote = try? referendum.estimateVoteLockingPeriod(
-                        for: newVote.toAccountVote(),
-                        additionalInfo: additions
-                    ) {
-                    newPeriod = periodWithoutReferendum.flatMap { max(periodWithNewVote, $0) } ?? periodWithNewVote
-                } else {
-                    newPeriod = periodWithoutReferendum
-                }
-
-                newState = GovernanceLockState(maxLockedAmount: newAmount, lockedUntil: newPeriod)
+                newState = GovernanceLockState(
+                    maxLockedAmount: newAmount,
+                    lockedUntil: newPeriod
+                )
             } else {
                 newState = nil
             }
 
-            return GovernanceLockStateDiff(before: oldState, vote: newVote, after: newState)
+            return GovernanceLockStateDiff(
+                before: oldState,
+                votes: newVotes,
+                after: newState
+            )
         }
+    }
+
+    private func calculateNewMaxPeriod(
+        using referendums: [ReferendumIdLocal: GovUnlockReferendumProtocol],
+        newVotes: [ReferendumIdLocal: ReferendumNewVote],
+        trackVotes: ReferendumTracksVotingDistribution,
+        additions: GovUnlockCalculationInfo
+    ) -> Moment? {
+        // as we replacing the vote we can immediately claim previos one so don't take into account
+        let filteredReferendums = referendums.filter { newVotes[$0.key] == nil }
+
+        let periodWithoutReferendum = calculateMaxLock(
+            for: filteredReferendums,
+            trackVotes: trackVotes,
+            additions: additions
+        )
+
+        let newPeriod: Moment? = newVotes.values
+            .compactMap { vote in
+                guard let period = try? referendums[vote.index]?.estimateVoteLockingPeriod(
+                    for: vote.toAccountVote(),
+                    additionalInfo: additions
+                ) else {
+                    return nil
+                }
+
+                return max(periodWithoutReferendum ?? period, period)
+            }
+            .max() ?? periodWithoutReferendum
+
+        return newPeriod
     }
 
     func createDelegateStateDiffOperation(
@@ -177,7 +205,7 @@ class GovernanceLockStateFactory {
 extension GovernanceLockStateFactory: GovernanceLockStateFactoryProtocol {
     func calculateLockStateDiff(
         for trackVotes: ReferendumTracksVotingDistribution,
-        newVote: ReferendumNewVote?,
+        newVotes: [ReferendumNewVote]?,
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data?
@@ -187,8 +215,8 @@ extension GovernanceLockStateFactory: GovernanceLockStateFactoryProtocol {
         let accountVoting = trackVotes.votes
         var allReferendumIds = Set(accountVoting.votes.keys)
 
-        if let newVoteIndex = newVote?.index {
-            allReferendumIds.insert(newVoteIndex)
+        newVotes?.forEach { newVote in
+            allReferendumIds.insert(newVote.index)
         }
 
         let referendumsWrapper = createReferendumsWrapper(
@@ -205,7 +233,7 @@ extension GovernanceLockStateFactory: GovernanceLockStateFactoryProtocol {
 
         let calculationOperation = createStateDiffOperation(
             for: trackVotes,
-            newVote: newVote,
+            newVotes: newVotes?.reduce(into: [:]) { $0[$1.index] = $1 },
             referendumsOperation: referendumsWrapper.targetOperation,
             additionalInfoOperation: additionalInfoWrapper.targetOperation
         )

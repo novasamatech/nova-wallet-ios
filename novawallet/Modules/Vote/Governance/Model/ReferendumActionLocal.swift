@@ -3,9 +3,28 @@ import BigInt
 import SubstrateSdk
 
 struct ReferendumActionLocal {
+    enum Asset: Equatable {
+        case current
+        case other(ChainAsset)
+    }
+
+    struct Amount {
+        let value: BigUInt
+        let asset: Asset
+
+        func otherChainAssetOrCurrentUtility(from chain: ChainModel) -> ChainAsset? {
+            switch asset {
+            case .current:
+                chain.utilityChainAsset()
+            case let .other(chainAsset):
+                chainAsset
+            }
+        }
+    }
+
     struct AmountSpendDetails {
-        let amount: BigUInt
-        let beneficiary: MultiAddress
+        let benefiary: AccountId
+        let amount: Amount
     }
 
     enum Call<C> {
@@ -25,15 +44,23 @@ struct ReferendumActionLocal {
     let amountSpendDetailsList: [AmountSpendDetails]
     let call: Call<RuntimeCall<JSON>>?
 
-    func spentAmount() -> BigUInt? {
-        guard !amountSpendDetailsList.isEmpty else {
+    func requestedAmount() -> Amount? {
+        guard let fRequest = amountSpendDetailsList.first else {
             return nil
         }
 
-        return amountSpendDetailsList.reduce(BigUInt(0)) { $0 + $1.amount }
+        let isSameAsset = amountSpendDetailsList.allSatisfy { $0.amount.asset == fRequest.amount.asset }
+
+        if isSameAsset {
+            let totalAmount = amountSpendDetailsList.reduce(BigUInt(0)) { $0 + $1.amount.value }
+
+            return .init(value: totalAmount, asset: fRequest.amount.asset)
+        } else {
+            return fRequest.amount
+        }
     }
 
-    var beneficiary: MultiAddress? {
-        amountSpendDetailsList.first?.beneficiary
+    var beneficiary: AccountId? {
+        amountSpendDetailsList.first?.benefiary
     }
 }

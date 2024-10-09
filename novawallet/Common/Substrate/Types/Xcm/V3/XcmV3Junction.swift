@@ -3,7 +3,7 @@ import BigInt
 import SubstrateSdk
 
 extension XcmV3 {
-    enum NetworkId: Codable {
+    enum NetworkId: Equatable, Codable {
         static let byGenesisField = "ByGenesis"
         static let polkadotField = "Polkadot"
         static let kusamaField = "Kusama"
@@ -63,7 +63,7 @@ extension XcmV3 {
         }
     }
 
-    struct AccountId32Value: Codable {
+    struct AccountId32Value: Equatable, Codable {
         enum CodingKeys: String, CodingKey {
             case network
             case accountId = "id"
@@ -73,17 +73,17 @@ extension XcmV3 {
         @BytesCodable var accountId: AccountId
     }
 
-    struct AccountId20Value: Codable {
+    struct AccountId20Value: Equatable, Codable {
         let network: NetworkId?
         @BytesCodable var key: AccountId
     }
 
-    struct AccountIndexValue: Codable {
+    struct AccountIndexValue: Equatable, Codable {
         let network: NetworkId?
         @StringCodable var index: UInt64
     }
 
-    enum Junction: Codable {
+    enum Junction: Equatable, Codable {
         static let parachainField = "Parachain"
         static let accountId32Field = "AccountId32"
         static let accountIndex64Field = "AccountIndex64"

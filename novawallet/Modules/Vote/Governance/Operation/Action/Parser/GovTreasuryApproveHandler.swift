@@ -42,8 +42,8 @@ extension GovSpentAmount.TreasuryApproveHandler: GovSpentAmountHandling {
             }
 
             let details = ReferendumActionLocal.AmountSpendDetails(
-                amount: proposal.value,
-                beneficiary: .accoundId(proposal.beneficiary)
+                benefiary: proposal.beneficiary,
+                amount: .init(value: proposal.value, asset: .current)
             )
 
             return details

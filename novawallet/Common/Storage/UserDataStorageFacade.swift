@@ -16,7 +16,7 @@ enum UserStorageParams {
      *  - update mappings between CoreData Entities and App Models;
      *  - switch version of UserStorageParams.modelVersion;
      */
-    static let modelVersion: UserStorageVersion = .version13
+    static let modelVersion: UserStorageVersion = .version14
     static let modelDirectory: String = "UserDataModel.momd"
     static let databaseName = "UserDataModel.sqlite"
 
