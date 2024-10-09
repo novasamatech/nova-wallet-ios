@@ -1,5 +1,4 @@
 import UIKit
-import Rswift
 import SoraFoundation
 
 final class LanguageSelectionViewController: SelectionListViewController<SelectionSubtitleTableViewCell> {

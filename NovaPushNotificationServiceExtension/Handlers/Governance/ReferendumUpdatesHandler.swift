@@ -52,31 +52,31 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
         switch payload.toStatus {
         case .approved:
             let title = R.string.localizable.pushNotificationReferendumApprovedTitle(
-                preferredLanguages: locale.rLanguages
+                preferredLanguages: locale.rLanguages!
             )
 
             let subtitle = R.string.localizable.pushNotificationReferendumApprovedSubtitle(
                 chain.name,
                 payload.referendumNumber,
-                preferredLanguages: locale.rLanguages
+                preferredLanguages: locale.rLanguages!
             )
 
             return .init(title: title, subtitle: subtitle)
         case .rejected:
             let title = R.string.localizable.pushNotificationReferendumRejectedTitle(
-                preferredLanguages: locale.rLanguages
+                preferredLanguages: locale.rLanguages!
             )
 
             let subtitle = R.string.localizable.pushNotificationReferendumRejectedSubtitle(
                 chain.name,
                 payload.referendumNumber,
-                preferredLanguages: locale.rLanguages
+                preferredLanguages: locale.rLanguages!
             )
 
             return .init(title: title, subtitle: subtitle)
         default:
             let title = R.string.localizable.pushNotificationReferendumStatusUpdatedTitle(
-                preferredLanguages: locale.rLanguages
+                preferredLanguages: locale.rLanguages!
             )
 
             let subtitle: String
@@ -87,14 +87,14 @@ final class ReferendumUpdatesHandler: CommonHandler, PushNotificationHandler {
                     payload.referendumNumber,
                     oldStatus.description(for: locale),
                     payload.toStatus.description(for: locale),
-                    preferredLanguages: locale.rLanguages
+                    preferredLanguages: locale.rLanguages!
                 )
             } else {
                 subtitle = R.string.localizable.pushNotificationReferendumSingleStatusUpdatedSubtitle(
                     chain.name,
                     payload.referendumNumber,
                     payload.toStatus.description(for: locale),
-                    preferredLanguages: locale.rLanguages
+                    preferredLanguages: locale.rLanguages!
                 )
             }
 

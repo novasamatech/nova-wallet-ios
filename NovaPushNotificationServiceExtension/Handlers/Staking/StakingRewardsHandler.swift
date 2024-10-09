@@ -111,7 +111,7 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
         )
         let walletString = walletName.flatMap { "[\($0)]" } ?? ""
         let title = [
-            R.string.localizable.pushNotificationStakingRewardTitle(preferredLanguages: locale.rLanguages),
+            R.string.localizable.pushNotificationStakingRewardTitle(preferredLanguages: locale.rLanguages!),
             walletString
         ].joined(with: .space)
         let balance = balanceViewModel(
@@ -126,7 +126,7 @@ final class StakingRewardsHandler: CommonHandler, PushNotificationHandler {
         let subtitle = R.string.localizable.pushNotificationStakingRewardSubtitle(
             amountWithPrice,
             chainAsset.chain.name,
-            preferredLanguages: locale.rLanguages
+            preferredLanguages: locale.rLanguages!
         )
 
         return .init(title: title, subtitle: subtitle)

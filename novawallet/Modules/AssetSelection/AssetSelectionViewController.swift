@@ -1,5 +1,5 @@
 import UIKit
-import Rswift
+import RswiftResources
 import SoraFoundation
 
 final class AssetSelectionViewController: SelectionListViewController<SelectionIconDetailsTableViewCell> {

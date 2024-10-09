@@ -6,9 +6,9 @@ extension PushNotification.TransferType {
         let title: String
         switch self {
         case .income:
-            title = R.string.localizable.pushNotificationReceiveTokensTitle(preferredLanguages: locale.rLanguages)
+            title = R.string.localizable.pushNotificationReceiveTokensTitle(preferredLanguages: locale.rLanguages!)
         case .outcome:
-            title = R.string.localizable.pushNotificationSentTokensTitle(preferredLanguages: locale.rLanguages)
+            title = R.string.localizable.pushNotificationSentTokensTitle(preferredLanguages: locale.rLanguages!)
         }
 
         return [title, walletString].joined(with: .space)
@@ -28,7 +28,7 @@ extension PushNotification.TransferType {
                 amount,
                 priceString,
                 chainName,
-                preferredLanguages: locale.rLanguages
+                preferredLanguages: locale.rLanguages!
             )
         case .outcome:
             if let address = address {
@@ -37,14 +37,14 @@ extension PushNotification.TransferType {
                     priceString,
                     address,
                     chainName,
-                    preferredLanguages: locale.rLanguages
+                    preferredLanguages: locale.rLanguages!
                 )
             } else {
                 return R.string.localizable.pushNotificationSentTokensNoAddressSubtitle(
                     amount,
                     priceString,
                     chainName,
-                    preferredLanguages: locale.rLanguages
+                    preferredLanguages: locale.rLanguages!
                 )
             }
         }
