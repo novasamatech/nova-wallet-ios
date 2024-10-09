@@ -5,6 +5,7 @@ import SoraFoundation
 enum PayCardSheetViewFactory {
     static func createCardPendingSheet(
         timerMediator: CountdownTimerMediator,
+        totalTime: TimeInterval,
         locale: Locale?
     ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe()
@@ -16,7 +17,15 @@ enum PayCardSheetViewFactory {
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.cardOpenPendingSheetMessage(preferredLanguages: locale.rLanguages)
+            let minutesString = R.string.localizable.commonMinutesFormat(
+                format: totalTime.minutesFromSeconds,
+                preferredLanguages: locale.rLanguages
+            )
+
+            return R.string.localizable.cardOpenPendingSheetMessage(
+                minutesString,
+                preferredLanguages: locale.rLanguages
+            )
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetTimerLabel.ContentViewModel>(

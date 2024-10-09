@@ -13,12 +13,12 @@ protocol PayCardInteractorInputProtocol: AnyObject {
     func setup()
     func processIssueInit()
     func processMessage(body: Any, of name: String)
+    func checkPendingTimeout()
 }
 
 protocol PayCardInteractorOutputProtocol: AnyObject {
     func didReceive(model: PayCardModel)
     func didRequestTopup(for model: PayCardTopupModel)
-    func didReceiveCardOpenTimestamp(_ timestamp: TimeInterval)
     func didReceiveCardStatus(_ cardStatus: PayCardStatus)
 }
 
@@ -32,6 +32,7 @@ protocol PayCardWireframeProtocol: AlertPresentable {
     func showCardOpenPending(
         from view: ControllerBackedProtocol?,
         timerMediator: CountdownTimerMediator,
+        totalTime: TimeInterval,
         locale: Locale?
     )
 

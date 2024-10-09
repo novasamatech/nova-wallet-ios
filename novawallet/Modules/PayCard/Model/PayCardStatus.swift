@@ -1,5 +1,7 @@
-enum PayCardStatus: String, Equatable {
-    case pending
+import Foundation
+
+enum PayCardStatus {
+    case pending(remained: TimeInterval, total: TimeInterval)
     case created
     case failed
 

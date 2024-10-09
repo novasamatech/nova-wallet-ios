@@ -49,21 +49,7 @@ final class PayCardPresenter {
         )
     }
 
-    private func showCardOpenPending() {
-        guard let openCardTimestamp else {
-            return
-        }
-
-        let timeElapsed = Date().timeIntervalSince1970 - openCardTimestamp
-        let waitingTime = 5.secondsFromMinutes
-
-        guard timeElapsed < waitingTime else {
-            showFailAlert()
-
-            return
-        }
-
-        let remainedTime = waitingTime - timeElapsed
+    private func showCardOpenPending(for remainedTime: TimeInterval, totalTime: TimeInterval) {
         let timer = CountdownTimerMediator()
         timer.addObserver(self)
         timer.start(with: remainedTime)
@@ -71,6 +57,7 @@ final class PayCardPresenter {
         wireframe.showCardOpenPending(
             from: view,
             timerMediator: timer,
+            totalTime: totalTime,
             locale: localizationManager.selectedLocale
         )
     }
@@ -100,6 +87,7 @@ extension PayCardPresenter: PayCardInteractorOutputProtocol {
             let isCardCreated = cardStatus?.isCreated ?? false
 
             if !isCardCreated {
+                cardStatus = nil
                 interactor.processIssueInit()
             }
         }
@@ -120,8 +108,8 @@ extension PayCardPresenter: PayCardInteractorOutputProtocol {
                 from: view,
                 completion: nil
             )
-        case (.none, .pending), (.failed, .pending):
-            showCardOpenPending()
+        case let (.none, .pending(remained, total)), let (.failed, .pending(remained, total)):
+            showCardOpenPending(for: remained, totalTime: total)
         case (.none, .failed), (.pending, .failed):
             showFailAlert()
         default:
@@ -139,7 +127,7 @@ extension PayCardPresenter: CountdownTimerDelegate {
 
     func didStop(with _: TimeInterval) {
         wireframe.closeCardOpenSheet(from: view) { [weak self] in
-            self?.showFailAlert()
+            self?.interactor.checkPendingTimeout()
         }
     }
 }
