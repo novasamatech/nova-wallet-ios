@@ -43,7 +43,7 @@ final class CustomNetworkAddInteractor: CustomNetworkBaseInteractor {
 
 extension CustomNetworkAddInteractor: CustomNetworkAddInteractorInputProtocol {
     func addNetwork(with request: CustomNetwork.AddRequest) {
-        setupFinishStrategy = setupFinishStrategyFactory.createAddNewStrategy()
+        setupFinishStrategy = setupFinishStrategyFactory.createAddNewStrategy(preConfiguredNetwork: networkToAdd)
 
         let type: ChainType = if let networkToAdd {
             networkToAdd.isEthereumBased ? .evm : .substrate
