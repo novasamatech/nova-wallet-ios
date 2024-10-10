@@ -113,7 +113,7 @@ extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputPro
                     do {
                         let signature = try signingOperation.extractNoCancellableResultData()
 
-                        let response = DAppOperationResponse(signature: signature)
+                        let response = DAppOperationResponse(signature: signature, modifiedTransaction: nil)
 
                         self.presenter?.didReceive(responseResult: .success(response), for: self.request)
                     } catch {
@@ -129,7 +129,7 @@ extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputPro
     }
 
     func reject() {
-        let response = DAppOperationResponse(signature: nil)
+        let response = DAppOperationResponse(signature: nil, modifiedTransaction: nil)
         presenter?.didReceive(responseResult: .success(response), for: request)
     }
 

@@ -13,7 +13,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
     }
 
     func confirm() {
-        guard signWrapper == nil, let extrinsicFactory = extrinsicFactory else {
+        guard !signCancellable.hasCall, let extrinsicFactory = extrinsicFactory else {
             return
         }
 
@@ -24,55 +24,52 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
 
         let signWrapper = createSignatureOperation(for: extrinsicFactory, signer: signer)
 
-        self.signWrapper = signWrapper
+        executeCancellable(
+            wrapper: signWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: signCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let request = self?.request else {
+                return
+            }
 
-        signWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.signWrapper != nil else {
-                    return
+            switch result {
+            case let .success(signatureResult):
+                let response = DAppOperationResponse(
+                    signature: signatureResult.signature,
+                    modifiedTransaction: signatureResult.modifiedExtrinsic
+                )
+
+                self?.presenter?.didReceive(responseResult: .success(response), for: request)
+            case let .failure(error):
+                let interactorError: Error
+                if let noKeysError = error as? NoKeysSigningWrapperError {
+                    interactorError = noKeysError
+                } else if let hardwareSigningError = error as? HardwareSigningError {
+                    interactorError = hardwareSigningError
+                } else if let operationError = error as? DAppOperationConfirmInteractorError {
+                    interactorError = operationError
+                } else {
+                    interactorError = DAppOperationConfirmInteractorError.signingFailed
                 }
 
-                self?.signWrapper = nil
-
-                guard let request = self?.request else {
-                    return
-                }
-
-                do {
-                    let signature = try signWrapper.targetOperation.extractNoCancellableResultData()
-                    let response = DAppOperationResponse(signature: signature)
-                    self?.presenter?.didReceive(responseResult: .success(response), for: request)
-                } catch {
-                    let interactorError: Error
-                    if let noKeysError = error as? NoKeysSigningWrapperError {
-                        interactorError = noKeysError
-                    } else if let hardwareSigningError = error as? HardwareSigningError {
-                        interactorError = hardwareSigningError
-                    } else if let operationError = error as? DAppOperationConfirmInteractorError {
-                        interactorError = operationError
-                    } else {
-                        interactorError = DAppOperationConfirmInteractorError.signingFailed
-                    }
-
-                    self?.presenter?.didReceive(responseResult: .failure(interactorError), for: request)
-                }
+                self?.presenter?.didReceive(responseResult: .failure(interactorError), for: request)
             }
         }
-
-        operationQueue.addOperations(signWrapper.allOperations, waitUntilFinished: false)
     }
 
     func reject() {
-        guard signWrapper == nil else {
+        guard !signCancellable.hasCall else {
             return
         }
 
-        let response = DAppOperationResponse(signature: nil)
+        let response = DAppOperationResponse(signature: nil, modifiedTransaction: nil)
         presenter?.didReceive(responseResult: .success(response), for: request)
     }
 
     func estimateFee() {
-        guard feeWrapper == nil, let extrinsicFactory = extrinsicFactory else {
+        guard !feeCancellable.hasCall, let extrinsicFactory = extrinsicFactory else {
             return
         }
 
@@ -89,29 +86,21 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
             builder
         }
 
-        feeWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.feeWrapper != nil else {
-                    return
-                }
-
-                self?.feeWrapper = nil
-
-                do {
-                    let info = try feeWrapper.targetOperation.extractNoCancellableResultData()
-
-                    // TODO: Consider fee payer here
-                    let feeModel = FeeOutputModel(value: info, validationProvider: nil)
-                    self?.presenter?.didReceive(feeResult: .success(feeModel))
-                } catch {
-                    self?.presenter?.didReceive(feeResult: .failure(error))
-                }
+        executeCancellable(
+            wrapper: feeWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: feeCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(info):
+                // TODO: Consider fee payer here
+                let feeModel = FeeOutputModel(value: info, validationProvider: nil)
+                self?.presenter?.didReceive(feeResult: .success(feeModel))
+            case let .failure(error):
+                self?.presenter?.didReceive(feeResult: .failure(error))
             }
         }
-
-        self.feeWrapper = feeWrapper
-
-        operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: false)
     }
 
     func prepareTxDetails() {

@@ -4,15 +4,8 @@ protocol GovernanceErrorPresentable: BaseErrorPresentable {
     func presentNotEnoughTokensToVote(
         from view: ControllerBackedProtocol,
         available: String,
+        maxAction: (() -> Void)?,
         locale: Locale?
-    )
-
-    func presentNotEnoughTokensToBatchVote(
-        from view: ControllerBackedProtocol,
-        maxAvailable: String,
-        fee: String,
-        locale: Locale?,
-        action: @escaping () -> Void
     )
 
     func presentReferendumCompleted(
@@ -58,55 +51,39 @@ extension GovernanceErrorPresentable where Self: AlertPresentable & ErrorPresent
     func presentNotEnoughTokensToVote(
         from view: ControllerBackedProtocol,
         available: String,
+        maxAction: (() -> Void)?,
         locale: Locale?
     ) {
         let title = R.string.localizable.commonAmountTooBig(preferredLanguages: locale?.rLanguages)
         let message = R.string.localizable.govNotEnoughVoteTokens(available, preferredLanguages: locale?.rLanguages)
 
-        let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
-
-        present(message: message, title: title, closeAction: close, from: view)
-    }
-
-    func presentNotEnoughTokensToBatchVote(
-        from view: ControllerBackedProtocol,
-        maxAvailable: String,
-        fee: String,
-        locale: Locale?,
-        action: @escaping () -> Void
-    ) {
-        let title = R.string.localizable.commonInsufficientBalance(
-            preferredLanguages: locale?.rLanguages
-        )
-
-        let message = R.string.localizable.commonUseMaxDueFeeMessage(
-            maxAvailable,
-            fee,
-            preferredLanguages: locale?.rLanguages
-        )
-
-        let action = AlertPresentableAction(
-            title: R.string.localizable.swipeGovAmountAlertUseMax(
+        if let maxAction = maxAction {
+            let cancelTitle = R.string.localizable.commonCancel(
                 preferredLanguages: locale?.rLanguages
-            ),
-            style: .normal,
-            handler: action
-        )
+            )
 
-        let closeAction: String = R.string.localizable.commonOk(
-            preferredLanguages: locale?.rLanguages
-        )
+            let maxTitle = R.string.localizable.swipeGovAmountAlertUseMax(
+                preferredLanguages: locale?.rLanguages
+            )
 
-        present(
-            viewModel: .init(
-                title: title,
-                message: message,
-                actions: [action],
-                closeAction: closeAction
-            ),
-            style: .alert,
-            from: view
-        )
+            present(
+                viewModel: .init(
+                    title: title,
+                    message: message,
+                    actions: [
+                        .init(title: cancelTitle),
+                        .init(title: maxTitle, handler: maxAction)
+                    ],
+                    closeAction: nil
+                ),
+                style: .alert,
+                from: view
+            )
+        } else {
+            let close = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+            present(message: message, title: title, closeAction: close, from: view)
+        }
     }
 
     func presentReferendumCompleted(
