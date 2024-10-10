@@ -6,7 +6,13 @@ protocol BaseErrorPresentable {
     func presentFeeTooHigh(from view: ControllerBackedProtocol, balance: String, fee: String, locale: Locale?)
     func presentExtrinsicFailed(from view: ControllerBackedProtocol, locale: Locale?)
     func presentInvalidAddress(from view: ControllerBackedProtocol, chainName: String, locale: Locale?)
-    func presentUpToForFee(from view: ControllerBackedProtocol, available: String, fee: String, locale: Locale?)
+    func presentUpToForFee(
+        from view: ControllerBackedProtocol,
+        available: String,
+        fee: String,
+        maxClosure: (() -> Void)?,
+        locale: Locale?
+    )
 
     func presentExistentialDepositWarning(
         from view: ControllerBackedProtocol,
@@ -68,17 +74,46 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
-    func presentUpToForFee(from view: ControllerBackedProtocol, available: String, fee: String, locale: Locale?) {
+    func presentUpToForFee(
+        from view: ControllerBackedProtocol,
+        available: String,
+        fee: String,
+        maxClosure: (() -> Void)?,
+        locale: Locale?
+    ) {
         let message = R.string.localizable.commonUseMaxDueFeeMessage(
-            fee,
             available,
+            fee,
             preferredLanguages: locale?.rLanguages
         )
 
         let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
-        present(message: message, title: title, closeAction: closeAction, from: view)
+        if let maxClosure {
+            let cancelTitle = R.string.localizable.commonCancel(
+                preferredLanguages: locale?.rLanguages
+            )
+
+            let maxTitle = R.string.localizable.swipeGovAmountAlertUseMax(
+                preferredLanguages: locale?.rLanguages
+            )
+
+            let viewModel = AlertPresentableViewModel(
+                title: title,
+                message: message,
+                actions: [
+                    .init(title: cancelTitle),
+                    .init(title: maxTitle, handler: maxClosure)
+                ],
+                closeAction: nil
+            )
+
+            present(viewModel: viewModel, style: .alert, from: view)
+        } else {
+            let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+            present(message: message, title: title, closeAction: closeAction, from: view)
+        }
     }
 
     func presentExistentialDepositWarning(

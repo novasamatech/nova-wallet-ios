@@ -22,10 +22,13 @@ extension DataValidationRunner {
                 onError: handlers.feeErrorClosure
             ),
             factory.enoughTokensForVotingAndFee(
-                params.assetBalance,
-                votingAmount: params.newVote?.voteAction.amount(),
-                fee: params.fee,
-                assetInfo: params.assetInfo,
+                .init(
+                    assetBalance: params.assetBalance,
+                    votingAmount: params.newVote?.voteAction.amount(),
+                    fee: params.fee,
+                    assetInfo: params.assetInfo
+                ),
+                maxAmountErrorClosure: nil,
                 locale: selectedLocale
             ),
             factory.referendumNotEnded(
@@ -75,10 +78,13 @@ extension DataValidationRunner {
                 onError: handlers.feeErrorClosure
             ),
             factory.enoughTokensForVotingAndFee(
-                params.assetBalance,
-                votingAmount: params.maxAmount,
-                fee: params.fee,
-                assetInfo: params.assetInfo,
+                .init(
+                    assetBalance: params.assetBalance,
+                    votingAmount: params.maxAmount,
+                    fee: params.fee,
+                    assetInfo: params.assetInfo
+                ),
+                maxAmountErrorClosure: handlers.maxAmountUpdateClosure,
                 locale: selectedLocale
             )
         ]
@@ -135,10 +141,13 @@ extension DataValidationRunner {
                 onError: feeErrorClosure
             ),
             factory.enoughTokensForVotingAndFee(
-                params.assetBalance,
-                votingAmount: params.newDelegation?.balance,
-                fee: params.fee,
-                assetInfo: params.assetInfo,
+                .init(
+                    assetBalance: params.assetBalance,
+                    votingAmount: params.newDelegation?.balance,
+                    fee: params.fee,
+                    assetInfo: params.assetInfo
+                ),
+                maxAmountErrorClosure: nil,
                 locale: selectedLocale
             ),
             factory.notVoting(

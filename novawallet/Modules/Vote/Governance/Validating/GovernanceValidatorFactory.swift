@@ -12,10 +12,8 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     ) -> DataValidating
 
     func enoughTokensForVotingAndFee(
-        _ assetBalance: AssetBalance?,
-        votingAmount: BigUInt?,
-        fee: ExtrinsicFeeProtocol?,
-        assetInfo: AssetBalanceDisplayInfo,
+        _ params: GovMaxAmountValidatingParams,
+        maxAmountErrorClosure: ((BigUInt) -> Void)?,
         locale: Locale?
     ) -> DataValidating
 
@@ -133,21 +131,16 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
     }
 
     func enoughTokensForVotingAndFee(
-        _ assetBalance: AssetBalance?,
-        votingAmount: BigUInt?,
-        fee: ExtrinsicFeeProtocol?,
-        assetInfo: AssetBalanceDisplayInfo,
+        _ params: GovMaxAmountValidatingParams,
+        maxAmountErrorClosure: ((BigUInt) -> Void)?,
         locale: Locale?
     ) -> DataValidating {
-        let availableForFee: BigUInt
-
-        if
-            let assetBalance = assetBalance,
-            let votingAmount = votingAmount,
-            assetBalance.freeInPlank >= votingAmount {
-            availableForFee = min(assetBalance.freeInPlank - votingAmount, assetBalance.transferable)
+        let availableForFee: BigUInt = if
+            let assetBalance = params.assetBalance,
+            let votingAmount = params.votingAmount {
+            min(assetBalance.availableForOpenGov.subtractOrZero(votingAmount), assetBalance.transferable)
         } else {
-            availableForFee = 0
+            0
         }
 
         return ErrorConditionViolation(onError: { [weak self] in
@@ -156,23 +149,43 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
             }
 
             let amountFormatter = self?.assetBalanceFormatterFactory.createTokenFormatter(
-                for: assetInfo
+                for: params.assetInfo
             ).value(for: locale ?? Locale.current)
 
-            let amountDecimal = availableForFee.decimal(assetInfo: assetInfo)
+            let feeInPlank = params.fee?.amountForCurrentAccount ?? 0
+            let transferableInPlank = params.assetBalance?.transferable ?? 0
+            let availableForOpenGov = params.assetBalance?.availableForOpenGov ?? 0
+            let availableAfterFee = transferableInPlank >= feeInPlank ?
+                availableForOpenGov.subtractOrZero(feeInPlank) : 0
+
+            let amountDecimal = availableAfterFee.decimal(assetInfo: params.assetInfo)
             let amountString = amountFormatter?.stringFromDecimal(amountDecimal) ?? ""
 
-            let feeDecimal = (fee?.amountForCurrentAccount ?? 0).decimal(assetInfo: assetInfo)
+            let feeDecimal = feeInPlank.decimal(assetInfo: params.assetInfo)
             let feeString = amountFormatter?.stringFromDecimal(feeDecimal) ?? ""
 
-            self?.presentable.presentUpToForFee(
-                from: view,
-                available: amountString,
-                fee: feeString,
-                locale: locale
-            )
+            if let maxAmountErrorClosure, availableAfterFee > 0 {
+                self?.presentable.presentUpToForFee(
+                    from: view,
+                    available: amountString,
+                    fee: feeString,
+                    maxClosure: {
+                        maxAmountErrorClosure(availableAfterFee)
+                    },
+                    locale: locale
+                )
+            } else {
+                self?.presentable.presentUpToForFee(
+                    from: view,
+                    available: amountString,
+                    fee: feeString,
+                    maxClosure: nil,
+                    locale: locale
+                )
+            }
+
         }, preservesCondition: {
-            guard let fee = fee?.amountForCurrentAccount else {
+            guard let fee = params.fee?.amountForCurrentAccount else {
                 return true
             }
 
