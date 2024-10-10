@@ -9,6 +9,7 @@ struct PayCardHook {
 
 protocol PayCardHookDelegate: AnyObject {
     func didRequestTopup(from model: PayCardTopupModel)
+    func didReceiveNoCard()
     func didOpenCard()
     func didFailToOpenCard()
 }
