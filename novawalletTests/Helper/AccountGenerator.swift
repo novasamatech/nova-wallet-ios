@@ -49,10 +49,11 @@ enum AccountGenerator {
     }
     
     static func generateProxiedChainAccount(
-        for model: ProxyAccountModel
+        for model: ProxyAccountModel,
+        chainId: ChainModel.Id
     ) -> ChainAccountModel {
         ChainAccountModel(
-            chainId: Data.random(of: 32)!.toHex(),
+            chainId: chainId,
             accountId: Data.random(of: 32)!,
             publicKey: Data.random(of: 32)!,
             cryptoType: 0,
