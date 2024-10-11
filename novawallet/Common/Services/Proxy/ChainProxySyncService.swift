@@ -191,7 +191,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
             var proxies: [ProxiedAccountId: [ProxyAccount]] = [:]
 
             repeat {
-                // We only need remote proxieds for current proxies and we don't support delaed proxies
+                // We only need remote proxieds for current proxies and we don't support delayed proxies
                 proxies = proxyList.compactMapValues { accounts in
                     accounts.filter {
                         !$0.hasDelay && possibleProxiesIds.contains($0.accountId)
