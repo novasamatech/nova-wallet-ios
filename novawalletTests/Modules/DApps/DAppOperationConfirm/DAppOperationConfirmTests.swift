@@ -19,6 +19,8 @@ class DAppOperationConfirmTests: XCTestCase {
         specVersion: BigUInt(9260).serialize().toHex(includePrefix: true),
         tip: "0x00000000000000000000000000000000",
         transactionVersion: "0x00000003",
+        metadataHash: nil,
+        withSignedTransaction: nil,
         signedExtensions: [
             "CheckNonZeroSender",
             "CheckSpecVersion",
@@ -119,13 +121,21 @@ class DAppOperationConfirmTests: XCTestCase {
             operationQueue: operationQueue
         )
 
+        let  storageFacade = SubstrateStorageTestFacade()
         let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
             chain: chain,
             estimatingWrapperFactory: feeEstimatingWrapperFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             userStorageFacade: UserDataStorageTestFacade(),
-            substrateStorageFacade: SubstrateStorageTestFacade(),
+            substrateStorageFacade: storageFacade,
+            operationQueue: operationQueue
+        )
+        
+        let metadataHashFactory = MetadataHashOperationFactory(
+            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
+                storageFacade: storageFacade
+            ),
             operationQueue: operationQueue
         )
 
@@ -135,7 +145,8 @@ class DAppOperationConfirmTests: XCTestCase {
             runtimeProvider: runtimeProvider,
             feeEstimationRegistry: feeEstimationRegistry,
             connection: connection,
-            signingWrapperFactory: signingWrapperFactory,
+            signingWrapperFactory: signingWrapperFactory, 
+            metadataHashFactory: metadataHashFactory,
             priceProviderFactory: priceProvider,
             currencyManager: CurrencyManagerStub(),
             operationQueue: operationQueue

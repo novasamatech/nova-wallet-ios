@@ -34,6 +34,44 @@ final class WalletUpdateMediator {
         self.operationQueue = operationQueue
     }
 
+    private static func nonProxiedWalletReachable(
+        from proxiedWallet: ManagedMetaAccountModel,
+        wallets: [ManagedMetaAccountModel],
+        removeIds: Set<MetaAccountModel.Id>
+    ) -> Bool {
+        var currentProxieds: Set<MetaAccountModel.Id> = [proxiedWallet.info.metaId]
+        var prevProxieds = currentProxieds
+        var foundWallets: [MetaAccountModel.Id: ManagedMetaAccountModel] = [proxiedWallet.info.metaId: proxiedWallet]
+
+        repeat {
+            let newReachableWallets: [ManagedMetaAccountModel] = currentProxieds.flatMap { proxiedId in
+                guard
+                    let proxied = foundWallets[proxiedId],
+                    let chainAccount = proxied.info.chainAccounts.first(where: { $0.proxy != nil }),
+                    let proxy = chainAccount.proxy else {
+                    return [ManagedMetaAccountModel]()
+                }
+
+                return wallets.filter { $0.info.has(accountId: proxy.accountId, chainId: chainAccount.chainId) }
+            }
+
+            if newReachableWallets.contains(
+                where: { $0.info.type != .proxied && !removeIds.contains($0.info.metaId) }
+            ) {
+                return true
+            }
+
+            foundWallets = newReachableWallets.reduce(into: foundWallets) {
+                $0[$1.info.metaId] = $1
+            }
+
+            prevProxieds = currentProxieds
+            currentProxieds = Set(foundWallets.keys)
+        } while prevProxieds != currentProxieds
+
+        return false
+    }
+
     private static func includeProxiedsToRemoveSet(
         starting removeIds: Set<MetaAccountModel.Id>,
         wallets: [ManagedMetaAccountModel]
@@ -46,20 +84,12 @@ final class WalletUpdateMediator {
         // we can have nested proxieds so we make sure to remove them all
 
         repeat {
-            let newProxiedIdsToRemove = allProxieds.filter { proxiedWallet in
-                guard
-                    let chainAccount = proxiedWallet.info.chainAccounts.first(where: { $0.proxy != nil }),
-                    let proxy = chainAccount.proxy else {
-                    return false
-                }
-
-                return wallets.allSatisfy { wallet in
-                    guard !newRemovedIds.contains(wallet.identifier) else {
-                        return true
-                    }
-
-                    return !wallet.info.has(accountId: proxy.accountId, chainId: chainAccount.chainId)
-                }
+            let newProxiedIdsToRemove = allProxieds.filter { proxied in
+                !nonProxiedWalletReachable(
+                    from: proxied,
+                    wallets: wallets,
+                    removeIds: newRemovedIds
+                )
             }.map(\.identifier)
 
             oldRemovedIds = newRemovedIds

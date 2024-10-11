@@ -52,6 +52,17 @@ struct PolkadotExtensionExtrinsic: Codable {
     let transactionVersion: String
 
     /**
+     *   Metadata hash to use for signing
+     */
+
+    let metadataHash: String?
+
+    /**
+     *   Whether transaction modification is allowed
+     */
+    let withSignedTransaction: Bool?
+
+    /**
      *   The applicable signed extensions for this runtime
      */
     let signedExtensions: [String]

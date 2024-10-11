@@ -27,9 +27,18 @@ extension ProxyResolution {
         }
 
         let accounts: [AccountId: [MetaChainAccountResponse]]
+        let proxieds: [AccountId: MetaChainAccountResponse]
 
         init(accounts: [AccountId: [MetaChainAccountResponse]]) {
             self.accounts = accounts
+
+            proxieds = accounts.reduce(into: [AccountId: MetaChainAccountResponse]()) { accum, keyValue in
+                guard let account = keyValue.value.first(where: { $0.chainAccount.type == .proxied }) else {
+                    return
+                }
+
+                accum[keyValue.key] = account
+            }
         }
 
         private func buildResult(
@@ -79,8 +88,10 @@ extension ProxyResolution {
                 }
 
                 let components = try solution.components.map { oldComponent in
+                    let optAccount = accounts[oldComponent.proxyAccountId] ?? proxieds[oldComponent.proxyAccountId]
+
                     guard
-                        let account = accounts[oldComponent.proxyAccountId],
+                        let account = optAccount,
                         let proxyType = oldComponent.applicableTypes.first else {
                         throw PathFinderError.noAccount
                     }
