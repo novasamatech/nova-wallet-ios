@@ -41,7 +41,11 @@ extension ReferendumsPresenter {
     }
 
     func createSwipeGovSection() -> ReferendumsSection? {
-        guard supportsSwipeGov == true else {
+        guard
+            supportsSwipeGov == true,
+            let chain,
+            selectedMetaAccount.fetch(for: chain.accountRequest()) != nil
+        else {
             return nil
         }
 

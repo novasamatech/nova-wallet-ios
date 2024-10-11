@@ -14,6 +14,7 @@ final class ReferendumsPresenter {
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let sorting: ReferendumsSorting
+    let selectedMetaAccount: MetaAccountModel
     let logger: LoggerProtocol
 
     private(set) lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
@@ -73,6 +74,7 @@ final class ReferendumsPresenter {
         activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        selectedMetaAccount: MetaAccountModel,
         sorting: ReferendumsSorting,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -85,6 +87,7 @@ final class ReferendumsPresenter {
         self.activityViewModelFactory = activityViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
+        self.selectedMetaAccount = selectedMetaAccount
         self.sorting = sorting
         self.logger = logger
         self.localizationManager = localizationManager
