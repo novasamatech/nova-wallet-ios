@@ -23,6 +23,7 @@ enum SettingsKey: String {
     case cloudBackupAutoSyncConfirm
     case cloudBackupPasswordId
     case integrateNetworksBannerSeen
+    case novaCardOpenTimestamp
 }
 
 extension SettingsManagerProtocol {
@@ -255,6 +256,20 @@ extension SettingsManagerProtocol {
                 set(value: value, for: SettingsKey.cloudBackupPasswordId.rawValue)
             } else {
                 removeValue(for: SettingsKey.cloudBackupPasswordId.rawValue)
+            }
+        }
+    }
+
+    var novaCardOpenTimestamp: UInt64? {
+        get {
+            string(for: SettingsKey.novaCardOpenTimestamp.rawValue).flatMap { UInt64($0) }
+        }
+
+        set {
+            if let value = newValue {
+                set(value: String(value), for: SettingsKey.novaCardOpenTimestamp.rawValue)
+            } else {
+                removeValue(for: SettingsKey.novaCardOpenTimestamp.rawValue)
             }
         }
     }

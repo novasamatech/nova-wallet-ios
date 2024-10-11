@@ -10,6 +10,7 @@ enum MercuryoCardApi {
     static let widgetUrl = URL(string: "https://exchange.mercuryo.io")!
     static let widgetId = "4ce98182-ed76-4933-ba1b-b85e4a51d75a" // TODO: Change for production
     static let cardsEndpoint = "https://api.mercuryo.io/v1.6/cards"
+    static let pendingTimeout: TimeInterval = 5.secondsFromMinutes
 }
 
 final class MercuryoCardHookFactory {

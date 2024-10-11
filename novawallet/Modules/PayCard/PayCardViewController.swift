@@ -24,6 +24,8 @@ final class PayCardViewController: UIViewController, ViewHolder {
 
     let presenter: PayCardPresenterProtocol
 
+    private var isSetupPresenter: Bool = false
+
     init(presenter: PayCardPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -42,8 +44,16 @@ final class PayCardViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupWebView()
+    }
 
-        presenter.setup()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if !isSetupPresenter {
+            isSetupPresenter = true
+
+            presenter.setup()
+        }
     }
 
     func setupWebView() {

@@ -1,24 +1,31 @@
 import Foundation
+import SoraKeystore
 
 final class PayCardInteractor {
     weak var presenter: PayCardInteractorOutputProtocol?
 
-    let payCardModelFactory: PayCardHookFactoryProtocol
+    let payCardHookFactory: PayCardHookFactoryProtocol
     let payCardResourceProvider: PayCardResourceProviding
     let operationQueue: OperationQueue
+    let pendingTimeout: TimeInterval
     let logger: LoggerProtocol
 
+    private let settingsManager: SettingsManagerProtocol
     private var messageHandlers: [PayCardMessageHandling] = []
 
     init(
-        payCardModelFactory: PayCardHookFactoryProtocol,
+        payCardHookFactory: PayCardHookFactoryProtocol,
         payCardResourceProvider: PayCardResourceProviding,
+        settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
+        pendingTimeout: TimeInterval,
         logger: LoggerProtocol
     ) {
-        self.payCardModelFactory = payCardModelFactory
+        self.payCardHookFactory = payCardHookFactory
         self.payCardResourceProvider = payCardResourceProvider
+        self.settingsManager = settingsManager
         self.operationQueue = operationQueue
+        self.pendingTimeout = pendingTimeout
         self.logger = logger
     }
 
@@ -41,7 +48,7 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
         do {
             let resource = try payCardResourceProvider.loadResource()
 
-            let hooksWrapper = payCardModelFactory.createHooks(for: self)
+            let hooksWrapper = payCardHookFactory.createHooks(for: self)
 
             execute(
                 wrapper: hooksWrapper,
@@ -61,6 +68,33 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
         }
     }
 
+    func checkPendingTimeout() {
+        guard let cardOpenTimestamp = settingsManager.novaCardOpenTimestamp else {
+            return
+        }
+
+        let currentTimestamp = Date().timeIntervalSince1970
+        let elapsedTime = currentTimestamp - TimeInterval(cardOpenTimestamp)
+
+        if elapsedTime < pendingTimeout {
+            presenter?.didReceiveCardStatus(
+                .pending(
+                    remained: pendingTimeout - elapsedTime,
+                    total: pendingTimeout
+                )
+            )
+        } else {
+            presenter?.didReceiveCardStatus(.failed)
+        }
+    }
+
+    func processIssueInit() {
+        let timestamp = Date().timeIntervalSince1970
+        settingsManager.novaCardOpenTimestamp = UInt64(timestamp)
+
+        checkPendingTimeout()
+    }
+
     func processMessage(body: Any, of name: String) {
         logger.debug("New message \(name): \(body)")
 
@@ -78,7 +112,23 @@ extension PayCardInteractor: PayCardHookDelegate {
         presenter?.didRequestTopup(for: model)
     }
 
-    func didOpenCard() {}
+    func didReceiveNoCard() {
+        checkPendingTimeout()
+    }
 
-    func didFailToOpenCard() {}
+    func didOpenCard() {
+        let createdStatus = PayCardStatus.created
+
+        settingsManager.novaCardOpenTimestamp = nil
+
+        presenter?.didReceiveCardStatus(createdStatus)
+    }
+
+    func didFailToOpenCard() {
+        let failedStatus = PayCardStatus.failed
+
+        settingsManager.novaCardOpenTimestamp = nil
+
+        presenter?.didReceiveCardStatus(failedStatus)
+    }
 }

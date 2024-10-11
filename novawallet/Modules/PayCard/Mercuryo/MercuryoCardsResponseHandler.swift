@@ -31,6 +31,8 @@ extension MercuryoCardsResponseHandler: PayCardMessageHandling {
 
             if let cards = response.data, cards.contains(where: { $0.issuedByMercuryo }) {
                 delegate?.didOpenCard()
+            } else {
+                delegate?.didReceiveNoCard()
             }
 
         } catch {

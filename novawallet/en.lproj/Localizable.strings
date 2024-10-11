@@ -1762,3 +1762,8 @@
 "common.use.max.due.fee.message" = "You can use up to %@ since you need to pay %@ for network fee.";
 "common.pay.anywhere" = "Pay anywhere";
 "common.nova.card" = "Nova Card";
+"common.estimated.timer" = "Estimated ~%@";
+"card.open.pending.sheet.title" = "Your card is being issued!";
+"card.open.pending.sheet.message" = "It can take up to %@.\nThis window will be closed automatically.";
+"card.open.failed.alert.title" = "Contact support";
+"card.open.failed.alert.message" = "Please contact support@novawallet.io. Include email address that you have used for issuing the card.";
