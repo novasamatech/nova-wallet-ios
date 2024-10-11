@@ -215,6 +215,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             selectedMetaAccount: wallet,
+            accountManagementFilter: AccountManagementFilter(),
             sorting: ReferendumsTimeSortingProvider(),
             localizationManager: localizationManager,
             logger: logger

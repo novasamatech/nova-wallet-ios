@@ -15,6 +15,7 @@ final class ReferendumsPresenter {
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let sorting: ReferendumsSorting
     let selectedMetaAccount: MetaAccountModel
+    let accountManagementFilter: AccountManagementFilterProtocol
     let logger: LoggerProtocol
 
     private(set) lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
@@ -75,6 +76,7 @@ final class ReferendumsPresenter {
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         selectedMetaAccount: MetaAccountModel,
+        accountManagementFilter: AccountManagementFilterProtocol,
         sorting: ReferendumsSorting,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -88,6 +90,7 @@ final class ReferendumsPresenter {
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         self.selectedMetaAccount = selectedMetaAccount
+        self.accountManagementFilter = accountManagementFilter
         self.sorting = sorting
         self.logger = logger
         self.localizationManager = localizationManager
@@ -227,8 +230,53 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         }
     }
 
+    private func createAccountValidationHandlers() -> (
+        success: () -> Void,
+        newAccount: () -> Void
+    ) {
+        let successHandler: () -> Void = { [weak self] in
+            guard let self, let view else { return }
+
+            wireframe.showSwipeGov(from: view)
+        }
+
+        let newAccountHandler: () -> Void = { [weak self] in
+            guard let self else { return }
+
+            wireframe.showWalletDetails(
+                from: view,
+                wallet: selectedMetaAccount
+            )
+        }
+
+        return (successHandler, newAccountHandler)
+    }
+
     func selectSwipeGov() {
-        wireframe.showSwipeGov(from: view)
+        guard let chain, let view else { return }
+
+        let addAccountAskMessage = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
+            chain.name,
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        let handlers = createAccountValidationHandlers()
+
+        let params = WalletNoAccountHandlingParams(
+            wallet: selectedMetaAccount,
+            chain: chain,
+            accountManagementFilter: accountManagementFilter,
+            successHandler: handlers.success,
+            newAccountHandler: handlers.newAccount,
+            addAccountAskMessage: addAccountAskMessage
+        )
+
+        validateAccount(
+            from: params,
+            view: view,
+            wireframe: wireframe,
+            locale: selectedLocale
+        )
     }
 
     func showReferendumDetailsIfNeeded() {
