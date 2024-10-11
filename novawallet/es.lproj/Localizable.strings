@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "esperando la próxima era (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Soporte & Retroalimentación";
-"settings.email" = "Email";
+"settings.email" = "Obtenga ayuda por Email";
 "wallet.manage.assets.title" = "Gestionar activos";
 "staking.reward.payouts.title_v2_2_0" = "Recompensas sin pagar";
 "staking.setup.restake.title_v2_2_0" = "Reinvertir recompensas";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Intercambiar";
 "common.action.repeat.operation" = "Repetir la operación";
 "swaps.error.rate.was.updated.message" = "Antes: %@.\nAhora: %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "Wiki y centro de ayuda";
 "common.not.enough.fee.message_v3.8.0" = "No tienes suficiente saldo para pagar la tarifa de red de %@.\nSaldo disponible para pagar tarifa después de la operación: %@";
 "deeplink.error.invalid.chainId.message" = "Cadena no encontrada";
 "deeplink.error.no.governance.type.message" = "Tipo de gobernanza no especificado";

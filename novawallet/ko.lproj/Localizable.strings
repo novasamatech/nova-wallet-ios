@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "다음 시대를 기다리는 중 (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "지원 및 피드백";
-"settings.email" = "이메일";
+"settings.email" = "이메일을 통해 지원 받기";
 "wallet.manage.assets.title" = "자산 관리";
 "staking.reward.payouts.title_v2_2_0" = "지급되지 않은 보상";
 "staking.setup.restake.title_v2_2_0" = "보상 재Stake";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "교환";
 "common.action.repeat.operation" = "작업 반복";
 "swaps.error.rate.was.updated.message" = "이전 비율: %@.\n새로운 비율: %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "위키 및 도움말 센터";
 "common.not.enough.fee.message_v3.8.0" = "네트워크 수수료 %@를 지불할 잔액이 부족합니다.\n작업 후 수수료를 지불할 수 있는 잔액: %@";
 "deeplink.error.invalid.chainId.message" = "체인을 찾을 수 없음";
 "deeplink.error.no.governance.type.message" = "거버넌스 유형이 지정되지 않음";
@@ -1609,7 +1609,7 @@
 "cloud.backup.not.available.title" = "iCloud 인증 실패";
 "cloud.backup.not.available.message" = "iCloud 계정에 로그인했는지 확인하십시오";
 "cloud.backup.not.enough.storage.message" = "사용할 수 있는 iCloud 저장 공간이 충분한지 확인하십시오. 설정에서 저장 공간을 관리할 수 있습니다.";
-"ledger.instructions.step4.highlighted" = "계정을 선택";
+"ledger.instructions.step4.highlighted" = "<font>계정을 선택</font>";
 "cloud.backup.create.title" = "백업 비밀번호 생성";
 "cloud.backup.create.hint.min.char" = "최소 %@ 문자";
 "cloud.backup.create.hint.numbers" = "숫자";

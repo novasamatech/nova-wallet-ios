@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "次の時代を待っています (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "サポート＆フィードバック";
-"settings.email" = "Eメール";
+"settings.email" = "メールでサポートを受ける";
 "wallet.manage.assets.title" = "資産を管理";
 "staking.reward.payouts.title_v2_2_0" = "未払いの報酬";
 "staking.setup.restake.title_v2_2_0" = "報酬を再ステークする";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "スワップ";
 "common.action.repeat.operation" = "操作を繰り返す";
 "swaps.error.rate.was.updated.message" = "以前のレート: %@。\n新しいレート: %@";
-"settings.wiki" = "ウィキ";
+"settings.wiki" = "ウィキとヘルプセンター";
 "common.not.enough.fee.message_v3.8.0" = "ネットワーク手数料の支払に必要な残高が不足しています: %@。\n操作後に手数料支払いに利用可能な残高: %@";
 "deeplink.error.invalid.chainId.message" = "チェーンが見つかりません";
 "deeplink.error.no.governance.type.message" = "ガバナンスタイプが指定されていません";

@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "等待下一个时代（%@）";
 "settings.youtube" = "Youtube";
 "settings.support" = "支持和反馈";
-"settings.email" = "电子邮件";
+"settings.email" = "通过电子邮件获得支持";
 "wallet.manage.assets.title" = "资产管理";
 "staking.reward.payouts.title_v2_2_0" = "未支付奖励";
 "staking.setup.restake.title_v2_2_0" = "增加质押奖励";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "交换";
 "common.action.repeat.operation" = "重复操作";
 "swaps.error.rate.was.updated.message" = "旧汇率：%@。\n新汇率：%@";
-"settings.wiki" = "用户指南";
+"settings.wiki" = "维基百科和帮助中心";
 "common.not.enough.fee.message_v3.8.0" = "您的余额不足以支付%@的网络费用。\n操作后可用于支付费用的余额：%@";
 "deeplink.error.invalid.chainId.message" = "未找到链";
 "deeplink.error.no.governance.type.message" = "未指定治理类型";

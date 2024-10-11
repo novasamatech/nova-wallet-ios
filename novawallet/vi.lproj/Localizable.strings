@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "đang chờ đợi kỷ nguyên tiếp theo (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Hỗ trợ &  Phản hồi";
-"settings.email" = "Email";
+"settings.email" = "Nhận hỗ trợ qua Email";
 "wallet.manage.assets.title" = "Quản lý tài sản";
 "staking.reward.payouts.title_v2_2_0" = "Phần thưởng chưa trả";
 "staking.setup.restake.title_v2_2_0" = "Restake phần thưởng";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Đổi";
 "common.action.repeat.operation" = "Lặp lại thao tác";
 "swaps.error.rate.was.updated.message" = "Tỷ lệ cũ: %@.\nTỷ lệ mới: %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "Wiki & Trung tâm trợ giúp";
 "common.not.enough.fee.message_v3.8.0" = "Bạn không có đủ số dư để trả phí mạng là %@.\nSố dư khả dụng để trả phí sau khi thực hiện: %@";
 "deeplink.error.invalid.chainId.message" = "Không tìm thấy chuỗi";
 "deeplink.error.no.governance.type.message" = "Loại quản lý không được chỉ định";
