@@ -392,6 +392,40 @@ extension ReferendumDetailsPresenter {
 
         return button
     }
+
+    private func createAccountValidationHandlers() -> (
+        success: () -> Void,
+        newAccount: () -> Void
+    ) {
+        let successHandler: () -> Void = { [weak self] in
+            guard let self else { return }
+
+            let initData = ReferendumVotingInitData(
+                votesResult: nil,
+                blockNumber: blockNumber,
+                blockTime: blockTime,
+                referendum: referendum,
+                lockDiff: nil
+            )
+
+            wireframe.showVote(
+                from: view,
+                referendum: referendum,
+                initData: initData
+            )
+        }
+
+        let newAccountHandler: () -> Void = { [weak self] in
+            guard let self else { return }
+
+            wireframe.showWalletDetails(
+                from: view,
+                wallet: wallet
+            )
+        }
+
+        return (successHandler, newAccountHandler)
+    }
 }
 
 // MARK: ReferendumDetailsPresenterProtocol
@@ -408,42 +442,28 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             return
         }
 
-        if wallet.fetch(for: chain.accountRequest()) != nil {
-            let initData = ReferendumVotingInitData(
-                votesResult: nil,
-                blockNumber: blockNumber,
-                blockTime: blockTime,
-                referendum: referendum,
-                lockDiff: nil
-            )
+        let addAccountAskMessage = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
+            chain.name,
+            preferredLanguages: selectedLocale.rLanguages
+        )
 
-            wireframe.showVote(from: view, referendum: referendum, initData: initData)
-        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
-            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
-                chain.name,
-                preferredLanguages: selectedLocale.rLanguages
-            )
+        let handlers = createAccountValidationHandlers()
 
-            wireframe.presentAddAccount(
-                from: view,
-                chainName: chain.name,
-                message: message,
-                locale: selectedLocale
-            ) { [weak self] in
-                guard let wallet = self?.wallet else {
-                    return
-                }
+        let params = WalletNoAccountHandlingParams(
+            wallet: wallet,
+            chain: chain,
+            accountManagementFilter: accountManagementFilter,
+            successHandler: handlers.success,
+            newAccountHandler: handlers.newAccount,
+            addAccountAskMessage: addAccountAskMessage
+        )
 
-                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
-            }
-        } else {
-            wireframe.presentNoAccountSupport(
-                from: view,
-                walletType: wallet.type,
-                chainName: chain.name,
-                locale: selectedLocale
-            )
-        }
+        validateAccount(
+            from: params,
+            view: view,
+            wireframe: wireframe,
+            locale: selectedLocale
+        )
     }
 
     func showProposerDetails() {

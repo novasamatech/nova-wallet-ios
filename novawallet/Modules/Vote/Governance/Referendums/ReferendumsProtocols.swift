@@ -9,7 +9,7 @@ protocol ReferendumsViewProtocol: ControllerBackedProtocol {
     func updateReferendums(time: [ReferendumIdLocal: StatusTimeViewModel?])
 }
 
-protocol ReferendumsPresenterProtocol: AnyObject {
+protocol ReferendumsPresenterProtocol: AnyObject, WalletNoAccountHandling {
     func select(referendumIndex: ReferendumIdLocal)
     func selectUnlocks()
     func selectDelegations()
@@ -46,7 +46,7 @@ protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumsInteractorError)
 }
 
-protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol ReferendumsWireframeProtocol: WalletNoAccountHandlingWireframe, ErrorPresentable, CommonRetryable {
     func selectChain(
         from view: ControllerBackedProtocol?,
         delegate: GovernanceAssetSelectionDelegate,
@@ -72,5 +72,10 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         from view: ControllerBackedProtocol?,
         referendumsState: Observable<ReferendumsViewState>,
         delegate: ReferendumSearchDelegate?
+    )
+
+    func showWalletDetails(
+        from view: ControllerBackedProtocol?,
+        wallet: MetaAccountModel
     )
 }
