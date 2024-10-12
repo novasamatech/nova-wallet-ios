@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import BigInt
 import Operation_iOS
-import Core
+import Web3Core
 
 final class TokensManageAddInteractor: AnyCancellableCleaning {
     weak var presenter: TokensManageAddInteractorOutputProtocol?

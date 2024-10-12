@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import RswiftResources
 
 final class LanguageSelectionViewController: SelectionListViewController<SelectionSubtitleTableViewCell> {
     var presenter: LanguageSelectionPresenterProtocol!

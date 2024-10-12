@@ -1,4 +1,5 @@
 import UIKit
+import RswiftResources
 
 class SelectionListViewController<C: UITableViewCell & SelectionItemViewProtocol>:
     UIViewController,

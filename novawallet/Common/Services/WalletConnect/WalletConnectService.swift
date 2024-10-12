@@ -3,7 +3,7 @@ import WalletConnectSwiftV2
 import Starscream
 import Combine
 import CryptoSwift
-import Core
+import Web3Core
 
 protocol WalletConnectServiceDelegate: AnyObject {
     func walletConnect(service: WalletConnectServiceProtocol, proposal: Session.Proposal)

@@ -1,6 +1,6 @@
 import Foundation
 import web3swift
-import Core
+import Web3Core
 
 protocol EvmSubscriptionMessageFactoryProtocol: AnyObject {
     func erc20(

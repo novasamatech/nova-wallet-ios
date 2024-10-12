@@ -1,5 +1,5 @@
 import Foundation
-import Core
+import Web3Core
 import SubstrateSdk
 import Operation_iOS
 
@@ -8,14 +8,14 @@ protocol EvmBalanceUpdateServiceFactoryProtocol {
         for holder: AccountAddress,
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
-        blockNumber: Core.BlockNumber,
+        blockNumber: Web3Core.BlockNumber,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol
 
     func createNativeBalanceUpdateService(
         for holder: AccountAddress,
         chainAssetId: ChainAssetId,
-        blockNumber: Core.BlockNumber,
+        blockNumber: Web3Core.BlockNumber,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol
 }
@@ -44,7 +44,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         for holder: AccountAddress,
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
-        blockNumber: Core.BlockNumber,
+        blockNumber: Web3Core.BlockNumber,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         guard let connection = chainRegistry.getOneShotConnection(for: chainId) else {
@@ -77,7 +77,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
     func createNativeBalanceUpdateService(
         for holder: AccountAddress,
         chainAssetId: ChainAssetId,
-        blockNumber: Core.BlockNumber,
+        blockNumber: Web3Core.BlockNumber,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         guard let connection = chainRegistry.getOneShotConnection(for: chainAssetId.chainId) else {

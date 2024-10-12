@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import Core
+import Web3Core
 
 struct ERC20TransferEvent {
     static let tokenType = "ERC20"

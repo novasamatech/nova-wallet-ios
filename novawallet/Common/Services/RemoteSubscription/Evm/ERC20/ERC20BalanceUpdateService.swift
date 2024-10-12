@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import web3swift
-import Core
+import Web3Core
 import SubstrateSdk
 import BigInt
 
@@ -13,7 +13,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
     let connection: JSONRPCEngine
     let repository: AnyDataProviderRepository<AssetBalance>
     let operationQueue: OperationQueue
-    let blockNumber: Core.BlockNumber
+    let blockNumber: Web3Core.BlockNumber
     let queryMessageFactory: EvmQueryContractMessageFactoryProtocol
     let completion: ERC20UpdateServiceCompletionClosure?
 
@@ -26,7 +26,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
         connection: JSONRPCEngine,
         repository: AnyDataProviderRepository<AssetBalance>,
         operationQueue: OperationQueue,
-        blockNumber: Core.BlockNumber,
+        blockNumber: Web3Core.BlockNumber,
         queryMessageFactory: EvmQueryContractMessageFactoryProtocol,
         logger: LoggerProtocol,
         completion: ERC20UpdateServiceCompletionClosure?

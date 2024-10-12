@@ -12,6 +12,7 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
         self.url = url
     }
 
+    @MainActor
     func loadMedia(
         on imageView: UIImageView,
         displaySettings: NftMediaDisplaySettings,
@@ -85,12 +86,14 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
         )
     }
 
+    @MainActor
     func cancel(on imageView: UIImageView) {
         imageView.kf.cancelDownloadTask()
     }
 }
 
 extension NftImageViewModel: ImageViewModelProtocol {
+    @MainActor
     func loadImage(on imageView: UIImageView, settings: ImageViewModelSettings, animated: Bool) {
         let displaySettings = NftMediaDisplaySettings(
             targetSize: settings.targetSize,

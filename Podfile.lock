@@ -1381,7 +1381,7 @@ PODS:
   - ReachabilitySwift (5.2.4)
   - RecaptchaInterop (100.0.0)
   - scrypt.c (0.1.1)
-  - secp256k1.c (0.1.2)
+  - secp256k1.c (0.1.3)
   - SnapKit (5.0.1)
   - SoraFoundation (1.1.0):
     - SoraFoundation/DateProcessing (= 1.1.0)
@@ -1505,13 +1505,13 @@ PODS:
   - WalletConnectSwiftV2/WalletConnectVerify (1.19.5):
     - WalletConnectSwiftV2/WalletConnectNetworking
     - WalletConnectSwiftV2/WalletConnectUtils
-  - Web3Core (3.0.6):
+  - Web3Core (3.2.0):
     - BigInt (~> 5.2.0)
     - CryptoSwift (~> 1.5.1)
     - secp256k1.c (~> 0.1)
-  - web3swift (3.0.6):
+  - web3swift (3.2.0):
     - Starscream (~> 4.0.4)
-    - Web3Core (~> 3.0.6)
+    - Web3Core (~> 3.2.0)
   - xxHash-Swift (1.0.13)
   - ZMarkupParser (1.6.1):
     - ZNSTextAttachment (~> 1.1.6)
@@ -1532,6 +1532,7 @@ DEPENDENCIES:
   - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
   - R.swift
   - ReachabilitySwift
+  - secp256k1.c (from `https://github.com/svojsu/secp256k1.c.git`, tag `0.1.3`)
   - SnapKit (~> 5.0.0)
   - SoraFoundation (from `https://github.com/ERussel/Foundation-iOS.git`, tag `1.1.0`)
   - SoraKeystore (~> 1.0.0)
@@ -1546,7 +1547,8 @@ DEPENDENCIES:
   - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
   - SwiftyBeaver
   - WalletConnectSwiftV2 (from `https://github.com/novasamatech/WalletConnectSwiftV2.git`, tag `rc1.9.6`)
-  - web3swift (from `https://github.com/web3swift-team/web3swift.git`, tag `3.0.6`)
+  - Web3Core (from `https://github.com/web3swift-team/web3swift.git`, branch `master`)
+  - web3swift (from `https://github.com/web3swift-team/web3swift.git`, branch `master`)
   - ZMarkupParser (= 1.6.1)
 
 SPEC REPOS:
@@ -1586,7 +1588,6 @@ SPEC REPOS:
     - ReachabilitySwift
     - RecaptchaInterop
     - scrypt.c
-    - secp256k1.c
     - SnapKit
     - SoraKeystore
     - Sourcery
@@ -1595,7 +1596,6 @@ SPEC REPOS:
     - SwiftLint
     - SwiftyBeaver
     - TweetNacl
-    - Web3Core
     - xxHash-Swift
     - ZMarkupParser
     - ZNSTextAttachment
@@ -1616,6 +1616,9 @@ EXTERNAL SOURCES:
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.0.1
+  secp256k1.c:
+    :git: https://github.com/svojsu/secp256k1.c.git
+    :tag: 0.1.3
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -1636,9 +1639,12 @@ EXTERNAL SOURCES:
   WalletConnectSwiftV2:
     :git: https://github.com/novasamatech/WalletConnectSwiftV2.git
     :tag: rc1.9.6
-  web3swift:
+  Web3Core:
+    :branch: master
     :git: https://github.com/web3swift-team/web3swift.git
-    :tag: 3.0.6
+  web3swift:
+    :branch: master
+    :git: https://github.com/web3swift-team/web3swift.git
 
 CHECKOUT OPTIONS:
   CDMarkdownKit:
@@ -1656,6 +1662,9 @@ CHECKOUT OPTIONS:
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.0.1
+  secp256k1.c:
+    :git: https://github.com/svojsu/secp256k1.c.git
+    :tag: 0.1.3
   SoraFoundation:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
@@ -1677,9 +1686,12 @@ CHECKOUT OPTIONS:
   WalletConnectSwiftV2:
     :git: https://github.com/novasamatech/WalletConnectSwiftV2.git
     :tag: rc1.9.6
-  web3swift:
+  Web3Core:
+    :commit: 8a026108ae5ff730ac83e9b574c8cf1c14413c94
     :git: https://github.com/web3swift-team/web3swift.git
-    :tag: 3.0.6
+  web3swift:
+    :commit: 8a026108ae5ff730ac83e9b574c8cf1c14413c94
+    :git: https://github.com/web3swift-team/web3swift.git
 
 SPEC CHECKSUMS:
   abseil: d121da9ef7e2ff4cab7666e76c5a3e0915ae08c3
@@ -1722,7 +1734,7 @@ SPEC CHECKSUMS:
   ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   scrypt.c: b42ae06183251329d2b2c620c226fb541a4a3592
-  secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
+  secp256k1.c: 99d5be2dba5c51380406ab0088569c2b4233f9ca
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SoraFoundation: 5b9d3c82d602150d2c2e65481c5eca5f5987c12c
   SoraKeystore: c42760c9270fc232a79f644c1b4bb07d9ead4ee7
@@ -1738,12 +1750,12 @@ SPEC CHECKSUMS:
   SwiftyBeaver: ade157e4f857812e7d7f15f2e3396bb8733f8a1c
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   WalletConnectSwiftV2: 52356e22c518bfc6deb0bb93e71f915be1c33536
-  Web3Core: 4a62a109cac056915d2d5023606438c89e229a1e
-  web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
+  Web3Core: e7b1ac4cf243e60005cebf9c35ff218b6a430760
+  web3swift: 353960336b84c7fe8cc1a717ce6592b55eaa46ee
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: c9cec7355ed24099edd674b3a445a9ca0f14f31a
 
-PODFILE CHECKSUM: d0cdab6ea0d777893f617c59b5d2565347a56dfe
+PODFILE CHECKSUM: 58f66b16bb31640c405f2a478c04e98b40e0fd8c
 
 COCOAPODS: 1.15.2

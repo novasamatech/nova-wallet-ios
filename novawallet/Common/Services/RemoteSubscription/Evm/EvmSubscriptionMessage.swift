@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import Core
+import Web3Core
 
 enum EvmSubscriptionMessage {
     static let subscribeMethod = "eth_subscribe"

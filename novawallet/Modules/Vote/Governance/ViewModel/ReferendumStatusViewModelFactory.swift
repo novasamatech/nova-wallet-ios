@@ -83,7 +83,7 @@ private extension ReferendumStatusViewModelFactory {
                 atBlock: max(currentBlock, model.timeoutAt),
                 currentBlock: currentBlock,
                 blockDuration: blockDuration,
-                timeStringProvider: strings.governanceReferendumsTimeTimeout,
+                timeStringProvider: strings.governanceReferendumsTimeTimeout.callAsFunction,
                 locale: locale
             )
         } else {
@@ -92,7 +92,7 @@ private extension ReferendumStatusViewModelFactory {
                 atBlock: model.preparingEnd,
                 currentBlock: currentBlock,
                 blockDuration: blockDuration,
-                timeStringProvider: strings.governanceReferendumsTimeDeciding,
+                timeStringProvider: strings.governanceReferendumsTimeDeciding.callAsFunction,
                 locale: locale
             )
         }
@@ -107,24 +107,24 @@ private extension ReferendumStatusViewModelFactory {
     ) -> StatusTimeViewModel? {
         let strings = R.string.localizable.self
 
-        if model.isPassing(for: currentBlock), let confirmationUntil = model.confirmationUntil {
-            return createTimeViewModel(
+        return if model.isPassing(for: currentBlock), let confirmationUntil = model.confirmationUntil {
+            createTimeViewModel(
                 state: referendumState,
                 atBlock: confirmationUntil,
                 currentBlock: currentBlock,
                 blockDuration: blockDuration,
-                timeStringProvider: strings.governanceReferendumsTimeApprove,
+                timeStringProvider: strings.governanceReferendumsTimeApprove.callAsFunction,
                 locale: locale
             )
         } else {
-            return switch model.projectPassing(for: currentBlock) {
+            switch model.projectPassing(for: currentBlock) {
             case let .passing(approvalBlock):
                 createTimeViewModel(
                     state: referendumState,
                     atBlock: approvalBlock,
                     currentBlock: currentBlock,
                     blockDuration: blockDuration,
-                    timeStringProvider: strings.governanceReferendumsTimeApprove,
+                    timeStringProvider: strings.governanceReferendumsTimeApprove.callAsFunction,
                     locale: locale
                 )
             case .notPassing:
@@ -133,7 +133,7 @@ private extension ReferendumStatusViewModelFactory {
                     atBlock: model.rejectedAt,
                     currentBlock: currentBlock,
                     blockDuration: blockDuration,
-                    timeStringProvider: strings.governanceReferendumsTimeReject,
+                    timeStringProvider: strings.governanceReferendumsTimeReject.callAsFunction,
                     locale: locale
                 )
             }
@@ -158,7 +158,7 @@ private extension ReferendumStatusViewModelFactory {
             atBlock: whenEnactment,
             currentBlock: currentBlock,
             blockDuration: blockDuration,
-            timeStringProvider: strings.governanceReferendumsTimeExecute,
+            timeStringProvider: strings.governanceReferendumsTimeExecute.callAsFunction,
             locale: locale
         )
     }

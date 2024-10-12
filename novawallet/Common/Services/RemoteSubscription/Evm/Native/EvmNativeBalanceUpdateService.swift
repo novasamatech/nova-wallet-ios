@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import web3swift
-import Core
+import Web3Core
 import SubstrateSdk
 import BigInt
 
@@ -13,7 +13,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
     let connection: JSONRPCEngine
     let repository: AnyDataProviderRepository<AssetBalance>
     let operationQueue: OperationQueue
-    let blockNumber: Core.BlockNumber
+    let blockNumber: Web3Core.BlockNumber
     let completion: EvmNativeUpdateServiceCompletionClosure?
 
     @Atomic(defaultValue: nil) private var queryId: UInt16?
@@ -25,7 +25,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
         connection: JSONRPCEngine,
         repository: AnyDataProviderRepository<AssetBalance>,
         operationQueue: OperationQueue,
-        blockNumber: Core.BlockNumber,
+        blockNumber: Web3Core.BlockNumber,
         logger: LoggerProtocol,
         completion: EvmNativeUpdateServiceCompletionClosure?
     ) {

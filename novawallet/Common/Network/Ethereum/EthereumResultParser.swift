@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import Core
+import Web3Core
 import BigInt
 
 enum EthereumRpcResultParser {

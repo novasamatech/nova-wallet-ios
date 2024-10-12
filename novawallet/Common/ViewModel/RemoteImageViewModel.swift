@@ -12,6 +12,7 @@ final class RemoteImageViewModel: NSObject {
 }
 
 extension RemoteImageViewModel: ImageViewModelProtocol {
+    @MainActor
     func loadImage(on imageView: UIImageView, settings: ImageViewModelSettings, animated: Bool) {
         var processor: ImageProcessor = SVGImageProcessor() |>
             ResizingImageProcessor(referenceSize: settings.targetSize, mode: .aspectFill) |>
@@ -48,6 +49,7 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
         )
     }
 
+    @MainActor
     func cancel(on imageView: UIImageView) {
         imageView.kf.cancelDownloadTask() // cancel any dowload task
 

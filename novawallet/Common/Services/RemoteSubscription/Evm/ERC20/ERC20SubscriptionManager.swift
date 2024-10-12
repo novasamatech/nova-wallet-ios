@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import web3swift
-import Core
+import Web3Core
 import BigInt
 
 final class ERC20SubscriptionManager {

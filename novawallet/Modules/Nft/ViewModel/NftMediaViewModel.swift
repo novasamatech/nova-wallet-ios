@@ -37,6 +37,7 @@ final class NftMediaViewModel {
         self.downloadService = downloadService
     }
 
+    @MainActor
     private func handle(
         result: Result<URL?, Error>,
         on imageView: UIImageView,
@@ -60,6 +61,7 @@ final class NftMediaViewModel {
 extension NftMediaViewModel: NftMediaViewModelProtocol {
     var identifier: String { metadataReference }
 
+    @MainActor
     func loadMedia(
         on imageView: UIImageView,
         displaySettings: NftMediaDisplaySettings,
@@ -93,6 +95,7 @@ extension NftMediaViewModel: NftMediaViewModelProtocol {
         }
     }
 
+    @MainActor
     func cancel(on imageView: UIImageView) {
         let operationToCancel = loadingOperation
         loadingOperation = nil
