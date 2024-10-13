@@ -1347,23 +1347,23 @@ PODS:
   - gRPC-Core/Privacy (1.65.5)
   - GTMSessionFetcher/Core (3.5.0)
   - HydraMath (0.2.0)
-  - IrohaCrypto/BIP39 (0.9.0):
+  - IrohaCrypto/BIP39 (0.10.0):
     - IrohaCrypto/Common
-  - IrohaCrypto/blake2 (0.9.0)
-  - IrohaCrypto/Common (0.9.0)
-  - IrohaCrypto/ed25519 (0.9.0):
+  - IrohaCrypto/blake2 (0.10.0)
+  - IrohaCrypto/Common (0.10.0)
+  - IrohaCrypto/ed25519 (0.10.0):
     - IrohaCrypto/Common
-  - IrohaCrypto/Scrypt (0.9.0):
+  - IrohaCrypto/Scrypt (0.10.0):
     - IrohaCrypto/Common
-    - scrypt.c (~> 0.1)
-  - IrohaCrypto/secp256k1 (0.9.0):
+    - scrypt.c (= 0.1.1)
+  - IrohaCrypto/secp256k1 (0.10.0):
     - IrohaCrypto/Common
     - secp256k1.c (~> 0.1)
-  - IrohaCrypto/sr25519 (0.9.0):
+  - IrohaCrypto/sr25519 (0.10.0):
     - IrohaCrypto/BIP39
     - IrohaCrypto/blake2
     - IrohaCrypto/Common
-  - IrohaCrypto/ss58 (0.9.0):
+  - IrohaCrypto/ss58 (0.10.0):
     - IrohaCrypto/blake2
     - IrohaCrypto/Common
   - keccak.c (0.1.3)
@@ -1442,11 +1442,11 @@ PODS:
   - Starscream (4.0.12)
   - SubstrateSdk (3.2.2):
     - BigInt (~> 5.0)
-    - IrohaCrypto/ed25519 (~> 0.9.0)
-    - IrohaCrypto/Scrypt (~> 0.9.0)
-    - IrohaCrypto/secp256k1 (~> 0.9.0)
-    - IrohaCrypto/sr25519 (~> 0.9.0)
-    - IrohaCrypto/ss58 (~> 0.9.0)
+    - IrohaCrypto/ed25519 (~> 0.10.0)
+    - IrohaCrypto/Scrypt (~> 0.10.0)
+    - IrohaCrypto/secp256k1 (~> 0.10.0)
+    - IrohaCrypto/sr25519 (~> 0.10.0)
+    - IrohaCrypto/ss58 (~> 0.10.0)
     - keccak.c (~> 0.1.0)
     - Operation-iOS (~> 2.0.1)
     - ReachabilitySwift (~> 5.0)
@@ -1541,7 +1541,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.2.2`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `21ac49473be18f7f1b590ed97f5ab5d5075bbfef`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1632,8 +1632,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
+    :commit: 21ac49473be18f7f1b590ed97f5ab5d5075bbfef
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.2.2
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1678,8 +1678,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
+    :commit: 21ac49473be18f7f1b590ed97f5ab5d5075bbfef
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.2.2
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -1725,7 +1725,7 @@ SPEC CHECKSUMS:
   gRPC-Core: a27c294d6149e1c39a7d173527119cfbc3375ce4
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   HydraMath: eb2fa7220956045ae5502b36cc91a34fd8ee4dcb
-  IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
+  IrohaCrypto: eb3772088068d8938198205b62b0a9dc5b8ce005
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
   Kingfisher: bbf78af014cc845cf9a799363f627b5212784165
   leveldb-library: e8eadf9008a61f9e1dde3978c086d2b6d9b9dc28
@@ -1745,7 +1745,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: 179539341c2261068528cd15a31837b7238fd901
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
-  SubstrateSdk: bc3da50e8e44ebb67e54fb20d5938a91ed85fc3c
+  SubstrateSdk: 85b5fe891e31203b126729add90b53e6c44a424c
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1760,6 +1760,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: c9cec7355ed24099edd674b3a445a9ca0f14f31a
 
-PODFILE CHECKSUM: 4b4c176cc05ba94b4ff39531edc8501057571436
+PODFILE CHECKSUM: 2b4c7f0902336f72da184052704197091efbb0d6
 
 COCOAPODS: 1.15.2
