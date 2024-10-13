@@ -1,5 +1,4 @@
 import Foundation
-import RswiftResources
 
 extension AccountOperationFactoryError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
@@ -9,7 +8,7 @@ extension AccountOperationFactoryError: ErrorContentConvertible {
         switch self {
         case .decryption:
             title = R.string.localizable
-                .accountImportKeystoreDecryptionErrorTitle.callAsFunction()
+                .accountImportKeystoreDecryptionErrorTitle(preferredLanguages: locale?.rLanguages)
             message = R.string.localizable
                 .accountImportKeystoreDecryptionErrorMessage(preferredLanguages: locale?.rLanguages)
         default:

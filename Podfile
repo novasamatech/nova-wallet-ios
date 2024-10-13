@@ -5,8 +5,8 @@ abstract_target 'novawalletAll' do
   use_frameworks!
 
   pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.2.2'
-  pod 'SwiftLint'
-  pod 'R.swift', :inhibit_warnings => true
+  pod 'SwiftLint', '= 0.43.1'
+  pod 'R.swift', '= 5.4.0', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
   pod 'SoraUI', :git => 'https://github.com/ERussel/UIkit-iOS.git', :tag => '1.13.0'
   pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
@@ -41,7 +41,7 @@ abstract_target 'novawalletAll' do
     pod 'Cuckoo'
     pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.2.2'
     pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
-    pod 'R.swift', :inhibit_warnings => true
+    pod 'R.swift', '= 5.4.0', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
@@ -58,8 +58,8 @@ abstract_target 'novawalletAll' do
   target 'NovaPushNotificationServiceExtension' do
     inherit! :search_paths
 
-    pod 'SwiftLint'
-    pod 'R.swift', :inhibit_warnings => true
+    pod 'SwiftLint', '= 0.43.1'
+    pod 'R.swift', '= 5.4.0', :inhibit_warnings => true
     pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
