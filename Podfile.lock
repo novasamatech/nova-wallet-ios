@@ -1541,7 +1541,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `21ac49473be18f7f1b590ed97f5ab5d5075bbfef`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `9226733a3d8b85c1798e449626e7a96842b45833`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1632,7 +1632,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
-    :commit: 21ac49473be18f7f1b590ed97f5ab5d5075bbfef
+    :commit: 9226733a3d8b85c1798e449626e7a96842b45833
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -1678,7 +1678,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
-    :commit: 21ac49473be18f7f1b590ed97f5ab5d5075bbfef
+    :commit: 9226733a3d8b85c1798e449626e7a96842b45833
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -1745,7 +1745,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: 179539341c2261068528cd15a31837b7238fd901
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
-  SubstrateSdk: 85b5fe891e31203b126729add90b53e6c44a424c
+  SubstrateSdk: b9755c159802357c69b9370a4d51e17ca4de36b4
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1760,6 +1760,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: c9cec7355ed24099edd674b3a445a9ca0f14f31a
 
-PODFILE CHECKSUM: 2b4c7f0902336f72da184052704197091efbb0d6
+PODFILE CHECKSUM: c6571f073d3d049b63274590e8a141da8380d289
 
 COCOAPODS: 1.15.2
