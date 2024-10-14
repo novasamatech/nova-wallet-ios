@@ -69,7 +69,8 @@ extension TransferSetupPresenterFactory {
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
-            utilityAssetInfo: utilityChainAsset.asset.displayInfo,
+            utilityAssetInfo: utilityChainAsset.assetDisplayInfo,
+            destUtilityAssetInfo: utilityChainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 

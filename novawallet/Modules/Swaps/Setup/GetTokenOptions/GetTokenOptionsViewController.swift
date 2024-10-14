@@ -28,6 +28,10 @@ final class GetTokenOptionsViewController: ModalPickerViewController<
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
+        guard viewModels[indexPath.row].value(for: selectedLocale).isActive else {
+            return
+        }
+
         operationPresenter.selectOption(at: indexPath.row)
     }
 }

@@ -1,8 +1,7 @@
 import SubstrateSdk
 import Operation_iOS
 
-class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
-    NetworkNodeConnectingTrait {
+class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait {
     weak var presenter: CustomNetworkBaseInteractorOutputProtocol?
 
     let chainRegistry: ChainRegistryProtocol
@@ -21,6 +20,8 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     var setupFinishStrategy: CustomNetworkSetupFinishStrategy?
 
     private var partialChain: PartialCustomChainModel?
+
+    private var setupNetworkCancellable = CancellableCallStore()
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -45,6 +46,10 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
     }
 
     func modify(with request: CustomNetwork.ModifyRequest) {
+        setupFinishStrategy = setupFinishStrategyFactory.createModifyStrategy(
+            networkToModify: request.existingNetwork
+        )
+
         let mainAsset = request.existingNetwork.assets.first(where: { $0.assetId == 0 })
 
         let evmChainId: UInt64? = if let chainId = request.chainId, let intChainId = Int(chainId) {
@@ -80,7 +85,6 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
             setupConnection(
                 for: partialChain,
                 node: request.node,
-                replacing: request.node,
                 networkSetupType: .full
             )
         } catch {
@@ -138,7 +142,6 @@ class CustomNetworkBaseInteractor: NetworkNodeCreatorTrait,
             setupConnection(
                 for: partialChain,
                 node: node,
-                replacing: request.replacingNode,
                 networkSetupType: request.networkSetupType
             )
         } catch {
@@ -183,16 +186,20 @@ private extension CustomNetworkBaseInteractor {
     func setupConnection(
         for partialChain: PartialCustomChainModel,
         node: ChainNodeModel,
-        replacing existingNode: ChainNodeModel?,
         networkSetupType: CustomNetworkSetupOperationType
     ) {
         do {
-            let connection = try connect(
-                to: node,
-                replacing: existingNode,
+            guard NSPredicate.ws.evaluate(with: node.url) else {
+                throw NetworkNodeConnectingError.wrongFormat
+            }
+
+            let connection = try connectionFactory.createConnection(
+                for: node,
                 chain: partialChain,
-                urlPredicate: NSPredicate.ws
+                delegate: self
             )
+
+            currentConnection = connection
 
             setupNetworkWrapper = customNetworkSetupFactory.createOperation(
                 with: partialChain,
@@ -200,8 +207,6 @@ private extension CustomNetworkBaseInteractor {
                 node: node,
                 type: networkSetupType
             )
-
-            currentConnection = connection
         } catch {
             let customNetworkError = CustomNetworkBaseInteractorError(from: error)
             presenter?.didReceive(customNetworkError)
@@ -242,9 +247,10 @@ private extension CustomNetworkBaseInteractor {
     func handleConnected() {
         guard let setupNetworkWrapper else { return }
 
-        execute(
+        executeCancellable(
             wrapper: setupNetworkWrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: setupNetworkCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {

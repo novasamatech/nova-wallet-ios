@@ -43,7 +43,7 @@ class NetworkDetailsViewModelFactory {
             )
         ]
 
-        if chain.source == .remote {
+        if !remoteNodes.isEmpty {
             let defaultNodesSection = createNodesSection(
                 with: remoteNodes,
                 selectedNode: selectedNode,
