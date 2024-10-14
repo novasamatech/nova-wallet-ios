@@ -908,9 +908,9 @@
 "ledger.instructions.title" = "Kết nối Ledger Nano X";
 "ledger.instructions.link" = "Hướng dẫn kết nối Bluetooth chính thức của Ledger";
 "ledger.instructions.step1" = "Đảm bảo %@ vào thiết bị Ledger của bạn bằng ứng dụng Ledger Live";
-"ledger.instructions.step1.highlighted" = "<font>Ứng dụng mạng đã được cài đặt</font>";
+"ledger.instructions.step1.highlighted" = "Ứng dụng mạng đã được cài đặt";
 "ledger.instructions.step2" = "%@ trên thiết bị Ledger của bạn";
-"ledger.instructions.step2.highlighted" = "<font>Mở ứng dụng mạng</font>";
+"ledger.instructions.step2.highlighted" = "Mở ứng dụng mạng";
 "ledger.instructions.step3" = "Cho phép Nova Wallet %@";
 "ledger.instructions.step3.highlighted" = "truy cập Bluetooth";
 "hardware.wallet.import.description" = "Polkadot Vault, Parity Signer hoặc Ledger";
@@ -1727,7 +1727,7 @@
 "gov.voters.abstain" = "Bỏ phiếu Abstain";
 "gov.vote.conviction.alert.title" = "Cập nhật độ xác tín";
 "gov.vote.conviction.alert.message" = "Bỏ phiếu Abstain chỉ có thể thực hiện với độ xác tín 0.1x. Bỏ phiếu với độ xác tín 0.1x?";
-"gov.vote.conviction.hint.title" = "Độ xác tín sẽ được đặt là 0.1x khi <font>bỏ phiếu Abstain</font>";
+"gov.vote.conviction.hint.title" = "Độ xác tín sẽ được đặt là 0.1x khi bỏ phiếu Abstain";
 "cloud.backup.password.confirm.title" = "Xác nhận mật khẩu sao lưu";
 "cloud.backup.password.confirm.details" = "Vui lòng nhập mật khẩu bạn đã tạo ở màn hình trước";
 "swipe.gov.empty.view.voted.text" = "Bạn đã bỏ phiếu cho tất cả các cuộc trưng cầu khả dụng";
