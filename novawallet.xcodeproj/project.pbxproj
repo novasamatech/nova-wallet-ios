@@ -650,6 +650,7 @@
 		0CD8463F2BE20CF20026B5CA /* AvailSignedExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8463E2BE20CF20026B5CA /* AvailSignedExtension.swift */; };
 		0CD846412BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846402BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift */; };
 		0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */; };
+		0CD87B992CBE401800DB0E5E /* MnemonicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD87B982CBE401800DB0E5E /* MnemonicTests.swift */; };
 		0CDEF1642C27E578003878F2 /* ExtrinsicProofOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */; };
 		0CDEF1662C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
@@ -5775,6 +5776,7 @@
 		0CD8463E2BE20CF20026B5CA /* AvailSignedExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailSignedExtension.swift; sourceTree = "<group>"; };
 		0CD846402BE25ECA0026B5CA /* ExtrinsicSignedExtensionFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSignedExtensionFacade.swift; sourceTree = "<group>"; };
 		0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredValidatorsProvider.swift; sourceTree = "<group>"; };
+		0CD87B982CBE401800DB0E5E /* MnemonicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicTests.swift; sourceTree = "<group>"; };
 		0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProofOperationFactory.swift; sourceTree = "<group>"; };
 		0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataRepositoryFactory.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
@@ -16323,6 +16325,7 @@
 				8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */,
 				84F4A90F255001D2000CF0A3 /* KeystoreExportWrapperTests.swift */,
 				8410562D27AF22DA004F5CA3 /* EthereumAddressChecksum.swift */,
+				0CD87B982CBE401800DB0E5E /* MnemonicTests.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -29127,6 +29130,7 @@
 				848A83752746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift in Sources */,
 				846CA7822709AD300011124C /* StakingAnalyticsLocalSubscriptionFactoryStub.swift in Sources */,
 				84B7C72C289BFA79001A3566 /* SelectValidatorsConfirmTests.swift in Sources */,
+				0CD87B992CBE401800DB0E5E /* MnemonicTests.swift in Sources */,
 				84E25BF427E8FEFD00290BF1 /* RewardDataSourceTests.swift in Sources */,
 				84AA004326C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift in Sources */,
 				8413B27A29507F3A00F8E2E4 /* DataProviderRepositoryStub.swift in Sources */,
