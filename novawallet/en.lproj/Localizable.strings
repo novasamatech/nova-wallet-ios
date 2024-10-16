@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "waiting for the next era (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Support & Feedback";
-"settings.email" = "Email";
+"settings.email" = "Get support via Email";
 "wallet.manage.assets.title" = "Manage assets";
 "staking.reward.payouts.title_v2_2_0" = "Unpaid rewards";
 "staking.setup.restake.title_v2_2_0" = "Restake rewards";
@@ -1420,7 +1420,7 @@
 "common.swap.title" = "Swap";
 "common.action.repeat.operation" = "Repeat the operation";
 "swaps.error.rate.was.updated.message" = "Old rate: %@.\nNew rate: %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "Wiki & Help Center";
 "common.not.enough.fee.message_v3.8.0" = "You don’t have enough balance to pay the network fee of %@.\nAvailable balance to pay fee after operation: %@";
 "deeplink.error.invalid.chainId.message" = "Chain is not found";
 "deeplink.error.no.governance.type.message" = "Governance type is not specified";

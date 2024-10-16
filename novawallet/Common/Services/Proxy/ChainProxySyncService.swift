@@ -178,7 +178,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
             let proxyList = try proxyListWrapper.targetOperation.extractNoCancellableResultData()
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let notProxiedAccountIdList: [AccountId] = chainMetaAccounts.compactMap { wallet in
+            let possibleProxiesList: [AccountId] = chainMetaAccounts.compactMap { wallet in
                 guard wallet.info.type != .proxied else {
                     return nil
                 }
@@ -186,17 +186,26 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
                 return wallet.info.fetch(for: chainModel.accountRequest())?.accountId
             }
 
-            let notProxiedAccountIds = Set(notProxiedAccountIdList)
+            var possibleProxiesIds = Set(possibleProxiesList)
+            var prevProxiesIds = possibleProxiesIds
+            var proxies: [ProxiedAccountId: [ProxyAccount]] = [:]
 
-            // We only need remote proxieds for proxies we have locally and we don't support delaed proxies
-            let proxies = proxyList.compactMapValues { accounts in
-                accounts.filter {
-                    !$0.hasDelay && notProxiedAccountIds.contains($0.accountId)
-                }
-            }.filter { !$0.value.isEmpty }
+            repeat {
+                // We only need remote proxieds for current proxies and we don't support delayed proxies
+                proxies = proxyList.compactMapValues { accounts in
+                    accounts.filter {
+                        !$0.hasDelay && possibleProxiesIds.contains($0.accountId)
+                    }
+                }.filter { !$0.value.isEmpty }
+
+                prevProxiesIds = possibleProxiesIds
+                possibleProxiesIds = possibleProxiesIds.union(Set(proxies.keys))
+
+            } while possibleProxiesIds != prevProxiesIds
 
             return proxies
         }
+
         proxyListOperation.addDependency(proxyListWrapper.targetOperation)
         proxyListOperation.addDependency(metaAccountsWrapper.targetOperation)
 

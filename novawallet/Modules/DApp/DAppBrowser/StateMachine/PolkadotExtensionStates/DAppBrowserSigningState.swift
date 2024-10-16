@@ -9,7 +9,11 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
         super.init(stateMachine: stateMachine)
     }
 
-    private func provideOperationResponse(with signature: Data, nextState: DAppBrowserStateProtocol) throws {
+    private func provideOperationResponse(
+        with signature: Data,
+        modifiedTransaction: Data?,
+        nextState: DAppBrowserStateProtocol
+    ) throws {
         guard let msgType = signingType.msgType else {
             return
         }
@@ -17,7 +21,8 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
         let identifier = (0 ... UInt32.max).randomElement() ?? 0
         let result = PolkadotExtensionSignerResult(
             identifier: UInt(identifier),
-            signature: signature.toHex(includePrefix: true)
+            signature: signature.toHex(includePrefix: true),
+            signedTransaction: modifiedTransaction?.toHex(includePrefix: true)
         )
 
         try provideResponse(for: msgType, result: result, nextState: nextState)
@@ -54,7 +59,11 @@ extension DAppBrowserSigningState: DAppBrowserStateProtocol {
 
         if let signature = response.signature {
             do {
-                try provideOperationResponse(with: signature, nextState: nextState)
+                try provideOperationResponse(
+                    with: signature,
+                    modifiedTransaction: response.modifiedTransaction,
+                    nextState: nextState
+                )
             } catch {
                 stateMachine?.emit(error: error, nextState: nextState)
             }

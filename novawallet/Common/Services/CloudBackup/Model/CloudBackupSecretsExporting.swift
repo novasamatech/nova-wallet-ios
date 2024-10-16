@@ -15,20 +15,24 @@ enum CloudBackupSecretsExporterError: Error {
     case unsupportedWallet(MetaAccountModelType)
     case invalidSecret(UInt8)
     case brokenSecrets(MetaAccountModel.Id)
+    case validationFailed
 }
 
 final class CloudBackupSecretsExporter {
     let walletConverter: CloudBackupFileModelConverting
     let cryptoManager: CloudBackupCryptoManagerProtocol
     let keychain: KeystoreProtocol
+    let validator: CloudBackupValidating
 
     init(
         walletConverter: CloudBackupFileModelConverting,
         cryptoManager: CloudBackupCryptoManagerProtocol,
+        validator: CloudBackupValidating,
         keychain: KeystoreProtocol
     ) {
         self.walletConverter = walletConverter
         self.cryptoManager = cryptoManager
+        self.validator = validator
         self.keychain = keychain
     }
 
@@ -333,11 +337,15 @@ extension CloudBackupSecretsExporter: CloudBackupSecretsExporting {
             try createPrivateInfo(from: wallet)
         }
 
+        let publicData = CloudBackup.PublicData(modifiedAt: modifiedAt, wallets: publicWalletsData)
         let privateInfo = CloudBackup.DecryptedFileModel.PrivateData(wallets: Set(privateInfoList))
+
+        guard validator.validate(publicData: publicData, matches: privateInfo) else {
+            throw CloudBackupSecretsExporterError.validationFailed
+        }
+
         let encodedPrivateInfo = try JSONEncoder().encode(privateInfo)
         let encryptedInfo = try cryptoManager.encrypt(data: encodedPrivateInfo, password: password)
-
-        let publicData = CloudBackup.PublicData(modifiedAt: modifiedAt, wallets: publicWalletsData)
 
         return .init(publicData: publicData, privateData: encryptedInfo.toHex())
     }

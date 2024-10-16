@@ -268,13 +268,18 @@ extension WalletConnectSignModelFactory {
         }
     }
 
-    static func createSigningResponse(for method: WalletConnectMethod, signature: Data) -> AnyCodable {
+    static func createSigningResponse(
+        for method: WalletConnectMethod,
+        signature: Data,
+        modifiedTransaction: Data?
+    ) -> AnyCodable {
         switch method {
         case .polkadotSignTransaction, .polkadotSignMessage:
             let identifier = (0 ... UInt32.max).randomElement() ?? 0
             let result = PolkadotExtensionSignerResult(
                 identifier: UInt(identifier),
-                signature: signature.toHex(includePrefix: true)
+                signature: signature.toHex(includePrefix: true),
+                signedTransaction: modifiedTransaction?.toHex(includePrefix: true)
             )
 
             return AnyCodable(result)

@@ -5,6 +5,11 @@ import BigInt
 import SoraKeystore
 
 final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
+    struct SignatureResult {
+        let signature: Data
+        let modifiedExtrinsic: Data?
+    }
+
     let request: DAppOperationRequest
     let chain: ChainModel
 
@@ -12,14 +17,15 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let runtimeProvider: RuntimeProviderProtocol
+    let metadataHashFactory: MetadataHashOperationFactoryProtocol
     let feeEstimationRegistry: ExtrinsicFeeEstimationRegistring
     let operationQueue: OperationQueue
 
     var extrinsicFactory: DAppExtrinsicBuilderOperationFactory?
 
     var priceProvider: StreamableProvider<PriceData>?
-    var feeWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>?
-    var signWrapper: CompoundOperationWrapper<Data>?
+    let feeCancellable = CancellableCallStore()
+    var signCancellable = CancellableCallStore()
 
     init(
         request: DAppOperationRequest,
@@ -28,6 +34,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         connection: JSONRPCEngine,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
+        metadataHashFactory: MetadataHashOperationFactoryProtocol,
         priceProviderFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -38,6 +45,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         self.feeEstimationRegistry = feeEstimationRegistry
         self.connection = connection
         self.signingWrapperFactory = signingWrapperFactory
+        self.metadataHashFactory = metadataHashFactory
         priceLocalSubscriptionFactory = priceProviderFactory
         self.operationQueue = operationQueue
         super.init()
@@ -81,7 +89,10 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     func completeSetup(for result: DAppOperationProcessedResult) {
         extrinsicFactory = DAppExtrinsicBuilderOperationFactory(
             processedResult: result,
-            runtimeProvider: runtimeProvider
+            chain: chain,
+            runtimeProvider: runtimeProvider,
+            connection: connection,
+            metadataHashOperationFactory: metadataHashFactory
         )
 
         let confirmationModel = DAppOperationConfirmModel(
@@ -101,20 +112,20 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     func createSignatureOperation(
         for extrinsicFactory: DAppExtrinsicBuilderOperationFactory,
         signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<Data> {
+    ) -> CompoundOperationWrapper<SignatureResult> {
         let signatureWrapper = extrinsicFactory.createRawSignatureWrapper { data, context in
             try signer.sign(data, context: context).rawData()
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let signatureOperation = ClosureOperation<Data> {
+        let signatureOperation = ClosureOperation<SignatureResult> {
             let signatureResult = try signatureWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             let scaleEncoder = codingFactory.createEncoder()
 
-            let rawSignature = signatureResult.signedExtrinsic
+            let rawSignature = signatureResult.signature
 
             switch extrinsicFactory.processedResult.account.cryptoType {
             case .sr25519:
@@ -147,7 +158,9 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
                 )
             }
 
-            return try scaleEncoder.encode()
+            let signature = try scaleEncoder.encode()
+
+            return SignatureResult(signature: signature, modifiedExtrinsic: signatureResult.modifiedExtrinsic)
         }
 
         signatureOperation.addDependency(codingFactoryOperation)

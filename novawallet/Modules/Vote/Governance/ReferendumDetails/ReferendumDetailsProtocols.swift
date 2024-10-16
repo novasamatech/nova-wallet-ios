@@ -12,7 +12,7 @@ protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(shouldHideFullDetails: Bool)
 }
 
-protocol ReferendumDetailsPresenterProtocol: AnyObject {
+protocol ReferendumDetailsPresenterProtocol: AnyObject, WalletNoAccountHandling {
     func setup()
     func showProposerDetails()
     func readFullDescription()
