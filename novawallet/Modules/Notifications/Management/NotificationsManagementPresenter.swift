@@ -317,9 +317,21 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
             if isStatusDeniedError(error) {
                 showNotificationDeniedError()
             } else {
-                wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                    self?.save()
-                }
+                let title = R.string.localizable.commonErrorGeneralTitle(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                let message = error.localizedDescription + " " + "\(error)"
+
+                wireframe.presentRequestStatus(
+                    on: view,
+                    title: title,
+                    message: message,
+                    locale: selectedLocale,
+                    retryAction: { [weak self] in
+                        self?.save()
+                    }
+                )
             }
         }
     }
