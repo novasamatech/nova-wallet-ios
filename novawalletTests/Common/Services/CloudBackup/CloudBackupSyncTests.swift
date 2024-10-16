@@ -94,43 +94,62 @@ final class CloudBackupSyncTests: XCTestCase {
         XCTAssertTrue(try setupResult.syncMetadataManager.hasPassword())
     }
     
-    func testCantApplyChangesIfSecretWalletHasNoSecrets() throws {
-        let logger = Logger.shared
-        let setupResult = setupSyncSevice(
-            configuringLocal: { params in
-                try? AccountCreationHelper.createMetaAccountFromMnemonic(
-                    cryptoType: .sr25519,
-                    keychain: params.keystore,
-                    settings: params.walletSettings
-                )
-                
-                try? KeystoreValidationHelper.clearKeystore(
-                    for: params.walletSettings.value,
-                    keystore: params.keystore
-                )
-            },
-            configuringBackup: { params in
-                params.syncMetadataManager.isBackupEnabled = true
-                try? params.syncMetadataManager.savePassword(Self.defaultPassword)
-                params.syncMetadataManager.saveLastSyncTimestamp(nil)
-            }
-        )
-        
-        let syncChanges: CloudBackupSyncResult.Changes? = syncAndWait(service: setupResult.syncService) { result in
-            switch result {
-            case let .changes(changes):
-                return changes
-            default:
-                logger.debug("Skipped: \(result)")
-                return nil
-            }
+    func testPreventApplyChangesIfSecretWalletHasNoSecrets() throws {
+        let optIssue = performDetectIssueTest { params in
+            // create a wallet with secrets
+            try? AccountCreationHelper.createMetaAccountFromMnemonic(
+                cryptoType: .sr25519,
+                keychain: params.keystore,
+                settings: params.walletSettings
+            )
+            
+            // and then remove secrets before syncing
+            try? KeystoreValidationHelper.clearKeystore(
+                for: params.walletSettings.value,
+                keystore: params.keystore
+            )
         }
         
-        XCTAssertNotNil(syncChanges)
+        XCTAssertEqual(optIssue, .internalFailure)
+    }
+    
+    func testPreventApplyChangesIfLegacyLedgerWalletHasNoDPath() throws {
+        let optIssue = performDetectIssueTest { params in
+            guard let ledgerApp = SupportedLedgerApp.substrate().first else {
+                return
+            }
+            
+            try? AccountCreationHelper.createSubstrateLedgerAccount(
+                from: ledgerApp,
+                keychain: params.keystore,
+                settings: params.walletSettings
+            )
+            
+            // and then remove secrets before syncing
+            try? KeystoreValidationHelper.clearKeystore(
+                for: params.walletSettings.value,
+                keystore: params.keystore
+            )
+        }
         
-        let issue = applyChangesAndDetectIssue(for: setupResult.syncService)
+        XCTAssertEqual(optIssue, .internalFailure)
+    }
+    
+    func testPreventApplyChangesIfGenericLedgerWalletHasNoDPath() throws {
+        let optIssue = performDetectIssueTest { params in
+            try? AccountCreationHelper.createSubstrateGenericLedgerWallet(
+                keychain: params.keystore,
+                settings: params.walletSettings
+            )
+            
+            // and then remove secrets before syncing
+            try? KeystoreValidationHelper.clearKeystore(
+                for: params.walletSettings.value,
+                keystore: params.keystore
+            )
+        }
         
-        XCTAssertEqual(issue, .internalFailure)
+        XCTAssertEqual(optIssue, .internalFailure)
     }
     
     func testDetectLocalChanges() throws {
@@ -664,6 +683,32 @@ final class CloudBackupSyncTests: XCTestCase {
                 XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
             }
         )
+    }
+    
+    private func performDetectIssueTest(
+        configuringLocal: LocalWalletsSetupClosure
+    ) -> CloudBackupSyncResult.Issue? {
+        let setupResult = setupSyncSevice(
+            configuringLocal: configuringLocal,
+            configuringBackup: { params in
+                params.syncMetadataManager.isBackupEnabled = true
+                try? params.syncMetadataManager.savePassword(Self.defaultPassword)
+                params.syncMetadataManager.saveLastSyncTimestamp(nil)
+            }
+        )
+        
+        let syncChanges: CloudBackupSyncResult.Changes? = syncAndWait(service: setupResult.syncService) { result in
+            switch result {
+            case let .changes(changes):
+                return changes
+            default:
+                return nil
+            }
+        }
+        
+        XCTAssertNotNil(syncChanges)
+        
+        return applyChangesAndDetectIssue(for: setupResult.syncService)
     }
     
     private func performSyncTest(
