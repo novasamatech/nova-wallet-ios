@@ -321,7 +321,7 @@ extension NotificationsManagementPresenter: NotificationsManagementInteractorOut
                     preferredLanguages: selectedLocale.rLanguages
                 )
 
-                let message = error.localizedDescription + " " + "\(error)"
+                let message = error.localizedDescription
 
                 wireframe.presentRequestStatus(
                     on: view,
