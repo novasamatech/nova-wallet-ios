@@ -244,7 +244,7 @@ final class AssetListPresenter {
         }
 
         let maybePrices = try? model.priceResult?.get()
-        let viewModels: [AssetListGroupViewModel] = model.groups.compactMap { groupModel in
+        let viewModels: [AssetListGroupViewModel] = model.chainGroups.allItems.compactMap { groupModel in
             createGroupViewModel(
                 from: groupModel,
                 maybePrices: maybePrices,
@@ -297,13 +297,13 @@ final class AssetListPresenter {
     }
 
     private func createGroupViewModel(
-        from groupModel: AssetListGroupModel,
+        from groupModel: AssetListChainGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
         hidesZeroBalances: Bool
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
 
-        let assets = model.groupLists[chain.chainId] ?? []
+        let assets = model.groupListsByChain[chain.chainId]?.allItems ?? []
 
         let filteredAssets: [AssetListAssetModel]
 
@@ -330,7 +330,7 @@ final class AssetListPresenter {
         return viewModelFactory.createGroupViewModel(
             for: chain,
             assets: assetInfoList,
-            value: groupModel.chainValue,
+            value: groupModel.value,
             connected: true,
             locale: selectedLocale
         )

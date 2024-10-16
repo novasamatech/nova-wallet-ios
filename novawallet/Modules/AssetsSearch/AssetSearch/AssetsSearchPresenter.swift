@@ -48,7 +48,7 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     }
 
     private func createGroupViewModel(
-        from groupModel: AssetListGroupModel,
+        from groupModel: AssetListChainGroupModel,
         groupLists: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>],
         maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupViewModel? {
@@ -67,7 +67,7 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
         return viewModelFactory.createGroupViewModel(
             for: chain,
             assets: assetInfoList,
-            value: groupModel.chainValue,
+            value: groupModel.value,
             connected: true,
             locale: selectedLocale
         )
