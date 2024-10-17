@@ -26,12 +26,14 @@ abstract_target 'novawalletAll' do
   pod 'EthereumSignTypedDataUtil', :git => 'https://github.com/ERussel/EthereumSignTypedDataUtil.git', :tag => '0.1.3'
   pod 'SwiftAlgorithms', '~> 1.0.0'
   pod 'ZMarkupParser', '= 1.6.1'
-  pod 'FirebaseAuth'
-  pod 'FirebaseFirestore'
-  pod 'FirebaseMessaging'
-  pod 'FirebaseAppCheck'
+  pod 'FirebaseAuth', '~> 11.3.0'
+  pod 'FirebaseFirestore', '~> 11.3.0'
+  pod 'FirebaseMessaging', '~> 11.3.0'
+  pod 'FirebaseAppCheck', '~> 11.3.0'
   pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.2'
   pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
+  pod 'IrohaCrypto', :git => 'https://github.com/novasamatech/IrohaCrypto', :tag => '0.9.1'
+  pod 'secp256k1.c', :git => 'https://github.com/novasamatech/secp256k1.c', :tag => '0.1.3'
   
   target 'novawalletTests' do
     inherit! :search_paths
@@ -47,6 +49,8 @@ abstract_target 'novawalletAll' do
     pod 'Starscream', :git => 'https://github.com/novasamatech/Starscream.git', :tag => '4.0.12'
     pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.2'
     pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
+    pod 'IrohaCrypto', :git => 'https://github.com/novasamatech/IrohaCrypto', :tag => '0.9.1'
+    pod 'secp256k1.c', :git => 'https://github.com/novasamatech/secp256k1.c', :tag => '0.1.3'
   end
 
   target 'novawalletIntegrationTests'
