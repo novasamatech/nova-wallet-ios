@@ -4,12 +4,14 @@ import BigInt
 protocol GraphEdgeProtocol {
     associatedtype Node
 
+    var origin: Node { get }
     var destination: Node { get }
 }
 
 struct SimpleEdge<N: Hashable>: GraphEdgeProtocol, Hashable {
     typealias Node = N
 
+    let origin: N
     let destination: N
 }
 
@@ -49,8 +51,11 @@ enum GraphModelFactory {
         _ connections: [[N: Set<N>]]
     ) -> GraphModel<N, SimpleEdge<N>> {
         connections.reduce(GraphModel<N, SimpleEdge<N>>(connections: [:])) { graph, subcon in
-            let edges = subcon.mapValues { siblings in
-                Set(siblings.map { SimpleEdge(destination: $0) })
+            let edges = subcon.reduce(into: [N: Set<SimpleEdge<N>>]()) { accum, siblings in
+                let origin = siblings.key
+                let destinations = siblings.value
+
+                accum[origin] = Set(destinations.map { SimpleEdge(origin: origin, destination: $0) })
             }
 
             return graph.merging(with: GraphModel<N, SimpleEdge<N>>(connections: edges))

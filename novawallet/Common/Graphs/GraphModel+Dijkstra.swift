@@ -1,11 +1,11 @@
 import Foundation
 
-extension GraphModel {
+extension GraphModel where E: GraphWeightableEdgeProtocol {
     func calculateShortestPath(from nodeStart: N, nodeEnd: N, topN: Int) -> [[E]] {
         var queue = PriorityQueue<(cost: Int, path: [E])>(sort: { $0.cost < $1.cost })
 
         connections[nodeStart]?.forEach {
-            queue.push((cost: 1, path: [$0]))
+            queue.push((cost: $0.weight, path: [$0]))
         }
 
         var result: [[E]] = []

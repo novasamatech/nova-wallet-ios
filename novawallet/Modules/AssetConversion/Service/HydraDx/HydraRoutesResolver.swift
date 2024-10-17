@@ -127,8 +127,16 @@ enum HydraRoutesResolver {
     }
 }
 
-extension HydraDx.SwapRoute.Component: GraphEdgeProtocol where Asset: Hashable {
+extension HydraDx.SwapRoute.Component: GraphWeightableEdgeProtocol where Asset: Hashable {
     typealias Node = Asset
+
+    var weight: Int {
+        1
+    }
+
+    var origin: Asset {
+        assetIn
+    }
 
     var destination: Asset {
         assetOut

@@ -535,6 +535,7 @@
 		0CB433482CC0F9EF00F2CB59 /* AssetsConversionExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB433472CC0F9EF00F2CB59 /* AssetsConversionExchange.swift */; };
 		0CB4334A2CC10AD000F2CB59 /* AssetsHydraExchage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB433492CC10AD000F2CB59 /* AssetsHydraExchage.swift */; };
 		0CB4334C2CC10C3C00F2CB59 /* AssetsHydraExchangeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB4334B2CC10C3C00F2CB59 /* AssetsHydraExchangeProvider.swift */; };
+		0CB4334E2CC1196400F2CB59 /* WeightableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB4334D2CC1196400F2CB59 /* WeightableEdge.swift */; };
 		0CB64E5A2AFE9947008F268F /* GetTokenOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB64E592AFE9947008F268F /* GetTokenOperation.swift */; };
 		0CB64E5C2B009DA9008F268F /* GetTokenOptionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB64E5B2B009DA9008F268F /* GetTokenOptionsModel.swift */; };
 		0CB64E5E2B00AA8F008F268F /* GetTokenOptionsResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB64E5D2B00AA8F008F268F /* GetTokenOptionsResult.swift */; };
@@ -5662,6 +5663,7 @@
 		0CB433472CC0F9EF00F2CB59 /* AssetsConversionExchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsConversionExchange.swift; sourceTree = "<group>"; };
 		0CB433492CC10AD000F2CB59 /* AssetsHydraExchage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsHydraExchage.swift; sourceTree = "<group>"; };
 		0CB4334B2CC10C3C00F2CB59 /* AssetsHydraExchangeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsHydraExchangeProvider.swift; sourceTree = "<group>"; };
+		0CB4334D2CC1196400F2CB59 /* WeightableEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightableEdge.swift; sourceTree = "<group>"; };
 		0CB64E592AFE9947008F268F /* GetTokenOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOperation.swift; sourceTree = "<group>"; };
 		0CB64E5B2B009DA9008F268F /* GetTokenOptionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsModel.swift; sourceTree = "<group>"; };
 		0CB64E5D2B00AA8F008F268F /* GetTokenOptionsResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsResult.swift; sourceTree = "<group>"; };
@@ -11656,6 +11658,7 @@
 				0CCDB2EA2B74DA55007BC5D6 /* GraphModel.swift */,
 				0CE360202C33F398006A6CE4 /* GraphModel+Dijkstra.swift */,
 				0CE360222C343300006A6CE4 /* PriorityQueue.swift */,
+				0CB4334D2CC1196400F2CB59 /* WeightableEdge.swift */,
 			);
 			path = Graphs;
 			sourceTree = "<group>";
@@ -24802,6 +24805,7 @@
 				84893C0724DA890F008F6A3F /* CommonError.swift in Sources */,
 				84F1CB3E27CF4F5A0095D523 /* BorderedLabelView.swift in Sources */,
 				849DEC6125EE13CE00C64C19 /* AddressOptionsPresentable.swift in Sources */,
+				0CB4334E2CC1196400F2CB59 /* WeightableEdge.swift in Sources */,
 				84A3773027B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift in Sources */,
 				84F30EF1260001A600039D09 /* DataProviderChange+Helper.swift in Sources */,
 				84755CEB298CF9CF0092D1A8 /* ViewModelViewPair.swift in Sources */,
