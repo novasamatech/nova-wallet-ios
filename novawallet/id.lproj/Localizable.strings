@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "menunggu era selanjutnya (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Dukungan & Masukan";
-"settings.email" = "Email";
+"settings.email" = "Dapatkan dukungan melalui Email";
 "wallet.manage.assets.title" = "Kelola aset";
 "staking.reward.payouts.title_v2_2_0" = "Imbalan yang belum dibayar";
 "staking.setup.restake.title_v2_2_0" = "Imbalan ulang staking";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Tukar";
 "common.action.repeat.operation" = "Ulangi operasi";
 "swaps.error.rate.was.updated.message" = "Nilai lama: %@.\nNilai baru: %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "Wiki & Pusat Bantuan";
 "common.not.enough.fee.message_v3.8.0" = "Saldo Anda tidak cukup untuk membayar biaya jaringan sebesar %@.\nSaldo yang tersedia untuk membayar biaya setelah operasi: %@";
 "deeplink.error.invalid.chainId.message" = "Rantai tidak ditemukan";
 "deeplink.error.no.governance.type.message" = "Tipe tata kelola tidak ditentukan";

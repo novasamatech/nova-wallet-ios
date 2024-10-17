@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "in attesa della prossima era (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Supporto e Feedback";
-"settings.email" = "Email";
+"settings.email" = "Ottieni supporto via Email";
 "wallet.manage.assets.title" = "Gestione asset";
 "staking.reward.payouts.title_v2_2_0" = "Ricompense non pagate";
 "staking.setup.restake.title_v2_2_0" = "Ri-staking ricompense";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Scambia";
 "common.action.repeat.operation" = "Ripeti l'operazione";
 "swaps.error.rate.was.updated.message" = "Vecchio tasso: %@.\nNuovo tasso: %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "Wiki e Centro assistenza";
 "common.not.enough.fee.message_v3.8.0" = "Non hai abbastanza saldo per pagare la commissione di rete di %@.\nSaldo disponibile per pagare la commissione dopo l'operazione: %@";
 "deeplink.error.invalid.chainId.message" = "Identificativo della rete non trovato";
 "deeplink.error.no.governance.type.message" = "Il tipo di governance non è specificato";

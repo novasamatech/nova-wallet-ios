@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "en attente de la prochaine ère (%@)";
 "settings.youtube" = "YouTube";
 "settings.support" = "Assistance et commentaires";
-"settings.email" = "E-mail";
+"settings.email" = "Obtenez de l'aide par Email";
 "wallet.manage.assets.title" = "Gérer les actifs";
 "staking.reward.payouts.title_v2_2_0" = "Récompenses impayées";
 "staking.setup.restake.title_v2_2_0" = "Récompenses réengagées";
@@ -908,9 +908,9 @@
 "ledger.instructions.title" = "Connecter Ledger Nano X";
 "ledger.instructions.link" = "Guide officiel de connexion Bluetooth de Ledger";
 "ledger.instructions.step1" = "Assurez-vous que %@ sur votre appareil Ledger à l'aide de l'application Ledger Live";
-"ledger.instructions.step1.highlighted" = "L'application <font>réseau</font> est installée";
+"ledger.instructions.step1.highlighted" = "L'application réseau est installée";
 "ledger.instructions.step2" = "%@ sur votre appareil Ledger";
-"ledger.instructions.step2.highlighted" = "Ouvrez l'application <font>réseau</font>";
+"ledger.instructions.step2.highlighted" = "Ouvrez l'application réseau";
 "ledger.instructions.step3" = "Autorisez Nova Wallet à %@";
 "ledger.instructions.step3.highlighted" = "accès Bluetooth";
 "hardware.wallet.import.description" = "Utiliser Polkadot Vault, Ledger ou Parity Signer";
@@ -1323,12 +1323,12 @@
 "common.recommended" = "Recommandé";
 "staking.setup.amount.direct.type.subtitle" = "Sélectionné : %li (max %li)";
 "staking.is.not.available.title" = "%@ est actuellement indisponible";
-"staking.locked.pool.violation.error" = "Vous avez des tokens verrouillés sur votre solde en raison de %@. Pour continuer, vous devez entrer moins de %@ ou plus de %@. Pour <font>stake</font> un autre montant, vous devez supprimer vos verrous %@.";
-"staking.locked.pool.violation.title" = "Vous ne pouvez pas <font>stake</font> le montant spécifié";
+"staking.locked.pool.violation.error" = "Vous avez des tokens verrouillés sur votre solde en raison de %@. Pour continuer, vous devez entrer moins de %@ ou plus de %@. Pour stake un autre montant, vous devez supprimer vos verrous %@.";
+"staking.locked.pool.violation.title" = "Vous ne pouvez pas stake le montant spécifié";
 "staking.pool.has.no.apy.message" = "La piscine que vous avez sélectionnée est inactive en raison de l'absence de validateurs sélectionnés ou de son stake étant inférieur au minimum.\nÊtes-vous sûr de vouloir continuer avec la piscine sélectionnée?";
 "staking.pool.ed.error.message" = "Votre solde disponible est de %@, vous devez laisser %@ comme solde minimal et payer les frais de réseau de %@. Vous pouvez staker pas plus de %@.";
 "staking.maximum.action" = "Stake max";
-"staking.pool.rewards.bond.more.pool.unbonding.error.message" = "Vous retirez tous vos tokens et ne pouvez pas en <font>stake</font> davantage.";
+"staking.pool.rewards.bond.more.pool.unbonding.error.message" = "Vous retirez tous vos tokens et ne pouvez pas en stake davantage.";
 "staking.pool.rewards.bond.more.pool.unbonding.error.title" = "Impossible de stake plus";
 "staking.start.already.have.any.staking" = "Vous avez déjà un staking dans %@";
 "staking.pool.network.info" = "Infos sur le Stake en pool";
@@ -1369,7 +1369,7 @@
 "common.alert.external.link.disclaimer.title" = "Continuer dans le navigateur?";
 "common.alert.external.link.disclaimer.message" = "Pour poursuivre l'achat, vous serez redirigé de l'application Nova Wallet vers %@";
 "polkadot.staking.promotion.title" = "Boostez vos DOT 🚀";
-"polkadot.staking.promotion.message" = "Vous avez récupéré vos DOT des crowdloans ? Commencez à <font>staker</font> vos DOT aujourd'hui pour obtenir les récompenses maximales !";
+"polkadot.staking.promotion.message" = "Vous avez récupéré vos DOT des crowdloans ? Commencez à staker vos DOT aujourd'hui pour obtenir les récompenses maximales !";
 "swaps.violating.consumers.message" = "Vous devez conserver au moins %@ après avoir payé %@ de frais de réseau car vous détenez des tokens insuffisants";
 "common.receive.not.sufficient.native.asset.error" = "Vous devez conserver au moins %@ pour recevoir des tokens %@";
 "swaps.rate.description" = "Taux de change entre deux crypto-monnaies différentes. Il représente combien de crypto-monnaie vous pouvez obtenir en échange d'un certain montant d'une autre crypto-monnaie.";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Échanger";
 "common.action.repeat.operation" = "Répétez l'opération";
 "swaps.error.rate.was.updated.message" = "Taux ancien : %@.\nNouveau taux : %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "Wiki et centre d'aide";
 "common.not.enough.fee.message_v3.8.0" = "Vous n'avez pas assez de solde pour payer les frais de réseau de %@.\nSolde disponible pour payer les frais après l'opération : %@";
 "deeplink.error.invalid.chainId.message" = "Chaîne non trouvée";
 "deeplink.error.no.governance.type.message" = "Le type de gouvernance n'est pas spécifié";
@@ -1573,7 +1573,7 @@
 "common.backup.manual" = "Sauvegarder manuellement";
 "cloud.backup.broken.title" = "Sauvegarde trouvée mais vide ou corrompue";
 "cloud.backup.broken.message" = "Un problème a été identifié avec votre sauvegarde. Vous avez la possibilité de supprimer la sauvegarde actuelle et d'en créer une nouvelle. %@ avant de continuer.";
-"cloud.backup.broken.highlighted" = "<font>Assurez-vous d'avoir sauvegardé les phrases secrètes pour tous les portefeuilles</font>";
+"cloud.backup.broken.highlighted" = "Assurez-vous d'avoir sauvegardé les phrases secrètes pour tous les portefeuilles";
 "common.recover.wallets" = "Récupérer les portefeuilles";
 "cloud.backup.existing.bottom.sheet.title" = "Sauvegarde Cloud existante trouvée";
 "cloud.backup.existing.bottom.sheet.recover" = "Voulez-vous récupérer vos portefeuilles ?";
@@ -1588,7 +1588,7 @@
 "cloud.backup.import.subtitle" = "Veuillez entrer le mot de passe que vous avez créé lors du processus de sauvegarde";
 "common.got.it" = "Compris";
 "cloud.backup.create.bottom.sheet.title" = "Souvenez-vous du mot de passe de sauvegarde";
-"cloud.backup.create.bottom.sheet.password" = "<font>Ce mot de passe ne peut pas être récupéré.</font>";
+"cloud.backup.create.bottom.sheet.password" = "Ce mot de passe ne peut pas être récupéré.";
 "common.backup.password" = "Mot de passe de sauvegarde";
 "cloud.backup.create.hint.letters" = "Lettres";
 "cloud.backup.create.hint.password.match" = "Les mots de passe correspondent";
@@ -1744,7 +1744,7 @@
 "gov.vote.setup.details.swipe.gov" = "Le vote sera configuré pour les futurs votes dans SwipeGov";
 "voting.list.widget.title" = "Confirmer les votes";
 "voting.list.widget.title.empty" = "Aucun vote";
-"vote.card.requested" = "<font>Demandé :</font>";
+"vote.card.requested" = "Demandé :";
 "swipe.gov.empty.view.text" = "Vous avez déjà voté pour tous les référendums disponibles ou il n'y a pas de référendums pour voter en ce moment. Revenez plus tard.";
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%li référendums";

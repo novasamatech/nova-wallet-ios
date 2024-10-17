@@ -81,6 +81,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
     var basePresentable: BaseErrorPresentable { presentable }
     let assetDisplayInfo: AssetBalanceDisplayInfo
     let utilityAssetInfo: AssetBalanceDisplayInfo
+    let destUtilityAssetInfo: AssetBalanceDisplayInfo
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     let presentable: TransferErrorPresentable
@@ -89,11 +90,13 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         presentable: TransferErrorPresentable,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         utilityAssetInfo: AssetBalanceDisplayInfo,
+        destUtilityAssetInfo: AssetBalanceDisplayInfo,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.presentable = presentable
         self.assetDisplayInfo = assetDisplayInfo
         self.utilityAssetInfo = utilityAssetInfo
+        self.destUtilityAssetInfo = destUtilityAssetInfo
         self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
@@ -160,7 +163,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
                 return
             }
 
-            let assetInfo = strongSelf.utilityAssetInfo
+            let assetInfo = strongSelf.destUtilityAssetInfo
 
             self?.presentable.presentNoReceiverAccount(
                 for: assetInfo.symbol,
