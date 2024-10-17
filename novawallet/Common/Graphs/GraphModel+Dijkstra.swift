@@ -29,7 +29,7 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
 
                 if !visitedPaths.contains(newPath) {
                     visitedPaths.insert(newPath)
-                    queue.push((cost: cost + 1, path: newPath))
+                    queue.push((cost: cost + neighbor.weight, path: newPath))
                 }
             }
         }
