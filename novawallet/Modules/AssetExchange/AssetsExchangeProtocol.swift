@@ -5,6 +5,7 @@ protocol AssetsExchangeProtocol {
     func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]>
 }
 
-protocol AssetsExchangeProviding {
+protocol AssetsExchangeProviding: AnyObject {
     func provide(notifingIn queue: DispatchQueue, onChange: @escaping ([AssetsExchangeProtocol]) -> Void)
+    func stop()
 }

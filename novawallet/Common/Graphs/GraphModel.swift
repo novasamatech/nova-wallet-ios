@@ -61,4 +61,12 @@ enum GraphModelFactory {
             return graph.merging(with: GraphModel<N, SimpleEdge<N>>(connections: edges))
         }
     }
+
+    static func createFromEdges<E: GraphEdgeProtocol & Hashable>(_ edges: [E]) -> GraphModel<E.Node, E> {
+        let connections = edges.reduce(into: [E.Node: Set<E>]()) { accum, edge in
+            accum[edge.origin] = (accum[edge.origin] ?? []).union([edge])
+        }
+
+        return GraphModel(connections: connections)
+    }
 }

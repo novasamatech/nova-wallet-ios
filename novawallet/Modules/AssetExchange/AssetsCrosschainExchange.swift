@@ -85,6 +85,11 @@ extension CrosschainAssetsExchangeProvider: AssetsExchangeProviding {
             provideExchanges(notifingIn: queue, onChange: onChange)
         }
     }
+
+    func stop() {
+        syncService.throttle()
+        chainRegistry.chainsUnsubscribe(self)
+    }
 }
 
 final class CrosschainAssetsExchange {

@@ -100,4 +100,8 @@ extension AssetsHydraExchangeProvider: AssetsExchangeProviding {
             provideExchanges(notifingIn: queue, onChange: onChange)
         }
     }
+
+    func stop() {
+        chainRegistry.chainsUnsubscribe(self)
+    }
 }

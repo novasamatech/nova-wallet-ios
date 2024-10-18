@@ -143,6 +143,11 @@
 		0C2DA8A02CC21B09001F79C8 /* IndexedChainModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA89F2CC21B09001F79C8 /* IndexedChainModels.swift */; };
 		0C2DA8A22CC21E5F001F79C8 /* AssetConversionExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8A12CC21E5F001F79C8 /* AssetConversionExchangeEdge.swift */; };
 		0C2DA8A42CC223D9001F79C8 /* HydraExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8A32CC223D9001F79C8 /* HydraExchangeEdge.swift */; };
+		0C2DA8A62CC265F0001F79C8 /* AssetsExchangeGraphProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8A52CC265F0001F79C8 /* AssetsExchangeGraphProvider.swift */; };
+		0C2DA8A82CC2679E001F79C8 /* AssetsExchangeGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8A72CC2679E001F79C8 /* AssetsExchangeGraph.swift */; };
+		0C2DA8AA2CC2A2E2001F79C8 /* AssetsExchangeBaseEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8A92CC2A2E2001F79C8 /* AssetsExchangeBaseEdge.swift */; };
+		0C2DA8AD2CC2B156001F79C8 /* AssetsExchangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8AC2CC2B156001F79C8 /* AssetsExchangeTests.swift */; };
+		0C2DA8AF2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8AE2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift */; };
 		0C2F86802A7119D400593C01 /* AuraSessionLengthOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F867F2A7119D400593C01 /* AuraSessionLengthOperationFactory.swift */; };
 		0C2F86822A7233DC00593C01 /* EraNominationPoolsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86812A7233DC00593C01 /* EraNominationPoolsService.swift */; };
 		0C2F86842A72343800593C01 /* EraNominationPoolsServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2F86832A72343800593C01 /* EraNominationPoolsServiceProtocol.swift */; };
@@ -5241,6 +5246,11 @@
 		0C2DA89F2CC21B09001F79C8 /* IndexedChainModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexedChainModels.swift; sourceTree = "<group>"; };
 		0C2DA8A12CC21E5F001F79C8 /* AssetConversionExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionExchangeEdge.swift; sourceTree = "<group>"; };
 		0C2DA8A32CC223D9001F79C8 /* HydraExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeEdge.swift; sourceTree = "<group>"; };
+		0C2DA8A52CC265F0001F79C8 /* AssetsExchangeGraphProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeGraphProvider.swift; sourceTree = "<group>"; };
+		0C2DA8A72CC2679E001F79C8 /* AssetsExchangeGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeGraph.swift; sourceTree = "<group>"; };
+		0C2DA8A92CC2A2E2001F79C8 /* AssetsExchangeBaseEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeBaseEdge.swift; sourceTree = "<group>"; };
+		0C2DA8AC2CC2B156001F79C8 /* AssetsExchangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeTests.swift; sourceTree = "<group>"; };
+		0C2DA8AE2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeGraphDescription.swift; sourceTree = "<group>"; };
 		0C2DF1CD2BB6825300DD58B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		0C2DF1CE2BB6825300DD58B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		0C2DF1CF2BB6825400DD58B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
@@ -10668,6 +10678,15 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		0C2DA8AB2CC2B120001F79C8 /* AssetsExchange */ = {
+			isa = PBXGroup;
+			children = (
+				0C2DA8AC2CC2B156001F79C8 /* AssetsExchangeTests.swift */,
+				0C2DA8AE2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift */,
+			);
+			path = AssetsExchange;
+			sourceTree = "<group>";
+		};
 		0C2F86872A723E4200593C01 /* NominationPools */ = {
 			isa = PBXGroup;
 			children = (
@@ -11245,6 +11264,9 @@
 				0C2DA89D2CC21853001F79C8 /* CrosschainExchangeEdge.swift */,
 				0C2DA8A12CC21E5F001F79C8 /* AssetConversionExchangeEdge.swift */,
 				0C2DA8A32CC223D9001F79C8 /* HydraExchangeEdge.swift */,
+				0C2DA8A52CC265F0001F79C8 /* AssetsExchangeGraphProvider.swift */,
+				0C2DA8A72CC2679E001F79C8 /* AssetsExchangeGraph.swift */,
+				0C2DA8A92CC2A2E2001F79C8 /* AssetsExchangeBaseEdge.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -15315,6 +15337,7 @@
 		8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
+				0C2DA8AB2CC2B120001F79C8 /* AssetsExchange */,
 				0C8FDBA72CAE537800775D7F /* SwipeGov */,
 				0C71046E2C29B60D00487E64 /* MetadataShortener */,
 				0CA26D8E2BBBBD9A0086748F /* CloudBackup */,
@@ -24325,6 +24348,7 @@
 				843B6F4F28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift in Sources */,
 				0C8AF7B62B36C75400005AC9 /* Pdc20OperationTests.swift in Sources */,
 				84FACB7125F57E4400F32ED4 /* SubstrateStorageTestFacade.swift in Sources */,
+				0C2DA8AD2CC2B156001F79C8 /* AssetsExchangeTests.swift in Sources */,
 				8418167728253B120007684A /* ParachainStakingCollatorsTests.swift in Sources */,
 				0CA7198C2B78FEF9000B086E /* HydraQuoteTests.swift in Sources */,
 				0C7104702C29B62800487E64 /* MetadataHashGenerationTests.swift in Sources */,
@@ -24334,6 +24358,7 @@
 				84BFE8A228C2420A00140F1F /* AutocompounDelegateStakeTests.swift in Sources */,
 				F49F49A326A5C45600A25931 /* BabeEraOperationFactoryTests.swift in Sources */,
 				77DC54842B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift in Sources */,
+				0C2DA8AF2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift in Sources */,
 				84532D5F28E4210E00EF4ADC /* ConvictionVotesFetchTests.swift in Sources */,
 				0C992C432B54F5D900ACC129 /* EraStakersPagedSearchOperationFactoryTests.swift in Sources */,
 				0C3205C22A868236002EB914 /* EvmGasPriceIntegrationTests.swift in Sources */,
@@ -25293,6 +25318,7 @@
 				84FD3DB72540EF0700A234E3 /* TransactionSubscription.swift in Sources */,
 				8482F628280C49940006C3A0 /* DAppsAuthViewModelFactory.swift in Sources */,
 				84C3F7832602086100D47501 /* StakingViewState.swift in Sources */,
+				0C2DA8A82CC2679E001F79C8 /* AssetsExchangeGraph.swift in Sources */,
 				F46F9F902733E02B00FFA556 /* MoonbeamKeys.swift in Sources */,
 				849014DC24AA8F60008F705E /* MainTabBarPresenter.swift in Sources */,
 				8467F4C526B1E4E200C5B6F4 /* StakingDurationFetching.swift in Sources */,
@@ -26885,6 +26911,7 @@
 				8499FECC27BF8F4A00712589 /* NftModelMapper.swift in Sources */,
 				842E9E962A2A279800759972 /* StakingDashboardLocalStorageHandler.swift in Sources */,
 				C89D156BA8B690E8E4DE19ED /* ExportSeedProtocols.swift in Sources */,
+				0C2DA8AA2CC2A2E2001F79C8 /* AssetsExchangeBaseEdge.swift in Sources */,
 				848F5FE52989130B0058CD74 /* GovernanceOffchainDelegations.swift in Sources */,
 				84F1CB3327CE575E0095D523 /* NftListUniquesViewModel.swift in Sources */,
 				AEBE173B262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift in Sources */,
@@ -28846,6 +28873,7 @@
 				770B26D96689F1A253B1348D /* OnboardingWalletReadyViewController.swift in Sources */,
 				EBDC7FDF98C20154FA7ED595 /* OnboardingWalletReadyViewLayout.swift in Sources */,
 				4AA446B2764D922E91641C03 /* OnboardingWalletReadyViewFactory.swift in Sources */,
+				0C2DA8A62CC265F0001F79C8 /* AssetsExchangeGraphProvider.swift in Sources */,
 				DA46697F2BA60F98B01AE6FA /* CloudBackupCreateProtocols.swift in Sources */,
 				2F817BEA33B48EDDCBA8CB53 /* CloudBackupCreateWireframe.swift in Sources */,
 				A10BC98A621E20E2DF59D747 /* CloudBackupCreateInteractor.swift in Sources */,
