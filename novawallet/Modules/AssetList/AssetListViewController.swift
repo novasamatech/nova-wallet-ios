@@ -191,11 +191,35 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
                 indexPath.section
             ) {
                 let groupViewModel = groupsViewModel.listState.groups[groupIndex]
-                let chainAssetId = switch groupViewModel {
+
+                let chainAssetId: ChainAssetId
+
+                switch groupViewModel {
                 case let .network(group):
-                    group.assets[indexPath.row].chainAssetId
+                    chainAssetId = group.assets[indexPath.row].chainAssetId
                 case let .token(group):
-                    group.assets[indexPath.row].chainAssetId
+                    if indexPath.row == 0 {
+                        let symbol = group.token.symbol
+                        let sectionState = rootView.collectionTokenGroupsLayout.state(for: symbol)
+                        let expandable = sectionState?.expandable ?? false
+                        let expanded = sectionState?.expanded ?? false
+
+                        if expanded == true {
+                            rootView.collectionTokenGroupsLayout.collapseAssetSection(at: symbol)
+                            collectionView.reloadSections([indexPath.section])
+
+                            return
+                        } else if expandable {
+                            rootView.collectionTokenGroupsLayout.expandAssetSection(for: symbol)
+                            collectionView.reloadSections([indexPath.section])
+
+                            return
+                        } else {
+                            chainAssetId = group.assets[indexPath.row].chainAssetId
+                        }
+                    } else {
+                        chainAssetId = group.assets[indexPath.row].chainAssetId
+                    }
                 }
 
                 presenter.selectAsset(for: chainAssetId)

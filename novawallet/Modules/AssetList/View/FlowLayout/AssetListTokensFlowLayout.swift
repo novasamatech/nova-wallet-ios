@@ -145,20 +145,27 @@ class AssetListTokensFlowLayout: AssetListFlowLayout {
             let section = SectionType.assetsStartingSection + groupIndex
             let numberOfItems = collectionView.numberOfItems(inSection: section)
 
-            let contentHeight = numberOfItems > 1
-                ? Measurements.mainAssetHeight + (Measurements.assetHeight * CGFloat(numberOfItems - 1))
-                : Measurements.mainAssetHeight
+            let expanded = numberOfItems > 1
+            let expandable = sectionsExpandableState[section] ?? false
 
-            let underneathViewHeight = sectionsExpandableState[section] == true
+            let mainAssetHeight = Measurements.mainAssetHeight + Measurements.decorationContentInset * 2
+
+            let contentHeight = expanded
+                ? mainAssetHeight + (Measurements.mainAssetHeight * CGFloat(numberOfItems - 1))
+                : mainAssetHeight
+
+            let underneathViewHeight = expandable && !expanded
                 ? Measurements.underneathViewHeight
                 : 0
 
-            let decorationHeight = contentHeight + underneathViewHeight + Measurements.decorationContentInset * 2
+            let decorationHeight = contentHeight + underneathViewHeight
 
-            let itemsDecorationAttributes = UICollectionViewLayoutAttributes(
+            let itemsDecorationAttributes = AssetListCustomLayoutAttributes(
                 forDecorationViewOfKind: Self.assetGroupDecoration,
                 with: IndexPath(item: 0, section: section)
             )
+
+            itemsDecorationAttributes.isExpanded = expanded
 
             let decorationWidth = max(collectionView.frame.width - 2 * UIConstants.horizontalInset, 0)
             let size = CGSize(width: decorationWidth, height: decorationHeight)
@@ -179,17 +186,18 @@ class AssetListTokensFlowLayout: AssetListFlowLayout {
     }
 
     override func assetCellHeight(for _: IndexPath) -> CGFloat {
-        guard let collectionView else {
-            return .zero
-        }
-
         let contentHeight = Measurements.mainAssetHeight
 
         return contentHeight
     }
 
     override func assetGroupInset(for section: Int) -> UIEdgeInsets {
-        let expandableOffset: CGFloat = sectionsExpandableState[section] == true
+        guard let collectionView else { return .zero }
+
+        let expanded = collectionView.numberOfItems(inSection: section) > 1
+        let expandable = sectionsExpandableState[section] ?? false
+
+        let expandableOffset: CGFloat = expandable && !expanded
             ? Measurements.underneathViewHeight
             : 0
 
@@ -199,5 +207,25 @@ class AssetListTokensFlowLayout: AssetListFlowLayout {
             bottom: 8 + Measurements.decorationContentInset + expandableOffset,
             right: 0
         )
+    }
+}
+
+class AssetListCustomLayoutAttributes: UICollectionViewLayoutAttributes {
+    var isExpanded: Bool = false
+
+    override func copy(with zone: NSZone? = nil) -> Any {
+        let copy = super.copy(with: zone)
+        let assetListAttributes = copy as? AssetListCustomLayoutAttributes
+
+        assetListAttributes?.isExpanded = isExpanded
+
+        return assetListAttributes ?? copy
+    }
+
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? AssetListCustomLayoutAttributes else {
+            return false
+        }
+        return other.isExpanded == isExpanded && super.isEqual(object)
     }
 }
