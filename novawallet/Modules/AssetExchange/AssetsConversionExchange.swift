@@ -4,14 +4,22 @@ import Operation_iOS
 typealias AssetsConversionExchange = AssetHubSwapOperationFactory
 
 extension AssetsConversionExchange: AssetsExchangeProtocol {
-    func fetchAvailableDirections() -> CompoundOperationWrapper<AssetsExchange.Directions> {
-        availableDirections()
-    }
+    func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
+        let connectionsWrapper = availableDirections()
 
-    func createAvailableDirectionsWrapper(
-        for chainAssetId: ChainAssetId
-    ) -> CompoundOperationWrapper<AssetsExchange.AvailableAssets> {
-        availableDirectionsForAsset(chainAssetId)
+        let mappingOperation = ClosureOperation<[any AssetExchangableGraphEdge]> {
+            let connections = try connectionsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return connections.flatMap { keyValue in
+                let origin = keyValue.key
+
+                return keyValue.value.map { AssetConversionExchangeEdge(origin: origin, destination: $0) }
+            }
+        }
+
+        mappingOperation.addDependency(connectionsWrapper.targetOperation)
+
+        return connectionsWrapper.insertingTail(operation: mappingOperation)
     }
 }
 

@@ -1,44 +1,34 @@
 import Foundation
 import Operation_iOS
 
-typealias AssetsHydraOmnipoolExchange = HydraOmnipoolTokensFactory
+extension HydraPoolTokensFactoryProtocol {
+    func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
+        let connectionsWrapper = availableDirections()
 
-extension AssetsHydraOmnipoolExchange: AssetsExchangeProtocol {
-    func fetchAvailableDirections() -> CompoundOperationWrapper<AssetsExchange.Directions> {
-        availableDirections()
-    }
+        let mappingOperation = ClosureOperation<[any AssetExchangableGraphEdge]> {
+            let connections = try connectionsWrapper.targetOperation.extractNoCancellableResultData()
 
-    func createAvailableDirectionsWrapper(
-        for chainAssetId: ChainAssetId
-    ) -> CompoundOperationWrapper<AssetsExchange.AvailableAssets> {
-        availableDirectionsForAsset(chainAssetId)
+            return connections.flatMap { keyValue in
+                let origin = keyValue.key
+
+                return keyValue.value.map { HydraExchangeEdge(origin: origin, destination: $0) }
+            }
+        }
+
+        mappingOperation.addDependency(connectionsWrapper.targetOperation)
+
+        return connectionsWrapper.insertingTail(operation: mappingOperation)
     }
 }
+
+typealias AssetsHydraOmnipoolExchange = HydraOmnipoolTokensFactory
+
+extension AssetsHydraOmnipoolExchange: AssetsExchangeProtocol {}
 
 typealias AssetsHydraStableSwapExchange = HydraStableSwapsTokensFactory
 
-extension AssetsHydraStableSwapExchange: AssetsExchangeProtocol {
-    func fetchAvailableDirections() -> CompoundOperationWrapper<AssetsExchange.Directions> {
-        availableDirections()
-    }
-
-    func createAvailableDirectionsWrapper(
-        for chainAssetId: ChainAssetId
-    ) -> CompoundOperationWrapper<AssetsExchange.AvailableAssets> {
-        availableDirectionsForAsset(chainAssetId)
-    }
-}
+extension AssetsHydraStableSwapExchange: AssetsExchangeProtocol {}
 
 typealias AssetsHydraXYKExchange = HydraXYKPoolTokensFactory
 
-extension AssetsHydraXYKExchange: AssetsExchangeProtocol {
-    func fetchAvailableDirections() -> CompoundOperationWrapper<AssetsExchange.Directions> {
-        availableDirections()
-    }
-
-    func createAvailableDirectionsWrapper(
-        for chainAssetId: ChainAssetId
-    ) -> CompoundOperationWrapper<AssetsExchange.AvailableAssets> {
-        availableDirectionsForAsset(chainAssetId)
-    }
-}
+extension AssetsHydraXYKExchange: AssetsExchangeProtocol {}

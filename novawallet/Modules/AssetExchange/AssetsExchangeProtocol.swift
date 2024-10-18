@@ -1,17 +1,8 @@
 import Foundation
 import Operation_iOS
 
-enum AssetsExchange {
-    typealias AvailableAssets = Set<ChainAssetId>
-    typealias Directions = [ChainAssetId: AvailableAssets]
-}
-
 protocol AssetsExchangeProtocol {
-    func fetchAvailableDirections() -> CompoundOperationWrapper<AssetsExchange.Directions>
-
-    func createAvailableDirectionsWrapper(
-        for chainAssetId: ChainAssetId
-    ) -> CompoundOperationWrapper<AssetsExchange.AvailableAssets>
+    func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]>
 }
 
 protocol AssetsExchangeProviding {
