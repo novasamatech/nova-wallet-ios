@@ -62,6 +62,10 @@ class AssetListTokensFlowLayout: AssetListFlowLayout {
         assetSectionsState[symbol]
     }
 
+    func expanded(for symbol: String) -> Bool {
+        assetSectionsState[symbol]?.expanded ?? false
+    }
+
     func changeSection(
         byChanging index: Int,
         for symbol: String

@@ -75,7 +75,7 @@ class AssetListAssetViewModelFactory {
 
         let totalBalance = assets.reduce(into: BigUInt()) { $0 += $1.balance ?? 0 }
 
-        var totalInfo = AssetListAssetAccountInfo(
+        let totalInfo = AssetListAssetAccountInfo(
             assetId: 0,
             assetInfo: assetInfo,
             balance: totalBalance,

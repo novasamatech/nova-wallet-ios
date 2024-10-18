@@ -280,7 +280,7 @@ extension AssetListViewController: UICollectionViewDataSource {
                     let state = rootView.collectionTokenGroupsLayout.state(for: groupViewModel.token.symbol)
 
                     return state?.expanded == true
-                        ? groupViewModel.assets.count
+                        ? groupViewModel.assets.count + 1
                         : 1
                 }
             } else {
@@ -407,24 +407,15 @@ extension AssetListViewController: UICollectionViewDataSource {
             case let .network(groupViewModel):
                 assetCell.bind(viewModel: groupViewModel.assets[indexPath.row])
             case let .token(groupViewModel):
-                rootView.collectionTokenGroupsLayout.changeSection(
-                    byChanging: indexPath.section,
+                let expanded = rootView.collectionTokenGroupsLayout.expanded(
                     for: groupViewModel.token.symbol
                 )
 
-                if groupViewModel.assets.count > 1 {
-                    rootView.collectionTokenGroupsLayout.setExpandableSection(
-                        for: groupViewModel.token.symbol,
-                        true
-                    )
+                if expanded, indexPath.row != 0 {
+                    assetCell.bind(viewModel: groupViewModel.assets[indexPath.row - 1])
                 } else {
-                    rootView.collectionTokenGroupsLayout.setExpandableSection(
-                        for: groupViewModel.token.symbol,
-                        false
-                    )
+                    assetCell.bind(viewModel: groupViewModel)
                 }
-
-                assetCell.bind(viewModel: groupViewModel.assets[indexPath.row])
             }
         }
 
@@ -563,6 +554,24 @@ extension AssetListViewController: AssetListViewProtocol {
 
     func didReceiveGroups(viewModel: AssetListViewModel) {
         groupsViewModel = viewModel
+
+        viewModel.listState.groups.enumerated().forEach { groupIndex, group in
+            guard case let .token(groupViewModel) = group else {
+                return
+            }
+
+            let sectionIndex = rootView.collectionTokenGroupsLayout.assetSectionIndex(from: groupIndex)
+
+            rootView.collectionTokenGroupsLayout.changeSection(
+                byChanging: sectionIndex,
+                for: groupViewModel.token.symbol
+            )
+
+            rootView.collectionTokenGroupsLayout.setExpandableSection(
+                for: groupViewModel.token.symbol,
+                groupViewModel.assets.count > 1
+            )
+        }
 
         rootView.collectionView.reloadData()
     }

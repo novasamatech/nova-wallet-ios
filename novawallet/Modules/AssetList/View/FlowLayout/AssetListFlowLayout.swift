@@ -249,4 +249,8 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
             return assetGroupInset(for: section)
         }
     }
+
+    func assetSectionIndex(from groupIndex: Int) -> Int {
+        SectionType.assetsStartingSection + groupIndex
+    }
 }

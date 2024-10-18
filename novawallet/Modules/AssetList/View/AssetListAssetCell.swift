@@ -93,6 +93,15 @@ final class AssetListAssetCell: UICollectionViewCell {
         )
     }
 
+    func bind(viewModel: AssetListTokenGroupViewModel) {
+        bind(
+            viewModel: viewModel,
+            balanceKeyPath: \.balance,
+            imageKeyPath: \.token.imageViewModel,
+            nameKeyPath: \.token.symbol
+        )
+    }
+
     private func bind<T>(
         viewModel: T,
         balanceKeyPath: KeyPath<T, AssetListAssetBalanceViewModel>,
