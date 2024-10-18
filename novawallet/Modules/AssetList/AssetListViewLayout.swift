@@ -6,7 +6,7 @@ final class AssetListViewLayout: UIView {
     let collectionNetworkGroupsLayout = AssetListNetworksFlowLayout()
     let collectionTokenGroupsLayout = AssetListTokensFlowLayout()
 
-    let assetGroupsLayoutStyle: AssetListGroupsStyle
+    var assetGroupsLayoutStyle: AssetListGroupsStyle
 
     var collectionViewLayout: AssetListFlowLayout {
         switch assetGroupsLayoutStyle {

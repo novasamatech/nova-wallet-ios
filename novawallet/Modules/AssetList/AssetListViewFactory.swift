@@ -58,7 +58,7 @@ struct AssetListViewFactory {
         )
         let localizationManager = LocalizationManager.shared
 
-        let assetListStyle: AssetListGroupsStyle = .tokens
+        let assetListStyle: AssetListGroupsStyle = .networks
 
         let presenter = AssetListPresenter(
             interactor: interactor,

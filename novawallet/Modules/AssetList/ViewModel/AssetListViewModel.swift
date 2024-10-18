@@ -93,6 +93,7 @@ enum AssetListGroupState {
 struct AssetListViewModel {
     let isFiltered: Bool
     let listState: AssetListGroupState
+    let listGroupStyle: AssetListGroupsStyle
 }
 
 // MARK: Group

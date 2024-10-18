@@ -7,6 +7,13 @@ import BigInt
 enum AssetListGroupsStyle {
     case networks
     case tokens
+
+    mutating func toggle() {
+        switch self {
+        case .networks: self = .tokens
+        case .tokens: self = .networks
+        }
+    }
 }
 
 final class AssetListPresenter {
@@ -259,12 +266,14 @@ final class AssetListPresenter {
         if viewModels.isEmpty, !model.balanceResults.isEmpty, model.balanceResults.count >= model.allChains.count {
             view?.didReceiveGroups(viewModel: .init(
                 isFiltered: isFilterOn,
-                listState: .empty
+                listState: .empty,
+                listGroupStyle: assetListStyle
             ))
         } else {
             view?.didReceiveGroups(viewModel: .init(
                 isFiltered: isFilterOn,
-                listState: .list(groups: viewModels)
+                listState: .list(groups: viewModels),
+                listGroupStyle: assetListStyle
             ))
         }
     }
@@ -530,6 +539,11 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         interactor.markPolkadotStakingPromotionSeen()
 
         view?.didClosePromotion()
+    }
+
+    func toggleAssetListStyle() {
+        assetListStyle.toggle()
+        provideAssetViewModels()
     }
 }
 

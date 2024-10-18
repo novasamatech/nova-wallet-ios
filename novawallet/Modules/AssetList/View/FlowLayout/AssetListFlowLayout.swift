@@ -152,7 +152,9 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     ) -> UICollectionViewLayoutAttributes? {
         guard
             elementKind == assetGroupDecorationIdentifier(),
-            indexPath.section > SectionType.assetsStartingSection else {
+            indexPath.section > SectionType.assetsStartingSection,
+            indexPath.section < itemsDecorationAttributes.count
+        else {
             return nil
         }
 

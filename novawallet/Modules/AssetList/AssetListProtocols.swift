@@ -29,6 +29,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentWalletConnect()
     func selectPromotion()
     func closePromotion()
+    func toggleAssetListStyle()
 }
 
 protocol AssetListInteractorInputProtocol {
