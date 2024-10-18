@@ -4,6 +4,11 @@ import SubstrateSdk
 import SoraFoundation
 import BigInt
 
+enum AssetListGroupsStyle {
+    case networks
+    case tokens
+}
+
 final class AssetListPresenter {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
     typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
@@ -27,14 +32,18 @@ final class AssetListPresenter {
 
     private(set) var model: AssetListBuilderResult.Model = .init()
 
+    private(set) var assetListStyle: AssetListGroupsStyle
+
     init(
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
+        assetListStyle: AssetListGroupsStyle,
         viewModelFactory: AssetListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.assetListStyle = assetListStyle
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
@@ -244,13 +253,7 @@ final class AssetListPresenter {
         }
 
         let maybePrices = try? model.priceResult?.get()
-        let viewModels: [AssetListGroupViewModel] = model.chainGroups.allItems.compactMap { groupModel in
-            createGroupViewModel(
-                from: groupModel,
-                maybePrices: maybePrices,
-                hidesZeroBalances: hidesZeroBalances
-            )
-        }
+        let viewModels = createGroupViewModels()
 
         let isFilterOn = hidesZeroBalances == true
         if viewModels.isEmpty, !model.balanceResults.isEmpty, model.balanceResults.count >= model.allChains.count {
@@ -296,11 +299,55 @@ final class AssetListPresenter {
         }
     }
 
-    private func createGroupViewModel(
+    private func createGroupViewModels() -> [AssetListGroupType] {
+        guard let hidesZeroBalances = hidesZeroBalances else {
+            return []
+        }
+
+        let maybePrices = try? model.priceResult?.get()
+
+        return switch assetListStyle {
+        case .networks:
+            model.chainGroups.allItems.compactMap {
+                createNetworkGroupViewModel(
+                    from: $0,
+                    maybePrices: maybePrices,
+                    hidesZeroBalances: hidesZeroBalances
+                )
+            }
+        case .tokens:
+            model.assetGroups.allItems.compactMap {
+                createAssetGroupViewModel(
+                    from: $0,
+                    maybePrices: maybePrices
+                )
+            }
+        }
+    }
+
+    private func createAssetGroupViewModel(
+        from groupModel: AssetListAssetGroupModel,
+        maybePrices: [ChainAssetId: PriceData]?
+    ) -> AssetListGroupType? {
+        let assetsDiff = model.groupListsByAsset[groupModel.chainAsset.asset.symbol] ?? .empty
+
+        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+            assetsListDiff: assetsDiff,
+            maybePrices: maybePrices,
+            connected: true,
+            locale: selectedLocale
+        ) {
+            .token(groupViewModel)
+        } else {
+            nil
+        }
+    }
+
+    private func createNetworkGroupViewModel(
         from groupModel: AssetListChainGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
         hidesZeroBalances: Bool
-    ) -> AssetListGroupViewModel? {
+    ) -> AssetListGroupType? {
         let chain = groupModel.chain
 
         let assets = model.groupListsByChain[chain.chainId]?.allItems ?? []
@@ -327,12 +374,14 @@ final class AssetListPresenter {
             AssetListPresenterHelpers.createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
         }
 
-        return viewModelFactory.createGroupViewModel(
-            for: chain,
-            assets: assetInfoList,
-            value: groupModel.value,
-            connected: true,
-            locale: selectedLocale
+        return .network(
+            viewModelFactory.createNetworkGroupViewModel(
+                for: chain,
+                assets: assetInfoList,
+                value: groupModel.value,
+                connected: true,
+                locale: selectedLocale
+            )
         )
     }
 

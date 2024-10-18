@@ -34,44 +34,44 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
             return
         }
 
-        let maybePrices = try? result.state.priceResult?.get()
-
-        let viewModels: [AssetListGroupViewModel] = result.groups.allItems.compactMap { groupModel in
-            createGroupViewModel(from: groupModel, groupLists: result.groupLists, maybePrices: maybePrices)
-        }
-
-        if viewModels.isEmpty {
-            view?.didReceiveGroups(state: .empty)
-        } else {
-            view?.didReceiveGroups(state: .list(groups: viewModels))
-        }
+//        let maybePrices = try? result.state.priceResult?.get()
+//
+//        let viewModels: [AssetListGroupViewModel] = result.groups.allItems.compactMap { groupModel in
+//            createGroupViewModel(from: groupModel, groupLists: result.groupLists, maybePrices: maybePrices)
+//        }
+//
+//        if viewModels.isEmpty {
+//            view?.didReceiveGroups(state: .empty)
+//        } else {
+//            view?.didReceiveGroups(state: .list(groups: viewModels))
+//        }
     }
 
-    private func createGroupViewModel(
-        from groupModel: AssetListChainGroupModel,
-        groupLists: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>],
-        maybePrices: [ChainAssetId: PriceData]?
-    ) -> AssetListGroupViewModel? {
-        let chain = groupModel.chain
-
-        let assets = groupLists[chain.chainId]?.allItems ?? []
-
-        let assetInfoList: [AssetListAssetAccountInfo] = assets.map { asset in
-            AssetListPresenterHelpers.createAssetAccountInfo(
-                from: asset,
-                chain: chain,
-                maybePrices: maybePrices
-            )
-        }
-
-        return viewModelFactory.createGroupViewModel(
-            for: chain,
-            assets: assetInfoList,
-            value: groupModel.value,
-            connected: true,
-            locale: selectedLocale
-        )
-    }
+//    private func createGroupViewModel(
+//        from groupModel: AssetListChainGroupModel,
+//        groupLists: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>],
+//        maybePrices: [ChainAssetId: PriceData]?
+//    ) -> AssetListGroupViewModel? {
+//        let chain = groupModel.chain
+//
+//        let assets = groupLists[chain.chainId]?.allItems ?? []
+//
+//        let assetInfoList: [AssetListAssetAccountInfo] = assets.map { asset in
+//            AssetListPresenterHelpers.createAssetAccountInfo(
+//                from: asset,
+//                chain: chain,
+//                maybePrices: maybePrices
+//            )
+//        }
+//
+//        return viewModelFactory.createGroupViewModel(
+//            for: chain,
+//            assets: assetInfoList,
+//            value: groupModel.value,
+//            connected: true,
+//            locale: selectedLocale
+//        )
+//    }
 
     // MARK: - AssetsSearchPresenterProtocol
 

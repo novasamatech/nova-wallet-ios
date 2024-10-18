@@ -144,13 +144,17 @@ class AssetListBaseBuilder {
                 acc[model.chainAssetModel.asset.symbol] = newValue
             }
             .forEach { symbol, assetListModels in
-                guard let groupModel = AssetListModelHelpers.createAssetGroupModel(assets: assetListModels) else {
-                    return
-                }
-
                 let changes: [DataProviderChange<AssetListAssetModel>] = assetListModels.map { .update(newItem: $0) }
 
                 groupListsByAsset[symbol]?.apply(changes: changes)
+
+                guard
+                    let assets = groupListsByAsset[symbol],
+                    let groupModel = AssetListModelHelpers.createAssetGroupModel(assets: assets.allItems)
+                else {
+                    return
+                }
+
                 assetGroups.apply(changes: [.update(newItem: groupModel)])
             }
     }

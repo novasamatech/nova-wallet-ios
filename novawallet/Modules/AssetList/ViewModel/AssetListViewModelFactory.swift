@@ -37,6 +37,7 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
     init(
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
         quantityFormatter: LocalizableResource<NumberFormatter>,
         nftDownloadService: NftFileDownloadServiceProtocol,
@@ -46,6 +47,7 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
         self.nftDownloadService = nftDownloadService
 
         super.init(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: assetFormatterFactory,
             percentFormatter: percentFormatter,

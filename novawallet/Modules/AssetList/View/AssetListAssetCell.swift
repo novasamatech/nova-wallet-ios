@@ -75,25 +75,50 @@ final class AssetListAssetCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AssetListAssetViewModel) {
+    func bind(viewModel: AssetListNetworkGroupAssetViewModel) {
+        bind(
+            viewModel: viewModel,
+            balanceKeyPath: \.balance,
+            imageKeyPath: \.icon,
+            nameKeyPath: \.tokenName
+        )
+    }
+
+    func bind(viewModel: AssetListTokenGroupAssetViewModel) {
+        bind(
+            viewModel: viewModel,
+            balanceKeyPath: \.balance,
+            imageKeyPath: \.chainAsset.assetViewModel.imageViewModel,
+            nameKeyPath: \.chainAsset.assetViewModel.symbol
+        )
+    }
+
+    private func bind<T>(
+        viewModel: T,
+        balanceKeyPath: KeyPath<T, AssetListAssetBalanceViewModel>,
+        imageKeyPath: KeyPath<T, ImageViewModelProtocol?>,
+        nameKeyPath: KeyPath<T, String>
+    ) {
         iconViewModel?.cancel(on: iconView.imageView)
 
-        iconViewModel = viewModel.icon
+        iconViewModel = viewModel[keyPath: imageKeyPath]
 
         iconView.imageView.image = nil
 
         let iconSize = Self.iconViewSize - iconView.contentInsets.left - iconView.contentInsets.right
-        viewModel.icon?.loadImage(
+        viewModel[keyPath: imageKeyPath]?.loadImage(
             on: iconView.imageView,
             targetSize: CGSize(width: iconSize, height: iconSize),
             animated: true
         )
 
-        assetLabel.text = viewModel.tokenName
+        assetLabel.text = viewModel[keyPath: nameKeyPath]
 
-        applyPrice(viewModel.price)
-        applyBalance(viewModel.balanceAmount)
-        applyBalanceValue(viewModel.balanceValue)
+        let balanceViewModel = viewModel[keyPath: balanceKeyPath]
+
+        applyPrice(balanceViewModel.price)
+        applyBalance(balanceViewModel.balanceAmount)
+        applyBalanceValue(balanceViewModel.balanceValue)
     }
 
     private func applyPrice(_ priceViewModel: LoadableViewModelState<AssetPriceViewModel>) {

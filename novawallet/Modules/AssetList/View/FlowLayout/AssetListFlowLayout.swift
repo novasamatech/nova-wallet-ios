@@ -18,13 +18,12 @@ enum AssetListMeasurement {
     static let assetGroupInsets = UIEdgeInsets(top: 2.0, left: 0, bottom: 16.0, right: 0)
 }
 
-final class AssetListFlowLayout: UICollectionViewFlowLayout {
-    static let assetGroupDecoration = "assetGroupDecoration"
-    private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
+class AssetListFlowLayout: UICollectionViewFlowLayout {
+    private(set) var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
 
-    private var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
-    private var promotionInsets: UIEdgeInsets = .zero
-    private var nftsInsets: UIEdgeInsets = .zero
+    private(set) var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
+    private(set) var promotionInsets: UIEdgeInsets = .zero
+    private(set) var nftsInsets: UIEdgeInsets = .zero
 
     enum SectionType: CaseIterable {
         case summary
@@ -129,18 +128,22 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         }
     }
 
-    private var itemsDecorationAttributes: [UICollectionViewLayoutAttributes] = []
+    var itemsDecorationAttributes: [UICollectionViewLayoutAttributes] = []
 
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let layoutAttributesObjects = super.layoutAttributesForElements(
-            in: rect
-        )?.map { $0.copy() } as? [UICollectionViewLayoutAttributes]
+    func updateItemsBackgroundAttributesIfNeeded() {
+        fatalError("Must be overriden by subsclass")
+    }
 
-        let visibleAttributes = itemsDecorationAttributes.filter { attributes in
-            attributes.frame.intersects(rect)
-        }
+    func assetCellHeight(for _: IndexPath) -> CGFloat {
+        fatalError("Must be overriden by subsclass")
+    }
 
-        return (layoutAttributesObjects ?? []) + visibleAttributes
+    func assetGroupDecorationIdentifier() -> String {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func assetGroupInset(for _: Int) -> UIEdgeInsets {
+        fatalError("Must be overriden by subsclass")
     }
 
     override func layoutAttributesForDecorationView(
@@ -148,7 +151,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         at indexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
         guard
-            elementKind == Self.assetGroupDecoration,
+            elementKind == assetGroupDecorationIdentifier(),
             indexPath.section > SectionType.assetsStartingSection else {
             return nil
         }
@@ -163,83 +166,6 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         itemsDecorationAttributes = []
         updateItemsBackgroundAttributesIfNeeded()
-    }
-
-    // swiftlint:disable:next function_body_length
-    private func updateItemsBackgroundAttributesIfNeeded() {
-        guard
-            let collectionView = collectionView,
-            collectionView.numberOfSections >= SectionType.allCases.count else {
-            return
-        }
-
-        let groupsCount = collectionView.numberOfSections - SectionType.assetsStartingSection
-
-        var groupY: CGFloat = 0.0
-
-        let hasSummarySection = collectionView.numberOfItems(inSection: SectionType.summary.index) > 0
-
-        if hasSummarySection {
-            groupY = AssetListMeasurement.accountHeight + SectionType.summary.cellSpacing +
-                totalBalanceHeight
-        }
-
-        groupY += AssetListMeasurement.summaryInsets.top + AssetListMeasurement.summaryInsets.bottom
-
-        groupY += nftsInsets.top + nftsInsets.bottom
-
-        let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
-
-        if hasNfts {
-            groupY += AssetListMeasurement.nftsHeight
-        }
-
-        groupY += promotionInsets.top + promotionInsets.bottom
-
-        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.promotion.index) > 0
-
-        if hasPromotion {
-            groupY += promotionHeight
-        }
-
-        groupY += AssetListMeasurement.settingsInsets.top + AssetListMeasurement.settingsHeight +
-            AssetListMeasurement.settingsInsets.bottom
-
-        let initAttributes = [UICollectionViewLayoutAttributes]()
-        let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, groupY)) { result, groupIndex in
-            let attributes = result.0
-            let positionY = result.1
-
-            let section = SectionType.assetsStartingSection + groupIndex
-            let numberOfItems = collectionView.numberOfItems(inSection: section)
-
-            let contentHeight = AssetListMeasurement.assetHeaderHeight +
-                CGFloat(numberOfItems) * AssetListMeasurement.assetHeight
-            let decorationHeight = AssetListMeasurement.assetGroupInsets.top + contentHeight +
-                AssetListMeasurement.decorationInset
-
-            let itemsDecorationAttributes = UICollectionViewLayoutAttributes(
-                forDecorationViewOfKind: Self.assetGroupDecoration,
-                with: IndexPath(item: 0, section: section)
-            )
-
-            let decorationWidth = max(collectionView.frame.width - 2 * UIConstants.horizontalInset, 0)
-            let size = CGSize(width: decorationWidth, height: decorationHeight)
-
-            let origin = CGPoint(x: UIConstants.horizontalInset, y: positionY)
-
-            itemsDecorationAttributes.frame = CGRect(origin: origin, size: size)
-            itemsDecorationAttributes.zIndex = -1
-
-            let newPosition = positionY + AssetListMeasurement.assetGroupInsets.top + contentHeight +
-                AssetListMeasurement.assetGroupInsets.bottom
-
-            let newAttributes = attributes + [itemsDecorationAttributes]
-
-            return (newAttributes, newPosition)
-        }
-
-        itemsDecorationAttributes = attributes
     }
 
     func updateTotalBalanceHeight(_ height: CGFloat) {
@@ -284,7 +210,10 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         invalidateLayout()
     }
 
-    func cellHeight(for type: CellType) -> CGFloat {
+    func cellHeight(
+        for type: CellType,
+        at indexPath: IndexPath
+    ) -> CGFloat {
         switch type {
         case .account:
             return AssetListMeasurement.accountHeight
@@ -299,11 +228,14 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         case .emptyState:
             return AssetListMeasurement.emptyStateCellHeight
         case .asset:
-            return AssetListMeasurement.assetHeight
+            return assetCellHeight(for: indexPath)
         }
     }
 
-    func sectionInsets(for type: SectionType) -> UIEdgeInsets {
+    func sectionInsets(
+        for type: SectionType,
+        section: Int
+    ) -> UIEdgeInsets {
         switch type {
         case .summary:
             return AssetListMeasurement.summaryInsets
@@ -314,7 +246,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         case .settings:
             return AssetListMeasurement.settingsInsets
         case .assetGroup:
-            return AssetListMeasurement.assetGroupInsets
+            return assetGroupInset(for: section)
         }
     }
 }

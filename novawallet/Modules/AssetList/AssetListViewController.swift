@@ -6,6 +6,8 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     let presenter: AssetListPresenterProtocol
 
+    let assetGroupsLayoutStyle: AssetListGroupsStyle
+
     var collectionViewLayout: UICollectionViewFlowLayout? {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     }
@@ -15,8 +17,14 @@ final class AssetListViewController: UIViewController, ViewHolder {
     private var nftViewModel: AssetListNftsViewModel?
     private var promotionBannerViewModel: PromotionBannerView.ViewModel?
 
-    init(presenter: AssetListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: AssetListPresenterProtocol,
+        assetGroupsLayoutStyle: AssetListGroupsStyle,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.assetGroupsLayoutStyle = assetGroupsLayoutStyle
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -28,7 +36,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AssetListViewLayout()
+        view = AssetListViewLayout(assetGroupsLayoutStyle: assetGroupsLayoutStyle)
     }
 
     override func viewDidLoad() {
@@ -58,8 +66,13 @@ final class AssetListViewController: UIViewController, ViewHolder {
         )
 
         collectionViewLayout?.register(
-            TokenGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListFlowLayout.assetGroupDecoration
+            AssetListNetworkGroupDecorationView.self,
+            forDecorationViewOfKind: AssetListNetworksFlowLayout.assetGroupDecoration
+        )
+
+        collectionViewLayout?.register(
+            AssetListTokenGroupDecorationView.self,
+            forDecorationViewOfKind: AssetListTokensFlowLayout.assetGroupDecoration
         )
 
         rootView.collectionView.dataSource = self
@@ -137,8 +150,16 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
-        let cellHeight = rootView.collectionViewLayout.cellHeight(for: cellType)
-        return CGSize(width: collectionView.bounds.width, height: cellHeight)
+
+        let cellHeight = rootView.collectionViewLayout.cellHeight(
+            for: cellType,
+            at: indexPath
+        )
+
+        return CGSize(
+            width: collectionView.bounds.width,
+            height: cellHeight
+        )
     }
 
     func collectionView(
@@ -147,14 +168,13 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
         switch AssetListFlowLayout.SectionType(section: section) {
-        case .assetGroup:
-            return CGSize(
+        case .assetGroup where assetGroupsLayoutStyle == .networks:
+            CGSize(
                 width: collectionView.frame.width,
                 height: AssetListMeasurement.assetHeaderHeight
             )
-
-        case .summary, .settings, .nfts, .promotion:
-            return .zero
+        case .summary, .settings, .nfts, .promotion, .assetGroup:
+            .zero
         }
     }
 
@@ -170,8 +190,15 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
             if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
                 indexPath.section
             ) {
-                let viewModel = groupsViewModel.listState.groups[groupIndex].assets[indexPath.row]
-                presenter.selectAsset(for: viewModel.chainAssetId)
+                let groupViewModel = groupsViewModel.listState.groups[groupIndex]
+                let chainAssetId = switch groupViewModel {
+                case let .network(group):
+                    group.assets[indexPath.row].chainAssetId
+                case let .token(group):
+                    group.assets[indexPath.row].chainAssetId
+                }
+
+                presenter.selectAsset(for: chainAssetId)
             }
         case .yourNfts:
             presenter.selectNfts()
@@ -194,7 +221,11 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
         let sectionType = AssetListFlowLayout.SectionType(section: section)
-        return rootView.collectionViewLayout.sectionInsets(for: sectionType)
+
+        return rootView.collectionViewLayout.sectionInsets(
+            for: sectionType,
+            section: section
+        )
     }
 }
 
@@ -203,7 +234,10 @@ extension AssetListViewController: UICollectionViewDataSource {
         AssetListFlowLayout.SectionType.assetsStartingSection + groupsViewModel.listState.groups.count
     }
 
-    func collectionView(_: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(
+        _: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         switch AssetListFlowLayout.SectionType(section: section) {
         case .summary:
             return headerViewModel != nil ? 2 : 0
@@ -215,7 +249,16 @@ extension AssetListViewController: UICollectionViewDataSource {
             return groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
             if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
-                return groupsViewModel.listState.groups[groupIndex].assets.count
+                switch groupsViewModel.listState.groups[groupIndex] {
+                case let .network(groupViewModel):
+                    return groupViewModel.assets.count
+                case let .token(groupViewModel):
+                    let state = rootView.collectionTokenGroupsLayout.state(for: groupViewModel.token.symbol)
+
+                    return state?.expanded == true
+                        ? groupViewModel.assets.count
+                        : 1
+                }
             } else {
                 return 0
             }
@@ -326,7 +369,7 @@ extension AssetListViewController: UICollectionViewDataSource {
     private func provideAssetCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath,
-        assetIndex: Int
+        assetIndex _: Int
     ) -> AssetListAssetCell {
         let assetCell = collectionView.dequeueReusableCellWithType(
             AssetListAssetCell.self,
@@ -336,8 +379,29 @@ extension AssetListViewController: UICollectionViewDataSource {
         if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
-            let viewModel = groupsViewModel.listState.groups[groupIndex].assets[assetIndex]
-            assetCell.bind(viewModel: viewModel)
+            switch groupsViewModel.listState.groups[groupIndex] {
+            case let .network(groupViewModel):
+                assetCell.bind(viewModel: groupViewModel.assets[indexPath.row])
+            case let .token(groupViewModel):
+                rootView.collectionTokenGroupsLayout.changeSection(
+                    byChanging: indexPath.section,
+                    for: groupViewModel.token.symbol
+                )
+
+                if groupViewModel.assets.count > 1 {
+                    rootView.collectionTokenGroupsLayout.setExpandableSection(
+                        for: groupViewModel.token.symbol,
+                        true
+                    )
+                } else {
+                    rootView.collectionTokenGroupsLayout.setExpandableSection(
+                        for: groupViewModel.token.symbol,
+                        false
+                    )
+                }
+
+                assetCell.bind(viewModel: groupViewModel.assets[indexPath.row])
+            }
         }
 
         return assetCell
@@ -426,20 +490,28 @@ extension AssetListViewController: UICollectionViewDataSource {
         viewForSupplementaryElementOfKind kind: String,
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
-        let view = collectionView.dequeueReusableSupplementaryViewWithType(
-            AssetListNetworkView.self,
-            forSupplementaryViewOfKind: kind,
-            for: indexPath
-        )!
-
-        if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
+        guard let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
-        ) {
-            let viewModel = groupsViewModel.listState.groups[groupIndex]
-            view.bind(viewModel: viewModel)
+        ) else {
+            return UICollectionReusableView()
         }
 
-        return view
+        let groupStyle = groupsViewModel.listState.groups[groupIndex]
+
+        switch groupStyle {
+        case let .network(viewModel):
+            let view = collectionView.dequeueReusableSupplementaryViewWithType(
+                AssetListNetworkView.self,
+                forSupplementaryViewOfKind: kind,
+                for: indexPath
+            )!
+
+            view.bind(viewModel: viewModel)
+
+            return view
+        case .token:
+            return UICollectionReusableView()
+        }
     }
 }
 

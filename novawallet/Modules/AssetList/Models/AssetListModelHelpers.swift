@@ -89,37 +89,28 @@ enum AssetListModelHelpers {
     static func createAssetsDiffCalculator(
         from assets: [AssetListAssetModel]
     ) -> ListDifferenceCalculator<AssetListAssetModel> {
-        let sortingBlock: (AssetListAssetModel, AssetListAssetModel) -> Bool = { model1, model2 in
-            let balance1 = model1.totalAmountDecimal ?? 0
-            let balance2 = model2.totalAmountDecimal ?? 0
-
-            let assetValue1 = model1.totalValue ?? 0
-            let assetValue2 = model2.totalValue ?? 0
-
-            if assetValue1 > 0, assetValue2 > 0 {
-                return assetValue1 > assetValue2
-            } else if assetValue1 > 0 {
-                return true
-            } else if assetValue2 > 0 {
-                return false
-            } else if balance1 > 0, balance2 > 0 {
-                return balance1 > balance2
-            } else if balance1 > 0 {
-                return true
-            } else if balance2 > 0 {
-                return false
-            } else if model1.chainAssetModel.asset.isUtility != model2.chainAssetModel.asset.isUtility {
-                return model1.chainAssetModel.asset.isUtility.intValue > model2.chainAssetModel.asset.isUtility.intValue
+        let sortingBlock: (AssetListAssetModel, AssetListAssetModel) -> Bool = { lhs, rhs in
+            if let result = AssetListAssetModelCompator.by(\.balanceValue, lhs, rhs) {
+                result
+            } else if let result = AssetListAssetModelCompator.by(\.externalBalancesValue, lhs, rhs) {
+                result
+            } else if let result = AssetListAssetModelCompator.by(\.totalAmountDecimal, lhs, rhs) {
+                result
+            } else if lhs.chainAssetModel.asset.isUtility != rhs.chainAssetModel.asset.isUtility {
+                lhs.chainAssetModel.asset.isUtility.intValue > rhs.chainAssetModel.asset.isUtility.intValue
             } else {
-                return model1.chainAssetModel.asset.symbol.lexicographicallyPrecedes(
-                    model2.chainAssetModel.asset.symbol
+                lhs.chainAssetModel.asset.symbol.lexicographicallyPrecedes(
+                    rhs.chainAssetModel.asset.symbol
                 )
             }
         }
 
         let sortedAssets = assets.sorted(by: sortingBlock)
 
-        return ListDifferenceCalculator(initialItems: sortedAssets, sortBlock: sortingBlock)
+        return ListDifferenceCalculator(
+            initialItems: sortedAssets,
+            sortBlock: sortingBlock
+        )
     }
 
     static func createAssetModels(for chainModel: ChainModel, state: AssetListState) -> [AssetListAssetModel] {
@@ -379,6 +370,11 @@ enum AssetListModelHelpers {
         newAssets
             .reduce(into: [:]) { acc, asset in
                 guard let oldList = groupListsByAsset[asset.chainAssetModel.asset.symbol] else {
+                    var currentChanges = acc[asset.chainAssetModel.asset.symbol] ?? []
+                    currentChanges.append(.insert(newItem: asset))
+
+                    acc[asset.chainAssetModel.asset.symbol] = currentChanges
+
                     return
                 }
 
