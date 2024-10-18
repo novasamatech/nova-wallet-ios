@@ -176,7 +176,9 @@ class AssetListBaseBuilder {
         from changes: [DataProviderChange<ChainModel>],
         using state: AssetListState
     ) -> ChainChangeProcessResult {
-        changes
+        var symbolsSet: Set<String> = Set()
+
+        return changes
             .reduce(
                 into: (
                     chainGroupResult: ChainChangeChainsProcessResult([], [:]),
@@ -194,7 +196,16 @@ class AssetListBaseBuilder {
                     acc.chainGroupResult.listChanges[$0.key] = current + $0.value
                 }
 
-                acc.assetGroupResult.groupChanges.append(contentsOf: mappedChange.assetGroupResult.groupChanges)
+                mappedChange.assetGroupResult.groupChanges.forEach { change in
+                    if case let .insert(newItem) = change {
+                        if !symbolsSet.contains(newItem.chainAsset.asset.symbol) {
+                            acc.assetGroupResult.groupChanges.append(change)
+                            symbolsSet.insert(newItem.chainAsset.asset.symbol)
+                        }
+                    } else {
+                        acc.assetGroupResult.groupChanges.append(change)
+                    }
+                }
 
                 mappedChange.assetGroupResult.listChanges.forEach {
                     let current = acc.assetGroupResult.listChanges[$0.key] ?? []
