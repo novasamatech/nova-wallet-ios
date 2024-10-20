@@ -50,11 +50,11 @@ class AssetListTokensFlowLayout: AssetListFlowLayout {
     private var assetSectionsState: [String: AssetListTokenSectionState] = [:]
     private var sectionsExpandableState: [Int: Bool] = [:]
 
-    func expandAssetSection(for symbol: String) {
+    func expandAssetGroup(for symbol: String) {
         assetSectionsState.changeState(with: symbol) { $0.byChanging(expanded: true) }
     }
 
-    func collapseAssetSection(at symbol: String) {
+    func collapseAssetGroup(for symbol: String) {
         assetSectionsState.changeState(with: symbol) { $0.byChanging(expanded: false) }
     }
 

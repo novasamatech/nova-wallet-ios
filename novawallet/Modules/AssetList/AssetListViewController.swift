@@ -12,15 +12,20 @@ final class AssetListViewController: UIViewController, ViewHolder {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     }
 
-    private var headerViewModel: AssetListHeaderViewModel?
+    private lazy var collectionViewManager: AssetListCollectionManagerProtocol = {
+        AssetListCollectionManager(
+            view: rootView,
+            groupsViewModel: groupsViewModel,
+            delegate: self,
+            selectedLocale: selectedLocale
+        )
+    }()
+
     private var groupsViewModel: AssetListViewModel = .init(
         isFiltered: false,
         listState: .list(groups: []),
         listGroupStyle: .tokens
     )
-
-    private var nftViewModel: AssetListNftsViewModel?
-    private var promotionBannerViewModel: PromotionBannerView.ViewModel?
 
     init(
         presenter: AssetListPresenterProtocol,
@@ -54,496 +59,11 @@ final class AssetListViewController: UIViewController, ViewHolder {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        updateLoadingState()
+        collectionViewManager.updateLoadingState()
     }
 
     private func setupCollectionView() {
-        rootView.collectionView.registerCellClass(AssetListAssetCell.self)
-        rootView.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
-        rootView.collectionView.registerCellClass(AssetListAccountCell.self)
-        rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
-        rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
-        rootView.collectionView.registerCellClass(AssetListNftsCell.self)
-        rootView.collectionView.registerCellClass(AssetListBannerCell.self)
-        rootView.collectionView.registerClass(
-            AssetListNetworkView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
-        )
-
-        rootView.collectionNetworkGroupsLayout.register(
-            AssetListNetworkGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListNetworksFlowLayout.assetGroupDecoration
-        )
-
-        rootView.collectionTokenGroupsLayout.register(
-            AssetListTokenGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListTokensFlowLayout.assetGroupDecoration
-        )
-
-        rootView.collectionView.dataSource = self
-        rootView.collectionView.delegate = self
-
-        rootView.collectionView.refreshControl?.addTarget(
-            self,
-            action: #selector(actionRefresh),
-            for: .valueChanged
-        )
-    }
-
-    private func updateLoadingState() {
-        rootView.collectionView.visibleCells.forEach { updateLoadingState(for: $0) }
-    }
-
-    private func updateLoadingState(for cell: UICollectionViewCell) {
-        (cell as? AnimationUpdatibleView)?.updateLayerAnimationIfActive()
-    }
-
-    @objc private func actionSelectAccount() {
-        presenter.selectWallet()
-    }
-
-    @objc private func actionSelectWalletConnect() {
-        presenter.presentWalletConnect()
-    }
-
-    @objc private func actionRefresh() {
-        let nftIndexPath = AssetListFlowLayout.CellType.yourNfts.indexPath
-        if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? AssetListNftsCell {
-            nftCell.refresh()
-        }
-
-        presenter.refresh()
-    }
-
-    @objc private func actionSettings() {
-        presenter.toggleAssetListStyle()
-
-        setupCollectionView()
-
-        // presenter.presentSettings()
-    }
-
-    @objc private func actionSearch() {
-        presenter.presentSearch()
-    }
-
-    @objc private func actionManage() {
-        presenter.presentAssetsManage()
-    }
-
-    @objc private func actionLocks() {
-        presenter.presentLocks()
-    }
-
-    @objc private func actionSend() {
-        presenter.send()
-    }
-
-    @objc private func actionReceive() {
-        presenter.receive()
-    }
-
-    @objc private func actionBuy() {
-        presenter.buy()
-    }
-
-    @objc private func actionSwap() {
-        presenter.swap()
-    }
-}
-
-extension AssetListViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout _: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
-
-        let cellHeight = rootView.collectionViewLayout.cellHeight(
-            for: cellType,
-            at: indexPath
-        )
-
-        return CGSize(
-            width: collectionView.bounds.width,
-            height: cellHeight
-        )
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout _: UICollectionViewLayout,
-        referenceSizeForHeaderInSection section: Int
-    ) -> CGSize {
-        switch AssetListFlowLayout.SectionType(section: section) {
-        case .assetGroup where groupsViewModel.listGroupStyle == .networks:
-            CGSize(
-                width: collectionView.frame.width,
-                height: AssetListMeasurement.assetHeaderHeight
-            )
-        case .summary, .settings, .nfts, .promotion, .assetGroup:
-            .zero
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
-
-        let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
-
-        switch cellType {
-        case .account, .settings, .emptyState, .totalBalance:
-            break
-        case .asset:
-            if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
-                indexPath.section
-            ) {
-                let groupViewModel = groupsViewModel.listState.groups[groupIndex]
-
-                let chainAssetId: ChainAssetId
-
-                switch groupViewModel {
-                case let .network(group):
-                    chainAssetId = group.assets[indexPath.row].chainAssetId
-                case let .token(group):
-                    if indexPath.row == 0 {
-                        let symbol = group.token.symbol
-                        let sectionState = rootView.collectionTokenGroupsLayout.state(for: symbol)
-                        let expandable = sectionState?.expandable ?? false
-                        let expanded = sectionState?.expanded ?? false
-
-                        if expanded == true {
-                            rootView.collectionTokenGroupsLayout.collapseAssetSection(at: symbol)
-                            collectionView.reloadSections([indexPath.section])
-
-                            return
-                        } else if expandable {
-                            rootView.collectionTokenGroupsLayout.expandAssetSection(for: symbol)
-                            collectionView.reloadSections([indexPath.section])
-
-                            return
-                        } else {
-                            chainAssetId = group.assets[indexPath.row].chainAssetId
-                        }
-                    } else {
-                        chainAssetId = group.assets[indexPath.row].chainAssetId
-                    }
-                }
-
-                presenter.selectAsset(for: chainAssetId)
-            }
-        case .yourNfts:
-            presenter.selectNfts()
-        case .banner:
-            presenter.selectPromotion()
-        }
-    }
-
-    func collectionView(
-        _: UICollectionView,
-        layout _: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt section: Int
-    ) -> CGFloat {
-        AssetListFlowLayout.SectionType(section: section).cellSpacing
-    }
-
-    func collectionView(
-        _: UICollectionView,
-        layout _: UICollectionViewLayout,
-        insetForSectionAt section: Int
-    ) -> UIEdgeInsets {
-        let sectionType = AssetListFlowLayout.SectionType(section: section)
-
-        return rootView.collectionViewLayout.sectionInsets(
-            for: sectionType,
-            section: section
-        )
-    }
-}
-
-extension AssetListViewController: UICollectionViewDataSource {
-    func numberOfSections(in _: UICollectionView) -> Int {
-        AssetListFlowLayout.SectionType.assetsStartingSection + groupsViewModel.listState.groups.count
-    }
-
-    func collectionView(
-        _: UICollectionView,
-        numberOfItemsInSection section: Int
-    ) -> Int {
-        switch AssetListFlowLayout.SectionType(section: section) {
-        case .summary:
-            return headerViewModel != nil ? 2 : 0
-        case .nfts:
-            return nftViewModel != nil ? 1 : 0
-        case .promotion:
-            return promotionBannerViewModel != nil ? 1 : 0
-        case .settings:
-            return groupsViewModel.listState.isEmpty ? 2 : 1
-        case .assetGroup:
-            if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
-                switch groupsViewModel.listState.groups[groupIndex] {
-                case let .network(groupViewModel):
-                    return groupViewModel.assets.count
-                case let .token(groupViewModel):
-                    let state = rootView.collectionTokenGroupsLayout.state(for: groupViewModel.token.symbol)
-
-                    return state?.expanded == true
-                        ? groupViewModel.assets.count + 1
-                        : 1
-                }
-            } else {
-                return 0
-            }
-        }
-    }
-
-    private func provideAccountCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListAccountCell {
-        let accountCell = collectionView.dequeueReusableCellWithType(
-            AssetListAccountCell.self,
-            for: indexPath
-        )!
-
-        if let viewModel = headerViewModel {
-            accountCell.bind(viewModel: viewModel)
-        }
-
-        accountCell.walletSwitch.addTarget(
-            self,
-            action: #selector(actionSelectAccount),
-            for: .touchUpInside
-        )
-
-        accountCell.walletConnect.addGestureRecognizer(UITapGestureRecognizer(
-            target: self,
-            action: #selector(actionSelectWalletConnect)
-        ))
-
-        return accountCell
-    }
-
-    private func provideTotalBalanceCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListTotalBalanceCell {
-        let totalBalanceCell = collectionView.dequeueReusableCellWithType(
-            AssetListTotalBalanceCell.self,
-            for: indexPath
-        )!
-
-        totalBalanceCell.locale = selectedLocale
-        totalBalanceCell.locksView.addGestureRecognizer(UITapGestureRecognizer(
-            target: self,
-            action: #selector(actionLocks)
-        ))
-        totalBalanceCell.sendButton.addTarget(
-            self,
-            action: #selector(actionSend),
-            for: .touchUpInside
-        )
-        totalBalanceCell.receiveButton.addTarget(
-            self,
-            action: #selector(actionReceive),
-            for: .touchUpInside
-        )
-        totalBalanceCell.buyButton.addTarget(
-            self,
-            action: #selector(actionBuy),
-            for: .touchUpInside
-        )
-        totalBalanceCell.swapButton.addTarget(
-            self,
-            action: #selector(actionSwap),
-            for: .touchUpInside
-        )
-        if let viewModel = headerViewModel {
-            totalBalanceCell.bind(viewModel: viewModel)
-        }
-
-        return totalBalanceCell
-    }
-
-    private func provideSettingsCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListSettingsCell {
-        let settingsCell = collectionView.dequeueReusableCellWithType(
-            AssetListSettingsCell.self,
-            for: indexPath
-        )!
-
-        settingsCell.locale = selectedLocale
-
-        settingsCell.settingsButton.addTarget(
-            self,
-            action: #selector(actionSettings),
-            for: .touchUpInside
-        )
-        settingsCell.settingsButton.bind(isFilterOn: groupsViewModel.isFiltered)
-
-        settingsCell.manageButton.addTarget(
-            self,
-            action: #selector(actionManage),
-            for: .touchUpInside
-        )
-
-        settingsCell.searchButton.addTarget(
-            self,
-            action: #selector(actionSearch),
-            for: .touchUpInside
-        )
-
-        return settingsCell
-    }
-
-    private func provideAssetCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath,
-        assetIndex _: Int
-    ) -> AssetListAssetCell {
-        let assetCell = collectionView.dequeueReusableCellWithType(
-            AssetListAssetCell.self,
-            for: indexPath
-        )!
-
-        if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
-            indexPath.section
-        ) {
-            switch groupsViewModel.listState.groups[groupIndex] {
-            case let .network(groupViewModel):
-                assetCell.bind(viewModel: groupViewModel.assets[indexPath.row])
-            case let .token(groupViewModel):
-                let expanded = rootView.collectionTokenGroupsLayout.expanded(
-                    for: groupViewModel.token.symbol
-                )
-
-                if expanded, indexPath.row != 0 {
-                    assetCell.bind(viewModel: groupViewModel.assets[indexPath.row - 1])
-                } else {
-                    assetCell.bind(viewModel: groupViewModel)
-                }
-            }
-        }
-
-        return assetCell
-    }
-
-    private func provideEmptyStateCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListEmptyCell {
-        let cell = collectionView.dequeueReusableCellWithType(
-            AssetListEmptyCell.self,
-            for: indexPath
-        )!
-
-        let text = R.string.localizable.walletListEmptyMessage(preferredLanguages: selectedLocale.rLanguages)
-        let actionTitle = R.string.localizable.walletListEmptyActionTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        cell.bind(text: text, actionTitle: actionTitle)
-        cell.actionButton.addTarget(self, action: #selector(actionBuy), for: .touchUpInside)
-
-        return cell
-    }
-
-    private func provideYourNftsCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListNftsCell {
-        let cell = collectionView.dequeueReusableCellWithType(
-            AssetListNftsCell.self,
-            for: indexPath
-        )!
-
-        cell.locale = selectedLocale
-
-        if let viewModel = nftViewModel {
-            cell.bind(viewModel: viewModel)
-        }
-
-        return cell
-    }
-
-    private func providePromotionBannerCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListBannerCell {
-        let cell = collectionView.dequeueReusableCellWithType(
-            AssetListBannerCell.self,
-            for: indexPath
-        )!
-
-        if let viewModel = promotionBannerViewModel {
-            cell.bind(viewModel: viewModel)
-        }
-
-        cell.bannerView.delegate = self
-
-        return cell
-    }
-
-    private func changeCollectionViewLayout() {
-        rootView.assetGroupsLayoutStyle = groupsViewModel.listGroupStyle
-
-        let layout: UICollectionViewLayout = rootView.collectionViewLayout
-
-        rootView.collectionView.setCollectionViewLayout(
-            layout,
-            animated: false
-        )
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        switch AssetListFlowLayout.CellType(indexPath: indexPath) {
-        case .account:
-            return provideAccountCell(collectionView, indexPath: indexPath)
-        case .totalBalance:
-            return provideTotalBalanceCell(collectionView, indexPath: indexPath)
-        case .yourNfts:
-            return provideYourNftsCell(collectionView, indexPath: indexPath)
-        case .banner:
-            return providePromotionBannerCell(collectionView, indexPath: indexPath)
-        case .settings:
-            return provideSettingsCell(collectionView, indexPath: indexPath)
-        case .emptyState:
-            return provideEmptyStateCell(collectionView, indexPath: indexPath)
-        case let .asset(_, assetIndex):
-            return provideAssetCell(collectionView, indexPath: indexPath, assetIndex: assetIndex)
-        }
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        viewForSupplementaryElementOfKind kind: String,
-        at indexPath: IndexPath
-    ) -> UICollectionReusableView {
-        guard kind == UICollectionView.elementKindSectionHeader else {
-            return UICollectionReusableView()
-        }
-
-        // Dequeue the header view
-        let view = collectionView.dequeueReusableSupplementaryViewWithType(
-            AssetListNetworkView.self,
-            forSupplementaryViewOfKind: kind,
-            for: indexPath
-        )!
-
-        // Configure the header view with the appropriate view model
-        if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(indexPath.section),
-           groupsViewModel.listGroupStyle == .networks,
-           case let .network(viewModel) = groupsViewModel.listState.groups[groupIndex] {
-            view.bind(viewModel: viewModel)
-        }
-
-        return view
+        collectionViewManager.setupCollectionView()
     }
 }
 
@@ -559,7 +79,7 @@ extension AssetListViewController: HiddableBarWhenPushed {}
 
 extension AssetListViewController: AssetListViewProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel) {
-        headerViewModel = viewModel
+        collectionViewManager.updateHeaderViewModel(with: viewModel)
 
         rootView.collectionView.reloadData()
 
@@ -573,37 +93,20 @@ extension AssetListViewController: AssetListViewProtocol {
         let oldGroupsStyle = groupsViewModel.listGroupStyle
         let newGroupStyle = viewModel.listGroupStyle
 
+        collectionViewManager.updateGroupsViewModel(with: viewModel)
         groupsViewModel = viewModel
 
         rootView.collectionView.reloadData()
 
         if oldGroupsStyle != newGroupStyle {
-            changeCollectionViewLayout()
+            collectionViewManager.changeCollectionViewLayout(to: newGroupStyle)
         }
 
-        if viewModel.listGroupStyle == .tokens {
-            viewModel.listState.groups.enumerated().forEach { groupIndex, group in
-                guard case let .token(groupViewModel) = group else {
-                    return
-                }
-
-                let sectionIndex = rootView.collectionTokenGroupsLayout.assetSectionIndex(from: groupIndex)
-
-                rootView.collectionTokenGroupsLayout.changeSection(
-                    byChanging: sectionIndex,
-                    for: groupViewModel.token.symbol
-                )
-
-                rootView.collectionTokenGroupsLayout.setExpandableSection(
-                    for: groupViewModel.token.symbol,
-                    groupViewModel.assets.count > 1
-                )
-            }
-        }
+        collectionViewManager.updateTokensGroupLayout()
     }
 
     func didReceiveNft(viewModel: AssetListNftsViewModel?) {
-        nftViewModel = viewModel
+        collectionViewManager.updateNftViewModel(with: viewModel)
 
         rootView.collectionView.reloadData()
 
@@ -616,7 +119,7 @@ extension AssetListViewController: AssetListViewProtocol {
     }
 
     func didReceivePromotion(viewModel: PromotionBannerView.ViewModel) {
-        promotionBannerViewModel = viewModel
+        collectionViewManager.updatePromotionBannerViewModel(with: viewModel)
 
         rootView.collectionView.reloadData()
 
@@ -625,12 +128,12 @@ extension AssetListViewController: AssetListViewProtocol {
     }
 
     func didClosePromotion() {
-        guard promotionBannerViewModel != nil else {
+        guard collectionViewManager.ableToClosePromotion else {
             return
         }
 
         rootView.collectionView.performBatchUpdates { [weak self] in
-            self?.promotionBannerViewModel = nil
+            self?.collectionViewManager.updatePromotionBannerViewModel(with: nil)
 
             let indexPath = AssetListFlowLayout.CellType.banner.indexPath
             self?.rootView.collectionView.deleteItems(at: [indexPath])
@@ -640,7 +143,74 @@ extension AssetListViewController: AssetListViewProtocol {
     }
 }
 
-extension AssetListViewController: PromotionBannerViewDelegate {
+// MARK: AssetListCollectionViewActionsDelegate
+
+extension AssetListViewController: AssetListCollectionManagerDelegate {
+    func selectAsset(for chainAssetId: ChainAssetId) {
+        presenter.selectAsset(for: chainAssetId)
+    }
+
+    func selectNfts() {
+        presenter.selectNfts()
+    }
+
+    func selectPromotion() {
+        presenter.selectPromotion()
+    }
+
+    func actionSelectAccount() {
+        presenter.selectWallet()
+    }
+
+    func actionSelectWalletConnect() {
+        presenter.presentWalletConnect()
+    }
+
+    func actionRefresh() {
+        let nftIndexPath = AssetListFlowLayout.CellType.yourNfts.indexPath
+        if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? AssetListNftsCell {
+            nftCell.refresh()
+        }
+
+        presenter.refresh()
+    }
+
+    func actionSettings() {
+        presenter.toggleAssetListStyle()
+
+        setupCollectionView()
+
+        // presenter.presentSettings()
+    }
+
+    func actionSearch() {
+        presenter.presentSearch()
+    }
+
+    func actionManage() {
+        presenter.presentAssetsManage()
+    }
+
+    func actionLocks() {
+        presenter.presentLocks()
+    }
+
+    func actionSend() {
+        presenter.send()
+    }
+
+    func actionReceive() {
+        presenter.receive()
+    }
+
+    func actionBuy() {
+        presenter.buy()
+    }
+
+    func actionSwap() {
+        presenter.swap()
+    }
+
     func promotionBannerDidRequestClose(view _: PromotionBannerView) {
         presenter.closePromotion()
     }
