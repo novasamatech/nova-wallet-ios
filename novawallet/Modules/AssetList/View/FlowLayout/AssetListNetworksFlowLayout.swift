@@ -7,18 +7,6 @@ final class AssetListNetworksFlowLayout: AssetListFlowLayout {
         AssetListNetworksFlowLayout.assetGroupDecoration
     }
 
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let layoutAttributesObjects = super.layoutAttributesForElements(
-            in: rect
-        )?.map { $0.copy() } as? [UICollectionViewLayoutAttributes]
-
-        let visibleAttributes = itemsDecorationAttributes.filter { attributes in
-            attributes.frame.intersects(rect)
-        }
-
-        return (layoutAttributesObjects ?? []) + visibleAttributes
-    }
-
     override func updateItemsBackgroundAttributesIfNeeded() {
         guard
             let collectionView = collectionView,

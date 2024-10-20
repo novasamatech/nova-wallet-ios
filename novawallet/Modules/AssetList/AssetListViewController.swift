@@ -496,8 +496,6 @@ extension AssetListViewController: UICollectionViewDataSource {
             layout,
             animated: false
         )
-
-        layout.invalidateLayout()
     }
 
     func collectionView(
