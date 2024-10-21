@@ -16,6 +16,12 @@ final class AssetListTokenGroupAssetCell: AssetListAssetCell {
         return label
     }()
 
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        assetLabel.apply(style: .regularSubhedlinePrimary)
+    }
+
     override func createDetailsView() -> UIView {
         let containerView = UIView()
 
