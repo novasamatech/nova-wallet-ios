@@ -1,16 +1,6 @@
 import Foundation
 import Operation_iOS
 
-protocol AssetsExchangeGraphProviding {
-    func setup()
-    func throttle()
-    func subscribeGraph(
-        _ target: AnyObject,
-        notifyingIn queue: DispatchQueue,
-        onChange: @escaping (AssetsExchangeGraphProtocol?) -> Void
-    )
-}
-
 final class AssetsExchangeGraphProvider {
     let supportedExchangeProviders: [AssetsExchangeProviding]
     let operationQueue: OperationQueue
@@ -98,14 +88,22 @@ final class AssetsExchangeGraphProvider {
 extension AssetsExchangeGraphProvider: AssetsExchangeGraphProviding {
     func setup() {
         supportedExchangeProviders.enumerated().forEach { index, provider in
-            provider.provide(notifingIn: syncQueue) { [weak self] exchanges in
+            provider.setup()
+
+            provider.subscribeExchanges(
+                self,
+                notifyingIn: syncQueue
+            ) { [weak self] exchanges in
                 self?.updateExchanges(exchanges, providerIndex: index)
             }
         }
     }
 
     func throttle() {
-        supportedExchangeProviders.forEach { $0.stop() }
+        supportedExchangeProviders.forEach { provider in
+            provider.unsubscribeExchanges(self)
+            provider.throttle()
+        }
     }
 
     func subscribeGraph(
@@ -121,6 +119,12 @@ extension AssetsExchangeGraphProvider: AssetsExchangeGraphProviding {
             ) { _, newState in
                 onChange(newState.value)
             }
+        }
+    }
+
+    func unsubscribeGraph(_ target: AnyObject) {
+        syncQueue.async { [weak self] in
+            self?.observableState.removeObserver(by: target)
         }
     }
 }

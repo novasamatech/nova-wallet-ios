@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class AssetConversionExchangeEdge {
+final class AssetHubExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
 
@@ -11,7 +11,7 @@ final class AssetConversionExchangeEdge {
     }
 }
 
-extension AssetConversionExchangeEdge: AssetExchangableGraphEdge {
+extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     var weight: Int { 1 }
 
     func quote(

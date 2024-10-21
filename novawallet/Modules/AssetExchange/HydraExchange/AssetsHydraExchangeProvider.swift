@@ -1,35 +1,11 @@
 import Foundation
 import Operation_iOS
 
-typealias AssetsConversionExchange = AssetHubSwapOperationFactory
-
-extension AssetsConversionExchange: AssetsExchangeProtocol {
-    func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
-        let connectionsWrapper = availableDirections()
-
-        let mappingOperation = ClosureOperation<[any AssetExchangableGraphEdge]> {
-            let connections = try connectionsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return connections.flatMap { keyValue in
-                let origin = keyValue.key
-
-                return keyValue.value.map { AssetConversionExchangeEdge(origin: origin, destination: $0) }
-            }
-        }
-
-        mappingOperation.addDependency(connectionsWrapper.targetOperation)
-
-        return connectionsWrapper.insertingTail(operation: mappingOperation)
-    }
-}
-
-final class AssetsConversionExchangeProvider {
+final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
     let chainRegistry: ChainRegistryProtocol
 
     private var supportedChains: [ChainModel.Id: ChainModel]?
-    let syncQueue: DispatchQueue
     let operationQueue: OperationQueue
-    let logger: LoggerProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -38,45 +14,58 @@ final class AssetsConversionExchangeProvider {
     ) {
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
-        self.logger = logger
 
-        syncQueue = DispatchQueue(label: "io.novawallet.assetsconversionprovider.\(UUID().uuidString)")
+        super.init(
+            syncQueue: DispatchQueue(label: "io.novawallet.hydraexchangeprovider.\(UUID().uuidString)"),
+            logger: logger
+        )
     }
 
-    private func provideExchanges(
-        notifingIn queue: DispatchQueue,
-        onChange: @escaping ([AssetsExchangeProtocol]) -> Void
-    ) {
+    private func updateStateIfNeeded() {
         guard let supportedChains else {
             return
         }
 
-        let exchanges: [AssetsExchangeProtocol] = supportedChains.values.compactMap { chain in
+        let exchanges: [AssetsExchangeProtocol] = supportedChains.values.flatMap { chain in
             guard
                 let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
                 let connection = chainRegistry.getConnection(for: chain.chainId) else {
                 logger.warning("Connection or runtime unavailable for \(chain.name)")
-                return nil
+                return [AssetsExchangeProtocol]()
             }
 
-            return AssetsConversionExchange(
+            let omnipoolExchange = AssetsHydraOmnipoolExchange(
                 chain: chain,
                 runtimeService: runtimeService,
                 connection: connection,
                 operationQueue: operationQueue
             )
+
+            let stableswapExchange = AssetsHydraStableSwapExchange(
+                chain: chain,
+                runtimeService: runtimeService,
+                connection: connection,
+                operationQueue: operationQueue
+            )
+
+            let xykExchange = AssetsHydraXYKExchange(
+                chain: chain,
+                runtimeService: runtimeService,
+                connection: connection,
+                operationQueue: operationQueue
+            )
+
+            return [omnipoolExchange, stableswapExchange, xykExchange]
         }
 
-        dispatchInQueueWhenPossible(queue) {
-            onChange(exchanges)
-        }
+        updateState(with: exchanges)
     }
 
     private func handleChains(changes: [DataProviderChange<ChainModel>]) -> Bool {
         let updatedChains = changes.reduce(into: supportedChains ?? [:]) { accum, change in
             switch change {
             case let .insert(newItem), let .update(newItem):
-                accum[newItem.chainId] = newItem.hasSwapHub ? newItem : nil
+                accum[newItem.chainId] = newItem.hasSwapHydra ? newItem : nil
             case let .delete(deletedIdentifier):
                 accum[deletedIdentifier] = nil
             }
@@ -90,10 +79,10 @@ final class AssetsConversionExchangeProvider {
 
         return true
     }
-}
 
-extension AssetsConversionExchangeProvider: AssetsExchangeProviding {
-    func provide(notifingIn queue: DispatchQueue, onChange: @escaping ([AssetsExchangeProtocol]) -> Void) {
+    // MARK: Subsclass
+
+    override func performSetup() {
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: syncQueue,
@@ -103,11 +92,11 @@ extension AssetsConversionExchangeProvider: AssetsExchangeProviding {
                 return
             }
 
-            provideExchanges(notifingIn: queue, onChange: onChange)
+            updateStateIfNeeded()
         }
     }
 
-    func stop() {
+    override func performThrottle() {
         chainRegistry.chainsUnsubscribe(self)
     }
 }

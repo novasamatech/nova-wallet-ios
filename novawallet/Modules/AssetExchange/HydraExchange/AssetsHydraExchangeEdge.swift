@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-class HydraExchangeEdge {
+class AssetsHydraExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
 
@@ -11,7 +11,7 @@ class HydraExchangeEdge {
     }
 }
 
-extension HydraExchangeEdge: AssetExchangableGraphEdge {
+extension AssetsHydraExchangeEdge: AssetExchangableGraphEdge {
     var weight: Int { 1 }
 
     func quote(

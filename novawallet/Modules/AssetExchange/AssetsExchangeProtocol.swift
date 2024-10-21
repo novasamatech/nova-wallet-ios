@@ -6,6 +6,27 @@ protocol AssetsExchangeProtocol {
 }
 
 protocol AssetsExchangeProviding: AnyObject {
-    func provide(notifingIn queue: DispatchQueue, onChange: @escaping ([AssetsExchangeProtocol]) -> Void)
-    func stop()
+    func setup()
+    func throttle()
+
+    func subscribeExchanges(
+        _ target: AnyObject,
+        notifyingIn queue: DispatchQueue,
+        onChange: @escaping ([AssetsExchangeProtocol]) -> Void
+    )
+
+    func unsubscribeExchanges(_ target: AnyObject)
+}
+
+protocol AssetsExchangeGraphProviding {
+    func setup()
+    func throttle()
+
+    func subscribeGraph(
+        _ target: AnyObject,
+        notifyingIn queue: DispatchQueue,
+        onChange: @escaping (AssetsExchangeGraphProtocol?) -> Void
+    )
+
+    func unsubscribeGraph(_ target: AnyObject)
 }

@@ -1,13 +1,11 @@
 import Foundation
 import Operation_iOS
 
-final class AssetsHydraExchangeProvider {
+final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
     let chainRegistry: ChainRegistryProtocol
 
     private var supportedChains: [ChainModel.Id: ChainModel]?
-    let syncQueue: DispatchQueue
     let operationQueue: OperationQueue
-    let logger: LoggerProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -16,61 +14,42 @@ final class AssetsHydraExchangeProvider {
     ) {
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
-        self.logger = logger
 
-        syncQueue = DispatchQueue(label: "io.novawallet.hydraexchangeprovider.\(UUID().uuidString)")
+        super.init(
+            syncQueue: DispatchQueue(label: "io.novawallet.assetshubprovider.\(UUID().uuidString)"),
+            logger: logger
+        )
     }
 
-    private func provideExchanges(
-        notifingIn queue: DispatchQueue,
-        onChange: @escaping ([AssetsExchangeProtocol]) -> Void
-    ) {
+    private func updateStateIfNeeded() {
         guard let supportedChains else {
             return
         }
 
-        let exchanges: [AssetsExchangeProtocol] = supportedChains.values.flatMap { chain in
+        let exchanges: [AssetsExchangeProtocol] = supportedChains.values.compactMap { chain in
             guard
                 let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
                 let connection = chainRegistry.getConnection(for: chain.chainId) else {
                 logger.warning("Connection or runtime unavailable for \(chain.name)")
-                return [AssetsExchangeProtocol]()
+                return nil
             }
 
-            let omnipoolExchange = AssetsHydraOmnipoolExchange(
+            return AssetsHubExchange(
                 chain: chain,
                 runtimeService: runtimeService,
                 connection: connection,
                 operationQueue: operationQueue
             )
-
-            let stableswapExchange = AssetsHydraStableSwapExchange(
-                chain: chain,
-                runtimeService: runtimeService,
-                connection: connection,
-                operationQueue: operationQueue
-            )
-
-            let xykExchange = AssetsHydraXYKExchange(
-                chain: chain,
-                runtimeService: runtimeService,
-                connection: connection,
-                operationQueue: operationQueue
-            )
-
-            return [omnipoolExchange, stableswapExchange, xykExchange]
         }
 
-        dispatchInQueueWhenPossible(queue) {
-            onChange(exchanges)
-        }
+        updateState(with: exchanges)
     }
 
     private func handleChains(changes: [DataProviderChange<ChainModel>]) -> Bool {
         let updatedChains = changes.reduce(into: supportedChains ?? [:]) { accum, change in
             switch change {
             case let .insert(newItem), let .update(newItem):
-                accum[newItem.chainId] = newItem.hasSwapHydra ? newItem : nil
+                accum[newItem.chainId] = newItem.hasSwapHub ? newItem : nil
             case let .delete(deletedIdentifier):
                 accum[deletedIdentifier] = nil
             }
@@ -84,10 +63,10 @@ final class AssetsHydraExchangeProvider {
 
         return true
     }
-}
 
-extension AssetsHydraExchangeProvider: AssetsExchangeProviding {
-    func provide(notifingIn queue: DispatchQueue, onChange: @escaping ([AssetsExchangeProtocol]) -> Void) {
+    // MARK: Subsclass
+
+    override func performSetup() {
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: syncQueue,
@@ -97,11 +76,11 @@ extension AssetsHydraExchangeProvider: AssetsExchangeProviding {
                 return
             }
 
-            provideExchanges(notifingIn: queue, onChange: onChange)
+            updateStateIfNeeded()
         }
     }
 
-    func stop() {
+    override func performThrottle() {
         chainRegistry.chainsUnsubscribe(self)
     }
 }

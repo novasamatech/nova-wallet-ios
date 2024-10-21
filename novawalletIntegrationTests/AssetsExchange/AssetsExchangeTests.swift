@@ -31,7 +31,7 @@ final class AssetsExchangeTests: XCTestCase {
                     logger: logger
                 ),
                 
-                AssetsConversionExchangeProvider(
+                AssetsHubExchangeProvider(
                     chainRegistry: chainRegistry,
                     operationQueue: operationQueue,
                     logger: logger

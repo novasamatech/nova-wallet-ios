@@ -11,7 +11,7 @@ extension HydraPoolTokensFactoryProtocol {
             return connections.flatMap { keyValue in
                 let origin = keyValue.key
 
-                return keyValue.value.map { HydraExchangeEdge(origin: origin, destination: $0) }
+                return keyValue.value.map { AssetsHydraExchangeEdge(origin: origin, destination: $0) }
             }
         }
 
