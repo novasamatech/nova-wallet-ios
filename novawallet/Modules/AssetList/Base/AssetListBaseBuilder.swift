@@ -318,18 +318,22 @@ class AssetListBaseBuilder {
         if dict[key] != nil {
             dict[key]?.apply(changes: changes)
         } else {
-            let assetModel = changes
+            let assetModel = mutChanges
                 .compactMap(\.item)
                 .first
 
             guard let assetModel else { return }
+
+            mutChanges = mutChanges.filter {
+                $0.item?.chainAssetModel.chainAssetId != assetModel.chainAssetModel.chainAssetId
+            }
 
             dict[key] = AssetListModelHelpers.createAssetsDiffCalculator(from: [assetModel])
 
             applyListChanges(
                 for: &dict,
                 key: key,
-                changes: Array(changes.dropFirst())
+                changes: Array(mutChanges)
             )
         }
     }
