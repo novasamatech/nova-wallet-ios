@@ -17,6 +17,57 @@ final class AssetListCollectionViewDelegate: NSObject {
     }
 }
 
+// MARK: Private
+
+private extension AssetListCollectionViewDelegate {
+    func processAssetSelect(
+        _ collectionView: UICollectionView,
+        at indexPath: IndexPath
+    ) {
+        guard
+            let groupsLayoutDelegate,
+            let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
+                indexPath.section
+            ) else {
+            return
+        }
+
+        let groupViewModel = groupsViewModel.listState.groups[groupIndex]
+
+        let chainAssetId: ChainAssetId
+
+        switch groupViewModel {
+        case let .network(group):
+            chainAssetId = group.assets[indexPath.row].chainAssetId
+        case let .token(group) where indexPath.row == 0:
+            let symbol = group.token.symbol
+            let expandable = groupsLayoutDelegate.groupExpandable(for: symbol)
+            let expanded = groupsLayoutDelegate.groupExpanded(for: symbol)
+
+            guard !expanded else {
+                groupsLayoutDelegate.collapseAssetGroup(for: symbol)
+                collectionView.reloadSections([indexPath.section])
+
+                return
+            }
+
+            guard !expandable else {
+                groupsLayoutDelegate.expandAssetGroup(for: symbol)
+                collectionView.reloadSections([indexPath.section])
+
+                return
+            }
+
+            chainAssetId = group.assets[indexPath.row].chainAssetId
+        case let .token(group):
+            let chainAssetIndex = indexPath.row - 1
+            chainAssetId = group.assets[chainAssetIndex].chainAssetId
+        }
+
+        selectionDelegate?.selectAsset(for: chainAssetId)
+    }
+}
+
 // MARK: UICollectionViewDelegateFlowLayout
 
 extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
@@ -65,44 +116,7 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         case .account, .settings, .emptyState, .totalBalance:
             break
         case .asset:
-            if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
-                indexPath.section
-            ) {
-                let groupViewModel = groupsViewModel.listState.groups[groupIndex]
-
-                let chainAssetId: ChainAssetId
-
-                switch groupViewModel {
-                case let .network(group):
-                    chainAssetId = group.assets[indexPath.row].chainAssetId
-                case let .token(group):
-                    guard let groupsLayoutDelegate else { return }
-
-                    if indexPath.row == 0 {
-                        let symbol = group.token.symbol
-                        let expandable = groupsLayoutDelegate.groupExpandable(for: symbol)
-                        let expanded = groupsLayoutDelegate.groupExpanded(for: symbol)
-
-                        if expanded == true {
-                            groupsLayoutDelegate.collapseAssetGroup(for: symbol)
-                            collectionView.reloadSections([indexPath.section])
-
-                            return
-                        } else if expandable {
-                            groupsLayoutDelegate.expandAssetGroup(for: symbol)
-                            collectionView.reloadSections([indexPath.section])
-
-                            return
-                        } else {
-                            chainAssetId = group.assets[indexPath.row].chainAssetId
-                        }
-                    } else {
-                        chainAssetId = group.assets[indexPath.row].chainAssetId
-                    }
-                }
-
-                selectionDelegate?.selectAsset(for: chainAssetId)
-            }
+            processAssetSelect(collectionView, at: indexPath)
         case .yourNfts:
             selectionDelegate?.selectNfts()
         case .banner:
