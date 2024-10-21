@@ -33,6 +33,7 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         setupTopBar()
         setupSearchField()
+        setupFilter()
         setupTableView()
         setupLocalization()
 
@@ -44,6 +45,14 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         rootView.addTokenButton.target = self
         rootView.addTokenButton.action = #selector(actionAddToken)
+    }
+
+    private func setupFilter() {
+        rootView.filterSwitch.addTarget(
+            self,
+            action: #selector(actionHideZeroBalances),
+            for: .valueChanged
+        )
     }
 
     private func setupSearchField() {
@@ -62,14 +71,22 @@ final class TokensManageViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.tokensManageTitle(preferredLanguages: selectedLocale.rLanguages)
+        let languages = selectedLocale.rLanguages
+
+        title = R.string.localizable.tokensManageTitle(
+            preferredLanguages: languages
+        )
 
         rootView.addTokenButton.title = R.string.localizable.commonAddToken(
-            preferredLanguages: selectedLocale.rLanguages
+            preferredLanguages: languages
         )
 
         let placeholder = R.string.localizable.assetsSearchPlaceholder(
-            preferredLanguages: selectedLocale.rLanguages
+            preferredLanguages: languages
+        )
+
+        rootView.filterLabel.text = R.string.localizable.assetsManageHideZeroBalances(
+            preferredLanguages: languages
         )
 
         rootView.searchTextField.attributedPlaceholder = NSAttributedString(
@@ -110,6 +127,10 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         presenter.search(query: query)
     }
+
+    @objc private func actionHideZeroBalances() {
+        presenter.performFilterChange(to: rootView.filterSwitch.isOn)
+    }
 }
 
 extension TokensManageViewController: TokensManageTableViewCellDelegate {
@@ -131,6 +152,13 @@ extension TokensManageViewController: TokensManageTableViewCellDelegate {
 }
 
 extension TokensManageViewController: TokensManageViewProtocol {
+    func didReceive(viewModel: AssetsSettingsViewModel) {
+        rootView.filterSwitch.setOn(
+            viewModel.hideZeroBalances,
+            animated: true
+        )
+    }
+
     func didReceive(viewModels: [TokensManageViewModel]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])

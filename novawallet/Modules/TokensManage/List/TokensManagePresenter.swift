@@ -10,6 +10,7 @@ final class TokensManagePresenter {
 
     private(set) var chains: ListDifferenceCalculator<ChainModel>
     private(set) var tokenModels: [MultichainToken] = []
+    private(set) var hideZeroBalances: Bool?
 
     private var query: String = ""
 
@@ -94,6 +95,18 @@ final class TokensManagePresenter {
         let chainAssetIds = token.instances.map(\.chainAssetId)
         interactor.save(chainAssetIds: Set(chainAssetIds), enabled: enabled, allChains: chains.allItems)
     }
+
+    private func changeHideZeroBalances(to value: Bool) {
+        let canApply = hideZeroBalances != nil && value != hideZeroBalances
+        hideZeroBalances = value
+
+        let viewModel = AssetsSettingsViewModel(
+            hideZeroBalances: value,
+            canApply: canApply
+        )
+
+        view?.didReceive(viewModel: viewModel)
+    }
 }
 
 extension TokensManagePresenter: TokensManagePresenterProtocol {
@@ -128,6 +141,10 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
 
         saveChains(for: tokenModels[tokenIndex], enabled: enabled)
     }
+
+    func performFilterChange(to value: Bool) {
+        interactor.save(hideZeroBalances: value)
+    }
 }
 
 extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
@@ -135,6 +152,12 @@ extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
         chains.apply(changes: changes)
 
         reloadTokens()
+    }
+
+    func didReceive(hideZeroBalances: Bool) {
+        self.hideZeroBalances = hideZeroBalances
+
+        changeHideZeroBalances(to: hideZeroBalances)
     }
 
     func didFailChainSave() {

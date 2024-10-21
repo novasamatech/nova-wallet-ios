@@ -2,6 +2,7 @@ import Operation_iOS
 
 protocol TokensManageViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModels: [TokensManageViewModel])
+    func didReceive(viewModel: AssetsSettingsViewModel)
 }
 
 protocol TokensManagePresenterProtocol: AnyObject {
@@ -10,15 +11,18 @@ protocol TokensManagePresenterProtocol: AnyObject {
     func performAddToken()
     func performEdit(for viewModel: TokensManageViewModel)
     func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool)
+    func performFilterChange(to value: Bool)
 }
 
 protocol TokensManageInteractorInputProtocol: AnyObject {
     func setup()
     func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel])
+    func save(hideZeroBalances: Bool)
 }
 
 protocol TokensManageInteractorOutputProtocol: AnyObject {
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>])
+    func didReceive(hideZeroBalances: Bool)
     func didFailChainSave()
 }
 

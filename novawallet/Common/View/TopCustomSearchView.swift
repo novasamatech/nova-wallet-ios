@@ -1,7 +1,8 @@
 import UIKit
+import SoraUI
 
-final class TopCustomSearchView: UIView {
-    static let preferredBarHeight: CGFloat = 48.0
+class TopCustomSearchView: UIView {
+    static let preferredBarHeight: CGFloat = 98.0
 
     let blurBackgroundView: BlurBackgroundView = {
         let view = BlurBackgroundView()
@@ -24,7 +25,7 @@ final class TopCustomSearchView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(blurBackgroundView)
 
         blurBackgroundView.snp.makeConstraints { make in

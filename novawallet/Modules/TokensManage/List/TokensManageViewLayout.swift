@@ -1,10 +1,18 @@
 import UIKit
 
 final class TokensManageViewLayout: UIView {
-    let searchView = TopCustomSearchView()
+    let searchView = TokensManageSearchView()
 
     var searchBar: CustomSearchBar {
         searchView.searchBar
+    }
+
+    var filterSwitch: UISwitch {
+        searchView.zeroBalanceFilterSwitch
+    }
+
+    var filterLabel: UILabel {
+        searchView.zeroBalanceFilterLabel
     }
 
     var searchTextField: UITextField {
