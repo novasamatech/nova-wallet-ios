@@ -29,7 +29,10 @@ final class AssetsExchangeGraphProvider {
         syncQueue = DispatchQueue(label: "io.novawallet.exchangegraphprovider.\(UUID().uuidString)")
     }
 
-    private func updateExchanges(_ exchanges: [AssetsExchangeProtocol], providerIndex: Int) {
+    private func updateExchanges(
+        _ exchanges: [AssetsExchangeProtocol],
+        providerIndex: Int
+    ) {
         guard let cancellableStore = edgesRequestPerProvider[providerIndex] else {
             return
         }
@@ -39,8 +42,15 @@ final class AssetsExchangeGraphProvider {
         let edgeWrappers = exchanges.map { $0.availableDirectSwapConnections() }
 
         let graphOperation = ClosureOperation<AssetsExchangeGraphModel> {
-            let edges = try edgeWrappers
-                .flatMap { try $0.targetOperation.extractNoCancellableResultData() }
+            let edges = edgeWrappers
+                .flatMap { edgeWrapper in
+                    do {
+                        return try edgeWrapper.targetOperation.extractNoCancellableResultData()
+                    } catch {
+                        self.logger.warning("Edge wrapper failed (provider \(providerIndex)): \(error)")
+                        return []
+                    }
+                }
                 .map { AnyAssetExchangeEdge($0) }
 
             return GraphModelFactory.createFromEdges(edges)
@@ -68,7 +78,7 @@ final class AssetsExchangeGraphProvider {
                 graphPerProvider[providerIndex] = graph
                 rebuildGraph()
             case let .failure(error):
-                logger.error("Did receive error: \(error).")
+                logger.error("Did receive error (provider index \(providerIndex)): \(error).")
             }
         }
     }
