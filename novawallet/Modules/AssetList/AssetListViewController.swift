@@ -67,15 +67,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 }
 
-extension AssetListViewController: Localizable {
-    func applyLocalization() {
-        if isViewLoaded {
-            rootView.collectionView.reloadData()
-        }
-    }
-}
-
-extension AssetListViewController: HiddableBarWhenPushed {}
+// MARK: AssetListViewProtocol
 
 extension AssetListViewController: AssetListViewProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel) {
@@ -143,7 +135,7 @@ extension AssetListViewController: AssetListViewProtocol {
     }
 }
 
-// MARK: AssetListCollectionViewActionsDelegate
+// MARK: AssetListCollectionManagerDelegate
 
 extension AssetListViewController: AssetListCollectionManagerDelegate {
     func selectAsset(for chainAssetId: ChainAssetId) {
@@ -215,3 +207,17 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.closePromotion()
     }
 }
+
+// MARK: Localizable
+
+extension AssetListViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            rootView.collectionView.reloadData()
+        }
+    }
+}
+
+// MARK: HiddableBarWhenPushed
+
+extension AssetListViewController: HiddableBarWhenPushed {}
