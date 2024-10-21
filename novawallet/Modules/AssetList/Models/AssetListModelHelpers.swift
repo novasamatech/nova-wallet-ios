@@ -90,14 +90,8 @@ enum AssetListModelHelpers {
         from assets: [AssetListAssetModel]
     ) -> ListDifferenceCalculator<AssetListAssetModel> {
         let sortingBlock: (AssetListAssetModel, AssetListAssetModel) -> Bool = { lhs, rhs in
-            if let result = AssetListAssetModelCompator.by(\.balanceValue, lhs, rhs) {
+            if let result = AssetListAssetModelCompator.by(\.totalAmountDecimal, lhs, rhs) {
                 result
-            } else if let result = AssetListAssetModelCompator.by(\.externalBalancesValue, lhs, rhs) {
-                result
-            } else if let result = AssetListAssetModelCompator.by(\.totalAmountDecimal, lhs, rhs) {
-                result
-            } else if lhs.chainAssetModel.asset.isUtility != rhs.chainAssetModel.asset.isUtility {
-                lhs.chainAssetModel.asset.isUtility.intValue > rhs.chainAssetModel.asset.isUtility.intValue
             } else {
                 lhs.chainAssetModel.asset.symbol.lexicographicallyPrecedes(
                     rhs.chainAssetModel.asset.symbol

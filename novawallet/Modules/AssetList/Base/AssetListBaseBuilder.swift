@@ -371,16 +371,26 @@ class AssetListBaseBuilder {
                 externalBalances: externalBalancesResult
             )
 
-            let assetListModel = AssetListModelHelpers.createAssetModel(
+            let assetListAssetModel = AssetListModelHelpers.createAssetModel(
                 for: chainModel,
                 assetModel: assetModel,
                 state: state
             )
 
             var chainChanges = chainListsChanges[chainAssetId.chainId] ?? []
-            chainChanges.append(.update(newItem: assetListModel))
+            chainChanges.append(.update(newItem: assetListAssetModel))
+
+            var assetChanges = assetListsChanges[assetModel.symbol] ?? []
+            if groupListsByAsset[assetModel.symbol]?.allItems.contains(
+                where: { $0.chainAssetModel.chainAssetId == assetListAssetModel.chainAssetModel.chainAssetId }
+            ) ?? false {
+                assetChanges.append(.update(newItem: assetListAssetModel))
+            } else {
+                assetChanges.append(.insert(newItem: assetListAssetModel))
+            }
 
             chainListsChanges[chainAssetId.chainId] = chainChanges
+            assetListsChanges[assetModel.symbol] = assetChanges
 
             changedChainGroups[chainModel.chainId] = chainModel
         }
