@@ -23,12 +23,11 @@ final class AssetListBuilder: AssetListBaseBuilder {
     }
 
     override func rebuildModel() {
-        let groups = self.groups.allItems
-        let groupList = groupLists.mapValues { $0.allItems }
-
         let model = AssetListBuilderResult.Model(
-            groups: groups,
-            groupLists: groupList,
+            chainGroups: chainGroups,
+            assetGroups: assetGroups,
+            groupListsByChain: groupListsByChain,
+            groupListsByAsset: groupListsByAsset,
             priceResult: priceResult,
             balanceResults: balanceResults,
             allChains: allChains,

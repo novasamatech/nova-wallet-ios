@@ -10,13 +10,14 @@ struct AssetModel: Equatable, Codable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = UInt32
     typealias PriceId = String
+    typealias Symbol = String
 
     static let utilityAssetId: Id = 0
 
     let assetId: Id
     let icon: URL?
     let name: String?
-    let symbol: String
+    let symbol: Symbol
     let precision: UInt16
     let priceId: PriceId?
     let stakings: [StakingType]?
@@ -42,7 +43,7 @@ struct AssetModel: Equatable, Codable, Hashable {
         assetId: Id,
         icon: URL?,
         name: String?,
-        symbol: String,
+        symbol: Symbol,
         precision: UInt16,
         priceId: PriceId?,
         stakings: [StakingType]?,

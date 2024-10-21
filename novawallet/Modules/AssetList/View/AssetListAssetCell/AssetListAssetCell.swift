@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class AssetListAssetCell: UICollectionViewCell {
+class AssetListAssetCell: UICollectionViewCell {
     private static let iconViewSize: CGFloat = 40.0
 
     let iconView: AssetIconView = {
@@ -13,20 +13,6 @@ final class AssetListAssetCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .semiBoldBody
         label.textColor = R.color.colorTextPrimary()
-        return label
-    }()
-
-    let priceLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularFootnote
-        label.textColor = R.color.colorTextSecondary()
-        return label
-    }()
-
-    let priceChangeLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularFootnote
-        label.textColor = .clear
         return label
     }()
 
@@ -45,6 +31,14 @@ final class AssetListAssetCell: UICollectionViewCell {
         label.textAlignment = .right
         return label
     }()
+
+    let dividerView: BorderedContainerView = .create { view in
+        view.strokeWidth = 1.0
+        view.strokeColor = R.color.colorDivider()!
+        view.borderType = .bottom
+
+        view.isHidden = true
+    }
 
     private var iconViewModel: ImageViewModelProtocol?
 
@@ -75,50 +69,54 @@ final class AssetListAssetCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AssetListAssetViewModel) {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        dividerView.isHidden = true
+    }
+
+    func createDetailsView() -> UIView {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func bind(viewModel: AssetListTokenGroupViewModel) {
+        bind(
+            viewModel: viewModel,
+            balanceKeyPath: \.balance,
+            imageKeyPath: \.token.imageViewModel,
+            nameKeyPath: \.token.symbol
+        )
+    }
+
+    func showDivider() {
+        dividerView.isHidden = false
+    }
+
+    func bind<T>(
+        viewModel: T,
+        balanceKeyPath: KeyPath<T, AssetListAssetBalanceViewModel>,
+        imageKeyPath: KeyPath<T, ImageViewModelProtocol?>,
+        nameKeyPath: KeyPath<T, String>
+    ) {
         iconViewModel?.cancel(on: iconView.imageView)
 
-        iconViewModel = viewModel.icon
+        iconViewModel = viewModel[keyPath: imageKeyPath]
 
         iconView.imageView.image = nil
 
         let iconSize = Self.iconViewSize - iconView.contentInsets.left - iconView.contentInsets.right
-        viewModel.icon?.loadImage(
+        viewModel[keyPath: imageKeyPath]?.loadImage(
             on: iconView.imageView,
             targetSize: CGSize(width: iconSize, height: iconSize),
             animated: true
         )
 
-        assetLabel.text = viewModel.tokenName
+        assetLabel.text = viewModel[keyPath: nameKeyPath]
 
-        applyPrice(viewModel.price)
-        applyBalance(viewModel.balanceAmount)
-        applyBalanceValue(viewModel.balanceValue)
-    }
+        let balanceViewModel = viewModel[keyPath: balanceKeyPath]
 
-    private func applyPrice(_ priceViewModel: LoadableViewModelState<AssetPriceViewModel>) {
-        switch priceViewModel {
-        case .loading:
-            priceLabel.text = ""
-            priceChangeLabel.text = ""
-        case let .cached(value):
-            priceLabel.text = value.amount
-            applyPriceChange(value.change)
-        case let .loaded(value):
-            priceLabel.text = value.amount
-            applyPriceChange(value.change)
-        }
-    }
-
-    private func applyPriceChange(_ priceChangeViewModel: ValueDirection<String>) {
-        switch priceChangeViewModel {
-        case let .increase(value):
-            priceChangeLabel.text = value
-            priceChangeLabel.textColor = R.color.colorTextPositive()
-        case let .decrease(value):
-            priceChangeLabel.text = value
-            priceChangeLabel.textColor = R.color.colorTextNegative()
-        }
+        applyBalance(balanceViewModel.balanceAmount)
+        applyBalanceValue(balanceViewModel.balanceValue)
     }
 
     private func applyBalance(_ balanceViewModel: LoadableViewModelState<String>) {
@@ -159,15 +157,11 @@ final class AssetListAssetCell: UICollectionViewCell {
             make.top.equalToSuperview().inset(8.0)
         }
 
-        contentView.addSubview(priceLabel)
-        priceLabel.snp.makeConstraints { make in
-            make.leading.equalTo(iconView.snp.trailing).offset(12.0)
-            make.bottom.equalToSuperview().inset(8.0)
-        }
+        let detailsView = createDetailsView()
 
-        contentView.addSubview(priceChangeLabel)
-        priceChangeLabel.snp.makeConstraints { make in
-            make.leading.equalTo(priceLabel.snp.trailing).offset(4.0)
+        contentView.addSubview(detailsView)
+        detailsView.snp.makeConstraints { make in
+            make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.bottom.equalToSuperview().inset(8.0)
         }
 
@@ -181,8 +175,15 @@ final class AssetListAssetCell: UICollectionViewCell {
         contentView.addSubview(balanceValueLabel)
         balanceValueLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(32.0)
-            make.leading.greaterThanOrEqualTo(priceChangeLabel.snp.trailing).offset(4.0)
+            make.leading.greaterThanOrEqualTo(detailsView.snp.trailing).offset(4.0)
             make.bottom.equalToSuperview().inset(8.0)
+        }
+
+        contentView.addSubview(dividerView)
+        dividerView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalToSuperview()
         }
     }
 }

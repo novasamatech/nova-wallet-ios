@@ -24,7 +24,7 @@ final class AssetListNetworkView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AssetListGroupViewModel) {
+    func bind(viewModel: AssetListNetworkGroupViewModel) {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
             valueLabel.text = value

@@ -7,7 +7,7 @@ protocol ChainAssetViewModelFactoryProtocol {
 final class ChainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol {
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
 
-    init(networkViewModelFactory: NetworkViewModelFactoryProtocol) {
+    init(networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory()) {
         self.networkViewModelFactory = networkViewModelFactory
     }
 

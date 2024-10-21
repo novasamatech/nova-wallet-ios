@@ -57,6 +57,7 @@ enum SwapAssetsOperationViewFactory {
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
+            chainAssetViewModelFactory: ChainAssetViewModelFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),

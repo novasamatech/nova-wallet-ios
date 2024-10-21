@@ -1,10 +1,33 @@
 import Foundation
 import BigInt
+import Operation_iOS
+
+extension ListDifferenceCalculator where T == AssetListChainGroupModel {
+    static let empty: ListDifferenceCalculator<T> = AssetListModelHelpers.createGroupsDiffCalculator(
+        from: [],
+        defaultComparingBy: \.chain
+    )
+}
+
+extension ListDifferenceCalculator where T == AssetListAssetGroupModel {
+    static let empty: ListDifferenceCalculator<T> = AssetListModelHelpers.createGroupsDiffCalculator(
+        from: [],
+        defaultComparingBy: \.chainAsset.chain
+    )
+}
+
+extension ListDifferenceCalculator where T == AssetListAssetModel {
+    static let empty: ListDifferenceCalculator<T> = AssetListModelHelpers.createAssetsDiffCalculator(
+        from: []
+    )
+}
 
 struct AssetListBuilderResult {
     struct Model {
-        let groups: [AssetListGroupModel]
-        let groupLists: [ChainModel.Id: [AssetListAssetModel]]
+        let chainGroups: ListDifferenceCalculator<AssetListChainGroupModel>
+        let assetGroups: ListDifferenceCalculator<AssetListAssetGroupModel>
+        let groupListsByChain: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>]
+        let groupListsByAsset: [AssetModel.Symbol: ListDifferenceCalculator<AssetListAssetModel>]
         let priceResult: Result<[ChainAssetId: PriceData], Error>?
         let balanceResults: [ChainAssetId: Result<BigUInt, Error>]
         let allChains: [ChainModel.Id: ChainModel]
@@ -15,8 +38,10 @@ struct AssetListBuilderResult {
         let holdsResult: Result<[AssetHold], Error>?
 
         init(
-            groups: [AssetListGroupModel] = [],
-            groupLists: [ChainModel.Id: [AssetListAssetModel]] = [:],
+            chainGroups: ListDifferenceCalculator<AssetListChainGroupModel> = .empty,
+            assetGroups: ListDifferenceCalculator<AssetListAssetGroupModel> = .empty,
+            groupListsByChain: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>] = [:],
+            groupListsByAsset: [AssetModel.Symbol: ListDifferenceCalculator<AssetListAssetModel>] = [:],
             priceResult: Result<[ChainAssetId: PriceData], Error>? = nil,
             balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:],
             allChains: [ChainModel.Id: ChainModel] = [:],
@@ -26,8 +51,10 @@ struct AssetListBuilderResult {
             locksResult: Result<[AssetLock], Error>? = nil,
             holdsResult: Result<[AssetHold], Error>? = nil
         ) {
-            self.groups = groups
-            self.groupLists = groupLists
+            self.chainGroups = chainGroups
+            self.assetGroups = assetGroups
+            self.groupListsByChain = groupListsByChain
+            self.groupListsByAsset = groupListsByAsset
             self.priceResult = priceResult
             self.balanceResults = balanceResults
             self.allChains = allChains
@@ -40,8 +67,10 @@ struct AssetListBuilderResult {
 
         func replacing(nfts: [NftModel]) -> Model {
             .init(
-                groups: groups,
-                groupLists: groupLists,
+                chainGroups: chainGroups,
+                assetGroups: assetGroups,
+                groupListsByChain: groupListsByChain,
+                groupListsByAsset: groupListsByAsset,
                 priceResult: priceResult,
                 balanceResults: balanceResults,
                 allChains: allChains,

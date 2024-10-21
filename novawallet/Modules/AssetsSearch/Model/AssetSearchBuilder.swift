@@ -92,15 +92,21 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             AssetListModelHelpers.createAssetsDiffCalculator(from: models)
         }
 
-        let chainModels: [AssetListGroupModel] = assetModels.compactMap { chainId, assetModels in
+        let chainModels: [AssetListChainGroupModel] = assetModels.compactMap { chainId, assetModels in
             guard let chain = state.allChains[chainId] else {
                 return nil
             }
 
-            return AssetListModelHelpers.createGroupModel(from: chain, assets: assetModels)
+            return AssetListModelHelpers.createChainGroupModel(
+                from: chain,
+                assets: assetModels
+            )
         }
 
-        let groupChainCalculator = AssetListModelHelpers.createGroupsDiffCalculator(from: chainModels)
+        let groupChainCalculator = AssetListModelHelpers.createGroupsDiffCalculator(
+            from: chainModels,
+            defaultComparingBy: \.chain
+        )
 
         return AssetSearchBuilderResult(
             groups: groupChainCalculator,

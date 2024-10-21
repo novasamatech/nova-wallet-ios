@@ -50,6 +50,7 @@ struct AssetListViewFactory {
         let viewModelFactory = AssetListViewModelFactory(
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
+            chainAssetViewModelFactory: ChainAssetViewModelFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource(),
             nftDownloadService: nftDownloadService,
@@ -57,15 +58,19 @@ struct AssetListViewFactory {
         )
         let localizationManager = LocalizationManager.shared
 
+        let assetListStyle: AssetListGroupsStyle = .networks
+
         let presenter = AssetListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            assetListStyle: assetListStyle,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
 
         let view = AssetListViewController(
             presenter: presenter,
+            assetGroupsLayoutStyle: assetListStyle,
             localizationManager: localizationManager
         )
 
