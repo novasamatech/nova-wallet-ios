@@ -257,7 +257,7 @@ private extension AssetListCollectionViewDataSource {
 
         return cell
     }
-    
+
     func numberOfItemsForAssetGroup(_ section: Int) -> Int {
         if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
             switch groupsViewModel.listState.groups[groupIndex] {
@@ -329,7 +329,7 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         _: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        return switch AssetListFlowLayout.SectionType(section: section) {
+        switch AssetListFlowLayout.SectionType(section: section) {
         case .summary:
             headerViewModel != nil ? 2 : 0
         case .nfts:
