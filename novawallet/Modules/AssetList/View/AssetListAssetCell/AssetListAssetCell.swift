@@ -32,6 +32,14 @@ class AssetListAssetCell: UICollectionViewCell {
         return label
     }()
 
+    let dividerView: BorderedContainerView = .create { view in
+        view.strokeWidth = 1.0
+        view.strokeColor = R.color.colorDivider()!
+        view.borderType = .bottom
+
+        view.isHidden = true
+    }
+
     private var iconViewModel: ImageViewModelProtocol?
 
     override init(frame: CGRect) {
@@ -61,6 +69,12 @@ class AssetListAssetCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        dividerView.isHidden = true
+    }
+
     func createDetailsView() -> UIView {
         fatalError("Must be overriden by subsclass")
     }
@@ -72,6 +86,10 @@ class AssetListAssetCell: UICollectionViewCell {
             imageKeyPath: \.token.imageViewModel,
             nameKeyPath: \.token.symbol
         )
+    }
+
+    func showDivider() {
+        dividerView.isHidden = false
     }
 
     func bind<T>(
@@ -159,6 +177,13 @@ class AssetListAssetCell: UICollectionViewCell {
             make.trailing.equalToSuperview().inset(32.0)
             make.leading.greaterThanOrEqualTo(detailsView.snp.trailing).offset(4.0)
             make.bottom.equalToSuperview().inset(8.0)
+        }
+
+        contentView.addSubview(dividerView)
+        dividerView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalToSuperview()
         }
     }
 }

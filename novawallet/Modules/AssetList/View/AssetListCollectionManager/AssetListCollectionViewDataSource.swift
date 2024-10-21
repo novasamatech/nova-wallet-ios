@@ -196,6 +196,10 @@ private extension AssetListCollectionViewDataSource {
             )!
             cell.bind(viewModel: groupViewModel)
 
+            if expanded {
+                cell.showDivider()
+            }
+
             assetCell = cell
         }
 
