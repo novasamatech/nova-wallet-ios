@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct TokenManageSingleViewFactory {
     static func createView(
@@ -36,9 +37,13 @@ struct TokenManageSingleViewFactory {
 
     private static func createInteractor() -> TokensManageInteractor? {
         let repository = SubstrateRepositoryFactory().createChainRepository()
+        let eventCenter = EventCenter.shared
+        let settingsManager = SettingsManager.shared
 
         return .init(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
+            eventCenter: eventCenter,
+            settingsManager: settingsManager,
             repository: repository,
             repositoryFactory: SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
             operationQueue: OperationManagerFacade.sharedDefaultQueue

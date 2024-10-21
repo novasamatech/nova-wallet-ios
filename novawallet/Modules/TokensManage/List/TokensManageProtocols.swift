@@ -26,6 +26,10 @@ protocol TokensManageInteractorOutputProtocol: AnyObject {
     func didFailChainSave()
 }
 
+extension TokensManageInteractorOutputProtocol {
+    func didReceive(hideZeroBalances: Bool) {}
+}
+
 protocol TokensManageWireframeProtocol: AnyObject {
     func showAddToken(from view: TokensManageViewProtocol?)
     func showEditToken(
