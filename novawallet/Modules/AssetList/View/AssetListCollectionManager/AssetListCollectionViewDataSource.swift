@@ -1,6 +1,6 @@
 import UIKit
 
-class AssetListCollectionViewDataSource: NSObject {
+final class AssetListCollectionViewDataSource: NSObject {
     var groupsViewModel: AssetListViewModel
     var headerViewModel: AssetListHeaderViewModel?
     var nftViewModel: AssetListNftsViewModel?
@@ -132,29 +132,71 @@ private extension AssetListCollectionViewDataSource {
         _ collectionView: UICollectionView,
         indexPath: IndexPath,
         assetIndex _: Int
+    ) -> UICollectionViewCell {
+        guard let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
+            indexPath.section
+        ) else {
+            return UICollectionViewCell()
+        }
+
+        return switch groupsViewModel.listState.groups[groupIndex] {
+        case let .network(groupViewModel):
+            provideNetworkGroupAssetCell(
+                collectionView,
+                groupViewModel: groupViewModel,
+                indexPath: indexPath
+            )
+        case let .token(groupViewModel):
+            provideTokenGroupAssetCell(
+                collectionView,
+                groupViewModel: groupViewModel,
+                indexPath: indexPath
+            )
+        }
+    }
+
+    func provideNetworkGroupAssetCell(
+        _ collectionView: UICollectionView,
+        groupViewModel: AssetListNetworkGroupViewModel,
+        indexPath: IndexPath
     ) -> AssetListAssetCell {
         let assetCell = collectionView.dequeueReusableCellWithType(
-            AssetListAssetCell.self,
+            AssetListNetworkGroupAssetCell.self,
             for: indexPath
         )!
 
-        if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
-            indexPath.section
-        ) {
-            switch groupsViewModel.listState.groups[groupIndex] {
-            case let .network(groupViewModel):
-                assetCell.bind(viewModel: groupViewModel.assets[indexPath.row])
-            case let .token(groupViewModel):
-                let expanded = groupsLayoutDelegate?.groupExpanded(
-                    for: groupViewModel.token.symbol
-                ) ?? false
+        assetCell.bind(viewModel: groupViewModel.assets[indexPath.row])
 
-                if expanded, indexPath.row != 0 {
-                    assetCell.bind(viewModel: groupViewModel.assets[indexPath.row - 1])
-                } else {
-                    assetCell.bind(viewModel: groupViewModel)
-                }
-            }
+        return assetCell
+    }
+
+    func provideTokenGroupAssetCell(
+        _ collectionView: UICollectionView,
+        groupViewModel: AssetListTokenGroupViewModel,
+        indexPath: IndexPath
+    ) -> AssetListAssetCell {
+        let expanded = groupsLayoutDelegate?.groupExpanded(
+            for: groupViewModel.token.symbol
+        ) ?? false
+
+        let assetCell: AssetListAssetCell
+
+        if expanded, indexPath.row != 0 {
+            let cell = collectionView.dequeueReusableCellWithType(
+                AssetListTokenGroupAssetCell.self,
+                for: indexPath
+            )!
+            cell.bind(viewModel: groupViewModel.assets[indexPath.row - 1])
+
+            assetCell = cell
+        } else {
+            let cell: AssetListAssetCell = collectionView.dequeueReusableCellWithType(
+                AssetListNetworkGroupAssetCell.self,
+                for: indexPath
+            )!
+            cell.bind(viewModel: groupViewModel)
+
+            assetCell = cell
         }
 
         return assetCell
@@ -215,6 +257,25 @@ private extension AssetListCollectionViewDataSource {
 
         return cell
     }
+    
+    func numberOfItemsForAssetGroup(_ section: Int) -> Int {
+        if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
+            switch groupsViewModel.listState.groups[groupIndex] {
+            case let .network(groupViewModel):
+                return groupViewModel.assets.count
+            case let .token(groupViewModel):
+                let expanded = groupsLayoutDelegate?.groupExpanded(
+                    for: groupViewModel.token.symbol
+                ) ?? false
+
+                return expanded
+                    ? groupViewModel.assets.count + 1
+                    : 1
+            }
+        } else {
+            return 0
+        }
+    }
 
     @objc func actionSelectAccount() {
         actionsDelegate?.actionSelectAccount()
@@ -268,32 +329,17 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         _: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        switch AssetListFlowLayout.SectionType(section: section) {
+        return switch AssetListFlowLayout.SectionType(section: section) {
         case .summary:
-            return headerViewModel != nil ? 2 : 0
+            headerViewModel != nil ? 2 : 0
         case .nfts:
-            return nftViewModel != nil ? 1 : 0
+            nftViewModel != nil ? 1 : 0
         case .promotion:
-            return promotionBannerViewModel != nil ? 1 : 0
+            promotionBannerViewModel != nil ? 1 : 0
         case .settings:
-            return groupsViewModel.listState.isEmpty ? 2 : 1
+            groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
-            if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
-                switch groupsViewModel.listState.groups[groupIndex] {
-                case let .network(groupViewModel):
-                    return groupViewModel.assets.count
-                case let .token(groupViewModel):
-                    let expanded = groupsLayoutDelegate?.groupExpanded(
-                        for: groupViewModel.token.symbol
-                    ) ?? false
-
-                    return expanded
-                        ? groupViewModel.assets.count + 1
-                        : 1
-                }
-            } else {
-                return 0
-            }
+            numberOfItemsForAssetGroup(section)
         }
     }
 

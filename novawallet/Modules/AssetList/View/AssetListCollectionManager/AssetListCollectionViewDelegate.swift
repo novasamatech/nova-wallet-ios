@@ -1,6 +1,6 @@
 import UIKit
 
-class AssetListCollectionViewDelegate: NSObject {
+final class AssetListCollectionViewDelegate: NSObject {
     var groupsViewModel: AssetListViewModel
 
     weak var selectionDelegate: AssetListCollectionSelectionDelegate?

@@ -1,6 +1,6 @@
 import UIKit
 
-class AssetListCollectionManager {
+final class AssetListCollectionManager {
     weak var delegate: AssetListCollectionManagerDelegate?
 
     var ableToClosePromotion: Bool {
@@ -74,7 +74,8 @@ class AssetListCollectionManager {
 
 extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     func setupCollectionView() {
-        view?.collectionView.registerCellClass(AssetListAssetCell.self)
+        view?.collectionView.registerCellClass(AssetListTokenGroupAssetCell.self)
+        view?.collectionView.registerCellClass(AssetListNetworkGroupAssetCell.self)
         view?.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
         view?.collectionView.registerCellClass(AssetListAccountCell.self)
         view?.collectionView.registerCellClass(AssetListSettingsCell.self)
