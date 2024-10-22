@@ -8,8 +8,8 @@ protocol AssetsExchangeGraphProtocol {
         to assetOut: ChainAssetId,
         maxTopPaths: Int
     ) -> [AssetExchangeGraphPath]
-    
-    func fetchReachbility() -> AssetsExchageGraphReachabilityProtocol
+
+    func fetchReachability() -> AssetsExchageGraphReachabilityProtocol
 }
 
 final class AssetsExchangeGraph {
@@ -28,14 +28,14 @@ extension AssetsExchangeGraph: AssetsExchangeGraphProtocol {
     ) -> [AssetExchangeGraphPath] {
         model.calculateShortestPath(from: assetIn, nodeEnd: assetOut, topN: maxTopPaths)
     }
-    
+
     func fetchReachability() -> AssetsExchageGraphReachabilityProtocol {
         let allNodes = model.connections.keys
-        
+
         let mapping = allNodes.reduce(into: [ChainAssetId: Set<ChainAssetId>]()) { accum, assetIn in
             accum[assetIn] = model.reachableNodes(for: assetIn)
         }
-        
+
         return AssetsExchageGraphReachability(mapping: mapping)
     }
 }

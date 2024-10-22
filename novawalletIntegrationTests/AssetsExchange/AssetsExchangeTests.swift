@@ -58,7 +58,7 @@ final class AssetsExchangeTests: XCTestCase {
             notifyingIn: .global()
         ) { graph in
             guard
-                let paths = graph?.fetchPaths(from: assetIn, to: assetOut),
+                let paths = graph?.fetchPaths(from: assetIn, to: assetOut, maxTopPaths: 4),
                 !paths.isEmpty else {
                 return
             }
