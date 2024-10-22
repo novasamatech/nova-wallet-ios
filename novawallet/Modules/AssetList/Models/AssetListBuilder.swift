@@ -23,11 +23,31 @@ final class AssetListBuilder: AssetListBaseBuilder {
     }
 
     override func rebuildModel() {
+        var groupListByChain: [ChainModel.Id: [AssetListAssetModel]] = [:]
+        var groupListsByChainDiff: [ChainModel.Id: [ListDifference<AssetListAssetModel>]] = [:]
+
+        groupListsByChain.forEach { key, value in
+            groupListByChain[key] = value.allItems
+            groupListsByChainDiff[key] = value.lastDifferences
+        }
+
+        var groupListByAsset: [AssetModel.Symbol: [AssetListAssetModel]] = [:]
+        var groupListsByAssetDiff: [AssetModel.Symbol: [ListDifference<AssetListAssetModel>]] = [:]
+
+        groupListsByAsset.forEach { key, value in
+            groupListByAsset[key] = value.allItems
+            groupListsByAssetDiff[key] = value.lastDifferences
+        }
+
         let model = AssetListBuilderResult.Model(
-            chainGroups: chainGroups,
-            assetGroups: assetGroups,
-            groupListsByChain: groupListsByChain,
-            groupListsByAsset: groupListsByAsset,
+            chainGroups: chainGroups.allItems,
+            chainGroupsChanges: chainGroups.lastDifferences,
+            assetGroups: assetGroups.allItems,
+            assetGroupsChanges: assetGroups.lastDifferences,
+            groupListsByChain: groupListByChain,
+            groupListsByChainChanges: groupListsByChainDiff,
+            groupListsByAsset: groupListByAsset,
+            groupListsByAssetChanges: groupListsByAssetDiff,
             priceResult: priceResult,
             balanceResults: balanceResults,
             allChains: allChains,

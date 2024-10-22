@@ -317,7 +317,7 @@ final class AssetListPresenter {
 
         return switch assetListStyle {
         case .networks:
-            model.chainGroups.allItems.compactMap {
+            model.chainGroups.compactMap {
                 createNetworkGroupViewModel(
                     from: $0,
                     maybePrices: maybePrices,
@@ -325,7 +325,7 @@ final class AssetListPresenter {
                 )
             }
         case .tokens:
-            model.assetGroups.allItems.compactMap {
+            model.assetGroups.compactMap {
                 createAssetGroupViewModel(
                     from: $0,
                     maybePrices: maybePrices
@@ -338,10 +338,10 @@ final class AssetListPresenter {
         from groupModel: AssetListAssetGroupModel,
         maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupType? {
-        let assetsDiff = model.groupListsByAsset[groupModel.multichainToken.symbol] ?? .empty
+        let assets = model.groupListsByAsset[groupModel.multichainToken.symbol] ?? []
 
         return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
-            assetsListDiff: assetsDiff,
+            assetsList: assets,
             group: groupModel,
             maybePrices: maybePrices,
             connected: true,
@@ -360,7 +360,7 @@ final class AssetListPresenter {
     ) -> AssetListGroupType? {
         let chain = groupModel.chain
 
-        let assets = model.groupListsByChain[chain.chainId]?.allItems ?? []
+        let assets = model.groupListsByChain[chain.chainId] ?? []
 
         let filteredAssets: [AssetListAssetModel]
 

@@ -20,7 +20,7 @@ protocol AssetListAssetViewModelFactoryProtocol {
     ) -> AssetListNetworkGroupViewModel
 
     func createTokenGroupViewModel(
-        assetsListDiff: ListDifferenceCalculator<AssetListAssetModel>,
+        assetsList: [AssetListAssetModel],
         group: AssetListAssetGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
         connected: Bool,
@@ -202,15 +202,13 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
     }
 
     func createTokenGroupViewModel(
-        assetsListDiff: ListDifferenceCalculator<AssetListAssetModel>,
+        assetsList: [AssetListAssetModel],
         group: AssetListAssetGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
         connected: Bool,
         locale: Locale
     ) -> AssetListTokenGroupViewModel? {
-        let allAssets = assetsListDiff.allItems
-
-        let allAssetsInfo = allAssets.map {
+        let allAssetsInfo = assetsList.map {
             AssetListPresenterHelpers.createAssetAccountInfo(
                 from: $0,
                 chain: $0.chainAssetModel.chain,
@@ -219,7 +217,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
         }
 
         guard
-            let token = allAssets.first,
+            let token = assetsList.first,
             let balanceViewModel = createBalanceViewModel(
                 for: allAssetsInfo,
                 group: group,
@@ -229,7 +227,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
             return nil
         }
 
-        let assetViewModels = allAssets.compactMap { assetModel in
+        let assetViewModels = assetsList.compactMap { assetModel in
             createTokenGroupAssetViewModel(
                 assetModel: assetModel,
                 maybePrices: maybePrices,
