@@ -3,10 +3,8 @@ import XCTest
 
 final class AssetsExchangeTests: XCTestCase {
 
-    func testGraphBuildSucceeds() {
-        let storageFacade = SubstrateStorageTestFacade()
-        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let operationQueue = OperationQueue()
+    func testFindPath() {
+        let chainRegistry = setupChainRegistry()
         let logger = Logger.shared
         
         guard
@@ -19,6 +17,83 @@ final class AssetsExchangeTests: XCTestCase {
         
         let assetIn = dotPolkadot.chainAssetId
         let assetOut = ChainAssetId(chainId: polkadotAssetHub.chainId, assetId: usdtAssetHub.assetId)
+        
+        let expectation = XCTestExpectation()
+        var foundPaths: [[AnyAssetExchangeEdge]]?
+        
+        let graphProvider = createAndSubscribeGraphProvider(for: chainRegistry) { graph in
+            guard
+                let paths = graph?.fetchPaths(from: assetIn, to: assetOut, maxTopPaths: 4),
+                !paths.isEmpty else {
+                return
+            }
+            
+            foundPaths = paths
+            
+            expectation.fulfill()
+        }
+     
+        wait(for: [expectation], timeout: 60)
+        
+        graphProvider.throttle()
+        
+        let descriptions = (foundPaths ?? []).map {
+            AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: $0,
+                chainRegistry: chainRegistry
+            )
+        }
+        
+        logger.info("Paths:")
+        
+        descriptions.forEach { logger.info($0) }
+    }
+    
+    func testFindAvailablePairs() {
+        let chainRegistry = setupChainRegistry()
+        
+        guard
+            let polkadotUtilityAsset = chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAssetId(),
+            let hydraUtilityAsset = chainRegistry.getChain(for: KnowChainId.hydra)?.utilityChainAssetId(),
+            let assetHubUtilityAsset = chainRegistry.getChain(for: KnowChainId.statemint)?.utilityChainAssetId() else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        let expectation = XCTestExpectation()
+        
+        let graphProvider = createAndSubscribeGraphProvider(for: chainRegistry) { graph in
+            guard let reachability = graph?.fetchReachability() else {
+                return
+            }
+            
+            let hasDirections = !reachability.getAllAssetIn().isEmpty &&
+                !reachability.getAllAssetOut().isEmpty &&
+                !reachability.getAssetsIn(for: assetHubUtilityAsset).isEmpty &&
+                !reachability.getAssetsOut(for: polkadotUtilityAsset).isEmpty &&
+                !reachability.getAssetsIn(for: hydraUtilityAsset).isEmpty
+            
+            if hasDirections {
+                expectation.fulfill()
+            }
+        }
+        
+        wait(for: [expectation], timeout: 60)
+        
+        graphProvider.throttle()
+    }
+    
+    private func setupChainRegistry() -> ChainRegistryProtocol {
+        let storageFacade = SubstrateStorageTestFacade()
+        return ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+    }
+    
+    private func createAndSubscribeGraphProvider(
+        for chainRegistry: ChainRegistryProtocol,
+        onGraphChange: @escaping (AssetsExchangeGraphProtocol?) -> Void
+    ) -> AssetsExchangeGraphProviding {
+        let operationQueue = OperationQueue()
+        let logger = Logger.shared
         
         let graphProvider = AssetsExchangeGraphProvider(
             supportedExchangeProviders: [
@@ -48,37 +123,14 @@ final class AssetsExchangeTests: XCTestCase {
         )
 
         graphProvider.setup()
-     
-        let expectation = XCTestExpectation()
-        
-        var foundPaths: [[AnyAssetExchangeEdge]]?
         
         graphProvider.subscribeGraph(
             self,
             notifyingIn: .global()
         ) { graph in
-            guard
-                let paths = graph?.fetchPaths(from: assetIn, to: assetOut, maxTopPaths: 4),
-                !paths.isEmpty else {
-                return
-            }
-            
-            foundPaths = paths
-            
-            expectation.fulfill()
+            onGraphChange(graph)
         }
         
-        wait(for: [expectation], timeout: 60)
-        
-        let descriptions = (foundPaths ?? []).map {
-            AssetsExchangeGraphDescription.getDescriptionForPath(
-                edges: $0,
-                chainRegistry: chainRegistry
-            )
-        }
-        
-        logger.info("Paths:")
-        
-        descriptions.forEach { logger.info($0) }
+        return graphProvider
     }
 }
