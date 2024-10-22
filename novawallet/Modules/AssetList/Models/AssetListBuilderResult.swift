@@ -10,10 +10,7 @@ extension ListDifferenceCalculator where T == AssetListChainGroupModel {
 }
 
 extension ListDifferenceCalculator where T == AssetListAssetGroupModel {
-    static let empty: ListDifferenceCalculator<T> = AssetListModelHelpers.createGroupsDiffCalculator(
-        from: [],
-        defaultComparingBy: \.chainAsset.chain
-    )
+    static let empty: ListDifferenceCalculator<T> = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: [])
 }
 
 extension ListDifferenceCalculator where T == AssetListAssetModel {

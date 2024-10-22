@@ -338,10 +338,11 @@ final class AssetListPresenter {
         from groupModel: AssetListAssetGroupModel,
         maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupType? {
-        let assetsDiff = model.groupListsByAsset[groupModel.chainAsset.asset.symbol] ?? .empty
+        let assetsDiff = model.groupListsByAsset[groupModel.multichainToken.symbol] ?? .empty
 
         return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
             assetsListDiff: assetsDiff,
+            group: groupModel,
             maybePrices: maybePrices,
             connected: true,
             locale: selectedLocale

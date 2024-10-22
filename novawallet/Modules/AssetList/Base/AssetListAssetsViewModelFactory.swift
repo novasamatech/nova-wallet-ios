@@ -21,6 +21,7 @@ protocol AssetListAssetViewModelFactoryProtocol {
 
     func createTokenGroupViewModel(
         assetsListDiff: ListDifferenceCalculator<AssetListAssetModel>,
+        group: AssetListAssetGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
         connected: Bool,
         locale: Locale
@@ -66,6 +67,7 @@ class AssetListAssetViewModelFactory {
 
     func createBalanceViewModel(
         for assets: [AssetListAssetAccountInfo],
+        group: AssetListAssetGroupModel,
         connected: Bool,
         locale: Locale
     ) -> AssetListAssetBalanceViewModel? {
@@ -78,7 +80,7 @@ class AssetListAssetViewModelFactory {
         let totalInfo = AssetListAssetAccountInfo(
             assetId: 0,
             assetInfo: assetInfo,
-            balance: totalBalance,
+            balance: group.amount.toSubstrateAmount(precision: assetInfo.assetPrecision),
             priceData: assets.first?.priceData
         )
 
@@ -201,6 +203,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
     func createTokenGroupViewModel(
         assetsListDiff: ListDifferenceCalculator<AssetListAssetModel>,
+        group: AssetListAssetGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
         connected: Bool,
         locale: Locale
@@ -219,6 +222,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
             let token = allAssets.first,
             let balanceViewModel = createBalanceViewModel(
                 for: allAssetsInfo,
+                group: group,
                 connected: connected,
                 locale: locale
             ) else {

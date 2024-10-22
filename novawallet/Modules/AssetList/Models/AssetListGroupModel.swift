@@ -22,14 +22,16 @@ struct AssetListChainGroupModel: Identifiable, GroupAmountContainable {
 }
 
 struct AssetListAssetGroupModel: Identifiable, GroupAmountContainable {
-    var identifier: String { chainAsset.identifier }
+    var identifier: String {
+        multichainToken.symbol
+    }
 
-    let chainAsset: ChainAsset
+    let multichainToken: MultichainToken
     let value: Decimal
     let amount: Decimal
 
-    init(chainAsset: ChainAsset, value: Decimal, amount: Decimal) {
-        self.chainAsset = chainAsset
+    init(multichainToken: MultichainToken, value: Decimal, amount: Decimal) {
+        self.multichainToken = multichainToken
         self.value = value
         self.amount = amount
     }
