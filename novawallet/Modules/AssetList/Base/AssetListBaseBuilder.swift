@@ -270,28 +270,12 @@ class AssetListBaseBuilder {
     ) {
         guard !changes.isEmpty else { return }
 
-        var mutChanges = changes
-
         if dict[key] != nil {
             dict[key]?.apply(changes: changes)
         } else {
-            let assetModel = mutChanges
-                .compactMap(\.item)
-                .first
+            let assetModels = changes.compactMap(\.item)
 
-            guard let assetModel else { return }
-
-            mutChanges = mutChanges.filter {
-                $0.item?.chainAssetModel.chainAssetId != assetModel.chainAssetModel.chainAssetId
-            }
-
-            dict[key] = AssetListModelHelpers.createAssetsDiffCalculator(from: [assetModel])
-
-            applyListChanges(
-                for: &dict,
-                key: key,
-                changes: Array(mutChanges)
-            )
+            dict[key] = AssetListModelHelpers.createAssetsDiffCalculator(from: assetModels)
         }
     }
 
@@ -409,8 +393,8 @@ class AssetListBaseBuilder {
     ) -> [DataProviderChange<AssetListAssetGroupModel>] {
         chainAssets.compactMap { chainAsset in
             guard
-                let assets = groupListsByAsset[chainAsset.asset.symbol]?.allItems,
-                let token = tokensByChainAsset[chainAsset.chainAssetId]
+                let token = tokensByChainAsset[chainAsset.chainAssetId],
+                let assets = groupListsByAsset[token.symbol]?.allItems
             else {
                 return nil
             }
