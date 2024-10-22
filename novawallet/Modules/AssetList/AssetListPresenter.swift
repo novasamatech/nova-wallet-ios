@@ -317,7 +317,7 @@ final class AssetListPresenter {
 
         return switch assetListStyle {
         case .networks:
-            model.chainGroups.allItems.compactMap {
+            model.chainGroups.compactMap {
                 createNetworkGroupViewModel(
                     from: $0,
                     maybePrices: maybePrices,
@@ -325,23 +325,48 @@ final class AssetListPresenter {
                 )
             }
         case .tokens:
-            model.assetGroups.allItems.compactMap {
+            model.assetGroups.compactMap {
                 createAssetGroupViewModel(
                     from: $0,
-                    maybePrices: maybePrices
+                    maybePrices: maybePrices,
+                    hidesZeroBalances: hidesZeroBalances
                 )
             }
         }
     }
 
+    private func filterZeroBalances(_ assets: [AssetListAssetModel]) -> [AssetListAssetModel] {
+        let filteredAssets: [AssetListAssetModel]
+
+        filteredAssets = assets.filter { asset in
+            if let balance = try? asset.balanceResult?.get(), balance > 0 {
+                return true
+            } else {
+                return false
+            }
+        }
+
+        return filteredAssets
+    }
+
     private func createAssetGroupViewModel(
         from groupModel: AssetListAssetGroupModel,
-        maybePrices: [ChainAssetId: PriceData]?
+        maybePrices: [ChainAssetId: PriceData]?,
+        hidesZeroBalances: Bool
     ) -> AssetListGroupType? {
-        let assetsDiff = model.groupListsByAsset[groupModel.chainAsset.asset.symbol] ?? .empty
+        let assets = model.groupListsByAsset[groupModel.multichainToken.symbol] ?? []
+
+        let filteredAssets = hidesZeroBalances
+            ? filterZeroBalances(assets)
+            : assets
+
+        guard !filteredAssets.isEmpty else {
+            return nil
+        }
 
         return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
-            assetsListDiff: assetsDiff,
+            assetsList: assets,
+            group: groupModel,
             maybePrices: maybePrices,
             connected: true,
             locale: selectedLocale
@@ -359,28 +384,22 @@ final class AssetListPresenter {
     ) -> AssetListGroupType? {
         let chain = groupModel.chain
 
-        let assets = model.groupListsByChain[chain.chainId]?.allItems ?? []
+        let assets = model.groupListsByChain[chain.chainId] ?? []
 
-        let filteredAssets: [AssetListAssetModel]
+        let filteredAssets = hidesZeroBalances
+            ? filterZeroBalances(assets)
+            : assets
 
-        if hidesZeroBalances {
-            filteredAssets = assets.filter { asset in
-                if let balance = try? asset.balanceResult?.get(), balance > 0 {
-                    return true
-                } else {
-                    return false
-                }
-            }
-
-            guard !filteredAssets.isEmpty else {
-                return nil
-            }
-        } else {
-            filteredAssets = assets
+        guard !filteredAssets.isEmpty else {
+            return nil
         }
 
         let assetInfoList: [AssetListAssetAccountInfo] = filteredAssets.map { asset in
-            AssetListPresenterHelpers.createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+            AssetListPresenterHelpers.createAssetAccountInfo(
+                from: asset,
+                chain: chain,
+                maybePrices: maybePrices
+            )
         }
 
         return .network(

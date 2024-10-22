@@ -2,32 +2,12 @@ import Foundation
 import BigInt
 import Operation_iOS
 
-extension ListDifferenceCalculator where T == AssetListChainGroupModel {
-    static let empty: ListDifferenceCalculator<T> = AssetListModelHelpers.createGroupsDiffCalculator(
-        from: [],
-        defaultComparingBy: \.chain
-    )
-}
-
-extension ListDifferenceCalculator where T == AssetListAssetGroupModel {
-    static let empty: ListDifferenceCalculator<T> = AssetListModelHelpers.createGroupsDiffCalculator(
-        from: [],
-        defaultComparingBy: \.chainAsset.chain
-    )
-}
-
-extension ListDifferenceCalculator where T == AssetListAssetModel {
-    static let empty: ListDifferenceCalculator<T> = AssetListModelHelpers.createAssetsDiffCalculator(
-        from: []
-    )
-}
-
 struct AssetListBuilderResult {
     struct Model {
-        let chainGroups: ListDifferenceCalculator<AssetListChainGroupModel>
-        let assetGroups: ListDifferenceCalculator<AssetListAssetGroupModel>
-        let groupListsByChain: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>]
-        let groupListsByAsset: [AssetModel.Symbol: ListDifferenceCalculator<AssetListAssetModel>]
+        let chainGroups: [AssetListChainGroupModel]
+        let assetGroups: [AssetListAssetGroupModel]
+        let groupListsByChain: [ChainModel.Id: [AssetListAssetModel]]
+        let groupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]]
         let priceResult: Result<[ChainAssetId: PriceData], Error>?
         let balanceResults: [ChainAssetId: Result<BigUInt, Error>]
         let allChains: [ChainModel.Id: ChainModel]
@@ -38,10 +18,10 @@ struct AssetListBuilderResult {
         let holdsResult: Result<[AssetHold], Error>?
 
         init(
-            chainGroups: ListDifferenceCalculator<AssetListChainGroupModel> = .empty,
-            assetGroups: ListDifferenceCalculator<AssetListAssetGroupModel> = .empty,
-            groupListsByChain: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>] = [:],
-            groupListsByAsset: [AssetModel.Symbol: ListDifferenceCalculator<AssetListAssetModel>] = [:],
+            chainGroups: [AssetListChainGroupModel] = [],
+            assetGroups: [AssetListAssetGroupModel] = [],
+            groupListsByChain: [ChainModel.Id: [AssetListAssetModel]] = [:],
+            groupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]] = [:],
             priceResult: Result<[ChainAssetId: PriceData], Error>? = nil,
             balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:],
             allChains: [ChainModel.Id: ChainModel] = [:],
