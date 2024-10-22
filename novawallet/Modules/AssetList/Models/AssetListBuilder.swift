@@ -41,13 +41,9 @@ final class AssetListBuilder: AssetListBaseBuilder {
 
         let model = AssetListBuilderResult.Model(
             chainGroups: chainGroups.allItems,
-            chainGroupsChanges: chainGroups.lastDifferences,
             assetGroups: assetGroups.allItems,
-            assetGroupsChanges: assetGroups.lastDifferences,
             groupListsByChain: groupListByChain,
-            groupListsByChainChanges: groupListsByChainDiff,
             groupListsByAsset: groupListByAsset,
-            groupListsByAssetChanges: groupListsByAssetDiff,
             priceResult: priceResult,
             balanceResults: balanceResults,
             allChains: allChains,

@@ -22,17 +22,9 @@ extension ListDifferenceCalculator where T == AssetListAssetModel {
 struct AssetListBuilderResult {
     struct Model {
         let chainGroups: [AssetListChainGroupModel]
-        let chainGroupsChanges: [ListDifference<AssetListChainGroupModel>]
-
         let assetGroups: [AssetListAssetGroupModel]
-        let assetGroupsChanges: [ListDifference<AssetListAssetGroupModel>]
-
         let groupListsByChain: [ChainModel.Id: [AssetListAssetModel]]
-        let groupListsByChainChanges: [ChainModel.Id: [ListDifference<AssetListAssetModel>]]
-
         let groupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]]
-        let groupListsByAssetChanges: [AssetModel.Symbol: [ListDifference<AssetListAssetModel>]]
-
         let priceResult: Result<[ChainAssetId: PriceData], Error>?
         let balanceResults: [ChainAssetId: Result<BigUInt, Error>]
         let allChains: [ChainModel.Id: ChainModel]
@@ -44,17 +36,9 @@ struct AssetListBuilderResult {
 
         init(
             chainGroups: [AssetListChainGroupModel] = [],
-            chainGroupsChanges: [ListDifference<AssetListChainGroupModel>] = [],
-
             assetGroups: [AssetListAssetGroupModel] = [],
-            assetGroupsChanges: [ListDifference<AssetListAssetGroupModel>] = [],
-
             groupListsByChain: [ChainModel.Id: [AssetListAssetModel]] = [:],
-            groupListsByChainChanges: [ChainModel.Id: [ListDifference<AssetListAssetModel>]] = [:],
-
             groupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]] = [:],
-            groupListsByAssetChanges: [AssetModel.Symbol: [ListDifference<AssetListAssetModel>]] = [:],
-
             priceResult: Result<[ChainAssetId: PriceData], Error>? = nil,
             balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:],
             allChains: [ChainModel.Id: ChainModel] = [:],
@@ -65,17 +49,9 @@ struct AssetListBuilderResult {
             holdsResult: Result<[AssetHold], Error>? = nil
         ) {
             self.chainGroups = chainGroups
-            self.chainGroupsChanges = chainGroupsChanges
-
             self.assetGroups = assetGroups
-            self.assetGroupsChanges = assetGroupsChanges
-
             self.groupListsByChain = groupListsByChain
-            self.groupListsByChainChanges = groupListsByChainChanges
-
             self.groupListsByAsset = groupListsByAsset
-            self.groupListsByAssetChanges = groupListsByAssetChanges
-
             self.priceResult = priceResult
             self.balanceResults = balanceResults
             self.allChains = allChains
