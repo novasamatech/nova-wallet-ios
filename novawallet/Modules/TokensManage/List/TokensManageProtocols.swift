@@ -27,7 +27,7 @@ protocol TokensManageInteractorOutputProtocol: AnyObject {
 }
 
 extension TokensManageInteractorOutputProtocol {
-    func didReceive(hideZeroBalances: Bool) {}
+    func didReceive(hideZeroBalances _: Bool) {}
 }
 
 protocol TokensManageWireframeProtocol: AnyObject {
