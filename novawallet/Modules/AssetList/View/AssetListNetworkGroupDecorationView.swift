@@ -77,7 +77,7 @@ final class AssetListTokenGroupDecorationView: UICollectionReusableView {
         underneathView.contentView?.fillColor = R.color.colorHiddenNetworkBlockBackground()!
 
         backgroundView.sideLength = 12
-        underneathView.sideLength = 4
+        underneathView.sideLength = 12
 
         underneathView.cornerCut = [.bottomLeft, .bottomRight]
         backgroundView.cornerCut = .allCorners
