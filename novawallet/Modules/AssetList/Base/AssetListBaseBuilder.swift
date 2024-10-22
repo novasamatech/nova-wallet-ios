@@ -296,20 +296,6 @@ class AssetListBaseBuilder {
     }
 
     private func processBalances(_ results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
-        var chainListsChanges: [ChainModel.Id: [DataProviderChange<AssetListAssetModel>]] = [:]
-        var assetListsChanges: [AssetModel.Symbol: [DataProviderChange<AssetListAssetModel>]] = [:]
-
-        var changedChainGroups: [ChainModel.Id: ChainModel] = [:]
-
-        let tokensByChainAsset = results.keys
-            .compactMap {
-                allChains[$0.chainId]
-            }
-            .createMultichainTokens()
-            .reduce(into: [ChainAssetId: MultichainToken]()) { acc, token in
-                token.instances.forEach { acc[$0.chainAssetId] = token }
-            }
-
         for (chainAssetId, result) in results {
             switch result {
             case let .success(maybeAmount):
@@ -324,6 +310,24 @@ class AssetListBaseBuilder {
                 balances[chainAssetId] = .failure(error)
             }
         }
+
+        updateGroupsWithBalances(with: results)
+    }
+
+    private func updateGroupsWithBalances(with results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
+        var chainListsChanges: [ChainModel.Id: [DataProviderChange<AssetListAssetModel>]] = [:]
+        var assetListsChanges: [AssetModel.Symbol: [DataProviderChange<AssetListAssetModel>]] = [:]
+
+        var changedChains: [ChainModel.Id: ChainModel] = [:]
+
+        let tokensByChainAsset = results.keys
+            .compactMap {
+                allChains[$0.chainId]
+            }
+            .createMultichainTokens()
+            .reduce(into: [ChainAssetId: MultichainToken]()) { acc, token in
+                token.instances.forEach { acc[$0.chainAssetId] = token }
+            }
 
         for chainAssetId in results.keys {
             guard
@@ -349,6 +353,7 @@ class AssetListBaseBuilder {
 
             var chainChanges = chainListsChanges[chainAssetId.chainId] ?? []
             chainChanges.append(.update(newItem: assetListAssetModel))
+            chainListsChanges[chainAssetId.chainId] = chainChanges
 
             if let symbol = tokensByChainAsset[assetListAssetModel.chainAssetModel.chainAssetId]?.symbol {
                 var assetChanges = assetListsChanges[symbol] ?? []
@@ -363,14 +368,27 @@ class AssetListBaseBuilder {
                 assetListsChanges[assetModel.symbol] = assetChanges
             }
 
-            chainListsChanges[chainAssetId.chainId] = chainChanges
-            changedChainGroups[chainModel.chainId] = chainModel
+            changedChains[chainModel.chainId] = chainModel
         }
 
         applyChainListsChanges(chainListsChanges)
         applyAssetListsChanges(assetListsChanges)
 
-        let chainGroupChanges: [DataProviderChange<AssetListChainGroupModel>] = changedChainGroups.map { keyValue in
+        let chainGroupChanges: [DataProviderChange<AssetListChainGroupModel>] = chainGroupChanges(for: changedChains)
+
+        let assetGroupChanges = assetGroupChanges(
+            from: changedChains.flatMap { $0.value.chainAssets() },
+            tokensByChainAsset: tokensByChainAsset
+        )
+
+        chainGroups.apply(changes: chainGroupChanges)
+        assetGroups.apply(changes: assetGroupChanges)
+    }
+
+    private func chainGroupChanges(
+        for changedChains: [ChainModel.Id: ChainModel]
+    ) -> [DataProviderChange<AssetListChainGroupModel>] {
+        changedChains.map { keyValue in
             let chainId = keyValue.key
             let chainModel = keyValue.value
 
@@ -383,28 +401,27 @@ class AssetListBaseBuilder {
 
             return .update(newItem: groupModel)
         }
+    }
 
-        let assetGroupChanges: [DataProviderChange<AssetListAssetGroupModel>] = changedChainGroups
-            .values
-            .flatMap { $0.chainAssets() }
-            .compactMap { chainAsset in
-                guard
-                    let assets = groupListsByAsset[chainAsset.asset.symbol]?.allItems,
-                    let token = tokensByChainAsset[chainAsset.chainAssetId]
-                else {
-                    return nil
-                }
-
-                let group = AssetListModelHelpers.createAssetGroupModel(
-                    token: token,
-                    assets: assets
-                )
-
-                return .update(newItem: group)
+    private func assetGroupChanges(
+        from chainAssets: [ChainAsset],
+        tokensByChainAsset: [ChainAssetId: MultichainToken]
+    ) -> [DataProviderChange<AssetListAssetGroupModel>] {
+        chainAssets.compactMap { chainAsset in
+            guard
+                let assets = groupListsByAsset[chainAsset.asset.symbol]?.allItems,
+                let token = tokensByChainAsset[chainAsset.chainAssetId]
+            else {
+                return nil
             }
 
-        chainGroups.apply(changes: chainGroupChanges)
-        assetGroups.apply(changes: assetGroupChanges)
+            let group = AssetListModelHelpers.createAssetGroupModel(
+                token: token,
+                assets: assets
+            )
+
+            return .update(newItem: group)
+        }
     }
 
     private func processRemovedPriceChainAssets(_ chainAssetIds: Set<ChainAssetId>) -> Bool {
