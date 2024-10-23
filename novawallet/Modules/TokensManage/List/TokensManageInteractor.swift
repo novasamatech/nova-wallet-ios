@@ -69,11 +69,18 @@ final class TokensManageInteractor {
             dependencies: [clearLocksOperation, clearCrowdloanContributionOperation]
         )
     }
+
+    private func provideHidesZeroBalances() {
+        let hidesZeroBalances = settingsManager.hidesZeroBalances
+
+        presenter?.didReceive(hideZeroBalances: hidesZeroBalances)
+    }
 }
 
 extension TokensManageInteractor: TokensManageInteractorInputProtocol {
     func setup() {
         subscribeChains()
+        provideHidesZeroBalances()
     }
 
     func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel]) {
