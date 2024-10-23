@@ -1,8 +1,6 @@
 import UIKit
 
 class TopCustomSearchView: UIView {
-    static let preferredBarHeight: CGFloat = 98.0
-
     let blurBackgroundView: BlurBackgroundView = {
         let view = BlurBackgroundView()
         view.sideLength = 0.0
