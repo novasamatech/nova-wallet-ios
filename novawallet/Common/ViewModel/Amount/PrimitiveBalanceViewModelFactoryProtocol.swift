@@ -5,8 +5,8 @@ import BigInt
 protocol PrimitiveBalanceViewModelFactoryProtocol {
     func priceFromAmount(_ amount: Decimal, priceData: PriceData) -> LocalizableResource<String>
 
-    func value(
-        from decimalValue: Decimal,
+    func priceFromFiatAmount(
+        _ decimalValue: Decimal,
         priceData: PriceData
     ) -> LocalizableResource<String>
 
