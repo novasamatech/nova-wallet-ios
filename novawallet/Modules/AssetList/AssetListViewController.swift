@@ -167,14 +167,6 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.refresh()
     }
 
-    func actionSettings() {
-        presenter.toggleAssetListStyle()
-
-        setupCollectionView()
-
-        // presenter.presentSettings()
-    }
-
     func actionSearch() {
         presenter.presentSearch()
     }

@@ -8,25 +8,17 @@ final class AssetListSettingsCell: UICollectionViewCell {
         return view
     }()
 
-    let manageButton: TriangularedBlurButton = {
-        let button = TriangularedBlurButton()
-        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
-        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
-        button.changesContentOpacityWhenHighlighted = true
-        button.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
-        return button
-    }()
+    let manageButton = BadgedManageButton()
 
-    let settingsButton = FilterBlurButton()
-
-    let searchButton: TriangularedBlurButton = {
-        let button = TriangularedBlurButton()
+    let searchButton: TriangularedButton = {
+        let button = TriangularedButton()
         button.imageWithTitleView?.iconImage = R.image.iconSearchButton()
+        button.triangularedView?.fillColor = .clear
+        button.triangularedView?.highlightedFillColor = .clear
+        button.triangularedView?.shadowOpacity = 0
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
-        button.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
+
         return button
     }()
 
@@ -64,17 +56,10 @@ final class AssetListSettingsCell: UICollectionViewCell {
             make.centerY.equalToSuperview()
         }
 
-        addSubview(settingsButton)
-
-        settingsButton.snp.makeConstraints { make in
-            make.trailing.equalTo(manageButton.snp.leading).inset(-8.0)
-            make.centerY.equalToSuperview()
-        }
-
         addSubview(searchButton)
 
         searchButton.snp.makeConstraints { make in
-            make.trailing.equalTo(settingsButton.snp.leading).inset(-8.0)
+            make.trailing.equalTo(manageButton.snp.leading).inset(-4.0)
             make.centerY.equalToSuperview()
         }
 

@@ -1004,6 +1004,7 @@
 		2D81FAE62CC62D0400BA0E46 /* AssetListTokenGroupAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D81FAE52CC62D0400BA0E46 /* AssetListTokenGroupAssetCell.swift */; };
 		2D81FAE82CC634E700BA0E46 /* AssetListNetworkGroupAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D81FAE72CC634E700BA0E46 /* AssetListNetworkGroupAssetCell.swift */; };
 		2D81FAEB2CC65CF800BA0E46 /* TokensManageSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D81FAEA2CC65CF800BA0E46 /* TokensManageSearchView.swift */; };
+		2D81FAED2CC8F33B00BA0E46 /* BadgedManageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D81FAEC2CC8F33B00BA0E46 /* BadgedManageButton.swift */; };
 		2D8463662C488416007E2986 /* ChainFilterStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8463652C488416007E2986 /* ChainFilterStrategyTests.swift */; };
 		2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */; };
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
@@ -6145,6 +6146,7 @@
 		2D81FAE52CC62D0400BA0E46 /* AssetListTokenGroupAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListTokenGroupAssetCell.swift; sourceTree = "<group>"; };
 		2D81FAE72CC634E700BA0E46 /* AssetListNetworkGroupAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListNetworkGroupAssetCell.swift; sourceTree = "<group>"; };
 		2D81FAEA2CC65CF800BA0E46 /* TokensManageSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageSearchView.swift; sourceTree = "<group>"; };
+		2D81FAEC2CC8F33B00BA0E46 /* BadgedManageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgedManageButton.swift; sourceTree = "<group>"; };
 		2D8463652C488416007E2986 /* ChainFilterStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategyTests.swift; sourceTree = "<group>"; };
 		2D8684542BFF7F6000A663D2 /* ExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportPresenter.swift; sourceTree = "<group>"; };
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
@@ -14976,6 +14978,7 @@
 				842D1E7824D063FD00C30A7A /* TriangularedView.swift */,
 				846449FE2567090B004EAA4B /* TriangularedView+Inspectable.swift */,
 				842D1E7A24D0667E00C30A7A /* TriangularedButton.swift */,
+				2D81FAEC2CC8F33B00BA0E46 /* BadgedManageButton.swift */,
 				842D1E7C24D0686D00C30A7A /* TriangularedButton+Inspectable.swift */,
 				84644A0625670B03004EAA4B /* BlockBackgroundView.swift */,
 				84644A0B256713D5004EAA4B /* TriangularedBlurView+Inspectable.swift */,
@@ -24440,6 +24443,7 @@
 				883DB17E297A521900EFB7D8 /* GovernanceDelegatesOrder.swift in Sources */,
 				7728E58D2A123B42007901E0 /* SearchOperationFactory.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
+				2D81FAED2CC8F33B00BA0E46 /* BadgedManageButton.swift in Sources */,
 				0CCCDF882B660E8700473D42 /* HydraOmnipoolQuoteParamsService.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,
 				848E6BDD2762142300C91022 /* StakingStatusView.swift in Sources */,

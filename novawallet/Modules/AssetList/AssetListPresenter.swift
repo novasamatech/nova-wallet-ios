@@ -471,10 +471,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         interactor.refresh()
     }
 
-    func presentSettings() {
-        wireframe.showAssetsSettings(from: view)
-    }
-
     func presentSearch() {
         wireframe.showAssetsSearch(from: view, delegate: self)
     }

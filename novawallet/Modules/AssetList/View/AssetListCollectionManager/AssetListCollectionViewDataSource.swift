@@ -106,13 +106,6 @@ private extension AssetListCollectionViewDataSource {
 
         settingsCell.locale = selectedLocale
 
-        settingsCell.settingsButton.addTarget(
-            self,
-            action: #selector(actionSettings),
-            for: .touchUpInside
-        )
-        settingsCell.settingsButton.bind(isFilterOn: groupsViewModel.isFiltered)
-
         settingsCell.manageButton.addTarget(
             self,
             action: #selector(actionManage),
@@ -124,6 +117,8 @@ private extension AssetListCollectionViewDataSource {
             action: #selector(actionSearch),
             for: .touchUpInside
         )
+
+        settingsCell.manageButton.bind(showingBadge: groupsViewModel.isFiltered)
 
         return settingsCell
     }
@@ -287,10 +282,6 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSelectWalletConnect() {
         actionsDelegate?.actionSelectWalletConnect()
-    }
-
-    @objc func actionSettings() {
-        actionsDelegate?.actionSettings()
     }
 
     @objc func actionSearch() {
