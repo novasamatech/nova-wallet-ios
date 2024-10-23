@@ -5,6 +5,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
         let view = UILabel()
         view.font = .semiBoldTitle3
         view.textColor = R.color.colorTextPrimary()
+        view.isUserInteractionEnabled = true
         return view
     }()
 

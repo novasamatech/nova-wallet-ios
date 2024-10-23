@@ -35,6 +35,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject, PromotionBannerViewD
     func actionReceive()
     func actionBuy()
     func actionSwap()
+    func actionChangeAssetListStyle()
 }
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {

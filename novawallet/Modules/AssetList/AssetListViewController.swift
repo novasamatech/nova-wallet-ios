@@ -195,6 +195,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.swap()
     }
 
+    func actionChangeAssetListStyle() {
+        presenter.toggleAssetListStyle()
+    }
+
     func promotionBannerDidRequestClose(view _: PromotionBannerView) {
         presenter.closePromotion()
     }

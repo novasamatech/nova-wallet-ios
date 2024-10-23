@@ -118,6 +118,13 @@ private extension AssetListCollectionViewDataSource {
             for: .touchUpInside
         )
 
+        settingsCell.titleLabel.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(actionChangeAssetListStyle)
+            )
+        )
+
         settingsCell.manageButton.bind(showingBadge: groupsViewModel.isFiltered)
 
         return settingsCell
@@ -310,6 +317,10 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSwap() {
         actionsDelegate?.actionSwap()
+    }
+
+    @objc func actionChangeAssetListStyle() {
+        actionsDelegate?.actionChangeAssetListStyle()
     }
 }
 
