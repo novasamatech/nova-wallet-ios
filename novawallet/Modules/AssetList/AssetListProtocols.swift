@@ -28,7 +28,6 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject, PromotionBannerViewD
     func actionSelectAccount()
     func actionSearch()
     func actionRefresh()
-    func actionSettings()
     func actionManage()
     func actionSelectWalletConnect()
     func actionLocks()
@@ -36,6 +35,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject, PromotionBannerViewD
     func actionReceive()
     func actionBuy()
     func actionSwap()
+    func actionChangeAssetListStyle()
 }
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {
@@ -78,7 +78,6 @@ protocol AssetListPresenterProtocol: AnyObject {
     func selectAsset(for chainAssetId: ChainAssetId)
     func selectNfts()
     func refresh()
-    func presentSettings()
     func presentSearch()
     func presentAssetsManage()
     func presentLocks()
@@ -126,7 +125,6 @@ protocol AssetListInteractorOutputProtocol {
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,
     CommonRetryable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
-    func showAssetsSettings(from view: AssetListViewProtocol?)
     func showTokensManage(from view: AssetListViewProtocol?)
 
     func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate)

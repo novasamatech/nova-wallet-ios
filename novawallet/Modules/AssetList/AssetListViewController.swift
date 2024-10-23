@@ -167,14 +167,6 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.refresh()
     }
 
-    func actionSettings() {
-        presenter.toggleAssetListStyle()
-
-        setupCollectionView()
-
-        // presenter.presentSettings()
-    }
-
     func actionSearch() {
         presenter.presentSearch()
     }
@@ -201,6 +193,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 
     func actionSwap() {
         presenter.swap()
+    }
+
+    func actionChangeAssetListStyle() {
+        presenter.toggleAssetListStyle()
     }
 
     func promotionBannerDidRequestClose(view _: PromotionBannerView) {
