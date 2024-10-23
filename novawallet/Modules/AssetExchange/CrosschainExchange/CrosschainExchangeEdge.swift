@@ -16,7 +16,7 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
 
     func quote(
         amount: Balance,
-        direction: AssetConversion.Direction
+        direction _: AssetConversion.Direction
     ) -> CompoundOperationWrapper<Balance> {
         CompoundOperationWrapper.createWithResult(amount)
     }

@@ -1,11 +1,28 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
-typealias AssetsHubExchange = AssetHubSwapOperationFactory
+final class AssetsHubExchange {
+    let swapFactory: AssetHubSwapOperationFactoryProtocol
 
-extension AssetsHubExchange: AssetsExchangeProtocol {
-    func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
-        let connectionsWrapper = availableDirections()
+    init(
+        chain: ChainModel,
+        runtimeService: RuntimeProviderProtocol,
+        connection: JSONRPCEngine,
+        operationQueue: OperationQueue
+    ) {
+        swapFactory = AssetHubSwapOperationFactory(
+            chain: chain,
+            runtimeService: runtimeService,
+            connection: connection,
+            operationQueue: operationQueue
+        )
+    }
+
+    private func availableDirectSwapConnections(
+        using swapFactory: AssetHubSwapOperationFactoryProtocol
+    ) -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
+        let connectionsWrapper = swapFactory.availableDirections()
 
         let mappingOperation = ClosureOperation<[any AssetExchangableGraphEdge]> {
             let connections = try connectionsWrapper.targetOperation.extractNoCancellableResultData()
@@ -13,12 +30,20 @@ extension AssetsHubExchange: AssetsExchangeProtocol {
             return connections.flatMap { keyValue in
                 let origin = keyValue.key
 
-                return keyValue.value.map { AssetHubExchangeEdge(origin: origin, destination: $0) }
+                return keyValue.value.map { destination in
+                    AssetHubExchangeEdge(origin: origin, destination: destination, quoteFactory: swapFactory)
+                }
             }
         }
 
         mappingOperation.addDependency(connectionsWrapper.targetOperation)
 
         return connectionsWrapper.insertingTail(operation: mappingOperation)
+    }
+}
+
+extension AssetsHubExchange: AssetsExchangeProtocol {
+    func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
+        availableDirectSwapConnections(using: swapFactory)
     }
 }
