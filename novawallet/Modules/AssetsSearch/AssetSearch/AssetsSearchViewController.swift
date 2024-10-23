@@ -85,7 +85,7 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
     }
 
     private func setupCollectionView() {
-        rootView.collectionView.registerCellClass(AssetListAssetCell.self)
+        rootView.collectionView.registerCellClass(AssetListNetworkGroupAssetCell.self)
         rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         rootView.collectionView.registerClass(
             AssetListNetworkView.self,
@@ -93,7 +93,7 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
         )
 
         collectionViewLayout?.register(
-            TokenGroupDecorationView.self,
+            AssetListNetworkGroupDecorationView.self,
             forDecorationViewOfKind: AssetsSearchFlowLayout.assetGroupDecoration
         )
 
@@ -183,8 +183,8 @@ extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
             if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
                 indexPath.section
             ) {
-                let viewModel = groupsState.groups[groupIndex].assets[indexPath.row]
-                presenter.selectAsset(for: viewModel.chainAssetId)
+                let chainAssetId = groupsState.groups[groupIndex].chainAssetId(for: indexPath.row)
+                presenter.selectAsset(for: chainAssetId)
             }
         }
     }
@@ -217,7 +217,7 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
             return groupsState.isEmpty ? 1 : 0
         case .assetGroup:
             if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
-                return groupsState.groups[groupIndex].assets.count
+                return groupsState.groups[groupIndex].assetsCount
             } else {
                 return 0
             }
@@ -230,15 +230,21 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
         assetIndex: Int
     ) -> AssetListAssetCell {
         let assetCell = collectionView.dequeueReusableCellWithType(
-            AssetListAssetCell.self,
+            AssetListNetworkGroupAssetCell.self,
             for: indexPath
         )!
 
         if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
-            let viewModel = groupsState.groups[groupIndex].assets[assetIndex]
-            assetCell.bind(viewModel: viewModel)
+            switch groupsState.groups[groupIndex] {
+            case let .network(groupModel):
+                let viewModel = groupModel.assets[assetIndex]
+                assetCell.bind(viewModel: viewModel)
+            case let .token(groupModel):
+                // TODO: Implement
+                print(groupModel.token)
+            }
         }
 
         return assetCell
@@ -267,10 +273,8 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
-            indexPath.section
-        ) {
-            let viewModel = groupsState.groups[groupIndex]
+        if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(indexPath.section),
+           case let .network(viewModel) = groupsState.groups[groupIndex] {
             view.bind(viewModel: viewModel)
         }
 

@@ -10,7 +10,10 @@ enum AssetOperationViewFactory {
         }
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory()
+
         let viewModelFactory = AssetListAssetViewModelFactory(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
@@ -52,7 +55,10 @@ enum AssetOperationViewFactory {
         }
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory()
+
         let viewModelFactory = AssetListAssetViewModelFactory(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
@@ -96,7 +102,10 @@ enum AssetOperationViewFactory {
         }
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory()
+
         let viewModelFactory = AssetListAssetViewModelFactory(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),

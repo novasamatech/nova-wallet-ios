@@ -2,16 +2,37 @@ import Foundation
 import Operation_iOS
 import BigInt
 
-struct AssetListGroupModel: Identifiable {
+protocol GroupAmountContainable {
+    var value: Decimal { get }
+    var amount: Decimal { get }
+}
+
+struct AssetListChainGroupModel: Identifiable, GroupAmountContainable {
     var identifier: String { chain.chainId }
 
     let chain: ChainModel
-    let chainValue: Decimal
-    let chainAmount: Decimal
+    let value: Decimal
+    let amount: Decimal
 
-    init(chain: ChainModel, chainValue: Decimal, chainAmount: Decimal) {
+    init(chain: ChainModel, value: Decimal, amount: Decimal) {
         self.chain = chain
-        self.chainValue = chainValue
-        self.chainAmount = chainAmount
+        self.value = value
+        self.amount = amount
+    }
+}
+
+struct AssetListAssetGroupModel: Identifiable, GroupAmountContainable {
+    var identifier: String {
+        multichainToken.symbol
+    }
+
+    let multichainToken: MultichainToken
+    let value: Decimal
+    let amount: Decimal
+
+    init(multichainToken: MultichainToken, value: Decimal, amount: Decimal) {
+        self.multichainToken = multichainToken
+        self.value = value
+        self.amount = amount
     }
 }

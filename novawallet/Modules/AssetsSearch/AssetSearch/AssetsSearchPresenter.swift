@@ -36,8 +36,16 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
 
         let maybePrices = try? result.state.priceResult?.get()
 
-        let viewModels: [AssetListGroupViewModel] = result.groups.allItems.compactMap { groupModel in
-            createGroupViewModel(from: groupModel, groupLists: result.groupLists, maybePrices: maybePrices)
+        let viewModels: [AssetListGroupType] = result.groups.allItems.compactMap { groupModel in
+            if let model = createGroupViewModel(
+                from: groupModel,
+                groupLists: result.groupLists,
+                maybePrices: maybePrices
+            ) {
+                .network(model)
+            } else {
+                nil
+            }
         }
 
         if viewModels.isEmpty {
@@ -48,10 +56,10 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     }
 
     private func createGroupViewModel(
-        from groupModel: AssetListGroupModel,
+        from groupModel: AssetListChainGroupModel,
         groupLists: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>],
         maybePrices: [ChainAssetId: PriceData]?
-    ) -> AssetListGroupViewModel? {
+    ) -> AssetListNetworkGroupViewModel? {
         let chain = groupModel.chain
 
         let assets = groupLists[chain.chainId]?.allItems ?? []
@@ -64,10 +72,10 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
             )
         }
 
-        return viewModelFactory.createGroupViewModel(
+        return viewModelFactory.createNetworkGroupViewModel(
             for: chain,
             assets: assetInfoList,
-            value: groupModel.chainValue,
+            value: groupModel.value,
             connected: true,
             locale: selectedLocale
         )

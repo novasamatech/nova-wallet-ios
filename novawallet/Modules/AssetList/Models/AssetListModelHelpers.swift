@@ -15,74 +15,111 @@ enum AssetListModelHelpers {
         return ListDifferenceCalculator(initialItems: [], sortBlock: sortingBlock)
     }
 
-    static func createGroupModel(
-        from chain: ChainModel,
+    static func createAssetGroupModel(
+        token: MultichainToken,
         assets: [AssetListAssetModel]
-    ) -> AssetListGroupModel {
+    ) -> AssetListAssetGroupModel {
         let amountValue: AmountPair<Decimal, Decimal> = assets.reduce(.init(amount: 0, value: 0)) { result, asset in
             .init(
-                amount: result.amount + asset.totalAmount.decimalOrZero(precision: asset.assetModel.precision),
+                amount: result.amount + asset.totalAmount.decimalOrZero(
+                    precision: asset.chainAssetModel.asset.precision
+                ),
                 value: result.value + (asset.totalValue ?? 0)
             )
         }
 
-        return AssetListGroupModel(
-            chain: chain,
-            chainValue: amountValue.value,
-            chainAmount: amountValue.amount
+        return AssetListAssetGroupModel(
+            multichainToken: token,
+            value: amountValue.value,
+            amount: amountValue.amount
         )
     }
 
-    static func createGroupsDiffCalculator(
-        from groups: [AssetListGroupModel]
-    ) -> ListDifferenceCalculator<AssetListGroupModel> {
-        let sortingBlock: (AssetListGroupModel, AssetListGroupModel) -> Bool = { model1, model2 in
-            if let result = AssetListGroupModelComparator.byValue(model1, model2) {
-                return result
-            } else if let result = AssetListGroupModelComparator.byTotalAmount(model1, model2) {
-                return result
+    static func createChainGroupModel(
+        from chain: ChainModel,
+        assets: [AssetListAssetModel]
+    ) -> AssetListChainGroupModel {
+        let amountValue: AmountPair<Decimal, Decimal> = assets.reduce(.init(amount: 0, value: 0)) { result, asset in
+            .init(
+                amount: result.amount + asset.totalAmount.decimalOrZero(
+                    precision: asset.chainAssetModel.asset.precision
+                ),
+                value: result.value + (asset.totalValue ?? 0)
+            )
+        }
+
+        return AssetListChainGroupModel(
+            chain: chain,
+            value: amountValue.value,
+            amount: amountValue.amount
+        )
+    }
+
+    static func createAssetGroupsDiffCalculator(
+        from groups: [AssetListAssetGroupModel]
+    ) -> ListDifferenceCalculator<AssetListAssetGroupModel> {
+        let sortingBlock: (AssetListAssetGroupModel, AssetListAssetGroupModel) -> Bool = { lhs, rhs in
+            if let result = AssetListGroupModelComparator.by(\.value, lhs, rhs) {
+                result
+            } else if let result = AssetListGroupModelComparator.by(\.amount, lhs, rhs) {
+                result
             } else {
-                return ChainModelCompator.defaultComparator(chain1: model1.chain, chain2: model2.chain)
+                false
             }
         }
 
         let sortedGroups = groups.sorted(by: sortingBlock)
 
-        return ListDifferenceCalculator(initialItems: sortedGroups, sortBlock: sortingBlock)
+        return ListDifferenceCalculator(
+            initialItems: sortedGroups,
+            sortBlock: sortingBlock
+        )
+    }
+
+    static func createGroupsDiffCalculator<T: GroupAmountContainable>(
+        from groups: [T],
+        defaultComparingBy: KeyPath<T, ChainModel>
+    ) -> ListDifferenceCalculator<T> {
+        let sortingBlock: (T, T) -> Bool = { lhs, rhs in
+            if let result = AssetListGroupModelComparator.by(\.value, lhs, rhs) {
+                result
+            } else if let result = AssetListGroupModelComparator.by(\.amount, lhs, rhs) {
+                result
+            } else {
+                ChainModelCompator.defaultComparator(
+                    chain1: lhs[keyPath: defaultComparingBy],
+                    chain2: rhs[keyPath: defaultComparingBy]
+                )
+            }
+        }
+
+        let sortedGroups = groups.sorted(by: sortingBlock)
+
+        return ListDifferenceCalculator(
+            initialItems: sortedGroups,
+            sortBlock: sortingBlock
+        )
     }
 
     static func createAssetsDiffCalculator(
         from assets: [AssetListAssetModel]
     ) -> ListDifferenceCalculator<AssetListAssetModel> {
-        let sortingBlock: (AssetListAssetModel, AssetListAssetModel) -> Bool = { model1, model2 in
-            let balance1 = model1.totalAmountDecimal ?? 0
-            let balance2 = model2.totalAmountDecimal ?? 0
-
-            let assetValue1 = model1.totalValue ?? 0
-            let assetValue2 = model2.totalValue ?? 0
-
-            if assetValue1 > 0, assetValue2 > 0 {
-                return assetValue1 > assetValue2
-            } else if assetValue1 > 0 {
-                return true
-            } else if assetValue2 > 0 {
-                return false
-            } else if balance1 > 0, balance2 > 0 {
-                return balance1 > balance2
-            } else if balance1 > 0 {
-                return true
-            } else if balance2 > 0 {
-                return false
-            } else if model1.assetModel.isUtility != model2.assetModel.isUtility {
-                return model1.assetModel.isUtility.intValue > model2.assetModel.isUtility.intValue
+        let sortingBlock: (AssetListAssetModel, AssetListAssetModel) -> Bool = { lhs, rhs in
+            if let result = AssetListAssetModelCompator.by(\.totalAmountDecimal, lhs, rhs) {
+                result
             } else {
-                return model1.assetModel.symbol.lexicographicallyPrecedes(model2.assetModel.symbol)
+                lhs.chainAssetModel.asset.symbol.lexicographicallyPrecedes(
+                    rhs.chainAssetModel.asset.symbol
+                )
             }
         }
 
         let sortedAssets = assets.sorted(by: sortingBlock)
 
-        return ListDifferenceCalculator(initialItems: sortedAssets, sortBlock: sortingBlock)
+        return ListDifferenceCalculator(
+            initialItems: sortedAssets,
+            sortBlock: sortingBlock
+        )
     }
 
     static func createAssetModels(for chainModel: ChainModel, state: AssetListState) -> [AssetListAssetModel] {
@@ -157,8 +194,10 @@ enum AssetListModelHelpers {
             }
         }()
 
+        let chainAsset = ChainAsset(chain: chainModel, asset: assetModel)
+
         return AssetListAssetModel(
-            assetModel: assetModel,
+            chainAssetModel: chainAsset,
             balanceResult: balanceResult,
             balanceValue: balanceValue,
             externalBalancesResult: externalBalancesContributionResult,

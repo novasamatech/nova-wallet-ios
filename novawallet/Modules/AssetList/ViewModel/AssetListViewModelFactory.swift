@@ -37,6 +37,7 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
     init(
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
         quantityFormatter: LocalizableResource<NumberFormatter>,
         nftDownloadService: NftFileDownloadServiceProtocol,
@@ -46,6 +47,7 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
         self.nftDownloadService = nftDownloadService
 
         super.init(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: assetFormatterFactory,
             percentFormatter: percentFormatter,
@@ -54,6 +56,13 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
     }
 
     private lazy var iconGenerator = NovaIconGenerator()
+
+    private func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
+        let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
+        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
+        let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
+        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
+    }
 
     private func calculateTotalPrice(from prices: [AssetListAssetAccountPrice]) -> Decimal {
         prices.reduce(Decimal(0)) { result, item in

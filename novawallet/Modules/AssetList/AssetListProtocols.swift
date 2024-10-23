@@ -3,6 +3,64 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
+// MARK: AssetListCollectionManager
+
+protocol AssetListCollectionManagerProtocol {
+    var ableToClosePromotion: Bool { get }
+    var delegate: AssetListCollectionManagerDelegate? { get set }
+
+    func setupCollectionView()
+    func updateGroupsViewModel(with model: AssetListViewModel)
+    func updateHeaderViewModel(with model: AssetListHeaderViewModel?)
+    func updateNftViewModel(with model: AssetListNftsViewModel?)
+    func updatePromotionBannerViewModel(with model: PromotionBannerView.ViewModel?)
+    func updateSelectedLocale(with locale: Locale)
+
+    func updateTokensGroupLayout()
+    func changeCollectionViewLayout(to style: AssetListGroupsStyle)
+    func updateLoadingState()
+}
+
+typealias AssetListCollectionManagerDelegate = AssetListCollectionViewActionsDelegate
+    & AssetListCollectionSelectionDelegate
+
+protocol AssetListCollectionViewActionsDelegate: AnyObject, PromotionBannerViewDelegate {
+    func actionSelectAccount()
+    func actionSearch()
+    func actionRefresh()
+    func actionSettings()
+    func actionManage()
+    func actionSelectWalletConnect()
+    func actionLocks()
+    func actionSend()
+    func actionReceive()
+    func actionBuy()
+    func actionSwap()
+}
+
+protocol AssetListCollectionSelectionDelegate: AnyObject {
+    func selectAsset(for chainAssetId: ChainAssetId)
+    func selectNfts()
+    func selectPromotion()
+}
+
+protocol AssetListCollectionViewLayoutDelegate: AnyObject {
+    func groupExpanded(for symbol: String) -> Bool
+    func groupExpandable(for symbol: String) -> Bool
+    func expandAssetGroup(for symbol: String)
+    func collapseAssetGroup(for symbol: String)
+    func sectionInsets(
+        for type: AssetListFlowLayout.SectionType,
+        section: Int
+    ) -> UIEdgeInsets
+    func cellHeight(
+        for type: AssetListFlowLayout.CellType,
+        at indexPath: IndexPath
+    ) -> CGFloat
+}
+
+// MARK: View
+
 protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
     func didReceiveGroups(viewModel: AssetListViewModel)
@@ -11,6 +69,8 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didClosePromotion()
     func didCompleteRefreshing()
 }
+
+// MARK: Presenter
 
 protocol AssetListPresenterProtocol: AnyObject {
     func setup()
@@ -29,7 +89,10 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentWalletConnect()
     func selectPromotion()
     func closePromotion()
+    func toggleAssetListStyle()
 }
+
+// MARK: Interactor
 
 protocol AssetListInteractorInputProtocol {
     func setup()
@@ -57,6 +120,8 @@ protocol AssetListInteractorOutputProtocol {
     func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool)
     func didReceiveWalletsState(hasUpdates: Bool)
 }
+
+// MARK: Wireframe
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,
     CommonRetryable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
