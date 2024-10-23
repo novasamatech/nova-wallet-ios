@@ -142,6 +142,8 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
 
         settingsManager.hidesZeroBalances = hideZeroBalances
 
+        provideHidesZeroBalances()
+
         if shouldNotify {
             eventCenter.notify(with: HideZeroBalancesChanged())
         }

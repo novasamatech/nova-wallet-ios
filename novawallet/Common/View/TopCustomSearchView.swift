@@ -1,5 +1,4 @@
 import UIKit
-import SoraUI
 
 class TopCustomSearchView: UIView {
     static let preferredBarHeight: CGFloat = 98.0

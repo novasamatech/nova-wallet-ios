@@ -10,7 +10,7 @@ final class TokensManagePresenter {
 
     private(set) var chains: ListDifferenceCalculator<ChainModel>
     private(set) var tokenModels: [MultichainToken] = []
-    private(set) var hideZeroBalances: Bool?
+    private(set) var hideZeroBalances: Bool = false
 
     private var query: String = ""
 
@@ -97,15 +97,13 @@ final class TokensManagePresenter {
     }
 
     private func changeHideZeroBalances(to value: Bool) {
-        let canApply = hideZeroBalances != nil && value != hideZeroBalances
+        guard hideZeroBalances != value else {
+            return
+        }
+
         hideZeroBalances = value
 
-        let viewModel = AssetsSettingsViewModel(
-            hideZeroBalances: value,
-            canApply: canApply
-        )
-
-        view?.didReceive(viewModel: viewModel)
+        view?.didReceive(hidesZeroBalances: value)
     }
 }
 
@@ -155,8 +153,6 @@ extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
     }
 
     func didReceive(hideZeroBalances: Bool) {
-        self.hideZeroBalances = hideZeroBalances
-
         changeHideZeroBalances(to: hideZeroBalances)
     }
 

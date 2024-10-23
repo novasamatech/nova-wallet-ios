@@ -152,9 +152,9 @@ extension TokensManageViewController: TokensManageTableViewCellDelegate {
 }
 
 extension TokensManageViewController: TokensManageViewProtocol {
-    func didReceive(viewModel: AssetsSettingsViewModel) {
+    func didReceive(hidesZeroBalances: Bool) {
         rootView.filterSwitch.setOn(
-            viewModel.hideZeroBalances,
+            hidesZeroBalances,
             animated: true
         )
     }

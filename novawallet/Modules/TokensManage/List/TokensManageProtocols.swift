@@ -2,7 +2,7 @@ import Operation_iOS
 
 protocol TokensManageViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModels: [TokensManageViewModel])
-    func didReceive(viewModel: AssetsSettingsViewModel)
+    func didReceive(hidesZeroBalances: Bool)
 }
 
 protocol TokensManagePresenterProtocol: AnyObject {
