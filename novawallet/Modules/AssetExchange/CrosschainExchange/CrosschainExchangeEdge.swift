@@ -15,9 +15,9 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
     var weight: Int { 1 }
 
     func quote(
-        amount _: Balance,
-        direction _: AssetConversion.Direction
+        amount: Balance,
+        direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<Balance> {
-        CompoundOperationWrapper.createWithError(CommonError.undefined)
+        CompoundOperationWrapper.createWithResult(amount)
     }
 }
