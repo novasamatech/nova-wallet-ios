@@ -16,8 +16,6 @@ final class AssetListViewLayout: UIView {
     }
 
     lazy var collectionView: UICollectionView = {
-        setupLayouts()
-
         let view = UICollectionView(
             frame: .zero,
             collectionViewLayout: collectionViewLayout
@@ -44,6 +42,8 @@ final class AssetListViewLayout: UIView {
     }
 
     func setup() {
+        setupLayouts()
+
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

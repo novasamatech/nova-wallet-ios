@@ -64,13 +64,6 @@ class AssetListAssetViewModelFactory {
         self.percentFormatter = percentFormatter
         self.currencyManager = currencyManager
     }
-
-    func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
-        let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
-        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(for: assetDisplayInfo)
-        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
-    }
 }
 
 // MARK: Private
@@ -183,8 +176,8 @@ private extension AssetListAssetViewModelFactory {
         let balanceState = LoadableViewModelState.loaded(value: balanceAmountString)
 
         if let priceData {
-            let balanceValue = balanceViewModelFactory.value(
-                from: value,
+            let balanceValue = balanceViewModelFactory.priceFromFiatAmount(
+                value,
                 priceData: priceData
             ).value(for: locale)
 
@@ -285,11 +278,13 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let iconViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
 
-        let priceString = formatPrice(
-            amount: value,
-            priceData: assets.first?.priceData,
-            locale: locale
-        )
+        let priceString: String = if let asset = assets.first, let priceData = asset.priceData {
+            balanceViewModelFactory(assetInfo: asset.assetInfo)
+                .priceFromFiatAmount(value, priceData: priceData)
+                .value(for: locale)
+        } else {
+            ""
+        }
 
         return AssetListNetworkGroupViewModel(
             networkName: networkName,

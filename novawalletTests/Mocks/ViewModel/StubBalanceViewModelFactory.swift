@@ -4,7 +4,10 @@ import SoraFoundation
 @testable import novawallet
 
 struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
-    func value(from decimalValue: Decimal, priceData: novawallet.PriceData) -> SoraFoundation.LocalizableResource<String> {
+    func priceFromFiatAmount(
+        _ decimalValue: Decimal,
+        priceData: PriceData
+    ) -> LocalizableResource<String> {
         LocalizableResource { _ in
             "$100"
         }

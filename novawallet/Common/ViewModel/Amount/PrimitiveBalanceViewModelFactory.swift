@@ -17,14 +17,11 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
         self.formatterFactory = formatterFactory
     }
 
-    func value(
-        from decimalValue: Decimal,
+    func priceFromFiatAmount(
+        _ decimalValue: Decimal,
         priceData: PriceData
     ) -> LocalizableResource<String> {
-        guard
-            let rate = Decimal(string: priceData.price),
-            let localizableFormatter = priceFormatter(for: priceData)
-        else {
+        guard let localizableFormatter = priceFormatter(for: priceData) else {
             return LocalizableResource { _ in "" }
         }
 
