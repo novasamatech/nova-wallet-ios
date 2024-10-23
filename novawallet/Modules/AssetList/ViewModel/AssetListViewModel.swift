@@ -108,6 +108,22 @@ enum AssetListGroupType: Identifiable {
         case let .token(model): model.id
         }
     }
+
+    var assetsCount: Int {
+        switch self {
+        case let .network(model): model.assets.count
+        case let .token(model): model.assets.count
+        }
+    }
+
+    func chainAssetId(for assetIndex: Int) -> ChainAssetId {
+        switch self {
+        case let .network(model):
+            model.assets[assetIndex].chainAssetId
+        case let .token(model):
+            model.assets[assetIndex].chainAssetId
+        }
+    }
 }
 
 struct AssetListNetworkGroupViewModel: Identifiable {

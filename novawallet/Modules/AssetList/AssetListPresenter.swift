@@ -365,7 +365,7 @@ final class AssetListPresenter {
         }
 
         return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
-            assetsList: assets,
+            assetsList: filteredAssets,
             group: groupModel,
             maybePrices: maybePrices,
             connected: true,
