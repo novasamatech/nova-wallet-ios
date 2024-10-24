@@ -6,6 +6,7 @@ final class AssetsExchangeTests: XCTestCase {
     func testFindPath() {
         let chainRegistry = setupChainRegistry()
         let logger = Logger.shared
+        let operationQueue = OperationQueue()
         
         guard
             let dotPolkadot = chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAsset(),
@@ -38,7 +39,12 @@ final class AssetsExchangeTests: XCTestCase {
         
         graphProvider.throttle()
         
-        let descriptions = (foundPaths ?? []).map {
+        guard let foundPaths else {
+            XCTFail("No paths")
+            return
+        }
+        
+        let descriptions = (foundPaths).map {
             AssetsExchangeGraphDescription.getDescriptionForPath(
                 edges: $0,
                 chainRegistry: chainRegistry
@@ -48,6 +54,34 @@ final class AssetsExchangeTests: XCTestCase {
         logger.info("Paths:")
         
         descriptions.forEach { logger.info($0) }
+        
+        let routeManager = AssetsExchangeRouteManager(
+            possiblePaths: foundPaths,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+        
+        let amount = Decimal(1000).toSubstrateAmount(precision: dotPolkadot.assetDisplayInfo.assetPrecision)!
+        let wrapper = routeManager.fetchRoute(for: amount, direction: .sell)
+        
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        
+        do {
+            guard let route = try wrapper.targetOperation.extractNoCancellableResultData() else {
+                XCTFail("Route not found")
+                return
+            }
+            
+            let routeDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: route.path,
+                chainRegistry: chainRegistry
+            )
+            
+            logger.info("Route: \(routeDescription)")
+            logger.info("Quote: \(String(route.quote))")
+        } catch {
+            logger.error("Quote error: \(error)")
+        }
     }
     
     func testFindAvailablePairs() {
@@ -109,11 +143,11 @@ final class AssetsExchangeTests: XCTestCase {
                     logger: logger
                 ),
                 
-                AssetsHubExchangeProvider(
+                /*AssetsHubExchangeProvider(
                     chainRegistry: chainRegistry,
                     operationQueue: operationQueue,
                     logger: logger
-                ),
+                ),*/
                 
                 AssetsHydraExchangeProvider(
                     selectedWallet: wallet,
