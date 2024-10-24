@@ -8,10 +8,8 @@ extension HydraPoolTokensFactoryProtocol {
         let mappingOperation = ClosureOperation<[any AssetExchangableGraphEdge]> {
             let connections = try connectionsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return connections.flatMap { keyValue in
-                let origin = keyValue.key
-
-                return keyValue.value.map { AssetsHydraExchangeEdge(origin: origin, destination: $0) }
+            return connections.flatMap { _ in
+                []
             }
         }
 
@@ -25,7 +23,7 @@ typealias AssetsHydraOmnipoolExchange = HydraOmnipoolTokensFactory
 
 extension AssetsHydraOmnipoolExchange: AssetsExchangeProtocol {}
 
-typealias AssetsHydraStableSwapExchange = HydraStableSwapsTokensFactory
+typealias AssetsHydraStableSwapExchange = HydraStableswapTokensFactory
 
 extension AssetsHydraStableSwapExchange: AssetsExchangeProtocol {}
 

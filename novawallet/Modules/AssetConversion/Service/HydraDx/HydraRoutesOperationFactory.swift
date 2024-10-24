@@ -10,7 +10,7 @@ protocol HydraRoutesOperationFactoryProtocol {
 
 final class HydraRoutesOperationFactory {
     let omnipoolTokensFactory: HydraOmnipoolTokensFactory
-    let stableswapTokensFactory: HydraStableSwapsTokensFactory
+    let stableswapTokensFactory: HydraStableswapTokensFactory
     let xykTokensFactory: HydraXYKPoolTokensFactory
     let runtimeProvider: RuntimeProviderProtocol
     let chain: ChainModel

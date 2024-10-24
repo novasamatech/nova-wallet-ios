@@ -4,20 +4,15 @@ import Operation_iOS
 class AssetsHydraExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
+    let remoteSwapPair: HydraDx.RemoteSwapPair
 
-    init(origin: ChainAssetId, destination: ChainAssetId) {
+    init(
+        origin: ChainAssetId,
+        destination: ChainAssetId,
+        remoteSwapPair: HydraDx.RemoteSwapPair
+    ) {
         self.origin = origin
         self.destination = destination
-    }
-}
-
-extension AssetsHydraExchangeEdge: AssetExchangableGraphEdge {
-    var weight: Int { 1 }
-
-    func quote(
-        amount _: Balance,
-        direction _: AssetConversion.Direction
-    ) -> CompoundOperationWrapper<Balance> {
-        CompoundOperationWrapper.createWithError(CommonError.undefined)
+        self.remoteSwapPair = remoteSwapPair
     }
 }

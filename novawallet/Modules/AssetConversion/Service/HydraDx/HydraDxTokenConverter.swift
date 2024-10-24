@@ -31,7 +31,7 @@ enum HydraDxTokenConverterError: Error {
 enum HydraDxTokenConverter {
     static let nativeRemoteAssetId = HydraDx.AssetId(0)
 
-    static func converToLocal(
+    static func convertToLocal(
         for remoteAsset: HydraDx.AssetId,
         chain: ChainModel,
         codingFactory: RuntimeCoderFactoryProtocol
@@ -71,6 +71,27 @@ enum HydraDxTokenConverter {
         }
 
         return ChainAssetId(chainId: chain.chainId, assetId: localAsset.assetId)
+    }
+
+    static func convertToRemoteLocalMapping(
+        remoteAssets: Set<HydraDx.AssetId>,
+        chain: ChainModel,
+        codingFactory: RuntimeCoderFactoryProtocol,
+        failureClosure: (HydraDx.AssetId, Error) throws -> Void
+    ) throws -> [HydraDx.AssetId: ChainAssetId] {
+        try remoteAssets.reduce(into: [:]) { accum, remoteAsset in
+            do {
+                let localAsset = try HydraDxTokenConverter.convertToLocal(
+                    for: remoteAsset,
+                    chain: chain,
+                    codingFactory: codingFactory
+                )
+
+                accum[remoteAsset] = localAsset
+            } catch {
+                try failureClosure(remoteAsset, error)
+            }
+        }
     }
 
     static func convertToRemote(

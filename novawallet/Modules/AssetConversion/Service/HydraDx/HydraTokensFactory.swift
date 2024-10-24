@@ -152,7 +152,7 @@ extension HydraTokensFactory {
             operationQueue: operationQueue
         )
 
-        let stableswap = HydraStableSwapsTokensFactory(
+        let stableswap = HydraStableswapTokensFactory(
             chain: chain,
             runtimeService: runtimeService,
             connection: connection,
