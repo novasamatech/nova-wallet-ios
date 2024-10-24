@@ -17,11 +17,12 @@ final class AssetsExchangeTests: XCTestCase {
         
         let assetIn = dotPolkadot.chainAssetId
         let assetOut = ChainAssetId(chainId: polkadotAssetHub.chainId, assetId: usdtAssetHub.assetId)
+        let wallet = AccountGenerator.generateMetaAccount(type: .watchOnly)
         
         let expectation = XCTestExpectation()
         var foundPaths: [[AnyAssetExchangeEdge]]?
         
-        let graphProvider = createAndSubscribeGraphProvider(for: chainRegistry) { graph in
+        let graphProvider = createAndSubscribeGraphProvider(for: wallet, chainRegistry: chainRegistry) { graph in
             guard
                 let paths = graph?.fetchPaths(from: assetIn, to: assetOut, maxTopPaths: 4),
                 !paths.isEmpty else {
@@ -51,6 +52,7 @@ final class AssetsExchangeTests: XCTestCase {
     
     func testFindAvailablePairs() {
         let chainRegistry = setupChainRegistry()
+        let wallet = AccountGenerator.generateMetaAccount(type: .watchOnly)
         
         guard
             let polkadotUtilityAsset = chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAssetId(),
@@ -62,7 +64,7 @@ final class AssetsExchangeTests: XCTestCase {
         
         let expectation = XCTestExpectation()
         
-        let graphProvider = createAndSubscribeGraphProvider(for: chainRegistry) { graph in
+        let graphProvider = createAndSubscribeGraphProvider(for: wallet, chainRegistry: chainRegistry) { graph in
             guard let reachability = graph?.fetchReachability() else {
                 return
             }
@@ -89,7 +91,8 @@ final class AssetsExchangeTests: XCTestCase {
     }
     
     private func createAndSubscribeGraphProvider(
-        for chainRegistry: ChainRegistryProtocol,
+        for wallet: MetaAccountModel,
+        chainRegistry: ChainRegistryProtocol,
         onGraphChange: @escaping (AssetsExchangeGraphProtocol?) -> Void
     ) -> AssetsExchangeGraphProviding {
         let operationQueue = OperationQueue()
@@ -113,6 +116,7 @@ final class AssetsExchangeTests: XCTestCase {
                 ),
                 
                 AssetsHydraExchangeProvider(
+                    selectedWallet: wallet,
                     chainRegistry: chainRegistry,
                     operationQueue: operationQueue,
                     logger: logger
