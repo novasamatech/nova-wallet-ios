@@ -59,7 +59,7 @@ extension AssetsHydraStableswapExchange: AssetsExchangeProtocol {
                             return nil
                         }
 
-                        let edge = AssetsHydraStableswapExchangeEdge(
+                        let edge = HydraStableswapExchangeEdge(
                             origin: localAssetIn,
                             destination: localAssetOut,
                             remoteSwapPair: .init(assetIn: remoteAssetIn, assetOut: remoteAssetOut),

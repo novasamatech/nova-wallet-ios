@@ -1,16 +1,19 @@
 import Foundation
 import Operation_iOS
 
-final class AssetsHydraOmnipoolExchangeEdge: AssetsHydraExchangeEdge {
-    let quoteFactory: HydraOmnipoolQuoteFactory
+final class HydraStableswapExchangeEdge: AssetsHydraExchangeEdge {
+    let quoteFactory: HydraStableswapQuoteFactory
+    let poolAsset: HydraDx.AssetId
 
     init(
         origin: ChainAssetId,
         destination: ChainAssetId,
         remoteSwapPair: HydraDx.RemoteSwapPair,
-        quoteFactory: HydraOmnipoolQuoteFactory
+        poolAsset: HydraDx.AssetId,
+        quoteFactory: HydraStableswapQuoteFactory
     ) {
         self.quoteFactory = quoteFactory
+        self.poolAsset = poolAsset
 
         super.init(
             origin: origin,
@@ -20,7 +23,7 @@ final class AssetsHydraOmnipoolExchangeEdge: AssetsHydraExchangeEdge {
     }
 }
 
-extension AssetsHydraOmnipoolExchangeEdge: AssetExchangableGraphEdge {
+extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
     var weight: Int { 1 }
 
     func quote(
@@ -31,6 +34,7 @@ extension AssetsHydraOmnipoolExchangeEdge: AssetExchangableGraphEdge {
             for: .init(
                 assetIn: remoteSwapPair.assetIn,
                 assetOut: remoteSwapPair.assetOut,
+                poolAsset: poolAsset,
                 amount: amount,
                 direction: direction
             )
