@@ -88,11 +88,11 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             result[chainAsset.chain.chainId] = currentModels + [assetModel]
         }
 
-        let groupAssetCalculators = assetModels.mapValues { models in
-            AssetListModelHelpers.createAssetsDiffCalculator(from: models)
+        let groupListsByChain = assetModels.mapValues { models in
+            AssetListModelHelpers.createAssetsDiffCalculator(from: models).allItems
         }
 
-        let chainModels: [AssetListChainGroupModel] = assetModels.compactMap { chainId, assetModels in
+        let chainGroups: [AssetListChainGroupModel] = assetModels.compactMap { chainId, assetModels in
             guard let chain = state.allChains[chainId] else {
                 return nil
             }
@@ -103,16 +103,91 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             )
         }
 
-        let groupChainCalculator = AssetListModelHelpers.createGroupsDiffCalculator(
-            from: chainModels,
+        let sortedChainGroups = AssetListModelHelpers.createGroupsDiffCalculator(
+            from: chainGroups,
             defaultComparingBy: \.chain
-        )
+        ).allItems
+        
+        let (assetGroups, groupListsByAsset) = buildAssetGroups(using: state)
 
         return AssetSearchBuilderResult(
-            groups: groupChainCalculator,
-            groupLists: groupAssetCalculators,
+            chainGroups: sortedChainGroups,
+            assetGroups: assetGroups,
+            groupListsByChain: groupListsByChain,
+            groupListsByAsset: groupListsByAsset,
             state: state
         )
+    }
+    
+    func buildAssetGroups(
+        using state: AssetListState
+    ) -> (
+        groups: [AssetListAssetGroupModel],
+        groupsList: [AssetModel.Symbol: [AssetListAssetModel]]
+    )
+    {
+        var newGroups: [AssetListAssetGroupModel] = []
+        var newGroupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]] = [:]
+
+        var tokensBySymbol: [AssetModel.Symbol: MultichainToken] = [:]
+        var tokensByChainAsset: [ChainAssetId: MultichainToken] = [:]
+
+        Array(state.allChains.values)
+            .createMultichainTokens()
+            .forEach { token in
+                token.instances.forEach {
+                    tokensByChainAsset[$0.chainAssetId] = token
+                }
+
+                tokensBySymbol[token.symbol] = token
+            }
+
+        assetsBySymbol(
+            using: tokensByChainAsset,
+            state: state
+        )
+        .forEach { symbol, assetListModels in
+            let diffCalculator = AssetListModelHelpers.createAssetsDiffCalculator(from: assetListModels)
+
+            newGroupListsByAsset[symbol] = diffCalculator.allItems
+
+            guard let token = tokensBySymbol[symbol] else {
+                return
+            }
+
+            let groupModel = AssetListModelHelpers.createAssetGroupModel(
+                token: token,
+                assets: assetListModels
+            )
+
+            newGroups.append(groupModel)
+        }
+
+        return (newGroups, newGroupListsByAsset)
+    }
+    
+    private func assetsBySymbol(
+        using tokensByChainAsset: [ChainAssetId: MultichainToken],
+        state: AssetListState
+    ) -> [AssetModel.Symbol: [AssetListAssetModel]] {
+        state.allChains.values
+            .flatMap { $0.chainAssets() }
+            .reduce(
+                into: [AssetModel.Symbol: [AssetListAssetModel]]()
+            ) { acc, chainAsset in
+                guard let symbol = tokensByChainAsset[chainAsset.chainAssetId]?.symbol else {
+                    return
+                }
+
+                let model = AssetListModelHelpers.createAssetModel(
+                    for: chainAsset.chain,
+                    assetModel: chainAsset.asset,
+                    state: state
+                )
+
+                let newValue = (acc[symbol] ?? []) + [model]
+                acc[symbol] = newValue
+            }
     }
 
     private func filterAssets(
