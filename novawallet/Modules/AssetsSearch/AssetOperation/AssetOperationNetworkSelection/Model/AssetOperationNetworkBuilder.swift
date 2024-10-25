@@ -5,6 +5,7 @@ import BigInt
 struct AssetOperationNetworkBuilderResult {
     let assets: [AssetListAssetModel]
     let prices: [ChainAssetId: PriceData]
+    let state: AssetListState
 }
 
 class AssetOperationNetworkBuilder: AnyCancellableCleaning {
@@ -85,7 +86,8 @@ class AssetOperationNetworkBuilder: AnyCancellableCleaning {
 
         return AssetOperationNetworkBuilderResult(
             assets: assetModels,
-            prices: prices
+            prices: prices,
+            state: state
         )
     }
 

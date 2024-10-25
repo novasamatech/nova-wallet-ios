@@ -37,25 +37,21 @@ final class SendAssetOperationPresenter: AssetOperationPresenter {
     }
 
     override func selectGroup(with symbol: AssetModel.Symbol) {
-        guard let multichainToken = result?.assetGroups.first(
-            where: { $0.multichainToken.symbol == symbol }
-        )?.multichainToken else {
-            return
-        }
-
-        if multichainToken.instances.count > 1 {
-            sendAssetWireframe?.showSelectNetwork(
-                from: view,
-                multichainToken: multichainToken
-            )
-        } else if
-            let chainAssetId = multichainToken.instances.first?.chainAssetId,
-            let chainAsset = result?.state.chainAsset(for: chainAssetId) {
-            sendAssetWireframe?.showSendTokens(
-                from: view,
-                chainAsset: chainAsset
-            )
-        }
+        processWithCheck(
+            symbol,
+            onSingleInstance: { chainAsset in
+                sendAssetWireframe?.showSendTokens(
+                    from: view,
+                    chainAsset: chainAsset
+                )
+            },
+            onMultipleInstances: { multichainToken in
+                sendAssetWireframe?.showSelectNetwork(
+                    from: view,
+                    multichainToken: multichainToken
+                )
+            }
+        )
     }
 }
 

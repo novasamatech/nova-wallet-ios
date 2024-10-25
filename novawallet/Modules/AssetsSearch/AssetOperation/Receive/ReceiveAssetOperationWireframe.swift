@@ -8,7 +8,7 @@ protocol ReceiveAssetOperationWireframeProtocol: MessageSheetPresentable, Assets
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,
-        metaChainAccountResponse: MetaChainAccountResponse
+        selectedAccount: MetaAccountModel
     )
 }
 
@@ -16,11 +16,12 @@ final class ReceiveAssetOperationWireframe: AssetOperationWireframe, ReceiveAsse
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,
-        metaChainAccountResponse _: MetaChainAccountResponse
+        selectedAccount: MetaAccountModel
     ) {
         guard let selectNetworkView = AssetOperationNetworkListViewFactory.createReceiveView(
             with: multichainToken,
-            stateObservable: stateObservable
+            stateObservable: stateObservable,
+            selectedAccount: selectedAccount
         ) else {
             return
         }

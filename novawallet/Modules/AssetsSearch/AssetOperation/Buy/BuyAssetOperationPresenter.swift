@@ -32,10 +32,32 @@ final class BuyAssetOperationPresenter: AssetOperationPresenter, PurchaseFlowMan
         )
     }
 
+    override func selectGroup(with symbol: AssetModel.Symbol) {
+        processWithCheck(
+            symbol,
+            onSingleInstance: { chainAsset in
+                processAssetSelected(chainAsset)
+            },
+            onMultipleInstances: { multichainToken in
+                buyAssetWireframe?.showSelectNetwork(
+                    from: view,
+                    multichainToken: multichainToken,
+                    selectedAccount: selectedAccount,
+                    purchaseProvider: purchaseProvider
+                )
+            }
+        )
+    }
+
     override func selectAsset(for chainAssetId: ChainAssetId) {
         guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
             return
         }
+
+        processAssetSelected(chainAsset)
+    }
+
+    private func processAssetSelected(_ chainAsset: ChainAsset) {
         guard let accountId = selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
             return
         }

@@ -17,5 +17,8 @@ protocol AssetOperationNetworkListInteractorOutputProtocol: AnyObject {
 }
 
 protocol AssetOperationNetworkListWireframeProtocol: AnyObject {
-    func showOperation(for chainAsset: ChainAsset)
+    func showSend(
+        from view: ControllerBackedProtocol?,
+        for chainAsset: ChainAsset
+    )
 }

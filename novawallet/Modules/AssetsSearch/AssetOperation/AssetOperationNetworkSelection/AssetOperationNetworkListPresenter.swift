@@ -3,28 +3,29 @@ import SoraFoundation
 
 class AssetOperationNetworkListPresenter {
     weak var view: AssetOperationNetworkListViewProtocol?
-    let wireframe: AssetOperationNetworkListWireframeProtocol
     let interactor: AssetOperationNetworkListInteractorInputProtocol
 
     let viewModelFactory: AssetOperationNetworkListViewModelFactory
 
     let multichainToken: MultichainToken
 
-    private var resultModel: AssetOperationNetworkBuilderResult?
+    private(set) var resultModel: AssetOperationNetworkBuilderResult?
 
     init(
         interactor: AssetOperationNetworkListInteractorInputProtocol,
-        wireframe: AssetOperationNetworkListWireframeProtocol,
         multichainToken: MultichainToken,
         viewModelFactory: AssetOperationNetworkListViewModelFactory
     ) {
         self.interactor = interactor
-        self.wireframe = wireframe
         self.multichainToken = multichainToken
         self.viewModelFactory = viewModelFactory
     }
 
     func provideTitle() {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func selectAsset(with _: ChainAssetId) {
         fatalError("Must be overriden by subsclass")
     }
 }
@@ -52,16 +53,6 @@ extension AssetOperationNetworkListPresenter: AssetOperationNetworkListPresenter
         provideTitle()
 
         interactor.setup()
-    }
-
-    func selectAsset(with chainAssetId: ChainAssetId) {
-        guard let chainAsset = resultModel?.assets.first(
-            where: { $0.chainAssetModel.chainAssetId == chainAssetId }
-        )?.chainAssetModel else {
-            return
-        }
-
-        wireframe.showOperation(for: chainAsset)
     }
 }
 

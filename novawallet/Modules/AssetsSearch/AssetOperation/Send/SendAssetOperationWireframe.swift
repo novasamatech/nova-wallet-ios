@@ -22,7 +22,8 @@ final class SendAssetOperationWireframe: AssetOperationWireframe, SendAssetOpera
     ) {
         guard let selectNetworkView = AssetOperationNetworkListViewFactory.createSendView(
             with: multichainToken,
-            stateObservable: stateObservable
+            stateObservable: stateObservable,
+            transferCompletion: transferCompletion
         ) else {
             return
         }

@@ -99,10 +99,10 @@ private extension AssetOperationNetworkView {
     private enum Constants {
         static let networkIconSize: CGFloat = 28.0
         static let contentInsets: UIEdgeInsets = .init(
-            top: 16,
-            left: 9.5,
-            bottom: 16,
-            right: 9.5
+            top: 9.5,
+            left: 16,
+            bottom: 9.5,
+            right: 16
         )
         static let backgrounViewCornerRadius: CGFloat = 12.0
     }

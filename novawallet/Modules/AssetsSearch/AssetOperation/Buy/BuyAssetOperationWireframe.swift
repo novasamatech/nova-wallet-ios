@@ -5,7 +5,9 @@ protocol BuyAssetOperationWireframeProtocol: AssetsSearchWireframeProtocol, Mess
     PurchasePresentable, AlertPresentable {
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
-        multichainToken: MultichainToken
+        multichainToken: MultichainToken,
+        selectedAccount: MetaAccountModel,
+        purchaseProvider: PurchaseProviderProtocol
     )
 }
 
@@ -14,11 +16,15 @@ final class BuyAssetOperationWireframe: AssetOperationWireframe, BuyAssetOperati
 extension BuyAssetOperationWireframe: AssetsSearchWireframeProtocol {
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
-        multichainToken: MultichainToken
+        multichainToken: MultichainToken,
+        selectedAccount: MetaAccountModel,
+        purchaseProvider: PurchaseProviderProtocol
     ) {
         guard let selectNetworkView = AssetOperationNetworkListViewFactory.createBuyView(
             with: multichainToken,
-            stateObservable: stateObservable
+            stateObservable: stateObservable,
+            selectedAccount: selectedAccount,
+            purchaseProvider: purchaseProvider
         ) else {
             return
         }

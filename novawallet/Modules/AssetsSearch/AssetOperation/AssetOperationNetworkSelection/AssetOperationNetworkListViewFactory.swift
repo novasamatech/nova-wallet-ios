@@ -4,7 +4,8 @@ import SoraFoundation
 struct AssetOperationNetworkListViewFactory {
     static func createSendView(
         with multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable
+        stateObservable: AssetListModelObservable,
+        transferCompletion: TransferCompletionClosure?
     ) -> AssetOperationNetworkListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -21,12 +22,12 @@ struct AssetOperationNetworkListViewFactory {
             stateObservable: stateObservable,
             logger: logger
         )
-        let wireframe = AssetOperationNetworkListWireframe()
 
         let presenter = createSendPresenter(
             with: interactor,
-            wireframe: wireframe,
             multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            transferCompletion: transferCompletion,
             currencyManager: currencyManager
         )
 
@@ -40,11 +41,18 @@ struct AssetOperationNetworkListViewFactory {
 
     private static func createSendPresenter(
         with interactor: AssetOperationNetworkListInteractor,
-        wireframe: AssetOperationNetworkListWireframe,
         multichainToken: MultichainToken,
+        stateObservable: AssetListModelObservable,
+        transferCompletion: TransferCompletionClosure?,
         currencyManager: CurrencyManager
     ) -> SendOperationNetworkListPresenter {
         let viewModelFactory = createViewModelFactory(with: currencyManager)
+
+        let wireframe = SendAssetOperationWireframe(
+            stateObservable: stateObservable,
+            buyTokensClosure: nil,
+            transferCompletion: transferCompletion
+        )
 
         return SendOperationNetworkListPresenter(
             interactor: interactor,
@@ -79,7 +87,9 @@ struct AssetOperationNetworkListViewFactory {
 extension AssetOperationNetworkListViewFactory {
     static func createBuyView(
         with multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable
+        stateObservable: AssetListModelObservable,
+        selectedAccount: MetaAccountModel,
+        purchaseProvider: PurchaseProviderProtocol
     ) -> AssetOperationNetworkListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -96,12 +106,13 @@ extension AssetOperationNetworkListViewFactory {
             stateObservable: stateObservable,
             logger: logger
         )
-        let wireframe = AssetOperationNetworkListWireframe()
 
         let presenter = createBuyPresenter(
             with: interactor,
-            wireframe: wireframe,
             multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            selectedAccount: selectedAccount,
+            purchaseProvider: purchaseProvider,
             currencyManager: currencyManager
         )
 
@@ -115,17 +126,23 @@ extension AssetOperationNetworkListViewFactory {
 
     private static func createBuyPresenter(
         with interactor: AssetOperationNetworkListInteractor,
-        wireframe: AssetOperationNetworkListWireframe,
         multichainToken: MultichainToken,
+        stateObservable: AssetListModelObservable,
+        selectedAccount: MetaAccountModel,
+        purchaseProvider: PurchaseProviderProtocol,
         currencyManager: CurrencyManager
     ) -> BuyOperationNetworkListPresenter {
         let viewModelFactory = createViewModelFactory(with: currencyManager)
+
+        let wireframe = BuyAssetOperationWireframe(stateObservable: stateObservable)
 
         return BuyOperationNetworkListPresenter(
             interactor: interactor,
             wireframe: wireframe,
             multichainToken: multichainToken,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            selectedAccount: selectedAccount,
+            purchaseProvider: purchaseProvider
         )
     }
 }
@@ -135,7 +152,8 @@ extension AssetOperationNetworkListViewFactory {
 extension AssetOperationNetworkListViewFactory {
     static func createReceiveView(
         with multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable
+        stateObservable: AssetListModelObservable,
+        selectedAccount: MetaAccountModel
     ) -> AssetOperationNetworkListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -152,12 +170,12 @@ extension AssetOperationNetworkListViewFactory {
             stateObservable: stateObservable,
             logger: logger
         )
-        let wireframe = AssetOperationNetworkListWireframe()
 
         let presenter = createReceivePresenter(
             with: interactor,
-            wireframe: wireframe,
             multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            selectedAccount: selectedAccount,
             currencyManager: currencyManager
         )
 
@@ -171,17 +189,21 @@ extension AssetOperationNetworkListViewFactory {
 
     private static func createReceivePresenter(
         with interactor: AssetOperationNetworkListInteractor,
-        wireframe: AssetOperationNetworkListWireframe,
         multichainToken: MultichainToken,
+        stateObservable: AssetListModelObservable,
+        selectedAccount: MetaAccountModel,
         currencyManager: CurrencyManager
     ) -> ReceiveOperationNetworkListPresenter {
         let viewModelFactory = createViewModelFactory(with: currencyManager)
+
+        let wireframe = ReceiveAssetOperationWireframe(stateObservable: stateObservable)
 
         return ReceiveOperationNetworkListPresenter(
             interactor: interactor,
             wireframe: wireframe,
             multichainToken: multichainToken,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            selectedAccount: selectedAccount
         )
     }
 }

@@ -18,6 +18,7 @@ final class ReceiveAssetOperationPresenter: AssetOperationPresenter {
         wireframe: ReceiveAssetOperationWireframeProtocol
     ) {
         self.selectedAccount = selectedAccount
+
         super.init(
             delegate: nil,
             interactor: interactor,
@@ -25,6 +26,37 @@ final class ReceiveAssetOperationPresenter: AssetOperationPresenter {
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
+    }
+
+    override func selectAsset(for chainAssetId: ChainAssetId) {
+        guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
+            return
+        }
+    }
+
+    override func selectGroup(with symbol: AssetModel.Symbol) {
+        processWithCheck(
+            symbol,
+            onSingleInstance: { chainAsset in
+                processAssetSelected(chainAsset)
+            },
+            onMultipleInstances: { multichainToken in
+                receiveWireframe?.showSelectNetwork(
+                    from: view,
+                    multichainToken: multichainToken,
+                    selectedAccount: selectedAccount
+                )
+            }
+        )
+    }
+
+    private func processAssetSelected(_ chainAsset: ChainAsset) {
+        let checkResult = TokenOperation.checkReceiveOperationAvailable(
+            walletType: selectedAccount.type,
+            chainAsset: chainAsset
+        )
+
+        handle(receiveCheckResult: checkResult, chainAsset: chainAsset)
     }
 
     private func handle(receiveCheckResult: ReceiveAvailableCheckResult, chainAsset: ChainAsset) {
@@ -41,18 +73,5 @@ final class ReceiveAssetOperationPresenter: AssetOperationPresenter {
                 }
             })
         }
-    }
-
-    override func selectAsset(for chainAssetId: ChainAssetId) {
-        guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
-            return
-        }
-
-        let checkResult = TokenOperation.checkReceiveOperationAvailable(
-            walletType: selectedAccount.type,
-            chainAsset: chainAsset
-        )
-
-        handle(receiveCheckResult: checkResult, chainAsset: chainAsset)
     }
 }
