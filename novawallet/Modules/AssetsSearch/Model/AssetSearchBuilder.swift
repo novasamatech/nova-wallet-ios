@@ -107,7 +107,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             from: chainGroups,
             defaultComparingBy: \.chain
         ).allItems
-        
+
         let (assetGroups, groupListsByAsset) = buildAssetGroups(using: state)
 
         return AssetSearchBuilderResult(
@@ -118,14 +118,13 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             state: state
         )
     }
-    
+
     func buildAssetGroups(
         using state: AssetListState
     ) -> (
         groups: [AssetListAssetGroupModel],
         groupsList: [AssetModel.Symbol: [AssetListAssetModel]]
-    )
-    {
+    ) {
         var newGroups: [AssetListAssetGroupModel] = []
         var newGroupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]] = [:]
 
@@ -165,7 +164,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
 
         return (newGroups, newGroupListsByAsset)
     }
-    
+
     private func assetsBySymbol(
         using tokensByChainAsset: [ChainAssetId: MultichainToken],
         state: AssetListState

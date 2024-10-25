@@ -4,18 +4,6 @@ import SubstrateSdk
 import SoraFoundation
 import BigInt
 
-enum AssetListGroupsStyle {
-    case networks
-    case tokens
-
-    mutating func toggle() {
-        switch self {
-        case .networks: self = .tokens
-        case .tokens: self = .networks
-        }
-    }
-}
-
 final class AssetListPresenter {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
     typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice

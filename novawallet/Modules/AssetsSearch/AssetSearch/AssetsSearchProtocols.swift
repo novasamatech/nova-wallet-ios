@@ -1,5 +1,44 @@
+import Foundation
+import UIKit
+
+// MARK: AssetsSearchCollectionManager
+
+protocol AssetsSearchCollectionManagerProtocol {
+    var ableToClosePromotion: Bool { get }
+    var delegate: AssetsSearchCollectionManagerDelegate? { get set }
+
+    func setupCollectionView()
+    func updateGroupsViewModel(with model: AssetListViewModel)
+    func updateSelectedLocale(with locale: Locale)
+
+    func updateTokensGroupLayout()
+    func changeCollectionViewLayout(to style: AssetListGroupsStyle)
+}
+
+typealias AssetsSearchCollectionManagerDelegate = AssetsSearchCollectionSelectionDelegate
+
+protocol AssetsSearchCollectionSelectionDelegate: AnyObject {
+    func selectAsset(for chainAssetId: ChainAssetId)
+}
+
+protocol AssetsSearchCollectionViewLayoutDelegate: AnyObject {
+    func groupExpanded(for symbol: String) -> Bool
+    func groupExpandable(for symbol: String) -> Bool
+    func expandAssetGroup(for symbol: String)
+    func collapseAssetGroup(for symbol: String)
+    func sectionInsets(
+        for type: AssetsSearchFlowLayout.SectionType,
+        section: Int
+    ) -> UIEdgeInsets
+    func cellHeight(
+        for type: AssetsSearchFlowLayout.CellType,
+        at indexPath: IndexPath
+    ) -> CGFloat
+}
+
 protocol AssetsSearchViewProtocol: ControllerBackedProtocol {
-    func didReceiveGroups(state: AssetListGroupState)
+    func didReceiveList(viewModel: AssetListViewModel)
+    func didReceiveAssetGroupsStyle(_ style: AssetListGroupsStyle)
 }
 
 protocol AssetsSearchPresenterProtocol: AnyObject {
@@ -16,6 +55,7 @@ protocol AssetsSearchInteractorInputProtocol: AnyObject {
 
 protocol AssetsSearchInteractorOutputProtocol: AnyObject {
     func didReceive(result: AssetSearchBuilderResult)
+    func didReceiveAssetGroupsStyle(_ style: AssetListGroupsStyle)
 }
 
 protocol AssetsSearchWireframeProtocol: AnyObject {

@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct AssetsSearchViewFactory {
     static func createView(
@@ -13,6 +14,7 @@ struct AssetsSearchViewFactory {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
             filter: { $0.chain.syncMode.enabled() },
+            settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 

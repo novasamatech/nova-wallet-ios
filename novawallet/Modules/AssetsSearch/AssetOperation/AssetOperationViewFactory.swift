@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 enum AssetOperationViewFactory {
     static func createBuyView(
@@ -170,6 +171,7 @@ enum AssetOperationViewFactory {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
             filter: { $0.chain.syncMode.enabled() },
+            settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 
@@ -211,6 +213,7 @@ enum AssetOperationViewFactory {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
             filter: filter,
+            settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 
