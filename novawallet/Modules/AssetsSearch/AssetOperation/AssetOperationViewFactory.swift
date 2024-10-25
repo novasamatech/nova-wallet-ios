@@ -35,7 +35,7 @@ enum AssetOperationViewFactory {
             R.string.localizable.assetOperationBuyTitle(preferredLanguages: $0.rLanguages)
         }
 
-        let view = AssetsSearchViewController(
+        let view = AssetOperationViewController(
             presenter: presenter,
             keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
             createViewClosure: { AssetsOperationViewLayout() },
@@ -80,7 +80,7 @@ enum AssetOperationViewFactory {
             R.string.localizable.assetOperationReceiveTitle(preferredLanguages: $0.rLanguages)
         }
 
-        let view = AssetsSearchViewController(
+        let view = AssetOperationViewController(
             presenter: presenter,
             keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
             createViewClosure: { AssetsOperationViewLayout() },

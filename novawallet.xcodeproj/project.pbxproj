@@ -960,6 +960,8 @@
 		2D4F550D2CCB742100B65B76 /* AssetListGroupsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F550B2CCB73BB00B65B76 /* AssetListGroupsStyle.swift */; };
 		2D4F550F2CCB775000B65B76 /* SendAssetOperationCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F550E2CCB775000B65B76 /* SendAssetOperationCollectionManager.swift */; };
 		2D4F55112CCB7C4C00B65B76 /* SendAssetOperationCollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55102CCB7C4C00B65B76 /* SendAssetOperationCollectionDataSource.swift */; };
+		2D4F551C2CCBA0D300B65B76 /* AssetOperationCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F551B2CCBA0D300B65B76 /* AssetOperationCollectionManager.swift */; };
+		2D4F551E2CCBA17800B65B76 /* AssetOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F551D2CCBA17800B65B76 /* AssetOperationViewController.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
@@ -6103,6 +6105,8 @@
 		2D4F550B2CCB73BB00B65B76 /* AssetListGroupsStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListGroupsStyle.swift; sourceTree = "<group>"; };
 		2D4F550E2CCB775000B65B76 /* SendAssetOperationCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAssetOperationCollectionManager.swift; sourceTree = "<group>"; };
 		2D4F55102CCB7C4C00B65B76 /* SendAssetOperationCollectionDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAssetOperationCollectionDataSource.swift; sourceTree = "<group>"; };
+		2D4F551B2CCBA0D300B65B76 /* AssetOperationCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationCollectionManager.swift; sourceTree = "<group>"; };
+		2D4F551D2CCBA17800B65B76 /* AssetOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationViewController.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
@@ -13684,7 +13688,9 @@
 				77A6F5BB2A2E2ABC004AFD1A /* Buy */,
 				77A6F5AC2A2E0B36004AFD1A /* Receive */,
 				778D979C2A24D21B002BA681 /* AssetsOperationViewLayout.swift */,
+				2D4F551B2CCBA0D300B65B76 /* AssetOperationCollectionManager.swift */,
 				77A6F5C82A2F1EFC004AFD1A /* AssetOperationViewFactory.swift */,
+				2D4F551D2CCBA17800B65B76 /* AssetOperationViewController.swift */,
 			);
 			path = AssetOperation;
 			sourceTree = "<group>";
@@ -25933,6 +25939,7 @@
 				8882FC6329E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift in Sources */,
 				847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */,
 				84F231E329B233F20070FC2F /* GovernanceDelegateListOperationFactoryProtocol+BlockNumber.swift in Sources */,
+				2D4F551C2CCBA0D300B65B76 /* AssetOperationCollectionManager.swift in Sources */,
 				849AFEB326DADC1300B65924 /* SubqueryHistory.swift in Sources */,
 				846A683027469BD500D1A47A /* CrowdloanOffchainProviderFactory.swift in Sources */,
 				84C11F1C2842B869007F7C05 /* ParaStkCollatorFiltersViewModel.swift in Sources */,
@@ -28013,6 +28020,7 @@
 				84282288289AC80600163031 /* MultiValueView+Factory.swift in Sources */,
 				0CA5BDEB2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift in Sources */,
 				0C13DFDD2AFA82BA00E5F355 /* AmountInputViewModel+Slippage.swift in Sources */,
+				2D4F551E2CCBA17800B65B76 /* AssetOperationViewController.swift in Sources */,
 				99570B581EF2EE8A1070442F /* CreateWatchOnlyViewFactory.swift in Sources */,
 				6003DF3EBB77510EFB70B4E4 /* MessageSheetProtocols.swift in Sources */,
 				2D1C5D142C2451D800E2DBDD /* NetworkNodePresenterProtocols.swift in Sources */,

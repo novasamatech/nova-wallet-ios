@@ -1,5 +1,3 @@
-import UIKit
-
 final class SendAssetOperationViewController: AssetsSearchViewController {
     var sendPresenter: SendAssetOperationPresenterProtocol? {
         presenter as? SendAssetOperationPresenterProtocol
