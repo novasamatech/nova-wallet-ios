@@ -4,8 +4,6 @@ import UIKit
 // MARK: AssetsSearchCollectionManager
 
 protocol AssetsSearchCollectionManagerProtocol {
-    var delegate: AssetsSearchCollectionManagerDelegate? { get set }
-
     func setupCollectionView()
     func updateGroupsViewModel(with model: AssetListViewModel)
     func updateSelectedLocale(with locale: Locale)
@@ -14,10 +12,16 @@ protocol AssetsSearchCollectionManagerProtocol {
     func changeCollectionViewLayout(to style: AssetListGroupsStyle)
 }
 
-typealias AssetsSearchCollectionManagerDelegate = AssetsSearchCollectionSelectionDelegate
+protocol AssetsSearchCollectionManagerDelegate: AnyObject {
+    func selectAsset(for chainAssetId: ChainAssetId)
+}
 
 protocol AssetsSearchCollectionSelectionDelegate: AnyObject {
     func selectAsset(for chainAssetId: ChainAssetId)
+    func selectGroup(
+        with symbol: AssetModel.Symbol,
+        at indexPath: IndexPath
+    )
 }
 
 protocol AssetsSearchCollectionViewLayoutDelegate: AnyObject {

@@ -21,7 +21,7 @@ final class AssetsSearchCollectionViewDelegate: NSObject {
 
 private extension AssetsSearchCollectionViewDelegate {
     func processAssetSelect(
-        _ collectionView: UICollectionView,
+        _: UICollectionView,
         at indexPath: IndexPath
     ) {
         guard
@@ -34,37 +34,22 @@ private extension AssetsSearchCollectionViewDelegate {
 
         let groupViewModel = groupsViewModel.listState.groups[groupIndex]
 
-        let chainAssetId: ChainAssetId
-
         switch groupViewModel {
         case let .network(group):
-            chainAssetId = group.assets[indexPath.row].chainAssetId
+            let chainAssetId = group.assets[indexPath.row].chainAssetId
+            selectionDelegate?.selectAsset(for: chainAssetId)
         case let .token(group) where indexPath.row == 0:
             let symbol = group.token.symbol
-            let expandable = groupsLayoutDelegate.groupExpandable(for: symbol)
-            let expanded = groupsLayoutDelegate.groupExpanded(for: symbol)
 
-            guard !expanded else {
-                groupsLayoutDelegate.collapseAssetGroup(for: symbol)
-                collectionView.reloadSections([indexPath.section])
-
-                return
-            }
-
-            guard !expandable else {
-                groupsLayoutDelegate.expandAssetGroup(for: symbol)
-                collectionView.reloadSections([indexPath.section])
-
-                return
-            }
-
-            chainAssetId = group.assets[indexPath.row].chainAssetId
+            selectionDelegate?.selectGroup(
+                with: symbol,
+                at: indexPath
+            )
         case let .token(group):
             let chainAssetIndex = indexPath.row - 1
-            chainAssetId = group.assets[chainAssetIndex].chainAssetId
+            let chainAssetId = group.assets[chainAssetIndex].chainAssetId
+            selectionDelegate?.selectAsset(for: chainAssetId)
         }
-
-        selectionDelegate?.selectAsset(for: chainAssetId)
     }
 }
 
@@ -107,7 +92,10 @@ extension AssetsSearchCollectionViewDelegate: UICollectionViewDelegateFlowLayout
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
         let cellType = AssetsSearchFlowLayout.CellType(indexPath: indexPath)

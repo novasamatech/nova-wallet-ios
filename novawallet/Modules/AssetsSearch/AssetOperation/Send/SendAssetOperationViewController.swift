@@ -1,4 +1,4 @@
-final class SendAssetOperationViewController: AssetsSearchViewController {
+final class SendAssetOperationViewController: AssetOperationViewController {
     var sendPresenter: SendAssetOperationPresenterProtocol? {
         presenter as? SendAssetOperationPresenterProtocol
     }

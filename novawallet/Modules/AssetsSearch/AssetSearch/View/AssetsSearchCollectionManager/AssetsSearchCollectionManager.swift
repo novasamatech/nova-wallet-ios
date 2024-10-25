@@ -1,7 +1,7 @@
 import UIKit
 
 class AssetsSearchCollectionManager {
-    weak var delegate: AssetsSearchCollectionManagerDelegate?
+    private weak var delegate: AssetsSearchCollectionManagerDelegate?
 
     var tokenGroupsLayout: AssetsSearchTokensFlowLayout? {
         view?.collectionTokenGroupsLayout
@@ -21,7 +21,7 @@ class AssetsSearchCollectionManager {
     init(
         view: BaseAssetsSearchViewLayout,
         groupsViewModel: AssetListViewModel,
-        delegate: AssetsSearchCollectionManagerDelegate? = nil,
+        delegate: AssetsSearchCollectionManagerDelegate?,
         selectedLocale: Locale
     ) {
         self.groupsViewModel = groupsViewModel
@@ -77,6 +77,22 @@ class AssetsSearchCollectionManager {
                 for: groupViewModel.token.symbol,
                 groupViewModel.assets.count > 1
             )
+        }
+    }
+
+    func selectGroup(
+        with symbol: AssetModel.Symbol,
+        at indexPath: IndexPath
+    ) {
+        let expandable = groupExpandable(for: symbol)
+        let expanded = groupExpanded(for: symbol)
+
+        if expanded {
+            collapseAssetGroup(for: symbol)
+            view?.collectionView.reloadSections([indexPath.section])
+        } else if expandable {
+            expandAssetGroup(for: symbol)
+            view?.collectionView.reloadSections([indexPath.section])
         }
     }
 

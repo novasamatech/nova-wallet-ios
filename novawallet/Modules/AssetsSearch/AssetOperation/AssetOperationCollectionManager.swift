@@ -1,4 +1,36 @@
+import Foundation
+
+typealias AssetOperationCollectionDelegate = AssetsSearchCollectionManagerDelegate
+    & AssetOperationCollectionManagerDelegate
+
 class AssetOperationCollectionManager: AssetsSearchCollectionManager {
+    weak var delegate: AssetOperationCollectionManagerDelegate?
+
+    init(
+        view: BaseAssetsSearchViewLayout,
+        groupsViewModel: AssetListViewModel,
+        delegate: AssetOperationCollectionDelegate?,
+        selectedLocale: Locale
+    ) {
+        super.init(
+            view: view,
+            groupsViewModel: groupsViewModel,
+            delegate: delegate,
+            selectedLocale: selectedLocale
+        )
+
+        self.delegate = delegate
+    }
+
+    override func selectGroup(
+        with symbol: AssetModel.Symbol,
+        at indexPath: IndexPath
+    ) {
+        super.selectGroup(with: symbol, at: indexPath)
+
+        delegate?.selectGroup(with: symbol)
+    }
+
     override func updateTokensGroupLayout() {
         guard
             let tokenGroupsLayout,

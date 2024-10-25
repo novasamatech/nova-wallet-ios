@@ -1,5 +1,8 @@
 import UIKit
 
+typealias SendAssetOperationCollectionDelegate = AssetOperationCollectionDelegate
+    & SendAssetOperationCollectionManagerActionDelegate
+
 class SendAssetOperationCollectionManager: AssetOperationCollectionManager {
     var dataSource: SendAssetOperationCollectionDataSource? {
         get {
@@ -15,7 +18,7 @@ class SendAssetOperationCollectionManager: AssetOperationCollectionManager {
     init(
         view: BaseAssetsSearchViewLayout,
         groupsViewModel: AssetListViewModel,
-        delegate: AssetsSearchCollectionManagerDelegate? = nil,
+        delegate: SendAssetOperationCollectionDelegate? = nil,
         actionDelegate: SendAssetOperationCollectionManagerActionDelegate? = nil,
         selectedLocale: Locale
     ) {

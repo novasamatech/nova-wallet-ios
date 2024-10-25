@@ -3,7 +3,7 @@ import BigInt
 import Operation_iOS
 import SoraFoundation
 
-final class ReceiveAssetOperationPresenter: AssetsSearchPresenter {
+final class ReceiveAssetOperationPresenter: AssetOperationPresenter {
     var receiveWireframe: ReceiveAssetOperationWireframeProtocol? {
         wireframe as? ReceiveAssetOperationWireframeProtocol
     }

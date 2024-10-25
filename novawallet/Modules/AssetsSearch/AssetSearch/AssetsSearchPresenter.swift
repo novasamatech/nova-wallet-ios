@@ -13,7 +13,7 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     let interactor: AssetsSearchInteractorInputProtocol
     let viewModelFactory: AssetListAssetViewModelFactoryProtocol
 
-    private var assetListStyle: AssetListGroupsStyle?
+    private(set) var assetListStyle: AssetListGroupsStyle?
 
     private(set) var result: AssetSearchBuilderResult?
 

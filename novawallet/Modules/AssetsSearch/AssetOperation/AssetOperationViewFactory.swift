@@ -154,6 +154,7 @@ enum AssetOperationViewFactory {
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
             wireframe: SendAssetOperationWireframe(
+                stateObservable: stateObservable,
                 buyTokensClosure: buyTokensClosure,
                 transferCompletion: transferCompletion
             )
@@ -181,7 +182,7 @@ enum AssetOperationViewFactory {
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
             selectedAccount: wallet,
-            wireframe: ReceiveAssetOperationWireframe()
+            wireframe: ReceiveAssetOperationWireframe(stateObservable: stateObservable)
         )
 
         interactor.presenter = presenter
@@ -223,7 +224,7 @@ enum AssetOperationViewFactory {
             viewModelFactory: viewModelFactory,
             selectedAccount: wallet,
             purchaseProvider: purchaseProvider,
-            wireframe: BuyAssetOperationWireframe(),
+            wireframe: BuyAssetOperationWireframe(stateObservable: stateObservable),
             localizationManager: LocalizationManager.shared
         )
 

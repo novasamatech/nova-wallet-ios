@@ -139,7 +139,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains_dev.json")!
         #endif
     }
 
@@ -147,7 +147,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/chains_dev.json")!
         #endif
     }
 
@@ -155,7 +155,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/details")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/detailsDev")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/detailsDev")!
         #endif
     }
 

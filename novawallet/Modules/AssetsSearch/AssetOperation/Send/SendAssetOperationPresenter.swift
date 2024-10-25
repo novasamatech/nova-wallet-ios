@@ -3,7 +3,7 @@ import BigInt
 import Operation_iOS
 import SoraFoundation
 
-final class SendAssetOperationPresenter: AssetsSearchPresenter {
+final class SendAssetOperationPresenter: AssetOperationPresenter {
     var sendAssetWireframe: SendAssetOperationWireframeProtocol? {
         wireframe as? SendAssetOperationWireframeProtocol
     }
@@ -29,6 +29,28 @@ final class SendAssetOperationPresenter: AssetsSearchPresenter {
         }
 
         if TokenOperation.checkTransferOperationAvailable() {
+            sendAssetWireframe?.showSendTokens(
+                from: view,
+                chainAsset: chainAsset
+            )
+        }
+    }
+
+    override func selectGroup(with symbol: AssetModel.Symbol) {
+        guard let multichainToken = result?.assetGroups.first(
+            where: { $0.multichainToken.symbol == symbol }
+        )?.multichainToken else {
+            return
+        }
+
+        if multichainToken.instances.count > 1 {
+            sendAssetWireframe?.showSelectNetwork(
+                from: view,
+                multichainToken: multichainToken
+            )
+        } else if
+            let chainAssetId = multichainToken.instances.first?.chainAssetId,
+            let chainAsset = result?.state.chainAsset(for: chainAssetId) {
             sendAssetWireframe?.showSendTokens(
                 from: view,
                 chainAsset: chainAsset
