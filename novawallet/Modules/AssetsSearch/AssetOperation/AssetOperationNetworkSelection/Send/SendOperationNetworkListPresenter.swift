@@ -6,7 +6,7 @@ class SendOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
             multichainToken.symbol,
             preferredLanguages: selectedLocale.rLanguages
         )
-        
+
         view?.updateHeader(with: title)
     }
 }

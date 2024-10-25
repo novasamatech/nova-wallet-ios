@@ -50,7 +50,7 @@ private extension AssetOperationNetworkListPresenter {
 extension AssetOperationNetworkListPresenter: AssetOperationNetworkListPresenterProtocol {
     func setup() {
         provideTitle()
-        
+
         interactor.setup()
     }
 

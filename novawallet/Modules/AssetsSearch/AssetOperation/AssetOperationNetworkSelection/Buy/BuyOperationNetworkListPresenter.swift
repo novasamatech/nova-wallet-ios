@@ -6,7 +6,7 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
             multichainToken.symbol,
             preferredLanguages: selectedLocale.rLanguages
         )
-        
+
         view?.updateHeader(with: title)
     }
 }

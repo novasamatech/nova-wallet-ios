@@ -34,8 +34,8 @@ extension AssetOperationNetworkListInteractor: AssetOperationNetworkListInteract
         let chainAssetIds = Set(multichainToken.instances.map(\.chainAssetId))
 
         let chainAssets = multichainToken.instances
-            .compactMap { chainAsset in
-                let chainId = chainAsset.chainAssetId.chainId
+            .compactMap { instance in
+                let chainId = instance.chainAssetId.chainId
 
                 return stateObservable.state.value.allChains[chainId]?.chainAssets()
             }

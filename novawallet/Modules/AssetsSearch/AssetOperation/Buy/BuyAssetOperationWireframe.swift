@@ -16,7 +16,7 @@ extension BuyAssetOperationWireframe: AssetsSearchWireframeProtocol {
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken
     ) {
-        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createView(
+        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createBuyView(
             with: multichainToken,
             stateObservable: stateObservable
         ) else {
@@ -28,7 +28,7 @@ extension BuyAssetOperationWireframe: AssetsSearchWireframeProtocol {
             animated: true
         )
     }
-    
+
     func close(view: AssetsSearchViewProtocol?, completion: (() -> Void)?) {
         view?.controller.presentingViewController?.dismiss(animated: true, completion: completion)
     }

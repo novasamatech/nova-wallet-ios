@@ -20,7 +20,7 @@ final class SendAssetOperationWireframe: AssetOperationWireframe, SendAssetOpera
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken
     ) {
-        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createView(
+        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createSendView(
             with: multichainToken,
             stateObservable: stateObservable
         ) else {

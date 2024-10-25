@@ -63,6 +63,17 @@ extension AssetOperationNetworkListViewController: UITableViewDelegate {
     ) -> CGFloat {
         Constants.sectionInset
     }
+
+    func tableView(
+        _: UITableView,
+        heightForHeaderInSection section: Int
+    ) -> CGFloat {
+        guard section == 0 else {
+            return .zero
+        }
+
+        return Constants.sectionInset
+    }
 }
 
 // MARK: UITableViewDataSource
@@ -87,6 +98,13 @@ extension AssetOperationNetworkListViewController: UITableViewDataSource {
     }
 
     func tableView(
+        _: UITableView,
+        viewForHeaderInSection _: Int
+    ) -> UIView? {
+        UIView()
+    }
+
+    func tableView(
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
@@ -94,7 +112,7 @@ extension AssetOperationNetworkListViewController: UITableViewDataSource {
             AssetOperationNetworkListCell.self,
             forIndexPath: indexPath
         )
-        cell.contentDisplayView.bind(viewModel: viewModels[indexPath.row])
+        cell.contentDisplayView.bind(viewModel: viewModels[indexPath.section])
 
         return cell
     }

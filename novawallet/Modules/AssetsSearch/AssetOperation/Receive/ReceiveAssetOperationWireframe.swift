@@ -4,7 +4,7 @@ protocol ReceiveAssetOperationWireframeProtocol: MessageSheetPresentable, Assets
         chainAsset: ChainAsset,
         metaChainAccountResponse: MetaChainAccountResponse
     )
-    
+
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,
@@ -16,9 +16,9 @@ final class ReceiveAssetOperationWireframe: AssetOperationWireframe, ReceiveAsse
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,
-        metaChainAccountResponse: MetaChainAccountResponse
+        metaChainAccountResponse _: MetaChainAccountResponse
     ) {
-        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createView(
+        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createReceiveView(
             with: multichainToken,
             stateObservable: stateObservable
         ) else {
@@ -30,7 +30,7 @@ final class ReceiveAssetOperationWireframe: AssetOperationWireframe, ReceiveAsse
             animated: true
         )
     }
-    
+
     func showReceiveTokens(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset,
