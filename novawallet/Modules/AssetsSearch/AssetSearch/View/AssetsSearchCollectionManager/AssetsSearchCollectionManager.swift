@@ -63,6 +63,7 @@ class AssetsSearchCollectionManager {
 
 extension AssetsSearchCollectionManager: AssetsSearchCollectionManagerProtocol {
     func setupCollectionView() {
+        view?.collectionView.registerCellClass(AssetListTokenGroupAssetCell.self)
         view?.collectionView.registerCellClass(AssetListNetworkGroupAssetCell.self)
         view?.collectionView.registerCellClass(AssetListEmptyCell.self)
         view?.collectionView.registerClass(

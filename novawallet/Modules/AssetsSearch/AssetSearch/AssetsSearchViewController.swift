@@ -53,7 +53,7 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupCollectionManager()
+        setupCollectionView()
         setupSearchBar()
         setupLocalization()
         presenter.setup()
@@ -84,6 +84,12 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
             delegate: self,
             selectedLocale: selectedLocale
         )
+    }
+
+    private func setupCollectionView() {
+        setupCollectionManager()
+
+        collectionViewManager?.setupCollectionView()
     }
 
     private func setupLocalization() {
@@ -142,8 +148,11 @@ extension AssetsSearchViewController: UITextFieldDelegate {
 extension AssetsSearchViewController: AssetsSearchViewProtocol {
     func didReceiveList(viewModel: AssetListViewModel) {
         groupsViewModel = viewModel
+        collectionViewManager?.updateGroupsViewModel(with: viewModel)
 
         rootView.collectionView.reloadData()
+
+        collectionViewManager?.updateTokensGroupLayout()
     }
 
     func didReceiveAssetGroupsStyle(_ style: AssetListGroupsStyle) {
@@ -171,6 +180,7 @@ extension AssetsSearchViewController: AssetsSearchViewProtocol {
 extension AssetsSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
+            collectionViewManager?.updateSelectedLocale(with: selectedLocale)
             rootView.collectionView.reloadData()
             setupLocalization()
         }

@@ -129,8 +129,14 @@ class AssetsSearchTokensFlowLayout: AssetsSearchFlowLayout {
             ? Measurements.underneathViewHeight
             : 0
 
+        var top = Measurements.decorationContentInset
+
+        if section == SectionType.assetsStartingSection {
+            top += SectionType.technical.insets.top + SectionType.technical.insets.bottom
+        }
+
         return UIEdgeInsets(
-            top: Measurements.decorationContentInset,
+            top: top,
             left: 0,
             bottom: 8 + Measurements.decorationContentInset + expandableOffset,
             right: 0
