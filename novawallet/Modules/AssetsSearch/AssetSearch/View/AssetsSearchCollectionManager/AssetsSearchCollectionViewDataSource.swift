@@ -43,8 +43,7 @@ class AssetsSearchCollectionViewDataSource: NSObject {
 private extension AssetsSearchCollectionViewDataSource {
     func provideAssetCell(
         _ collectionView: UICollectionView,
-        indexPath: IndexPath,
-        assetIndex _: Int
+        indexPath: IndexPath
     ) -> UICollectionViewCell {
         guard let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
@@ -165,8 +164,8 @@ extension AssetsSearchCollectionViewDataSource: UICollectionViewDataSource {
         switch AssetsSearchFlowLayout.CellType(indexPath: indexPath) {
         case .emptyState:
             provideEmptyStateCell(collectionView, indexPath: indexPath)
-        case let .asset(_, assetIndex):
-            provideAssetCell(collectionView, indexPath: indexPath, assetIndex: assetIndex)
+        case .asset:
+            provideAssetCell(collectionView, indexPath: indexPath)
         }
     }
 

@@ -12581,6 +12581,17 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		2D4F553C2CCC5DA400B65B76 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				4F7095E8DFCBC16F925C919E /* AssetOperationNetworkListPresenter.swift */,
+				2D4F552D2CCC387400B65B76 /* Receive */,
+				2D4F552E2CCC387A00B65B76 /* Buy */,
+				2D4F552F2CCC388700B65B76 /* Send */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
 			isa = PBXGroup;
 			children = (
@@ -22679,12 +22690,9 @@
 			children = (
 				2D4F55302CCC38FB00B65B76 /* Model */,
 				2D4F55242CCBFC2D00B65B76 /* View */,
-				2D4F552D2CCC387400B65B76 /* Receive */,
-				2D4F552E2CCC387A00B65B76 /* Buy */,
-				2D4F552F2CCC388700B65B76 /* Send */,
+				2D4F553C2CCC5DA400B65B76 /* Presenter */,
 				699926F12D454980392BAF03 /* AssetOperationNetworkSelectionProtocols.swift */,
 				3C402A458F6B80E4CD6DBFE3 /* AssetOperationNetworkListWireframe.swift */,
-				4F7095E8DFCBC16F925C919E /* AssetOperationNetworkListPresenter.swift */,
 				3C3ADD92DEC7B0142C5C6696 /* AssetOperationNetworkListInteractor.swift */,
 				891FBCE49A51A9120ED9F861 /* AssetOperationNetworkListViewController.swift */,
 				B54E04B6D25A2DCD254CF1C4 /* AssetOperationNetworkListViewLayout.swift */,
