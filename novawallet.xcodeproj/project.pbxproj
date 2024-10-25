@@ -976,6 +976,7 @@
 		2D4F55342CCC396200B65B76 /* SendOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55332CCC396200B65B76 /* SendOperationNetworkListPresenter.swift */; };
 		2D4F55362CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */; };
 		2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */; };
+		2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
@@ -6134,6 +6135,7 @@
 		2D4F55332CCC396200B65B76 /* SendOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
+		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
@@ -12570,6 +12572,15 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		2D4F55392CCC48C800B65B76 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				0CAC01542A52E0CC0069413E /* AssetListModelHelpers.swift */,
+				2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
 			isa = PBXGroup;
 			children = (
@@ -17058,6 +17069,7 @@
 		847F2D4B27AA68CB00AFD476 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				2D4F55392CCC48C800B65B76 /* Helpers */,
 				847F2D4C27AA68DD00AFD476 /* AssetListAssetModel.swift */,
 				847F2D4E27AA695F00AFD476 /* AssetListGroupModel.swift */,
 				88F19DDF28D8D0F600F6E459 /* LoadableViewModelState+Addition.swift */,
@@ -17066,7 +17078,6 @@
 				0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */,
 				0C56B4FC2A4B0CA90030F9C9 /* AssetListBuilderResult.swift */,
 				0C83775C2A4EEB380072102D /* AssetListState.swift */,
-				0CAC01542A52E0CC0069413E /* AssetListModelHelpers.swift */,
 				77CBD39B2ABBA98900D646D6 /* AssetListModel.swift */,
 				77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */,
 				2D008A622CC242DA00BFEE99 /* AssetListAssetModelCompator.swift */,
@@ -27181,6 +27192,7 @@
 				0C13D2FC2A7D4B220054BB6F /* RelaychainStakingRestrictionsBuilder.swift in Sources */,
 				84FB9E20285C5C9E00B42FC0 /* XcmJunction.swift in Sources */,
 				84EBA4F027AD26A5000AEEAD /* AssetBalanceId.swift in Sources */,
+				2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */,
 				8436B6DC2848998200F24360 /* StakingAccountDetailsViewModelFactory.swift in Sources */,
 				846FB02E28C7524200CA5444 /* StakingParachainInteractor+Provide.swift in Sources */,
 				BA7AEE82627CFC0AFD69B299 /* RecommendedValidatorListPresenter.swift in Sources */,

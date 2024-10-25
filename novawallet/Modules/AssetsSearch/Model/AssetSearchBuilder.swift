@@ -89,7 +89,9 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         }
 
         let groupListsByChain = assetModels.mapValues { models in
-            AssetListModelHelpers.createAssetsDiffCalculator(from: models).allItems
+            let comparator = AssetListModelHelpers.assetSortingBlockDefaultByChain
+
+            return models.sorted(by: comparator)
         }
 
         let chainGroups: [AssetListChainGroupModel] = assetModels.compactMap { chainId, assetModels in
@@ -103,10 +105,8 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             )
         }
 
-        let sortedChainGroups = AssetListModelHelpers.createGroupsDiffCalculator(
-            from: chainGroups,
-            defaultComparingBy: \.chain
-        ).allItems
+        let comparator = AssetListModelHelpers.assetListChainGroupSortingBlock
+        let sortedChainGroups = chainGroups.sorted(by: comparator)
 
         let (assetGroups, groupListsByAsset) = buildAssetGroups(using: state)
 
@@ -146,9 +146,10 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             state: state
         )
         .forEach { symbol, assetListModels in
-            let diffCalculator = AssetListModelHelpers.createAssetsDiffCalculator(from: assetListModels)
+            let comparator = AssetListModelHelpers.assetSortingBlockDefaultByChain
+            let sortedModels = assetListModels.sorted(by: comparator)
 
-            newGroupListsByAsset[symbol] = diffCalculator.allItems
+            newGroupListsByAsset[symbol] = sortedModels
 
             guard let token = tokensBySymbol[symbol] else {
                 return
