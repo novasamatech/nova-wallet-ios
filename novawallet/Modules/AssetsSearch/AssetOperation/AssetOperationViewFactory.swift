@@ -145,6 +145,7 @@ enum AssetOperationViewFactory {
     ) -> SendAssetOperationPresenter {
         let interactor = SendAssetsOperationInteractor(
             stateObservable: stateObservable,
+            settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 

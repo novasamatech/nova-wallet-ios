@@ -1,19 +1,23 @@
 import BigInt
+import SoraKeystore
 
 final class SendAssetsOperationInteractor {
     weak var presenter: AssetsSearchInteractorOutputProtocol?
 
     let stateObservable: AssetListModelObservable
     let filter: ChainAssetsFilter
+    let settingsManager: SettingsManagerProtocol
     let logger: LoggerProtocol
 
     private var builder: SendAssetSearchBuilder?
 
     init(
         stateObservable: AssetListModelObservable,
+        settingsManager: SettingsManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
+        self.settingsManager = settingsManager
         self.logger = logger
 
         filter = { chainAsset in
@@ -29,10 +33,18 @@ final class SendAssetsOperationInteractor {
             return balance.transferable > 0
         }
     }
+
+    private func provideAssetsGroupStyle() {
+        let style = settingsManager.assetListGroupStyle
+
+        presenter?.didReceiveAssetGroupsStyle(style)
+    }
 }
 
 extension SendAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
     func setup() {
+        provideAssetsGroupStyle()
+
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = 1
 

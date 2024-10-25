@@ -3,10 +3,6 @@ import UIKit
 class AssetsSearchCollectionManager {
     weak var delegate: AssetsSearchCollectionManagerDelegate?
 
-    var ableToClosePromotion: Bool {
-        promotionBannerViewModel != nil
-    }
-
     var tokenGroupsLayout: AssetsSearchTokensFlowLayout? {
         view?.collectionTokenGroupsLayout
     }
@@ -17,8 +13,7 @@ class AssetsSearchCollectionManager {
 
     weak var view: BaseAssetsSearchViewLayout?
 
-    private var groupsViewModel: AssetListViewModel
-    private var promotionBannerViewModel: PromotionBannerView.ViewModel?
+    var groupsViewModel: AssetListViewModel
 
     var collectionViewDataSource: AssetsSearchCollectionViewDataSource
     var collectionViewDelegate: AssetsSearchCollectionViewDelegate
@@ -52,6 +47,37 @@ class AssetsSearchCollectionManager {
 
         view?.collectionView.dataSource = collectionViewDataSource
         view?.collectionView.delegate = collectionViewDelegate
+    }
+
+    func groupExpandable(for symbol: String) -> Bool {
+        tokenGroupsLayout?.state(for: symbol)?.expandable ?? false
+    }
+
+    func updateTokensGroupLayout() {
+        guard
+            let tokenGroupsLayout,
+            groupsViewModel.listGroupStyle == .tokens
+        else {
+            return
+        }
+
+        groupsViewModel.listState.groups.enumerated().forEach { groupIndex, group in
+            guard case let .token(groupViewModel) = group else {
+                return
+            }
+
+            let sectionIndex = tokenGroupsLayout.assetSectionIndex(from: groupIndex)
+
+            tokenGroupsLayout.changeSection(
+                byChanging: sectionIndex,
+                for: groupViewModel.token.symbol
+            )
+
+            tokenGroupsLayout.setExpandableSection(
+                for: groupViewModel.token.symbol,
+                groupViewModel.assets.count > 1
+            )
+        }
     }
 
     private func updateLoadingState(for cell: UICollectionViewCell) {
@@ -96,33 +122,6 @@ extension AssetsSearchCollectionManager: AssetsSearchCollectionManagerProtocol {
         layout.invalidateLayout()
     }
 
-    func updateTokensGroupLayout() {
-        guard
-            let tokenGroupsLayout,
-            groupsViewModel.listGroupStyle == .tokens
-        else {
-            return
-        }
-
-        groupsViewModel.listState.groups.enumerated().forEach { groupIndex, group in
-            guard case let .token(groupViewModel) = group else {
-                return
-            }
-
-            let sectionIndex = tokenGroupsLayout.assetSectionIndex(from: groupIndex)
-
-            tokenGroupsLayout.changeSection(
-                byChanging: sectionIndex,
-                for: groupViewModel.token.symbol
-            )
-
-            tokenGroupsLayout.setExpandableSection(
-                for: groupViewModel.token.symbol,
-                groupViewModel.assets.count > 1
-            )
-        }
-    }
-
     func updateGroupsViewModel(with model: AssetListViewModel) {
         groupsViewModel = model
 
@@ -154,10 +153,6 @@ extension AssetsSearchCollectionManager: AssetsSearchCollectionViewLayoutDelegat
             for: type,
             at: indexPath
         ) ?? .zero
-    }
-
-    func groupExpandable(for symbol: String) -> Bool {
-        tokenGroupsLayout?.state(for: symbol)?.expandable ?? false
     }
 
     func expandAssetGroup(for symbol: String) {

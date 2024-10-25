@@ -12480,6 +12480,15 @@
 			path = FlowLayout;
 			sourceTree = "<group>";
 		};
+		2D4F55122CCB917600B65B76 /* SendAssetOperationCollectionManager */ = {
+			isa = PBXGroup;
+			children = (
+				2D4F550E2CCB775000B65B76 /* SendAssetOperationCollectionManager.swift */,
+				2D4F55102CCB7C4C00B65B76 /* SendAssetOperationCollectionDataSource.swift */,
+			);
+			path = SendAssetOperationCollectionManager;
+			sourceTree = "<group>";
+		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
 			isa = PBXGroup;
 			children = (
@@ -13863,8 +13872,7 @@
 		77A6F5C72A2F17C3004AFD1A /* Send */ = {
 			isa = PBXGroup;
 			children = (
-				2D4F550E2CCB775000B65B76 /* SendAssetOperationCollectionManager.swift */,
-				2D4F55102CCB7C4C00B65B76 /* SendAssetOperationCollectionDataSource.swift */,
+				2D4F55122CCB917600B65B76 /* SendAssetOperationCollectionManager */,
 				77CBD39D2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift */,
 				77A6F5C42A2F17BE004AFD1A /* SendAssetOperationPresenter.swift */,
 				77A6F5C32A2F17BE004AFD1A /* SendAssetOperationWireframe.swift */,

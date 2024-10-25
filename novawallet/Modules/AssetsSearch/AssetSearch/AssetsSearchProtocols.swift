@@ -4,7 +4,6 @@ import UIKit
 // MARK: AssetsSearchCollectionManager
 
 protocol AssetsSearchCollectionManagerProtocol {
-    var ableToClosePromotion: Bool { get }
     var delegate: AssetsSearchCollectionManagerDelegate? { get set }
 
     func setupCollectionView()

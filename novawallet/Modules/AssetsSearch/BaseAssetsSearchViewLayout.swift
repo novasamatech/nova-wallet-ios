@@ -14,7 +14,7 @@ class BaseAssetsSearchViewLayout: UIView {
     var cancelButton: RoundedButton? { searchView.optionalCancelButton }
 
     let collectionNetworkGroupsLayout = AssetsSearchNetworksFlowLayout()
-    let collectionTokenGroupsLayout = AssetsSearchTokensFlowLayout()
+    var collectionTokenGroupsLayout = AssetsSearchTokensFlowLayout()
 
     var assetGroupsLayoutStyle: AssetListGroupsStyle?
 
