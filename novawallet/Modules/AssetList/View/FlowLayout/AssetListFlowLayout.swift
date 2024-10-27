@@ -25,6 +25,8 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     private(set) var promotionInsets: UIEdgeInsets = .zero
     private(set) var nftsInsets: UIEdgeInsets = .zero
 
+    private var isAnimating: Bool = false
+
     enum SectionType: CaseIterable {
         case summary
         case nfts
@@ -273,11 +275,15 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     override func prepareForTransition(to newLayout: UICollectionViewLayout) {
         super.prepareForTransition(to: newLayout)
 
+        isAnimating = true
+
         Logger.shared.info("Transition to new layout: \(newLayout) in \(self)")
     }
 
     override func prepareForTransition(from oldLayout: UICollectionViewLayout) {
         super.prepareForTransition(from: oldLayout)
+
+        isAnimating = true
 
         Logger.shared.info("Transition from old layout: \(oldLayout) in \(self)")
     }
@@ -285,22 +291,21 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     override func finalizeLayoutTransition() {
         super.finalizeLayoutTransition()
 
+        isAnimating = false
+
         Logger.shared.info("Finalize transition on layout \(self)")
     }
 
     override func initialLayoutAttributesForAppearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let attributes = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
 
-        Logger.shared.info("Transition Appearing item \(itemIndexPath) Attributes: \(attributes)")
+        Logger.shared.info("Transition \(self) Appearing item \(itemIndexPath) Attributes: \(attributes)")
 
         attributes?.alpha = 1.0
 
-        Logger.shared.info("Init Transition ZIndex \(attributes?.zIndex)")
-        Logger.shared.info("Init Transition Transform \(attributes?.transform)")
-        Logger.shared.info("Init Transition Transform3D \(attributes?.transform3D)")
-        Logger.shared.info("Init Transition Frame \(attributes?.frame)")
-        Logger.shared.info("Init Transition Center \(attributes?.center)")
-        Logger.shared.info("Init Transition Bounds \(attributes?.bounds)")
+        if isAnimating, itemIndexPath.section >= AssetListFlowLayout.SectionType.assetsStartingSection {
+            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+        }
 
         return attributes
     }
@@ -310,7 +315,11 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         attributes?.alpha = 1.0
 
-        Logger.shared.info("Transition Dissappearing item \(itemIndexPath) Attributes: \(attributes)")
+        if isAnimating, itemIndexPath.section >= AssetListFlowLayout.SectionType.assetsStartingSection {
+            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+        }
+
+        Logger.shared.info("Transition \(self) Dissappearing item \(itemIndexPath) Attributes: \(attributes)")
 
         return attributes
     }
@@ -318,9 +327,13 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     override func initialLayoutAttributesForAppearingDecorationElement(ofKind elementKind: String, at decorationIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let attributes = super.initialLayoutAttributesForAppearingDecorationElement(ofKind: elementKind, at: decorationIndexPath)?.copy() as? UICollectionViewLayoutAttributes
 
-        Logger.shared.info("Transition Appearing decoration \(decorationIndexPath) Attributes: \(attributes)")
+        Logger.shared.info("Transition \(self) Appearing decoration \(decorationIndexPath) Attributes: \(attributes)")
 
         attributes?.alpha = 1.0
+
+        if isAnimating {
+            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+        }
 
         return attributes
     }
@@ -330,7 +343,11 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         attributes?.alpha = 1.0
 
-        Logger.shared.info("Transition Dissappearing decoration \(decorationIndexPath) Attributes: \(attributes)")
+        if isAnimating {
+            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+        }
+
+        Logger.shared.info("Transition \(self) Dissappearing decoration \(decorationIndexPath) Attributes: \(attributes)")
 
         return attributes
     }
@@ -340,7 +357,11 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         attributes?.alpha = 1.0
 
-        Logger.shared.info("Transition Appearing supplementary \(elementIndexPath) Attributes: \(attributes)")
+        if isAnimating {
+            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+        }
+
+        Logger.shared.info("Transition \(self) Appearing supplementary \(elementIndexPath) Attributes: \(attributes)")
 
         return attributes
     }
@@ -348,9 +369,13 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     override func finalLayoutAttributesForDisappearingSupplementaryElement(ofKind elementKind: String, at elementIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let attributes = super.finalLayoutAttributesForDisappearingSupplementaryElement(ofKind: elementKind, at: elementIndexPath)?.copy() as? UICollectionViewLayoutAttributes
 
-        Logger.shared.info("Transition Dissappearing supplementary \(elementIndexPath) Attributes: \(attributes)")
+        Logger.shared.info("Transition \(self) Dissappearing supplementary \(elementIndexPath) Attributes: \(attributes)")
 
         attributes?.alpha = 1.0
+
+        if isAnimating {
+            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+        }
 
         return attributes
     }

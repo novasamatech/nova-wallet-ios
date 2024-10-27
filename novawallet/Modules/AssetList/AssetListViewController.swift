@@ -98,9 +98,11 @@ extension AssetListViewController: AssetListViewProtocol {
                 AssetListFlowLayout.SectionType.assetsStartingSection + index
             }
 
-            rootView.collectionView.performBatchUpdates {
-                rootView.collectionView.deleteSections(IndexSet(removingIndexes))
-                rootView.collectionView.insertSections(IndexSet(insertingIndexes))
+            UIView.performWithoutAnimation {
+                self.rootView.collectionView.performBatchUpdates {
+                    self.rootView.collectionView.deleteSections(IndexSet(removingIndexes))
+                    self.rootView.collectionView.insertSections(IndexSet(insertingIndexes))
+                }
             }
 
             collectionViewManager.changeCollectionViewLayout(to: newGroupStyle)
