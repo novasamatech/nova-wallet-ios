@@ -58,19 +58,15 @@ struct AssetListViewFactory {
         )
         let localizationManager = LocalizationManager.shared
 
-        let assetListStyle: AssetListGroupsStyle = .networks
-
         let presenter = AssetListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            assetListStyle: assetListStyle,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
 
         let view = AssetListViewController(
             presenter: presenter,
-            assetGroupsLayoutStyle: assetListStyle,
             localizationManager: localizationManager
         )
 

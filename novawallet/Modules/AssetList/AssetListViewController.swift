@@ -6,7 +6,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     let presenter: AssetListPresenterProtocol
 
-    var assetGroupsLayoutStyle: AssetListGroupsStyle
+    var assetGroupsLayoutStyle: AssetListGroupsStyle?
 
     var collectionViewLayout: UICollectionViewFlowLayout? {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
@@ -29,11 +29,9 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     init(
         presenter: AssetListPresenterProtocol,
-        assetGroupsLayoutStyle: AssetListGroupsStyle,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.assetGroupsLayoutStyle = assetGroupsLayoutStyle
 
         super.init(nibName: nil, bundle: nil)
 
@@ -46,7 +44,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AssetListViewLayout(assetGroupsLayoutStyle: assetGroupsLayoutStyle)
+        view = AssetListViewLayout()
     }
 
     override func viewDidLoad() {
@@ -132,6 +130,10 @@ extension AssetListViewController: AssetListViewProtocol {
         }
 
         rootView.collectionViewLayout.deactivatePromotion()
+    }
+
+    func didReceiveAssetListStyle(_ style: AssetListGroupsStyle) {
+        assetGroupsLayoutStyle = style
     }
 }
 
