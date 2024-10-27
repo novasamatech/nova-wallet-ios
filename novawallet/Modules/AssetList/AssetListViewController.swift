@@ -85,16 +85,32 @@ extension AssetListViewController: AssetListViewProtocol {
         let oldGroupsStyle = groupsViewModel.listGroupStyle
         let newGroupStyle = viewModel.listGroupStyle
 
+        let oldViewModel = groupsViewModel
         collectionViewManager.updateGroupsViewModel(with: viewModel)
         groupsViewModel = viewModel
 
-        rootView.collectionView.reloadData()
-
         if oldGroupsStyle != newGroupStyle {
-            collectionViewManager.changeCollectionViewLayout(to: newGroupStyle)
-        }
+            let removingIndexes = oldViewModel.listState.groups.enumerated().map { index, _ in
+                AssetListFlowLayout.SectionType.assetsStartingSection + index
+            }
 
-        collectionViewManager.updateTokensGroupLayout()
+            let insertingIndexes = viewModel.listState.groups.enumerated().map { index, _ in
+                AssetListFlowLayout.SectionType.assetsStartingSection + index
+            }
+
+            rootView.collectionView.performBatchUpdates {
+                rootView.collectionView.deleteSections(IndexSet(removingIndexes))
+                rootView.collectionView.insertSections(IndexSet(insertingIndexes))
+            }
+
+            collectionViewManager.changeCollectionViewLayout(to: newGroupStyle)
+
+            collectionViewManager.updateTokensGroupLayout()
+        } else {
+            rootView.collectionView.reloadData()
+
+            collectionViewManager.updateTokensGroupLayout()
+        }
     }
 
     func didReceiveNft(viewModel: AssetListNftsViewModel?) {

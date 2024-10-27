@@ -267,4 +267,91 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     func assetSectionIndex(from groupIndex: Int) -> Int {
         SectionType.assetsStartingSection + groupIndex
     }
+
+    // MARK: Animation
+
+    override func prepareForTransition(to newLayout: UICollectionViewLayout) {
+        super.prepareForTransition(to: newLayout)
+
+        Logger.shared.info("Transition to new layout: \(newLayout) in \(self)")
+    }
+
+    override func prepareForTransition(from oldLayout: UICollectionViewLayout) {
+        super.prepareForTransition(from: oldLayout)
+
+        Logger.shared.info("Transition from old layout: \(oldLayout) in \(self)")
+    }
+
+    override func finalizeLayoutTransition() {
+        super.finalizeLayoutTransition()
+
+        Logger.shared.info("Finalize transition on layout \(self)")
+    }
+
+    override func initialLayoutAttributesForAppearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+
+        Logger.shared.info("Transition Appearing item \(itemIndexPath) Attributes: \(attributes)")
+
+        attributes?.alpha = 1.0
+
+        Logger.shared.info("Init Transition ZIndex \(attributes?.zIndex)")
+        Logger.shared.info("Init Transition Transform \(attributes?.transform)")
+        Logger.shared.info("Init Transition Transform3D \(attributes?.transform3D)")
+        Logger.shared.info("Init Transition Frame \(attributes?.frame)")
+        Logger.shared.info("Init Transition Center \(attributes?.center)")
+        Logger.shared.info("Init Transition Bounds \(attributes?.bounds)")
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 1.0
+
+        Logger.shared.info("Transition Dissappearing item \(itemIndexPath) Attributes: \(attributes)")
+
+        return attributes
+    }
+
+    override func initialLayoutAttributesForAppearingDecorationElement(ofKind elementKind: String, at decorationIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingDecorationElement(ofKind: elementKind, at: decorationIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+
+        Logger.shared.info("Transition Appearing decoration \(decorationIndexPath) Attributes: \(attributes)")
+
+        attributes?.alpha = 1.0
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingDecorationElement(ofKind elementKind: String, at decorationIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingDecorationElement(ofKind: elementKind, at: decorationIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 1.0
+
+        Logger.shared.info("Transition Dissappearing decoration \(decorationIndexPath) Attributes: \(attributes)")
+
+        return attributes
+    }
+
+    override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String, at elementIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingSupplementaryElement(ofKind: elementKind, at: elementIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 1.0
+
+        Logger.shared.info("Transition Appearing supplementary \(elementIndexPath) Attributes: \(attributes)")
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingSupplementaryElement(ofKind elementKind: String, at elementIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingSupplementaryElement(ofKind: elementKind, at: elementIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+
+        Logger.shared.info("Transition Dissappearing supplementary \(elementIndexPath) Attributes: \(attributes)")
+
+        attributes?.alpha = 1.0
+
+        return attributes
+    }
 }

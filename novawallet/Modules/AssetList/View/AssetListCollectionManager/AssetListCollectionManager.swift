@@ -107,7 +107,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
 
         view.collectionView.setCollectionViewLayout(
             layout,
-            animated: false
+            animated: true
         )
 
         layout.invalidateLayout()
