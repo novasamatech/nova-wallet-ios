@@ -3,7 +3,7 @@ import BigInt
 import Operation_iOS
 import SoraFoundation
 
-final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
+final class SwapAssetsOperationPresenter: AssetOperationPresenter {
     var swapAssetsWireframe: SwapAssetsOperationWireframeProtocol? {
         wireframe as? SwapAssetsOperationWireframeProtocol
     }
@@ -50,11 +50,35 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
             return
         }
 
-        selectClosureStrategy.applyStrategy(for: { dismissalCallback in
-            self.wireframe.close(view: self.view, completion: dismissalCallback)
-        }, callback: {
-            self.selectClosure(chainAsset)
-        })
+        processAssetSelected(chainAsset)
+    }
+
+    override func selectGroup(with symbol: AssetModel.Symbol) {
+        processGroupSelectionWithCheck(
+            symbol,
+            onSingleInstance: { chainAsset in
+                processAssetSelected(chainAsset)
+            },
+            onMultipleInstances: { multichainToken in
+                swapAssetsWireframe?.showSelectNetwork(
+                    from: view,
+                    multichainToken: multichainToken,
+                    selectClosure: selectClosure,
+                    selectClosureStrategy: selectClosureStrategy
+                )
+            }
+        )
+    }
+
+    private func processAssetSelected(_ chainAsset: ChainAsset) {
+        selectClosureStrategy.applyStrategy(
+            for: { dismissalCallback in
+                self.wireframe.close(view: self.view, completion: dismissalCallback)
+            },
+            callback: { [weak self] in
+                self?.selectClosure(chainAsset)
+            }
+        )
     }
 }
 

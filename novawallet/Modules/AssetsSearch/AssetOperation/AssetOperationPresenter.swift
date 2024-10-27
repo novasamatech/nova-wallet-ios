@@ -9,7 +9,7 @@ class AssetOperationPresenter: AssetsSearchPresenter, AssetOperationPresenterPro
         fatalError("Must be overriden by subsclass")
     }
 
-    func processWithCheck(
+    func processGroupSelectionWithCheck(
         _ symbol: String,
         onSingleInstance: (ChainAsset) -> Void,
         onMultipleInstances: (MultichainToken) -> Void

@@ -5,6 +5,7 @@ struct MultichainToken {
         let chainAssetId: ChainAssetId
         let chainName: String
         let enabled: Bool
+        let testnet: Bool
         let icon: URL?
     }
 
@@ -26,7 +27,13 @@ struct MultichainToken {
 
 extension MultichainToken.Instance {
     func byChanging(enabled: Bool) -> MultichainToken.Instance {
-        .init(chainAssetId: chainAssetId, chainName: chainName, enabled: enabled, icon: icon)
+        .init(
+            chainAssetId: chainAssetId,
+            chainName: chainName,
+            enabled: enabled,
+            testnet: testnet,
+            icon: icon
+        )
     }
 }
 
@@ -56,6 +63,7 @@ extension Array where Element == ChainModel {
                     chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
                     chainName: chain.name,
                     enabled: asset.enabled,
+                    testnet: chain.isTestnet,
                     icon: asset.icon
                 )
 
@@ -103,6 +111,7 @@ extension Array where Element == ChainModel {
                     chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
                     chainName: chain.name,
                     enabled: asset.enabled,
+                    testnet: chain.isTestnet,
                     icon: asset.icon
                 )
 
@@ -120,6 +129,66 @@ extension Array where Element == ChainModel {
                         instances: [instance]
                     )
                 }
+            }
+        }
+    }
+}
+
+extension Array where Element == ChainAsset {
+    func createMultichainTokens() -> [MultichainToken] {
+        let mapping = createMultichainTokenMapping()
+
+        let chainOrders = enumerated().reduce(into: [ChainModel.Id: Int]()) { accum, chainOrder in
+            accum[chainOrder.1.chain.chainId] = chainOrder.0
+        }
+
+        return mapping.values.sorted { token1, token2 in
+            guard
+                let chainAssetId1 = token1.instances.first?.chainAssetId,
+                let chainAssetId2 = token2.instances.first?.chainAssetId else {
+                return true
+            }
+
+            let order1 = chainOrders[chainAssetId1.chainId] ?? Int.max
+            let order2 = chainOrders[chainAssetId2.chainId] ?? Int.max
+
+            if order1 != order2 {
+                return order1 < order2
+            } else {
+                return chainAssetId1.assetId < chainAssetId2.assetId
+            }
+        }
+    }
+
+    private func createMultichainTokenMapping() -> [String: MultichainToken] {
+        let allSymbols = reduce(into: Set<String>()) { accum, chainAsset in
+            accum.insert(chainAsset.asset.symbol)
+        }
+
+        return reduce(into: [String: MultichainToken]()) { accum, chainAsset in
+            let instance = MultichainToken.Instance(
+                chainAssetId: chainAsset.chainAssetId,
+                chainName: chainAsset.chain.name,
+                enabled: chainAsset.asset.enabled,
+                testnet: chainAsset.chain.isTestnet,
+                icon: chainAsset.asset.icon
+            )
+
+            let symbolExtensions = MultichainToken.reserveTokensOf(symbol: chainAsset.asset.symbol)
+            let tokenSymbol = symbolExtensions.first(
+                where: { allSymbols.contains($0) }
+            ) ?? chainAsset.asset.symbol
+
+            if let token = accum[tokenSymbol] {
+                accum[tokenSymbol] = MultichainToken(
+                    symbol: tokenSymbol,
+                    instances: token.instances + [instance]
+                )
+            } else {
+                accum[tokenSymbol] = MultichainToken(
+                    symbol: tokenSymbol,
+                    instances: [instance]
+                )
             }
         }
     }

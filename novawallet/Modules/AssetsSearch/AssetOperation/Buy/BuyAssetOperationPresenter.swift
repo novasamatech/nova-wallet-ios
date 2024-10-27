@@ -33,7 +33,7 @@ final class BuyAssetOperationPresenter: AssetOperationPresenter, PurchaseFlowMan
     }
 
     override func selectGroup(with symbol: AssetModel.Symbol) {
-        processWithCheck(
+        processGroupSelectionWithCheck(
             symbol,
             onSingleInstance: { chainAsset in
                 processAssetSelected(chainAsset)

@@ -62,7 +62,7 @@ protocol AssetsSearchInteractorOutputProtocol: AnyObject {
 }
 
 protocol AssetsSearchWireframeProtocol: AnyObject {
-    func close(view: AssetsSearchViewProtocol?, completion: (() -> Void)?)
+    func close(view: ControllerBackedProtocol?, completion: (() -> Void)?)
 }
 
 extension AssetsSearchWireframeProtocol {

@@ -207,3 +207,68 @@ extension AssetOperationNetworkListViewFactory {
         )
     }
 }
+
+// MARK: SWAPS
+
+extension AssetOperationNetworkListViewFactory {
+    static func createSwapsView(
+        with multichainToken: MultichainToken,
+        stateObservable: AssetListModelObservable,
+        selectClosure: @escaping (ChainAsset) -> Void,
+        selectClosureStrategy: SubmoduleNavigationStrategy
+    ) -> AssetOperationNetworkListViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let operation = OperationQueue()
+        operation.maxConcurrentOperationCount = 1
+
+        let logger = Logger.shared
+
+        let interactor = AssetOperationNetworkListInteractor(
+            multichainToken: multichainToken,
+            operationQueue: operation,
+            stateObservable: stateObservable,
+            logger: logger
+        )
+
+        let presenter = createSwapPresenter(
+            with: interactor,
+            multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            currencyManager: currencyManager,
+            selectClosure: selectClosure,
+            selectClosureStrategy: selectClosureStrategy
+        )
+
+        let view = AssetOperationNetworkListViewController(presenter: presenter)
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createSwapPresenter(
+        with interactor: AssetOperationNetworkListInteractor,
+        multichainToken: MultichainToken,
+        stateObservable: AssetListModelObservable,
+        currencyManager: CurrencyManager,
+        selectClosure: @escaping (ChainAsset) -> Void,
+        selectClosureStrategy: SubmoduleNavigationStrategy
+    ) -> SwapOperationNetworkListPresenter {
+        let viewModelFactory = createViewModelFactory(with: currencyManager)
+
+        let wireframe = SwapAssetsOperationWireframe(stateObservable: stateObservable)
+
+        return SwapOperationNetworkListPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            multichainToken: multichainToken,
+            viewModelFactory: viewModelFactory,
+            selectClosure: selectClosure,
+            selectClosureStrategy: selectClosureStrategy
+        )
+    }
+}

@@ -28,22 +28,14 @@ final class SendAssetOperationPresenter: AssetOperationPresenter {
             return
         }
 
-        if TokenOperation.checkTransferOperationAvailable() {
-            sendAssetWireframe?.showSendTokens(
-                from: view,
-                chainAsset: chainAsset
-            )
-        }
+        processAssetSelected(chainAsset)
     }
 
     override func selectGroup(with symbol: AssetModel.Symbol) {
-        processWithCheck(
+        processGroupSelectionWithCheck(
             symbol,
             onSingleInstance: { chainAsset in
-                sendAssetWireframe?.showSendTokens(
-                    from: view,
-                    chainAsset: chainAsset
-                )
+                processAssetSelected(chainAsset)
             },
             onMultipleInstances: { multichainToken in
                 sendAssetWireframe?.showSelectNetwork(
@@ -52,6 +44,15 @@ final class SendAssetOperationPresenter: AssetOperationPresenter {
                 )
             }
         )
+    }
+
+    private func processAssetSelected(_ chainAsset: ChainAsset) {
+        if TokenOperation.checkTransferOperationAvailable() {
+            sendAssetWireframe?.showSendTokens(
+                from: view,
+                chainAsset: chainAsset
+            )
+        }
     }
 }
 

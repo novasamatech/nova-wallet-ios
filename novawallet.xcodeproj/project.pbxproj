@@ -1007,6 +1007,7 @@
 		2D6287652C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287642C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift */; };
 		2D62876A2C99A10000060814 /* SwipeGovRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */; };
 		2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */; };
+		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -6166,6 +6167,7 @@
 		2D6287642C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmViewController.swift; sourceTree = "<group>"; };
 		2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovRepositoryFactory.swift; sourceTree = "<group>"; };
 		2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupInteractorError.swift; sourceTree = "<group>"; };
+		2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -12585,6 +12587,7 @@
 			isa = PBXGroup;
 			children = (
 				4F7095E8DFCBC16F925C919E /* AssetOperationNetworkListPresenter.swift */,
+				2D65F6C72CCED75C00CC6F72 /* Swap */,
 				2D4F552D2CCC387400B65B76 /* Receive */,
 				2D4F552E2CCC387A00B65B76 /* Buy */,
 				2D4F552F2CCC388700B65B76 /* Send */,
@@ -12712,6 +12715,14 @@
 				2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		2D65F6C72CCED75C00CC6F72 /* Swap */ = {
+			isa = PBXGroup;
+			children = (
+				2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */,
+			);
+			path = Swap;
 			sourceTree = "<group>";
 		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
@@ -13784,6 +13795,7 @@
 			children = (
 				B79780E21E046803D697AEAD /* AssetOperationNetworkSelection */,
 				77A6F5C22A2F1736004AFD1A /* Extensions */,
+				77C9BCC22ACD563E00022EA2 /* Swaps */,
 				77A6F5C72A2F17C3004AFD1A /* Send */,
 				77A6F5BB2A2E2ABC004AFD1A /* Buy */,
 				77A6F5AC2A2E0B36004AFD1A /* Receive */,
@@ -22002,7 +22014,6 @@
 		A29C55960FE9EADBDEAC6F03 /* AssetsSearch */ = {
 			isa = PBXGroup;
 			children = (
-				77C9BCC22ACD563E00022EA2 /* Swaps */,
 				0C1FE4F22A52EDD5003769E7 /* Model */,
 				775692822A24CA5100220756 /* AssetOperation */,
 				778D97A02A24D459002BA681 /* AssetSearch */,
@@ -28356,6 +28367,7 @@
 				E221892A5B6A41A944B88336 /* ParaStkYieldBoostStartProtocols.swift in Sources */,
 				772BCCA72B7A031B00A516D9 /* NotificationsView.swift in Sources */,
 				8465DA3B298EC97D00C7CFF1 /* TitleDetailsSheetViewFactory.swift in Sources */,
+				2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */,
 				8F131D86B269B7FAB96CF3B5 /* ParaStkYieldBoostStartWireframe.swift in Sources */,
 				84C1DBBE29C2615F00F295A5 /* InflationCurveRewardConfig.swift in Sources */,
 				EEDDE41F8445C0CB2E99AFE4 /* ParaStkYieldBoostStartPresenter.swift in Sources */,
