@@ -14,6 +14,7 @@ protocol AssetsSearchCollectionManagerProtocol {
 
 protocol AssetsSearchCollectionManagerDelegate: AnyObject {
     func selectAsset(for chainAssetId: ChainAssetId)
+    func selectGroup(with symbol: AssetModel.Symbol)
 }
 
 protocol AssetsSearchCollectionSelectionDelegate: AnyObject {
@@ -47,6 +48,7 @@ protocol AssetsSearchViewProtocol: ControllerBackedProtocol {
 protocol AssetsSearchPresenterProtocol: AnyObject {
     func setup()
     func selectAsset(for chainAssetId: ChainAssetId)
+    func selectGroup(with symbol: AssetModel.Symbol)
     func updateSearch(query: String)
     func cancel()
 }

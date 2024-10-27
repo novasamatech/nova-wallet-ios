@@ -969,7 +969,6 @@
 		2D4F55212CCBE18400B65B76 /* AssetOperationNetworkListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55202CCBE18400B65B76 /* AssetOperationNetworkListViewModelFactory.swift */; };
 		2D4F55232CCBE58000B65B76 /* AssetOperationNetworkBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55222CCBE58000B65B76 /* AssetOperationNetworkBuilder.swift */; };
 		2D4F55262CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55252CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift */; };
-		2D4F55282CCC1DEB00B65B76 /* AssetOperationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55272CCC1DEB00B65B76 /* AssetOperationPresenter.swift */; };
 		2D4F552A2CCC211B00B65B76 /* AssetOperationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55292CCC211B00B65B76 /* AssetOperationWireframe.swift */; };
 		2D4F552C2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F552B2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift */; };
 		2D4F55322CCC390F00B65B76 /* IdentifiableChainAssetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55312CCC390F00B65B76 /* IdentifiableChainAssetViewModel.swift */; };
@@ -6129,7 +6128,6 @@
 		2D4F55202CCBE18400B65B76 /* AssetOperationNetworkListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationNetworkListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D4F55222CCBE58000B65B76 /* AssetOperationNetworkBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationNetworkBuilder.swift; sourceTree = "<group>"; };
 		2D4F55252CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationNetworkListCell.swift; sourceTree = "<group>"; };
-		2D4F55272CCC1DEB00B65B76 /* AssetOperationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationPresenter.swift; sourceTree = "<group>"; };
 		2D4F55292CCC211B00B65B76 /* AssetOperationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationWireframe.swift; sourceTree = "<group>"; };
 		2D4F552B2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationNetworkViewModel.swift; sourceTree = "<group>"; };
 		2D4F55312CCC390F00B65B76 /* IdentifiableChainAssetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableChainAssetViewModel.swift; sourceTree = "<group>"; };
@@ -13803,7 +13801,6 @@
 				2D4F551B2CCBA0D300B65B76 /* AssetOperationCollectionManager.swift */,
 				77A6F5C82A2F1EFC004AFD1A /* AssetOperationViewFactory.swift */,
 				2D4F551D2CCBA17800B65B76 /* AssetOperationViewController.swift */,
-				2D4F55272CCC1DEB00B65B76 /* AssetOperationPresenter.swift */,
 				2D4F55292CCC211B00B65B76 /* AssetOperationWireframe.swift */,
 			);
 			path = AssetOperation;
@@ -26101,7 +26098,6 @@
 				8499FEE227C0AF4700712589 /* ChainModel+Nft.swift in Sources */,
 				0CA719852B789111000B086E /* HydraOmnipoolQuoteParams.swift in Sources */,
 				0CFA161E2B0CED07007AF885 /* GovTreasurySpentLocalHandler.swift in Sources */,
-				2D4F55282CCC1DEB00B65B76 /* AssetOperationPresenter.swift in Sources */,
 				0CB64E692B01F798008F268F /* TransferSetupOriginSelectionWireframe.swift in Sources */,
 				0CE1A0572BEBCC46008206ED /* CloudBackupSettingsViewModel.swift in Sources */,
 				8428765424ADDE0200D91AD8 /* SettingsViewModelFactory.swift in Sources */,
