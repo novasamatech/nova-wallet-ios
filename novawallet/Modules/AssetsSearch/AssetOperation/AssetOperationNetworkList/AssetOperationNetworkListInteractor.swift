@@ -27,7 +27,7 @@ final class AssetOperationNetworkListInteractor {
     }
 }
 
-// MARK: AssetOperationNetworkSelectionInteractorInputProtocol
+// MARK: AssetOperationNetworkListInteractorInputProtocol
 
 extension AssetOperationNetworkListInteractor: AssetOperationNetworkListInteractorInputProtocol {
     func setup() {
