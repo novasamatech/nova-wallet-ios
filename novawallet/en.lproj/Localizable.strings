@@ -1761,3 +1761,4 @@
 "buy.operation.network.list.title" = "Select network for buying %@";
 "receive.operation.network.list.title" = "Select network for receiving %@";
 "swap.operation.network.list.title" = "Select network for swapping %@";
+"settings.appearance" = "Appearance";

@@ -22,6 +22,7 @@ enum SettingsRow {
     case notifications
     case backup
     case networks
+    case appearance
 }
 
 extension SettingsRow {
@@ -68,6 +69,8 @@ extension SettingsRow {
             return R.string.localizable.commonBackup(preferredLanguages: locale.rLanguages)
         case .networks:
             return R.string.localizable.connectionManagementTitle(preferredLanguages: locale.rLanguages)
+        case .appearance:
+            return R.string.localizable.settingsAppearance(preferredLanguages: locale.rLanguages)
         }
     }
 
@@ -113,6 +116,8 @@ extension SettingsRow {
             return R.image.iconSettingsBackup()!
         case .networks:
             return R.image.iconNetworks()!
+        case .appearance:
+            return R.image.iconAppearance()!
         }
     }
 }
