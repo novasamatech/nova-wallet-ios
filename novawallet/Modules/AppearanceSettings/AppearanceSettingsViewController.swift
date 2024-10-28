@@ -33,7 +33,10 @@ final class AppearanceSettingsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.settingsAppearance(preferredLanguages: selectedLocale)
+        title = R.string.localizable.settingsAppearance(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
         rootView.locale = selectedLocale
     }
 }
