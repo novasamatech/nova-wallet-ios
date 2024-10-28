@@ -52,7 +52,13 @@ private extension AppearanceSettingsViewController {
     }
 }
 
-extension AppearanceSettingsViewController: AppearanceSettingsViewProtocol {}
+// MARK: AppearanceSettingsViewProtocol
+
+extension AppearanceSettingsViewController: AppearanceSettingsViewProtocol {
+    func update(with initialViewModel: AppearanceSettingsIconsView.Model) {
+        rootView.tokenIconsView.bind(viewModel: initialViewModel)
+    }
+}
 
 // MARK: Localizable
 

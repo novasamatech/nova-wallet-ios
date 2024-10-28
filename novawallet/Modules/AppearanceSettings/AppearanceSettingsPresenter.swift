@@ -14,12 +14,26 @@ final class AppearanceSettingsPresenter {
     }
 }
 
-extension AppearanceSettingsPresenter: AppearanceSettingsPresenterProtocol {
-    func setup() {}
+// MARK: AppearanceSettingsPresenterProtocol
 
-    func changeTokenIcons(with selectedOption: AppearanceSettingsIconsView.AppearanceIconsOptions) {
-        print(selectedOption)
+extension AppearanceSettingsPresenter: AppearanceSettingsPresenterProtocol {
+    func setup() {
+        interactor.setup()
+    }
+
+    func changeTokenIcons(with selectedOption: AppearanceSettingsIconsView.AppearanceOptions) {
+        interactor.selectTokenIconsOption(.init(from: selectedOption))
     }
 }
 
-extension AppearanceSettingsPresenter: AppearanceSettingsInteractorOutputProtocol {}
+// MARK: AppearanceSettingsInteractorOutputProtocol
+
+extension AppearanceSettingsPresenter: AppearanceSettingsInteractorOutputProtocol {
+    func didReceiveAppearance(iconsOption: AppearanceIconsOptions) {
+        let model = AppearanceSettingsIconsView.Model(
+            selectedOption: .init(from: iconsOption)
+        )
+
+        view?.update(with: model)
+    }
+}

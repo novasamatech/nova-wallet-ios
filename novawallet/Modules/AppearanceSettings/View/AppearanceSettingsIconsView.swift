@@ -2,8 +2,8 @@ import UIKit
 import SoraUI
 
 class AppearanceSettingsIconsView: UIView {
-    private var optionChangedAction: ((AppearanceIconsOptions) -> Void)?
-    private var selectedOption: AppearanceIconsOptions?
+    private var optionChangedAction: ((AppearanceOptions) -> Void)?
+    private var selectedOption: AppearanceOptions?
 
     private let whiteOptionImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
@@ -99,7 +99,7 @@ class AppearanceSettingsIconsView: UIView {
         setup(for: viewModel.selectedOption)
     }
 
-    func addAction(on optionChanged: @escaping (AppearanceIconsOptions) -> Void) {
+    func addAction(on optionChanged: @escaping (AppearanceOptions) -> Void) {
         optionChangedAction = optionChanged
     }
 
@@ -124,12 +124,21 @@ class AppearanceSettingsIconsView: UIView {
 
 extension AppearanceSettingsIconsView {
     struct Model {
-        let selectedOption: AppearanceIconsOptions
+        let selectedOption: AppearanceOptions
     }
 
-    enum AppearanceIconsOptions {
+    enum AppearanceOptions {
         case white
         case colored
+
+        init(from iconsOptions: AppearanceIconsOptions) {
+            switch iconsOptions {
+            case .white:
+                self = .white
+            case .colored:
+                self = .colored
+            }
+        }
     }
 }
 
@@ -165,7 +174,7 @@ private extension AppearanceSettingsIconsView {
         )
     }
 
-    func setup(for selectedOption: AppearanceIconsOptions) {
+    func setup(for selectedOption: AppearanceOptions) {
         self.selectedOption = selectedOption
 
         switch selectedOption {
@@ -192,7 +201,7 @@ private extension AppearanceSettingsIconsView {
         changeOption(to: .colored)
     }
 
-    func changeOption(to newOption: AppearanceIconsOptions) {
+    func changeOption(to newOption: AppearanceOptions) {
         guard selectedOption != newOption else {
             return
         }

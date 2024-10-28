@@ -1009,6 +1009,10 @@
 		2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */; };
 		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
 		2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */; };
+		2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */; };
+		2D65F6D02CCF901C00CC6F72 /* AppearanceIconsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */; };
+		2D65F6D22CCF90E800CC6F72 /* AssetIconsAppearanceChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6D12CCF90E800CC6F72 /* AssetIconsAppearanceChanged.swift */; };
+		2D65F6D52CCF938D00CC6F72 /* AppearanceIconsOptions+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6D42CCF938D00CC6F72 /* AppearanceIconsOptions+Init.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -6180,6 +6184,9 @@
 		2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupInteractorError.swift; sourceTree = "<group>"; };
 		2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsIconsView.swift; sourceTree = "<group>"; };
+		2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceIconsOptions.swift; sourceTree = "<group>"; };
+		2D65F6D12CCF90E800CC6F72 /* AssetIconsAppearanceChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIconsAppearanceChanged.swift; sourceTree = "<group>"; };
+		2D65F6D42CCF938D00CC6F72 /* AppearanceIconsOptions+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppearanceIconsOptions+Init.swift"; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -12749,6 +12756,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2D65F6CD2CCF8D9400CC6F72 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */,
+				2D65F6D42CCF938D00CC6F72 /* AppearanceIconsOptions+Init.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -13141,6 +13157,7 @@
 		3C6913D315CA586B8DBC28EC /* AppearanceSettings */ = {
 			isa = PBXGroup;
 			children = (
+				2D65F6CD2CCF8D9400CC6F72 /* Model */,
 				2D65F6CA2CCF72E500CC6F72 /* View */,
 				34941959390B65981DC4B49F /* AppearanceSettingsProtocols.swift */,
 				E4E89B52CA0A12A4008756FB /* AppearanceSettingsWireframe.swift */,
@@ -20777,6 +20794,7 @@
 				7746854E2B3BDD4F002E0A0F /* WalletChanged.swift */,
 				0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */,
 				2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */,
+				2D65F6D12CCF90E800CC6F72 /* AssetIconsAppearanceChanged.swift */,
 			);
 			path = Events;
 			sourceTree = "<group>";
@@ -24466,6 +24484,7 @@
 				77EDF9282B96DDA9003266B1 /* MultiassetCryptoType.swift in Sources */,
 				7778FE6B2B910D1B0023E801 /* AssetType.swift in Sources */,
 				77AE4FB02B90646100426519 /* BaseOperation+Cancellable.swift in Sources */,
+				2D65F6D02CCF901C00CC6F72 /* AppearanceIconsOptions.swift in Sources */,
 				0CCD18A52BA160950068D73A /* CurrencyRepository.swift in Sources */,
 				7778FE592B910A930023E801 /* Longrun.swift in Sources */,
 				778215D12B91B3BC006C7D13 /* PushNotificationHandlersFactory.swift in Sources */,
@@ -24658,6 +24677,7 @@
 				8407716428CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift in Sources */,
 				F477CD26262EAD30004DF739 /* StakingPayoutViewModelFactory.swift in Sources */,
 				7728E58B2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift in Sources */,
+				2D65F6D52CCF938D00CC6F72 /* AppearanceIconsOptions+Init.swift in Sources */,
 				84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */,
 				844E1E19266142080076AC59 /* BondedState+Status.swift in Sources */,
 				F4CE0F9A27343FFD0094CD8A /* AcalaContributionConfirmVC.swift in Sources */,
@@ -27716,7 +27736,9 @@
 				844B6EC528A3153C00A8BE83 /* MetaAccountModelType+SignatureFormat.swift in Sources */,
 				0C3205DE2A896C19002EB914 /* EvmFeeModel.swift in Sources */,
 				2932BD7922FDCD64F4E9A57D /* AssetListPresenter.swift in Sources */,
+				2D65F6D22CCF90E800CC6F72 /* AssetIconsAppearanceChanged.swift in Sources */,
 				2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */,
+				2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */,
 				84355CF628B63D19004E5C5E /* LedgerCrypto+Conversion.swift in Sources */,
 				8463781F2979DACB0034162B /* ReferendumsActivityViewModelFactory.swift in Sources */,
 				84B8AA8B29FA3B0500347A37 /* WalletConnectBaseState.swift in Sources */,
