@@ -118,7 +118,7 @@ extension AssetOperationNetworkListViewController: UITableViewDataSource {
     }
 }
 
-// MARK: AssetOperationNetworkSelectionViewProtocol
+// MARK: AssetOperationNetworkListViewProtocol
 
 extension AssetOperationNetworkListViewController: AssetOperationNetworkListViewProtocol {
     func update(with viewModels: [AssetOperationNetworkViewModel]) {

@@ -46,7 +46,7 @@ private extension AssetOperationNetworkListPresenter {
     }
 }
 
-// MARK: AssetOperationNetworkSelectionPresenterProtocol
+// MARK: AssetOperationNetworkListPresenterProtocol
 
 extension AssetOperationNetworkListPresenter: AssetOperationNetworkListPresenterProtocol {
     func setup() {
@@ -56,7 +56,7 @@ extension AssetOperationNetworkListPresenter: AssetOperationNetworkListPresenter
     }
 }
 
-// MARK: AssetOperationNetworkSelectionInteractorOutputProtocol
+// MARK: AssetOperationNetworkListInteractorOutputProtocol
 
 extension AssetOperationNetworkListPresenter: AssetOperationNetworkListInteractorOutputProtocol {
     func didReceive(result: AssetOperationNetworkBuilderResult) {
