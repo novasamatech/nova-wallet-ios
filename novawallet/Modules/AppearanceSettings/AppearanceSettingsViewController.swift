@@ -29,15 +29,26 @@ final class AppearanceSettingsViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupActions()
         presenter.setup()
     }
+}
 
-    private func setupLocalization() {
+// MARK: Private
+
+private extension AppearanceSettingsViewController {
+    func setupLocalization() {
         title = R.string.localizable.settingsAppearance(
             preferredLanguages: selectedLocale.rLanguages
         )
 
         rootView.locale = selectedLocale
+    }
+
+    func setupActions() {
+        rootView.tokenIconsView.addAction { [weak self] newOption in
+            self?.presenter.changeTokenIcons(with: newOption)
+        }
     }
 }
 

@@ -16,6 +16,10 @@ final class AppearanceSettingsPresenter {
 
 extension AppearanceSettingsPresenter: AppearanceSettingsPresenterProtocol {
     func setup() {}
+
+    func changeTokenIcons(with selectedOption: AppearanceSettingsIconsView.AppearanceIconsOptions) {
+        print(selectedOption)
+    }
 }
 
 extension AppearanceSettingsPresenter: AppearanceSettingsInteractorOutputProtocol {}

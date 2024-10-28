@@ -2,15 +2,38 @@ import UIKit
 import SoraUI
 
 class AppearanceSettingsIconsView: UIView {
+    private var optionChangedAction: ((AppearanceIconsOptions) -> Void)?
+    private var selectedOption: AppearanceIconsOptions?
+
+    private let whiteOptionImageView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = Constants.imageSize / 2
+        view.layer.borderWidth = Constants.selectedBorderWidth
+        view.layer.borderColor = UIColor.clear.cgColor
+
+        view.image = R.image.iconAppearanceWhite()
+    }
+
+    private let coloredOptionImageView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = Constants.imageSize / 2
+        view.layer.borderWidth = Constants.selectedBorderWidth
+        view.layer.borderColor = UIColor.clear.cgColor
+
+        view.image = R.image.iconAppearanceColored()
+    }
+
     private let tokenIconsView: GenericMultiValueView<
         GenericBorderedView<
             GenericPairValueView<
                 GenericPairValueView<
-                    UIImageView,
+                    UIView,
                     UILabel
                 >,
                 GenericPairValueView<
-                    UIImageView,
+                    UIView,
                     UILabel
                 >
             >
@@ -32,13 +55,12 @@ class AppearanceSettingsIconsView: UIView {
         ]
         .forEach { optionView in
             optionView.setVerticalAndSpacing(Constants.optionInnerSpacing)
-            optionView.fView.contentMode = .scaleAspectFit
             optionView.sView.apply(style: .footnoteSecondary)
             optionView.sView.textAlignment = .center
+
+            optionView.isUserInteractionEnabled = true
         }
 
-        view.valueBottom.contentView.fView.fView.image = R.image.iconAppearanceWhite()
-        view.valueBottom.contentView.sView.fView.image = R.image.iconAppearanceColored()
         view.valueBottom.contentView.stackView.alignment = .center
         view.valueBottom.contentView.stackView.distribution = .fillEqually
     }
@@ -48,14 +70,14 @@ class AppearanceSettingsIconsView: UIView {
     }
 
     var whiteOption: GenericPairValueView<
-        UIImageView,
+        UIView,
         UILabel
     > {
         tokenIconsView.valueBottom.contentView.fView
     }
 
     var coloredOption: GenericPairValueView<
-        UIImageView,
+        UIView,
         UILabel
     > {
         tokenIconsView.valueBottom.contentView.sView
@@ -65,6 +87,7 @@ class AppearanceSettingsIconsView: UIView {
         super.init(frame: frame)
 
         setupLayout()
+        setupActions()
     }
 
     @available(*, unavailable)
@@ -73,7 +96,11 @@ class AppearanceSettingsIconsView: UIView {
     }
 
     func bind(viewModel: Model) {
-        print(viewModel)
+        setup(for: viewModel.selectedOption)
+    }
+
+    func addAction(on optionChanged: @escaping (AppearanceIconsOptions) -> Void) {
+        optionChangedAction = optionChanged
     }
 
     func applyLocalization(for locale: Locale) {
@@ -116,11 +143,64 @@ private extension AppearanceSettingsIconsView {
             make.edges.equalToSuperview()
         }
 
-        [whiteOption.fView, coloredOption.fView].forEach { imageView in
+        whiteOption.fView.addSubview(whiteOptionImageView)
+        coloredOption.fView.addSubview(coloredOptionImageView)
+
+        [whiteOptionImageView, coloredOptionImageView].forEach { imageView in
             imageView.snp.makeConstraints { make in
                 make.size.equalTo(Constants.imageSize)
+                make.top.bottom.equalToSuperview()
+                make.centerX.equalToSuperview()
             }
         }
+    }
+
+    func setupActions() {
+        whiteOption.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(whiteSelected))
+        )
+
+        coloredOption.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(coloredSelected))
+        )
+    }
+
+    func setup(for selectedOption: AppearanceIconsOptions) {
+        self.selectedOption = selectedOption
+
+        switch selectedOption {
+        case .white:
+            whiteOptionImageView.layer.borderColor = R.color.colorIconAccent()?.cgColor
+            coloredOptionImageView.layer.borderColor = UIColor.clear.cgColor
+
+            whiteOption.sView.textColor = R.color.colorButtonTextAccent()
+            coloredOption.sView.textColor = R.color.colorTextSecondary()
+        case .colored:
+            coloredOptionImageView.layer.borderColor = R.color.colorIconAccent()?.cgColor
+            whiteOptionImageView.layer.borderColor = UIColor.clear.cgColor
+
+            coloredOption.sView.textColor = R.color.colorButtonTextAccent()
+            whiteOption.sView.textColor = R.color.colorTextSecondary()
+        }
+    }
+
+    @objc func whiteSelected() {
+        changeOption(to: .white)
+    }
+
+    @objc func coloredSelected() {
+        changeOption(to: .colored)
+    }
+
+    func changeOption(to newOption: AppearanceIconsOptions) {
+        guard selectedOption != newOption else {
+            return
+        }
+
+        selectedOption = newOption
+
+        setup(for: newOption)
+        optionChangedAction?(newOption)
     }
 }
 
@@ -130,6 +210,7 @@ private extension AppearanceSettingsIconsView {
     enum Constants {
         static let imageSize: CGFloat = 56
         static let containerCornerRadius: CGFloat = 10
+        static let selectedBorderWidth: CGFloat = 1.0
 
         static let contentInsets: UIEdgeInsets = .init(
             top: 16,
