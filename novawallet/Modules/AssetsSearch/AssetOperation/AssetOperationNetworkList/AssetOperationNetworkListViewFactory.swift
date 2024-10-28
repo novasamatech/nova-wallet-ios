@@ -11,14 +11,10 @@ struct AssetOperationNetworkListViewFactory {
             return nil
         }
 
-        let operation = OperationQueue()
-        operation.maxConcurrentOperationCount = 1
-
         let logger = Logger.shared
 
         let interactor = AssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
-            operationQueue: operation,
             stateObservable: stateObservable,
             logger: logger
         )
@@ -95,14 +91,10 @@ extension AssetOperationNetworkListViewFactory {
             return nil
         }
 
-        let operation = OperationQueue()
-        operation.maxConcurrentOperationCount = 1
-
         let logger = Logger.shared
 
         let interactor = AssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
-            operationQueue: operation,
             stateObservable: stateObservable,
             logger: logger
         )
@@ -159,14 +151,10 @@ extension AssetOperationNetworkListViewFactory {
             return nil
         }
 
-        let operation = OperationQueue()
-        operation.maxConcurrentOperationCount = 1
-
         let logger = Logger.shared
 
         let interactor = AssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
-            operationQueue: operation,
             stateObservable: stateObservable,
             logger: logger
         )
@@ -221,14 +209,10 @@ extension AssetOperationNetworkListViewFactory {
             return nil
         }
 
-        let operation = OperationQueue()
-        operation.maxConcurrentOperationCount = 1
-
         let logger = Logger.shared
 
         let interactor = AssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
-            operationQueue: operation,
             stateObservable: stateObservable,
             logger: logger
         )

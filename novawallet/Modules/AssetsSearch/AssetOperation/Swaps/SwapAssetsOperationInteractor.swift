@@ -162,7 +162,10 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
 
         builder = .init(
             filter: filter,
-            workingQueue: .main,
+            workingQueue: .init(
+                label: AssetsSearchInteractor.workingQueueLabel,
+                qos: .userInteractive
+            ),
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
                 self?.presenter?.didReceive(result: result)

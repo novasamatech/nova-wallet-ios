@@ -73,64 +73,7 @@ extension Array where Element == ChainModel {
     }
 
     func createMultichainTokens() -> [MultichainToken] {
-        let mapping = createMultichainTokenMapping()
-
-        let chainOrders = enumerated().reduce(into: [ChainModel.Id: Int]()) { accum, chainOrder in
-            accum[chainOrder.1.chainId] = chainOrder.0
-        }
-
-        return mapping.values.sorted { token1, token2 in
-            guard
-                let chainAssetId1 = token1.instances.first?.chainAssetId,
-                let chainAssetId2 = token2.instances.first?.chainAssetId else {
-                return true
-            }
-
-            let order1 = chainOrders[chainAssetId1.chainId] ?? Int.max
-            let order2 = chainOrders[chainAssetId2.chainId] ?? Int.max
-
-            if order1 != order2 {
-                return order1 < order2
-            } else {
-                return chainAssetId1.assetId < chainAssetId2.assetId
-            }
-        }
-    }
-
-    private func createMultichainTokenMapping() -> [String: MultichainToken] {
-        let allSymbols = reduce(into: Set<String>()) { accum, chain in
-            for asset in chain.assets {
-                accum.insert(asset.symbol)
-            }
-        }
-
-        return reduce(into: [String: MultichainToken]()) { accum, chain in
-            let assets = chain.assets.sorted { $0.assetId < $1.assetId }
-            for asset in assets {
-                let instance = MultichainToken.Instance(
-                    chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
-                    chainName: chain.name,
-                    enabled: asset.enabled,
-                    testnet: chain.isTestnet,
-                    icon: asset.icon
-                )
-
-                let symbolExtensions = MultichainToken.reserveTokensOf(symbol: asset.symbol)
-                let tokenSymbol = symbolExtensions.first(where: { allSymbols.contains($0) }) ?? asset.symbol
-
-                if let token = accum[tokenSymbol] {
-                    accum[tokenSymbol] = MultichainToken(
-                        symbol: tokenSymbol,
-                        instances: token.instances + [instance]
-                    )
-                } else {
-                    accum[tokenSymbol] = MultichainToken(
-                        symbol: tokenSymbol,
-                        instances: [instance]
-                    )
-                }
-            }
-        }
+        flatMap { $0.chainAssets() }.createMultichainTokens()
     }
 }
 

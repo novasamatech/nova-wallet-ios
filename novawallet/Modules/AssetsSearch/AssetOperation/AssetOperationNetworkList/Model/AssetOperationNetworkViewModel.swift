@@ -1,5 +1,5 @@
 struct AssetOperationNetworkViewModel {
-    let chainAsset: IdentifiableChainAssetViewModel
+    let chainAsset: ChainAssetViewModel
     let amount: String
     let value: String
 }

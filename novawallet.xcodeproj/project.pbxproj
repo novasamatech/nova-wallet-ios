@@ -971,7 +971,6 @@
 		2D4F55262CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55252CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift */; };
 		2D4F552A2CCC211B00B65B76 /* AssetOperationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55292CCC211B00B65B76 /* AssetOperationWireframe.swift */; };
 		2D4F552C2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F552B2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift */; };
-		2D4F55322CCC390F00B65B76 /* IdentifiableChainAssetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55312CCC390F00B65B76 /* IdentifiableChainAssetViewModel.swift */; };
 		2D4F55342CCC396200B65B76 /* SendOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55332CCC396200B65B76 /* SendOperationNetworkListPresenter.swift */; };
 		2D4F55362CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */; };
 		2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */; };
@@ -6130,7 +6129,6 @@
 		2D4F55252CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationNetworkListCell.swift; sourceTree = "<group>"; };
 		2D4F55292CCC211B00B65B76 /* AssetOperationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationWireframe.swift; sourceTree = "<group>"; };
 		2D4F552B2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationNetworkViewModel.swift; sourceTree = "<group>"; };
-		2D4F55312CCC390F00B65B76 /* IdentifiableChainAssetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableChainAssetViewModel.swift; sourceTree = "<group>"; };
 		2D4F55332CCC396200B65B76 /* SendOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
@@ -12566,7 +12564,6 @@
 			children = (
 				2D4F55202CCBE18400B65B76 /* AssetOperationNetworkListViewModelFactory.swift */,
 				2D4F552B2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift */,
-				2D4F55312CCC390F00B65B76 /* IdentifiableChainAssetViewModel.swift */,
 				2D4F55222CCBE58000B65B76 /* AssetOperationNetworkBuilder.swift */,
 			);
 			path = Model;
@@ -28693,7 +28690,6 @@
 				C6DA3ABD47E72ED1661830A9 /* GovernanceDelegateSearchPresenter.swift in Sources */,
 				0CC2E5602A6E44E7004092E7 /* NominationPoolsRemoteSubscriptionService.swift in Sources */,
 				7C98D0A579FDC879CC5DBF2F /* GovernanceDelegateSearchInteractor.swift in Sources */,
-				2D4F55322CCC390F00B65B76 /* IdentifiableChainAssetViewModel.swift in Sources */,
 				8455F1A02A1E7265003F072D /* Multistaking+Relaychain.swift in Sources */,
 				2D008A6A2CC59F3700BFEE99 /* AssetListCollectionManager.swift in Sources */,
 				84EDF66B29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift in Sources */,

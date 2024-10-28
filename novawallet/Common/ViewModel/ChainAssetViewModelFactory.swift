@@ -2,7 +2,6 @@ import Foundation
 
 protocol ChainAssetViewModelFactoryProtocol {
     func createViewModel(from chainAsset: ChainAsset) -> ChainAssetViewModel
-    func createIdentifiableViewModel(from chainAsset: ChainAsset) -> IdentifiableChainAssetViewModel
 }
 
 final class ChainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol {
@@ -18,15 +17,10 @@ final class ChainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol {
         let assetIconViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: chainAsset.asset.icon)
         let assetViewModel = AssetViewModel(symbol: chainAsset.asset.symbol, imageViewModel: assetIconViewModel)
 
-        return ChainAssetViewModel(networkViewModel: networkViewModel, assetViewModel: assetViewModel)
-    }
-
-    func createIdentifiableViewModel(from chainAsset: ChainAsset) -> IdentifiableChainAssetViewModel {
-        let viewModel = createViewModel(from: chainAsset)
-
-        return IdentifiableChainAssetViewModel(
+        return ChainAssetViewModel(
             chainAssetId: chainAsset.chainAssetId,
-            viewModel: viewModel
+            networkViewModel: networkViewModel,
+            assetViewModel: assetViewModel
         )
     }
 }
