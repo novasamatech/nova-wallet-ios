@@ -1,5 +1,12 @@
 protocol SwapAssetsOperationWireframeProtocol: AssetsSearchWireframeProtocol, ErrorPresentable,
-    AlertPresentable, CommonRetryable {}
+    AlertPresentable, CommonRetryable {
+    func showSelectNetwork(
+        from view: ControllerBackedProtocol?,
+        multichainToken: MultichainToken,
+        selectClosure: @escaping (ChainAsset) -> Void,
+        selectClosureStrategy: SubmoduleNavigationStrategy
+    )
+}
 
 protocol SwapAssetsOperationPresenterProtocol: AssetsSearchInteractorOutputProtocol {
     func directionsLoaded()

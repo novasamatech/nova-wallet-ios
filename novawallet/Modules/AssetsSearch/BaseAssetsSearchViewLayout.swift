@@ -13,14 +13,24 @@ class BaseAssetsSearchViewLayout: UIView {
 
     var cancelButton: RoundedButton? { searchView.optionalCancelButton }
 
-    lazy var collectionView: UICollectionView = {
-        let flowLayout = AssetsSearchFlowLayout()
-        flowLayout.scrollDirection = .vertical
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.minimumInteritemSpacing = 0
-        flowLayout.sectionInset = .zero
+    let collectionNetworkGroupsLayout = AssetsSearchNetworksFlowLayout()
+    var collectionTokenGroupsLayout = AssetsSearchTokensFlowLayout()
 
-        let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+    var assetGroupsLayoutStyle: AssetListGroupsStyle?
+
+    var collectionViewLayout: AssetsSearchFlowLayout {
+        switch assetGroupsLayoutStyle ?? .tokens {
+        case .networks: collectionNetworkGroupsLayout
+        case .tokens: collectionTokenGroupsLayout
+        }
+    }
+
+    lazy var collectionView: UICollectionView = {
+        let view = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: collectionViewLayout
+        )
+
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.contentInset = UIEdgeInsets(top: Constants.searchBarHeight, left: 0.0, bottom: 16.0, right: 0.0)
@@ -28,8 +38,8 @@ class BaseAssetsSearchViewLayout: UIView {
         return view
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(frame _: CGRect) {
+        super.init(frame: .zero)
 
         setup()
     }
@@ -44,6 +54,8 @@ class BaseAssetsSearchViewLayout: UIView {
     }
 
     func setup() {
+        setupLayouts()
+
         addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -54,6 +66,18 @@ class BaseAssetsSearchViewLayout: UIView {
         searchView.snp.makeConstraints { make in
             make.leading.top.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.searchBarHeight)
+        }
+    }
+
+    func setupLayouts() {
+        [
+            collectionNetworkGroupsLayout,
+            collectionTokenGroupsLayout
+        ].forEach {
+            $0.scrollDirection = .vertical
+            $0.minimumLineSpacing = 0
+            $0.minimumInteritemSpacing = 0
+            $0.sectionInset = .zero
         }
     }
 }

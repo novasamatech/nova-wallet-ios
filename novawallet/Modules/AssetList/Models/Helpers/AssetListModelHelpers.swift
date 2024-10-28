@@ -4,13 +4,7 @@ import BigInt
 
 enum AssetListModelHelpers {
     static func createNftDiffCalculator() -> ListDifferenceCalculator<NftModel> {
-        let sortingBlock: (NftModel, NftModel) -> Bool = { model1, model2 in
-            guard let createdAt1 = model1.createdAt, let createdAt2 = model2.createdAt else {
-                return true
-            }
-
-            return createdAt1.compare(createdAt2) == .orderedDescending
-        }
+        let sortingBlock = AssetListModelHelpers.nftSortingBlock
 
         return ListDifferenceCalculator(initialItems: [], sortBlock: sortingBlock)
     }
@@ -58,15 +52,7 @@ enum AssetListModelHelpers {
     static func createAssetGroupsDiffCalculator(
         from groups: [AssetListAssetGroupModel]
     ) -> ListDifferenceCalculator<AssetListAssetGroupModel> {
-        let sortingBlock: (AssetListAssetGroupModel, AssetListAssetGroupModel) -> Bool = { lhs, rhs in
-            if let result = AssetListGroupModelComparator.by(\.value, lhs, rhs) {
-                result
-            } else if let result = AssetListGroupModelComparator.by(\.amount, lhs, rhs) {
-                result
-            } else {
-                false
-            }
-        }
+        let sortingBlock = AssetListModelHelpers.assetListAssetGroupSortingBlock
 
         let sortedGroups = groups.sorted(by: sortingBlock)
 
@@ -104,15 +90,7 @@ enum AssetListModelHelpers {
     static func createAssetsDiffCalculator(
         from assets: [AssetListAssetModel]
     ) -> ListDifferenceCalculator<AssetListAssetModel> {
-        let sortingBlock: (AssetListAssetModel, AssetListAssetModel) -> Bool = { lhs, rhs in
-            if let result = AssetListAssetModelCompator.by(\.totalAmountDecimal, lhs, rhs) {
-                result
-            } else {
-                lhs.chainAssetModel.asset.symbol.lexicographicallyPrecedes(
-                    rhs.chainAssetModel.asset.symbol
-                )
-            }
-        }
+        let sortingBlock = AssetListModelHelpers.assetSortingBlockDefaultByLexical
 
         let sortedAssets = assets.sorted(by: sortingBlock)
 

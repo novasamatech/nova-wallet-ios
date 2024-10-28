@@ -3,11 +3,14 @@ import UIKit
 enum AssetsSearchMeasurement {
     static let emptyStateCellHeight: CGFloat = 168
     static let emptySearchCellWithActionHeight: CGFloat = 230
+
+    static let assetHeight: CGFloat = 56.0
+    static let assetHeaderHeight: CGFloat = 45.0
+    static let decorationInset: CGFloat = 8.0
+    static let assetGroupInsets = UIEdgeInsets(top: 2.0, left: 0, bottom: 16.0, right: 0)
 }
 
-final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
-    static let assetGroupDecoration = "assetGroupDecoration"
-
+class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
     enum SectionType: CaseIterable {
         case technical
         case assetGroup
@@ -101,7 +104,23 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
         }
     }
 
-    private var itemsDecorationAttributes: [UICollectionViewLayoutAttributes] = []
+    var itemsDecorationAttributes: [UICollectionViewLayoutAttributes] = []
+
+    func updateItemsBackgroundAttributesIfNeeded() {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func assetCellHeight(for _: IndexPath) -> CGFloat {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func assetGroupDecorationIdentifier() -> String {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func assetGroupInset(for _: Int) -> UIEdgeInsets {
+        fatalError("Must be overriden by subsclass")
+    }
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let layoutAttributesObjects = super.layoutAttributesForElements(
@@ -120,8 +139,10 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
         at indexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
         guard
-            elementKind == Self.assetGroupDecoration,
-            indexPath.section > SectionType.assetsStartingSection else {
+            elementKind == assetGroupDecorationIdentifier(),
+            indexPath.section > SectionType.assetsStartingSection,
+            indexPath.section < itemsDecorationAttributes.count
+        else {
             return nil
         }
 
@@ -137,60 +158,31 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
         updateItemsBackgroundAttributesIfNeeded()
     }
 
-    private func updateItemsBackgroundAttributesIfNeeded() {
-        guard
-            let collectionView = collectionView,
-            collectionView.numberOfSections >= SectionType.allCases.count else {
-            return
+    func cellHeight(
+        for type: CellType,
+        at indexPath: IndexPath
+    ) -> CGFloat {
+        switch type {
+        case .emptyState:
+            return AssetListMeasurement.emptyStateCellHeight
+        case .asset:
+            return assetCellHeight(for: indexPath)
         }
+    }
 
-        let groupsCount = collectionView.numberOfSections - SectionType.assetsStartingSection
-
-        var groupY: CGFloat = 0.0
-
-        groupY += SectionType.technical.insets.top + SectionType.technical.insets.bottom
-
-        let hasTechnicals = collectionView.numberOfItems(inSection: SectionType.technical.index) > 0
-
-        if hasTechnicals {
-            groupY += AssetListMeasurement.emptyStateCellHeight
+    func sectionInsets(
+        for type: SectionType,
+        section: Int
+    ) -> UIEdgeInsets {
+        switch type {
+        case .assetGroup:
+            assetGroupInset(for: section)
+        case .technical:
+            .zero
         }
+    }
 
-        let (attributes, _) = (0 ..< groupsCount).reduce(
-            ([UICollectionViewLayoutAttributes](), groupY)
-        ) { result, groupIndex in
-            let attributes = result.0
-            let positionY = result.1
-
-            let section = SectionType.assetsStartingSection + groupIndex
-            let numberOfItems = collectionView.numberOfItems(inSection: section)
-
-            let contentHeight = AssetListMeasurement.assetHeaderHeight +
-                CGFloat(numberOfItems) * AssetListMeasurement.assetHeight
-            let decorationHeight = SectionType.assetGroup.insets.top + contentHeight +
-                AssetListMeasurement.decorationInset
-
-            let itemsDecorationAttributes = UICollectionViewLayoutAttributes(
-                forDecorationViewOfKind: Self.assetGroupDecoration,
-                with: IndexPath(item: 0, section: section)
-            )
-
-            let decorationWidth = max(collectionView.frame.width - 2 * UIConstants.horizontalInset, 0)
-            let size = CGSize(width: decorationWidth, height: decorationHeight)
-
-            let origin = CGPoint(x: UIConstants.horizontalInset, y: positionY)
-
-            itemsDecorationAttributes.frame = CGRect(origin: origin, size: size)
-            itemsDecorationAttributes.zIndex = -1
-
-            let newPosition = positionY + SectionType.assetGroup.insets.top + contentHeight +
-                SectionType.assetGroup.insets.bottom
-
-            let newAttributes = attributes + [itemsDecorationAttributes]
-
-            return (newAttributes, newPosition)
-        }
-
-        itemsDecorationAttributes = attributes
+    func assetSectionIndex(from groupIndex: Int) -> Int {
+        SectionType.assetsStartingSection + groupIndex
     }
 }

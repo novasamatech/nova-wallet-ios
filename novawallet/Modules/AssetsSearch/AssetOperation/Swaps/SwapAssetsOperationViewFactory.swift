@@ -1,4 +1,5 @@
 import Foundation
+import SoraKeystore
 import SoraFoundation
 
 enum SwapAssetsOperationViewFactory {
@@ -107,6 +108,7 @@ enum SwapAssetsOperationViewFactory {
             stateObservable: stateObservable,
             chainAsset: chainAsset,
             assetConversionAggregation: assetConversionAggregator,
+            settingsManager: SettingsManager.shared,
             operationQueue: operationQueue,
             logger: Logger.shared
         )
@@ -117,7 +119,7 @@ enum SwapAssetsOperationViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
-            wireframe: SwapAssetsOperationWireframe(),
+            wireframe: SwapAssetsOperationWireframe(stateObservable: stateObservable),
             logger: Logger.shared
         )
 

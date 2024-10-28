@@ -17,6 +17,10 @@ final class ChainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol {
         let assetIconViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: chainAsset.asset.icon)
         let assetViewModel = AssetViewModel(symbol: chainAsset.asset.symbol, imageViewModel: assetIconViewModel)
 
-        return ChainAssetViewModel(networkViewModel: networkViewModel, assetViewModel: assetViewModel)
+        return ChainAssetViewModel(
+            chainAssetId: chainAsset.chainAssetId,
+            networkViewModel: networkViewModel,
+            assetViewModel: assetViewModel
+        )
     }
 }

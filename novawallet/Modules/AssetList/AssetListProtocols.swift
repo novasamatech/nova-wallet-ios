@@ -68,6 +68,7 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceivePromotion(viewModel: PromotionBannerView.ViewModel)
     func didClosePromotion()
     func didCompleteRefreshing()
+    func didReceiveAssetListStyle(_ style: AssetListGroupsStyle)
 }
 
 // MARK: Presenter
@@ -100,6 +101,7 @@ protocol AssetListInteractorInputProtocol {
     func connectWalletConnect(uri: String)
     func retryFetchWalletConnectSessionsCount()
     func markPolkadotStakingPromotionSeen()
+    func setAssetListGroupsStyle(_ style: AssetListGroupsStyle)
 }
 
 protocol AssetListInteractorOutputProtocol {
@@ -118,6 +120,7 @@ protocol AssetListInteractorOutputProtocol {
     func didCompleteRefreshing()
     func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool)
     func didReceiveWalletsState(hasUpdates: Bool)
+    func didReceiveAssetListGroupStyle(_ style: AssetListGroupsStyle)
 }
 
 // MARK: Wireframe

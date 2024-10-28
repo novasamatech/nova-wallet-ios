@@ -132,8 +132,7 @@ private extension AssetListCollectionViewDataSource {
 
     func provideAssetCell(
         _ collectionView: UICollectionView,
-        indexPath: IndexPath,
-        assetIndex _: Int
+        indexPath: IndexPath
     ) -> UICollectionViewCell {
         guard let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
@@ -366,8 +365,8 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
             return provideSettingsCell(collectionView, indexPath: indexPath)
         case .emptyState:
             return provideEmptyStateCell(collectionView, indexPath: indexPath)
-        case let .asset(_, assetIndex):
-            return provideAssetCell(collectionView, indexPath: indexPath, assetIndex: assetIndex)
+        case .asset:
+            return provideAssetCell(collectionView, indexPath: indexPath)
         }
     }
 

@@ -1,4 +1,5 @@
 import BigInt
+import SoraKeystore
 import Operation_iOS
 
 final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
@@ -8,6 +9,8 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
     let logger: LoggerProtocol
     let chainAsset: ChainAsset?
     let assetConversionAggregation: AssetConversionAggregationFactoryProtocol
+
+    let settingsManager: SettingsManagerProtocol
 
     private let operationQueue: OperationQueue
     private var builder: AssetSearchBuilder?
@@ -19,6 +22,7 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
         stateObservable: AssetListModelObservable,
         chainAsset: ChainAsset?,
         assetConversionAggregation: AssetConversionAggregationFactoryProtocol,
+        settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -26,6 +30,7 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
         self.logger = logger
         self.chainAsset = chainAsset
         self.assetConversionAggregation = assetConversionAggregation
+        self.settingsManager = settingsManager
         self.operationQueue = operationQueue
     }
 
@@ -157,7 +162,10 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
 
         builder = .init(
             filter: filter,
-            workingQueue: .main,
+            workingQueue: .init(
+                label: AssetsSearchInteractor.workingQueueLabel,
+                qos: .userInteractive
+            ),
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
                 self?.presenter?.didReceive(result: result)
@@ -176,10 +184,17 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             self.reloadDirectionsIfNeeded()
         }
     }
+
+    private func provideAssetsGroupStyle() {
+        let style = settingsManager.assetListGroupStyle
+
+        presenter?.didReceiveAssetGroupsStyle(style)
+    }
 }
 
 extension SwapAssetsOperationInteractor: SwapAssetsOperationInteractorInputProtocol {
     func setup() {
+        provideAssetsGroupStyle()
         createBuilder()
         reloadDirectionsIfNeeded()
     }

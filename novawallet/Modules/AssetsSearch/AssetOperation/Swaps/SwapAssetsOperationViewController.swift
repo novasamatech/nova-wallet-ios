@@ -1,6 +1,6 @@
 import UIKit
 
-final class SwapAssetsOperationViewController: AssetsSearchViewController {
+final class SwapAssetsOperationViewController: AssetOperationViewController {
     private var isLoading: Bool = false
 
     var swapPresenter: SwapAssetsOperationPresenterProtocol? {
