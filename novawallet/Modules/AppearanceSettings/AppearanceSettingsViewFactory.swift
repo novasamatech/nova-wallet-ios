@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct AppearanceSettingsViewFactory {
     static func createView() -> AppearanceSettingsViewProtocol? {
@@ -7,7 +8,10 @@ struct AppearanceSettingsViewFactory {
 
         let presenter = AppearanceSettingsPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = AppearanceSettingsViewController(presenter: presenter)
+        let view = AppearanceSettingsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

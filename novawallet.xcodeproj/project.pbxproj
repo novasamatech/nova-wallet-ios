@@ -1008,6 +1008,7 @@
 		2D62876A2C99A10000060814 /* SwipeGovRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */; };
 		2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */; };
 		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
+		2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -6178,6 +6179,7 @@
 		2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovRepositoryFactory.swift; sourceTree = "<group>"; };
 		2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupInteractorError.swift; sourceTree = "<group>"; };
 		2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
+		2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsIconsView.swift; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -12739,6 +12741,14 @@
 			path = Swap;
 			sourceTree = "<group>";
 		};
+		2D65F6CA2CCF72E500CC6F72 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -13131,6 +13141,7 @@
 		3C6913D315CA586B8DBC28EC /* AppearanceSettings */ = {
 			isa = PBXGroup;
 			children = (
+				2D65F6CA2CCF72E500CC6F72 /* View */,
 				34941959390B65981DC4B49F /* AppearanceSettingsProtocols.swift */,
 				E4E89B52CA0A12A4008756FB /* AppearanceSettingsWireframe.swift */,
 				10B808DF32AF89255DD5B0CB /* AppearanceSettingsPresenter.swift */,
@@ -13139,7 +13150,6 @@
 				1DBC3651D8BC668CFCA5C46F /* AppearanceSettingsViewLayout.swift */,
 				17206AFFB5FC421D0A7ABB76 /* AppearanceSettingsViewFactory.swift */,
 			);
-			name = AppearanceSettings;
 			path = AppearanceSettings;
 			sourceTree = "<group>";
 		};
@@ -23230,7 +23240,6 @@
 			children = (
 				C31F3C0B5328C8F80613426D /* AppearanceSettingsTests.swift */,
 			);
-			name = AppearanceSettings;
 			path = AppearanceSettings;
 			sourceTree = "<group>";
 		};
@@ -24099,7 +24108,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift",
+				$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -24230,7 +24239,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/R.generated.swift",
+				$PROJECT_DIR/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -24268,7 +24277,7 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CIKeys.generated.swift",
-				"$PROJECT_DIR/CIKeys.generated.swift",
+				$PROJECT_DIR/CIKeys.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -25337,6 +25346,7 @@
 				84F30E9C25FD3DBC00039D09 /* EmptyHandlingStorageSubscription.swift in Sources */,
 				84DF21B525388B35005454AE /* Scheduler.swift in Sources */,
 				0C154A0E2A45995500932C3F /* CompoundComparator.swift in Sources */,
+				2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */,
 				88A0E10028A284C700A9C940 /* CurrencyManager.swift in Sources */,
 				848DE76826D64F7F0045CD29 /* UserStorageVersion.swift in Sources */,
 				0CEB6B532CA6E92700609DC2 /* VotingPowerSetClosure.swift in Sources */,

@@ -1762,3 +1762,6 @@
 "receive.operation.network.list.title" = "Select network for receiving %@";
 "swap.operation.network.list.title" = "Select network for swapping %@";
 "settings.appearance" = "Appearance";
+"settings.appearance.token.icons.title" = "Token icons";
+"settings.appearance.token.icons.option.white" = "White";
+"settings.appearance.token.icons.option.colored" = "Colored";
