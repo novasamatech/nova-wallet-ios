@@ -20,15 +20,11 @@ final class AssetsExchangeRouteManager {
         for path: AssetExchangeGraphPath,
         amount: Balance,
         direction: AssetConversion.Direction
-    ) -> CompoundOperationWrapper<AssetExchangeRoute>? {
-        let directionPath = switch direction {
-        case .sell:
-            path
-        case .buy:
-            AssetExchangeGraphPath(path.reversed())
-        }
-
-        return directionPath.reduce(nil) { prevWrapper, edge in
+    ) -> CompoundOperationWrapper<AssetExchangeRoute> {
+        let wrappers: [CompoundOperationWrapper<AssetExchangeRouteItem>]
+        wrappers = path.quoteIteration(for: direction).reduce([]) { prevWrappers, edge in
+            let prevWrapper = prevWrappers.last
+            
             let quoteWrapper: CompoundOperationWrapper<Balance> = OperationCombiningService.compoundNonOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) {
@@ -38,15 +34,40 @@ final class AssetsExchangeRouteManager {
 
                 return wrapper
             }
-
+            
             if let prevWrapper {
                 quoteWrapper.addDependency(wrapper: prevWrapper)
-
-                return quoteWrapper.insertingHead(operations: prevWrapper.allOperations)
-            } else {
-                return quoteWrapper
+            }
+            
+            let mappingOperation = ClosureOperation<AssetExchangeRouteItem> {
+                let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+                let prevQuote = try prevWrapper?.targetOperation.extractNoCancellableResultData()
+                
+                return AssetExchangeRouteItem(edge: edge, amount: prevQuote ?? amount, quote: quote)
+            }
+            
+            mappingOperation.addDependency(quoteWrapper.targetOperation)
+            
+            let totalWrapper = quoteWrapper.insertingTail(operation: mappingOperation)
+            
+            return prevWrappers + [totalWrapper]
+        }
+        
+        let mappingOperation = ClosureOperation<AssetExchangeRoute> {
+            let initRoute = AssetExchangeRoute(items: [], amount: amount, direction: direction)
+            
+            return try wrappers.reduce(initRoute) { route, wrapper in
+                let item = try wrapper.targetOperation.extractNoCancellableResultData()
+                
+                return route.byAddingNext(item: item)
             }
         }
+        
+        wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+        
+        let dependencies = wrappers.flatMap { $0.allOperations }
+        
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 }
 
@@ -55,21 +76,11 @@ extension AssetsExchangeRouteManager {
         for amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
-        let pathQuoteWrappers = possiblePaths.map { createQuote(for: $0, amount: amount, direction: direction) }
+        let routeWrappers = possiblePaths.map { createQuote(for: $0, amount: amount, direction: direction) }
 
         let winnerCalculator = ClosureOperation<AssetExchangeRoute?> {
-            let quotes: [Balance?] = pathQuoteWrappers.map { pathQuoteWrapper in
-                do {
-                    return try pathQuoteWrapper?.targetOperation.extractNoCancellableResultData()
-                } catch {
-                    self.logger.error("Quote failed: \(error)")
-                    return nil
-                }
-            }
-
-            let exchangeRoutes: [AssetExchangeRoute] = zip(self.possiblePaths, quotes).compactMap { pair in
-                guard let quote = pair.1 else { return nil }
-                return AssetExchangeRoute(path: pair.0, quote: quote)
+            let exchangeRoutes: [AssetExchangeRoute] = try routeWrappers.map { routeWrapper in
+                try routeWrapper.targetOperation.extractNoCancellableResultData()
             }
 
             switch direction {
@@ -80,7 +91,7 @@ extension AssetsExchangeRouteManager {
             }
         }
 
-        let dependencies = pathQuoteWrappers
+        let dependencies = routeWrappers
             .compactMap { $0 }
             .flatMap(\.allOperations)
 
