@@ -6,8 +6,6 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     let presenter: AssetListPresenterProtocol
 
-    var assetGroupsLayoutStyle: AssetListGroupsStyle?
-
     var collectionViewLayout: UICollectionViewFlowLayout? {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     }
@@ -133,7 +131,7 @@ extension AssetListViewController: AssetListViewProtocol {
     }
 
     func didReceiveAssetListStyle(_ style: AssetListGroupsStyle) {
-        assetGroupsLayoutStyle = style
+        rootView.assetGroupsLayoutStyle = style
     }
 }
 

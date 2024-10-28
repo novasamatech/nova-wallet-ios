@@ -2,6 +2,8 @@ import UIKit
 import SoraKeystore
 
 final class AssetsSearchInteractor {
+    static let workingQueueLabel: String = "com.nova.wallet.assets.search.builder"
+
     weak var presenter: AssetsSearchInteractorOutputProtocol?
 
     let stateObservable: AssetListModelObservable
@@ -40,7 +42,10 @@ extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
 
         builder = .init(
             filter: filter,
-            workingQueue: .main,
+            workingQueue: .init(
+                label: AssetsSearchInteractor.workingQueueLabel,
+                qos: .userInteractive
+            ),
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
                 self?.presenter?.didReceive(result: result)

@@ -4,9 +4,9 @@ import Operation_iOS
 final class AssetOperationNetworkListInteractor {
     weak var presenter: AssetOperationNetworkListInteractorOutputProtocol?
 
+    private let workingQueueLabel: String = "com.nova.wallet.assets.networks.builder"
     private let stateObservable: AssetListModelObservable
     private let multichainToken: MultichainToken
-    private let operationQueue: OperationQueue
 
     private let logger: LoggerProtocol
 
@@ -16,12 +16,10 @@ final class AssetOperationNetworkListInteractor {
 
     init(
         multichainToken: MultichainToken,
-        operationQueue: OperationQueue,
         stateObservable: AssetListModelObservable,
         logger: LoggerProtocol
     ) {
         self.multichainToken = multichainToken
-        self.operationQueue = operationQueue
         self.stateObservable = stateObservable
         self.logger = logger
     }
@@ -50,10 +48,12 @@ extension AssetOperationNetworkListInteractor: AssetOperationNetworkListInteract
 
         builder = .init(
             chainAssets: chainAssets,
-            workingQueue: .main,
+            workingQueue: .init(
+                label: workingQueueLabel,
+                qos: .userInteractive
+            ),
             callbackQueue: .main,
             callbackClosure: resultClosure,
-            operationQueue: operationQueue,
             logger: logger
         )
 

@@ -39,7 +39,7 @@ private extension AssetOperationNetworkListViewModelFactory {
             ""
         }
 
-        let chainAssetViewModel = chainAssetViewModelFactory.createIdentifiableViewModel(
+        let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(
             from: asset.chainAssetModel
         )
 

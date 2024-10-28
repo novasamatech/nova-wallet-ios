@@ -64,9 +64,9 @@ class AssetOperationNetworkView: UIView {
     func bind(viewModel: AssetOperationNetworkViewModel) {
         amountLabel.text = viewModel.amount
         valueLabel.text = viewModel.value
-        titleLabel.text = viewModel.chainAsset.viewModel.networkViewModel.name
+        titleLabel.text = viewModel.chainAsset.networkViewModel.name
 
-        viewModel.chainAsset.viewModel.networkViewModel.icon?.loadImage(
+        viewModel.chainAsset.networkViewModel.icon?.loadImage(
             on: imageView,
             targetSize: CGSize(
                 width: Constants.networkIconSize,
