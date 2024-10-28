@@ -353,6 +353,8 @@
 		0C7104A22C2D0A6200487E64 /* LedgerTxConfirmationParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104A12C2D0A6200487E64 /* LedgerTxConfirmationParams.swift */; };
 		0C7104A42C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104A32C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift */; };
 		0C7104A82C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104A72C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift */; };
+		0C746DBC2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */; };
+		0C746DBE2CCF440800E9178B /* AssetExchangeSwapOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C746DBD2CCF440800E9178B /* AssetExchangeSwapOperation.swift */; };
 		0C75E2962C3F9263005A6232 /* DelegatedStakingPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C75E2952C3F9263005A6232 /* DelegatedStakingPallet.swift */; };
 		0C75E2982C3F92EC005A6232 /* DelegatedStakingPallet+Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C75E2972C3F92EC005A6232 /* DelegatedStakingPallet+Path.swift */; };
 		0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */; };
@@ -5474,6 +5476,8 @@
 		0C7104A12C2D0A6200487E64 /* LedgerTxConfirmationParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerTxConfirmationParams.swift; sourceTree = "<group>"; };
 		0C7104A32C2D0FC500487E64 /* BaseLedgerTxConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLedgerTxConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C7104A72C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerTxConfirmInteractor.swift; sourceTree = "<group>"; };
+		0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeExecutionManager.swift; sourceTree = "<group>"; };
+		0C746DBD2CCF440800E9178B /* AssetExchangeSwapOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeSwapOperation.swift; sourceTree = "<group>"; };
 		0C75E2952C3F9263005A6232 /* DelegatedStakingPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedStakingPallet.swift; sourceTree = "<group>"; };
 		0C75E2972C3F92EC005A6232 /* DelegatedStakingPallet+Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DelegatedStakingPallet+Path.swift"; sourceTree = "<group>"; };
 		0C77B55E2A83717000B5AE08 /* StaticValidatorListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticValidatorListViewController.swift; sourceTree = "<group>"; };
@@ -11335,6 +11339,8 @@
 				0C2DA8A72CC2679E001F79C8 /* AssetsExchangeGraph.swift */,
 				0C11D85D2CCA470D003EC46D /* AssetsExchangeRouteManager.swift */,
 				0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */,
+				0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */,
+				0C746DBD2CCF440800E9178B /* AssetExchangeSwapOperation.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -25576,6 +25582,7 @@
 				0C13DFDF2AFA89EF00E5F355 /* Decimal+Percents.swift in Sources */,
 				AEA0C8BA268113F900F9666F /* YourValidatorList+RecommendedList.swift in Sources */,
 				0C38B5032B7A86CE00882A8B /* TokensPallet.swift in Sources */,
+				0C746DBE2CCF440800E9178B /* AssetExchangeSwapOperation.swift in Sources */,
 				88421056289BBA8D00306F2C /* CurrencyPresenter.swift in Sources */,
 				84D33996262250B800130A89 /* String+Substrate.swift in Sources */,
 				8442003428E9BD3200C49C4A /* VoteChildPresenterFactory.swift in Sources */,
@@ -25750,6 +25757,7 @@
 				0C7CF4CC2BD374930015DD45 /* CloudBackupFileManaging.swift in Sources */,
 				88C5F07C297EE79C001CCADE /* Release.swift in Sources */,
 				845B89222959620000EE25B0 /* SecurityLayerPresenter.swift in Sources */,
+				0C746DBC2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift in Sources */,
 				849E07F4284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift in Sources */,
 				0C59E8D82AA60490001E11F3 /* ExternalAssetBalanceStreambleSource.swift in Sources */,
 				84BC7047289EFFFA008A9758 /* ChainWalletDisplayAddress.swift in Sources */,

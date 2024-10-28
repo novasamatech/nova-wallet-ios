@@ -20,7 +20,7 @@ final class AssetsExchangeRouteManager {
         for path: AssetExchangeGraphPath,
         amount: Balance,
         direction: AssetConversion.Direction
-    ) -> CompoundOperationWrapper<Balance>? {
+    ) -> CompoundOperationWrapper<AssetExchangeRoute>? {
         let directionPath = switch direction {
         case .sell:
             path
