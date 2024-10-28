@@ -173,8 +173,7 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .language:
             wireframe.showLanguageSelection(from: view)
         case .appearance:
-            // TODO: Route when ready
-            print("Appearance")
+            wireframe.showAppearance(from: view)
         case .biometricAuth:
             toggleBiometryUsage()
         case .approveWithPin:
