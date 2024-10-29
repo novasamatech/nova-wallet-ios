@@ -5,17 +5,12 @@ import SoraFoundation
 struct AppearanceSettingsViewFactory {
     static func createView() -> AppearanceSettingsViewProtocol? {
         let settingsManager = SettingsManager.shared
-        let eventCenter = EventCenter.shared
-
-        let interactor = AppearanceSettingsInteractor(
-            settingsManager: settingsManager,
-            eventCenter: eventCenter
-        )
+        let appearanceFacade = AppearanceFacade.shared
 
         let wireframe = AppearanceSettingsWireframe()
 
         let presenter = AppearanceSettingsPresenter(
-            interactor: interactor,
+            appearanceFacade: appearanceFacade,
             wireframe: wireframe
         )
 
@@ -25,7 +20,6 @@ struct AppearanceSettingsViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }

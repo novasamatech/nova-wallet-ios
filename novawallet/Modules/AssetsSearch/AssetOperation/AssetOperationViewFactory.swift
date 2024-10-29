@@ -18,6 +18,7 @@ enum AssetOperationViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             currencyManager: currencyManager
         )
 
@@ -63,6 +64,7 @@ enum AssetOperationViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             currencyManager: currencyManager
         )
 
@@ -110,6 +112,7 @@ enum AssetOperationViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             currencyManager: currencyManager
         )
 

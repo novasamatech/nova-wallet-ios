@@ -15,7 +15,7 @@ struct AssetModel: Equatable, Codable, Hashable {
     static let utilityAssetId: Id = 0
 
     let assetId: Id
-    let icon: URL?
+    let icon: String?
     let name: String?
     let symbol: Symbol
     let precision: UInt16
@@ -41,7 +41,7 @@ struct AssetModel: Equatable, Codable, Hashable {
 
     init(
         assetId: Id,
-        icon: URL?,
+        icon: String?,
         name: String?,
         symbol: Symbol,
         precision: UInt16,

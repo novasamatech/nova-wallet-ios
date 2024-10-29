@@ -14,7 +14,12 @@ struct TokenManageSingleViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let formatter = NumberFormatter.positiveQuantity.localizableResource()
-        let viewModelFactory = TokensManageViewModelFactory(quantityFormater: formatter)
+        let assetIconViewModelFactory = AssetIconViewModelFactory()
+
+        let viewModelFactory = TokensManageViewModelFactory(
+            quantityFormater: formatter,
+            assetIconViewModelFactory: assetIconViewModelFactory
+        )
 
         let presenter = TokenManageSinglePresenter(
             interactor: interactor,

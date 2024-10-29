@@ -9,7 +9,7 @@ final class AssetIconView: UIView {
 
     let imageView = UIImageView()
 
-    var contentInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6) {
+    var contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) {
         didSet {
             updateInsets()
         }

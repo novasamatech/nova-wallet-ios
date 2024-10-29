@@ -7,7 +7,7 @@ struct RemoteAssetModel: Equatable, Codable, Hashable {
     typealias PriceId = String
 
     let assetId: Id
-    let icon: URL?
+    let icon: String?
     let name: String?
     let symbol: String
     let precision: UInt16

@@ -14,6 +14,7 @@ final class OperationDetailsViewModelFactory {
     let dateFormatter: LocalizableResource<DateFormatter>
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
     lazy var poolIconFactory: NominationPoolsIconFactoryProtocol = NominationPoolsIconFactory()
     lazy var walletViewModelFactory = WalletAccountViewModelFactory()
@@ -24,6 +25,7 @@ final class OperationDetailsViewModelFactory {
         networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol =
             DisplayAddressViewModelFactory(),
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
         quantityFormatter: LocalizableResource<NumberFormatter> =
             NumberFormatter.quantity.localizableResource(),
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
@@ -31,6 +33,7 @@ final class OperationDetailsViewModelFactory {
         self.dateFormatter = dateFormatter
         self.networkViewModelFactory = networkViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
+        self.assetIconViewModelFactory = assetIconViewModelFactory
         self.quantityFormatter = quantityFormatter
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
@@ -50,11 +53,10 @@ final class OperationDetailsViewModelFactory {
             let image = R.image.iconRewardOperation()!
             return StaticImageViewModel(image: image)
         case .extrinsic, .contract:
-            if let url = assetInfo.icon {
-                return RemoteImageViewModel(url: url)
-            } else {
-                return nil
-            }
+            return assetIconViewModelFactory.createAssetIconViewModel(
+                for: assetInfo.icon?.getPath(),
+                defaultURL: assetInfo.icon?.getURL()
+            )
         case .swap:
             let image = R.image.iconSwap()!
             return StaticImageViewModel(image: image)
@@ -283,8 +285,7 @@ final class OperationDetailsViewModelFactory {
         locale: Locale
     ) -> SwapAssetAmountViewModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chain)
-        let assetIcon: ImageViewModelProtocol = asset.icon.map { RemoteImageViewModel(url: $0) } ??
-            StaticImageViewModel(image: R.image.iconDefaultToken()!)
+        let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: asset.icon)
         let amountDecimal = Decimal.fromSubstrateAmount(
             amount,
             precision: asset.displayInfo.assetPrecision

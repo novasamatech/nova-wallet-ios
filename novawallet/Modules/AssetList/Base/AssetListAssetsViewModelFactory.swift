@@ -48,6 +48,7 @@ class AssetListAssetViewModelFactory {
     let currencyManager: CurrencyManagerProtocol
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let percentFormatter: LocalizableResource<NumberFormatter>
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
     private(set) lazy var cssColorFactory = CSSGradientFactory()
 
@@ -56,12 +57,14 @@ class AssetListAssetViewModelFactory {
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.priceAssetInfoFactory = priceAssetInfoFactory
         self.assetFormatterFactory = assetFormatterFactory
         self.percentFormatter = percentFormatter
+        self.assetIconViewModelFactory = assetIconViewModelFactory
         self.currencyManager = currencyManager
     }
 }
@@ -316,8 +319,8 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let tokenViewModel = AssetViewModel(
             symbol: group.multichainToken.symbol,
-            imageViewModel: ImageViewModelFactory.createAssetIconOrDefault(
-                from: group.multichainToken.icon
+            imageViewModel: assetIconViewModelFactory.createAssetIconViewModel(
+                for: group.multichainToken.icon
             )
         )
 
@@ -350,7 +353,10 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let assetInfo = assetAccountInfo.assetInfo
 
-        let iconViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: assetInfo.icon)
+        let iconViewModel = assetIconViewModelFactory.createAssetIconViewModel(
+            for: assetInfo.icon?.getPath(),
+            defaultURL: assetInfo.icon?.getURL()
+        )
 
         return AssetListNetworkGroupAssetViewModel(
             chainAssetId: ChainAssetId(chainId: chainId, assetId: assetAccountInfo.assetId),

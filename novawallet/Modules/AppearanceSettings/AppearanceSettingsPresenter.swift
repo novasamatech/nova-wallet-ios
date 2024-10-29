@@ -3,13 +3,13 @@ import Foundation
 final class AppearanceSettingsPresenter {
     weak var view: AppearanceSettingsViewProtocol?
     let wireframe: AppearanceSettingsWireframeProtocol
-    let interactor: AppearanceSettingsInteractorInputProtocol
+    let appearanceFacade: AppearanceFacadeProtocol
 
     init(
-        interactor: AppearanceSettingsInteractorInputProtocol,
+        appearanceFacade: AppearanceFacadeProtocol,
         wireframe: AppearanceSettingsWireframeProtocol
     ) {
-        self.interactor = interactor
+        self.appearanceFacade = appearanceFacade
         self.wireframe = wireframe
     }
 }
@@ -18,22 +18,14 @@ final class AppearanceSettingsPresenter {
 
 extension AppearanceSettingsPresenter: AppearanceSettingsPresenterProtocol {
     func setup() {
-        interactor.setup()
+        let selectedIconsAppearance = appearanceFacade.selectedIconAppearance
+        let model = AppearanceSettingsIconsView.Model(
+            selectedOption: .init(from: selectedIconsAppearance)
+        )
+        view?.update(with: model)
     }
 
     func changeTokenIcons(with selectedOption: AppearanceSettingsIconsView.AppearanceOptions) {
-        interactor.selectTokenIconsOption(.init(from: selectedOption))
-    }
-}
-
-// MARK: AppearanceSettingsInteractorOutputProtocol
-
-extension AppearanceSettingsPresenter: AppearanceSettingsInteractorOutputProtocol {
-    func didReceiveAppearance(iconsOption: AppearanceIconsOptions) {
-        let model = AppearanceSettingsIconsView.Model(
-            selectedOption: .init(from: iconsOption)
-        )
-
-        view?.update(with: model)
+        appearanceFacade.selectedIconAppearance = .init(from: selectedOption)
     }
 }

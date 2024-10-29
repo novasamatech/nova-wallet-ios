@@ -18,7 +18,6 @@ final class SwapElementView: UIView {
     }
 
     let assetIconView: AssetIconView = .create {
-        $0.contentInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
         $0.backgroundView.cornerRadius = SwapElementView.assetIconRadius
     }
 

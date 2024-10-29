@@ -25,14 +25,17 @@ protocol SwapConfirmViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
 final class SwapConfirmViewModelFactory: SwapBaseViewModelFactory {
     let walletViewModelFactory = WalletAccountViewModelFactory()
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         percentForamatter: LocalizableResource<NumberFormatter>,
         priceDifferenceConfig: SwapPriceDifferenceConfig
     ) {
         self.networkViewModelFactory = networkViewModelFactory
+        self.assetIconViewModelFactory = assetIconViewModelFactory
 
         super.init(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
@@ -50,8 +53,8 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
         locale: Locale
     ) -> SwapAssetAmountViewModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
-        let assetIcon: ImageViewModelProtocol = chainAsset.asset.icon.map { RemoteImageViewModel(url: $0) } ??
-            StaticImageViewModel(image: R.image.iconDefaultToken()!)
+        let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
+
         let amountDecimal = Decimal.fromSubstrateAmount(
             amount,
             precision: chainAsset.assetDisplayInfo.assetPrecision

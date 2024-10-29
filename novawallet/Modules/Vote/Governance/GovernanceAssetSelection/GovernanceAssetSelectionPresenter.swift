@@ -16,16 +16,20 @@ final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
     private var selectedGovernanceType: GovernanceType?
     private var selectedChainId: ChainModel.Id?
 
+    private let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+
     init(
         interactor: AssetSelectionInteractorInputProtocol,
         wireframe: GovernanceAssetSelectionWireframeProtocol,
         selectedChainId: ChainModel.Id?,
         selectedGovernanceType: GovernanceType?,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedChainId = selectedChainId
         self.selectedGovernanceType = selectedGovernanceType
+        self.assetIconViewModelFactory = assetIconViewModelFactory
 
         super.init(
             interactor: interactor,
@@ -42,7 +46,10 @@ final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
-        let icon = ImageViewModelFactory.createAssetIconOrDefault(from: asset.icon ?? chain.icon)
+        let icon = assetIconViewModelFactory.createAssetIconViewModel(
+            for: asset.icon,
+            defaultURL: chain.icon
+        )
         let title = governanceType.title(for: chain)
         let isSelected = selectedChainId == chain.chainId && selectedGovernanceType == governanceType
         let balance = extractFormattedBalance(for: chainAsset) ?? ""

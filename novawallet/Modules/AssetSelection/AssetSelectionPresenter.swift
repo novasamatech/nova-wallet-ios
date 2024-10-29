@@ -7,6 +7,8 @@ final class AssetSelectionPresenter: AssetSelectionBasePresenter {
         baseWireframe as? AssetSelectionWireframeProtocol
     }
 
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+
     let selectedChainAssetId: ChainAssetId?
 
     init(
@@ -14,9 +16,11 @@ final class AssetSelectionPresenter: AssetSelectionBasePresenter {
         wireframe: AssetSelectionWireframeProtocol,
         selectedChainAssetId: ChainAssetId?,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedChainAssetId = selectedChainAssetId
+        self.assetIconViewModelFactory = assetIconViewModelFactory
 
         super.init(
             interactor: interactor,
@@ -35,7 +39,10 @@ final class AssetSelectionPresenter: AssetSelectionBasePresenter {
             let chain = chainAsset.chain
             let asset = chainAsset.asset
 
-            let icon = ImageViewModelFactory.createAssetIconOrDefault(from: asset.icon ?? chain.icon)
+            let icon = assetIconViewModelFactory.createAssetIconViewModel(
+                for: asset.icon,
+                defaultURL: chain.icon
+            )
             let title = asset.name ?? chain.name
             let isSelected = selectedChainAssetId?.assetId == asset.assetId &&
                 selectedChainAssetId?.chainId == chain.chainId
