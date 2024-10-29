@@ -5,9 +5,14 @@ import Operation_iOS
 
 final class RemoteImageViewModel: NSObject {
     let url: URL
+    let fallbackImage: UIImage?
 
-    init(url: URL) {
+    init(
+        url: URL,
+        fallbackImage: UIImage? = nil
+    ) {
         self.url = url
+        self.fallbackImage = fallbackImage
     }
 }
 
@@ -45,7 +50,11 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
         imageView.kf.setImage(
             with: url,
             options: options
-        )
+        ) { [weak self] result in
+            if case .failure = result {
+                imageView.image = self?.fallbackImage
+            }
+        }
     }
 
     func cancel(on imageView: UIImageView) {

@@ -39,10 +39,7 @@ final class AssetSelectionPresenter: AssetSelectionBasePresenter {
             let chain = chainAsset.chain
             let asset = chainAsset.asset
 
-            let icon = assetIconViewModelFactory.createAssetIconViewModel(
-                for: asset.icon,
-                defaultURL: chain.icon
-            )
+            let icon = assetIconViewModelFactory.createAssetIconViewModel(for: asset.icon)
             let title = asset.name ?? chain.name
             let isSelected = selectedChainAssetId?.assetId == asset.assetId &&
                 selectedChainAssetId?.chainId == chain.chainId
