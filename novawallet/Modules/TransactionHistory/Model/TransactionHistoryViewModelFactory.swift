@@ -293,10 +293,7 @@ final class TransactionHistoryViewModelFactory {
             locale: locale
         )
 
-        let imageViewModel = assetIconViewModelFactory.createAssetIconViewModel(
-            for: chainAsset.asset.icon,
-            defaultURL: chainAsset.chain.icon
-        )
+        let imageViewModel = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
         let peerFirstName = data.callPath.callName.displayCall
         let peerLastName = data.callPath.moduleName.displayCall
         let extrinsicTitleWithSubtitle = data.callPath.isEvmNativeTransaction ?
