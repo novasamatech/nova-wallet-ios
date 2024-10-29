@@ -24,49 +24,53 @@ final class AssetsExchangeRouteManager {
         let wrappers: [CompoundOperationWrapper<AssetExchangeRouteItem>]
         wrappers = path.quoteIteration(for: direction).reduce([]) { prevWrappers, edge in
             let prevWrapper = prevWrappers.last
-            
+
             let quoteWrapper: CompoundOperationWrapper<Balance> = OperationCombiningService.compoundNonOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) {
-                let prevQuote = try prevWrapper?.targetOperation.extractNoCancellableResultData()
+                let prevRouteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
 
-                let wrapper = edge.quote(amount: prevQuote ?? amount, direction: direction)
+                let wrapper = edge.quote(amount: prevRouteItem?.quote ?? amount, direction: direction)
 
                 return wrapper
             }
-            
+
             if let prevWrapper {
                 quoteWrapper.addDependency(wrapper: prevWrapper)
             }
-            
+
             let mappingOperation = ClosureOperation<AssetExchangeRouteItem> {
                 let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
-                let prevQuote = try prevWrapper?.targetOperation.extractNoCancellableResultData()
-                
-                return AssetExchangeRouteItem(edge: edge, amount: prevQuote ?? amount, quote: quote)
+                let prevQuoteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
+
+                return AssetExchangeRouteItem(
+                    edge: edge,
+                    amount: prevQuoteItem?.quote ?? amount,
+                    quote: quote
+                )
             }
-            
+
             mappingOperation.addDependency(quoteWrapper.targetOperation)
-            
+
             let totalWrapper = quoteWrapper.insertingTail(operation: mappingOperation)
-            
+
             return prevWrappers + [totalWrapper]
         }
-        
+
         let mappingOperation = ClosureOperation<AssetExchangeRoute> {
             let initRoute = AssetExchangeRoute(items: [], amount: amount, direction: direction)
-            
+
             return try wrappers.reduce(initRoute) { route, wrapper in
                 let item = try wrapper.targetOperation.extractNoCancellableResultData()
-                
+
                 return route.byAddingNext(item: item)
             }
         }
-        
+
         wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
-        
-        let dependencies = wrappers.flatMap { $0.allOperations }
-        
+
+        let dependencies = wrappers.flatMap(\.allOperations)
+
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 }

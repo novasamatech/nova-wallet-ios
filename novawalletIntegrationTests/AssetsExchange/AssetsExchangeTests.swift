@@ -73,7 +73,7 @@ final class AssetsExchangeTests: XCTestCase {
             }
             
             let routeDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
-                edges: route.path,
+                edges: route.items.map({ $0.edge }),
                 chainRegistry: chainRegistry
             )
             

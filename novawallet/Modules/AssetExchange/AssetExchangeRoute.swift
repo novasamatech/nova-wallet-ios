@@ -4,7 +4,7 @@ struct AssetExchangeRoute {
     let items: [AssetExchangeRouteItem]
     let amount: Balance
     let direction: AssetConversion.Direction
-    
+
     var quote: Balance {
         switch direction {
         case .sell:
@@ -13,7 +13,7 @@ struct AssetExchangeRoute {
             return items.first?.quote ?? amount
         }
     }
-    
+
     func byAddingNext(item: AssetExchangeRouteItem) -> AssetExchangeRoute {
         switch direction {
         case .sell:
@@ -30,7 +30,7 @@ extension AssetExchangeGraphPath {
         case .sell:
             self
         case .buy:
-            AssetExchangeGraphPath(path.reversed())
+            AssetExchangeGraphPath(reversed())
         }
     }
 }
