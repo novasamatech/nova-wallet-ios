@@ -51,10 +51,15 @@ extension AssetIconViewModelFactory: AssetIconViewModelFactoryProtocol {
             defaultURL
         }
 
+        let fallbackImage = R.image.iconDefaultToken()!
+
         return if let baseURL {
-            RemoteImageViewModel(url: baseURL)
+            RemoteImageViewModel(
+                url: baseURL,
+                fallbackImage: fallbackImage
+            )
         } else {
-            StaticImageViewModel(image: R.image.iconDefaultToken()!)
+            StaticImageViewModel(image: fallbackImage)
         }
     }
 }
