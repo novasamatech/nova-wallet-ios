@@ -2,25 +2,25 @@ import Foundation
 import Operation_iOS
 
 protocol AssetExchangeExecutionManagerProtocol {
-    func executeSwap(completion: @escaping (Result<Balance, Error>) -> Void)
+    func executeSwap(for amountIn: Balance, completion: @escaping (Result<Balance, Error>) -> Void)
 }
 
 final class AssetExchangeExecutionManager {
-    let operations: [AssetExchangeOperationProtocol]
+    let operations: [AssetExchangeAtomicOperationProtocol]
     let operationQueue: OperationQueue
 
-    init(operations: [AssetExchangeOperationProtocol], operationQueue: OperationQueue) {
+    init(operations: [AssetExchangeAtomicOperationProtocol], operationQueue: OperationQueue) {
         self.operations = operations
         self.operationQueue = operationQueue
     }
 }
 
 extension AssetExchangeExecutionManager: AssetExchangeExecutionManagerProtocol {
-    func executeSwap(completion: @escaping (Result<Balance, Error>) -> Void) {
+    func executeSwap(for amountIn: Balance, completion: @escaping (Result<Balance, Error>) -> Void) {
         let wrappers: [CompoundOperationWrapper<Balance>] = operations.reduce([]) { prevWrappers, operation in
             let prevWrapper = prevWrappers.last
-            let amountClosure: () throws -> Balance? = {
-                try prevWrapper.map { try $0.targetOperation.extractNoCancellableResultData() }
+            let amountClosure: () throws -> Balance = {
+                try prevWrapper.map { try $0.targetOperation.extractNoCancellableResultData() } ?? amountIn
             }
 
             let nextWrapper = operation.executeWrapper(for: amountClosure)
