@@ -3738,7 +3738,7 @@
 		84D9C8F328ADA42F007FB23B /* Data+Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */; };
 		84DA03D12758AA6800E8B326 /* BaseAccountImportWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D02758AA6800E8B326 /* BaseAccountImportWireframe.swift */; };
 		84DA03D427592FAA00E8B326 /* ChainAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D327592FAA00E8B326 /* ChainAccountView.swift */; };
-		84DA03D62759341200E8B326 /* ChainAccountControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D52759341200E8B326 /* ChainAccountControl.swift */; };
+		84DA03D62759341200E8B326 /* AccountAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D52759341200E8B326 /* AccountAddressView.swift */; };
 		84DA03D82759362100E8B326 /* ChainAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D72759362100E8B326 /* ChainAccountViewModel.swift */; };
 		84DA03DB275A31B500E8B326 /* DAppListHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03DA275A31B500E8B326 /* DAppListHeaderView.swift */; };
 		84DA3B1224C6D29100B5E27F /* RuntimeVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA3B1124C6D29100B5E27F /* RuntimeVersion.swift */; };
@@ -8866,7 +8866,7 @@
 		84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Chunk.swift"; sourceTree = "<group>"; };
 		84DA03D02758AA6800E8B326 /* BaseAccountImportWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAccountImportWireframe.swift; sourceTree = "<group>"; };
 		84DA03D327592FAA00E8B326 /* ChainAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountView.swift; sourceTree = "<group>"; };
-		84DA03D52759341200E8B326 /* ChainAccountControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountControl.swift; sourceTree = "<group>"; };
+		84DA03D52759341200E8B326 /* AccountAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAddressView.swift; sourceTree = "<group>"; };
 		84DA03D72759362100E8B326 /* ChainAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountViewModel.swift; sourceTree = "<group>"; };
 		84DA03DA275A31B500E8B326 /* DAppListHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListHeaderView.swift; sourceTree = "<group>"; };
 		84DA3B1124C6D29100B5E27F /* RuntimeVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeVersion.swift; sourceTree = "<group>"; };
@@ -12540,6 +12540,14 @@
 				2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */,
 			);
 			path = Appearance;
+			sourceTree = "<group>";
+		};
+		2D442CF42CD182F600A0380F /* View */ = {
+			isa = PBXGroup;
+			children = (
+				84DA03D52759341200E8B326 /* AccountAddressView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		2D4F54FF2CCA60C500B65B76 /* AssetsSearchCollectionManager */ = {
@@ -20492,7 +20500,6 @@
 			isa = PBXGroup;
 			children = (
 				84DA03D327592FAA00E8B326 /* ChainAccountView.swift */,
-				84DA03D52759341200E8B326 /* ChainAccountControl.swift */,
 				84DA03D72759362100E8B326 /* ChainAccountViewModel.swift */,
 				846B748E28B41C6B00C39B93 /* ChainAccountTableViewCell.swift */,
 			);
@@ -23333,6 +23340,7 @@
 		EC1A579A3747EB16688DAEBF /* AssetReceive */ = {
 			isa = PBXGroup;
 			children = (
+				2D442CF42CD182F600A0380F /* View */,
 				88E74E8629538BEB008031A3 /* Model */,
 				47042BBA5082B1EC1D017B56 /* AssetReceiveProtocols.swift */,
 				6C1179A25C22AF0875A1ADCD /* AssetReceiveWireframe.swift */,
@@ -26012,7 +26020,7 @@
 				8425EA9025EA7E5800C307C9 /* ElectedValidatorInfo.swift in Sources */,
 				0C500B222B05102900ABEE70 /* AssetTxPaymentPallet.swift in Sources */,
 				84216FCF28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift in Sources */,
-				84DA03D62759341200E8B326 /* ChainAccountControl.swift in Sources */,
+				84DA03D62759341200E8B326 /* AccountAddressView.swift in Sources */,
 				84329ED02832461D0020BC1C /* TimeInterval+Localization.swift in Sources */,
 				846AF8442525BE0100868F37 /* Price.swift in Sources */,
 				84468A072866530100BCBE00 /* AssetStorageInfoOperationFactory.swift in Sources */,

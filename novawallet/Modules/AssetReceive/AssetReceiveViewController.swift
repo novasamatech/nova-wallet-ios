@@ -45,14 +45,27 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+
         rootView.shareButton.imageWithTitleView?.title = R.string.localizable.walletReceiveShareTitle(
-            preferredLanguages: selectedLocale.rLanguages
+            preferredLanguages: languages
         )
+        rootView.accountAddressView.copyButton.imageWithTitleView?.title = R.string.localizable.commonCopyAddress(
+            preferredLanguages: languages
+        ).capitalized
     }
 
     private func setupHandlers() {
-        rootView.shareButton.addTarget(self, action: #selector(didTapShare), for: .touchUpInside)
-        rootView.accountDetailsView.addTarget(self, action: #selector(didTapOnAccount), for: .touchUpInside)
+        rootView.shareButton.addTarget(
+            self,
+            action: #selector(didTapShare),
+            for: .touchUpInside
+        )
+        rootView.accountAddressView.copyButton.addTarget(
+            self,
+            action: #selector(didTapCopyAddress),
+            for: .touchUpInside
+        )
     }
 
     private func updateTitleDetails(
@@ -81,19 +94,29 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
         presenter.share()
     }
 
-    @objc private func didTapOnAccount() {
-        presenter.presentAccountOptions()
+    @objc private func didTapCopyAddress() {
+        presenter.copyAddress()
     }
 }
 
-extension AssetReceiveViewController: AssetReceiveViewProtocol {
-    func didReceive(chainAccountViewModel: ChainAccountViewModel, token: String) {
-        rootView.accountDetailsView.chainAccountView.bind(viewModel: chainAccountViewModel)
+struct AccountAddressViewModel {
+    let walletName: String?
+    let address: String?
+}
 
+extension AssetReceiveViewController: AssetReceiveViewProtocol {
+    func didReceive(
+        addressViewModel: AccountAddressViewModel,
+        networkName: String,
+        token: String
+    ) {
         updateTitleDetails(
-            chainName: chainAccountViewModel.networkName,
+            chainName: networkName,
             token: token
         )
+
+        rootView.accountAddressView.titleLabel.text = addressViewModel.walletName
+        rootView.accountAddressView.addressLabel.text = addressViewModel.address
     }
 
     func didReceive(qrImage: UIImage) {

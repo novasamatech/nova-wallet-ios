@@ -87,18 +87,16 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
         )
     }
 
-    func presentAccountOptions() {
-        guard let view = view,
-              let address = account?.chainAccount.toAddress(),
-              let chain = chain else {
+    func copyAddress() {
+        guard let address = account?.chainAccount.toAddress() else {
             return
         }
 
-        wireframe.presentAccountOptions(
-            from: view,
-            address: address,
-            chain: chain,
-            locale: localizationManager.selectedLocale
+        UIPasteboard.general.string = address
+
+        wireframe.presentSuccessNotification(
+            R.string.localizable.commonAddressCoppied(),
+            from: view
         )
     }
 }
@@ -114,13 +112,14 @@ extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
 
         provideNetwork()
 
-        let chainAccountViewModel = createChainAccountViewModel(
-            for: account.chainAccount.accountId,
-            chain: chain
+        let addressViewModel = AccountAddressViewModel(
+            walletName: account.chainAccount.name,
+            address: account.chainAccount.toAddress()
         )
 
         view?.didReceive(
-            chainAccountViewModel: chainAccountViewModel,
+            addressViewModel: addressViewModel,
+            networkName: chain.name,
             token: token
         )
     }

@@ -25,8 +25,8 @@ extension RoundedView {
     func applyControlBackgroundStyle() {
         strokeColor = R.color.colorContainerBorder()!
         highlightedStrokeColor = .clear
+        shadowOpacity = .zero
         fillColor = .clear
-        highlightedFillColor = R.color.colorCellBackgroundPressed()!
     }
 
     func applyBorderBackgroundStyle() {
