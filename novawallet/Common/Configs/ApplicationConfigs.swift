@@ -166,7 +166,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v2/assets.json")!
         #else
             URL(
-                string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v2/assets_dev.json"
+                string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v3/assets_dev.json"
             )!
         #endif
     }
