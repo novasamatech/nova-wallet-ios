@@ -36,7 +36,10 @@ final class AssetReceiveViewLayout: UIView {
         $0.backgroundView.shadowOpacity = .zero
     }
 
-    let shareButton: TriangularedButton = .create { $0.applyDefaultStyle() }
+    let shareButton: TriangularedButton = .create {
+        $0.applyDefaultStyle()
+        $0.imageWithTitleView?.iconImage = R.image.iconShare()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
