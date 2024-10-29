@@ -9,6 +9,7 @@ final class AssetReceivePresenter {
     let interactor: AssetReceiveInteractorInputProtocol
     let iconGenerator: IconGenerating
     let accountShareFactory: NovaAccountShareFactoryProtocol
+    let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
     let logger: LoggerProtocol?
@@ -23,6 +24,7 @@ final class AssetReceivePresenter {
         wireframe: AssetReceiveWireframeProtocol,
         iconGenerator: IconGenerating,
         accountShareFactory: NovaAccountShareFactoryProtocol,
+        networkViewModelFactory: NetworkViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
@@ -31,6 +33,7 @@ final class AssetReceivePresenter {
         self.iconGenerator = iconGenerator
         self.accountShareFactory = accountShareFactory
         self.logger = logger
+        self.networkViewModelFactory = networkViewModelFactory
         self.localizationManager = localizationManager
     }
 
@@ -47,6 +50,14 @@ final class AssetReceivePresenter {
             )
         )
         return viewModel
+    }
+
+    private func provideNetwork() {
+        guard let chain else { return }
+
+        let networkViewModel = networkViewModelFactory.createViewModel(from: chain)
+
+        view?.didReceive(networkViewModel: networkViewModel)
     }
 }
 
@@ -100,6 +111,8 @@ extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
     ) {
         self.account = account
         self.chain = chain
+
+        provideNetwork()
 
         let chainAccountViewModel = createChainAccountViewModel(
             for: account.chainAccount.accountId,

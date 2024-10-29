@@ -1,6 +1,7 @@
 import Foundation
 import CoreImage
 import Operation_iOS
+import QRCode
 
 enum QRCreationOperationError: Error {
     case generatorUnavailable
@@ -11,49 +12,60 @@ enum QRCreationOperationError: Error {
 final class QRCreationOperation: BaseOperation<UIImage> {
     let payloadClosure: () throws -> Data
     let qrSize: CGSize
+    let logoSize: CGSize?
 
-    init(payload: Data, qrSize: CGSize) {
+    init(
+        payload: Data,
+        qrSize: CGSize,
+        logoSize: CGSize? = nil
+    ) {
         payloadClosure = { payload }
         self.qrSize = qrSize
+        self.logoSize = logoSize
 
         super.init()
     }
 
-    init(qrSize: CGSize, payloadClosure: @escaping () throws -> Data) {
+    init(
+        qrSize: CGSize,
+        logoSize: CGSize?,
+        payloadClosure: @escaping () throws -> Data
+    ) {
         self.qrSize = qrSize
+        self.logoSize = logoSize
         self.payloadClosure = payloadClosure
     }
 
     override func performAsync(_ callback: @escaping (Result<UIImage, Error>) -> Void) throws {
-        guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
-            throw QRCreationOperationError.generatorUnavailable
-        }
+        let data = try payloadClosure()
+        let qrDoc = QRCode.Document(data: data)
+        qrDoc.design.backgroundColor(UIColor.white.cgColor)
+        qrDoc.design.shape.eye = QRCode.EyeShape.Squircle()
+        qrDoc.design.shape.onPixels = QRCode.PixelShape.Circle(insetFraction: 0.2)
+        qrDoc.design.style.onPixels = QRCode.FillStyle.Solid(UIColor.black.cgColor)
+        qrDoc.design.shape.offPixels = nil
+        qrDoc.design.style.offPixels = nil
 
-        let payload = try payloadClosure()
-
-        filter.setValue(payload, forKey: "inputMessage")
-        filter.setValue("M", forKey: "inputCorrectionLevel")
-
-        guard let qrImage = filter.outputImage else {
-            throw QRCreationOperationError.generatedImageInvalid
-        }
-
-        let transformedImage: CIImage
-
-        if qrImage.extent.size.width * qrImage.extent.height > 0.0 {
-            let transform = CGAffineTransform(
-                scaleX: qrSize.width / qrImage.extent.width,
-                y: qrSize.height / qrImage.extent.height
+        if let logoSize {
+            let scaledSize = CGSize(
+                width: logoSize.width * UIScreen.main.scale,
+                height: logoSize.height * UIScreen.main.scale
             )
-            transformedImage = qrImage.transformed(by: transform)
-        } else {
-            transformedImage = qrImage
+
+            guard let image = UIImage.background(from: .white, size: scaledSize)?.cgImage else {
+                return
+            }
+
+            qrDoc.logoTemplate = QRCode.LogoTemplate.CircleCenter(image: image)
         }
 
-        let context = CIContext()
+        let scaledSize = CGSize(
+            width: qrSize.width * UIScreen.main.scale,
+            height: qrSize.height * UIScreen.main.scale
+        )
 
-        guard let cgImage = context.createCGImage(transformedImage, from: transformedImage.extent) else {
-            throw QRCreationOperationError.bitmapImageCreationFailed
+        guard let cgImage = qrDoc.cgImage(scaledSize) else {
+            throw BarcodeCreationError.bitmapImageCreationFailed
         }
 
         callback(.success(UIImage(cgImage: cgImage)))

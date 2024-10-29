@@ -1,6 +1,7 @@
 import UIKit
 
 protocol AssetReceiveViewProtocol: ControllerBackedProtocol {
+    func didReceive(networkViewModel: NetworkViewModel)
     func didReceive(chainAccountViewModel: ChainAccountViewModel, token: String)
     func didReceive(qrImage: UIImage)
 }

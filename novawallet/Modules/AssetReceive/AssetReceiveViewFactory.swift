@@ -28,11 +28,14 @@ struct AssetReceiveViewFactory {
             localizationManager: localizationManager
         )
 
+        let networkViewModelFactory = NetworkViewModelFactory()
+
         let presenter = AssetReceivePresenter(
             interactor: interactor,
             wireframe: wireframe,
             iconGenerator: PolkadotIconGenerator(),
             accountShareFactory: accountShareFactory,
+            networkViewModelFactory: networkViewModelFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

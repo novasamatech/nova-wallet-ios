@@ -958,6 +958,7 @@
 		2D389B172C875B3200256C7B /* SwipeGovInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */; };
 		2D442CEF2CD0F7DF00A0380F /* AppearanceDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CEE2CD0F7DF00A0380F /* AppearanceDepending.swift */; };
 		2D442CF12CD0F85400A0380F /* IconAppearanceDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */; };
+		2D442CF32CD103ED00A0380F /* BarcodeCreationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */; };
 		2D4F55012CCA60E900B65B76 /* AssetsSearchCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55002CCA60E900B65B76 /* AssetsSearchCollectionManager.swift */; };
 		2D4F55032CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55022CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift */; };
 		2D4F55052CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55042CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift */; };
@@ -6137,6 +6138,7 @@
 		2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovInteractor.swift; sourceTree = "<group>"; };
 		2D442CEE2CD0F7DF00A0380F /* AppearanceDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceDepending.swift; sourceTree = "<group>"; };
 		2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAppearanceDepending.swift; sourceTree = "<group>"; };
+		2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeCreationError.swift; sourceTree = "<group>"; };
 		2D4F55002CCA60E900B65B76 /* AssetsSearchCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionManager.swift; sourceTree = "<group>"; };
 		2D4F55022CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		2D4F55042CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionViewDelegate.swift; sourceTree = "<group>"; };
@@ -19789,6 +19791,7 @@
 			children = (
 				84BC703E289DBE6C008A9758 /* QRCreationOperation.swift */,
 				84BC7040289DBF62008A9758 /* QRDisplayView.swift */,
+				2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */,
 			);
 			path = QRCreation;
 			sourceTree = "<group>";
@@ -28455,6 +28458,7 @@
 				846DA55B2A20A56D006CD6C1 /* OffchainMultistakingUpdateService.swift in Sources */,
 				0C3205CA2A895489002EB914 /* EvmGasLimitProvider.swift in Sources */,
 				7764E2772BA43DA1002F54AA /* SettingsSectionFooterView.swift in Sources */,
+				2D442CF32CD103ED00A0380F /* BarcodeCreationError.swift in Sources */,
 				AE180C8B30831C9BAA39763A /* ParaStkYieldBoostSetupViewController.swift in Sources */,
 				8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */,
 				88B1862A28EF30A600D49854 /* YourVoteView.swift in Sources */,

@@ -1765,3 +1765,4 @@
 "settings.appearance.token.icons.title" = "Token icons";
 "settings.appearance.token.icons.option.white" = "White";
 "settings.appearance.token.icons.option.colored" = "Colored";
+"wallet.receive.details.format" = "Send only %@ token and tokens in %@ network to this address, or you might lose your funds";

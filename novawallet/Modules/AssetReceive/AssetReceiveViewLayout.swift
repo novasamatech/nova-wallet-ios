@@ -10,11 +10,23 @@ final class AssetReceiveViewLayout: UIView {
         return view
     }()
 
+    let chainView = AssetListChainView()
+
     let accountDetailsView: ChainAccountControl = .create {
         $0.chainAccountView.actionIconView.image = R.image.iconMore()?.tinted(with: R.color.colorIconSecondary()!)
     }
 
-    let titleLabel = UILabel(style: .semiboldBodyPrimary, textAlignment: .center)
+    let titleLabel: UILabel = .create { view in
+        view.apply(style: .title3Primary)
+        view.textAlignment = .center
+    }
+
+    let detailsLabel: UILabel = .create { view in
+        view.apply(style: .footnoteSecondary)
+        view.numberOfLines = 0
+        view.textAlignment = .center
+    }
+
     let qrView: QRDisplayView = .create { $0.contentInsets = Constants.qrViewContentInsets }
     let shareButton: TriangularedButton = .create { $0.applyDefaultStyle() }
 
@@ -36,14 +48,9 @@ final class AssetReceiveViewLayout: UIView {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.bottom.equalToSuperview()
         }
-        containerView.stackView.addArrangedSubview(accountDetailsView)
         containerView.stackView.addArrangedSubview(titleLabel)
+        containerView.stackView.addArrangedSubview(detailsLabel)
         containerView.stackView.addArrangedSubview(qrView)
-
-        accountDetailsView.snp.makeConstraints {
-            $0.height.equalTo(Constants.accountDetailsViewHeight)
-            $0.width.equalToSuperview().inset(Constants.containerHorizontalOffset)
-        }
 
         qrView.snp.makeConstraints {
             $0.width.equalToSuperview().multipliedBy(Constants.qrViewSizeRatio)
@@ -52,10 +59,13 @@ final class AssetReceiveViewLayout: UIView {
         }
 
         containerView.stackView.setCustomSpacing(
-            Constants.accountDetailsTitleVerticalSpace,
-            after: accountDetailsView
+            Constants.titleDetailsVerticalSpace,
+            after: titleLabel
         )
-        containerView.stackView.setCustomSpacing(Constants.titleQRVerticalSpace, after: titleLabel)
+        containerView.stackView.setCustomSpacing(
+            Constants.detailsQRVerticalSpace,
+            after: detailsLabel
+        )
 
         addSubview(shareButton)
         shareButton.snp.makeConstraints {
@@ -75,13 +85,14 @@ extension AssetReceiveViewLayout {
         static let qrCodeMinimumWidth: CGFloat = 120
         static let accountDetailsViewHeight: CGFloat = 52
         static let accountDetailsTitleVerticalSpace: CGFloat = 52
-        static let titleQRVerticalSpace: CGFloat = 36
+        static let detailsQRVerticalSpace: CGFloat = 36
+        static let titleDetailsVerticalSpace: CGFloat = 4
         static let qrViewContentInsets: CGFloat = 8
         static let containerHorizontalOffset: CGFloat = 16
         static let shareButtonTopOffset: CGFloat = 24
         static let shareButtonHeight: CGFloat = 52
         static let containerInsets = UIEdgeInsets(
-            top: 16,
+            top: 40,
             left: containerHorizontalOffset,
             bottom: Constants.shareButtonHeight + shareButtonTopOffset,
             right: containerHorizontalOffset

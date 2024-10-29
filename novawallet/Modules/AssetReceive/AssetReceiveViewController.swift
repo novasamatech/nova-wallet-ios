@@ -6,7 +6,6 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
 
     let presenter: AssetReceivePresenterProtocol
     private var cachedBoundsWidth: CGFloat?
-    private var token: String = ""
 
     init(
         presenter: AssetReceivePresenterProtocol,
@@ -46,12 +45,9 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
-        rootView.titleLabel.text = R.string.localizable.walletReceiveDescription(preferredLanguages: languages)
         rootView.shareButton.imageWithTitleView?.title = R.string.localizable.walletReceiveShareTitle(
-            preferredLanguages: languages
+            preferredLanguages: selectedLocale.rLanguages
         )
-        update(token: token)
     }
 
     private func setupHandlers() {
@@ -59,12 +55,26 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
         rootView.accountDetailsView.addTarget(self, action: #selector(didTapOnAccount), for: .touchUpInside)
     }
 
-    private func update(token: String) {
-        self.token = token
-        navigationItem.title = R.string.localizable.walletReceiveTitleFormat(
+    private func updateTitleDetails(
+        chainName: String,
+        token: String
+    ) {
+        let languages = selectedLocale.rLanguages
+
+        rootView.titleLabel.text = R.string.localizable.walletReceiveTitleFormat(
             token,
-            preferredLanguages: selectedLocale.rLanguages
+            preferredLanguages: languages
         )
+
+        rootView.detailsLabel.text = R.string.localizable.walletReceiveDetailsFormat(
+            token,
+            chainName,
+            preferredLanguages: languages
+        )
+    }
+
+    private func updateNavigationBar() {
+        navigationItem.titleView = rootView.chainView
     }
 
     @objc private func didTapShare() {
@@ -79,11 +89,20 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
 extension AssetReceiveViewController: AssetReceiveViewProtocol {
     func didReceive(chainAccountViewModel: ChainAccountViewModel, token: String) {
         rootView.accountDetailsView.chainAccountView.bind(viewModel: chainAccountViewModel)
-        update(token: token)
+
+        updateTitleDetails(
+            chainName: chainAccountViewModel.networkName,
+            token: token
+        )
     }
 
     func didReceive(qrImage: UIImage) {
         rootView.qrView.imageView.image = qrImage
+    }
+
+    func didReceive(networkViewModel: NetworkViewModel) {
+        rootView.chainView.bind(viewModel: networkViewModel)
+        updateNavigationBar()
     }
 }
 
