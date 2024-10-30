@@ -81,10 +81,10 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 chainAccount: chainAccount
             )
 
-            let feeWrapper = operationFactory.estimateFeeOperation { builder in
+            let feeWrapper = operationFactory.estimateFeeOperation({ builder in
                 let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
                 return try callClosure(builder)
-            }
+            }, payingIn: request.originFeeAsset)
 
             feeWrapper.addDependency(wrapper: callBuilderWrapper)
 
@@ -272,7 +272,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
             let submitWrapper = operationFactory.submit({ builder in
                 let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
                 return try callClosure(builder)
-            }, signer: signer)
+            }, signer: signer, payingIn: request.originFeeAsset)
 
             submitWrapper.addDependency(wrapper: callBuilderWrapper)
 
