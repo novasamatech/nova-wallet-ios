@@ -6,13 +6,13 @@ struct MultichainToken {
         let chainName: String
         let enabled: Bool
         let testnet: Bool
-        let icon: URL?
+        let icon: String?
     }
 
     let symbol: String
     let instances: [Instance]
 
-    var icon: URL? {
+    var icon: String? {
         instances.first(where: { $0.icon != nil })?.icon
     }
 

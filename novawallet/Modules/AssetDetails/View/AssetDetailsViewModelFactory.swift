@@ -26,14 +26,17 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
     let priceChangePercentFormatter: LocalizableResource<NumberFormatter>
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
     init(
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         priceChangePercentFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
+        self.assetIconViewModelFactory = assetIconViewModelFactory
         self.priceAssetInfoFactory = priceAssetInfoFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.priceChangePercentFormatter = priceChangePercentFormatter
@@ -70,8 +73,7 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         locale: Locale
     ) -> AssetDetailsModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
-        let assetIcon: ImageViewModelProtocol = chainAsset.asset.icon.map { RemoteImageViewModel(url: $0) } ??
-            StaticImageViewModel(image: R.image.iconDefaultToken()!)
+        let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
 
         return AssetDetailsModel(
             tokenName: chainAsset.asset.symbol,

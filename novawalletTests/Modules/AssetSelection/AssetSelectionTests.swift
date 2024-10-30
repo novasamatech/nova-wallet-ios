@@ -3,6 +3,7 @@ import XCTest
 import BigInt
 import Cuckoo
 import SoraFoundation
+import SoraKeystore
 
 class AssetSelectionTests: XCTestCase {
     func testSuccessfullSelection() {
@@ -68,6 +69,7 @@ class AssetSelectionTests: XCTestCase {
             wireframe: wireframe,
             selectedChainAssetId: selectedChainAssetId,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             localizationManager: LocalizationManager.shared
         )
 

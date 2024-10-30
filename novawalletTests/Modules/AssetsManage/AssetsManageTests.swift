@@ -37,7 +37,8 @@ class AssetsManageTests: XCTestCase {
         )
         
         let viewModelFactory = TokensManageViewModelFactory(
-            quantityFormater: NumberFormatter.positiveQuantity.localizableResource()
+            quantityFormater: NumberFormatter.positiveQuantity.localizableResource(), 
+            assetIconViewModelFactory: AssetIconViewModelFactory()
         )
         
         let presenter = TokensManagePresenter(

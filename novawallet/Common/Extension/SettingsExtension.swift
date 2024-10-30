@@ -24,6 +24,7 @@ enum SettingsKey: String {
     case cloudBackupPasswordId
     case integrateNetworksBannerSeen
     case assetListGroupStyle
+    case assetIconsAppearance
 }
 
 extension SettingsManagerProtocol {
@@ -273,6 +274,23 @@ extension SettingsManagerProtocol {
             set(
                 value: newValue.rawValue,
                 for: SettingsKey.assetListGroupStyle.rawValue
+            )
+        }
+    }
+
+    var assetIconsAppearance: AppearanceIconsOptions {
+        get {
+            if let rawValue = string(for: SettingsKey.assetIconsAppearance.rawValue) {
+                return AppearanceIconsOptions(rawValue: rawValue) ?? .colored
+            } else {
+                return .colored
+            }
+        }
+
+        set {
+            set(
+                value: newValue.rawValue,
+                for: SettingsKey.assetIconsAppearance.rawValue
             )
         }
     }

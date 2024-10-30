@@ -63,6 +63,7 @@ struct SwapSetupViewFactory {
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             issuesViewModelFactory: issuesViewModelFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             percentForamatter: NumberFormatter.percentSingle.localizableResource(),
             priceDifferenceConfig: .defaultConfig
         )

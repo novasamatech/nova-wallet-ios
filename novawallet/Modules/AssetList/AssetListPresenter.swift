@@ -33,12 +33,14 @@ final class AssetListPresenter {
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
         viewModelFactory: AssetListViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        appearanceFacade: AppearanceFacadeProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
+        self.appearanceFacade = appearanceFacade
     }
 
     private func providePolkadotStakingPromotion() {
@@ -657,5 +659,13 @@ extension AssetListPresenter: URIScanDelegate {
         wireframe.hideUriScanAnimated(from: view) { [weak self] in
             self?.interactor.connectWalletConnect(uri: uri)
         }
+    }
+}
+
+extension AssetListPresenter: IconAppearanceDepending {
+    func applyIconAppearance() {
+        guard let view, view.isSetup else { return }
+
+        provideAssetViewModels()
     }
 }
