@@ -194,6 +194,9 @@
 		0C3205E82A898195002EB914 /* EvmValidationErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205E72A898195002EB914 /* EvmValidationErrorPresentable.swift */; };
 		0C3205EA2A8A0539002EB914 /* EvmValidationProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205E92A8A0539002EB914 /* EvmValidationProviderFactory.swift */; };
 		0C3205EC2A8A122D002EB914 /* FeeOutputModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3205EB2A8A122D002EB914 /* FeeOutputModel.swift */; };
+		0C3272892CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272882CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift */; };
+		0C32728D2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C32728C2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift */; };
+		0C32728F2CD203F000FC1B42 /* XcmTotalFeeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C32728E2CD203F000FC1B42 /* XcmTotalFeeModel.swift */; };
 		0C363E962B6B591C0065AFA6 /* HydraExtrinsicOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E952B6B591C0065AFA6 /* HydraExtrinsicOperationFactory.swift */; };
 		0C363E982B6B63280065AFA6 /* HydraConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E972B6B63280065AFA6 /* HydraConstants.swift */; };
 		0C363E9A2B6B69D60065AFA6 /* HydraFeeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E992B6B69D60065AFA6 /* HydraFeeService.swift */; };
@@ -5319,6 +5322,9 @@
 		0C3205E72A898195002EB914 /* EvmValidationErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmValidationErrorPresentable.swift; sourceTree = "<group>"; };
 		0C3205E92A8A0539002EB914 /* EvmValidationProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmValidationProviderFactory.swift; sourceTree = "<group>"; };
 		0C3205EB2A8A122D002EB914 /* FeeOutputModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeOutputModel.swift; sourceTree = "<group>"; };
+		0C3272882CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeAtomicOperationArgs.swift; sourceTree = "<group>"; };
+		0C32728C2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeSwapLimit.swift; sourceTree = "<group>"; };
+		0C32728E2CD203F000FC1B42 /* XcmTotalFeeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTotalFeeModel.swift; sourceTree = "<group>"; };
 		0C34D496D0F57E685237B3A7 /* StakingUnbondConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C363E952B6B591C0065AFA6 /* HydraExtrinsicOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicOperationFactory.swift; sourceTree = "<group>"; };
 		0C363E972B6B63280065AFA6 /* HydraConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraConstants.swift; sourceTree = "<group>"; };
@@ -11348,6 +11354,8 @@
 				0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */,
 				0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */,
 				0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */,
+				0C3272882CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift */,
+				0C32728C2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -14648,6 +14656,7 @@
 				0C1CCC402B60138F00A6EA17 /* XcmDeliveryRequest.swift */,
 				0C1CCC422B6017E100A6EA17 /* XcmDeliveryFee.swift */,
 				0C1CCC462B60DA0C00A6EA17 /* XcmFeeModel.swift */,
+				0C32728E2CD203F000FC1B42 /* XcmTotalFeeModel.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -26356,6 +26365,7 @@
 				841E2E4E2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift in Sources */,
 				84E8BA2229FFB38600FD9F40 /* EthereumTransaction.swift in Sources */,
 				846A2601267C768500429A7F /* CrowdloanContributionMapper.swift in Sources */,
+				0C3272892CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift in Sources */,
 				84CFF1EA26526FBC00DB7CF7 /* StakingBondMoreConfirmationViewFactory.swift in Sources */,
 				77EFFC8A2A6E7A24009E28F8 /* AccountExistense.swift in Sources */,
 				8466BB472640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift in Sources */,
@@ -27608,6 +27618,7 @@
 				8499FEE427C1059700712589 /* RMRKV1SyncService.swift in Sources */,
 				8882FC6529E5D09300DDA90B /* EquillibriumAssetsBalanceUpdater.swift in Sources */,
 				842A737527DB8338006EE1EA /* OperationDetailsViewModelFactory.swift in Sources */,
+				0C32728F2CD203F000FC1B42 /* XcmTotalFeeModel.swift in Sources */,
 				844C3E712A09126F00C4305F /* WalletsChooseViewFactory.swift in Sources */,
 				93434E8E407A6C63D8862A21 /* AssetSelectionProtocols.swift in Sources */,
 				84E25BEC27E87D5400290BF1 /* TransferDataValidatorFactory.swift in Sources */,
@@ -28154,6 +28165,7 @@
 				99781C3020E07C022DBF5280 /* ChangeWatchOnlyViewLayout.swift in Sources */,
 				832B616B89972C96D98023DB /* ChangeWatchOnlyViewFactory.swift in Sources */,
 				2D7C8A932C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift in Sources */,
+				0C32728D2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift in Sources */,
 				884A7532299CB22F00FEFC30 /* TrackTableViewCell.swift in Sources */,
 				B310C3D126C304851A40CFA9 /* ChainAddressDetailsProtocols.swift in Sources */,
 				FB405A41F9B89097016D4C78 /* ChainAddressDetailsWireframe.swift in Sources */,

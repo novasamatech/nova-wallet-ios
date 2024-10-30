@@ -3,6 +3,7 @@ import Operation_iOS
 
 final class CrosschainExchangeAtomicOperation {
     let wallet: MetaAccountModel
+    let operationArgs: AssetExchangeAtomicOperationArgs
     let chainRegistry: ChainRegistryProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let xcmService: XcmTransferServiceProtocol
@@ -15,6 +16,7 @@ final class CrosschainExchangeAtomicOperation {
     init(
         wallet: MetaAccountModel,
         edge: any AssetExchangableGraphEdge,
+        operationArgs: AssetExchangeAtomicOperationArgs,
         chainRegistry: ChainRegistryProtocol,
         xcmService: XcmTransferServiceProtocol,
         resolutionFactory: XcmTransferResolutionFactoryProtocol,
@@ -25,6 +27,7 @@ final class CrosschainExchangeAtomicOperation {
     ) {
         self.wallet = wallet
         self.signingWrapperFactory = signingWrapperFactory
+        self.operationArgs = operationArgs
         self.chainRegistry = chainRegistry
         self.edge = edge
         self.xcmService = xcmService
@@ -52,8 +55,47 @@ final class CrosschainExchangeAtomicOperation {
             )
         }
     }
+    
+    private func createOriginFeeFetchWrapper(
+        dependingOn resolutionOperation: BaseOperation<XcmTransferParties>,
+        feeOperation: BaseOperation<XcmFeeModelProtocol>,
+        amountClosure: @escaping () throws -> Balance
+    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        OperationCombiningService<ExtrinsicFeeProtocol>.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let transferParties = try resolutionOperation.extractNoCancellableResultData()
+            let crosschainFee = try feeOperation.extractNoCancellableResultData()
+            let amount = try amountClosure
+            
+            let unweightedRequest = XcmUnweightedTransferRequest(
+                origin: transferParties.origin,
+                destination: transferParties.destination,
+                reserve: transferParties.reserve,
+                amount: amount
+            )
+            
+            let transferRequest = XcmTransferRequest(
+                unweighted: unweightedRequest,
+                maxWeight: crosschainFee.weightLimit,
+                originFeeAsset: self.operationArgs.feeAsset
+            )
+            
+            let feeOperation = AsyncClosureOperation<ExtrinsicFeeProtocol> { completion in
+                self.xcmService.estimateOriginFee(
+                    request: transferRequest,
+                    xcmTransfers: self.xcmTransfers,
+                    runningIn: self.workingQueue
+                ) { result in
+                    completion(result)
+                }
+            }
 
-    private func createFeeFetchWrapper(
+            return CompoundOperationWrapper(targetOperation: feeOperation)
+        }
+    }
+
+    private func createCrosschainFeeFetchWrapper(
         dependingOn resolutionOperation: BaseOperation<XcmTransferParties>,
         amountClosure: @escaping () throws -> Balance
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
@@ -65,6 +107,7 @@ final class CrosschainExchangeAtomicOperation {
 
             let request = XcmUnweightedTransferRequest(
                 origin: transferParties.origin,
+                originFeeAsset: self.operationArgs.feeAsset,
                 destination: transferParties.destination,
                 reserve: transferParties.reserve,
                 amount: amount
@@ -98,17 +141,22 @@ final class CrosschainExchangeAtomicOperation {
             let amount = try amountClosure()
             let signer = try signerOperation.extractNoCancellableResultData()
 
+            let unweightedRequest = XcmUnweightedTransferRequest(
+                origin: transferParties.origin,
+                destination: transferParties.destination,
+                reserve: transferParties.reserve,
+                amount: amount
+            )
+            
+            let transferRequest = XcmTransferRequest(
+                unweighted: unweightedRequest,
+                maxWeight: fee.weightLimit,
+                originFeeAsset: self.operationArgs.feeAsset
+            )
+            
             let operation = AsyncClosureOperation<XcmSubmitExtrinsic> { completion in
                 self.xcmService.submit(
-                    request: .init(
-                        unweighted: .init(
-                            origin: transferParties.origin,
-                            destination: transferParties.destination,
-                            reserve: transferParties.reserve,
-                            amount: amount
-                        ),
-                        maxWeight: fee.weightLimit
-                    ),
+                    request: transferRequest,
                     xcmTransfers: self.xcmTransfers,
                     signer: signer,
                     runningIn: self.workingQueue
@@ -157,11 +205,11 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
         submitWrapper.addDependency(wrapper: signerFetchWrapper)
         submitWrapper.addDependency(wrapper: feeWrapper)
 
-        // TODO: Replace with monitoring
+        // TODO: Replace with monitoring to understand actual amount received
         let mappingOperation = ClosureOperation<Balance> {
             _ = try submitWrapper.targetOperation.extractNoCancellableResultData()
 
-            return 0
+            return self.operationArgs.swapLimit
         }
 
         mappingOperation.addDependency(submitWrapper.targetOperation)
@@ -188,7 +236,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
 
         let feeWrapper = createFeeFetchWrapper(
             dependingOn: resolutionWrapper.targetOperation,
-            amountClosure: { 0 }
+            amountClosure: { self.operationArgs.swapLimit.amountIn }
         )
 
         feeWrapper.addDependency(wrapper: resolutionWrapper)
