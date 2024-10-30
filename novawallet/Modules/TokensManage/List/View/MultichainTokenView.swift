@@ -16,7 +16,6 @@ final class MultichainTokenView: UIView {
     let iconView: AssetIconView = .create {
         $0.backgroundView.apply(style: .tokenContainer)
         $0.backgroundView.cornerRadius = Constants.iconBackgroundSize.height / 2.0
-        $0.shouldTintView = true
     }
 
     let detailsView: MultiValueView = .create { view in
@@ -53,8 +52,7 @@ final class MultichainTokenView: UIView {
 
         let imageSettings = ImageViewModelSettings(
             targetSize: Constants.iconSize,
-            cornerRadius: nil,
-            tintColor: style.iconColor
+            cornerRadius: nil
         )
 
         iconView.bind(viewModel: viewModel.imageViewModel, settings: imageSettings)
