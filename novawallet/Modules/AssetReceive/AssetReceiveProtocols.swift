@@ -7,7 +7,7 @@ protocol AssetReceiveViewProtocol: ControllerBackedProtocol {
         networkName: String,
         token: String
     )
-    func didReceive(qrImage: UIImage)
+    func didReceive(qrResult: QRCodeFactory.Result)
 }
 
 protocol AssetReceivePresenterProtocol: AnyObject {

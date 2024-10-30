@@ -9,12 +9,19 @@ final class QRDisplayView: UIView {
         return view
     }()
 
-    let imageView = UIImageView()
+    let noLogoQRImageView = UIImageView()
+    let fullQRImageView: UIImageView = .create { view in
+        view.alpha = 0
+    }
+
+    var viewModel: QRCodeFactory.Result?
 
     var contentInsets: CGFloat = 8.0 {
         didSet {
-            imageView.snp.updateConstraints { make in
-                make.edges.equalToSuperview().inset(contentInsets)
+            [noLogoQRImageView, fullQRImageView].forEach {
+                $0.snp.updateConstraints { make in
+                    make.edges.equalToSuperview().inset(contentInsets)
+                }
             }
         }
     }
@@ -42,15 +49,39 @@ final class QRDisplayView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func bind(viewModel: QRCodeFactory.Result) {
+        switch viewModel {
+        case let .noLogo(image):
+            noLogoQRImageView.image = image
+        case let .full(image) where self.viewModel != nil && self.viewModel != viewModel:
+            fullQRImageView.image = image
+
+            UIView.animate(withDuration: 0.3) {
+                self.fullQRImageView.alpha = 1
+            }
+        case let .full(image):
+            fullQRImageView.image = image
+            fullQRImageView.alpha = 1
+        }
+
+        self.viewModel = viewModel
+    }
+
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        addSubview(imageView)
-        imageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(contentInsets)
+        [
+            noLogoQRImageView,
+            fullQRImageView
+        ]
+        .forEach { view in
+            addSubview(view)
+            view.snp.makeConstraints { make in
+                make.edges.equalToSuperview().inset(contentInsets)
+            }
         }
     }
 }

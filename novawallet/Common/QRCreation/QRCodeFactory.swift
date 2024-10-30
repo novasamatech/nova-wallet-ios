@@ -122,10 +122,19 @@ private extension QRCodeFactory {
 
             var updatedLogoInfo: QRLogoInfo? = logoInfo
 
-            if case let .success(cacheResult) = result, let image = cacheResult.image {
+            if
+                case let .success(cacheResult) = result,
+                let image = cacheResult.image,
+                let type = logoInfo.type {
+                let localType: QRLogoType? = switch type {
+                case let .remoteColored(url): .localColored(image)
+                case let .remoteTransparent(url): .localTransparent(image)
+                default: nil
+                }
+
                 updatedLogoInfo = QRLogoInfo(
                     size: logoInfo.size,
-                    type: .local(image)
+                    type: localType
                 )
             }
 

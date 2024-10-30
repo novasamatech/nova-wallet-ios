@@ -60,7 +60,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             qrSize: size
         ) { [weak self] result in
             self?.presenter.didReceive(qrCodeInfo: .init(
-                image: result.image,
+                result: result,
                 encodingData: receiverInfo
             ))
         }

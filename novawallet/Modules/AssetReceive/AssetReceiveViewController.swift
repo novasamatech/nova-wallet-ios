@@ -119,8 +119,8 @@ extension AssetReceiveViewController: AssetReceiveViewProtocol {
         rootView.accountAddressView.addressLabel.text = addressViewModel.address
     }
 
-    func didReceive(qrImage: UIImage) {
-        rootView.qrView.imageView.image = qrImage
+    func didReceive(qrResult: QRCodeFactory.Result) {
+        rootView.qrView.bind(viewModel: qrResult)
     }
 
     func didReceive(networkViewModel: NetworkViewModel) {

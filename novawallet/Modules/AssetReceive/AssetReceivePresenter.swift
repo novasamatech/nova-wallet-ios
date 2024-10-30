@@ -77,7 +77,7 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
         }
         let sharingItems = accountShareFactory.createSources(
             for: qrCodeInfo.encodingData,
-            qrImage: qrCodeInfo.image
+            qrImage: qrCodeInfo.result.image
         )
 
         wireframe.share(
@@ -126,7 +126,7 @@ extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
 
     func didReceive(qrCodeInfo: QRCodeInfo) {
         self.qrCodeInfo = qrCodeInfo
-        view?.didReceive(qrImage: qrCodeInfo.image)
+        view?.didReceive(qrResult: qrCodeInfo.result)
     }
 
     func didReceive(error: AssetReceiveInteractorError) {

@@ -13,7 +13,8 @@ enum QRCreationOperationError: Error {
 enum QRLogoType {
     case remoteColored(URL?)
     case remoteTransparent(URL?)
-    case local(UIImage)
+    case localColored(UIImage)
+    case localTransparent(UIImage)
 
     var url: URL? {
         switch self {
@@ -99,14 +100,22 @@ final class QRCreationOperation: BaseOperation<UIImage> {
             return
         }
 
-        if case let .local(image) = logoInfo.type {
-            qrDoc.logoTemplate = QRCode.LogoTemplate.SquareCenter(
+        switch logoInfo.type {
+        case let .localColored(image):
+            qrDoc.logoTemplate = QRCode.LogoTemplate.CircleCenter(
                 image: image.cgImage!,
                 inset: 0
             )
 
             try qrCreateImageClosure()
-        } else {
+        case let .localTransparent(image):
+            qrDoc.logoTemplate = QRCode.LogoTemplate.CircleCenter(
+                image: image.cgImage!,
+                inset: 20
+            )
+
+            try qrCreateImageClosure()
+        default:
             try downloadImage(
                 using: logoInfo,
                 scale: scale
@@ -116,7 +125,7 @@ final class QRCreationOperation: BaseOperation<UIImage> {
                 default: 0
                 }
 
-                qrDoc.logoTemplate = QRCode.LogoTemplate.SquareCenter(
+                qrDoc.logoTemplate = QRCode.LogoTemplate.CircleCenter(
                     image: logoImage,
                     inset: inset
                 )
