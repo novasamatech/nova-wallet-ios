@@ -599,7 +599,6 @@
 		0CCA24652AC6B51200AEF23D /* AssetHubSwapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA24642AC6B51200AEF23D /* AssetHubSwapTests.swift */; };
 		0CCA70732CD0A4FD0082A9C8 /* CrosschainExchangeAtomicOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA70722CD0A4FD0082A9C8 /* CrosschainExchangeAtomicOperation.swift */; };
 		0CCA70752CD0B2860082A9C8 /* MetaAccountModel+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA70742CD0B2860082A9C8 /* MetaAccountModel+Async.swift */; };
-		0CCA70762CD0B2860082A9C8 /* MetaAccountModel+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA70742CD0B2860082A9C8 /* MetaAccountModel+Async.swift */; };
 		0CCA70782CD0B4220082A9C8 /* SigningWrapperFactory+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCA70772CD0B4220082A9C8 /* SigningWrapperFactory+Async.swift */; };
 		0CCCDF742B62AA3400473D42 /* ParaStkPreferredCollatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCCDF732B62AA3400473D42 /* ParaStkPreferredCollatorFactory.swift */; };
 		0CCCDF762B64B80500473D42 /* StorageKeysOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCCDF752B64B80500473D42 /* StorageKeysOperationFactory.swift */; };
@@ -24382,7 +24381,6 @@
 				77AE4FAF2B90611800426519 /* BaseOperation+Result.swift in Sources */,
 				0CCD18C82BA1F0830068D73A /* ImageViewModel.swift in Sources */,
 				7778FE4F2B9108A00023E801 /* Atomic.swift in Sources */,
-				0CCA70762CD0B2860082A9C8 /* MetaAccountModel+Async.swift in Sources */,
 				7778FE4A2B9105780023E801 /* BigInt+Decimal.swift in Sources */,
 				77AE4F9B2B905B7D00426519 /* ChainSyncMode.swift in Sources */,
 				0CCD18D12BA1F3DA0068D73A /* PrimitiveBalanceViewModelFactoryProtocol.swift in Sources */,

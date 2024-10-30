@@ -10,6 +10,7 @@ final class CrosschainExchangeAtomicOperation {
     let xcmTransfers: XcmTransfers
     let edge: any AssetExchangableGraphEdge
     let operationQueue: OperationQueue
+    let workingQueue: DispatchQueue
 
     init(
         wallet: MetaAccountModel,
@@ -19,7 +20,8 @@ final class CrosschainExchangeAtomicOperation {
         resolutionFactory: XcmTransferResolutionFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         xcmTransfers: XcmTransfers,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        workingQueue: DispatchQueue = .global()
     ) {
         self.wallet = wallet
         self.signingWrapperFactory = signingWrapperFactory
@@ -29,69 +31,50 @@ final class CrosschainExchangeAtomicOperation {
         self.resolutionFactory = resolutionFactory
         self.xcmTransfers = xcmTransfers
         self.operationQueue = operationQueue
-    }
-    
-    private func origingAccountWrapper(
-        from wallet: MetaAccountModel
-    ) -> CompoundOperationWrapper<ChainAccountResponse> {
-        let chainWrapper = chainRegistry.asyncWaitChainWrapper(for: edge.origin.chainId)
-        
-        let selectedAccountOperation = ClosureOperation<ChainAccountResponse> {
-            let chain = try chainWrapper.targetOperation.extractNoCancellableResultData()
-            
-            guard let 
-        }
-    }
-}
-
-extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
-    func executeWrapper(for amountClosure: () throws -> Balance) -> CompoundOperationWrapper<Balance> {
-        let selectedAccountWrapper = wallet.fetchChainAccountWrapper(
-            for: edge.origin.chainId,
-            using: chainRegistry
-        )
-        
-        let signingOperationWrapper = signingWrapperFactory.createSigningOperationWrapper(
-            dependingOn: { try selectedAccountWrapper.targetOperation.extractNoCancellableResultData() },
-            operationQueue: operationQueue
-        )
-        
-        signingOperationWrapper.addDependency(wrapper: selectedAccountWrapper)
-        
-        
-        let submitWrapper = xcmService.submit(
-            request: .ini,
-            xcmTransfers: xcmTransfers,
-            signer: <#T##any SigningWrapperProtocol#>, runningIn: <#T##DispatchQueue#>, completion: <#T##XcmExtrinsicSubmitClosure##XcmExtrinsicSubmitClosure##(XcmSubmitExtrinsicResult) -> Void#>)
+        self.workingQueue = workingQueue
     }
 
-    func estimateFee() -> CompoundOperationWrapper<Balance> {
-        let resolutionWrapper = resolutionFactory.createResolutionWrapper(
-            for: edge.origin,
-            transferDestinationId: .init(
-                chainId: edge.destination.chainId,
-                accountId: AccountId.zeroAccountId(of: 32)
-            ),
-            xcmTransfers: xcmTransfers
-        )
-
-        let feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+    private func createXcmPartiesResolutionWrapper(
+        dependingOn selectedAccountOperation: BaseOperation<MetaChainAccountResponse>
+    ) -> CompoundOperationWrapper<XcmTransferParties> {
+        OperationCombiningService<XcmTransferParties>.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
-            let transferParties = try resolutionWrapper.targetOperation.extractNoCancellableResultData()
+            let accountId = try selectedAccountOperation.extractNoCancellableResultData().chainAccount.accountId
+
+            return self.resolutionFactory.createResolutionWrapper(
+                for: self.edge.origin,
+                transferDestinationId: .init(
+                    chainId: self.edge.destination.chainId,
+                    accountId: accountId
+                ),
+                xcmTransfers: self.xcmTransfers
+            )
+        }
+    }
+
+    private func createFeeFetchWrapper(
+        dependingOn resolutionOperation: BaseOperation<XcmTransferParties>,
+        amountClosure: @escaping () throws -> Balance
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
+        OperationCombiningService<XcmFeeModelProtocol>.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let transferParties = try resolutionOperation.extractNoCancellableResultData()
+            let amount = try amountClosure()
 
             let request = XcmUnweightedTransferRequest(
                 origin: transferParties.origin,
                 destination: transferParties.destination,
                 reserve: transferParties.reserve,
-                amount: 0
+                amount: amount
             )
 
             let feeOperation = AsyncClosureOperation<XcmFeeModelProtocol> { completion in
                 self.xcmService.estimateCrossChainFee(
                     request: request,
                     xcmTransfers: self.xcmTransfers,
-                    runningIn: .global()
+                    runningIn: self.workingQueue
                 ) { result in
                     completion(result)
                 }
@@ -99,6 +82,114 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
 
             return CompoundOperationWrapper(targetOperation: feeOperation)
         }
+    }
+
+    private func createSubmitWrapper(
+        dependingOn signerOperation: BaseOperation<SigningWrapperProtocol>,
+        resolutionOperation: BaseOperation<XcmTransferParties>,
+        feeOperation: BaseOperation<XcmFeeModelProtocol>,
+        amountClosure: @escaping () throws -> Balance
+    ) -> CompoundOperationWrapper<XcmSubmitExtrinsic> {
+        OperationCombiningService<XcmSubmitExtrinsic>.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let transferParties = try resolutionOperation.extractNoCancellableResultData()
+            let fee = try feeOperation.extractNoCancellableResultData()
+            let amount = try amountClosure()
+            let signer = try signerOperation.extractNoCancellableResultData()
+
+            let operation = AsyncClosureOperation<XcmSubmitExtrinsic> { completion in
+                self.xcmService.submit(
+                    request: .init(
+                        unweighted: .init(
+                            origin: transferParties.origin,
+                            destination: transferParties.destination,
+                            reserve: transferParties.reserve,
+                            amount: amount
+                        ),
+                        maxWeight: fee.weightLimit
+                    ),
+                    xcmTransfers: self.xcmTransfers,
+                    signer: signer,
+                    runningIn: self.workingQueue
+                ) { result in
+                    completion(result)
+                }
+            }
+
+            return CompoundOperationWrapper(targetOperation: operation)
+        }
+    }
+}
+
+extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
+    func executeWrapper(for amountClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance> {
+        let selectedAccountWrapper = wallet.fetchChainAccountWrapper(
+            for: edge.origin.chainId,
+            using: chainRegistry
+        )
+
+        let signerFetchWrapper = signingWrapperFactory.createSigningOperationWrapper(
+            dependingOn: { try selectedAccountWrapper.targetOperation.extractNoCancellableResultData() },
+            operationQueue: operationQueue
+        )
+
+        signerFetchWrapper.addDependency(wrapper: selectedAccountWrapper)
+
+        let resolutionWrapper = createXcmPartiesResolutionWrapper(
+            dependingOn: selectedAccountWrapper.targetOperation
+        )
+
+        let feeWrapper = createFeeFetchWrapper(
+            dependingOn: resolutionWrapper.targetOperation,
+            amountClosure: amountClosure
+        )
+
+        feeWrapper.addDependency(wrapper: resolutionWrapper)
+
+        let submitWrapper = createSubmitWrapper(
+            dependingOn: signerFetchWrapper.targetOperation,
+            resolutionOperation: resolutionWrapper.targetOperation,
+            feeOperation: feeWrapper.targetOperation,
+            amountClosure: amountClosure
+        )
+
+        submitWrapper.addDependency(wrapper: signerFetchWrapper)
+        submitWrapper.addDependency(wrapper: feeWrapper)
+
+        // TODO: Replace with monitoring
+        let mappingOperation = ClosureOperation<Balance> {
+            _ = try submitWrapper.targetOperation.extractNoCancellableResultData()
+
+            return 0
+        }
+
+        mappingOperation.addDependency(submitWrapper.targetOperation)
+
+        return submitWrapper
+            .insertingHead(operations: feeWrapper.allOperations)
+            .insertingHead(operations: resolutionWrapper.allOperations)
+            .insertingHead(operations: signerFetchWrapper.allOperations)
+            .insertingHead(operations: selectedAccountWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
+    }
+
+    func estimateFee() -> CompoundOperationWrapper<Balance> {
+        let selectedAccountWrapper = wallet.fetchChainAccountWrapper(
+            for: edge.origin.chainId,
+            using: chainRegistry
+        )
+
+        let resolutionWrapper = createXcmPartiesResolutionWrapper(
+            dependingOn: selectedAccountWrapper.targetOperation
+        )
+
+        resolutionWrapper.addDependency(wrapper: selectedAccountWrapper)
+
+        let feeWrapper = createFeeFetchWrapper(
+            dependingOn: resolutionWrapper.targetOperation,
+            amountClosure: { 0 }
+        )
 
         feeWrapper.addDependency(wrapper: resolutionWrapper)
 
@@ -112,6 +203,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
 
         return feeWrapper
             .insertingHead(operations: resolutionWrapper.allOperations)
+            .insertingHead(operations: selectedAccountWrapper.allOperations)
             .insertingTail(operation: mappingOperation)
     }
 }
