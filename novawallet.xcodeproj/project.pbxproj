@@ -199,6 +199,9 @@
 		0C32728F2CD203F000FC1B42 /* XcmTotalFeeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C32728E2CD203F000FC1B42 /* XcmTotalFeeModel.swift */; };
 		0C3272912CD2409B00FC1B42 /* AssetExchangeOperationFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272902CD2409B00FC1B42 /* AssetExchangeOperationFee.swift */; };
 		0C3272932CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272922CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift */; };
+		0C3272952CD24F9600FC1B42 /* AssetHubExchangeAtomicOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272942CD24F9600FC1B42 /* AssetHubExchangeAtomicOperation.swift */; };
+		0C3272972CD2821500FC1B42 /* ChainRegistry+Get.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3272962CD2821500FC1B42 /* ChainRegistry+Get.swift */; };
+		0C32729C2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C32729B2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift */; };
 		0C363E962B6B591C0065AFA6 /* HydraExtrinsicOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E952B6B591C0065AFA6 /* HydraExtrinsicOperationFactory.swift */; };
 		0C363E982B6B63280065AFA6 /* HydraConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E972B6B63280065AFA6 /* HydraConstants.swift */; };
 		0C363E9A2B6B69D60065AFA6 /* HydraFeeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C363E992B6B69D60065AFA6 /* HydraFeeService.swift */; };
@@ -5329,6 +5332,9 @@
 		0C32728E2CD203F000FC1B42 /* XcmTotalFeeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTotalFeeModel.swift; sourceTree = "<group>"; };
 		0C3272902CD2409B00FC1B42 /* AssetExchangeOperationFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationFee.swift; sourceTree = "<group>"; };
 		0C3272922CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetExchangeOperationFee+Crosschain.swift"; sourceTree = "<group>"; };
+		0C3272942CD24F9600FC1B42 /* AssetHubExchangeAtomicOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeAtomicOperation.swift; sourceTree = "<group>"; };
+		0C3272962CD2821500FC1B42 /* ChainRegistry+Get.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainRegistry+Get.swift"; sourceTree = "<group>"; };
+		0C32729B2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetExchangeOperationFee+AssetHub.swift"; sourceTree = "<group>"; };
 		0C34D496D0F57E685237B3A7 /* StakingUnbondConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C363E952B6B591C0065AFA6 /* HydraExtrinsicOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicOperationFactory.swift; sourceTree = "<group>"; };
 		0C363E972B6B63280065AFA6 /* HydraConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraConstants.swift; sourceTree = "<group>"; };
@@ -10659,6 +10665,8 @@
 				0CB433472CC0F9EF00F2CB59 /* AssetsHubExchange.swift */,
 				0C19CCA12CC6EC75007F8ED8 /* AssetsHubExchangeProvider.swift */,
 				0C2DA8A12CC21E5F001F79C8 /* AssetHubExchangeEdge.swift */,
+				0C3272942CD24F9600FC1B42 /* AssetHubExchangeAtomicOperation.swift */,
+				0C32729B2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift */,
 			);
 			path = AssetHubExchange;
 			sourceTree = "<group>";
@@ -20174,6 +20182,7 @@
 				844CB57526FA064700396E13 /* ChainRegistryError.swift */,
 				84BAD21B293B1BC200C55C49 /* ChainModelConversion.swift */,
 				0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */,
+				0C3272962CD2821500FC1B42 /* ChainRegistry+Get.swift */,
 			);
 			path = ChainRegistry;
 			sourceTree = "<group>";
@@ -28307,6 +28316,7 @@
 				77E304B22AEFC0F3006FD6F0 /* FeeAssetSelectSheetViewController.swift in Sources */,
 				2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */,
 				84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */,
+				0C32729C2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift in Sources */,
 				84A5915E292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift in Sources */,
 				CD4240B756F20C338A8B3589 /* LedgerInstructionsWireframe.swift in Sources */,
 				91A1286763617DE022BD495F /* LedgerInstructionsPresenter.swift in Sources */,
@@ -28372,6 +28382,7 @@
 				5E3B1E6B9E94848B186FD4D1 /* ReferendumDetailsInteractor.swift in Sources */,
 				77740BC02AD4A80D00E8C06F /* SwapInfoView.swift in Sources */,
 				0C495B9B2B452CD600B8D339 /* ProxyResolutionGraph.swift in Sources */,
+				0C3272952CD24F9600FC1B42 /* AssetHubExchangeAtomicOperation.swift in Sources */,
 				488E4467895040EA85FDCC79 /* ReferendumDetailsViewController.swift in Sources */,
 				0C2DA8A22CC21E5F001F79C8 /* AssetHubExchangeEdge.swift in Sources */,
 				0C992C4A2B5530A000ACC129 /* StakingClaimedRewardsOperationFactory.swift in Sources */,
@@ -28786,6 +28797,7 @@
 				A83ED3518F2FD1C7B1C48D9E /* StartStakingInfoViewLayout.swift in Sources */,
 				DC02C1C18DC5C03F5A006C81 /* StartStakingInfoViewFactory.swift in Sources */,
 				62D28F231DED3F39B2C53F1F /* StakingSetupAmountProtocols.swift in Sources */,
+				0C3272972CD2821500FC1B42 /* ChainRegistry+Get.swift in Sources */,
 				3B1D2A0FCDDF1AAC32BFEE58 /* StakingSetupAmountWireframe.swift in Sources */,
 				FA0E6F6A12CA290C7079AC6C /* StakingSetupAmountPresenter.swift in Sources */,
 				1ECC51FC47422BF1450E0575 /* StakingSetupAmountInteractor.swift in Sources */,

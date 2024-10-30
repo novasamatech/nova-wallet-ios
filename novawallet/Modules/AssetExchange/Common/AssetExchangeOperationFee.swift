@@ -18,12 +18,14 @@ struct AssetExchangeOperationFee {
     struct PostSubmission {
         /**
          * Post-submission fees paid by (some) origin account.
-         * This is typed as `AmountByAccount` as those fee might still use different accounts (e.g. delivery fees are always paid from requested account)
+         * This is typed as `AmountByAccount` as those fee might still
+         * use different accounts (e.g. delivery fees are always paid from requested account)
          */
         let paidByAccount: [AmountByPayer]
 
         /**
-         * Post-submission fees paid from swapping amount directly. Its payment is isolated and does not involve any withdrawals from accounts
+         * Post-submission fees paid from swapping amount directly. Its payment is isolated
+         * and does not involve any withdrawals from accounts
          */
         let paidFromAmount: [Amount]
     }

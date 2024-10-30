@@ -30,4 +30,20 @@ extension ChainRegistryProtocol {
 
         return CompoundOperationWrapper(targetOperation: operation)
     }
+
+    func asyncWaitChainAsset(
+        for chainAssetId: ChainAssetId
+    ) -> CompoundOperationWrapper<ChainAsset?> {
+        let chainWrapper = asyncWaitChainWrapper(for: chainAssetId.chainId)
+
+        let mappingOperation = ClosureOperation<ChainAsset?> {
+            let chain = try chainWrapper.targetOperation.extractNoCancellableResultData()
+
+            return chain?.chainAsset(for: chainAssetId.assetId)
+        }
+
+        mappingOperation.addDependency(chainWrapper.targetOperation)
+
+        return chainWrapper.insertingTail(operation: mappingOperation)
+    }
 }
