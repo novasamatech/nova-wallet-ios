@@ -36,7 +36,10 @@ final class ParitySignerTxQrInteractor {
         self.operationQueue = operationQueue
     }
 
-    private func provideTransactionCode(for size: CGSize, account: ChainAccountResponse) {
+    private func provideTransactionCode(
+        for size: CGSize,
+        account: ChainAccountResponse
+    ) {
         let messageWrapper = messageOperationFactory.createTransaction(
             for: signingData,
             accountId: account.accountId,
@@ -56,7 +59,7 @@ final class ParitySignerTxQrInteractor {
             let paylods = try qrPayloadWrapper.targetOperation.extractNoCancellableResultData()
 
             return paylods.map { payload in
-                let operation = QRCreationOperation(payload: payload, qrSize: size)
+                let operation = QRCreationOperation(payload: payload, qrSize: size, logoURL: nil)
                 return CompoundOperationWrapper(targetOperation: operation)
             }
         }.longrunOperation()

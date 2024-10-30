@@ -1,6 +1,22 @@
 import UIKit
 import Operation_iOS
 
+enum AssetIconURLFactory {
+    static func createURL(
+        for iconName: String?,
+        iconAppearance: AppearanceIconsOptions
+    ) -> URL? {
+        guard let iconName else { return nil }
+
+        return switch iconAppearance {
+        case .white:
+            URL(string: ApplicationConfig.shared.whiteAppearanceIconsPath + iconName)
+        case .colored:
+            URL(string: ApplicationConfig.shared.coloredAppearanceIconsPath + iconName)
+        }
+    }
+}
+
 final class AssetReceiveInteractor: AnyCancellableCleaning {
     weak var presenter: AssetReceiveInteractorOutputProtocol!
 
@@ -8,6 +24,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
     let qrCoderFactory: NovaWalletQRCoderFactoryProtocol
     let qrCodeCreationOperationFactory: QRCreationOperationFactoryProtocol
     let metaChainAccountResponse: MetaChainAccountResponse
+    let appearanceFacade: AppearanceFacadeProtocol
 
     private let operationQueue: OperationQueue
     private var currentQRCodeOperation: CancellableCall?
@@ -17,12 +34,14 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
         chainAsset: ChainAsset,
         qrCoderFactory: NovaWalletQRCoderFactoryProtocol,
         qrCodeCreationOperationFactory: QRCreationOperationFactoryProtocol,
+        appearanceFacade: AppearanceFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.metaChainAccountResponse = metaChainAccountResponse
         self.chainAsset = chainAsset
         self.qrCoderFactory = qrCoderFactory
         self.qrCodeCreationOperationFactory = qrCodeCreationOperationFactory
+        self.appearanceFacade = appearanceFacade
         self.operationQueue = operationQueue
     }
 
@@ -41,8 +60,14 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             return
         }
 
+        let iconURL = AssetIconURLFactory.createURL(
+            for: chainAsset.asset.icon,
+            iconAppearance: appearanceFacade.selectedIconAppearance
+        )
+
         let qrCreationOperation = qrCodeCreationOperationFactory.createOperation(
             payload: payload,
+            logoURL: iconURL,
             qrSize: size
         )
 

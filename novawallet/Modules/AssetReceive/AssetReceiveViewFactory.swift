@@ -18,6 +18,7 @@ struct AssetReceiveViewFactory {
             chainAsset: chainAsset,
             qrCoderFactory: qrCoderFactory,
             qrCodeCreationOperationFactory: QRCreationOperationFactory(),
+            appearanceFacade: AppearanceFacade.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
         let wireframe = AssetReceiveWireframe()
