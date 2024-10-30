@@ -55,7 +55,7 @@ final class CrosschainExchangeAtomicOperation {
             )
         }
     }
-    
+
     private func createOriginFeeFetchWrapper(
         dependingOn resolutionOperation: BaseOperation<XcmTransferParties>,
         feeOperation: BaseOperation<XcmFeeModelProtocol>,
@@ -66,21 +66,21 @@ final class CrosschainExchangeAtomicOperation {
         ) {
             let transferParties = try resolutionOperation.extractNoCancellableResultData()
             let crosschainFee = try feeOperation.extractNoCancellableResultData()
-            let amount = try amountClosure
-            
+            let amount = try amountClosure()
+
             let unweightedRequest = XcmUnweightedTransferRequest(
                 origin: transferParties.origin,
                 destination: transferParties.destination,
                 reserve: transferParties.reserve,
                 amount: amount
             )
-            
+
             let transferRequest = XcmTransferRequest(
                 unweighted: unweightedRequest,
                 maxWeight: crosschainFee.weightLimit,
                 originFeeAsset: self.operationArgs.feeAsset
             )
-            
+
             let feeOperation = AsyncClosureOperation<ExtrinsicFeeProtocol> { completion in
                 self.xcmService.estimateOriginFee(
                     request: transferRequest,
@@ -107,7 +107,6 @@ final class CrosschainExchangeAtomicOperation {
 
             let request = XcmUnweightedTransferRequest(
                 origin: transferParties.origin,
-                originFeeAsset: self.operationArgs.feeAsset,
                 destination: transferParties.destination,
                 reserve: transferParties.reserve,
                 amount: amount
@@ -147,13 +146,13 @@ final class CrosschainExchangeAtomicOperation {
                 reserve: transferParties.reserve,
                 amount: amount
             )
-            
+
             let transferRequest = XcmTransferRequest(
                 unweighted: unweightedRequest,
                 maxWeight: fee.weightLimit,
                 originFeeAsset: self.operationArgs.feeAsset
             )
-            
+
             let operation = AsyncClosureOperation<XcmSubmitExtrinsic> { completion in
                 self.xcmService.submit(
                     request: transferRequest,
@@ -188,7 +187,8 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
             dependingOn: selectedAccountWrapper.targetOperation
         )
 
-        let feeWrapper = createFeeFetchWrapper(
+        // TODO: We need only weight from the crosschain fee, probably we can calculate it during submission
+        let feeWrapper = createCrosschainFeeFetchWrapper(
             dependingOn: resolutionWrapper.targetOperation,
             amountClosure: amountClosure
         )
@@ -209,7 +209,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
         let mappingOperation = ClosureOperation<Balance> {
             _ = try submitWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.operationArgs.swapLimit
+            return self.operationArgs.swapLimit.amountOut
         }
 
         mappingOperation.addDependency(submitWrapper.targetOperation)
@@ -222,7 +222,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
             .insertingTail(operation: mappingOperation)
     }
 
-    func estimateFee() -> CompoundOperationWrapper<Balance> {
+    func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
         let selectedAccountWrapper = wallet.fetchChainAccountWrapper(
             for: edge.origin.chainId,
             using: chainRegistry
@@ -234,22 +234,39 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
 
         resolutionWrapper.addDependency(wrapper: selectedAccountWrapper)
 
-        let feeWrapper = createFeeFetchWrapper(
+        let crosschainFeeWrapper = createCrosschainFeeFetchWrapper(
             dependingOn: resolutionWrapper.targetOperation,
             amountClosure: { self.operationArgs.swapLimit.amountIn }
         )
 
-        feeWrapper.addDependency(wrapper: resolutionWrapper)
+        crosschainFeeWrapper.addDependency(wrapper: resolutionWrapper)
 
-        let mappingOperation = ClosureOperation<Balance> {
-            let fee = try feeWrapper.targetOperation.extractNoCancellableResultData()
+        let originFeeWrapper = createOriginFeeFetchWrapper(
+            dependingOn: resolutionWrapper.targetOperation,
+            feeOperation: crosschainFeeWrapper.targetOperation,
+            amountClosure: { self.operationArgs.swapLimit.amountIn }
+        )
 
-            return fee.senderPart
+        originFeeWrapper.addDependency(wrapper: crosschainFeeWrapper)
+
+        let mappingOperation = ClosureOperation<AssetExchangeOperationFee> {
+            let originFee = try originFeeWrapper.targetOperation.extractNoCancellableResultData()
+            let crosschainFee = try crosschainFeeWrapper.targetOperation.extractNoCancellableResultData()
+
+            return .init(
+                crosschainFee: crosschainFee,
+                originFee: originFee,
+                assetIn: self.edge.origin,
+                assetOut: self.edge.destination,
+                args: self.operationArgs
+            )
         }
 
-        mappingOperation.addDependency(feeWrapper.targetOperation)
+        mappingOperation.addDependency(crosschainFeeWrapper.targetOperation)
+        mappingOperation.addDependency(originFeeWrapper.targetOperation)
 
-        return feeWrapper
+        return crosschainFeeWrapper
+            .insertingHead(operations: originFeeWrapper.allOperations)
             .insertingHead(operations: resolutionWrapper.allOperations)
             .insertingHead(operations: selectedAccountWrapper.allOperations)
             .insertingTail(operation: mappingOperation)

@@ -26,7 +26,9 @@ struct ExtrinsicFeePayer: Equatable {
 }
 
 protocol ExtrinsicFeeProtocol {
+    // TODO: We need asset id here to make it more explicit how fee is paid
     var amount: BigUInt { get }
+    // TODO: nil is for current account, we need make it explicit
     var payer: ExtrinsicFeePayer? { get }
     var weight: BigUInt { get }
 }
