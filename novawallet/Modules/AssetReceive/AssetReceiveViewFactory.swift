@@ -13,13 +13,20 @@ struct AssetReceiveViewFactory {
             publicKey: chainAccount.publicKey
         )
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let qrCodeFactory = QRCodeFactory(
+            operationFactory: QRCreationOperationFactory(),
+            operationQueue: operationQueue
+        )
+
         let interactor = AssetReceiveInteractor(
             metaChainAccountResponse: metaChainAccountResponse,
             chainAsset: chainAsset,
             qrCoderFactory: qrCoderFactory,
-            qrCodeCreationOperationFactory: QRCreationOperationFactory(),
+            qrCodeFactory: qrCodeFactory,
             appearanceFacade: AppearanceFacade.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: operationQueue
         )
         let wireframe = AssetReceiveWireframe()
         let localizationManager = LocalizationManager.shared

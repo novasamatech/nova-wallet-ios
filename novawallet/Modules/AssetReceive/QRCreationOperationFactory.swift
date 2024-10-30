@@ -3,28 +3,21 @@ import Operation_iOS
 protocol QRCreationOperationFactoryProtocol {
     func createOperation(
         payload: Data,
-        logoURL: URL?,
+        logoInfo: QRLogoInfo?,
         qrSize: CGSize
-    ) -> BaseOperation<UIImage>
+    ) -> QRCreationOperation
 }
 
 final class QRCreationOperationFactory: QRCreationOperationFactoryProtocol {
-    private let logoSize: CGSize
-
-    init(logoSize: CGSize = .init(width: 64, height: 64)) {
-        self.logoSize = logoSize
-    }
-
     func createOperation(
         payload: Data,
-        logoURL: URL?,
+        logoInfo: QRLogoInfo?,
         qrSize: CGSize
-    ) -> BaseOperation<UIImage> {
+    ) -> QRCreationOperation {
         QRCreationOperation(
             payload: payload,
             qrSize: qrSize,
-            logoURL: logoURL,
-            logoSize: logoSize
+            logoInfo: logoInfo
         )
     }
 }

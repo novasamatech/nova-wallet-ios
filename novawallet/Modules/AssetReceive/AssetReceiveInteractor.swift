@@ -1,28 +1,12 @@
 import UIKit
 import Operation_iOS
 
-enum AssetIconURLFactory {
-    static func createURL(
-        for iconName: String?,
-        iconAppearance: AppearanceIconsOptions
-    ) -> URL? {
-        guard let iconName else { return nil }
-
-        return switch iconAppearance {
-        case .white:
-            URL(string: ApplicationConfig.shared.whiteAppearanceIconsPath + iconName)
-        case .colored:
-            URL(string: ApplicationConfig.shared.coloredAppearanceIconsPath + iconName)
-        }
-    }
-}
-
 final class AssetReceiveInteractor: AnyCancellableCleaning {
     weak var presenter: AssetReceiveInteractorOutputProtocol!
 
     let chainAsset: ChainAsset
+    let qrCodeFactory: QRCodeFactoryProtocol
     let qrCoderFactory: NovaWalletQRCoderFactoryProtocol
-    let qrCodeCreationOperationFactory: QRCreationOperationFactoryProtocol
     let metaChainAccountResponse: MetaChainAccountResponse
     let appearanceFacade: AppearanceFacadeProtocol
 
@@ -33,14 +17,14 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
         metaChainAccountResponse: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         qrCoderFactory: NovaWalletQRCoderFactoryProtocol,
-        qrCodeCreationOperationFactory: QRCreationOperationFactoryProtocol,
+        qrCodeFactory: QRCodeFactoryProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.metaChainAccountResponse = metaChainAccountResponse
         self.chainAsset = chainAsset
         self.qrCoderFactory = qrCoderFactory
-        self.qrCodeCreationOperationFactory = qrCodeCreationOperationFactory
+        self.qrCodeFactory = qrCodeFactory
         self.appearanceFacade = appearanceFacade
         self.operationQueue = operationQueue
     }
@@ -60,39 +44,26 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             return
         }
 
-        let iconURL = AssetIconURLFactory.createURL(
+        let qrLogoType = AssetIconURLFactory.createQRLogoURL(
             for: chainAsset.asset.icon,
             iconAppearance: appearanceFacade.selectedIconAppearance
         )
 
-        let qrCreationOperation = qrCodeCreationOperationFactory.createOperation(
-            payload: payload,
-            logoURL: iconURL,
-            qrSize: size
+        let logoInfo = QRLogoInfo(
+            size: .qrLogoSize,
+            type: qrLogoType
         )
 
-        qrCreationOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard let self = self, self.currentQRCodeOperation === qrCreationOperation else {
-                    return
-                }
-
-                self.currentQRCodeOperation = nil
-
-                do {
-                    let qrImage = try qrCreationOperation.extractNoCancellableResultData()
-                    self.presenter.didReceive(qrCodeInfo: .init(
-                        image: qrImage,
-                        encodingData: receiverInfo
-                    ))
-                } catch {
-                    self.presenter.didReceive(error: .generatingQRCode)
-                }
-            }
+        qrCodeFactory.createQRCode(
+            with: payload,
+            logoInfo: logoInfo,
+            qrSize: size
+        ) { [weak self] result in
+            self?.presenter.didReceive(qrCodeInfo: .init(
+                image: result.image,
+                encodingData: receiverInfo
+            ))
         }
-
-        currentQRCodeOperation = qrCreationOperation
-        operationQueue.addOperation(qrCreationOperation)
     }
 }
 

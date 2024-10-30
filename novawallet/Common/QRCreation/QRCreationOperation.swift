@@ -10,35 +10,60 @@ enum QRCreationOperationError: Error {
     case bitmapImageCreationFailed
 }
 
+enum QRLogoType {
+    case remoteColored(URL?)
+    case remoteTransparent(URL?)
+    case local(UIImage)
+
+    var url: URL? {
+        switch self {
+        case let .remoteColored(url), let .remoteTransparent(url):
+            return url
+        default:
+            return nil
+        }
+    }
+
+    var cacheKey: String? {
+        guard let url else { return nil }
+
+        return url.absoluteString + String(describing: self)
+    }
+}
+
+struct QRLogoInfo {
+    let size: CGSize
+    let type: QRLogoType?
+
+    var url: URL? {
+        type?.url
+    }
+}
+
 final class QRCreationOperation: BaseOperation<UIImage> {
     let payloadClosure: () throws -> Data
     let qrSize: CGSize
-    let logoSize: CGSize?
-    let logoURL: URL?
+    let logoInfo: QRLogoInfo?
 
     init(
         payload: Data,
         qrSize: CGSize,
-        logoURL: URL?,
-        logoSize: CGSize? = nil
+        logoInfo: QRLogoInfo? = nil
     ) {
         payloadClosure = { payload }
         self.qrSize = qrSize
-        self.logoSize = logoSize
-        self.logoURL = logoURL
+        self.logoInfo = logoInfo
 
         super.init()
     }
 
     init(
         qrSize: CGSize,
-        logoURL: URL?,
-        logoSize: CGSize?,
+        logoInfo: QRLogoInfo? = nil,
         payloadClosure: @escaping () throws -> Data
     ) {
         self.qrSize = qrSize
-        self.logoURL = logoURL
-        self.logoSize = logoSize
+        self.logoInfo = logoInfo
         self.payloadClosure = payloadClosure
     }
 
@@ -69,58 +94,93 @@ final class QRCreationOperation: BaseOperation<UIImage> {
             callback(.success(UIImage(cgImage: cgImage)))
         }
 
-        guard let logoSize else {
+        guard let logoInfo else {
             try qrCreateImageClosure()
             return
         }
 
-        try retrieveImage(
-            of: logoSize,
-            scale: scale,
-            using: logoURL
-        ) { logoImage in
-            qrDoc.logoTemplate = QRCode.LogoTemplate.CircleCenter(image: logoImage)
+        if case let .local(image) = logoInfo.type {
+            qrDoc.logoTemplate = QRCode.LogoTemplate.SquareCenter(
+                image: image.cgImage!,
+                inset: 0
+            )
 
             try qrCreateImageClosure()
+        } else {
+            try downloadImage(
+                using: logoInfo,
+                scale: scale
+            ) { logoImage in
+                let inset: CGFloat = switch logoInfo.type {
+                case .remoteTransparent: 20
+                default: 0
+                }
+
+                qrDoc.logoTemplate = QRCode.LogoTemplate.SquareCenter(
+                    image: logoImage,
+                    inset: inset
+                )
+
+                try qrCreateImageClosure()
+            }
         }
     }
 
-    private func retrieveImage(
-        of size: CGSize,
+    private func downloadImage(
+        using logoInfo: QRLogoInfo,
         scale: CGFloat,
-        using url: URL?,
         completion: @escaping (CGImage) throws -> Void
     ) throws {
-        let defaultTokenImage = R.image.iconDefaultToken()!
-
         let scaledSize = CGSize(
-            width: size.width * scale,
-            height: size.height * scale
+            width: logoInfo.size.width * scale,
+            height: logoInfo.size.height * scale
         )
 
-        guard let url else {
-            try completion(
-                defaultTokenImage.kf.resize(to: scaledSize).cgImage!
-            )
+        let defaultImage = UIImage.background(from: .white, size: scaledSize)!
+
+        guard let url = logoInfo.url else {
+            try completion(defaultImage.cgImage!)
 
             return
         }
 
-        let options: KingfisherOptionsInfo = [.processor(SVGImageProcessor())]
+        let options: KingfisherOptionsInfo = [
+            .processor(ResizingImageProcessor(referenceSize: scaledSize)),
+            .processor(SVGImageProcessor())
+        ]
 
         KingfisherManager.shared.downloader.downloadImage(with: url, options: options) { result in
-            let resultImage: UIImage
+            var resultImage: UIImage
 
             switch result {
             case let .success(imageResult) where imageResult.image.cgImage != nil:
                 resultImage = imageResult.image
             default:
-                resultImage = defaultTokenImage
+                resultImage = defaultImage
             }
 
-            let resizedImage = resultImage.kf.resize(to: scaledSize)
+            let sizeBeforeProcessing = resultImage.size
 
-            try? completion(resizedImage.cgImage!)
+            if case .remoteTransparent = logoInfo.type {
+                resultImage = resultImage.redrawWithBackground(
+                    color: R.color.colorTextPrimaryOnWhite()!,
+                    shape: .circle
+                )
+            }
+
+            if let cacheKey = logoInfo.type?.cacheKey {
+                KingfisherManager.shared.cache.store(
+                    resultImage,
+                    forKey: cacheKey,
+                    options: KingfisherParsedOptionsInfo(nil)
+                )
+            }
+
+            try? completion(resultImage.cgImage!)
         }
     }
+}
+
+extension CGSize {
+    static let qrLogoSize: CGSize = .init(width: 80, height: 80)
 }
