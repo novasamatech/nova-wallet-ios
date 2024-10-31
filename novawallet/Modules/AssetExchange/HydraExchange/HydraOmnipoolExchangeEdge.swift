@@ -46,4 +46,15 @@ extension HydraOmnipoolExchangeEdge: AssetExchangableGraphEdge {
             )
         )
     }
+    
+    func beginOperation(for args: AssetExchangeAtomicOperationArgs) -> AssetExchangeAtomicOperationProtocol {
+        
+    }
+    
+    func appendToOperation(
+        _ currentOperation: AssetExchangeAtomicOperationProtocol,
+        args: AssetExchangeAtomicOperationArgs
+    ) -> AssetExchangeAtomicOperationProtocol? {
+        return nil
+    }
 }
