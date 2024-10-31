@@ -60,9 +60,9 @@ final class AssetReceivePresenter {
 
         view?.didReceive(networkViewModel: networkViewModel)
     }
-    
+
     private func provideAddress() {
-        guard 
+        guard
             let account,
             let chain,
             let token
@@ -113,11 +113,10 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
             return
         }
 
-        UIPasteboard.general.string = address
-
-        wireframe.presentSuccessNotification(
-            R.string.localizable.commonAddressCoppied(),
-            from: view
+        wireframe.copyAddress(
+            from: view,
+            address: address,
+            locale: localizationManager.selectedLocale
         )
     }
 }

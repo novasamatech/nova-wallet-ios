@@ -29,4 +29,4 @@ protocol AssetReceiveInteractorOutputProtocol: AnyObject {
 }
 
 protocol AssetReceiveWireframeProtocol: AnyObject, SharingPresentable,
-    ErrorPresentable, AlertPresentable, CommonRetryable, ModalAlertPresenting {}
+    ErrorPresentable, AlertPresentable, CommonRetryable, ModalAlertPresenting, CopyAddressPresentable {}
