@@ -59,7 +59,7 @@ final class ParitySignerTxQrInteractor {
             let paylods = try qrPayloadWrapper.targetOperation.extractNoCancellableResultData()
 
             return paylods.map { payload in
-                let operation = QRCreationOperation(payload: payload, qrSize: size, logoInfo: nil)
+                let operation = QRCreationOperation(payload: payload, qrSize: size)
                 return CompoundOperationWrapper(targetOperation: operation)
             }
         }.longrunOperation()

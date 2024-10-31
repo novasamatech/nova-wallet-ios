@@ -15,9 +15,9 @@ struct AssetReceiveViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let qrCodeFactory = QRCodeFactory(
-            operationFactory: QRCreationOperationFactory(),
-            operationQueue: operationQueue
+        let qrCodeFactory = QRCodeWithLogoFactory(
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
 
         let interactor = AssetReceiveInteractor(

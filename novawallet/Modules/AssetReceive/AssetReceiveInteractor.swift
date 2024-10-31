@@ -5,7 +5,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
     weak var presenter: AssetReceiveInteractorOutputProtocol!
 
     let chainAsset: ChainAsset
-    let qrCodeFactory: QRCodeFactoryProtocol
+    let qrCodeFactory: QRCodeWithLogoFactoryProtocol
     let qrCoderFactory: NovaWalletQRCoderFactoryProtocol
     let metaChainAccountResponse: MetaChainAccountResponse
     let appearanceFacade: AppearanceFacadeProtocol
@@ -17,7 +17,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
         metaChainAccountResponse: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         qrCoderFactory: NovaWalletQRCoderFactoryProtocol,
-        qrCodeFactory: QRCodeFactoryProtocol,
+        qrCodeFactory: QRCodeWithLogoFactoryProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
         operationQueue: OperationQueue
     ) {
@@ -59,10 +59,15 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             logoInfo: logoInfo,
             qrSize: size
         ) { [weak self] result in
-            self?.presenter.didReceive(qrCodeInfo: .init(
-                result: result,
-                encodingData: receiverInfo
-            ))
+            switch result {
+            case let .success(qrCode):
+                self?.presenter.didReceive(qrCodeInfo: .init(
+                    result: qrCode,
+                    encodingData: receiverInfo
+                ))
+            case let .failure(error):
+                self?.presenter.didReceive(error: .generatingQRCode)
+            }
         }
     }
 }
