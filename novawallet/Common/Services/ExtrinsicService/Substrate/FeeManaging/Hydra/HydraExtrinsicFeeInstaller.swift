@@ -15,7 +15,7 @@ final class HydraExtrinsicFeeInstaller {
 }
 
 extension HydraExtrinsicFeeInstaller {
-    struct TransferFeeInstallingCalls {
+    struct FeeInstallingCalls {
         let setCurrencyCall: HydraDx.SetCurrencyCall?
         let revertCurrencyCall: HydraDx.SetCurrencyCall?
     }
@@ -31,7 +31,7 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
             codingFactory: coderFactory
         )
 
-        let calls = createTransferFeeCalls(using: assetId)
+        let calls = createFeeCalls(using: assetId)
 
         guard
             let setCurrencyCall = calls.setCurrencyCall,
@@ -45,7 +45,7 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
             .adding(call: revertCurrencyCall.runtimeCall())
     }
 
-    private func createTransferFeeCalls(using assetId: HydraDx.LocalRemoteAssetId) -> TransferFeeInstallingCalls {
+    private func createFeeCalls(using assetId: HydraDx.LocalRemoteAssetId) -> FeeInstallingCalls {
         let setCurrencyCall: HydraDx.SetCurrencyCall? = {
             let currentFeeAssetId = swapState.feeCurrency ?? HydraDx.nativeAssetId
 
@@ -64,9 +64,6 @@ extension HydraExtrinsicFeeInstaller: ExtrinsicFeeInstalling {
             return .init(currency: HydraDx.nativeAssetId)
         }()
 
-        return TransferFeeInstallingCalls(
-            setCurrencyCall: setCurrencyCall,
-            revertCurrencyCall: revertCurrencyCall
-        )
+        return FeeInstallingCalls(setCurrencyCall: setCurrencyCall, revertCurrencyCall: revertCurrencyCall)
     }
 }

@@ -1,6 +1,10 @@
 import Foundation
 import Operation_iOS
 
+protocol AssetsHydraExchangeEdgeProtocol {
+    var routeComponent: HydraDx.RemoteSwapRoute.Component { get }
+}
+
 class AssetsHydraExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId

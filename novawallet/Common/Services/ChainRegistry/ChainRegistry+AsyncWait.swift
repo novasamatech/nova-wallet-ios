@@ -31,15 +31,58 @@ extension ChainRegistryProtocol {
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
-    func asyncWaitChainAsset(
-        for chainAssetId: ChainAssetId
-    ) -> CompoundOperationWrapper<ChainAsset?> {
-        let chainWrapper = asyncWaitChainWrapper(for: chainAssetId.chainId)
+    func asyncWaitChainOrErrorWrapper(
+        for chainId: ChainModel.Id,
+        workQueue: DispatchQueue = .global()
+    ) -> CompoundOperationWrapper<ChainModel> {
+        let wrapper = asyncWaitChainWrapper(for: chainId, workQueue: workQueue)
 
-        let mappingOperation = ClosureOperation<ChainAsset?> {
-            let chain = try chainWrapper.targetOperation.extractNoCancellableResultData()
+        let mappingOperation = ClosureOperation<ChainModel> {
+            try wrapper.targetOperation.extractNoCancellableResultData().mapOrThrow(
+                ChainRegistryError.noChain(chainId)
+            )
+        }
 
-            return chain?.chainAsset(for: chainAssetId.assetId)
+        mappingOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper.insertingTail(operation: mappingOperation)
+    }
+
+    func asyncWaitChainAssetOrError(
+        for chainAssetId: ChainAssetId,
+        workQueue: DispatchQueue = .global()
+    ) -> CompoundOperationWrapper<ChainAsset> {
+        let chainWrapper = asyncWaitChainWrapper(for: chainAssetId.chainId, workQueue: workQueue)
+
+        let mappingOperation = ClosureOperation<ChainAsset> {
+            let chain = try chainWrapper.targetOperation.extractNoCancellableResultData().mapOrThrow(
+                ChainRegistryError.noChain(chainAssetId.chainId)
+            )
+
+            return try chain.chainAsset(for: chainAssetId.assetId).mapOrThrow(
+                ChainRegistryError.noChainAsset(chainAssetId)
+            )
+        }
+
+        mappingOperation.addDependency(chainWrapper.targetOperation)
+
+        return chainWrapper.insertingTail(operation: mappingOperation)
+    }
+
+    func asyncWaitUtilityAssetOrError(
+        for chainId: ChainModel.Id,
+        workQueue: DispatchQueue = .global()
+    ) -> CompoundOperationWrapper<ChainAsset> {
+        let chainWrapper = asyncWaitChainWrapper(for: chainId, workQueue: workQueue)
+
+        let mappingOperation = ClosureOperation<ChainAsset> {
+            let chain = try chainWrapper.targetOperation.extractNoCancellableResultData().mapOrThrow(
+                ChainRegistryError.noChain(chainId)
+            )
+
+            return try chain.utilityChainAsset().mapOrThrow(
+                ChainRegistryError.noUtilityAsset(chainId)
+            )
         }
 
         mappingOperation.addDependency(chainWrapper.targetOperation)

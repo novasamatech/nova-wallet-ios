@@ -23,6 +23,16 @@ final class HydraStableswapExchangeEdge: AssetsHydraExchangeEdge {
     }
 }
 
+extension HydraStableswapExchangeEdge: AssetsHydraExchangeEdgeProtocol {
+    var routeComponent: HydraDx.RemoteSwapRoute.Component {
+        .init(
+            assetIn: remoteSwapPair.assetIn,
+            assetOut: remoteSwapPair.assetOut,
+            type: .stableswap(poolAsset)
+        )
+    }
+}
+
 extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
     var weight: Int { 1 }
 

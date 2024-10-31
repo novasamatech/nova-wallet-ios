@@ -1,17 +1,15 @@
 import Foundation
 import SubstrateSdk
 
-enum HydraExtrinsicConverter {
+enum HydraExchangeExtrinsicConverter {
     static func addingOperation(
-        from params: HydraSwapParams,
+        from params: HydraExchangeSwapParams,
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         var currentBuilder = builder
 
         if let updateReferralCall = params.updateReferral {
-            currentBuilder = try currentBuilder
-                .with(batchType: .ignoreFails)
-                .adding(call: updateReferralCall.runtimeCall())
+            currentBuilder = try currentBuilder.adding(call: updateReferralCall.runtimeCall())
         }
 
         switch params.swap {
