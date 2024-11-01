@@ -10,7 +10,7 @@ final class HydraStableswapExchangeEdge: AssetsHydraExchangeEdge {
         destination: ChainAssetId,
         remoteSwapPair: HydraDx.RemoteSwapPair,
         poolAsset: HydraDx.AssetId,
-        host: HydraSwapHostProtocol,
+        host: HydraExchangeHostProtocol,
         quoteFactory: HydraStableswapQuoteFactory
     ) {
         self.quoteFactory = quoteFactory

@@ -2,13 +2,13 @@ import Foundation
 import Operation_iOS
 
 final class AssetsHydraXYKExchange {
-    let host: HydraSwapHostProtocol
+    let host: HydraExchangeHostProtocol
     let tokensFactory: HydraXYKPoolTokensFactory
     let quoteFactory: HydraXYKSwapQuoteFactory
     let logger: LoggerProtocol
 
     init(
-        host: HydraSwapHostProtocol,
+        host: HydraExchangeHostProtocol,
         tokensFactory: HydraXYKPoolTokensFactory,
         quoteFactory: HydraXYKSwapQuoteFactory,
         logger: LoggerProtocol

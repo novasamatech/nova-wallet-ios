@@ -4,11 +4,11 @@ import Operation_iOS
 final class AssetsHydraOmnipoolExchange {
     let tokensFactory: HydraOmnipoolTokensFactory
     let quoteFactory: HydraOmnipoolQuoteFactory
-    let host: HydraSwapHostProtocol
+    let host: HydraExchangeHostProtocol
     let logger: LoggerProtocol
 
     init(
-        host: HydraSwapHostProtocol,
+        host: HydraExchangeHostProtocol,
         tokensFactory: HydraOmnipoolTokensFactory,
         quoteFactory: HydraOmnipoolQuoteFactory,
         logger: LoggerProtocol

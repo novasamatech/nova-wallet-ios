@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 
-protocol HydraSwapHostProtocol {
+protocol HydraExchangeHostProtocol {
     var chain: ChainModel { get }
     var selectedAccount: ChainAccountResponse { get }
     var extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol { get }
@@ -12,7 +12,7 @@ protocol HydraSwapHostProtocol {
     var operationQueue: OperationQueue { get }
 }
 
-final class HydraSwapHost: HydraSwapHostProtocol {
+final class HydraExchangeHost: HydraExchangeHostProtocol {
     let chain: ChainModel
     let selectedAccount: ChainAccountResponse
     let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol

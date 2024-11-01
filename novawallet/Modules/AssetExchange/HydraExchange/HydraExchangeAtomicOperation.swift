@@ -8,7 +8,7 @@ enum HydraExchangeAtomicOperationError: Error {
 final class HydraExchangeAtomicOperation {
     typealias Edge = AssetsHydraExchangeEdgeProtocol & AssetExchangableGraphEdge
 
-    let host: HydraSwapHostProtocol
+    let host: HydraExchangeHostProtocol
     let edges: [any Edge]
     let operationArgs: AssetExchangeAtomicOperationArgs
 
@@ -25,7 +25,7 @@ final class HydraExchangeAtomicOperation {
     }
 
     init(
-        host: HydraSwapHostProtocol,
+        host: HydraExchangeHostProtocol,
         operationArgs: AssetExchangeAtomicOperationArgs,
         edges: [any Edge]
     ) {

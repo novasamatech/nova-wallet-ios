@@ -11,7 +11,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
     let substrateStorageFacade: StorageFacadeProtocol
     let userStorageFacade: StorageFacadeProtocol
 
-    private var hosts: [ChainModel.Id: HydraSwapHostProtocol] = [:]
+    private var hosts: [ChainModel.Id: HydraExchangeHostProtocol] = [:]
 
     init(
         selectedWallet: MetaAccountModel,
@@ -33,7 +33,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
-    private func createOmnipoolExchange(from host: HydraSwapHostProtocol) -> AssetsHydraOmnipoolExchange {
+    private func createOmnipoolExchange(from host: HydraExchangeHostProtocol) -> AssetsHydraOmnipoolExchange {
         let flowState = HydraOmnipoolFlowState(
             account: host.selectedAccount,
             chain: host.chain,
@@ -55,7 +55,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
-    private func createStableswapExchange(from host: HydraSwapHostProtocol) -> AssetsHydraStableswapExchange {
+    private func createStableswapExchange(from host: HydraExchangeHostProtocol) -> AssetsHydraStableswapExchange {
         let flowState = HydraStableswapFlowState(
             account: host.selectedAccount,
             chain: host.chain,
@@ -77,7 +77,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
-    private func createXYKExchange(from host: HydraSwapHostProtocol) -> AssetsHydraXYKExchange {
+    private func createXYKExchange(from host: HydraExchangeHostProtocol) -> AssetsHydraXYKExchange {
         let flowState = HydraXYKFlowState(
             account: host.selectedAccount,
             chain: host.chain,
@@ -104,7 +104,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         account: ChainAccountResponse,
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol
-    ) -> HydraSwapHostProtocol {
+    ) -> HydraExchangeHostProtocol {
         if let host = hosts[chain.chainId] {
             return host
         }
@@ -137,7 +137,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             runtimeProvider: runtimeService
         )
 
-        let host = HydraSwapHost(
+        let host = HydraExchangeHost(
             chain: chain,
             selectedAccount: account,
             extrinsicOperationFactory: extrinsicOperationFactory,
