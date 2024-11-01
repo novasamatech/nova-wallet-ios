@@ -37,4 +37,15 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
 
         return quoteWrapper.insertingTail(operation: mappingOperation)
     }
+
+    func beginOperation(for _: AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol {
+        throw CommonError.undefined
+    }
+
+    func appendToOperation(
+        _: AssetExchangeAtomicOperationProtocol,
+        args _: AssetExchangeAtomicOperationArgs
+    ) -> AssetExchangeAtomicOperationProtocol? {
+        nil
+    }
 }

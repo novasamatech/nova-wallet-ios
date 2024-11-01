@@ -9,14 +9,17 @@ class AssetsHydraExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
     let remoteSwapPair: HydraDx.RemoteSwapPair
+    let host: HydraSwapHostProtocol
 
     init(
         origin: ChainAssetId,
         destination: ChainAssetId,
-        remoteSwapPair: HydraDx.RemoteSwapPair
+        remoteSwapPair: HydraDx.RemoteSwapPair,
+        host: HydraSwapHostProtocol
     ) {
         self.origin = origin
         self.destination = destination
         self.remoteSwapPair = remoteSwapPair
+        self.host = host
     }
 }

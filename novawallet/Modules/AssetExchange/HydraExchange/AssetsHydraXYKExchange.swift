@@ -2,30 +2,27 @@ import Foundation
 import Operation_iOS
 
 final class AssetsHydraXYKExchange {
-    let chain: ChainModel
+    let host: HydraSwapHostProtocol
     let tokensFactory: HydraXYKPoolTokensFactory
     let quoteFactory: HydraXYKSwapQuoteFactory
-    let runtimeProvider: RuntimeProviderProtocol
     let logger: LoggerProtocol
 
     init(
-        chain: ChainModel,
+        host: HydraSwapHostProtocol,
         tokensFactory: HydraXYKPoolTokensFactory,
         quoteFactory: HydraXYKSwapQuoteFactory,
-        runtimeProvider: RuntimeProviderProtocol,
         logger: LoggerProtocol
     ) {
-        self.chain = chain
+        self.host = host
         self.tokensFactory = tokensFactory
         self.quoteFactory = quoteFactory
-        self.runtimeProvider = runtimeProvider
         self.logger = logger
     }
 }
 
 extension AssetsHydraXYKExchange: AssetsExchangeProtocol {
     func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
         let remotePairsWrapper = tokensFactory.fetchAllRemotePairsWrapper(dependingOn: codingFactoryOperation)
 
         remotePairsWrapper.addDependency(operations: [codingFactoryOperation])
@@ -37,7 +34,7 @@ extension AssetsHydraXYKExchange: AssetsExchangeProtocol {
 
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
                 remoteAssets: remoteAssets,
-                chain: self.chain,
+                chain: self.host.chain,
                 codingFactory: codingFactory,
                 failureClosure: { self.logger.error("Token \($0) conversion failed: \($1)") }
             )
@@ -53,6 +50,7 @@ extension AssetsHydraXYKExchange: AssetsExchangeProtocol {
                     origin: localAsset1,
                     destination: localAsset2,
                     remoteSwapPair: .init(assetIn: remotePair.asset1, assetOut: remotePair.asset2),
+                    host: self.host,
                     quoteFactory: self.quoteFactory
                 )
 
@@ -60,6 +58,7 @@ extension AssetsHydraXYKExchange: AssetsExchangeProtocol {
                     origin: localAsset2,
                     destination: localAsset1,
                     remoteSwapPair: .init(assetIn: remotePair.asset2, assetOut: remotePair.asset1),
+                    host: self.host,
                     quoteFactory: self.quoteFactory
                 )
 

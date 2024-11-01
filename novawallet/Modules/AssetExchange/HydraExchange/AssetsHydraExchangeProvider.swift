@@ -8,16 +8,24 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
     private var supportedChains: [ChainModel.Id: ChainModel]?
     let operationQueue: OperationQueue
     let selectedWallet: MetaAccountModel
+    let substrateStorageFacade: StorageFacadeProtocol
+    let userStorageFacade: StorageFacadeProtocol
+
+    private var hosts: [ChainModel.Id: HydraSwapHostProtocol] = [:]
 
     init(
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
+        self.substrateStorageFacade = substrateStorageFacade
+        self.userStorageFacade = userStorageFacade
 
         super.init(
             syncQueue: DispatchQueue(label: "io.novawallet.hydraexchangeprovider.\(UUID().uuidString)"),
@@ -25,88 +33,124 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
-    private func createOmnipoolExchange(
-        for chain: ChainModel,
-        selectedAccount: ChainAccountResponse,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeProviderProtocol
-    ) -> AssetsHydraOmnipoolExchange {
+    private func createOmnipoolExchange(from host: HydraSwapHostProtocol) -> AssetsHydraOmnipoolExchange {
         let flowState = HydraOmnipoolFlowState(
-            account: selectedAccount,
-            chain: chain,
-            connection: connection,
-            runtimeProvider: runtimeService,
-            operationQueue: operationQueue
+            account: host.selectedAccount,
+            chain: host.chain,
+            connection: host.connection,
+            runtimeProvider: host.runtimeService,
+            operationQueue: host.operationQueue
         )
 
         return AssetsHydraOmnipoolExchange(
-            chain: chain,
+            host: host,
             tokensFactory: HydraOmnipoolTokensFactory(
-                chain: chain,
-                runtimeService: runtimeService,
-                connection: connection,
-                operationQueue: operationQueue
+                chain: host.chain,
+                runtimeService: host.runtimeService,
+                connection: host.connection,
+                operationQueue: host.operationQueue
             ),
             quoteFactory: HydraOmnipoolQuoteFactory(flowState: flowState),
-            runtimeService: runtimeService,
             logger: logger
         )
     }
 
-    private func createStableswapExchange(
-        for chain: ChainModel,
-        selectedAccount: ChainAccountResponse,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeProviderProtocol
-    ) -> AssetsHydraStableswapExchange {
+    private func createStableswapExchange(from host: HydraSwapHostProtocol) -> AssetsHydraStableswapExchange {
         let flowState = HydraStableswapFlowState(
-            account: selectedAccount,
-            chain: chain,
-            connection: connection,
-            runtimeProvider: runtimeService,
-            operationQueue: operationQueue
+            account: host.selectedAccount,
+            chain: host.chain,
+            connection: host.connection,
+            runtimeProvider: host.runtimeService,
+            operationQueue: host.operationQueue
         )
 
         return AssetsHydraStableswapExchange(
-            chain: chain,
+            host: host,
             swapFactory: .init(
-                chain: chain,
-                runtimeService: runtimeService,
-                connection: connection,
-                operationQueue: operationQueue
+                chain: host.chain,
+                runtimeService: host.runtimeService,
+                connection: host.connection,
+                operationQueue: host.operationQueue
             ),
             quoteFactory: HydraStableswapQuoteFactory(flowState: flowState),
-            runtimeService: runtimeService,
             logger: logger
         )
     }
 
-    private func createXYKExchange(
+    private func createXYKExchange(from host: HydraSwapHostProtocol) -> AssetsHydraXYKExchange {
+        let flowState = HydraXYKFlowState(
+            account: host.selectedAccount,
+            chain: host.chain,
+            connection: host.connection,
+            runtimeProvider: host.runtimeService,
+            operationQueue: host.operationQueue
+        )
+
+        return AssetsHydraXYKExchange(
+            host: host,
+            tokensFactory: .init(
+                chain: host.chain,
+                runtimeService: host.runtimeService,
+                connection: host.connection,
+                operationQueue: host.operationQueue
+            ),
+            quoteFactory: .init(flowState: flowState),
+            logger: logger
+        )
+    }
+
+    private func setupHost(
         for chain: ChainModel,
-        selectedAccount: ChainAccountResponse,
+        account: ChainAccountResponse,
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol
-    ) -> AssetsHydraXYKExchange {
-        let flowState = HydraXYKFlowState(
-            account: selectedAccount,
-            chain: chain,
+    ) -> HydraSwapHostProtocol {
+        if let host = hosts[chain.chainId] {
+            return host
+        }
+
+        let extrinsicOperationFactory = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeService,
+            engine: connection,
+            operationQueue: operationQueue,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
+        ).createOperationFactory(account: account, chain: chain)
+
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: account.metaId,
+            accountResponse: account
+        )
+
+        let swapParamsService = HydraSwapParamsService(
+            accountId: account.accountId,
             connection: connection,
             runtimeProvider: runtimeService,
             operationQueue: operationQueue
         )
 
-        return AssetsHydraXYKExchange(
+        swapParamsService.setup()
+
+        let extrinsicParamsFactory = HydraExchangeExtrinsicParamsFactory(
             chain: chain,
-            tokensFactory: .init(
-                chain: chain,
-                runtimeService: runtimeService,
-                connection: connection,
-                operationQueue: operationQueue
-            ),
-            quoteFactory: .init(flowState: flowState),
-            runtimeProvider: runtimeService,
-            logger: logger
+            swapService: swapParamsService,
+            runtimeProvider: runtimeService
         )
+
+        let host = HydraSwapHost(
+            chain: chain,
+            selectedAccount: account,
+            extrinsicOperationFactory: extrinsicOperationFactory,
+            extrinsicParamsFactory: extrinsicParamsFactory,
+            runtimeService: runtimeService,
+            connection: connection,
+            signingWrapper: signingWrapper,
+            operationQueue: operationQueue
+        )
+
+        hosts[chain.chainId] = host
+
+        return host
     }
 
     private func updateStateIfNeeded() {
@@ -123,26 +167,18 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
                 return [AssetsExchangeProtocol]()
             }
 
-            let omnipoolExchange = createOmnipoolExchange(
+            let swapHost = setupHost(
                 for: chain,
-                selectedAccount: selectedAccount,
+                account: selectedAccount,
                 connection: connection,
                 runtimeService: runtimeService
             )
 
-            let stableswapExchange = createStableswapExchange(
-                for: chain,
-                selectedAccount: selectedAccount,
-                connection: connection,
-                runtimeService: runtimeService
-            )
+            let omnipoolExchange = createOmnipoolExchange(from: swapHost)
 
-            let xykExchange = createXYKExchange(
-                for: chain,
-                selectedAccount: selectedAccount,
-                connection: connection,
-                runtimeService: runtimeService
-            )
+            let stableswapExchange = createStableswapExchange(from: swapHost)
+
+            let xykExchange = createXYKExchange(from: swapHost)
 
             return [omnipoolExchange, stableswapExchange, xykExchange]
         }

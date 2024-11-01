@@ -8,12 +8,19 @@ class AnyAssetExchangeEdge {
     private let fetchOrigin: () -> ChainAssetId
     private let fetchDestination: () -> ChainAssetId
     private let fetchQuote: (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<Balance>
+    private let beginOperationClosure: (AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol
+    private let appendToOperationClosure: (
+        AssetExchangeAtomicOperationProtocol,
+        AssetExchangeAtomicOperationArgs
+    ) -> AssetExchangeAtomicOperationProtocol?
 
     init(_ edge: any AssetExchangableGraphEdge) {
         fetchWeight = { edge.weight }
         fetchOrigin = { edge.origin }
         fetchDestination = { edge.destination }
         fetchQuote = edge.quote
+        beginOperationClosure = edge.beginOperation
+        appendToOperationClosure = edge.appendToOperation
     }
 }
 
@@ -25,6 +32,17 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
     var origin: ChainAssetId { fetchOrigin() }
     var destination: ChainAssetId { fetchDestination() }
     var weight: Int { fetchWeight() }
+
+    func beginOperation(for args: AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol {
+        try beginOperationClosure(args)
+    }
+
+    func appendToOperation(
+        _ currentOperation: AssetExchangeAtomicOperationProtocol,
+        args: AssetExchangeAtomicOperationArgs
+    ) -> AssetExchangeAtomicOperationProtocol? {
+        appendToOperation(currentOperation, args: args)
+    }
 }
 
 extension AnyAssetExchangeEdge: Hashable {

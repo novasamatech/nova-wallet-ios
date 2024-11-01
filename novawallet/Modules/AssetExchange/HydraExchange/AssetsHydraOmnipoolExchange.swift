@@ -2,30 +2,27 @@ import Foundation
 import Operation_iOS
 
 final class AssetsHydraOmnipoolExchange {
-    let chain: ChainModel
     let tokensFactory: HydraOmnipoolTokensFactory
     let quoteFactory: HydraOmnipoolQuoteFactory
-    let runtimeService: RuntimeProviderProtocol
+    let host: HydraSwapHostProtocol
     let logger: LoggerProtocol
 
     init(
-        chain: ChainModel,
+        host: HydraSwapHostProtocol,
         tokensFactory: HydraOmnipoolTokensFactory,
         quoteFactory: HydraOmnipoolQuoteFactory,
-        runtimeService: RuntimeProviderProtocol,
         logger: LoggerProtocol
     ) {
-        self.chain = chain
         self.tokensFactory = tokensFactory
         self.quoteFactory = quoteFactory
-        self.runtimeService = runtimeService
+        self.host = host
         self.logger = logger
     }
 }
 
 extension AssetsHydraOmnipoolExchange: AssetsExchangeProtocol {
     func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
-        let codingFactoryOpertion = runtimeService.fetchCoderFactoryOperation()
+        let codingFactoryOpertion = host.runtimeService.fetchCoderFactoryOperation()
         let remoteAssetsWrapper = tokensFactory.fetchAllRemoteAssets()
 
         let mappingOperation = ClosureOperation<[any AssetExchangableGraphEdge]> {
@@ -34,7 +31,7 @@ extension AssetsHydraOmnipoolExchange: AssetsExchangeProtocol {
 
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
                 remoteAssets: remoteAssets,
-                chain: self.chain,
+                chain: self.host.chain,
                 codingFactory: codingFactory,
                 failureClosure: { self.logger.error("Token \($0) conversion failed: \($1)") }
             )
@@ -57,6 +54,7 @@ extension AssetsHydraOmnipoolExchange: AssetsExchangeProtocol {
                         origin: localAssetIn,
                         destination: localAssetOut,
                         remoteSwapPair: .init(assetIn: remoteAssetIn, assetOut: remoteAssetOut),
+                        host: self.host,
                         quoteFactory: self.quoteFactory
                     )
 

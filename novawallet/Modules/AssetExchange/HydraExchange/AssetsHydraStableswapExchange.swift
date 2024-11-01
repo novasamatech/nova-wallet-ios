@@ -4,28 +4,25 @@ import Operation_iOS
 final class AssetsHydraStableswapExchange {
     let swapFactory: HydraStableswapTokensFactory
     let quoteFactory: HydraStableswapQuoteFactory
-    let chain: ChainModel
-    let runtimeService: RuntimeProviderProtocol
+    let host: HydraSwapHostProtocol
     let logger: LoggerProtocol
 
     init(
-        chain: ChainModel,
+        host: HydraSwapHostProtocol,
         swapFactory: HydraStableswapTokensFactory,
         quoteFactory: HydraStableswapQuoteFactory,
-        runtimeService: RuntimeProviderProtocol,
         logger: LoggerProtocol
     ) {
-        self.chain = chain
+        self.host = host
         self.swapFactory = swapFactory
         self.quoteFactory = quoteFactory
-        self.runtimeService = runtimeService
         self.logger = logger
     }
 }
 
 extension AssetsHydraStableswapExchange: AssetsExchangeProtocol {
     func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
-        let codingFactoryOpertion = runtimeService.fetchCoderFactoryOperation()
+        let codingFactoryOpertion = host.runtimeService.fetchCoderFactoryOperation()
         let allPoolsWrapper = swapFactory.fetchRemotePools()
 
         let mappingOperation = ClosureOperation<[any AssetExchangableGraphEdge]> {
@@ -36,7 +33,7 @@ extension AssetsHydraStableswapExchange: AssetsExchangeProtocol {
 
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
                 remoteAssets: allRemoteAssets,
-                chain: self.chain,
+                chain: self.host.chain,
                 codingFactory: codingFactory,
                 failureClosure: { self.logger.error("Token \($0) conversion failed: \($1)") }
             )
@@ -64,6 +61,7 @@ extension AssetsHydraStableswapExchange: AssetsExchangeProtocol {
                             destination: localAssetOut,
                             remoteSwapPair: .init(assetIn: remoteAssetIn, assetOut: remoteAssetOut),
                             poolAsset: remotePoolAsset,
+                            host: self.host,
                             quoteFactory: self.quoteFactory
                         )
 

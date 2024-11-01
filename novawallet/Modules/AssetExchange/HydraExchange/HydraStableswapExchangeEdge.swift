@@ -10,6 +10,7 @@ final class HydraStableswapExchangeEdge: AssetsHydraExchangeEdge {
         destination: ChainAssetId,
         remoteSwapPair: HydraDx.RemoteSwapPair,
         poolAsset: HydraDx.AssetId,
+        host: HydraSwapHostProtocol,
         quoteFactory: HydraStableswapQuoteFactory
     ) {
         self.quoteFactory = quoteFactory
@@ -18,7 +19,8 @@ final class HydraStableswapExchangeEdge: AssetsHydraExchangeEdge {
         super.init(
             origin: origin,
             destination: destination,
-            remoteSwapPair: remoteSwapPair
+            remoteSwapPair: remoteSwapPair,
+            host: host
         )
     }
 }
@@ -49,5 +51,20 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
                 direction: direction
             )
         )
+    }
+
+    func beginOperation(for args: AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol {
+        HydraExchangeAtomicOperation(
+            host: host,
+            operationArgs: args,
+            edges: [self]
+        )
+    }
+
+    func appendToOperation(
+        _: AssetExchangeAtomicOperationProtocol,
+        args _: AssetExchangeAtomicOperationArgs
+    ) -> AssetExchangeAtomicOperationProtocol? {
+        nil
     }
 }
