@@ -5,11 +5,18 @@ final class AssetHubExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
     let quoteFactory: AssetHubSwapOperationFactoryProtocol
+    let host: AssetHubExchangeHostProtocol
 
-    init(origin: ChainAssetId, destination: ChainAssetId, quoteFactory: AssetHubSwapOperationFactoryProtocol) {
+    init(
+        origin: ChainAssetId,
+        destination: ChainAssetId,
+        quoteFactory: AssetHubSwapOperationFactoryProtocol,
+        host: AssetHubExchangeHostProtocol
+    ) {
         self.origin = origin
         self.destination = destination
         self.quoteFactory = quoteFactory
+        self.host = host
     }
 }
 
@@ -38,8 +45,12 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
         return quoteWrapper.insertingTail(operation: mappingOperation)
     }
 
-    func beginOperation(for _: AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol {
-        throw CommonError.undefined
+    func beginOperation(for args: AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol {
+        AssetHubExchangeAtomicOperation(
+            host: host,
+            operationArgs: args,
+            edge: self
+        )
     }
 
     func appendToOperation(

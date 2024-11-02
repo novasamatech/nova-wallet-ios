@@ -4,18 +4,16 @@ import SubstrateSdk
 
 final class AssetsHubExchange {
     let swapFactory: AssetHubSwapOperationFactoryProtocol
+    let host: AssetHubExchangeHostProtocol
 
-    init(
-        chain: ChainModel,
-        runtimeService: RuntimeProviderProtocol,
-        connection: JSONRPCEngine,
-        operationQueue: OperationQueue
-    ) {
+    init(host: AssetHubExchangeHostProtocol) {
+        self.host = host
+
         swapFactory = AssetHubSwapOperationFactory(
-            chain: chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
+            chain: host.chain,
+            runtimeService: host.runtimeService,
+            connection: host.connection,
+            operationQueue: host.operationQueue
         )
     }
 
@@ -31,7 +29,12 @@ final class AssetsHubExchange {
                 let origin = keyValue.key
 
                 return keyValue.value.map { destination in
-                    AssetHubExchangeEdge(origin: origin, destination: destination, quoteFactory: swapFactory)
+                    AssetHubExchangeEdge(
+                        origin: origin,
+                        destination: destination,
+                        quoteFactory: swapFactory,
+                        host: self.host
+                    )
                 }
             }
         }

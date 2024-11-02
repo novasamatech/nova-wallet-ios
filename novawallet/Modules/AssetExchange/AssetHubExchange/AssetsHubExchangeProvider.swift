@@ -6,13 +6,25 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
 
     private var supportedChains: [ChainModel.Id: ChainModel]?
     let operationQueue: OperationQueue
+    let wallet: MetaAccountModel
+    let signingWrapperFactory: SigningWrapperFactoryProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
+    let userStorageFacade: StorageFacadeProtocol
 
     init(
+        wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        signingWrapperFactory: SigningWrapperFactoryProtocol,
+        userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.wallet = wallet
         self.chainRegistry = chainRegistry
+        self.signingWrapperFactory = signingWrapperFactory
+        self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
 
         super.init(
@@ -29,17 +41,36 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
         let exchanges: [AssetsExchangeProtocol] = supportedChains.values.compactMap { chain in
             guard
                 let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
-                let connection = chainRegistry.getConnection(for: chain.chainId) else {
-                logger.warning("Connection or runtime unavailable for \(chain.name)")
+                let connection = chainRegistry.getConnection(for: chain.chainId),
+                let selectedAccount = wallet.fetch(for: chain.accountRequest()) else {
+                logger.warning("Wallet, Connection or runtime unavailable for \(chain.name)")
                 return nil
             }
 
-            return AssetsHubExchange(
+            let extrinsicOperationFactory = ExtrinsicServiceFactory(
+                runtimeRegistry: runtimeService,
+                engine: connection,
+                operationQueue: operationQueue,
+                userStorageFacade: userStorageFacade,
+                substrateStorageFacade: substrateStorageFacade
+            ).createOperationFactory(account: selectedAccount, chain: chain)
+
+            let signingWrapper = signingWrapperFactory.createSigningWrapper(
+                for: selectedAccount.metaId,
+                accountResponse: selectedAccount
+            )
+
+            let host = AssetHubExchangeHost(
                 chain: chain,
+                selectedAccount: selectedAccount,
+                extrinsicOperationFactory: extrinsicOperationFactory,
+                signingWrapper: signingWrapper,
                 runtimeService: runtimeService,
                 connection: connection,
                 operationQueue: operationQueue
             )
+
+            return AssetsHubExchange(host: host)
         }
 
         updateState(with: exchanges)

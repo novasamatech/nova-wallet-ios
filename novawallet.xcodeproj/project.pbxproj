@@ -319,6 +319,7 @@
 		0C5FA9A72B8313950077934C /* String+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C5FA9A62B8313950077934C /* String+Search.swift */; };
 		0C6108262CD5227900909928 /* HydraExchangeHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108252CD5227900909928 /* HydraExchangeHost.swift */; };
 		0C6108282CD53CDE00909928 /* CrosschainExchangeHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108272CD53CDE00909928 /* CrosschainExchangeHost.swift */; };
+		0C61082A2CD5DE9500909928 /* AssetHubExchangeHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108292CD5DE9500909928 /* AssetHubExchangeHost.swift */; };
 		0C626D1B2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */; };
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
@@ -5457,6 +5458,7 @@
 		0C5FA9A62B8313950077934C /* String+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Search.swift"; sourceTree = "<group>"; };
 		0C6108252CD5227900909928 /* HydraExchangeHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeHost.swift; sourceTree = "<group>"; };
 		0C6108272CD53CDE00909928 /* CrosschainExchangeHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainExchangeHost.swift; sourceTree = "<group>"; };
+		0C6108292CD5DE9500909928 /* AssetHubExchangeHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeHost.swift; sourceTree = "<group>"; };
 		0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingMainPresenterFactory+NominationPools.swift"; sourceTree = "<group>"; };
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
@@ -10678,6 +10680,7 @@
 				0C2DA8A12CC21E5F001F79C8 /* AssetHubExchangeEdge.swift */,
 				0C3272942CD24F9600FC1B42 /* AssetHubExchangeAtomicOperation.swift */,
 				0C32729B2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift */,
+				0C6108292CD5DE9500909928 /* AssetHubExchangeHost.swift */,
 			);
 			path = AssetHubExchange;
 			sourceTree = "<group>";
@@ -25279,6 +25282,7 @@
 				771901A62AE8FF7E00D9C918 /* SwapInfoViewCell.swift in Sources */,
 				8428765C24ADDE0200D91AD8 /* SettingsViewController.swift in Sources */,
 				84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */,
+				0C61082A2CD5DE9500909928 /* AssetHubExchangeHost.swift in Sources */,
 				8433B34A29B63661005E5D0F /* ExtrinsicSplitter.swift in Sources */,
 				843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */,
 				0C3205DA2A896029002EB914 /* EvmConstantNonceProvider.swift in Sources */,

@@ -2,80 +2,49 @@ import Foundation
 import Operation_iOS
 
 final class AssetHubExchangeAtomicOperation {
+    let host: AssetHubExchangeHostProtocol
     let edge: any AssetExchangableGraphEdge
-    let wallet: MetaAccountModel
     let operationArgs: AssetExchangeAtomicOperationArgs
-    let chainRegistry: ChainRegistryProtocol
-    let signingWrapperFactory: SigningWrapperFactoryProtocol
-    let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
-    let operationQueue: OperationQueue
 
     init(
-        wallet: MetaAccountModel,
+        host: AssetHubExchangeHostProtocol,
         operationArgs: AssetExchangeAtomicOperationArgs,
-        chainRegistry: ChainRegistryProtocol,
-        signingWrapperFactory: SigningWrapperFactoryProtocol,
-        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
-        edge: any AssetExchangableGraphEdge,
-        operationQueue: OperationQueue
+        edge: any AssetExchangableGraphEdge
     ) {
-        self.wallet = wallet
+        self.host = host
         self.operationArgs = operationArgs
-        self.chainRegistry = chainRegistry
-        self.signingWrapperFactory = signingWrapperFactory
-        self.extrinsicServiceFactory = extrinsicServiceFactory
         self.edge = edge
-        self.operationQueue = operationQueue
     }
 
-    private func createFeeWrapper(
-        dependingOn chainOperation: BaseOperation<ChainModel?>,
-        selectedAccountOperation: BaseOperation<MetaChainAccountResponse>
-    ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        OperationCombiningService<ExtrinsicFeeProtocol>.compoundNonOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            let optOriginChain = try chainOperation.extractNoCancellableResultData()
-            let originChain = try optOriginChain.mapOrThrow(ChainRegistryError.noChain(self.edge.origin.chainId))
+    private func createFeeWrapper() -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
+        // TODO: Check whether we need to change direction
+        let callArgs = AssetConversion.CallArgs(
+            assetIn: edge.origin,
+            amountIn: operationArgs.swapLimit.amountIn,
+            assetOut: edge.destination,
+            amountOut: operationArgs.swapLimit.amountOut,
+            receiver: host.selectedAccount.accountId,
+            direction: operationArgs.swapLimit.direction,
+            slippage: operationArgs.swapLimit.slippage,
+            context: nil
+        )
 
-            let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(for: originChain.chainId)
+        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
 
-            let selectedAccount = try selectedAccountOperation.extractNoCancellableResultData()
+        let feeWrapper = host.extrinsicOperationFactory.estimateFeeOperation({ builder in
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            // TODO: Check whether we need to change direction
-            let callArgs = AssetConversion.CallArgs(
-                assetIn: self.edge.origin,
-                amountIn: self.operationArgs.swapLimit.amountIn,
-                assetOut: self.edge.destination,
-                amountOut: self.operationArgs.swapLimit.amountOut,
-                receiver: selectedAccount.chainAccount.accountId,
-                direction: self.operationArgs.swapLimit.direction,
-                slippage: self.operationArgs.swapLimit.slippage,
-                context: nil
+            return try AssetHubExtrinsicConverter.addingOperation(
+                to: builder,
+                chain: self.host.chain,
+                args: callArgs,
+                codingFactory: codingFactory
             )
+        }, payingIn: operationArgs.feeAsset)
 
-            let extrinsicOperationFactory = self.extrinsicServiceFactory.createOperationFactory(
-                account: selectedAccount.chainAccount,
-                chain: originChain
-            )
+        feeWrapper.addDependency(operations: [codingFactoryOperation])
 
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-            let feeWrapper = extrinsicOperationFactory.estimateFeeOperation({ builder in
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-                return try AssetHubExtrinsicConverter.addingOperation(
-                    to: builder,
-                    chain: originChain,
-                    args: callArgs,
-                    codingFactory: codingFactory
-                )
-            }, payingIn: self.operationArgs.feeAsset)
-
-            feeWrapper.addDependency(operations: [codingFactoryOperation])
-
-            return feeWrapper.insertingHead(operations: [codingFactoryOperation])
-        }
+        return feeWrapper.insertingHead(operations: [codingFactoryOperation])
     }
 }
 
@@ -87,17 +56,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
     }
 
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
-        let originChainId = edge.origin.chainId
-        let chainWrapper = chainRegistry.asyncWaitChainWrapper(for: originChainId)
-        let selectedAccountWrapper = wallet.fetchChainAccountWrapper(for: originChainId, using: chainRegistry)
-
-        let feeWrapper = createFeeWrapper(
-            dependingOn: chainWrapper.targetOperation,
-            selectedAccountOperation: selectedAccountWrapper.targetOperation
-        )
-
-        feeWrapper.addDependency(wrapper: chainWrapper)
-        feeWrapper.addDependency(wrapper: selectedAccountWrapper)
+        let feeWrapper = createFeeWrapper()
 
         let mappingOperation = ClosureOperation<AssetExchangeOperationFee> {
             let extrinsicFee = try feeWrapper.targetOperation.extractNoCancellableResultData()
@@ -107,9 +66,6 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
 
         mappingOperation.addDependency(feeWrapper.targetOperation)
 
-        return feeWrapper
-            .insertingHead(operations: selectedAccountWrapper.allOperations)
-            .insertingHead(operations: chainWrapper.allOperations)
-            .insertingTail(operation: mappingOperation)
+        return feeWrapper.insertingTail(operation: mappingOperation)
     }
 }
