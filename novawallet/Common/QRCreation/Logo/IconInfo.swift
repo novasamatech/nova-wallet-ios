@@ -1,36 +1,36 @@
 import Foundation
 import UIKit
 
-struct QRLogoInfo {
+struct IconInfo {
     let size: CGSize
-    let type: QRLogoType?
+    let type: IconType?
 
     var url: URL? {
         type?.url
     }
 
-    func byChangingToLocal(_ image: UIImage) -> QRLogoInfo? {
+    func byChangingToLocal(_ image: UIImage) -> IconInfo? {
         switch type {
         case .remoteColored:
-            QRLogoInfo(
+            IconInfo(
                 size: size,
                 type: .localColored(image)
             )
         case .remoteTransparent:
-            QRLogoInfo(
+            IconInfo(
                 size: size,
                 type: .localTransparent(image)
             )
         default:
-            QRLogoInfo(
+            IconInfo(
                 size: size,
                 type: nil
             )
         }
     }
 
-    func withNoLogo() -> QRLogoInfo {
-        QRLogoInfo(
+    func withNoLogo() -> IconInfo {
+        IconInfo(
             size: size,
             type: nil
         )

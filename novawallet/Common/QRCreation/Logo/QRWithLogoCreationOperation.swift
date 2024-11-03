@@ -7,12 +7,12 @@ import QRCode
 final class QRWithLogoCreationOperation: BaseOperation<UIImage> {
     let payloadClosure: () throws -> Data
     let qrSize: CGSize
-    let logoInfo: QRLogoInfo?
+    let logoInfo: IconInfo?
 
     init(
         payload: Data,
         qrSize: CGSize,
-        logoInfo: QRLogoInfo? = nil
+        logoInfo: IconInfo? = nil
     ) {
         payloadClosure = { payload }
         self.qrSize = qrSize
@@ -23,7 +23,7 @@ final class QRWithLogoCreationOperation: BaseOperation<UIImage> {
 
     init(
         qrSize: CGSize,
-        logoInfo: QRLogoInfo? = nil,
+        logoInfo: IconInfo? = nil,
         payloadClosure: @escaping () throws -> Data
     ) {
         self.qrSize = qrSize

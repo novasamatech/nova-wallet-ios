@@ -10,7 +10,7 @@ enum QRCodeFactoryError: Error {
 protocol QRCodeWithLogoFactoryProtocol {
     func createQRCode(
         with payload: Data,
-        logoInfo: QRLogoInfo?,
+        logoInfo: IconInfo?,
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void,
         completion: @escaping (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void
@@ -30,18 +30,18 @@ final class QRCodeWithLogoFactory {
         }
     }
 
-    let imageManager: KingfisherManager
+    let iconRetrievingFactory: IconRetrieveOperationFactoryProtocol
     let operationQueue: OperationQueue
     let callbackQueue: DispatchQueue
     let logger: LoggerProtocol
 
     init(
-        imageManager: KingfisherManager = KingfisherManager.shared,
+        iconRetrievingFactory: IconRetrieveOperationFactoryProtocol,
         operationQueue: OperationQueue,
         callbackQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
-        self.imageManager = imageManager
+        self.iconRetrievingFactory = iconRetrievingFactory
         self.operationQueue = operationQueue
         self.callbackQueue = callbackQueue
         self.logger = logger
@@ -53,7 +53,7 @@ final class QRCodeWithLogoFactory {
 extension QRCodeWithLogoFactory: QRCodeWithLogoFactoryProtocol {
     func createQRCode(
         with payload: Data,
-        logoInfo: QRLogoInfo?,
+        logoInfo: IconInfo?,
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void,
         completion: @escaping (Result<QRCreationResult, Error>) -> Void
@@ -82,33 +82,21 @@ private extension QRCodeWithLogoFactory {
         let remoteLogo: Bool
     }
 
-    func checkCacheOperation(
-        in cache: ImageCache,
-        using logoInfo: QRLogoInfo?
-    ) -> ClosureOperation<Bool> {
-        ClosureOperation {
-            guard
-                let logoInfo,
-                let cacheKey = logoInfo.type?.cacheKey
-            else {
-                return false
-            }
-
-            let cachedType = cache.imageCachedType(forKey: cacheKey)
-
-            return cachedType.cached
+    func checkCacheOperation(using logoInfo: IconInfo?) -> BaseOperation<Bool> {
+        if let cacheKey = logoInfo?.type?.cacheKey {
+            iconRetrievingFactory.checkCacheOperation(using: cacheKey)
+        } else {
+            .createWithResult(false)
         }
     }
 
     func createQRWrapper(
         with payload: Data,
-        logoInfo: QRLogoInfo?,
+        logoInfo: IconInfo?,
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void
     ) -> CompoundOperationWrapper<QRCreationResult> {
-        let cache = imageManager.cache
-
-        let checkCacheOperation = checkCacheOperation(in: cache, using: logoInfo)
+        var checkCacheOperation = checkCacheOperation(using: logoInfo)
 
         let wrapper: CompoundOperationWrapper<QRCreationResult> = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -123,14 +111,12 @@ private extension QRCodeWithLogoFactory {
             return if !cached, usesCache {
                 createDownloadLogoQRWrapper(
                     payload: payload,
-                    downloader: imageManager.downloader,
                     logoInfo: logoInfo,
                     qrSize: qrSize,
                     partialResultClosure: partialResultClosure
                 )
             } else if let cacheKey = logoInfo.type?.cacheKey {
                 createCachedLogoQRWrapper(
-                    using: cache,
                     cacheKey: cacheKey,
                     payload: payload,
                     logoInfo: logoInfo,
@@ -153,22 +139,20 @@ private extension QRCodeWithLogoFactory {
             }
         }
 
-        wrapper.addDependency(operations: [checkCacheOperation])
+        let dependencies = [checkCacheOperation].compactMap { $0 }
 
-        return wrapper.insertingHead(operations: [checkCacheOperation])
+        wrapper.addDependency(operations: dependencies)
+
+        return wrapper.insertingHead(operations: dependencies)
     }
 
     func createDownloadLogoQRWrapper(
         payload: Data,
-        downloader: ImageDownloader,
-        logoInfo: QRLogoInfo,
+        logoInfo: IconInfo,
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void
     ) -> CompoundOperationWrapper<QRCreationResult> {
-        let logoOperation = downloadImageOperation(
-            using: logoInfo,
-            downloader: downloader
-        )
+        let logoOperation = iconRetrievingFactory.downloadImageOperation(using: logoInfo)
 
         let partialQRWrapper = createQRResultWrapper(
             using: nil,
@@ -203,16 +187,12 @@ private extension QRCodeWithLogoFactory {
     }
 
     func createCachedLogoQRWrapper(
-        using cache: ImageCache,
         cacheKey: String,
         payload: Data,
-        logoInfo: QRLogoInfo,
+        logoInfo: IconInfo,
         qrSize: CGSize
     ) -> CompoundOperationWrapper<QRCreationResult> {
-        let logoOperation = retrieveImageOperation(
-            using: cache,
-            cacheKey: cacheKey
-        )
+        let logoOperation = iconRetrievingFactory.retrieveImageOperation(using: cacheKey)
 
         return createQRResultWrapper(
             using: logoOperation,
@@ -225,7 +205,7 @@ private extension QRCodeWithLogoFactory {
     func createQRResultWrapper(
         using logoOperation: BaseOperation<UIImage>?,
         payload: Data,
-        logoInfo: QRLogoInfo,
+        logoInfo: IconInfo,
         qrSize: CGSize
     ) -> CompoundOperationWrapper<QRCreationResult> {
         var qrImageWrapper: CompoundOperationWrapper<UIImage>
@@ -236,7 +216,7 @@ private extension QRCodeWithLogoFactory {
                 return .createWithError(BaseOperationError.parentOperationCancelled)
             }
 
-            var updatedLogoInfo: QRLogoInfo? = logoInfo
+            var updatedLogoInfo: IconInfo? = logoInfo
 
             if let logoOperation {
                 do {
@@ -281,81 +261,5 @@ private extension QRCodeWithLogoFactory {
         resultMappingWrapper.addDependency(wrapper: qrImageWrapper)
 
         return resultMappingWrapper.insertingHead(operations: qrImageWrapper.allOperations)
-    }
-
-    func downloadImageOperation(
-        using logoInfo: QRLogoInfo,
-        downloader: ImageDownloader
-    ) -> AsyncClosureOperation<UIImage> {
-        AsyncClosureOperation { resultClosure in
-            let scale = UIScreen.main.scale
-
-            let scaledSize = CGSize(
-                width: logoInfo.size.width * scale,
-                height: logoInfo.size.height * scale
-            )
-
-            guard let url = logoInfo.url else {
-                resultClosure(.failure(QRCodeFactoryError.logoDownloadError))
-
-                return
-            }
-
-            let options: KingfisherOptionsInfo = [
-                .processor(ResizingImageProcessor(referenceSize: scaledSize)),
-                .processor(SVGImageProcessor())
-            ]
-
-            downloader.downloadImage(with: url, options: options) { result in
-                var resultImage: UIImage
-
-                switch result {
-                case let .success(imageResult) where imageResult.image.cgImage != nil:
-                    resultImage = imageResult.image
-                default:
-                    resultClosure(.failure(QRCodeFactoryError.logoDownloadError))
-
-                    return
-                }
-
-                let sizeBeforeProcessing = resultImage.size
-
-                if case .remoteTransparent = logoInfo.type {
-                    resultImage = resultImage.redrawWithBackground(
-                        color: R.color.colorTextPrimaryOnWhite()!,
-                        shape: .circle
-                    )
-                }
-
-                if let cacheKey = logoInfo.type?.cacheKey {
-                    KingfisherManager.shared.cache.store(
-                        resultImage,
-                        forKey: cacheKey,
-                        options: KingfisherParsedOptionsInfo(nil)
-                    )
-                }
-
-                resultClosure(.success(resultImage))
-            }
-        }
-    }
-
-    func retrieveImageOperation(
-        using cache: ImageCache,
-        cacheKey: String
-    ) -> AsyncClosureOperation<UIImage> {
-        AsyncClosureOperation { resultClosure in
-            cache.retrieveImage(forKey: cacheKey) { [weak self] result in
-                guard let self else { return }
-
-                if
-                    case let .success(cacheResult) = result,
-                    let image = cacheResult.image {
-                    resultClosure(.success(image))
-                } else {
-                    resultClosure(.failure(QRCodeFactoryError.logoRetrievingError))
-                }
-            }
-        }
     }
 }

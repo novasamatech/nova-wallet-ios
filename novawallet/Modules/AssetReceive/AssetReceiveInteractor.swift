@@ -49,7 +49,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             iconAppearance: appearanceFacade.selectedIconAppearance
         )
 
-        let logoInfo = QRLogoInfo(
+        let logoInfo = IconInfo(
             size: .qrLogoSize,
             type: qrLogoType
         )

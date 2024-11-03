@@ -15,7 +15,10 @@ struct AssetReceiveViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
+        let imageRetreiveOperationFactory = KingfisherIconRetrieveOperationFactory(operationQueue: operationQueue)
+
         let qrCodeFactory = QRCodeWithLogoFactory(
+            iconRetrievingFactory: imageRetreiveOperationFactory,
             operationQueue: operationQueue,
             callbackQueue: .main,
             logger: Logger.shared

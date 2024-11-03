@@ -932,6 +932,7 @@
 		2D1C5D262C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D252C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift */; };
 		2D1C5D282C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D272C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift */; };
 		2D1C5D2A2C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D292C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift */; };
+		2D1D66002CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D65FF2CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
 		2D32BE132C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */; };
@@ -1074,8 +1075,8 @@
 		2DBB28872CD2934500DFA0AD /* AssetIconURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */; };
 		2DBB28892CD42ACB00DFA0AD /* QRCreationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */; };
 		2DBB288D2CD42C5200DFA0AD /* QRCreationOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB288C2CD42C5200DFA0AD /* QRCreationOperationFactory.swift */; };
-		2DBB288F2CD42E8D00DFA0AD /* QRLogoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB288E2CD42E8D00DFA0AD /* QRLogoType.swift */; };
-		2DBB28912CD42ED800DFA0AD /* QRLogoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28902CD42ED800DFA0AD /* QRLogoInfo.swift */; };
+		2DBB288F2CD42E8D00DFA0AD /* IconType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB288E2CD42E8D00DFA0AD /* IconType.swift */; };
+		2DBB28912CD42ED800DFA0AD /* IconInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28902CD42ED800DFA0AD /* IconInfo.swift */; };
 		2DBB28932CD432FB00DFA0AD /* CopyAddressPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28922CD432FB00DFA0AD /* CopyAddressPresentable.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
@@ -6116,6 +6117,7 @@
 		2D1C5D252C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkEditPresenter.swift; sourceTree = "<group>"; };
 		2D1C5D272C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkEditInteractor.swift; sourceTree = "<group>"; };
 		2D1C5D292C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkPresenterProtocols.swift; sourceTree = "<group>"; };
+		2D1D65FF2CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconRetrieveOperationFactory.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
 		2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeInstaller.swift; sourceTree = "<group>"; };
@@ -6257,8 +6259,8 @@
 		2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIconURLFactory.swift; sourceTree = "<group>"; };
 		2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperation.swift; sourceTree = "<group>"; };
 		2DBB288C2CD42C5200DFA0AD /* QRCreationOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperationFactory.swift; sourceTree = "<group>"; };
-		2DBB288E2CD42E8D00DFA0AD /* QRLogoType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRLogoType.swift; sourceTree = "<group>"; };
-		2DBB28902CD42ED800DFA0AD /* QRLogoInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRLogoInfo.swift; sourceTree = "<group>"; };
+		2DBB288E2CD42E8D00DFA0AD /* IconType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconType.swift; sourceTree = "<group>"; };
+		2DBB28902CD42ED800DFA0AD /* IconInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconInfo.swift; sourceTree = "<group>"; };
 		2DBB28922CD432FB00DFA0AD /* CopyAddressPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyAddressPresentable.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
@@ -12496,6 +12498,14 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
+		2D1D65FE2CD80A33009C6C2F /* IconRetrieve */ = {
+			isa = PBXGroup;
+			children = (
+				2D1D65FF2CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift */,
+			);
+			path = IconRetrieve;
+			sourceTree = "<group>";
+		};
 		2D32BE112C6A49900047F520 /* FeeManaging */ = {
 			isa = PBXGroup;
 			children = (
@@ -12921,8 +12931,8 @@
 			children = (
 				84BC703E289DBE6C008A9758 /* QRWithLogoCreationOperation.swift */,
 				2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */,
-				2DBB288E2CD42E8D00DFA0AD /* QRLogoType.swift */,
-				2DBB28902CD42ED800DFA0AD /* QRLogoInfo.swift */,
+				2DBB288E2CD42E8D00DFA0AD /* IconType.swift */,
+				2DBB28902CD42ED800DFA0AD /* IconInfo.swift */,
 			);
 			path = Logo;
 			sourceTree = "<group>";
@@ -17607,6 +17617,7 @@
 		849013D124A92686008F705E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2D1D65FE2CD80A33009C6C2F /* IconRetrieve */,
 				0CCDB2E92B74DA33007BC5D6 /* Graphs */,
 				0C9C642B2A8CE2D4004DC078 /* SystemAccounts */,
 				0C463FCE2A592ACD003E71C9 /* Effects */,
@@ -25938,7 +25949,7 @@
 				88D997B028ABC8C0006135A5 /* YourContributionsTableViewCell.swift in Sources */,
 				849ABE5B2627739400011A2A /* ListReducing.swift in Sources */,
 				0C7CF4CC2BD374930015DD45 /* CloudBackupFileManaging.swift in Sources */,
-				2DBB28912CD42ED800DFA0AD /* QRLogoInfo.swift in Sources */,
+				2DBB28912CD42ED800DFA0AD /* IconInfo.swift in Sources */,
 				88C5F07C297EE79C001CCADE /* Release.swift in Sources */,
 				845B89222959620000EE25B0 /* SecurityLayerPresenter.swift in Sources */,
 				849E07F4284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift in Sources */,
@@ -27189,6 +27200,7 @@
 				8463A73825E3AA47003B8160 /* AccountInfo.swift in Sources */,
 				ABA3D873BBECB7F4BD670872 /* ExportSeedPresenter.swift in Sources */,
 				8476D39B27F43E30004D9A7A /* PhishingSiteVerifier.swift in Sources */,
+				2D1D66002CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift in Sources */,
 				0C7CF4D62BD4E5350015DD45 /* KeychainProxy.swift in Sources */,
 				9A6A55297F41DAE45071BF57 /* ExportSeedInteractor.swift in Sources */,
 				0CE933C02C068BF2000F3EFE /* AddAccount+ImportOptionsPresenter.swift in Sources */,
@@ -27474,7 +27486,7 @@
 				7725062C2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift in Sources */,
 				84466B3528B6731B00FA1E0D /* LedgerSigningWrapper.swift in Sources */,
 				0C38B4FB2B7A5DB500882A8B /* ExtrinsicProcessor+HydraSwapMatching.swift in Sources */,
-				2DBB288F2CD42E8D00DFA0AD /* QRLogoType.swift in Sources */,
+				2DBB288F2CD42E8D00DFA0AD /* IconType.swift in Sources */,
 				F4223ED127329767003D8E4E /* AcalaTransferRequest.swift in Sources */,
 				8473F4B8282BFFF8007CC55A /* StakingRelaychainInteractor+Subscription.swift in Sources */,
 				841E2E5027381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift in Sources */,

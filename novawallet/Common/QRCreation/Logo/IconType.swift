@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-enum QRLogoType {
+enum IconType {
     case remoteColored(URL?)
     case remoteTransparent(URL?)
     case localColored(UIImage)
