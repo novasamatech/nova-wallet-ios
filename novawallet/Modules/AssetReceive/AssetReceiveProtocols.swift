@@ -7,7 +7,7 @@ protocol AssetReceiveViewProtocol: ControllerBackedProtocol {
         networkName: String,
         token: String
     )
-    func didReceive(qrResult: QRCodeFactory.Result)
+    func didReceive(qrResult: QRCodeWithLogoFactory.QRCreationResult)
 }
 
 protocol AssetReceivePresenterProtocol: AnyObject {
@@ -29,4 +29,4 @@ protocol AssetReceiveInteractorOutputProtocol: AnyObject {
 }
 
 protocol AssetReceiveWireframeProtocol: AnyObject, SharingPresentable,
-    ErrorPresentable, AlertPresentable, CommonRetryable, ModalAlertPresenting {}
+    ErrorPresentable, AlertPresentable, CommonRetryable, ModalAlertPresenting, CopyAddressPresentable {}

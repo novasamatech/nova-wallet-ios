@@ -119,7 +119,7 @@ extension AssetReceiveViewController: AssetReceiveViewProtocol {
         rootView.accountAddressView.addressLabel.text = addressViewModel.address
     }
 
-    func didReceive(qrResult: QRCodeFactory.Result) {
+    func didReceive(qrResult: QRCodeWithLogoFactory.QRCreationResult) {
         rootView.qrView.bind(viewModel: qrResult)
     }
 

@@ -1,6 +1,6 @@
 import UIKit
 import Kingfisher
-import SVGKit
+import SwiftDraw
 import Operation_iOS
 
 final class RemoteImageViewModel: NSObject {
@@ -84,8 +84,7 @@ final class RemoteImageSerializer: CacheSerializer {
         if let uiImage = internalCache.image(with: data, options: options) {
             return uiImage
         } else {
-            let imsvg = SVGKImage(data: data)
-            return imsvg?.uiImage
+            return UIImage(svgData: data)
         }
     }
 }

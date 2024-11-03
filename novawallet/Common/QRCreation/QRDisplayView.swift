@@ -14,7 +14,7 @@ final class QRDisplayView: UIView {
         view.alpha = 0
     }
 
-    var viewModel: QRCodeFactory.Result?
+    var viewModel: QRCodeWithLogoFactory.QRCreationResult?
 
     var contentInsets: CGFloat = 8.0 {
         didSet {
@@ -49,7 +49,7 @@ final class QRDisplayView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: QRCodeFactory.Result) {
+    func bind(viewModel: QRCodeWithLogoFactory.QRCreationResult) {
         switch viewModel {
         case let .noLogo(image):
             noLogoQRImageView.image = image

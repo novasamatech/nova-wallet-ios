@@ -18,6 +18,7 @@ final class AssetReceivePresenter {
     private var account: MetaChainAccountResponse?
     private var chain: ChainModel?
     private var qrCodeSize: CGSize?
+    private var token: String?
 
     init(
         interactor: AssetReceiveInteractorInputProtocol,
@@ -59,6 +60,26 @@ final class AssetReceivePresenter {
 
         view?.didReceive(networkViewModel: networkViewModel)
     }
+
+    private func provideAddress() {
+        guard
+            let account,
+            let chain,
+            let token
+        else {
+            return
+        }
+        let addressViewModel = AccountAddressViewModel(
+            walletName: account.chainAccount.name,
+            address: account.chainAccount.toAddress()
+        )
+
+        view?.didReceive(
+            addressViewModel: addressViewModel,
+            networkName: chain.name,
+            token: token
+        )
+    }
 }
 
 extension AssetReceivePresenter: AssetReceivePresenterProtocol {
@@ -92,11 +113,10 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
             return
         }
 
-        UIPasteboard.general.string = address
-
-        wireframe.presentSuccessNotification(
-            R.string.localizable.commonAddressCoppied(),
-            from: view
+        wireframe.copyAddress(
+            from: view,
+            address: address,
+            locale: localizationManager.selectedLocale
         )
     }
 }
@@ -109,19 +129,10 @@ extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
     ) {
         self.account = account
         self.chain = chain
+        self.token = token
 
         provideNetwork()
-
-        let addressViewModel = AccountAddressViewModel(
-            walletName: account.chainAccount.name,
-            address: account.chainAccount.toAddress()
-        )
-
-        view?.didReceive(
-            addressViewModel: addressViewModel,
-            networkName: chain.name,
-            token: token
-        )
+        provideAddress()
     }
 
     func didReceive(qrCodeInfo: QRCodeInfo) {

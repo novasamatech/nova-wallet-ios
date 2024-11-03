@@ -5,7 +5,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
     weak var presenter: AssetReceiveInteractorOutputProtocol!
 
     let chainAsset: ChainAsset
-    let qrCodeFactory: QRCodeFactoryProtocol
+    let qrCodeFactory: QRCodeWithLogoFactoryProtocol
     let qrCoderFactory: NovaWalletQRCoderFactoryProtocol
     let metaChainAccountResponse: MetaChainAccountResponse
     let appearanceFacade: AppearanceFacadeProtocol
@@ -17,7 +17,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
         metaChainAccountResponse: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         qrCoderFactory: NovaWalletQRCoderFactoryProtocol,
-        qrCodeFactory: QRCodeFactoryProtocol,
+        qrCodeFactory: QRCodeWithLogoFactoryProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
         operationQueue: OperationQueue
     ) {
@@ -49,21 +49,30 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             iconAppearance: appearanceFacade.selectedIconAppearance
         )
 
-        let logoInfo = QRLogoInfo(
+        let logoInfo = IconInfo(
             size: .qrLogoSize,
             type: qrLogoType
         )
 
+        let resultClosure: (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void = { [weak self] result in
+            switch result {
+            case let .success(qrCode):
+                self?.presenter.didReceive(qrCodeInfo: .init(
+                    result: qrCode,
+                    encodingData: receiverInfo
+                ))
+            case .failure:
+                self?.presenter.didReceive(error: .generatingQRCode)
+            }
+        }
+
         qrCodeFactory.createQRCode(
             with: payload,
             logoInfo: logoInfo,
-            qrSize: size
-        ) { [weak self] result in
-            self?.presenter.didReceive(qrCodeInfo: .init(
-                result: result,
-                encodingData: receiverInfo
-            ))
-        }
+            qrSize: size,
+            partialResultClosure: resultClosure,
+            completion: resultClosure
+        )
     }
 }
 

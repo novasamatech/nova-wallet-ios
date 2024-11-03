@@ -18,7 +18,7 @@ enum AssetIconURLFactory {
     static func createQRLogoURL(
         for iconName: String?,
         iconAppearance: AppearanceIconsOptions
-    ) -> QRLogoType? {
+    ) -> IconType? {
         guard let iconName else { return nil }
 
         switch iconAppearance {
