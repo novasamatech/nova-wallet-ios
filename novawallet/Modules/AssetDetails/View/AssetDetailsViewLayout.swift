@@ -10,8 +10,6 @@ final class AssetDetailsViewLayout: UIView {
     let assetIconView: AssetIconView = .create {
         $0.backgroundView.cornerRadius = 14
         $0.backgroundView.apply(style: .assetContainer)
-        $0.contentInsets = .init(top: 3, left: 3, bottom: 3, right: 3)
-        $0.imageView.tintColor = R.color.colorIconSecondary()
     }
 
     let assetLabel = UILabel(

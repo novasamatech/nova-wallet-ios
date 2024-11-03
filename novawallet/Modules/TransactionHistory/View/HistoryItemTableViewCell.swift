@@ -24,8 +24,6 @@ final class HistoryItemTableViewCell: UITableViewCell {
         view.backgroundView.cornerRadius = Constants.iconSize.height / 2.0
         view.backgroundView.fillColor = R.color.colorContainerBackground()!
         view.backgroundView.highlightedFillColor = R.color.colorContainerBackground()!
-        view.contentInsets = Constants.imageInsets
-        view.imageView.tintColor = R.color.colorIconSecondary()
         return view
     }()
 

@@ -52,7 +52,8 @@ final class MultichainTokenView: UIView {
 
         let imageSettings = ImageViewModelSettings(
             targetSize: Constants.iconSize,
-            cornerRadius: nil
+            cornerRadius: nil,
+            opacity: style.iconOpacity
         )
 
         iconView.bind(viewModel: viewModel.imageViewModel, settings: imageSettings)
@@ -87,14 +88,14 @@ extension MultichainTokenView {
     struct Style {
         let titleColor: UIColor
         let subtitleColor: UIColor
-        let iconColor: UIColor
+        let iconOpacity: CGFloat
     }
 
     static var enabledStyle: Style {
         .init(
             titleColor: R.color.colorTextPrimary()!,
             subtitleColor: R.color.colorTextSecondary()!,
-            iconColor: R.color.colorIconPrimary()!
+            iconOpacity: 1.0
         )
     }
 
@@ -102,7 +103,7 @@ extension MultichainTokenView {
         .init(
             titleColor: R.color.colorTextSecondary()!,
             subtitleColor: R.color.colorTextSecondary()!,
-            iconColor: R.color.colorIconSecondary()!
+            iconOpacity: 0.5
         )
     }
 }
