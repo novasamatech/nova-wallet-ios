@@ -109,22 +109,25 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             userStorageFacade: userStorageFacade
         )
 
-        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
-            runtimeService: runtimeRegistry,
-            connection: engine,
-            operationQueue: operationQueue
-        )
-
-        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
-            chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             connection: engine,
             runtimeProvider: runtimeRegistry,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade,
             operationQueue: operationQueue
+        )
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
+                host: extrinsicFeeHost,
+                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
+            ),
+            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
+                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
+            )
         )
 
         return ExtrinsicService(
@@ -149,21 +152,26 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             chain: chain,
             userStorageFacade: userStorageFacade
         )
-        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+
+        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
-            runtimeService: runtimeRegistry,
-            connection: engine,
-            operationQueue: operationQueue
-        )
-        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
-            chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             connection: engine,
             runtimeProvider: runtimeRegistry,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade,
             operationQueue: operationQueue
+        )
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
+                host: extrinsicFeeHost,
+                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
+            ),
+            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
+                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
+            )
         )
 
         return ExtrinsicOperationFactory(

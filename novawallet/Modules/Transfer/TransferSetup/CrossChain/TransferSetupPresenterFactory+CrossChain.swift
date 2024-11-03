@@ -119,8 +119,6 @@ extension TransferSetupPresenterFactory {
             logger: logger
         )
 
-        let senderResolutionFacade = ExtrinsicSenderResolutionFacade(userStorageFacade: UserDataStorageFacade.shared)
-
         let metadataHashOperationFactory = MetadataHashOperationFactory(
             metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
                 storageFacade: SubstrateDataStorageFacade.shared
@@ -131,8 +129,9 @@ extension TransferSetupPresenterFactory {
         let extrinsicService = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            senderResolutionFacade: senderResolutionFacade,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
 

@@ -2,23 +2,23 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-final class HydraExtrinsicAssetsCustomFeeEstimator {
+final class ExtrinsicAssetConversionFeeEstimator {
     let chainAsset: ChainAsset
-    let flowState: HydraFlowState
     let operationQueue: OperationQueue
+    let quoteFactory: AssetQuoteFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
-        flowState: HydraFlowState,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        quoteFactory: AssetQuoteFactoryProtocol
     ) {
         self.chainAsset = chainAsset
-        self.flowState = flowState
         self.operationQueue = operationQueue
+        self.quoteFactory = quoteFactory
     }
 }
 
-extension HydraExtrinsicAssetsCustomFeeEstimator: ExtrinsicFeeEstimating {
+extension ExtrinsicAssetConversionFeeEstimator: ExtrinsicFeeEstimating {
     func createFeeEstimatingWrapper(
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
@@ -40,8 +40,6 @@ extension HydraExtrinsicAssetsCustomFeeEstimator: ExtrinsicFeeEstimating {
             extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
         )
 
-        let quoteFactory = HydraQuoteFactory(flowState: flowState)
-
         let conversionOperation: BaseOperation<[AssetConversion.Quote]> = OperationCombiningService(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
@@ -55,7 +53,7 @@ extension HydraExtrinsicAssetsCustomFeeEstimator: ExtrinsicFeeEstimating {
                     direction: .buy
                 )
 
-                return quoteFactory.quote(for: quoteArgs)
+                return self.quoteFactory.quote(for: quoteArgs)
             }
         }.longrunOperation()
 

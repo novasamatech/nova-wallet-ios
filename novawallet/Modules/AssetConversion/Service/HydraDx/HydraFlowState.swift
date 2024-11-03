@@ -2,16 +2,6 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-protocol HydraFlowStateProtocol {
-    func getReQuoteService(
-        for assetIn: ChainAssetId,
-        assetOut: ChainAssetId
-    ) -> ObservableSyncServiceProtocol?
-
-    func createFeeService() throws -> AssetConversionFeeServiceProtocol
-    func createExtrinsicService() throws -> AssetConversionExtrinsicServiceProtocol
-}
-
 final class HydraFlowState {
     let account: ChainAccountResponse
     let chain: ChainModel
