@@ -54,21 +54,25 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             type: qrLogoType
         )
 
-        qrCodeFactory.createQRCode(
-            with: payload,
-            logoInfo: logoInfo,
-            qrSize: size
-        ) { [weak self] result in
+        let resultClosure: (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void = { [weak self] result in
             switch result {
             case let .success(qrCode):
                 self?.presenter.didReceive(qrCodeInfo: .init(
                     result: qrCode,
                     encodingData: receiverInfo
                 ))
-            case let .failure(error):
+            case .failure:
                 self?.presenter.didReceive(error: .generatingQRCode)
             }
         }
+
+        qrCodeFactory.createQRCode(
+            with: payload,
+            logoInfo: logoInfo,
+            qrSize: size,
+            partialResultClosure: resultClosure,
+            completion: resultClosure
+        )
     }
 }
 

@@ -17,6 +17,7 @@ struct AssetReceiveViewFactory {
 
         let qrCodeFactory = QRCodeWithLogoFactory(
             operationQueue: operationQueue,
+            callbackQueue: .main,
             logger: Logger.shared
         )
 

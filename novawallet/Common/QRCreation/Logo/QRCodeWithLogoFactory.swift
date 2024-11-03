@@ -12,6 +12,7 @@ protocol QRCodeWithLogoFactoryProtocol {
         with payload: Data,
         logoInfo: QRLogoInfo?,
         qrSize: CGSize,
+        partialResultClosure: @escaping (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void,
         completion: @escaping (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void
     )
 }
@@ -31,15 +32,18 @@ final class QRCodeWithLogoFactory {
 
     let imageManager: KingfisherManager
     let operationQueue: OperationQueue
+    let callbackQueue: DispatchQueue
     let logger: LoggerProtocol
 
     init(
         imageManager: KingfisherManager = KingfisherManager.shared,
         operationQueue: OperationQueue,
+        callbackQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.imageManager = imageManager
         self.operationQueue = operationQueue
+        self.callbackQueue = callbackQueue
         self.logger = logger
     }
 }
@@ -51,12 +55,14 @@ extension QRCodeWithLogoFactory: QRCodeWithLogoFactoryProtocol {
         with payload: Data,
         logoInfo: QRLogoInfo?,
         qrSize: CGSize,
+        partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void,
         completion: @escaping (Result<QRCreationResult, Error>) -> Void
     ) {
         let wrapper = createQRWrapper(
             with: payload,
             logoInfo: logoInfo,
-            qrSize: qrSize
+            qrSize: qrSize,
+            partialResultClosure: partialResultClosure
         )
 
         novawallet.execute(
@@ -97,13 +103,12 @@ private extension QRCodeWithLogoFactory {
     func createQRWrapper(
         with payload: Data,
         logoInfo: QRLogoInfo?,
-        qrSize: CGSize
+        qrSize: CGSize,
+        partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void
     ) -> CompoundOperationWrapper<QRCreationResult> {
         let cache = imageManager.cache
 
         let checkCacheOperation = checkCacheOperation(in: cache, using: logoInfo)
-
-        var remoteLogo = false
 
         let wrapper: CompoundOperationWrapper<QRCreationResult> = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -120,7 +125,8 @@ private extension QRCodeWithLogoFactory {
                     payload: payload,
                     downloader: imageManager.downloader,
                     logoInfo: logoInfo,
-                    qrSize: qrSize
+                    qrSize: qrSize,
+                    partialResultClosure: partialResultClosure
                 )
             } else if let cacheKey = logoInfo.type?.cacheKey {
                 createCachedLogoQRWrapper(
@@ -156,19 +162,44 @@ private extension QRCodeWithLogoFactory {
         payload: Data,
         downloader: ImageDownloader,
         logoInfo: QRLogoInfo,
-        qrSize: CGSize
+        qrSize: CGSize,
+        partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void
     ) -> CompoundOperationWrapper<QRCreationResult> {
         let logoOperation = downloadImageOperation(
             using: logoInfo,
             downloader: downloader
         )
 
-        return createQRResultWrapper(
+        let partialQRWrapper = createQRResultWrapper(
+            using: nil,
+            payload: payload,
+            logoInfo: logoInfo,
+            qrSize: qrSize
+        )
+
+        partialQRWrapper.targetOperation.completionBlock = { [weak self] in
+            guard let self else { return }
+
+            dispatchInQueueWhenPossible(callbackQueue) {
+                do {
+                    let value = try partialQRWrapper.targetOperation.extractNoCancellableResultData()
+                    partialResultClosure(.success(value))
+                } catch {
+                    partialResultClosure(.failure(error))
+                }
+            }
+        }
+
+        let completeQRWrapper = createQRResultWrapper(
             using: logoOperation,
             payload: payload,
             logoInfo: logoInfo,
             qrSize: qrSize
         )
+
+        completeQRWrapper.targetOperation.addDependency(partialQRWrapper.targetOperation)
+
+        return completeQRWrapper.insertingHead(operations: partialQRWrapper.allOperations)
     }
 
     func createCachedLogoQRWrapper(
@@ -214,6 +245,8 @@ private extension QRCodeWithLogoFactory {
                 } catch {
                     logger.error(error.localizedDescription)
                 }
+            } else {
+                updatedLogoInfo = updatedLogoInfo?.withNoLogo()
             }
 
             let qrCodeOperation = QRWithLogoCreationOperation(
@@ -236,7 +269,7 @@ private extension QRCodeWithLogoFactory {
         ) {
             let qrImage = try qrImageWrapper.targetOperation.extractNoCancellableResultData()
 
-            let result: QRCreationResult = if logoInfo.type != nil {
+            let result: QRCreationResult = if logoOperation != nil {
                 .full(qrImage)
             } else {
                 .noLogo(qrImage)
