@@ -4,7 +4,10 @@ import XCTest
 final class AssetsExchangeTests: XCTestCase {
 
     func testFindPath() {
-        let chainRegistry = setupChainRegistry()
+        let substrateStorageFacade = SubstrateStorageTestFacade()
+        let userDataStorageFacade = UserDataStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: substrateStorageFacade)
+        
         let logger = Logger.shared
         let operationQueue = OperationQueue()
         
@@ -23,7 +26,12 @@ final class AssetsExchangeTests: XCTestCase {
         let expectation = XCTestExpectation()
         var foundPaths: [[AnyAssetExchangeEdge]]?
         
-        let graphProvider = createAndSubscribeGraphProvider(for: wallet, chainRegistry: chainRegistry) { graph in
+        let graphProvider = createAndSubscribeGraphProvider(
+            for: wallet,
+            chainRegistry: chainRegistry,
+            userStorageFacade: userDataStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
+        ) { graph in
             guard
                 let paths = graph?.fetchPaths(from: assetIn, to: assetOut, maxTopPaths: 4),
                 !paths.isEmpty else {
@@ -85,7 +93,10 @@ final class AssetsExchangeTests: XCTestCase {
     }
     
     func testFindAvailablePairs() {
-        let chainRegistry = setupChainRegistry()
+        let substrateStorageFacade = SubstrateStorageTestFacade()
+        let userDataStorageFacade = UserDataStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: substrateStorageFacade)
+        
         let wallet = AccountGenerator.generateMetaAccount(type: .watchOnly)
         
         guard
@@ -98,7 +109,12 @@ final class AssetsExchangeTests: XCTestCase {
         
         let expectation = XCTestExpectation()
         
-        let graphProvider = createAndSubscribeGraphProvider(for: wallet, chainRegistry: chainRegistry) { graph in
+        let graphProvider = createAndSubscribeGraphProvider(
+            for: wallet,
+            chainRegistry: chainRegistry,
+            userStorageFacade: userDataStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
+        ) { graph in
             guard let reachability = graph?.fetchReachability() else {
                 return
             }
@@ -119,14 +135,11 @@ final class AssetsExchangeTests: XCTestCase {
         graphProvider.throttle()
     }
     
-    private func setupChainRegistry() -> ChainRegistryProtocol {
-        let storageFacade = SubstrateStorageTestFacade()
-        return ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-    }
-    
     private func createAndSubscribeGraphProvider(
         for wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         onGraphChange: @escaping (AssetsExchangeGraphProtocol?) -> Void
     ) -> AssetsExchangeGraphProviding {
         let operationQueue = OperationQueue()
@@ -135,11 +148,16 @@ final class AssetsExchangeTests: XCTestCase {
         let graphProvider = AssetsExchangeGraphProvider(
             supportedExchangeProviders: [
                 CrosschainAssetsExchangeProvider(
+                    wallet: wallet,
                     syncService: XcmTransfersSyncService(
                         remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
                         operationQueue: operationQueue
                     ),
                     chainRegistry: chainRegistry,
+                    signingWrapperFactory: SigningWrapperFactory(),
+                    userStorageFacade: userStorageFacade,
+                    substrateStorageFacade: substrateStorageFacade,
+                    operationQueue: operationQueue,
                     logger: logger
                 ),
                 
@@ -152,6 +170,8 @@ final class AssetsExchangeTests: XCTestCase {
                 AssetsHydraExchangeProvider(
                     selectedWallet: wallet,
                     chainRegistry: chainRegistry,
+                    userStorageFacade: userStorageFacade,
+                    substrateStorageFacade: substrateStorageFacade,
                     operationQueue: operationQueue,
                     logger: logger
                 )

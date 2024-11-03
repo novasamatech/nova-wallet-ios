@@ -299,7 +299,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
             account: account,
             chain: chain,
             connection: connection,
-            runtimeProvider: runtimeProvider,
+            runtimeProvider: runtimeService,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
