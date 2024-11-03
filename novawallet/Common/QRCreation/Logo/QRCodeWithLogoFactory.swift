@@ -2,11 +2,6 @@ import Foundation
 import Kingfisher
 import Operation_iOS
 
-enum QRCodeFactoryError: Error {
-    case logoDownloadError
-    case logoRetrievingError
-}
-
 protocol QRCodeWithLogoFactoryProtocol {
     func createQRCode(
         with payload: Data,
