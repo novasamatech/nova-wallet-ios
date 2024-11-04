@@ -9,6 +9,7 @@ final class AssetReceivePresenter {
     let interactor: AssetReceiveInteractorInputProtocol
     let iconGenerator: IconGenerating
     let accountShareFactory: NovaAccountShareFactoryProtocol
+    let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
     let logger: LoggerProtocol?
@@ -17,12 +18,14 @@ final class AssetReceivePresenter {
     private var account: MetaChainAccountResponse?
     private var chain: ChainModel?
     private var qrCodeSize: CGSize?
+    private var token: String?
 
     init(
         interactor: AssetReceiveInteractorInputProtocol,
         wireframe: AssetReceiveWireframeProtocol,
         iconGenerator: IconGenerating,
         accountShareFactory: NovaAccountShareFactoryProtocol,
+        networkViewModelFactory: NetworkViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
@@ -31,6 +34,7 @@ final class AssetReceivePresenter {
         self.iconGenerator = iconGenerator
         self.accountShareFactory = accountShareFactory
         self.logger = logger
+        self.networkViewModelFactory = networkViewModelFactory
         self.localizationManager = localizationManager
     }
 
@@ -47,6 +51,34 @@ final class AssetReceivePresenter {
             )
         )
         return viewModel
+    }
+
+    private func provideNetwork() {
+        guard let chain else { return }
+
+        let networkViewModel = networkViewModelFactory.createViewModel(from: chain)
+
+        view?.didReceive(networkViewModel: networkViewModel)
+    }
+
+    private func provideAddress() {
+        guard
+            let account,
+            let chain,
+            let token
+        else {
+            return
+        }
+        let addressViewModel = AccountAddressViewModel(
+            walletName: account.chainAccount.name,
+            address: account.chainAccount.toAddress()
+        )
+
+        view?.didReceive(
+            addressViewModel: addressViewModel,
+            networkName: chain.name,
+            token: token
+        )
     }
 }
 
@@ -66,7 +98,7 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
         }
         let sharingItems = accountShareFactory.createSources(
             for: qrCodeInfo.encodingData,
-            qrImage: qrCodeInfo.image
+            qrImage: qrCodeInfo.result.image
         )
 
         wireframe.share(
@@ -76,17 +108,14 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
         )
     }
 
-    func presentAccountOptions() {
-        guard let view = view,
-              let address = account?.chainAccount.toAddress(),
-              let chain = chain else {
+    func copyAddress() {
+        guard let address = account?.chainAccount.toAddress() else {
             return
         }
 
-        wireframe.presentAccountOptions(
+        wireframe.copyAddress(
             from: view,
             address: address,
-            chain: chain,
             locale: localizationManager.selectedLocale
         )
     }
@@ -100,21 +129,15 @@ extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
     ) {
         self.account = account
         self.chain = chain
+        self.token = token
 
-        let chainAccountViewModel = createChainAccountViewModel(
-            for: account.chainAccount.accountId,
-            chain: chain
-        )
-
-        view?.didReceive(
-            chainAccountViewModel: chainAccountViewModel,
-            token: token
-        )
+        provideNetwork()
+        provideAddress()
     }
 
     func didReceive(qrCodeInfo: QRCodeInfo) {
         self.qrCodeInfo = qrCodeInfo
-        view?.didReceive(qrImage: qrCodeInfo.image)
+        view?.didReceive(qrResult: qrCodeInfo.result)
     }
 
     func didReceive(error: AssetReceiveInteractorError) {

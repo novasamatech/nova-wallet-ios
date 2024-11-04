@@ -32,11 +32,8 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
 
         var options: KingfisherOptionsInfo = [
             .processor(processor),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheSerializer(RemoteImageSerializer.shared),
-            .cacheOriginalImage,
-            .diskCacheExpiration(.days(1))
-        ]
+            .scaleFactor(UIScreen.main.scale)
+        ] + KingfisherOptionsInfo.cacheOptions
 
         if let renderingMode = settings.renderingMode {
             let imageModifier = RenderingModeImageModifier(renderingMode: renderingMode)
