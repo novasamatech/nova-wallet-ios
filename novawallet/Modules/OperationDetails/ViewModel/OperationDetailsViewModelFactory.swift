@@ -55,6 +55,7 @@ final class OperationDetailsViewModelFactory {
         case .extrinsic, .contract:
             return assetIconViewModelFactory.createAssetIconViewModel(
                 for: assetInfo.icon?.getPath(),
+                with: .white,
                 defaultURL: assetInfo.icon?.getURL()
             )
         case .swap:
@@ -285,7 +286,7 @@ final class OperationDetailsViewModelFactory {
         locale: Locale
     ) -> SwapAssetAmountViewModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chain)
-        let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: asset.icon)
+        let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: asset.icon, with: .white)
         let amountDecimal = Decimal.fromSubstrateAmount(
             amount,
             precision: asset.displayInfo.assetPrecision

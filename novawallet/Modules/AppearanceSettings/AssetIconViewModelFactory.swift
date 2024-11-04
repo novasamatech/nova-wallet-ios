@@ -4,6 +4,7 @@ import SoraKeystore
 protocol AssetIconViewModelFactoryProtocol {
     func createAssetIcon(
         for iconPath: String?,
+        with appearance: AppearanceIconsOptions?,
         defaultURL: URL?
     ) -> ImageViewModelProtocol
 }
@@ -11,10 +12,12 @@ protocol AssetIconViewModelFactoryProtocol {
 extension AssetIconViewModelFactoryProtocol {
     func createAssetIconViewModel(
         for iconPath: String?,
+        with appearance: AppearanceIconsOptions? = nil,
         defaultURL: URL? = nil
     ) -> ImageViewModelProtocol {
         createAssetIcon(
             for: iconPath,
+            with: appearance,
             defaultURL: defaultURL
         )
     }
@@ -38,10 +41,13 @@ class AssetIconViewModelFactory {
 extension AssetIconViewModelFactory: AssetIconViewModelFactoryProtocol {
     func createAssetIcon(
         for iconPath: String?,
+        with appearance: AppearanceIconsOptions?,
         defaultURL: URL? = nil
     ) -> ImageViewModelProtocol {
+        let selectedAppearance = appearance ?? appearanceFacade.selectedIconAppearance
+
         let baseURL: URL? = if let iconPath {
-            switch appearanceFacade.selectedIconAppearance {
+            switch selectedAppearance {
             case .white:
                 URL(string: applicationConfig.whiteAppearanceIconsPath + iconPath)
             case .colored:
