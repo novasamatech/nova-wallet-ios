@@ -39,4 +39,22 @@ struct AssetExchangeRouteItem {
     let edge: AnyAssetExchangeEdge
     let amount: Balance
     let quote: Balance
+
+    func amountIn(for direction: AssetConversion.Direction) -> Balance {
+        switch direction {
+        case .sell:
+            return amount
+        case .buy:
+            return quote
+        }
+    }
+
+    func amountOut(for direction: AssetConversion.Direction) -> Balance {
+        switch direction {
+        case .sell:
+            return quote
+        case .buy:
+            return amount
+        }
+    }
 }

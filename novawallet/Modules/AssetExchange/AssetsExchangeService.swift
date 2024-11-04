@@ -34,21 +34,46 @@ final class AssetsExchangeService {
         self.logger = logger
     }
 
+    private func createOperationArgs(
+        for segment: AssetExchangeRouteItem,
+        routeDirection: AssetConversion.Direction,
+        slippage: BigRational,
+        feeAssetId: ChainAssetId?,
+        isFirst: Bool
+    ) -> AssetExchangeAtomicOperationArgs {
+        // on the first segment fee paid in configurable asset and further only in assetIn
+        let feeAssetId = isFirst ? feeAssetId : segment.edge.origin
+
+        let segmentDirection: AssetConversion.Direction = if isFirst {
+            routeDirection
+        } else {
+            // we currently can't define buy for non first segment
+            .sell
+        }
+
+        return .init(
+            swapLimit: .init(
+                direction: segmentDirection,
+                amountIn: segment.amountIn(for: routeDirection),
+                amountOut: segment.amountOut(for: routeDirection),
+                slippage: slippage
+            ),
+            feeAsset: feeAssetId
+        )
+    }
+
     private func prepareAtomicOperations(
         for route: AssetExchangeRoute,
         slippage: BigRational,
         feeAssetId: ChainAssetId?
     ) throws -> [AssetExchangeAtomicOperationProtocol] {
         try route.items.reduce([]) { curOperations, segment in
-            // TODO: Fix Args
-            let args = AssetExchangeAtomicOperationArgs(
-                swapLimit: .init(
-                    direction: route.direction,
-                    amountIn: segment.amount,
-                    amountOut: segment.quote,
-                    slippage: slippage
-                ),
-                feeAsset: feeAssetId
+            let args = createOperationArgs(
+                for: segment,
+                routeDirection: route.direction,
+                slippage: slippage,
+                feeAssetId: feeAssetId,
+                isFirst: curOperations.isEmpty
             )
 
             if

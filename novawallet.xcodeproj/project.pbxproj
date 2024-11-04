@@ -10721,6 +10721,9 @@
 				0C32728C2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift */,
 				0C3272902CD2409B00FC1B42 /* AssetExchangeOperationFee.swift */,
 				0C3272882CD1F83D00FC1B42 /* AssetExchangeAtomicOperationArgs.swift */,
+				0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */,
+				0C61084C2CD8909600909928 /* AssetExchangeFee.swift */,
+				0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -11462,10 +11465,7 @@
 				0C2DA8A52CC265F0001F79C8 /* AssetsExchangeGraphProvider.swift */,
 				0C2DA8A72CC2679E001F79C8 /* AssetsExchangeGraph.swift */,
 				0C11D85D2CCA470D003EC46D /* AssetsExchangeRouteManager.swift */,
-				0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */,
-				0C61084C2CD8909600909928 /* AssetExchangeFee.swift */,
 				0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */,
-				0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */,
 				0C6108482CD889A000909928 /* AssetsExchange.swift */,
 				0C61084A2CD88F9B00909928 /* AssetsExchangeService.swift */,
 			);

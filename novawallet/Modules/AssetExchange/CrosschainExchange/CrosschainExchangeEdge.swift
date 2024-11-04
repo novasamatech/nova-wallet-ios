@@ -14,7 +14,7 @@ final class CrosschainExchangeEdge {
 }
 
 extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
-    var weight: Int { 1 }
+    var weight: Int { AssetsExchange.defaultEdgeWeight }
 
     func quote(
         amount: Balance,
