@@ -247,11 +247,13 @@ private extension AssetListStyleSwitcherView {
         let currentSpring = createSpringAnimation(
             fromValue: currentPosition,
             toValue: currentPosition + (Constants.rollDistance * direction.yOffset),
+            opaque: true,
             direction: direction
         )
         let newSpring = createSpringAnimation(
             fromValue: newLabel.layer.position.y,
             toValue: currentPosition,
+            opaque: false,
             direction: direction
         )
 
@@ -260,6 +262,7 @@ private extension AssetListStyleSwitcherView {
         CATransaction.setCompletionBlock { [weak self] in
             self?.label.text = newText
             self?.label.layer.position.y = currentPosition
+            self?.label.layer.opacity = 1.0
             newLabel.removeFromSuperview()
 
             self?.isUserInteractionEnabled = true
@@ -280,6 +283,7 @@ private extension AssetListStyleSwitcherView {
     func createSpringAnimation(
         fromValue: CGFloat?,
         toValue: CGFloat?,
+        opaque: Bool,
         direction: AnimationDirection
     ) -> CAAnimationGroup {
         guard let fromValue = fromValue else { return CAAnimationGroup() }
@@ -288,7 +292,15 @@ private extension AssetListStyleSwitcherView {
         anticipation.fromValue = fromValue
         anticipation.toValue = fromValue + (Constants.anticipationDistance * (-direction.yOffset))
         anticipation.duration = Constants.animationDuration * Constants.anticipationDurationRatio
-        anticipation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        anticipation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+
+        let opacity = CABasicAnimation(keyPath: "opacity")
+        opacity.fromValue = opaque ? 1.0 : 0.0
+        opacity.toValue = opaque ? 0.0 : 1.0
+        opacity.duration = Constants.animationDuration * (1 - Constants.anticipationDurationRatio)
+        opacity.beginTime = anticipation.duration
+        opacity.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        opacity.speed = 1.5
 
         let spring = CASpringAnimation(keyPath: "position.y")
         spring.fromValue = anticipation.toValue
@@ -301,10 +313,9 @@ private extension AssetListStyleSwitcherView {
         spring.mass = Constants.springObjectMass
 
         let group = CAAnimationGroup()
-        group.animations = [anticipation, spring]
+        group.animations = [anticipation, opacity, spring]
         group.duration = Constants.animationDuration
         group.fillMode = .forwards
-        group.isRemovedOnCompletion = true
 
         return group
     }
@@ -371,7 +382,7 @@ private extension AssetListStyleSwitcherView {
 private extension AssetListStyleSwitcherView {
     enum Constants {
         static let rollDistance: CGFloat = 30
-        static let animationDuration: CFTimeInterval = 0.6
+        static let animationDuration: CFTimeInterval = 0.4
 
         static let squareSize: CGFloat = 6
         static let circleSize: CGFloat = 6
@@ -381,7 +392,7 @@ private extension AssetListStyleSwitcherView {
         static let anticipationDurationRatio: CGFloat = 0.35
 
         static let springInitialVelocity = 0.0
-        static let springDamping: CGFloat = 20.0
+        static let springDamping: CGFloat = 15.0
         static let springStiffness: CGFloat = 150
         static let springObjectMass: CGFloat = 0.8
 
