@@ -165,8 +165,8 @@ private extension AssetListStyleSwitcherView {
         )
         circleLayer.path = circlePath.cgPath
         circleLayer.fillColor = selected
-            ? R.color.colorIconPrimary()!.cgColor
-            : R.color.colorIconInactive()!.cgColor
+            ? Constants.indicatorActiveColor
+            : Constants.indicatorInactiveColor
         circleLayer.position = CGPoint(x: 8, y: 16)
 
         circleLayer.removeFromSuperlayer()
@@ -199,8 +199,8 @@ private extension AssetListStyleSwitcherView {
             direction: .up
         )
         animateIndicators(
-            squareColor: .gray,
-            circleColor: .white
+            squareColor: Constants.indicatorInactiveColor,
+            circleColor: Constants.indicatorActiveColor
         )
     }
 
@@ -211,7 +211,10 @@ private extension AssetListStyleSwitcherView {
             ),
             direction: .down
         )
-        animateIndicators(squareColor: .white, circleColor: .gray)
+        animateIndicators(
+            squareColor: Constants.indicatorActiveColor,
+            circleColor: Constants.indicatorInactiveColor
+        )
     }
 
     func animateLabels(
@@ -275,16 +278,16 @@ private extension AssetListStyleSwitcherView {
     }
 
     func animateIndicators(
-        squareColor: UIColor,
-        circleColor: UIColor
+        squareColor: CGColor,
+        circleColor: CGColor
     ) {
         let squareAnimation = createColorAnimation(
-            fromValue: squareLayer.fillColor ?? UIColor.white.cgColor,
-            toValue: squareColor.cgColor
+            fromValue: squareLayer.fillColor,
+            toValue: squareColor
         )
         let circleAnimation = createColorAnimation(
-            fromValue: circleLayer.fillColor ?? UIColor.gray.cgColor,
-            toValue: circleColor.cgColor
+            fromValue: circleLayer.fillColor,
+            toValue: circleColor
         )
 
         squareLayer.add(
@@ -298,8 +301,8 @@ private extension AssetListStyleSwitcherView {
     }
 
     func createColorAnimation(
-        fromValue: CGColor,
-        toValue: CGColor
+        fromValue: CGColor?,
+        toValue: CGColor?
     ) -> CABasicAnimation {
         let animation = CABasicAnimation(keyPath: "fillColor")
         animation.fromValue = fromValue
@@ -348,5 +351,8 @@ private extension AssetListStyleSwitcherView {
 
         static let indicatorContainerHeight: CGFloat = 24
         static let indicatorContainerWidth: CGFloat = 16
+
+        static let indicatorActiveColor: CGColor = R.color.colorIconPrimary()!.cgColor
+        static let indicatorInactiveColor: CGColor = R.color.colorIconInactive()!.cgColor
     }
 }
