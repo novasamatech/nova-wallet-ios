@@ -63,7 +63,7 @@ extension QRCodeWithLogoFactory: QRCodeWithLogoFactoryProtocol {
         novawallet.execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            runningCallbackIn: .main,
+            runningCallbackIn: callbackQueue,
             callbackClosure: completion
         )
     }
@@ -238,10 +238,7 @@ private extension QRCodeWithLogoFactory {
             qrImageWrapper = qrImageWrapper.insertingHead(operations: [logoOperation])
         }
 
-        let resultMappingWrapper: CompoundOperationWrapper<QRCreationResult>
-        resultMappingWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
+        let resultMappingOperation = ClosureOperation {
             let qrImage = try qrImageWrapper.targetOperation.extractNoCancellableResultData()
 
             let result: QRCreationResult = if logoOperation != nil {
@@ -250,11 +247,11 @@ private extension QRCodeWithLogoFactory {
                 .noLogo(qrImage)
             }
 
-            return .createWithResult(result)
+            return result
         }
 
-        resultMappingWrapper.addDependency(wrapper: qrImageWrapper)
+        resultMappingOperation.addDependency(qrImageWrapper.targetOperation)
 
-        return resultMappingWrapper.insertingHead(operations: qrImageWrapper.allOperations)
+        return qrImageWrapper.insertingTail(operation: resultMappingOperation)
     }
 }
