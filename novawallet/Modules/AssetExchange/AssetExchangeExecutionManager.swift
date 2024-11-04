@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol AssetExchangeExecutionManagerProtocol {
-    func executeSwap(for amountIn: Balance, completion: @escaping (Result<Balance, Error>) -> Void)
+    func executeSwap(for amountIn: Balance) -> CompoundOperationWrapper<Balance>
 }
 
 final class AssetExchangeExecutionManager {
@@ -16,7 +16,7 @@ final class AssetExchangeExecutionManager {
 }
 
 extension AssetExchangeExecutionManager: AssetExchangeExecutionManagerProtocol {
-    func executeSwap(for amountIn: Balance, completion: @escaping (Result<Balance, Error>) -> Void) {
+    func executeSwap(for amountIn: Balance) -> CompoundOperationWrapper<Balance> {
         let wrappers: [CompoundOperationWrapper<Balance>] = operations.reduce([]) { prevWrappers, operation in
             let prevWrapper = prevWrappers.last
             let amountClosure: () throws -> Balance = {
@@ -28,27 +28,16 @@ extension AssetExchangeExecutionManager: AssetExchangeExecutionManagerProtocol {
             return prevWrappers + [nextWrapper]
         }
 
-        guard let firstWrapper = wrappers.first else { return }
+        guard let firstWrapper = wrappers.first else {
+            return .createWithResult(amountIn)
+        }
 
-        let totalWrapper: CompoundOperationWrapper<Balance> = wrappers
+        return wrappers
             .suffix(wrappers.count - 1)
             .reduce(firstWrapper) { totalWrapper, nextWrapper in
                 nextWrapper.addDependency(operations: [totalWrapper.targetOperation])
 
                 return nextWrapper.insertingHead(operations: totalWrapper.allOperations)
             }
-
-        execute(
-            wrapper: totalWrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { result in
-            switch result {
-            case let .success(balance):
-                completion(.success(balance))
-            case let .failure(error):
-                completion(.failure(error))
-            }
-        }
     }
 }

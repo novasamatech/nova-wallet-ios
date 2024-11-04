@@ -41,7 +41,7 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
         _ currentOperation: AssetExchangeAtomicOperationProtocol,
         args: AssetExchangeAtomicOperationArgs
     ) -> AssetExchangeAtomicOperationProtocol? {
-        appendToOperation(currentOperation, args: args)
+        appendToOperationClosure(currentOperation, args)
     }
 }
 
