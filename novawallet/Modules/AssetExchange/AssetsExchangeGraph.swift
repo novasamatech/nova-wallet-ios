@@ -2,7 +2,7 @@ import Foundation
 
 typealias AssetsExchangeGraphModel = GraphModel<ChainAssetId, AnyAssetExchangeEdge>
 
-protocol AssetsExchangeGraphProtocol {
+protocol AssetsExchangeGraphProtocol: AnyObject {
     func fetchPaths(
         from assetIn: ChainAssetId,
         to assetOut: ChainAssetId,

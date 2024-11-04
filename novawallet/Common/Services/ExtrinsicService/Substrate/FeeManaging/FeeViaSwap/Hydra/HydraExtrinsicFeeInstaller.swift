@@ -3,11 +3,11 @@ import SubstrateSdk
 
 final class HydraExtrinsicFeeInstaller {
     let feeAsset: ChainAsset
-    let swapState: HydraDx.SwapRemoteState
+    let swapState: HydraDx.SwapFeeCurrencyState
 
     init(
         feeAsset: ChainAsset,
-        swapState: HydraDx.SwapRemoteState
+        swapState: HydraDx.SwapFeeCurrencyState
     ) {
         self.feeAsset = feeAsset
         self.swapState = swapState

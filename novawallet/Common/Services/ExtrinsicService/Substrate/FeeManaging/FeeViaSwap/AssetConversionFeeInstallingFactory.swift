@@ -4,21 +4,21 @@ import Operation_iOS
 final class AssetConversionFeeInstallingFactory {
     let host: ExtrinsicFeeEstimatorHostProtocol
 
-    private var hydraFlowState: HydraFlowState?
+    private var hydraFeeService: HydraSwapFeeCurrencyService?
 
     init(host: ExtrinsicFeeEstimatorHostProtocol) {
         self.host = host
     }
 
-    private func setupHydraFlowState() -> HydraFlowState {
-        if let hydraFlowState {
-            return hydraFlowState
-        }
+    private func setupHydraFeeCurrencyService(for account: ChainAccountResponse) -> HydraSwapFeeCurrencyService {
+        let hydraFeeService = AssetConversionFeeSharedStateStore.getOrCreateHydraFeeCurrencyService(
+            for: host,
+            payerAccountId: account.accountId
+        )
 
-        let hydraFlowState = AssetConversionFeeSharedStateStore.getOrCreateHydra(for: host)
-        self.hydraFlowState = hydraFlowState
+        self.hydraFeeService = hydraFeeService
 
-        return hydraFlowState
+        return hydraFeeService
     }
 
     private func createHydraFeeInstallingWrapper(
@@ -30,9 +30,9 @@ final class AssetConversionFeeInstallingFactory {
         ) {
             let account = try accountClosure()
 
-            let state = self.setupHydraFlowState()
+            let feeCurrencyService = self.setupHydraFeeCurrencyService(for: account)
 
-            let swapStateFetchOperation = state.setupSwapService().createFetchOperation()
+            let swapStateFetchOperation = feeCurrencyService.createFetchOperation()
 
             return CompoundOperationWrapper(targetOperation: swapStateFetchOperation)
         }

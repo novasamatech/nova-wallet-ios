@@ -8,6 +8,7 @@ private struct StateKey: Hashable {
 
 enum AssetConversionFeeSharedStateStore {
     private static var states: [StateKey: WeakWrapper] = [:]
+    private static var feeServices: [StateKey: WeakWrapper] = [:]
     private static let mutex = NSLock()
 
     static func getOrCreateHydra(for host: ExtrinsicFeeEstimatorHostProtocol) -> HydraFlowState {
@@ -36,5 +37,33 @@ enum AssetConversionFeeSharedStateStore {
         states[state] = WeakWrapper(target: flowState)
 
         return flowState
+    }
+
+    static func getOrCreateHydraFeeCurrencyService(
+        for host: ExtrinsicFeeEstimatorHostProtocol,
+        payerAccountId: AccountId
+    ) -> HydraSwapFeeCurrencyService {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let state = StateKey(chainId: host.chain.chainId, accountId: payerAccountId)
+
+        if let service = feeServices[state]?.target as? HydraSwapFeeCurrencyService {
+            return service
+        }
+
+        let service = HydraSwapFeeCurrencyService(
+            payerAccountId: payerAccountId,
+            connection: host.connection,
+            runtimeProvider: host.runtimeProvider,
+            operationQueue: host.operationQueue
+        )
+
+        feeServices[state] = WeakWrapper(target: service)
+
+        return service
     }
 }

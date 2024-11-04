@@ -6,7 +6,6 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
     let chainRegistry: ChainRegistryProtocol
 
     private var supportedChains: [ChainModel.Id: ChainModel]?
-    let operationQueue: OperationQueue
     let selectedWallet: MetaAccountModel
     let substrateStorageFacade: StorageFacadeProtocol
     let userStorageFacade: StorageFacadeProtocol
@@ -23,11 +22,11 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
     ) {
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
-        self.operationQueue = operationQueue
         self.substrateStorageFacade = substrateStorageFacade
         self.userStorageFacade = userStorageFacade
 
         super.init(
+            operationQueue: operationQueue,
             syncQueue: DispatchQueue(label: "io.novawallet.hydraexchangeprovider.\(UUID().uuidString)"),
             logger: logger
         )
@@ -115,7 +114,14 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             operationQueue: operationQueue,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade
-        ).createOperationFactory(account: account, chain: chain)
+        ).createOperationFactory(
+            account: account,
+            chain: chain,
+            customFeeEstimatingFactory: AssetExchangeFeeEstimatingFactory(
+                graphProxy: graphProxy,
+                operationQueue: operationQueue
+            )
+        )
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: account.metaId,

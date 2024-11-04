@@ -1,16 +1,22 @@
 import Foundation
 
 class AssetsExchangeBaseProvider {
+    let graphProxy: AssetExchangeGraphProxy
+
     private var observableState: Observable<NotEqualWrapper<[AssetsExchangeProtocol]>> = .init(
         state: .init(value: [])
     )
 
+    let operationQueue: OperationQueue
     let syncQueue: DispatchQueue
     let logger: LoggerProtocol
 
-    init(syncQueue: DispatchQueue, logger: LoggerProtocol) {
+    init(operationQueue: OperationQueue, syncQueue: DispatchQueue, logger: LoggerProtocol) {
+        self.operationQueue = operationQueue
         self.syncQueue = syncQueue
         self.logger = logger
+
+        graphProxy = AssetExchangeGraphProxy(operationQueue: operationQueue, logger: logger)
     }
 
     func updateState(with newExchanges: [AssetsExchangeProtocol]) {
@@ -55,5 +61,9 @@ extension AssetsExchangeBaseProvider: AssetsExchangeProviding {
         syncQueue.async { [weak self] in
             self?.observableState.removeObserver(by: target)
         }
+    }
+
+    func inject(graph: AssetsExchangeGraphProtocol) {
+        graphProxy.install(graph: graph)
     }
 }

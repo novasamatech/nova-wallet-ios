@@ -92,6 +92,8 @@ final class AssetsExchangeGraphProvider {
 
         let graph = AssetsExchangeGraph(model: graphModel)
         observableState.state = .init(value: graph)
+
+        supportedExchangeProviders.forEach { $0.inject(graph: graph) }
     }
 }
 

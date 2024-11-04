@@ -16,6 +16,8 @@ protocol AssetsExchangeProviding: AnyObject {
     )
 
     func unsubscribeExchanges(_ target: AnyObject)
+
+    func inject(graph: AssetsExchangeGraphProtocol)
 }
 
 protocol AssetsExchangeGraphProviding {

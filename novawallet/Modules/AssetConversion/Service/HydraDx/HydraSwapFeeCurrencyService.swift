@@ -2,11 +2,11 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-class HydraSwapParamsService: ObservableSubscriptionSyncService<HydraDx.SwapRemoteState> {
-    let accountId: AccountId
+class HydraSwapFeeCurrencyService: ObservableSubscriptionSyncService<HydraDx.SwapFeeCurrencyState> {
+    let payerAccountId: AccountId
 
     init(
-        accountId: AccountId,
+        payerAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -15,7 +15,7 @@ class HydraSwapParamsService: ObservableSubscriptionSyncService<HydraDx.SwapRemo
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         logger: LoggerProtocol = Logger.shared
     ) {
-        self.accountId = accountId
+        self.payerAccountId = payerAccountId
 
         super.init(
             connection: connection,
@@ -29,19 +29,19 @@ class HydraSwapParamsService: ObservableSubscriptionSyncService<HydraDx.SwapRemo
     }
 
     func getRequests(for accountId: AccountId) -> [BatchStorageSubscriptionRequest] {
-        let referralRequest = BatchStorageSubscriptionRequest(
+        let feeCurrencyRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: HydraDx.referralLinkedAccountPath,
+                storagePath: HydraDx.accountFeeCurrencyPath,
                 localKey: "",
                 keyParamClosure: { BytesCodable(wrappedValue: accountId) }
             ),
-            mappingKey: HydraDx.SwapRemoteStateChange.Key.referralLink.rawValue
+            mappingKey: HydraDx.SwapFeeCurrencyStateChange.Key.feeCurrency.rawValue
         )
 
-        return [referralRequest]
+        return [feeCurrencyRequest]
     }
 
     override func getRequests() throws -> [BatchStorageSubscriptionRequest] {
-        getRequests(for: accountId)
+        getRequests(for: payerAccountId)
     }
 }
