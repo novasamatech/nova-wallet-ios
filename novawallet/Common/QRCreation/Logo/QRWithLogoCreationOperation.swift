@@ -7,15 +7,18 @@ import QRCode
 final class QRWithLogoCreationOperation: BaseOperation<UIImage> {
     let payloadClosure: () throws -> Data
     let qrSize: CGSize
+    let scale: CGFloat
     let logoInfo: IconInfo?
 
     init(
         payload: Data,
         qrSize: CGSize,
+        scale: CGFloat = UIScreen.main.scale,
         logoInfo: IconInfo? = nil
     ) {
         payloadClosure = { payload }
         self.qrSize = qrSize
+        self.scale = scale
         self.logoInfo = logoInfo
 
         super.init()
@@ -24,10 +27,12 @@ final class QRWithLogoCreationOperation: BaseOperation<UIImage> {
     init(
         qrSize: CGSize,
         logoInfo: IconInfo? = nil,
+        scale: CGFloat = UIScreen.main.scale,
         payloadClosure: @escaping () throws -> Data
     ) {
         self.qrSize = qrSize
         self.logoInfo = logoInfo
+        self.scale = scale
         self.payloadClosure = payloadClosure
     }
 
@@ -40,23 +45,6 @@ final class QRWithLogoCreationOperation: BaseOperation<UIImage> {
         qrDoc.design.style.onPixels = QRCode.FillStyle.Solid(UIColor.black.cgColor)
         qrDoc.design.shape.offPixels = nil
         qrDoc.design.style.offPixels = nil
-
-        let qrCreateImageClosure: () throws -> Void = { [weak self] in
-            guard let self else { return }
-
-            let scale = UIScreen.main.scale
-
-            let scaledSize = CGSize(
-                width: qrSize.width * scale,
-                height: qrSize.height * scale
-            )
-
-            guard let cgImage = qrDoc.cgImage(scaledSize) else {
-                throw BarcodeCreationError.bitmapImageCreationFailed
-            }
-
-            callback(.success(UIImage(cgImage: cgImage)))
-        }
 
         switch logoInfo?.type {
         case let .localColored(image):
@@ -73,7 +61,23 @@ final class QRWithLogoCreationOperation: BaseOperation<UIImage> {
             break
         }
 
-        try qrCreateImageClosure()
+        try createQRImage(from: qrDoc, callback)
+    }
+
+    private func createQRImage(
+        from qrDoc: QRCode.Document,
+        _ callback: @escaping (Result<UIImage, Error>) -> Void
+    ) throws {
+        let scaledSize = CGSize(
+            width: qrSize.width * scale,
+            height: qrSize.height * scale
+        )
+
+        guard let cgImage = qrDoc.cgImage(scaledSize) else {
+            throw BarcodeCreationError.bitmapImageCreationFailed
+        }
+
+        callback(.success(UIImage(cgImage: cgImage)))
     }
 }
 

@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class QRDisplayView: UIView {
+final class QRWithLogoDisplayView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
         view.fillColor = .white
@@ -10,9 +10,7 @@ final class QRDisplayView: UIView {
     }()
 
     let noLogoQRImageView = UIImageView()
-    let fullQRImageView: UIImageView = .create { view in
-        view.alpha = 0
-    }
+    let fullQRImageView = UIImageView()
 
     var viewModel: QRCodeWithLogoFactory.QRCreationResult?
 
@@ -36,6 +34,14 @@ final class QRDisplayView: UIView {
         }
     }
 
+    private let appearAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 0.0,
+        to: 1.0,
+        duration: 0.3,
+        delay: 0.0,
+        options: [.curveLinear]
+    )
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -56,12 +62,12 @@ final class QRDisplayView: UIView {
         case let .full(image) where self.viewModel != nil && self.viewModel != viewModel:
             fullQRImageView.image = image
 
-            UIView.animate(withDuration: 0.3) {
-                self.fullQRImageView.alpha = 1
-            }
+            appearAnimator.animate(
+                view: fullQRImageView,
+                completionBlock: nil
+            )
         case let .full(image):
             fullQRImageView.image = image
-            fullQRImageView.alpha = 1
         }
 
         self.viewModel = viewModel

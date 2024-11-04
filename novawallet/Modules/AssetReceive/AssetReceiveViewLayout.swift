@@ -31,7 +31,7 @@ final class AssetReceiveViewLayout: UIView {
         view.textAlignment = .center
     }
 
-    let qrView: QRDisplayView = .create {
+    let qrView: QRWithLogoDisplayView = .create {
         $0.contentInsets = Constants.qrViewContentInsets
         $0.backgroundView.shadowOpacity = .zero
     }

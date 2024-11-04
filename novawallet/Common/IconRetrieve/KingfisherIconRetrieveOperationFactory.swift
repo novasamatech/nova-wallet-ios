@@ -71,13 +71,9 @@ extension KingfisherIconRetrieveOperationFactory: IconRetrieveOperationFactoryPr
                 }
 
                 if let cacheKey = iconInfo.type?.cacheKey {
-                    let cacheOptions: KingfisherOptionsInfo = [
-                        .cacheSerializer(RemoteImageSerializer.shared),
-                        .cacheOriginalImage,
-                        .diskCacheExpiration(.days(1))
-                    ]
+                    let cacheOptions = KingfisherOptionsInfo.cacheOptions
 
-                    KingfisherManager.shared.cache.store(
+                    imageManager.cache.store(
                         resultImage,
                         forKey: cacheKey,
                         options: KingfisherParsedOptionsInfo(cacheOptions)
@@ -104,4 +100,12 @@ extension KingfisherIconRetrieveOperationFactory: IconRetrieveOperationFactoryPr
             }
         }
     }
+}
+
+extension KingfisherOptionsInfo {
+    static let cacheOptions: KingfisherOptionsInfo = [
+        .cacheSerializer(RemoteImageSerializer.shared),
+        .cacheOriginalImage,
+        .diskCacheExpiration(.days(1))
+    ]
 }
