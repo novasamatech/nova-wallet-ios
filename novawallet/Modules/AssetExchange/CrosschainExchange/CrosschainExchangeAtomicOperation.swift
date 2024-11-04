@@ -231,8 +231,8 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
         mappingOperation.addDependency(crosschainFeeWrapper.targetOperation)
         mappingOperation.addDependency(originFeeWrapper.targetOperation)
 
-        return crosschainFeeWrapper
-            .insertingHead(operations: originFeeWrapper.allOperations)
+        return originFeeWrapper
+            .insertingHead(operations: crosschainFeeWrapper.allOperations)
             .insertingHead(operations: resolutionWrapper.allOperations)
             .insertingTail(operation: mappingOperation)
     }

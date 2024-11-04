@@ -44,14 +44,12 @@ extension ExtrinsicFeeEstimationRegistry: ExtrinsicFeeEstimationRegistring {
 
         return createFeeEstimatingWrapper(
             for: asset,
-            chainAssetId: chainAssetId,
             extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
         )
     }
 
     func createFeeEstimatingWrapper(
         for asset: AssetModel,
-        chainAssetId _: ChainAssetId,
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
         guard !asset.isUtility else {

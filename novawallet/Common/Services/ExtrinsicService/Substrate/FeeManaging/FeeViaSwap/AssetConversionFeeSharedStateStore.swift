@@ -64,6 +64,8 @@ enum AssetConversionFeeSharedStateStore {
 
         feeServices[state] = WeakWrapper(target: service)
 
+        service.setup()
+
         return service
     }
 }
