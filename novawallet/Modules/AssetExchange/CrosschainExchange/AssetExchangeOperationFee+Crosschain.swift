@@ -24,7 +24,7 @@ extension AssetExchangeOperationFee {
                 )
             ],
             paidFromAmount: [
-                .init(amount: crosschainFee.senderPart, asset: assetIn)
+                .init(amount: crosschainFee.holdingPart, asset: assetIn)
             ]
         )
     }
