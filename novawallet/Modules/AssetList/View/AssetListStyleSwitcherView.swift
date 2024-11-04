@@ -247,11 +247,15 @@ private extension AssetListStyleSwitcherView {
             toValue: currentPosition
         )
 
+        isUserInteractionEnabled = false
+
         CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in
             self?.label.text = newText
             self?.label.layer.position.y = currentPosition
             newLabel.removeFromSuperview()
+
+            self?.isUserInteractionEnabled = true
         }
 
         label.layer.add(currentSpring, forKey: "rollOut")
