@@ -38,6 +38,10 @@ class AssetListStyleSwitcherView: UIView {
     }
 
     func setup(with state: State) {
+        guard state != self.state else {
+            return
+        }
+
         self.state = state
 
         setupIndicatorLayers(with: state)
@@ -130,7 +134,7 @@ private extension AssetListStyleSwitcherView {
         addGestureRecognizer(tapGesture)
     }
 
-    func setupIndicatorLayers(with _: State) {
+    func setupIndicatorLayers(with state: State) {
         setupSquareLayer(selected: state == .networks)
         setupCircleLayer(selected: state == .tokens)
     }
@@ -198,6 +202,7 @@ private extension AssetListStyleSwitcherView {
             ),
             direction: .up
         )
+
         animateIndicators(
             squareColor: Constants.indicatorInactiveColor,
             circleColor: Constants.indicatorActiveColor
@@ -211,6 +216,7 @@ private extension AssetListStyleSwitcherView {
             ),
             direction: .down
         )
+
         animateIndicators(
             squareColor: Constants.indicatorActiveColor,
             circleColor: Constants.indicatorInactiveColor
@@ -240,16 +246,17 @@ private extension AssetListStyleSwitcherView {
 
         let currentSpring = createSpringAnimation(
             fromValue: currentPosition,
-            toValue: currentPosition + (Constants.rollDistance * direction.yOffset)
+            toValue: currentPosition + (Constants.rollDistance * direction.yOffset),
+            direction: direction
         )
         let newSpring = createSpringAnimation(
             fromValue: newLabel.layer.position.y,
-            toValue: currentPosition
+            toValue: currentPosition,
+            direction: direction
         )
 
         isUserInteractionEnabled = false
 
-        CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in
             self?.label.text = newText
             self?.label.layer.position.y = currentPosition
@@ -258,49 +265,73 @@ private extension AssetListStyleSwitcherView {
             self?.isUserInteractionEnabled = true
         }
 
-        label.layer.add(currentSpring, forKey: "rollOut")
-        newLabel.layer.add(newSpring, forKey: "rollIn")
-
+        CATransaction.begin()
+        label.layer.add(
+            currentSpring,
+            forKey: "rollOut"
+        )
+        newLabel.layer.add(
+            newSpring,
+            forKey: "rollIn"
+        )
         CATransaction.commit()
     }
 
     func createSpringAnimation(
-        fromValue: Any?,
-        toValue: Any?
-    ) -> CASpringAnimation {
+        fromValue: CGFloat?,
+        toValue: CGFloat?,
+        direction: AnimationDirection
+    ) -> CAAnimationGroup {
+        guard let fromValue = fromValue else { return CAAnimationGroup() }
+
+        let anticipation = CABasicAnimation(keyPath: "position.y")
+        anticipation.fromValue = fromValue
+        anticipation.toValue = fromValue + (Constants.anticipationDistance * (-direction.yOffset))
+        anticipation.duration = Constants.animationDuration * Constants.anticipationDurationRatio
+        anticipation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+
         let spring = CASpringAnimation(keyPath: "position.y")
-        spring.fromValue = fromValue
+        spring.fromValue = anticipation.toValue
         spring.toValue = toValue
-        spring.duration = Constants.animationDuration
+        spring.duration = Constants.animationDuration * (1 - Constants.anticipationDurationRatio)
+        spring.beginTime = anticipation.duration
         spring.initialVelocity = Constants.springInitialVelocity
         spring.damping = Constants.springDamping
         spring.stiffness = Constants.springStiffness
         spring.mass = Constants.springObjectMass
-        spring.isRemovedOnCompletion = true
 
-        return spring
+        let group = CAAnimationGroup()
+        group.animations = [anticipation, spring]
+        group.duration = Constants.animationDuration
+        group.fillMode = .forwards
+        group.isRemovedOnCompletion = true
+
+        return group
     }
 
     func animateIndicators(
         squareColor: CGColor,
         circleColor: CGColor
     ) {
+        squareLayer.fillColor = squareColor
+        circleLayer.fillColor = circleColor
+
         let squareAnimation = createColorAnimation(
-            fromValue: squareLayer.fillColor,
+            fromValue: squareLayer.presentation()?.fillColor ?? squareLayer.fillColor,
             toValue: squareColor
         )
         let circleAnimation = createColorAnimation(
-            fromValue: circleLayer.fillColor,
+            fromValue: circleLayer.presentation()?.fillColor ?? circleLayer.fillColor,
             toValue: circleColor
         )
 
         squareLayer.add(
             squareAnimation,
-            forKey: "fillColor"
+            forKey: "squareFillColor"
         )
         circleLayer.add(
             circleAnimation,
-            forKey: "fillColor"
+            forKey: "circleFillColor"
         )
     }
 
@@ -323,7 +354,8 @@ private extension AssetListStyleSwitcherView {
 
 private extension AssetListStyleSwitcherView {
     enum AnimationDirection {
-        case up, down
+        case up
+        case down
 
         var yOffset: CGFloat {
             switch self {
@@ -345,10 +377,13 @@ private extension AssetListStyleSwitcherView {
         static let circleSize: CGFloat = 6
         static let spacing: CGFloat = 6
 
-        static let springInitialVelocity = -5.0
-        static let springDamping: CGFloat = 8.0
-        static let springStiffness: CGFloat = 130
-        static let springObjectMass: CGFloat = 0.5
+        static let anticipationDistance: CGFloat = 8.0
+        static let anticipationDurationRatio: CGFloat = 0.35
+
+        static let springInitialVelocity = 0.0
+        static let springDamping: CGFloat = 20.0
+        static let springStiffness: CGFloat = 150
+        static let springObjectMass: CGFloat = 0.8
 
         static let labelContainerHeight: CGFloat = 30.0
         static let labelContainerWidth: CGFloat = 95.0
