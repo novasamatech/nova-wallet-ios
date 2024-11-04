@@ -62,9 +62,13 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
     }
 
     func appendToOperation(
-        _: AssetExchangeAtomicOperationProtocol,
-        args _: AssetExchangeAtomicOperationArgs
+        _ operation: AssetExchangeAtomicOperationProtocol,
+        args: AssetExchangeAtomicOperationArgs
     ) -> AssetExchangeAtomicOperationProtocol? {
-        nil
+        appendToOperation(
+            operation,
+            edge: self,
+            args: args
+        )
     }
 }

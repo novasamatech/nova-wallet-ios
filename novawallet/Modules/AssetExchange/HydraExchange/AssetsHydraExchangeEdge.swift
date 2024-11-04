@@ -22,4 +22,39 @@ class AssetsHydraExchangeEdge {
         self.remoteSwapPair = remoteSwapPair
         self.host = host
     }
+
+    func appendToOperation(
+        _ operation: AssetExchangeAtomicOperationProtocol,
+        edge: any HydraExchangeAtomicOperation.Edge,
+        args: AssetExchangeAtomicOperationArgs
+    ) -> AssetExchangeAtomicOperationProtocol? {
+        guard
+            let hydraOperation = operation as? HydraExchangeAtomicOperation,
+            let lastEdge = hydraOperation.edges.last,
+            edge.origin == lastEdge.destination else {
+            return nil
+        }
+
+        return HydraExchangeAtomicOperation(
+            host: hydraOperation.host,
+            operationArgs: hydraOperation.operationArgs.extending(with: args),
+            edges: hydraOperation.edges + [edge]
+        )
+    }
+}
+
+private extension AssetExchangeAtomicOperationArgs {
+    func extending(
+        with newOperationArgs: AssetExchangeAtomicOperationArgs
+    ) -> AssetExchangeAtomicOperationArgs {
+        .init(
+            swapLimit: .init(
+                direction: swapLimit.direction,
+                amountIn: swapLimit.amountIn,
+                amountOut: newOperationArgs.swapLimit.amountOut,
+                slippage: newOperationArgs.swapLimit.slippage
+            ),
+            feeAsset: feeAsset
+        )
+    }
 }
