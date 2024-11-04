@@ -6,8 +6,6 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     let presenter: AssetListPresenterProtocol
 
-    var assetGroupsLayoutStyle: AssetListGroupsStyle
-
     var collectionViewLayout: UICollectionViewFlowLayout? {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     }
@@ -29,11 +27,9 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     init(
         presenter: AssetListPresenterProtocol,
-        assetGroupsLayoutStyle: AssetListGroupsStyle,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.assetGroupsLayoutStyle = assetGroupsLayoutStyle
 
         super.init(nibName: nil, bundle: nil)
 
@@ -46,7 +42,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AssetListViewLayout(assetGroupsLayoutStyle: assetGroupsLayoutStyle)
+        view = AssetListViewLayout()
     }
 
     override func viewDidLoad() {
@@ -65,6 +61,34 @@ final class AssetListViewController: UIViewController, ViewHolder {
     private func setupCollectionView() {
         collectionViewManager.setupCollectionView()
     }
+
+    func updateTotalBalanceHeight(_ height: CGFloat) {
+        [
+            rootView.collectionNetworkGroupsLayout,
+            rootView.collectionTokenGroupsLayout
+        ].forEach { $0.updateTotalBalanceHeight(height) }
+    }
+
+    private func activatePromotionWithHeight(_ height: CGFloat) {
+        [
+            rootView.collectionNetworkGroupsLayout,
+            rootView.collectionTokenGroupsLayout
+        ].forEach { $0.activatePromotionWithHeight(height) }
+    }
+
+    private func deactivatePromotion() {
+        [
+            rootView.collectionNetworkGroupsLayout,
+            rootView.collectionTokenGroupsLayout
+        ].forEach { $0.deactivatePromotion() }
+    }
+
+    private func setNftsActive(_ isActive: Bool) {
+        [
+            rootView.collectionNetworkGroupsLayout,
+            rootView.collectionTokenGroupsLayout
+        ].forEach { $0.setNftsActive(isActive) }
+    }
 }
 
 // MARK: AssetListViewProtocol
@@ -78,7 +102,7 @@ extension AssetListViewController: AssetListViewProtocol {
         let cellHeight = viewModel.locksAmount == nil ?
             AssetListMeasurement.totalBalanceHeight : AssetListMeasurement.totalBalanceWithLocksHeight
 
-        rootView.collectionViewLayout.updateTotalBalanceHeight(cellHeight)
+        updateTotalBalanceHeight(cellHeight)
     }
 
     func didReceiveGroups(viewModel: AssetListViewModel) {
@@ -121,7 +145,7 @@ extension AssetListViewController: AssetListViewProtocol {
         rootView.collectionView.reloadData()
 
         let isNftActive = viewModel != nil
-        rootView.collectionViewLayout.setNftsActive(isNftActive)
+        setNftsActive(isNftActive)
     }
 
     func didCompleteRefreshing() {
@@ -134,7 +158,7 @@ extension AssetListViewController: AssetListViewProtocol {
         rootView.collectionView.reloadData()
 
         let height = AssetListBannerCell.estimateHeight(for: viewModel)
-        rootView.collectionViewLayout.activatePromotionWithHeight(height)
+        activatePromotionWithHeight(height)
     }
 
     func didClosePromotion() {
@@ -149,7 +173,11 @@ extension AssetListViewController: AssetListViewProtocol {
             self?.rootView.collectionView.deleteItems(at: [indexPath])
         }
 
-        rootView.collectionViewLayout.deactivatePromotion()
+        deactivatePromotion()
+    }
+
+    func didReceiveAssetListStyle(_ style: AssetListGroupsStyle) {
+        rootView.assetGroupsLayoutStyle = style
     }
 }
 

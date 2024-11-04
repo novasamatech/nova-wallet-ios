@@ -25,22 +25,22 @@ final class AssetListPresenter {
 
     private(set) var walletConnectSessionsCount: Int = 0
 
-    private(set) var model: AssetListBuilderResult.Model = .init()
+    private(set) var assetListStyle: AssetListGroupsStyle?
 
-    private(set) var assetListStyle: AssetListGroupsStyle
+    private(set) var model: AssetListBuilderResult.Model = .init()
 
     init(
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
-        assetListStyle: AssetListGroupsStyle,
         viewModelFactory: AssetListViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        appearanceFacade: AppearanceFacadeProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.assetListStyle = assetListStyle
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
+        self.appearanceFacade = appearanceFacade
     }
 
     private func providePolkadotStakingPromotion() {
@@ -243,7 +243,7 @@ final class AssetListPresenter {
     }
 
     private func provideAssetViewModels() {
-        guard let hidesZeroBalances = hidesZeroBalances else {
+        guard let hidesZeroBalances, let assetListStyle else {
             return
         }
 
@@ -297,7 +297,7 @@ final class AssetListPresenter {
     }
 
     private func createGroupViewModels() -> [AssetListGroupType] {
-        guard let hidesZeroBalances = hidesZeroBalances else {
+        guard let hidesZeroBalances, let assetListStyle else {
             return []
         }
 
@@ -545,8 +545,14 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func toggleAssetListStyle() {
-        assetListStyle.toggle()
+        assetListStyle?.toggle()
+
+        guard let assetListStyle else {
+            return
+        }
+
         provideAssetViewModels()
+        interactor.setAssetListGroupsStyle(assetListStyle)
     }
 }
 
@@ -624,6 +630,12 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         hasWalletsUpdates = hasUpdates
         provideHeaderViewModel()
     }
+
+    func didReceiveAssetListGroupStyle(_ style: AssetListGroupsStyle) {
+        assetListStyle = style
+
+        view?.didReceiveAssetListStyle(style)
+    }
 }
 
 extension AssetListPresenter: Localizable {
@@ -647,5 +659,13 @@ extension AssetListPresenter: URIScanDelegate {
         wireframe.hideUriScanAnimated(from: view) { [weak self] in
             self?.interactor.connectWalletConnect(uri: uri)
         }
+    }
+}
+
+extension AssetListPresenter: IconAppearanceDepending {
+    func applyIconAppearance() {
+        guard let view, view.isSetup else { return }
+
+        provideAssetViewModels()
     }
 }

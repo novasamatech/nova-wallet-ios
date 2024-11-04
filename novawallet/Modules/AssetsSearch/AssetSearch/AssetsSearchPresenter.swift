@@ -31,6 +31,42 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
         self.localizationManager = localizationManager
     }
 
+    func selectGroup(with symbol: AssetModel.Symbol) {
+        processGroupSelectionWithCheck(
+            symbol,
+            onSingleInstance: { chainAsset in
+                processAssetSelected(with: chainAsset.chainAssetId)
+            },
+            onMultipleInstances: { _ in }
+        )
+    }
+
+    func processGroupSelectionWithCheck(
+        _ symbol: String,
+        onSingleInstance: (ChainAsset) -> Void,
+        onMultipleInstances: (MultichainToken) -> Void
+    ) {
+        guard let multichainToken = result?.assetGroups.first(
+            where: { $0.multichainToken.symbol == symbol }
+        )?.multichainToken else {
+            return
+        }
+
+        if multichainToken.instances.count > 1 {
+            onMultipleInstances(multichainToken)
+        } else if
+            let chainAssetId = multichainToken.instances.first?.chainAssetId,
+            let chainAsset = result?.state.chainAsset(for: chainAssetId) {
+            onSingleInstance(chainAsset)
+        }
+    }
+
+    private func processAssetSelected(with chainAssetId: ChainAssetId) {
+        delegate?.assetSearchDidSelect(chainAssetId: chainAssetId)
+
+        wireframe.close(view: view)
+    }
+
     private func provideAssetsViewModel() {
         guard
             let result,
@@ -134,9 +170,7 @@ class AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     }
 
     func selectAsset(for chainAssetId: ChainAssetId) {
-        delegate?.assetSearchDidSelect(chainAssetId: chainAssetId)
-
-        wireframe.close(view: view)
+        processAssetSelected(with: chainAssetId)
     }
 
     func updateSearch(query: String) {

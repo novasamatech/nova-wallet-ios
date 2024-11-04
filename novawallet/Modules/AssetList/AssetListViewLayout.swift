@@ -6,10 +6,10 @@ final class AssetListViewLayout: UIView {
     let collectionNetworkGroupsLayout = AssetListNetworksFlowLayout()
     let collectionTokenGroupsLayout = AssetListTokensFlowLayout()
 
-    var assetGroupsLayoutStyle: AssetListGroupsStyle
+    var assetGroupsLayoutStyle: AssetListGroupsStyle?
 
     var collectionViewLayout: AssetListFlowLayout {
-        switch assetGroupsLayoutStyle {
+        switch assetGroupsLayoutStyle ?? .tokens {
         case .networks: collectionNetworkGroupsLayout
         case .tokens: collectionTokenGroupsLayout
         }
@@ -28,9 +28,7 @@ final class AssetListViewLayout: UIView {
         return view
     }()
 
-    init(assetGroupsLayoutStyle: AssetListGroupsStyle) {
-        self.assetGroupsLayoutStyle = assetGroupsLayoutStyle
-
+    override init(frame _: CGRect) {
         super.init(frame: .zero)
 
         setup()

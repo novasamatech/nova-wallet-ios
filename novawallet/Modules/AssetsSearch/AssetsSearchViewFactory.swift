@@ -28,6 +28,7 @@ struct AssetsSearchViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             currencyManager: currencyManager
         )
 

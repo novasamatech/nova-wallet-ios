@@ -157,6 +157,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             localizationManager: localizationManager,
             crowdloansCalculator: CrowdloansCalculator(),
             accountManagementFilter: AccountManagementFilter(),
+            appearanceFacade: AppearanceFacade.shared,
             logger: Logger.shared
         )
 
@@ -218,6 +219,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             accountManagementFilter: AccountManagementFilter(),
             sorting: ReferendumsTimeSortingProvider(),
             localizationManager: localizationManager,
+            appearanceFacade: AppearanceFacade.shared,
             logger: logger
         )
 

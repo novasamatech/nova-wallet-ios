@@ -38,6 +38,7 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
         quantityFormatter: LocalizableResource<NumberFormatter>,
         nftDownloadService: NftFileDownloadServiceProtocol,
@@ -51,6 +52,7 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: assetFormatterFactory,
             percentFormatter: percentFormatter,
+            assetIconViewModelFactory: assetIconViewModelFactory,
             currencyManager: currencyManager
         )
     }

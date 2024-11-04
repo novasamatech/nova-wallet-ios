@@ -11,7 +11,12 @@ struct TokensManageViewFactory {
         let wireframe = TokensManageWireframe()
 
         let formatter = NumberFormatter.positiveQuantity.localizableResource()
-        let viewModelFactory = TokensManageViewModelFactory(quantityFormater: formatter)
+        let assetIconViewModelFactory = AssetIconViewModelFactory()
+
+        let viewModelFactory = TokensManageViewModelFactory(
+            quantityFormater: formatter,
+            assetIconViewModelFactory: assetIconViewModelFactory
+        )
 
         let presenter = TokensManagePresenter(
             interactor: interactor,

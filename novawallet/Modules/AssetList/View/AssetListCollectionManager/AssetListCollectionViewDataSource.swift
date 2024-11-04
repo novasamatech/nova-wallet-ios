@@ -106,6 +106,8 @@ private extension AssetListCollectionViewDataSource {
 
         settingsCell.locale = selectedLocale
 
+        settingsCell.styleSwitcher.setup(with: .init(using: groupsViewModel.listGroupStyle))
+
         settingsCell.manageButton.addTarget(
             self,
             action: #selector(actionManage),
@@ -118,12 +120,9 @@ private extension AssetListCollectionViewDataSource {
             for: .touchUpInside
         )
 
-        settingsCell.titleLabel.addGestureRecognizer(
-            UITapGestureRecognizer(
-                target: self,
-                action: #selector(actionChangeAssetListStyle)
-            )
-        )
+        settingsCell.styleSwitcher.addAction { [weak self] _ in
+            self?.actionsDelegate?.actionChangeAssetListStyle()
+        }
 
         settingsCell.manageButton.bind(showingBadge: groupsViewModel.isFiltered)
 
@@ -316,10 +315,6 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSwap() {
         actionsDelegate?.actionSwap()
-    }
-
-    @objc func actionChangeAssetListStyle() {
-        actionsDelegate?.actionChangeAssetListStyle()
     }
 }
 

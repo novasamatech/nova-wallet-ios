@@ -37,7 +37,10 @@ extension AssetListModelHelpers {
         } else if let result = AssetListGroupModelComparator.by(\.amount, lhs, rhs) {
             result
         } else {
-            false
+            AssetListGroupModelComparator.defaultComparator(
+                lhs: lhs,
+                rhs: rhs
+            )
         }
     }
 

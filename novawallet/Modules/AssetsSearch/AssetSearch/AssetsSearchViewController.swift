@@ -136,6 +136,11 @@ extension AssetsSearchViewController: AssetsSearchCollectionManagerDelegate {
         keyboardAppearanceStrategy.onCellSelected(for: rootView.searchBar.textField)
         presenter.selectAsset(for: chainAssetId)
     }
+
+    func selectGroup(with symbol: AssetModel.Symbol) {
+        keyboardAppearanceStrategy.onCellSelected(for: rootView.searchBar.textField)
+        presenter.selectGroup(with: symbol)
+    }
 }
 
 extension AssetsSearchViewController: UITextFieldDelegate {

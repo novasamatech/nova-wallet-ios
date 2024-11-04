@@ -93,6 +93,8 @@ class AssetsSearchCollectionManager {
         } else if expandable {
             expandAssetGroup(for: symbol)
             view?.collectionView.reloadSections([indexPath.section])
+        } else {
+            delegate?.selectGroup(with: symbol)
         }
     }
 

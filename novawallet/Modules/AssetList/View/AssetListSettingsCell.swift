@@ -1,13 +1,7 @@
 import UIKit
 
 final class AssetListSettingsCell: UICollectionViewCell {
-    let titleLabel: UILabel = {
-        let view = UILabel()
-        view.font = .semiBoldTitle3
-        view.textColor = R.color.colorTextPrimary()
-        view.isUserInteractionEnabled = true
-        return view
-    }()
+    let styleSwitcher = AssetListStyleSwitcherView()
 
     let manageButton = BadgedManageButton()
 
@@ -44,9 +38,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
     }
 
     private func setupLocalization() {
-        titleLabel.text = R.string.localizable.commonTokens(
-            preferredLanguages: locale.rLanguages
-        )
+        styleSwitcher.locale = locale
     }
 
     private func setupLayout() {
@@ -64,9 +56,9 @@ final class AssetListSettingsCell: UICollectionViewCell {
             make.centerY.equalToSuperview()
         }
 
-        addSubview(titleLabel)
+        addSubview(styleSwitcher)
 
-        titleLabel.snp.makeConstraints { make in
+        styleSwitcher.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.trailing.lessThanOrEqualTo(searchButton.snp.leading).offset(-8.0)
             make.centerY.equalToSuperview()

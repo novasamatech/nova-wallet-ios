@@ -7,13 +7,6 @@ final class SwapAssetControl: BackgroundedContentControl {
 
     let assetView = SwapAssetView()
 
-    var iconViewContentInsets = UIEdgeInsets.zero {
-        didSet {
-            lazyIconView?.contentInsets = iconViewContentInsets
-            setNeedsLayout()
-        }
-    }
-
     var horizontalSpacing: CGFloat = 12 {
         didSet {
             setNeedsLayout()
@@ -117,7 +110,6 @@ final class SwapAssetControl: BackgroundedContentControl {
         let size = 2 * iconRadius
         let initFrame = CGRect(origin: .zero, size: .init(width: size, height: size))
         let imageView = AssetIconView(frame: initFrame)
-        imageView.contentInsets = iconViewContentInsets
         imageView.backgroundView.cornerRadius = iconRadius
         contentView?.addSubview(imageView)
 
@@ -135,7 +127,6 @@ extension SwapAssetControl {
     func bind(assetViewModel: SwapsAssetViewModel) {
         let width = 2 * iconRadius - iconView.contentInsets.left - iconView.contentInsets.right
         let height = 2 * iconRadius - iconView.contentInsets.top - iconView.contentInsets.bottom
-        iconViewContentInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
         let size = CGSize(width: width, height: height)
         iconView.bind(viewModel: assetViewModel.imageViewModel, size: size)
 
@@ -150,7 +141,6 @@ extension SwapAssetControl {
     func bind(emptyViewModel: EmptySwapsAssetViewModel) {
         let size = CGSize(width: 2 * iconRadius, height: 2 * iconRadius)
         iconView.bind(viewModel: emptyViewModel.imageViewModel, size: size)
-        iconViewContentInsets = .zero
         assetView.bind(
             symbol: emptyViewModel.title,
             network: emptyViewModel.subtitle,

@@ -1,6 +1,6 @@
 import UIKit
 
-typealias SendAssetOperationCollectionDelegate = AssetOperationCollectionDelegate
+typealias SendAssetOperationCollectionDelegate = AssetsSearchCollectionManagerDelegate
     & SendAssetOperationCollectionManagerActionDelegate
 
 class SendAssetOperationCollectionManager: AssetOperationCollectionManager {

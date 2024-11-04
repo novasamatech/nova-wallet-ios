@@ -3,7 +3,7 @@ import BigInt
 import Operation_iOS
 import SoraFoundation
 
-final class ReceiveAssetOperationPresenter: AssetOperationPresenter {
+final class ReceiveAssetOperationPresenter: AssetsSearchPresenter {
     var receiveWireframe: ReceiveAssetOperationWireframeProtocol? {
         wireframe as? ReceiveAssetOperationWireframeProtocol
     }
@@ -32,10 +32,12 @@ final class ReceiveAssetOperationPresenter: AssetOperationPresenter {
         guard let chainAsset = result?.state.chainAsset(for: chainAssetId) else {
             return
         }
+
+        processAssetSelected(chainAsset)
     }
 
     override func selectGroup(with symbol: AssetModel.Symbol) {
-        processWithCheck(
+        processGroupSelectionWithCheck(
             symbol,
             onSingleInstance: { chainAsset in
                 processAssetSelected(chainAsset)

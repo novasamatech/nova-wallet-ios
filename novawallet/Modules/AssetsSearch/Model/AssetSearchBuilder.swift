@@ -108,7 +108,10 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         let comparator = AssetListModelHelpers.assetListChainGroupSortingBlock
         let sortedChainGroups = chainGroups.sorted(by: comparator)
 
-        let (assetGroups, groupListsByAsset) = buildAssetGroups(using: state)
+        let (assetGroups, groupListsByAsset) = buildAssetGroups(
+            from: assets,
+            using: state
+        )
 
         return AssetSearchBuilderResult(
             chainGroups: sortedChainGroups,
@@ -120,6 +123,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
     }
 
     func buildAssetGroups(
+        from assets: [ChainAsset],
         using state: AssetListState
     ) -> (
         groups: [AssetListAssetGroupModel],
@@ -131,7 +135,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         var tokensBySymbol: [AssetModel.Symbol: MultichainToken] = [:]
         var tokensByChainAsset: [ChainAssetId: MultichainToken] = [:]
 
-        Array(state.allChains.values)
+        assets
             .createMultichainTokens()
             .forEach { token in
                 token.instances.forEach {
@@ -163,6 +167,9 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             newGroups.append(groupModel)
         }
 
+        let groupsComparator = AssetListModelHelpers.assetListAssetGroupSortingBlock
+        newGroups.sort(by: groupsComparator)
+
         return (newGroups, newGroupListsByAsset)
     }
 
@@ -170,24 +177,24 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         using tokensByChainAsset: [ChainAssetId: MultichainToken],
         state: AssetListState
     ) -> [AssetModel.Symbol: [AssetListAssetModel]] {
-        state.allChains.values
-            .flatMap { $0.chainAssets() }
-            .reduce(
-                into: [AssetModel.Symbol: [AssetListAssetModel]]()
-            ) { acc, chainAsset in
-                guard let symbol = tokensByChainAsset[chainAsset.chainAssetId]?.symbol else {
-                    return
+        tokensByChainAsset.reduce(into: [AssetModel.Symbol: [AssetListAssetModel]]()) { acc, keyValue in
+            let models: [AssetListAssetModel] = keyValue.value.instances.compactMap { instance in
+                guard
+                    let chain = state.allChains[instance.chainAssetId.chainId],
+                    let asset = chain.asset(for: instance.chainAssetId.assetId)
+                else {
+                    return nil
                 }
 
-                let model = AssetListModelHelpers.createAssetModel(
-                    for: chainAsset.chain,
-                    assetModel: chainAsset.asset,
+                return AssetListModelHelpers.createAssetModel(
+                    for: chain,
+                    assetModel: asset,
                     state: state
                 )
-
-                let newValue = (acc[symbol] ?? []) + [model]
-                acc[symbol] = newValue
             }
+
+            acc[keyValue.value.symbol] = models
+        }
     }
 
     private func filterAssets(

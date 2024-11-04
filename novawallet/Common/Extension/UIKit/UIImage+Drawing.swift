@@ -1,6 +1,11 @@
 import UIKit
 
 extension UIImage {
+    enum Shape {
+        case rectangle
+        case circle
+    }
+
     static func background(
         from color: UIColor,
         size: CGSize = CGSize(width: 1.0, height: 1.0),
@@ -23,6 +28,29 @@ extension UIImage {
         UIGraphicsEndImageContext()
 
         return image
+    }
+
+    func redrawWithBackground(
+        color: UIColor,
+        shape: Shape = .rectangle
+    ) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: size, format: UIGraphicsImageRendererFormat.default())
+
+        return renderer.image { context in
+            let rect = CGRect(origin: .zero, size: size)
+
+            color.setFill()
+
+            switch shape {
+            case .rectangle:
+                context.fill(rect)
+
+            case .circle:
+                context.cgContext.fillEllipse(in: rect)
+            }
+
+            self.draw(in: rect)
+        }
     }
 
     func crop(targetSize: CGSize, cornerRadius: CGFloat, contentScale: CGFloat) -> UIImage? {
