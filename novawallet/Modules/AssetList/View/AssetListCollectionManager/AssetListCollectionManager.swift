@@ -101,16 +101,18 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     func changeCollectionViewLayout(to style: AssetListGroupsStyle) {
         guard let view else { return }
 
+        let previousLayout = view.collectionViewLayout
+
         view.assetGroupsLayoutStyle = style
 
-        let layout: UICollectionViewLayout = view.collectionViewLayout
+        let newLayout: AssetListFlowLayout = view.collectionViewLayout
 
         view.collectionView.setCollectionViewLayout(
-            layout,
+            newLayout,
             animated: true
-        )
-
-        layout.invalidateLayout()
+        ) { _ in
+            view.collectionView.collectionViewLayout.invalidateLayout()
+        }
     }
 
     func updateTokensGroupLayout() {

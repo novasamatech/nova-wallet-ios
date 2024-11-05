@@ -25,6 +25,8 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     private(set) var promotionInsets: UIEdgeInsets = .zero
     private(set) var nftsInsets: UIEdgeInsets = .zero
 
+    var needsDecorationUpdate = false
+
     private var isAnimating: Bool = false
 
     enum SectionType: CaseIterable {
@@ -177,6 +179,11 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         return itemsDecorationAttributes[index]
     }
 
+    override func invalidateLayout() {
+        super.invalidateLayout()
+        itemsDecorationAttributes = []
+    }
+
     override func prepare() {
         super.prepare()
 
@@ -272,19 +279,30 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     // MARK: Animation
 
+    private func getTransformForAnimation(isAppearing: Bool) -> CGAffineTransform {
+        let scale: CGFloat = 0.001
+        let translation: CGFloat = isAppearing ? -50 : 50
+        return CGAffineTransform(scaleX: scale, y: scale)
+            .concatenating(CGAffineTransform(translationX: 0, y: translation))
+    }
+
     override func prepareForTransition(to newLayout: UICollectionViewLayout) {
         super.prepareForTransition(to: newLayout)
 
-        isAnimating = true
+        itemsDecorationAttributes.removeAll()
 
+        isAnimating = true
+        
         Logger.shared.info("Transition to new layout: \(newLayout) in \(self)")
     }
 
     override func prepareForTransition(from oldLayout: UICollectionViewLayout) {
         super.prepareForTransition(from: oldLayout)
 
-        isAnimating = true
+        prepare()
 
+        isAnimating = true
+        
         Logger.shared.info("Transition from old layout: \(oldLayout) in \(self)")
     }
 
@@ -292,89 +310,113 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         super.finalizeLayoutTransition()
 
         isAnimating = false
-
+        
         Logger.shared.info("Finalize transition on layout \(self)")
     }
 
-    override func initialLayoutAttributesForAppearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    override func initialLayoutAttributesForAppearingItem(
+        at itemIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)?
+            .copy() as? UICollectionViewLayoutAttributes
 
+        attributes?.alpha = 0.0
+
+        if isAnimating {
+            attributes?.transform = getTransformForAnimation(isAppearing: true)
+        }
+        
         Logger.shared.info("Transition \(self) Appearing item \(itemIndexPath) Attributes: \(attributes)")
 
-        attributes?.alpha = 1.0
-
-        if isAnimating, itemIndexPath.section >= AssetListFlowLayout.SectionType.assetsStartingSection {
-            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
-        }
-
         return attributes
     }
 
-    override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    override func finalLayoutAttributesForDisappearingItem(
+        at itemIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?
+            .copy() as? UICollectionViewLayoutAttributes
 
-        attributes?.alpha = 1.0
+        attributes?.alpha = 0.0
 
-        if isAnimating, itemIndexPath.section >= AssetListFlowLayout.SectionType.assetsStartingSection {
-            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+        if isAnimating {
+            attributes?.transform = getTransformForAnimation(isAppearing: false)
         }
 
-        Logger.shared.info("Transition \(self) Dissappearing item \(itemIndexPath) Attributes: \(attributes)")
-
+        Logger.shared.info("Transition \(self) Disappearing item \(itemIndexPath) Attributes: \(attributes)")
+        
         return attributes
     }
 
-    override func initialLayoutAttributesForAppearingDecorationElement(ofKind elementKind: String, at decorationIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.initialLayoutAttributesForAppearingDecorationElement(ofKind: elementKind, at: decorationIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    override func initialLayoutAttributesForAppearingDecorationElement(
+        ofKind elementKind: String,
+        at decorationIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = itemsDecorationAttributes
+            .first { $0.indexPath == decorationIndexPath }?
+            .copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
+
+        if isAnimating {
+            attributes?.transform = getTransformForAnimation(isAppearing: true)
+        }
 
         Logger.shared.info("Transition \(self) Appearing decoration \(decorationIndexPath) Attributes: \(attributes)")
 
-        attributes?.alpha = 1.0
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingDecorationElement(
+        ofKind elementKind: String,
+        at decorationIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = itemsDecorationAttributes
+            .first { $0.indexPath == decorationIndexPath }?
+            .copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
 
         if isAnimating {
-            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+            attributes?.transform = getTransformForAnimation(isAppearing: false)
+        }
+
+        Logger.shared.info("Transition \(self) Disappearing decoration \(decorationIndexPath) Attributes: \(attributes)")
+
+        return attributes
+    }
+
+    override func initialLayoutAttributesForAppearingSupplementaryElement(
+        ofKind elementKind: String,
+        at elementIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingSupplementaryElement(
+            ofKind: elementKind,
+            at: elementIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
+
+        if isAnimating {
+            attributes?.transform = getTransformForAnimation(isAppearing: true)
         }
 
         return attributes
     }
 
-    override func finalLayoutAttributesForDisappearingDecorationElement(ofKind elementKind: String, at decorationIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.finalLayoutAttributesForDisappearingDecorationElement(ofKind: elementKind, at: decorationIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    override func finalLayoutAttributesForDisappearingSupplementaryElement(
+        ofKind elementKind: String,
+        at elementIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingSupplementaryElement(
+            ofKind: elementKind,
+            at: elementIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
 
-        attributes?.alpha = 1.0
-
-        if isAnimating {
-            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
-        }
-
-        Logger.shared.info("Transition \(self) Dissappearing decoration \(decorationIndexPath) Attributes: \(attributes)")
-
-        return attributes
-    }
-
-    override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String, at elementIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.initialLayoutAttributesForAppearingSupplementaryElement(ofKind: elementKind, at: elementIndexPath)?.copy() as? UICollectionViewLayoutAttributes
-
-        attributes?.alpha = 1.0
+        attributes?.alpha = 0.0
 
         if isAnimating {
-            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
-        }
-
-        Logger.shared.info("Transition \(self) Appearing supplementary \(elementIndexPath) Attributes: \(attributes)")
-
-        return attributes
-    }
-
-    override func finalLayoutAttributesForDisappearingSupplementaryElement(ofKind elementKind: String, at elementIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.finalLayoutAttributesForDisappearingSupplementaryElement(ofKind: elementKind, at: elementIndexPath)?.copy() as? UICollectionViewLayoutAttributes
-
-        Logger.shared.info("Transition \(self) Dissappearing supplementary \(elementIndexPath) Attributes: \(attributes)")
-
-        attributes?.alpha = 1.0
-
-        if isAnimating {
-            attributes?.transform = CGAffineTransform.identity.scaledBy(x: 0.0, y: 0.0)
+            attributes?.transform = getTransformForAnimation(isAppearing: false)
         }
 
         return attributes

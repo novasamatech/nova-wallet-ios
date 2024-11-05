@@ -123,15 +123,14 @@ extension AssetListViewController: AssetListViewProtocol {
             }
 
             UIView.performWithoutAnimation {
-                self.rootView.collectionView.performBatchUpdates {
+                rootView.collectionView.performBatchUpdates {
                     self.rootView.collectionView.deleteSections(IndexSet(removingIndexes))
                     self.rootView.collectionView.insertSections(IndexSet(insertingIndexes))
+                } completion: { _ in
+                    self.collectionViewManager.updateTokensGroupLayout()
+                    self.collectionViewManager.changeCollectionViewLayout(to: newGroupStyle)
                 }
             }
-
-            collectionViewManager.changeCollectionViewLayout(to: newGroupStyle)
-
-            collectionViewManager.updateTokensGroupLayout()
         } else {
             rootView.collectionView.reloadData()
 
