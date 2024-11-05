@@ -67,18 +67,20 @@ final class AssetsExchangeTests: XCTestCase {
         
         let graph = createGraph(for: params)
         
-        guard let reachability = graph?.fetchReachability() else {
-            XCTFail("No graph")
-            return
+        measure {
+            guard let reachability = graph?.fetchReachability() else {
+                XCTFail("No graph")
+                return
+            }
+            
+            let hasDirections = !reachability.getAllAssetIn().isEmpty &&
+                !reachability.getAllAssetOut().isEmpty &&
+                !reachability.getAssetsIn(for: assetHubUtilityAsset).isEmpty &&
+                !reachability.getAssetsOut(for: polkadotUtilityAsset).isEmpty &&
+                !reachability.getAssetsIn(for: hydraUtilityAsset).isEmpty
+            
+            XCTAssert(hasDirections, "Some directions were not found")
         }
-        
-        let hasDirections = !reachability.getAllAssetIn().isEmpty &&
-            !reachability.getAllAssetOut().isEmpty &&
-            !reachability.getAssetsIn(for: assetHubUtilityAsset).isEmpty &&
-            !reachability.getAssetsOut(for: polkadotUtilityAsset).isEmpty &&
-            !reachability.getAssetsIn(for: hydraUtilityAsset).isEmpty
-        
-        XCTAssert(hasDirections, "Some directions were not found")
     }
     
     func testCalculateFee() {

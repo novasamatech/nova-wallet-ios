@@ -34,7 +34,8 @@ extension AssetsExchangeGraph: AssetsExchangeGraphProtocol {
         let allNodes = model.connections.keys
 
         let mapping = allNodes.reduce(into: [ChainAssetId: Set<ChainAssetId>]()) { accum, assetIn in
-            accum[assetIn] = model.reachableNodes(for: assetIn)
+            // TODO: replace with real filter
+            accum[assetIn] = model.calculateReachableNodes(for: assetIn, filter: .allEdges())
         }
 
         return AssetsExchageGraphReachability(mapping: mapping)

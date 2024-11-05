@@ -16,7 +16,6 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
         }
 
         var result: [[E]] = []
-        var visitedPaths: Set<[E]> = Set()
 
         while !queue.isEmpty, result.count < topN {
             guard let (cost, path) = queue.pop() else { break }
@@ -31,15 +30,13 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
             let neighbors = connections[currentEdge.destination] ?? []
 
             for neighbor in neighbors {
-                var newPath = path
-                newPath.append(neighbor)
+                if
+                    !path.contains(neighbor),
+                    filter.shouldVisit(edge: neighbor, predecessor: currentEdge) {
+                    var newPath = path
+                    newPath.append(neighbor)
 
-                if !visitedPaths.contains(newPath) {
-                    visitedPaths.insert(newPath)
-                    
-                    if filter.shouldVisit(edge: neighbor, predecessor: currentEdge) {
-                        queue.push((cost: cost + neighbor.weight, path: newPath))
-                    }
+                    queue.push((cost: cost + neighbor.weight, path: newPath))
                 }
             }
         }

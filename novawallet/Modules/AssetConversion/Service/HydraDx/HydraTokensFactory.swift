@@ -68,7 +68,7 @@ extension HydraTokensFactory: HydraTokensFactoryProtocol {
             let graph = GraphModelFactory.createFromConnections(pairPools)
 
             return graph.connections.keys.reduce(into: [ChainAssetId: Set<ChainAssetId>]()) { accum, asset in
-                accum[asset] = graph.reachableNodes(for: asset)
+                accum[asset] = graph.calculateReachableNodes(for: asset, filter: .allEdges())
             }
         }
 
@@ -89,7 +89,7 @@ extension HydraTokensFactory: HydraTokensFactoryProtocol {
 
             let graph = GraphModelFactory.createFromConnections(pairPools)
 
-            return graph.reachableNodes(for: chainAssetId)
+            return graph.calculateReachableNodes(for: chainAssetId, filter: .allEdges())
         }
 
         wrappers.forEach { mergeOperation.addDependency($0.targetOperation) }

@@ -334,6 +334,7 @@
 		0C61084B2CD88F9B00909928 /* AssetsExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C61084A2CD88F9B00909928 /* AssetsExchangeService.swift */; };
 		0C61084D2CD8909600909928 /* AssetExchangeFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C61084C2CD8909600909928 /* AssetExchangeFee.swift */; };
 		0C61084F2CD92C6F00909928 /* GraphEdgeFiltering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C61084E2CD92C6F00909928 /* GraphEdgeFiltering.swift */; };
+		0C6108512CD9D3BA00909928 /* GraphModel+BFS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108502CD9D3BA00909928 /* GraphModel+BFS.swift */; };
 		0C626D1B2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */; };
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
@@ -5486,6 +5487,7 @@
 		0C61084A2CD88F9B00909928 /* AssetsExchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeService.swift; sourceTree = "<group>"; };
 		0C61084C2CD8909600909928 /* AssetExchangeFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFee.swift; sourceTree = "<group>"; };
 		0C61084E2CD92C6F00909928 /* GraphEdgeFiltering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphEdgeFiltering.swift; sourceTree = "<group>"; };
+		0C6108502CD9D3BA00909928 /* GraphModel+BFS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GraphModel+BFS.swift"; sourceTree = "<group>"; };
 		0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingMainPresenterFactory+NominationPools.swift"; sourceTree = "<group>"; };
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
@@ -11899,6 +11901,7 @@
 			children = (
 				0CCDB2EA2B74DA55007BC5D6 /* GraphModel.swift */,
 				0CE360202C33F398006A6CE4 /* GraphModel+Dijkstra.swift */,
+				0C6108502CD9D3BA00909928 /* GraphModel+BFS.swift */,
 				0CE360222C343300006A6CE4 /* PriorityQueue.swift */,
 				0CB4334D2CC1196400F2CB59 /* WeightableEdge.swift */,
 				0C61084E2CD92C6F00909928 /* GraphEdgeFiltering.swift */,
@@ -25566,6 +25569,7 @@
 				84EDF66929C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift in Sources */,
 				0CEB6B2D2CA4121300609DC2 /* GovTreasurySpentRemoteHandler.swift in Sources */,
 				84F4A9A42551A8F3000CF0A3 /* AccountExportPasswordError.swift in Sources */,
+				0C6108512CD9D3BA00909928 /* GraphModel+BFS.swift in Sources */,
 				84B73ADE279D90BD0071AE16 /* AssetsTransfer.swift in Sources */,
 				0CAB7D9F2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift in Sources */,
 				84CFF1E726526FBC00DB7CF7 /* StakingBondMoreViewLayout.swift in Sources */,
