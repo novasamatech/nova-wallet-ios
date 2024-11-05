@@ -283,7 +283,6 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         let scale: CGFloat = 0.001
         let translation: CGFloat = isAppearing ? -50 : 50
         return CGAffineTransform(scaleX: scale, y: scale)
-            .concatenating(CGAffineTransform(translationX: 0, y: translation))
     }
 
     override func prepareForTransition(to newLayout: UICollectionViewLayout) {
@@ -292,17 +291,15 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         itemsDecorationAttributes.removeAll()
 
         isAnimating = true
-        
+
         Logger.shared.info("Transition to new layout: \(newLayout) in \(self)")
     }
 
     override func prepareForTransition(from oldLayout: UICollectionViewLayout) {
         super.prepareForTransition(from: oldLayout)
 
-        prepare()
-
         isAnimating = true
-        
+
         Logger.shared.info("Transition from old layout: \(oldLayout) in \(self)")
     }
 
@@ -310,7 +307,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         super.finalizeLayoutTransition()
 
         isAnimating = false
-        
+
         Logger.shared.info("Finalize transition on layout \(self)")
     }
 
@@ -325,7 +322,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         if isAnimating {
             attributes?.transform = getTransformForAnimation(isAppearing: true)
         }
-        
+
         Logger.shared.info("Transition \(self) Appearing item \(itemIndexPath) Attributes: \(attributes)")
 
         return attributes
@@ -344,12 +341,12 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         }
 
         Logger.shared.info("Transition \(self) Disappearing item \(itemIndexPath) Attributes: \(attributes)")
-        
+
         return attributes
     }
 
     override func initialLayoutAttributesForAppearingDecorationElement(
-        ofKind elementKind: String,
+        ofKind _: String,
         at decorationIndexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
         let attributes = itemsDecorationAttributes
@@ -360,6 +357,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         if isAnimating {
             attributes?.transform = getTransformForAnimation(isAppearing: true)
+            Logger.shared.info("Transform Attributes: \(attributes) in Appearing decoration \(self)")
         }
 
         Logger.shared.info("Transition \(self) Appearing decoration \(decorationIndexPath) Attributes: \(attributes)")
@@ -368,7 +366,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     }
 
     override func finalLayoutAttributesForDisappearingDecorationElement(
-        ofKind elementKind: String,
+        ofKind _: String,
         at decorationIndexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
         let attributes = itemsDecorationAttributes
