@@ -8,4 +8,8 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
         _ currentOperation: AssetExchangeAtomicOperationProtocol,
         args: AssetExchangeAtomicOperationArgs
     ) -> AssetExchangeAtomicOperationProtocol?
+
+    func shouldIgnoreFeeRequirement(after predecessor: any AssetExchangableGraphEdge) -> Bool
+
+    func canPayNonNativeFeesInIntermediatePosition() -> Bool
 }

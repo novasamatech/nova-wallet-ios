@@ -11,6 +11,30 @@ final class CrosschainExchangeEdge {
         self.destination = destination
         self.host = host
     }
+
+    private func deliveryFeeNotPaidOrFromHolding() -> Bool {
+        do {
+            guard let deliveryFee = try host.xcmTransfers.deliveryFee(from: origin.chainId) else {
+                return true
+            }
+
+            guard
+                let originChain = host.allChains[origin.chainId],
+                let destinationChain = host.allChains[destination.chainId] else {
+                return false
+            }
+
+            if !destinationChain.isRelaychain {
+                return deliveryFee.toParachain?.alwaysHoldingPays ?? false
+            } else if !originChain.isRelaychain {
+                return deliveryFee.toParent?.alwaysHoldingPays ?? false
+            } else {
+                return false
+            }
+        } catch {
+            return false
+        }
+    }
 }
 
 extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
@@ -36,5 +60,15 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
         args _: AssetExchangeAtomicOperationArgs
     ) -> AssetExchangeAtomicOperationProtocol? {
         nil
+    }
+
+    func shouldIgnoreFeeRequirement(after _: any AssetExchangableGraphEdge) -> Bool {
+        false
+    }
+
+    func canPayNonNativeFeesInIntermediatePosition() -> Bool {
+        // TODO: also assetIn is must be self sufficient
+
+        deliveryFeeNotPaidOrFromHolding()
     }
 }

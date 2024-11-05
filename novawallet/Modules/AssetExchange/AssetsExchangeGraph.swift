@@ -26,7 +26,8 @@ extension AssetsExchangeGraph: AssetsExchangeGraphProtocol {
         to assetOut: ChainAssetId,
         maxTopPaths: Int
     ) -> [AssetExchangeGraphPath] {
-        model.calculateShortestPath(from: assetIn, nodeEnd: assetOut, topN: maxTopPaths)
+        // TODO: replace with real filter
+        model.calculateShortestPath(from: assetIn, nodeEnd: assetOut, topN: maxTopPaths, filter: .allEdges())
     }
 
     func fetchReachability() -> AssetsExchageGraphReachabilityProtocol {

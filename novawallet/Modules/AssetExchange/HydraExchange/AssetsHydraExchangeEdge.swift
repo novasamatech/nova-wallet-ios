@@ -41,6 +41,16 @@ class AssetsHydraExchangeEdge {
             edges: hydraOperation.edges + [edge]
         )
     }
+
+    func shouldIgnoreFeeRequirement(after predecessor: any AssetExchangableGraphEdge) -> Bool {
+        predecessor is AssetsHydraExchangeEdge
+    }
+
+    func canPayNonNativeFeesInIntermediatePosition() -> Bool {
+        // TODO: assetIn must whitelisted for fee payment
+
+        true
+    }
 }
 
 private extension AssetExchangeAtomicOperationArgs {

@@ -59,4 +59,13 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     ) -> AssetExchangeAtomicOperationProtocol? {
         nil
     }
+
+    func shouldIgnoreFeeRequirement(after _: any AssetExchangableGraphEdge) -> Bool {
+        false
+    }
+
+    func canPayNonNativeFeesInIntermediatePosition() -> Bool {
+        // TODO: assetIn is must be self sufficient
+        true
+    }
 }

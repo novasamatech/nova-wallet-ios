@@ -333,6 +333,7 @@
 		0C6108492CD889A000909928 /* AssetsExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108482CD889A000909928 /* AssetsExchange.swift */; };
 		0C61084B2CD88F9B00909928 /* AssetsExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C61084A2CD88F9B00909928 /* AssetsExchangeService.swift */; };
 		0C61084D2CD8909600909928 /* AssetExchangeFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C61084C2CD8909600909928 /* AssetExchangeFee.swift */; };
+		0C61084F2CD92C6F00909928 /* GraphEdgeFiltering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C61084E2CD92C6F00909928 /* GraphEdgeFiltering.swift */; };
 		0C626D1B2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */; };
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
@@ -5484,6 +5485,7 @@
 		0C6108482CD889A000909928 /* AssetsExchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchange.swift; sourceTree = "<group>"; };
 		0C61084A2CD88F9B00909928 /* AssetsExchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeService.swift; sourceTree = "<group>"; };
 		0C61084C2CD8909600909928 /* AssetExchangeFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFee.swift; sourceTree = "<group>"; };
+		0C61084E2CD92C6F00909928 /* GraphEdgeFiltering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphEdgeFiltering.swift; sourceTree = "<group>"; };
 		0C626D1A2A8F519100CDAF4E /* StakingMainPresenterFactory+NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingMainPresenterFactory+NominationPools.swift"; sourceTree = "<group>"; };
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
@@ -11899,6 +11901,7 @@
 				0CE360202C33F398006A6CE4 /* GraphModel+Dijkstra.swift */,
 				0CE360222C343300006A6CE4 /* PriorityQueue.swift */,
 				0CB4334D2CC1196400F2CB59 /* WeightableEdge.swift */,
+				0C61084E2CD92C6F00909928 /* GraphEdgeFiltering.swift */,
 			);
 			path = Graphs;
 			sourceTree = "<group>";
@@ -28132,6 +28135,7 @@
 				0DAD4FE2F8B905CEBADAB3EA /* ParaStkCollatorFiltersViewController.swift in Sources */,
 				6A776A53FEC109C875113B38 /* ParaStkCollatorFiltersViewFactory.swift in Sources */,
 				3B6F50061AD9FC31D6712D9F /* ParaStkCollatorsSearchProtocols.swift in Sources */,
+				0C61084F2CD92C6F00909928 /* GraphEdgeFiltering.swift in Sources */,
 				52326E49B049C54434C95132 /* ParaStkCollatorsSearchWireframe.swift in Sources */,
 				84117078285B1050006F4DFB /* XcmAssetTransfer.swift in Sources */,
 				0C3205D82A896009002EB914 /* EvmDefaultNonceProvider.swift in Sources */,

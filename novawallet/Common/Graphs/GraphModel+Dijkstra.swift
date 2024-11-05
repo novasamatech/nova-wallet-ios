@@ -1,11 +1,18 @@
 import Foundation
 
 extension GraphModel where E: GraphWeightableEdgeProtocol {
-    func calculateShortestPath(from nodeStart: N, nodeEnd: N, topN: Int) -> [[E]] {
+    func calculateShortestPath(
+        from nodeStart: N,
+        nodeEnd: N,
+        topN: Int,
+        filter: AnyGraphEdgeFilter<E>
+    ) -> [[E]] {
         var queue = PriorityQueue<(cost: Int, path: [E])>(sort: { $0.cost < $1.cost })
 
-        connections[nodeStart]?.forEach {
-            queue.push((cost: $0.weight, path: [$0]))
+        connections[nodeStart]?.forEach { edge in
+            if filter.shouldVisit(edge: edge, predecessor: nil) {
+                queue.push((cost: edge.weight, path: [edge]))
+            }
         }
 
         var result: [[E]] = []
@@ -29,7 +36,10 @@ extension GraphModel where E: GraphWeightableEdgeProtocol {
 
                 if !visitedPaths.contains(newPath) {
                     visitedPaths.insert(newPath)
-                    queue.push((cost: cost + neighbor.weight, path: newPath))
+                    
+                    if filter.shouldVisit(edge: neighbor, predecessor: currentEdge) {
+                        queue.push((cost: cost + neighbor.weight, path: newPath))
+                    }
                 }
             }
         }
