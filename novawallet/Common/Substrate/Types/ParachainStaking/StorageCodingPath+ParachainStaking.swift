@@ -25,6 +25,10 @@ extension ParachainStaking {
         StorageCodingPath(moduleName: "ParachainStaking", itemName: "ParachainBondInfo")
     }
 
+    static var inflationDistributionInfoPath: StorageCodingPath {
+        StorageCodingPath(moduleName: "ParachainStaking", itemName: "InflationDistributionInfo")
+    }
+
     static var delegatorStatePath: StorageCodingPath {
         StorageCodingPath(moduleName: "ParachainStaking", itemName: "DelegatorState")
     }
