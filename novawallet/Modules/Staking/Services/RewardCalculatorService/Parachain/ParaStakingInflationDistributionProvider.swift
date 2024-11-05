@@ -16,7 +16,8 @@ final class ParaStakingInflationDistrProvider: LocalStorageProviderObserving {
     let syncQueue: DispatchQueue
     let operationQueue: OperationQueue
 
-    private var internalProvider: AnyObject?
+    private var clearObserverClosure: (() -> Void)?
+    private var cancellableStore = CancellableCallStore()
 
     init(
         chainId: ChainModel.Id,
@@ -36,7 +37,13 @@ final class ParaStakingInflationDistrProvider: LocalStorageProviderObserving {
         do {
             let provider = try providerFactory.getParachainBondProvider(for: chainId)
 
-            internalProvider = provider
+            clearObserverClosure = { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                provider.removeObserver(self)
+            }
 
             let options = DataProviderObserverOptions(
                 alwaysNotifyOnRefresh: false,
@@ -54,6 +61,7 @@ final class ParaStakingInflationDistrProvider: LocalStorageProviderObserving {
                 callbackQueue: syncQueue,
                 options: options
             )
+
         } catch {
             dispatchInQueueWhenPossible(syncQueue) {
                 closure(.failure(error))
@@ -67,7 +75,13 @@ final class ParaStakingInflationDistrProvider: LocalStorageProviderObserving {
         do {
             let provider = try providerFactory.getInflationDistributionInfoProvider(for: chainId)
 
-            internalProvider = provider
+            clearObserverClosure = { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                provider.removeObserver(self)
+            }
 
             let options = DataProviderObserverOptions(
                 alwaysNotifyOnRefresh: false,
@@ -104,11 +118,14 @@ final class ParaStakingInflationDistrProvider: LocalStorageProviderObserving {
 
 extension ParaStakingInflationDistrProvider: ParaStakingInflationDistrProviding {
     func setup(with closure: @escaping ParaStakingInflationDistrClosure) {
+        cancellableStore.cancel()
+
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         execute(
             operation: codingFactoryOperation,
             inOperationQueue: operationQueue,
+            backingCallIn: cancellableStore,
             runningCallbackIn: syncQueue
         ) { [weak self] result in
             guard let self else {
@@ -129,6 +146,9 @@ extension ParaStakingInflationDistrProvider: ParaStakingInflationDistrProviding 
     }
 
     func throttle() {
-        internalProvider = nil
+        cancellableStore.cancel()
+
+        clearObserverClosure?()
+        clearObserverClosure = nil
     }
 }
