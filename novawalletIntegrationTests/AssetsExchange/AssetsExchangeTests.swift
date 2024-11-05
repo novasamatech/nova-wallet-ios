@@ -83,6 +83,28 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
     
+    func testNoRoute() {
+        let params = buildCommonParams()
+        
+        guard
+            let polkadotUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAssetId(),
+            let kusamaUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.kusama)?.utilityChainAssetId() else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        measure {
+            let route = graph.fetchPaths(from: kusamaUtilityAsset, to: polkadotUtilityAsset, maxTopPaths: 1)
+            
+            XCTAssert(route.isEmpty, "Unexpected route found")
+        }
+    }
+    
     func testCalculateFee() {
         let params = buildCommonParams()
         
