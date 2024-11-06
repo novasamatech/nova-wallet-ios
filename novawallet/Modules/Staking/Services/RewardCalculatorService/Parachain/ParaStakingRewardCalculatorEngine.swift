@@ -54,7 +54,7 @@ final class ParaStakingRewardCalculatorEngine {
     let totalIssuance: BigUInt
     let totalStaked: BigUInt
     let inflation: ParachainStaking.InflationConfig
-    let parachainBond: ParachainStaking.ParachainBondConfig
+    let inflationDistribution: ParachainStaking.InflationDistributionPercent
     let selectedCollators: SelectedRoundCollators
     let assetPrecision: Int16
 
@@ -62,14 +62,14 @@ final class ParaStakingRewardCalculatorEngine {
         totalIssuance: BigUInt,
         totalStaked: BigUInt,
         inflation: ParachainStaking.InflationConfig,
-        parachainBond: ParachainStaking.ParachainBondConfig,
+        inflationDistribution: ParachainStaking.InflationDistributionPercent,
         selectedCollators: SelectedRoundCollators,
         assetPrecision: Int16
     ) {
         self.totalIssuance = totalIssuance
         self.totalStaked = totalStaked
         self.inflation = inflation
-        self.parachainBond = parachainBond
+        self.inflationDistribution = inflationDistribution
         self.selectedCollators = selectedCollators
         self.assetPrecision = assetPrecision
     }
@@ -78,8 +78,8 @@ final class ParaStakingRewardCalculatorEngine {
         Decimal.fromSubstratePerbill(value: selectedCollators.commission) ?? 0.0
     }()
 
-    private(set) lazy var parachainBondPercent: Decimal = {
-        Decimal.fromSubstratePercent(value: parachainBond.percent) ?? 0.0
+    private(set) lazy var inflationDistributionPercent: Decimal = {
+        Decimal.fromSubstratePercent(value: inflationDistribution) ?? 0.0
     }()
 
     private(set) lazy var selectedCollatorsStake: Decimal = {
@@ -158,7 +158,7 @@ final class ParaStakingRewardCalculatorEngine {
 
         let decimalReturn = (decimalInflation / stakedPortion) * stakeDeviation
 
-        return decimalReturn * (1.0 - parachainBondPercent - collatorCommision)
+        return decimalReturn * (1.0 - inflationDistributionPercent - collatorCommision)
     }
 }
 
