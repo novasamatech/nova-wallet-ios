@@ -259,16 +259,18 @@ private extension AssetListStyleSwitcherView {
 
         isUserInteractionEnabled = false
 
+        CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in
             self?.label.text = newText
             self?.label.layer.position.y = currentPosition
             self?.label.layer.opacity = 1.0
+
+            self?.label.layer.removeAllAnimations()
             newLabel.removeFromSuperview()
 
             self?.isUserInteractionEnabled = true
         }
 
-        CATransaction.begin()
         label.layer.add(
             currentSpring,
             forKey: "rollOut"
@@ -316,6 +318,7 @@ private extension AssetListStyleSwitcherView {
         group.animations = [anticipation, opacity, spring]
         group.duration = Constants.animationDuration
         group.fillMode = .forwards
+        group.isRemovedOnCompletion = false
 
         return group
     }
