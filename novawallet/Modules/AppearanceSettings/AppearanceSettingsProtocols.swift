@@ -9,4 +9,6 @@ protocol AppearanceSettingsPresenterProtocol: AnyObject {
     )
 }
 
-protocol AppearanceSettingsWireframeProtocol: AnyObject {}
+protocol AppearanceSettingsWireframeProtocol: AnyObject {
+    func presentAppearanceChanged(from view: ControllerBackedProtocol?)
+}
