@@ -52,6 +52,7 @@ extension MockCloudBackupServiceFactory: CloudBackupServiceFactoryProtocol {
         CloudBackupSecretsExporter(
             walletConverter: CloudBackupFileModelConverter(),
             cryptoManager: createCryptoManager(),
+            validator: ICloudBackupValidator(),
             keychain: keychain
         )
     }

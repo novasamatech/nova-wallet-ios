@@ -9,6 +9,9 @@ extension ParachainStaking {
             ParachainStaking.collatorCommissionPath,
             StorageCodingPath.totalIssuance,
             ParachainStaking.inflationConfigPath,
+
+            // we can have either inflationDistributionInfoPath or parachainBondInfoPath in runtime
+            ParachainStaking.inflationDistributionInfoPath,
             ParachainStaking.parachainBondInfoPath
         ]
 
