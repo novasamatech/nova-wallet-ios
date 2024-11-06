@@ -1,33 +1,51 @@
 import UIKit
+import SoraKeystore
 
 final class AssetsSearchInteractor {
+    static let workingQueueLabel: String = "com.nova.wallet.assets.search.builder"
+
     weak var presenter: AssetsSearchInteractorOutputProtocol?
 
     let stateObservable: AssetListModelObservable
     let filter: ChainAssetsFilter?
     let logger: LoggerProtocol
 
+    let settingsManager: SettingsManagerProtocol
+
     private var builder: AssetSearchBuilder?
 
     init(
         stateObservable: AssetListModelObservable,
         filter: ChainAssetsFilter?,
+        settingsManager: SettingsManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
         self.filter = filter
+        self.settingsManager = settingsManager
         self.logger = logger
+    }
+
+    private func provideAssetsGroupStyle() {
+        let style = settingsManager.assetListGroupStyle
+
+        presenter?.didReceiveAssetGroupsStyle(style)
     }
 }
 
 extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
     func setup() {
+        provideAssetsGroupStyle()
+
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = 1
 
         builder = .init(
             filter: filter,
-            workingQueue: .main,
+            workingQueue: .init(
+                label: AssetsSearchInteractor.workingQueueLabel,
+                qos: .userInteractive
+            ),
             callbackQueue: .main,
             callbackClosure: { [weak self] result in
                 self?.presenter?.didReceive(result: result)

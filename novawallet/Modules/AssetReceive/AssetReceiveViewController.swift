@@ -6,7 +6,6 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
 
     let presenter: AssetReceivePresenterProtocol
     private var cachedBoundsWidth: CGFloat?
-    private var token: String = ""
 
     init(
         presenter: AssetReceivePresenterProtocol,
@@ -47,43 +46,86 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        rootView.titleLabel.text = R.string.localizable.walletReceiveDescription(preferredLanguages: languages)
+
         rootView.shareButton.imageWithTitleView?.title = R.string.localizable.walletReceiveShareTitle(
             preferredLanguages: languages
         )
-        update(token: token)
+        rootView.accountAddressView.copyButton.imageWithTitleView?.title = R.string.localizable.commonCopyAddress(
+            preferredLanguages: languages
+        ).capitalized
     }
 
     private func setupHandlers() {
-        rootView.shareButton.addTarget(self, action: #selector(didTapShare), for: .touchUpInside)
-        rootView.accountDetailsView.addTarget(self, action: #selector(didTapOnAccount), for: .touchUpInside)
+        rootView.shareButton.addTarget(
+            self,
+            action: #selector(didTapShare),
+            for: .touchUpInside
+        )
+        rootView.accountAddressView.copyButton.addTarget(
+            self,
+            action: #selector(didTapCopyAddress),
+            for: .touchUpInside
+        )
     }
 
-    private func update(token: String) {
-        self.token = token
-        navigationItem.title = R.string.localizable.walletReceiveTitleFormat(
+    private func updateTitleDetails(
+        chainName: String,
+        token: String
+    ) {
+        let languages = selectedLocale.rLanguages
+
+        rootView.titleLabel.text = R.string.localizable.walletReceiveTitleFormat(
             token,
-            preferredLanguages: selectedLocale.rLanguages
+            preferredLanguages: languages
         )
+
+        rootView.detailsLabel.text = R.string.localizable.walletReceiveDetailsFormat(
+            token,
+            chainName,
+            preferredLanguages: languages
+        )
+    }
+
+    private func updateNavigationBar() {
+        navigationItem.titleView = rootView.chainView
     }
 
     @objc private func didTapShare() {
         presenter.share()
     }
 
-    @objc private func didTapOnAccount() {
-        presenter.presentAccountOptions()
+    @objc private func didTapCopyAddress() {
+        presenter.copyAddress()
     }
 }
 
+struct AccountAddressViewModel {
+    let walletName: String?
+    let address: String?
+}
+
 extension AssetReceiveViewController: AssetReceiveViewProtocol {
-    func didReceive(chainAccountViewModel: ChainAccountViewModel, token: String) {
-        rootView.accountDetailsView.chainAccountView.bind(viewModel: chainAccountViewModel)
-        update(token: token)
+    func didReceive(
+        addressViewModel: AccountAddressViewModel,
+        networkName: String,
+        token: String
+    ) {
+        updateTitleDetails(
+            chainName: networkName,
+            token: token
+        )
+
+        rootView.accountAddressView.titleLabel.text = addressViewModel.walletName
+        rootView.accountAddressView.addressLabel.text = addressViewModel.address
     }
 
-    func didReceive(qrImage: UIImage) {
-        rootView.qrView.imageView.image = qrImage
+    func didReceive(qrResult: QRCodeWithLogoFactory.QRCreationResult) {
+        rootView.qrView.bind(viewModel: qrResult)
+    }
+
+    func didReceive(networkViewModel: NetworkViewModel) {
+        rootView.chainView.bind(viewModel: networkViewModel)
+        updateNavigationBar()
     }
 }
 

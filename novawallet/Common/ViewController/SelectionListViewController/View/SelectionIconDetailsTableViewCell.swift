@@ -1,10 +1,9 @@
 import UIKit
 
 final class SelectionIconDetailsTableViewCell: UITableViewCell {
-    let checkmarkImageView: UIImageView = {
+    let radioButtonImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconCheckmark()
-        imageView.tintColor = R.color.colorIconPrimary()
+        imageView.image = R.image.iconRadioButtonUnselected()
         return imageView
     }()
 
@@ -50,18 +49,10 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(checkmarkImageView)
-
-        checkmarkImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(24.0)
-        }
-
         contentView.addSubview(iconImageView)
 
         iconImageView.snp.makeConstraints { make in
-            make.left.equalTo(checkmarkImageView.snp.right).offset(12.0)
+            make.left.equalToSuperview().offset(16.0)
             make.centerY.equalToSuperview()
             make.size.equalTo(32.0)
         }
@@ -81,10 +72,21 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
             make.right.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalToSuperview().inset(8.0)
         }
+
+        contentView.addSubview(radioButtonImageView)
+
+        radioButtonImageView.snp.makeConstraints { make in
+            make.right.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.left.greaterThanOrEqualTo(titleLabel)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(20.0)
+        }
     }
 
     private func updateSelectionState() {
-        checkmarkImageView.isHidden = !(viewModel?.isSelected ?? false)
+        radioButtonImageView.image = (viewModel?.isSelected ?? false)
+            ? R.image.iconRadioButtonSelected()
+            : R.image.iconRadioButtonUnselected()
     }
 }
 

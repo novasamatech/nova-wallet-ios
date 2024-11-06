@@ -1,10 +1,18 @@
 import UIKit
 
 final class TokensManageViewLayout: UIView {
-    let searchView = TopCustomSearchView()
+    let searchView = TokensManageSearchView()
 
     var searchBar: CustomSearchBar {
         searchView.searchBar
+    }
+
+    var filterSwitch: UISwitch {
+        searchView.zeroBalanceFilterSwitch
+    }
+
+    var filterLabel: UILabel {
+        searchView.zeroBalanceFilterLabel
     }
 
     var searchTextField: UITextField {
@@ -59,7 +67,7 @@ final class TokensManageViewLayout: UIView {
         searchView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(TopCustomSearchView.preferredBarHeight)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.preferredBarHeight)
         }
 
         contentView.addSubview(tableView)
@@ -68,10 +76,18 @@ final class TokensManageViewLayout: UIView {
         }
 
         tableView.contentInset = UIEdgeInsets(
-            top: TopCustomSearchView.preferredBarHeight,
+            top: Constants.preferredBarHeight,
             left: 0,
             bottom: 0,
             right: 0
         )
+    }
+}
+
+// MARK: Constants
+
+private extension TokensManageViewLayout {
+    enum Constants {
+        static let preferredBarHeight: CGFloat = 98.0
     }
 }

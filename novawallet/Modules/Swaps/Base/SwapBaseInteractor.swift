@@ -27,7 +27,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     private var feeModelBuilder: AssetHubFeeModelBuilder?
     private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
     private var assetsExchangeService: AssetsExchangeServiceProtocol?
-    
+
     var currentChain: ChainModel?
 
     init(
@@ -179,7 +179,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         guard let chain = currentChain, let state = try? flowState.setup(for: chain) else {
             return
         }
-        
+
         let wrapper = assetConversionAggregator.createQuoteWrapper(for: state, args: args)
 
         executeCancellable(
@@ -267,7 +267,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
-    
+
     private func updateService(with graph: AssetsExchangeGraphProtocol) {
         assetsExchangeService = AssetsExchangeService(graph: graph, operationQueue: operationQueue, logger: logger)
     }
@@ -279,7 +279,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             guard let graph = optGraph else {
                 return
             }
-            
+
             self?.updateService(with: graph)
         }
     }

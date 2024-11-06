@@ -42,18 +42,18 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
 
     override func didUpdateShapshotParam() {
         if
-            let totalIssuance = totalIssuance,
-            let totalUnvested = totalUnvested,
-            let totalStaked = totalStaked,
-            let inflationConfig = inflationConfig,
-            let parachainBondConfig = parachainBondConfig {
+            let totalIssuance,
+            let totalUnvested,
+            let totalStaked,
+            let inflationConfig,
+            let inflationDistribution {
             let circulating = totalIssuance + totalUnvested
 
             let snapshot = Snapshot(
                 totalStaked: totalStaked,
                 totalIssuance: circulating,
                 inflation: inflationConfig,
-                parachainBond: parachainBondConfig
+                inflationDistribution: inflationDistribution
             )
 
             updateSnapshotAndNotify(snapshot)

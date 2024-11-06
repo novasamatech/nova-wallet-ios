@@ -1,5 +1,6 @@
 import UIKit
 import Operation_iOS
+import SoraKeystore
 
 final class TokensManageInteractor {
     weak var presenter: TokensManageInteractorOutputProtocol?
@@ -7,17 +8,24 @@ final class TokensManageInteractor {
     let chainRegistry: ChainRegistryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
+
+    private var settingsManager: SettingsManagerProtocol
 
     private weak var pendingOperation: BaseOperation<Void>?
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        eventCenter: EventCenterProtocol,
+        settingsManager: SettingsManagerProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
+        self.eventCenter = eventCenter
+        self.settingsManager = settingsManager
         self.repository = repository
         self.repositoryFactory = repositoryFactory
         self.operationQueue = operationQueue
@@ -61,11 +69,18 @@ final class TokensManageInteractor {
             dependencies: [clearLocksOperation, clearCrowdloanContributionOperation]
         )
     }
+
+    private func provideHidesZeroBalances() {
+        let hidesZeroBalances = settingsManager.hidesZeroBalances
+
+        presenter?.didReceive(hideZeroBalances: hidesZeroBalances)
+    }
 }
 
 extension TokensManageInteractor: TokensManageInteractorInputProtocol {
     func setup() {
         subscribeChains()
+        provideHidesZeroBalances()
     }
 
     func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel]) {
@@ -119,6 +134,18 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
             let clearTokenWrapper = createTokenClearWrapper(for: chainAssetIds)
             clearTokenWrapper.addDependency(operations: [saveOperation])
             operationQueue.addOperations(clearTokenWrapper.allOperations, waitUntilFinished: false)
+        }
+    }
+
+    func save(hideZeroBalances: Bool) {
+        let shouldNotify = hideZeroBalances != settingsManager.hidesZeroBalances
+
+        settingsManager.hidesZeroBalances = hideZeroBalances
+
+        provideHidesZeroBalances()
+
+        if shouldNotify {
+            eventCenter.notify(with: HideZeroBalancesChanged())
         }
     }
 }

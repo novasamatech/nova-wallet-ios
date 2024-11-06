@@ -1,8 +1,6 @@
 import UIKit
 
-final class TopCustomSearchView: UIView {
-    static let preferredBarHeight: CGFloat = 48.0
-
+class TopCustomSearchView: UIView {
     let blurBackgroundView: BlurBackgroundView = {
         let view = BlurBackgroundView()
         view.sideLength = 0.0
@@ -24,7 +22,7 @@ final class TopCustomSearchView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(blurBackgroundView)
 
         blurBackgroundView.snp.makeConstraints { make in

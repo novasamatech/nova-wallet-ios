@@ -88,25 +88,113 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             result[chainAsset.chain.chainId] = currentModels + [assetModel]
         }
 
-        let groupAssetCalculators = assetModels.mapValues { models in
-            AssetListModelHelpers.createAssetsDiffCalculator(from: models)
+        let groupListsByChain = assetModels.mapValues { models in
+            let comparator = AssetListModelHelpers.assetSortingBlockDefaultByChain
+
+            return models.sorted(by: comparator)
         }
 
-        let chainModels: [AssetListGroupModel] = assetModels.compactMap { chainId, assetModels in
+        let chainGroups: [AssetListChainGroupModel] = assetModels.compactMap { chainId, assetModels in
             guard let chain = state.allChains[chainId] else {
                 return nil
             }
 
-            return AssetListModelHelpers.createGroupModel(from: chain, assets: assetModels)
+            return AssetListModelHelpers.createChainGroupModel(
+                from: chain,
+                assets: assetModels
+            )
         }
 
-        let groupChainCalculator = AssetListModelHelpers.createGroupsDiffCalculator(from: chainModels)
+        let comparator = AssetListModelHelpers.assetListChainGroupSortingBlock
+        let sortedChainGroups = chainGroups.sorted(by: comparator)
+
+        let (assetGroups, groupListsByAsset) = buildAssetGroups(
+            from: assets,
+            using: state
+        )
 
         return AssetSearchBuilderResult(
-            groups: groupChainCalculator,
-            groupLists: groupAssetCalculators,
+            chainGroups: sortedChainGroups,
+            assetGroups: assetGroups,
+            groupListsByChain: groupListsByChain,
+            groupListsByAsset: groupListsByAsset,
             state: state
         )
+    }
+
+    func buildAssetGroups(
+        from assets: [ChainAsset],
+        using state: AssetListState
+    ) -> (
+        groups: [AssetListAssetGroupModel],
+        groupsList: [AssetModel.Symbol: [AssetListAssetModel]]
+    ) {
+        var newGroups: [AssetListAssetGroupModel] = []
+        var newGroupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]] = [:]
+
+        var tokensBySymbol: [AssetModel.Symbol: MultichainToken] = [:]
+        var tokensByChainAsset: [ChainAssetId: MultichainToken] = [:]
+
+        assets
+            .createMultichainTokens()
+            .forEach { token in
+                token.instances.forEach {
+                    tokensByChainAsset[$0.chainAssetId] = token
+                }
+
+                tokensBySymbol[token.symbol] = token
+            }
+
+        assetsBySymbol(
+            using: tokensByChainAsset,
+            state: state
+        )
+        .forEach { symbol, assetListModels in
+            let comparator = AssetListModelHelpers.assetSortingBlockDefaultByChain
+            let sortedModels = assetListModels.sorted(by: comparator)
+
+            newGroupListsByAsset[symbol] = sortedModels
+
+            guard let token = tokensBySymbol[symbol] else {
+                return
+            }
+
+            let groupModel = AssetListModelHelpers.createAssetGroupModel(
+                token: token,
+                assets: assetListModels
+            )
+
+            newGroups.append(groupModel)
+        }
+
+        let groupsComparator = AssetListModelHelpers.assetListAssetGroupSortingBlock
+        newGroups.sort(by: groupsComparator)
+
+        return (newGroups, newGroupListsByAsset)
+    }
+
+    private func assetsBySymbol(
+        using tokensByChainAsset: [ChainAssetId: MultichainToken],
+        state: AssetListState
+    ) -> [AssetModel.Symbol: [AssetListAssetModel]] {
+        tokensByChainAsset.reduce(into: [AssetModel.Symbol: [AssetListAssetModel]]()) { acc, keyValue in
+            let models: [AssetListAssetModel] = keyValue.value.instances.compactMap { instance in
+                guard
+                    let chain = state.allChains[instance.chainAssetId.chainId],
+                    let asset = chain.asset(for: instance.chainAssetId.assetId)
+                else {
+                    return nil
+                }
+
+                return AssetListModelHelpers.createAssetModel(
+                    for: chain,
+                    assetModel: asset,
+                    state: state
+                )
+            }
+
+            acc[keyValue.value.symbol] = models
+        }
     }
 
     private func filterAssets(

@@ -7,17 +7,9 @@ extension RemoteAssetModel {
             return nil
         }
 
-        let iconURL: URL?
-
-        if let icon = evmToken.icon {
-            iconURL = URL(string: icon)
-        } else {
-            iconURL = nil
-        }
-
         self.init(
             assetId: assetId,
-            icon: iconURL,
+            icon: evmToken.icon,
             name: evmToken.name,
             symbol: evmToken.symbol,
             precision: UInt16(evmToken.precision),

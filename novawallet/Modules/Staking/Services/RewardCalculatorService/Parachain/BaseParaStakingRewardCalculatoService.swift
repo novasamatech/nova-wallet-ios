@@ -15,7 +15,7 @@ class BaseParaStakingRewardCalculatoService {
         let totalStaked: BigUInt
         let totalIssuance: BigUInt
         let inflation: ParachainStaking.InflationConfig
-        let parachainBond: ParachainStaking.ParachainBondConfig
+        let inflationDistribution: ParachainStaking.InflationDistributionPercent
     }
 
     let syncQueue = DispatchQueue(
@@ -29,11 +29,10 @@ class BaseParaStakingRewardCalculatoService {
     private(set) var totalIssuance: BigUInt?
     private(set) var totalStaked: BigUInt?
     private(set) var inflationConfig: ParachainStaking.InflationConfig?
-    private(set) var parachainBondConfig: ParachainStaking.ParachainBondConfig?
+    private(set) var inflationDistribution: ParachainStaking.InflationDistributionPercent?
 
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
     private var inflationProvider: AnyDataProvider<ParachainStaking.DecodedInflationConfig>?
-    private var parachainBondProvider: AnyDataProvider<ParachainStaking.DecodedParachainBondConfig>?
 
     private(set) var totalStakeCancellable = CancellableCallStore()
 
@@ -42,6 +41,7 @@ class BaseParaStakingRewardCalculatoService {
     let chainId: ChainModel.Id
     let collatorsService: ParachainStakingCollatorServiceProtocol
     let providerFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let inflationDistributionProvider: ParaStakingInflationDistrProviding
     let operationQueue: OperationQueue
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let connection: JSONRPCEngine
@@ -69,6 +69,14 @@ class BaseParaStakingRewardCalculatoService {
         self.operationQueue = operationQueue
         self.assetPrecision = assetPrecision
         self.logger = logger
+
+        inflationDistributionProvider = ParaStakingInflationDistrProvider(
+            chainId: chainId,
+            runtimeService: runtimeCodingService,
+            providerFactory: providerFactory,
+            operationQueue: operationQueue,
+            syncQueue: syncQueue
+        )
     }
 
     // MARK: - Private
@@ -80,15 +88,15 @@ class BaseParaStakingRewardCalculatoService {
 
     func didUpdateShapshotParam() {
         if
-            let totalIssuance = totalIssuance,
-            let totalStaked = totalStaked,
-            let inflationConfig = inflationConfig,
-            let parachainBondConfig = parachainBondConfig {
+            let totalIssuance,
+            let totalStaked,
+            let inflationConfig,
+            let inflationDistribution {
             let snapshot = Snapshot(
                 totalStaked: totalStaked,
                 totalIssuance: totalIssuance,
                 inflation: inflationConfig,
-                parachainBond: parachainBondConfig
+                inflationDistribution: inflationDistribution
             )
 
             updateSnapshotAndNotify(snapshot)
@@ -133,7 +141,7 @@ class BaseParaStakingRewardCalculatoService {
                 totalIssuance: snapshot.totalIssuance,
                 totalStaked: snapshot.totalStaked,
                 inflation: snapshot.inflation,
-                parachainBond: snapshot.parachainBond,
+                inflationDistribution: snapshot.inflationDistribution,
                 selectedCollators: selectedCollators,
                 assetPrecision: assetPrecision
             )
@@ -180,7 +188,7 @@ class BaseParaStakingRewardCalculatoService {
         do {
             try subscribeTotalIssuance()
             try subscribeInflationConfig()
-            try subscribeParachainBondConfig()
+            try subscribeInflationDistribution()
             updateTotalStaked()
         } catch {
             logger.error("Can't make subscription")
@@ -194,8 +202,7 @@ class BaseParaStakingRewardCalculatoService {
         inflationProvider?.removeObserver(self)
         inflationProvider = nil
 
-        parachainBondProvider?.removeObserver(self)
-        parachainBondProvider = nil
+        inflationDistributionProvider.throttle()
 
         totalStakeCancellable.cancel()
     }
@@ -264,36 +271,15 @@ extension BaseParaStakingRewardCalculatoService {
         )
     }
 
-    private func subscribeParachainBondConfig() throws {
-        guard parachainBondProvider == nil else {
-            return
+    private func subscribeInflationDistribution() throws {
+        inflationDistributionProvider.setup { [weak self] result in
+            switch result {
+            case let .success(inflationDistribution):
+                self?.inflationDistribution = inflationDistribution
+            case let .failure(error):
+                self?.logger.error("Did receive error: \(error)")
+            }
         }
-
-        parachainBondProvider = try providerFactory.getParachainBondProvider(for: chainId)
-
-        let updateClosure: ([DataProviderChange<ParachainStaking.DecodedParachainBondConfig>]) -> Void
-
-        updateClosure = { [weak self] changes in
-            self?.parachainBondConfig = changes.reduceToLastChange()?.item
-            self?.didUpdateShapshotParam()
-        }
-
-        let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.logger.error("Did receive error: \(error)")
-        }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
-        )
-
-        parachainBondProvider?.addObserver(
-            self,
-            deliverOn: syncQueue,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
     }
 }
 

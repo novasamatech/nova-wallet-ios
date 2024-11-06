@@ -1157,13 +1157,13 @@ PODS:
     - BoringSSL-GRPC/Interface (= 0.0.36)
   - BoringSSL-GRPC/Interface (0.0.36)
   - CDMarkdownKit (2.5.2)
-  - CocoaLumberjack (3.7.2):
-    - CocoaLumberjack/Core (= 3.7.2)
-  - CocoaLumberjack/Core (3.7.2)
   - CryptoSwift (1.5.1)
   - Cuckoo (1.7.1):
     - Cuckoo/Swift (= 1.7.1)
   - Cuckoo/Swift (1.7.1)
+  - DSF_QRCode (18.0.0):
+    - SwiftImageReadWrite (~> 1.6.1)
+    - SwiftQRCodeGenerator (~> 2.0.2)
   - EthereumSignTypedDataUtil (0.1.2):
     - BigInt (~> 5.0)
     - CryptoSwift (~> 1.4)
@@ -1463,11 +1463,12 @@ PODS:
     - Starscream
     - TweetNacl (~> 1.0.0)
     - xxHash-Swift (~> 1.0.0)
-  - SVGKit (2.1.0):
-    - CocoaLumberjack (~> 3.0)
   - SwiftAlgorithms (1.0.0)
+  - SwiftDraw (0.18.0)
   - SwiftFormat/CLI (0.47.13)
+  - SwiftImageReadWrite (1.6.1)
   - SwiftLint (0.43.1)
+  - SwiftQRCodeGenerator (2.0.2)
   - SwiftRLP (1.1):
     - BigInt (~> 5.0)
   - SwiftyBeaver (1.9.3)
@@ -1532,6 +1533,7 @@ PODS:
 DEPENDENCIES:
   - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
   - Cuckoo
+  - DSF_QRCode (~> 18.0.0)
   - EthereumSignTypedDataUtil (from `https://github.com/ERussel/EthereumSignTypedDataUtil.git`, tag `0.1.3`)
   - FirebaseAppCheck (~> 11.3.0)
   - FirebaseAuth (~> 11.3.0)
@@ -1553,8 +1555,8 @@ DEPENDENCIES:
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
   - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.2.2`)
-  - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftAlgorithms (~> 1.0.0)
+  - SwiftDraw (~> 0.18.0)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
   - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
@@ -1569,9 +1571,9 @@ SPEC REPOS:
     - AppCheckCore
     - BigInt
     - BoringSSL-GRPC
-    - CocoaLumberjack
     - CryptoSwift
     - Cuckoo
+    - DSF_QRCode
     - FirebaseAppCheck
     - FirebaseAppCheckInterop
     - FirebaseAuth
@@ -1604,8 +1606,11 @@ SPEC REPOS:
     - SoraKeystore
     - Sourcery
     - SwiftAlgorithms
+    - SwiftDraw
     - SwiftFormat
+    - SwiftImageReadWrite
     - SwiftLint
+    - SwiftQRCodeGenerator
     - SwiftyBeaver
     - TweetNacl
     - Web3Core
@@ -1647,9 +1652,6 @@ EXTERNAL SOURCES:
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
     :tag: 3.2.2
-  SVGKit:
-    :git: https://github.com/SVGKit/SVGKit.git
-    :tag: 3.0.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
   WalletConnectSwiftV2:
@@ -1693,9 +1695,6 @@ CHECKOUT OPTIONS:
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
     :tag: 3.2.2
-  SVGKit:
-    :git: https://github.com/SVGKit/SVGKit.git
-    :tag: 3.0.0
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
@@ -1712,9 +1711,9 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   BoringSSL-GRPC: ca6a8e5d04812fce8ffd6437810c2d46f925eaeb
   CDMarkdownKit: ed78cf1a5c57dbe362054633a0f802f0534531ff
-  CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
+  DSF_QRCode: 3fe0acc968ce8588a9b1dabb9557a364472f5aaf
   EthereumSignTypedDataUtil: ae4e33b21e51ee046a86a65b02843090b8bbd3f9
   FirebaseAppCheck: db69ee8842189d7a86366b79941da15934f99b75
   FirebaseAppCheckInterop: 7789a8adfb09e905ce02a76540b94b059029ea81
@@ -1756,10 +1755,12 @@ SPEC CHECKSUMS:
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
   SubstrateSdk: bc3da50e8e44ebb67e54fb20d5938a91ed85fc3c
-  SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
+  SwiftDraw: f63484562ddd30d9682b5576acc1d98acc2bec8f
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
+  SwiftImageReadWrite: 69f6521a74fdddbb61b2cc844150ec64de2cb4c7
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
+  SwiftQRCodeGenerator: cc02fed209335064d0b0dd61b2a0874b9bc6bd5a
   SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
@@ -1770,6 +1771,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 8dbd4b43cda3ae0b15bcd2fc1ff4d764fd8a87bc
+PODFILE CHECKSUM: e61a173a12a181d74e396efe945694768f75d065
 
 COCOAPODS: 1.15.2

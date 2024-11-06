@@ -1,7 +1,7 @@
 import UIKit
 import SnapKit
 
-final class FilterBlurButton: TriangularedBlurButton {
+final class FilterButton: TriangularedButton {
     let badgeView: UIView = .create {
         $0.backgroundColor = R.color.colorIconAccent()
         $0.clipsToBounds = true
@@ -9,14 +9,18 @@ final class FilterBlurButton: TriangularedBlurButton {
         $0.isHidden = true
     }
 
+    var icon: UIImage? = R.image.iconFilterAssets()
+
     override func configure() {
         super.configure()
 
-        imageWithTitleView?.iconImage = R.image.iconFilterAssets()
+        imageWithTitleView?.iconImage = icon
         contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         changesContentOpacityWhenHighlighted = true
-        triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
+
+        triangularedView?.fillColor = .clear
+        triangularedView?.highlightedFillColor = .clear
+        triangularedView?.shadowOpacity = 0
 
         addSubview(badgeView)
 
@@ -27,7 +31,7 @@ final class FilterBlurButton: TriangularedBlurButton {
         }
     }
 
-    func bind(isFilterOn: Bool) {
-        badgeView.isHidden = !isFilterOn
+    func bind(showingBadge: Bool) {
+        badgeView.isHidden = !showingBadge
     }
 }
