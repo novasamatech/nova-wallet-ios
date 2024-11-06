@@ -20,8 +20,8 @@ class AssetSelectionTests: XCTestCase {
             )
         }
 
-        let view = MockAssetSelectionViewProtocol()
-        let wireframe = MockAssetSelectionWireframeProtocol()
+        let view = MockChainAssetSelectionViewProtocol()
+        let wireframe = MockChainAssetSelectionWireframeProtocol()
 
         let storageFacade = SubstrateStorageTestFacade()
         let repository = ChainRepositoryFactory(storageFacade: storageFacade).createRepository(
@@ -46,7 +46,7 @@ class AssetSelectionTests: XCTestCase {
             )
         )
 
-        let interactor = AssetSelectionInteractor(
+        let interactor = ChainAssetSelectionInteractor(
             selectedMetaAccount: selectedAccount,
             balanceSlice: \.transferable,
             repository: repository,
@@ -64,7 +64,7 @@ class AssetSelectionTests: XCTestCase {
             assetId: selectedAsset.assetId
         )
 
-        let presenter = AssetSelectionPresenter(
+        let presenter = ChainAssetSelectionPresenter(
             interactor: interactor,
             wireframe: wireframe,
             selectedChainAssetId: selectedChainAssetId,

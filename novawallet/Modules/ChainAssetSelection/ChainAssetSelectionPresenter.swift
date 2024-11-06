@@ -2,9 +2,9 @@ import Foundation
 import SoraFoundation
 import BigInt
 
-final class AssetSelectionPresenter: AssetSelectionBasePresenter {
-    var wireframe: AssetSelectionWireframeProtocol? {
-        baseWireframe as? AssetSelectionWireframeProtocol
+final class ChainAssetSelectionPresenter: ChainAssetSelectionBasePresenter {
+    var wireframe: ChainAssetSelectionWireframeProtocol? {
+        baseWireframe as? ChainAssetSelectionWireframeProtocol
     }
 
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
@@ -12,8 +12,8 @@ final class AssetSelectionPresenter: AssetSelectionBasePresenter {
     let selectedChainAssetId: ChainAssetId?
 
     init(
-        interactor: AssetSelectionInteractorInputProtocol,
-        wireframe: AssetSelectionWireframeProtocol,
+        interactor: ChainAssetSelectionInteractorInputProtocol,
+        wireframe: ChainAssetSelectionWireframeProtocol,
         selectedChainAssetId: ChainAssetId?,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,

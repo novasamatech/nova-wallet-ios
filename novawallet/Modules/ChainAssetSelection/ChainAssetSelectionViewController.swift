@@ -2,19 +2,19 @@ import UIKit
 import Rswift
 import SoraFoundation
 
-final class AssetSelectionViewController: SelectionListViewController<SelectionIconDetailsTableViewCell> {
+final class ChainAssetSelectionViewController: SelectionListViewController<SelectionIconDetailsTableViewCell> {
     override var selectableCellIdentifier: ReuseIdentifier<SelectionIconDetailsTableViewCell>! {
         ReuseIdentifier(identifier: SelectionIconDetailsTableViewCell.reuseIdentifier)
     }
 
     let localizedTitle: LocalizableResource<String>
 
-    let presenter: AssetSelectionPresenterProtocol
+    let presenter: ChainAssetSelectionPresenterProtocol
 
     init(
         nibName: String,
         localizedTitle: LocalizableResource<String>,
-        presenter: AssetSelectionPresenterProtocol,
+        presenter: ChainAssetSelectionPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -40,9 +40,9 @@ final class AssetSelectionViewController: SelectionListViewController<SelectionI
     }
 }
 
-extension AssetSelectionViewController: AssetSelectionViewProtocol {}
+extension ChainAssetSelectionViewController: ChainAssetSelectionViewProtocol {}
 
-extension AssetSelectionViewController: Localizable {
+extension ChainAssetSelectionViewController: Localizable {
     func applyLocalization() {
         title = localizedTitle.value(for: selectedLocale)
     }

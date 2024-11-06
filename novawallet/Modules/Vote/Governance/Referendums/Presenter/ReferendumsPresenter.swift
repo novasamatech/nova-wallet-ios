@@ -447,9 +447,9 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
 // MARK: GovernanceAssetSelectionDelegate
 
-extension ReferendumsPresenter: GovernanceAssetSelectionDelegate {
+extension ReferendumsPresenter: GovernanceChainSelectionDelegate {
     func governanceAssetSelection(
-        view _: AssetSelectionViewProtocol,
+        view _: ChainAssetSelectionViewProtocol,
         didCompleteWith option: GovernanceSelectedOption
     ) {
         if selectedOption == option {

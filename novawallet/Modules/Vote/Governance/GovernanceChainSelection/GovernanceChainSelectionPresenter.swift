@@ -1,9 +1,9 @@
 import Foundation
 import SoraFoundation
 
-final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
-    var wireframe: GovernanceAssetSelectionWireframeProtocol? {
-        baseWireframe as? GovernanceAssetSelectionWireframeProtocol
+final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter {
+    var wireframe: GovernanceChainSelectionWireframeProtocol? {
+        baseWireframe as? GovernanceChainSelectionWireframeProtocol
     }
 
     struct Option {
@@ -19,8 +19,8 @@ final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
     private let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
     init(
-        interactor: AssetSelectionInteractorInputProtocol,
-        wireframe: GovernanceAssetSelectionWireframeProtocol,
+        interactor: ChainAssetSelectionInteractorInputProtocol,
+        wireframe: GovernanceChainSelectionWireframeProtocol,
         selectedChainId: ChainModel.Id?,
         selectedGovernanceType: GovernanceType?,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
