@@ -1,7 +1,7 @@
 import UIKit
 
 final class AssetListSettingsCell: UICollectionViewCell {
-    let styleSwitcher = AssetListStyleSwitcherView()
+    let styleSwitcher = AssetListStyleSwitcher()
 
     let manageButton = BadgedManageButton()
 
@@ -38,7 +38,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
     }
 
     private func setupLocalization() {
-        styleSwitcher.locale = locale
+        styleSwitcher.controlContentView.locale = locale
     }
 
     private func setupLayout() {
