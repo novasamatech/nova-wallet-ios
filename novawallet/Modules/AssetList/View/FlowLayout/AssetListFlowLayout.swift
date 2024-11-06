@@ -314,11 +314,13 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     }
 
     override func initialLayoutAttributesForAppearingDecorationElement(
-        ofKind _: String,
+        ofKind kind: String,
         at decorationIndexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
-        let attributes = itemsDecorationAttributes[decorationIndexPath]?
-            .copy() as? UICollectionViewLayoutAttributes
+        let attributes = super.initialLayoutAttributesForAppearingDecorationElement(
+            ofKind: kind,
+            at: decorationIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
 
         attributes?.alpha = 0.0
 
@@ -326,11 +328,13 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     }
 
     override func finalLayoutAttributesForDisappearingDecorationElement(
-        ofKind _: String,
+        ofKind kind: String,
         at decorationIndexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
-        let attributes = itemsDecorationAttributes[decorationIndexPath]?
-            .copy() as? UICollectionViewLayoutAttributes
+        let attributes = super.finalLayoutAttributesForDisappearingDecorationElement(
+            ofKind: kind,
+            at: decorationIndexPath
+        )
 
         return attributes
     }
