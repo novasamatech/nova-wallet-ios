@@ -176,11 +176,11 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     func quote(args: AssetConversion.QuoteArgs) {
         quoteCall.cancel()
 
-        guard let chain = currentChain, let state = try? flowState.setup(for: chain) else {
+        guard let chain = currentChain, let assetsExchangeService else {
             return
         }
 
-        let wrapper = assetConversionAggregator.createQuoteWrapper(for: state, args: args)
+        let wrapper = assetsExchangeService.createQuoteWrapper(args: args)
 
         executeCancellable(
             wrapper: wrapper,

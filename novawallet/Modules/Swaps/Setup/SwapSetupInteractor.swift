@@ -80,27 +80,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     private func provideCanPayFee(for asset: ChainAsset) {
         canPayFeeInAssetCall.cancel()
 
-        // we currently don't allow to pay for swaps in non native token for proxy
-        guard selectedWallet.type != .proxied else {
-            presenter?.didReceiveCanPayFeeInPayAsset(false, chainAssetId: asset.chainAssetId)
-            return
-        }
-
-        let wrapper = assetConversionAggregator.createCanPayFeeWrapper(in: asset)
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: canPayFeeInAssetCall,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(canPayFee):
-                self?.presenter?.didReceiveCanPayFeeInPayAsset(canPayFee, chainAssetId: asset.chainAssetId)
-            case let .failure(error):
-                self?.presenter?.didReceive(setupError: .payAssetSetFailed(error))
-            }
-        }
+        // TODO: Implement provide fee
     }
 
     private func clearRemoteSubscription() {

@@ -268,6 +268,8 @@
 		0C41D21E2BFB0719000950EE /* WalletsFetchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D21D2BFB0719000950EE /* WalletsFetchHelper.swift */; };
 		0C41D2202BFB07B4000950EE /* CloudBackupFetchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D21F2BFB07B4000950EE /* CloudBackupFetchHelper.swift */; };
 		0C41D2222BFB0BAC000950EE /* KeystoreValidationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2212BFB0BAC000950EE /* KeystoreValidationHelper.swift */; };
+		0C423ABB2CDBAE9B00A64941 /* AssetExchangeFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C423ABA2CDBAE9B00A64941 /* AssetExchangeFacade.swift */; };
+		0C423ABD2CDBAEC900A64941 /* AssetExchangeGraphProvidingParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C423ABC2CDBAEC900A64941 /* AssetExchangeGraphProvidingParams.swift */; };
 		0C4394D42BD6661F00578761 /* PasswordInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D32BD6661F00578761 /* PasswordInputView.swift */; };
 		0C4394D72BD761D000578761 /* CloudBackupPasswordValidationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */; };
 		0C4394D92BD7626500578761 /* CloudBackupPasswordValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D82BD7626500578761 /* CloudBackupPasswordValidator.swift */; };
@@ -5479,6 +5481,8 @@
 		0C41D21D2BFB0719000950EE /* WalletsFetchHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsFetchHelper.swift; sourceTree = "<group>"; };
 		0C41D21F2BFB07B4000950EE /* CloudBackupFetchHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupFetchHelper.swift; sourceTree = "<group>"; };
 		0C41D2212BFB0BAC000950EE /* KeystoreValidationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeystoreValidationHelper.swift; sourceTree = "<group>"; };
+		0C423ABA2CDBAE9B00A64941 /* AssetExchangeFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFacade.swift; sourceTree = "<group>"; };
+		0C423ABC2CDBAEC900A64941 /* AssetExchangeGraphProvidingParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphProvidingParams.swift; sourceTree = "<group>"; };
 		0C432D57ACFA53F42E574CBD /* TokensManageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManageViewController.swift; sourceTree = "<group>"; };
 		0C4394D32BD6661F00578761 /* PasswordInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordInputView.swift; sourceTree = "<group>"; };
 		0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupPasswordValidationResult.swift; sourceTree = "<group>"; };
@@ -11117,6 +11121,15 @@
 			path = CloudBackup;
 			sourceTree = "<group>";
 		};
+		0C423AB92CDBAE7300A64941 /* Facade */ = {
+			isa = PBXGroup;
+			children = (
+				0C423ABA2CDBAE9B00A64941 /* AssetExchangeFacade.swift */,
+				0C423ABC2CDBAEC900A64941 /* AssetExchangeGraphProvidingParams.swift */,
+			);
+			path = Facade;
+			sourceTree = "<group>";
+		};
 		0C4394D52BD7617200578761 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -11560,6 +11573,7 @@
 		0C9BCC562CBD6B1600CBE21B /* AssetExchange */ = {
 			isa = PBXGroup;
 			children = (
+				0C423AB92CDBAE7300A64941 /* Facade */,
 				0C61083F2CD74D5600909928 /* FeeEstimating */,
 				0C19CCA32CC6ED9D007F8ED8 /* Common */,
 				0C19CCA62CC6F121007F8ED8 /* HydraExchange */,
@@ -26254,6 +26268,7 @@
 				8465DA3F298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift in Sources */,
 				2DBB288D2CD42C5200DFA0AD /* QRCreationOperationFactory.swift in Sources */,
 				845B823429C8FF0700D187CB /* EtherscanNativeOperationFactory.swift in Sources */,
+				0C423ABD2CDBAEC900A64941 /* AssetExchangeGraphProvidingParams.swift in Sources */,
 				88D997B028ABC8C0006135A5 /* YourContributionsTableViewCell.swift in Sources */,
 				849ABE5B2627739400011A2A /* ListReducing.swift in Sources */,
 				0C7CF4CC2BD374930015DD45 /* CloudBackupFileManaging.swift in Sources */,
@@ -28145,6 +28160,7 @@
 				2932BD7922FDCD64F4E9A57D /* AssetListPresenter.swift in Sources */,
 				2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */,
 				2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */,
+				0C423ABB2CDBAE9B00A64941 /* AssetExchangeFacade.swift in Sources */,
 				84355CF628B63D19004E5C5E /* LedgerCrypto+Conversion.swift in Sources */,
 				8463781F2979DACB0034162B /* ReferendumsActivityViewModelFactory.swift in Sources */,
 				84B8AA8B29FA3B0500347A37 /* WalletConnectBaseState.swift in Sources */,
@@ -28341,7 +28357,6 @@
 				841E5565282EA76C00C8438F /* ParachainStakingBaseState.swift in Sources */,
 				77CB33D72A3998FD00B6709A /* Array+Sort.swift in Sources */,
 				84B8AA8129F9097D00347A37 /* WalletConnectTransport.swift in Sources */,
-				599CEA840B4E888B643AEB5E /* AssetsSettingsViewFactory.swift in Sources */,
 				0C3272932CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift in Sources */,
 				04B85867D67D56994D99FF14 /* NftListProtocols.swift in Sources */,
 				E9625CE429290F5504728D62 /* NftListWireframe.swift in Sources */,
