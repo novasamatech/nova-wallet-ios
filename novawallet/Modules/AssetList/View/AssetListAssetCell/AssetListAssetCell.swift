@@ -123,10 +123,13 @@ class AssetListAssetCell: UICollectionViewCell {
         switch balanceViewModel {
         case .loading:
             balanceLabel.text = ""
-        case let .cached(value):
-            balanceLabel.text = value
-        case let .loaded(value):
-            balanceLabel.text = value
+        case let .cached(value), let .loaded(value):
+            balanceLabel.attributedText = NSAttributedString.styledAmountString(
+                from: value,
+                intPartFont: .semiBoldBody,
+                fractionFont: .semiBoldSubheadline,
+                decimalSeparator: String(String.Separator.dot.rawValue)
+            )
         }
     }
 
