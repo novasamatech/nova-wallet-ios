@@ -12,7 +12,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     init(
         flowState: AssetConversionFlowFacadeProtocol,
-        assetConversionAggregatorFactory: AssetConversionAggregationFactoryProtocol,
+        assetsExchangeGraphProvider: AssetsExchangeGraphProviding,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -20,20 +20,22 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         storageRepository: AnyDataProviderRepository<ChainStorageItem>,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.storageRepository = storageRepository
 
         super.init(
             flowState: flowState,
-            assetConversionAggregator: assetConversionAggregatorFactory,
+            assetsExchangeGraphProvider: assetsExchangeGraphProvider,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
     }
 

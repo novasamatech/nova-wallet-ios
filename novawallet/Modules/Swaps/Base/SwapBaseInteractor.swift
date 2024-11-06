@@ -6,7 +6,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     weak var basePresenter: SwapBaseInteractorOutputProtocol?
 
     let flowState: AssetConversionFlowFacadeProtocol
-    let assetConversionAggregator: AssetConversionAggregationFactoryProtocol
+    let assetsExchangeGraphProvider: AssetsExchangeGraphProviding
     let chainRegistry: ChainRegistryProtocol
     let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -14,6 +14,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let currencyManager: CurrencyManagerProtocol
     let selectedWallet: MetaAccountModel
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
         flowState.generalSubscriptonFactory
@@ -21,27 +22,28 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     private var quoteCall = CancellableCallStore()
 
-    private var assetConversionFeeService: AssetConversionFeeServiceProtocol?
     private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var feeModelBuilder: AssetHubFeeModelBuilder?
     private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
-
+    private var assetsExchangeService: AssetsExchangeServiceProtocol?
+    
     var currentChain: ChainModel?
 
     init(
         flowState: AssetConversionFlowFacadeProtocol,
-        assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
+        assetsExchangeGraphProvider: AssetsExchangeGraphProviding,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.flowState = flowState
-        self.assetConversionAggregator = assetConversionAggregator
+        self.assetsExchangeGraphProvider = assetsExchangeGraphProvider
         self.chainRegistry = chainRegistry
         self.assetStorageFactory = assetStorageFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -49,6 +51,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         self.currencyManager = currencyManager
         self.selectedWallet = selectedWallet
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 
     deinit {
@@ -176,7 +179,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         guard let chain = currentChain, let state = try? flowState.setup(for: chain) else {
             return
         }
-
+        
         let wrapper = assetConversionAggregator.createQuoteWrapper(for: state, args: args)
 
         executeCancellable(
@@ -264,18 +267,28 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
+    
+    private func updateService(with graph: AssetsExchangeGraphProtocol) {
+        assetsExchangeService = AssetsExchangeService(graph: graph, operationQueue: operationQueue, logger: logger)
+    }
 
     // MARK: - SwapBaseInteractorInputProtocol
 
-    func setup() {}
+    func setup() {
+        assetsExchangeGraphProvider.subscribeGraph(self, notifyingIn: .main) { [weak self] optGraph in
+            guard let graph = optGraph else {
+                return
+            }
+            
+            self?.updateService(with: graph)
+        }
+    }
 
     func calculateQuote(for args: AssetConversion.QuoteArgs) {
         quote(args: args)
     }
 
-    func calculateFee(
-        args: AssetConversion.CallArgs
-    ) {
+    func calculateFee(args: AssetConversion.CallArgs) {
         fee(args: args)
     }
 
