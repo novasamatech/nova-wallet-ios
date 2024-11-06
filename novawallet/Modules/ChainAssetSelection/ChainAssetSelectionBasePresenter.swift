@@ -3,10 +3,10 @@ import SoraFoundation
 import BigInt
 import Operation_iOS
 
-class AssetSelectionBasePresenter {
-    weak var view: AssetSelectionViewProtocol?
-    let baseWireframe: AssetSelectionBaseWireframeProtocol
-    let interactor: AssetSelectionInteractorInputProtocol
+class ChainAssetSelectionBasePresenter {
+    weak var view: ChainAssetSelectionViewProtocol?
+    let baseWireframe: ChainAssetSelectionBaseWireframeProtocol
+    let interactor: ChainAssetSelectionInteractorInputProtocol
 
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
@@ -22,8 +22,8 @@ class AssetSelectionBasePresenter {
     }
 
     init(
-        interactor: AssetSelectionInteractorInputProtocol,
-        baseWireframe: AssetSelectionBaseWireframeProtocol,
+        interactor: ChainAssetSelectionInteractorInputProtocol,
+        baseWireframe: ChainAssetSelectionBaseWireframeProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -129,7 +129,7 @@ class AssetSelectionBasePresenter {
     }
 }
 
-extension AssetSelectionBasePresenter: AssetSelectionPresenterProtocol {
+extension ChainAssetSelectionBasePresenter: ChainAssetSelectionPresenterProtocol {
     var numberOfItems: Int {
         viewModels.count
     }
@@ -147,7 +147,7 @@ extension AssetSelectionBasePresenter: AssetSelectionPresenterProtocol {
     }
 }
 
-extension AssetSelectionBasePresenter: AssetSelectionInteractorOutputProtocol {
+extension ChainAssetSelectionBasePresenter: ChainAssetSelectionInteractorOutputProtocol {
     func didReceiveChainAssets(result: Result<[ChainAsset], Error>) {
         switch result {
         case let .success(chainAssets):
@@ -196,7 +196,7 @@ extension AssetSelectionBasePresenter: AssetSelectionInteractorOutputProtocol {
     }
 }
 
-extension AssetSelectionBasePresenter: Localizable {
+extension ChainAssetSelectionBasePresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateView()

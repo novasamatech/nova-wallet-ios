@@ -2,14 +2,14 @@ import UIKit
 import Operation_iOS
 import BigInt
 
-final class AssetSelectionInteractor {
-    weak var presenter: AssetSelectionInteractorOutputProtocol?
+final class ChainAssetSelectionInteractor {
+    weak var presenter: ChainAssetSelectionInteractorOutputProtocol?
 
     let selectedMetaAccount: MetaAccountModel
     let repository: AnyDataProviderRepository<ChainModel>
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let assetFilter: AssetSelectionFilter
+    let assetFilter: ChainAssetSelectionFilter
     let operationQueue: OperationQueue
     let balanceSlice: KeyPath<AssetBalance, BigUInt>
 
@@ -24,7 +24,7 @@ final class AssetSelectionInteractor {
         repository: AnyDataProviderRepository<ChainModel>,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        assetFilter: @escaping AssetSelectionFilter,
+        assetFilter: @escaping ChainAssetSelectionFilter,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -185,13 +185,13 @@ final class AssetSelectionInteractor {
     }
 }
 
-extension AssetSelectionInteractor: AssetSelectionInteractorInputProtocol {
+extension ChainAssetSelectionInteractor: ChainAssetSelectionInteractorInputProtocol {
     func setup() {
         fetchChainsAndSubscribeBalance()
     }
 }
 
-extension AssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
         let results = assetBalanceIdMapping.values.reduce(
             into: [ChainAssetId: Result<BigUInt?, Error>]()
@@ -278,7 +278,7 @@ extension AssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSub
     }
 }
 
-extension AssetSelectionInteractor: SelectedCurrencyDepending {
+extension ChainAssetSelectionInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         guard presenter != nil else {
             return

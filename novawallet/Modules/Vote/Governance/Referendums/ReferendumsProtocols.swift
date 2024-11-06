@@ -49,7 +49,7 @@ protocol ReferendumsInteractorOutputProtocol: AnyObject {
 protocol ReferendumsWireframeProtocol: WalletNoAccountHandlingWireframe, ErrorPresentable, CommonRetryable {
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: GovernanceAssetSelectionDelegate,
+        delegate: GovernanceChainSelectionDelegate,
         chainId: ChainModel.Id?,
         governanceType: GovernanceType?
     )

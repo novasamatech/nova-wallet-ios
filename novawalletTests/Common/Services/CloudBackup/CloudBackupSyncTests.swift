@@ -94,6 +94,64 @@ final class CloudBackupSyncTests: XCTestCase {
         XCTAssertTrue(try setupResult.syncMetadataManager.hasPassword())
     }
     
+    func testPreventApplyChangesIfSecretWalletHasNoSecrets() throws {
+        let optIssue = performDetectIssueTest { params in
+            // create a wallet with secrets
+            try? AccountCreationHelper.createMetaAccountFromMnemonic(
+                cryptoType: .sr25519,
+                keychain: params.keystore,
+                settings: params.walletSettings
+            )
+            
+            // and then remove secrets before syncing
+            try? KeystoreValidationHelper.clearKeystore(
+                for: params.walletSettings.value,
+                keystore: params.keystore
+            )
+        }
+        
+        XCTAssertEqual(optIssue, .internalFailure)
+    }
+    
+    func testPreventApplyChangesIfLegacyLedgerWalletHasNoDPath() throws {
+        let optIssue = performDetectIssueTest { params in
+            guard let ledgerApp = SupportedLedgerApp.substrate().first else {
+                return
+            }
+            
+            try? AccountCreationHelper.createSubstrateLedgerAccount(
+                from: ledgerApp,
+                keychain: params.keystore,
+                settings: params.walletSettings
+            )
+            
+            // and then remove secrets before syncing
+            try? KeystoreValidationHelper.clearKeystore(
+                for: params.walletSettings.value,
+                keystore: params.keystore
+            )
+        }
+        
+        XCTAssertEqual(optIssue, .internalFailure)
+    }
+    
+    func testPreventApplyChangesIfGenericLedgerWalletHasNoDPath() throws {
+        let optIssue = performDetectIssueTest { params in
+            try? AccountCreationHelper.createSubstrateGenericLedgerWallet(
+                keychain: params.keystore,
+                settings: params.walletSettings
+            )
+            
+            // and then remove secrets before syncing
+            try? KeystoreValidationHelper.clearKeystore(
+                for: params.walletSettings.value,
+                keystore: params.keystore
+            )
+        }
+        
+        XCTAssertEqual(optIssue, .internalFailure)
+    }
+    
     func testDetectLocalChanges() throws {
         try performSyncTest(
             configuringLocal: { params in
@@ -627,6 +685,32 @@ final class CloudBackupSyncTests: XCTestCase {
         )
     }
     
+    private func performDetectIssueTest(
+        configuringLocal: LocalWalletsSetupClosure
+    ) -> CloudBackupSyncResult.Issue? {
+        let setupResult = setupSyncSevice(
+            configuringLocal: configuringLocal,
+            configuringBackup: { params in
+                params.syncMetadataManager.isBackupEnabled = true
+                try? params.syncMetadataManager.savePassword(Self.defaultPassword)
+                params.syncMetadataManager.saveLastSyncTimestamp(nil)
+            }
+        )
+        
+        let syncChanges: CloudBackupSyncResult.Changes? = syncAndWait(service: setupResult.syncService) { result in
+            switch result {
+            case let .changes(changes):
+                return changes
+            default:
+                return nil
+            }
+        }
+        
+        XCTAssertNotNil(syncChanges)
+        
+        return applyChangesAndDetectIssue(for: setupResult.syncService)
+    }
+    
     private func performSyncTest(
         configuringLocal: LocalWalletsSetupClosure,
         changingAfterBackup: LocalWalletsChangeClosure,
@@ -717,6 +801,21 @@ final class CloudBackupSyncTests: XCTestCase {
             switch result {
             case .noUpdates:
                 return ()
+            default:
+                return nil
+            }
+        }
+    }
+    
+    private func applyChangesAndDetectIssue(
+        for syncService: CloudBackupSyncServiceProtocol
+    ) -> CloudBackupSyncResult.Issue? {
+        syncService.applyChanges(notifyingIn: .global(), closure: {_ in })
+        
+        return syncAndWait(service: syncService) { result in
+            switch result {
+            case let .issue(issue):
+                return issue
             default:
                 return nil
             }
