@@ -52,7 +52,7 @@ protocol CrowdloanListWireframeProtocol: AlertPresentable, NoAccountSupportPrese
 
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: AssetSelectionDelegate,
+        delegate: ChainAssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?
     )
 
