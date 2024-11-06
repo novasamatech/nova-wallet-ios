@@ -35,12 +35,14 @@ struct AssetSelectionViewFactory {
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
         let localizationManager = LocalizationManager.shared
+        let assetIconViewModelFactory = AssetIconViewModelFactory()
 
         let presenter = AssetSelectionPresenter(
             interactor: interactor,
             wireframe: wireframe,
             selectedChainAssetId: selectedChainAssetId,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
+            assetIconViewModelFactory: assetIconViewModelFactory,
             localizationManager: localizationManager
         )
 

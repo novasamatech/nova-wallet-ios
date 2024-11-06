@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 enum AssetOperationViewFactory {
     static func createBuyView(
@@ -10,10 +11,14 @@ enum AssetOperationViewFactory {
         }
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory()
+
         let viewModelFactory = AssetListAssetViewModelFactory(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             currencyManager: currencyManager
         )
 
@@ -31,7 +36,7 @@ enum AssetOperationViewFactory {
             R.string.localizable.assetOperationBuyTitle(preferredLanguages: $0.rLanguages)
         }
 
-        let view = AssetsSearchViewController(
+        let view = AssetOperationViewController(
             presenter: presenter,
             keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
             createViewClosure: { AssetsOperationViewLayout() },
@@ -52,10 +57,14 @@ enum AssetOperationViewFactory {
         }
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory()
+
         let viewModelFactory = AssetListAssetViewModelFactory(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             currencyManager: currencyManager
         )
 
@@ -73,7 +82,7 @@ enum AssetOperationViewFactory {
             R.string.localizable.assetOperationReceiveTitle(preferredLanguages: $0.rLanguages)
         }
 
-        let view = AssetsSearchViewController(
+        let view = AssetOperationViewController(
             presenter: presenter,
             keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
             createViewClosure: { AssetsOperationViewLayout() },
@@ -96,10 +105,14 @@ enum AssetOperationViewFactory {
         }
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory()
+
         let viewModelFactory = AssetListAssetViewModelFactory(
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             currencyManager: currencyManager
         )
 
@@ -135,6 +148,7 @@ enum AssetOperationViewFactory {
     ) -> SendAssetOperationPresenter {
         let interactor = SendAssetsOperationInteractor(
             stateObservable: stateObservable,
+            settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 
@@ -143,6 +157,7 @@ enum AssetOperationViewFactory {
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
             wireframe: SendAssetOperationWireframe(
+                stateObservable: stateObservable,
                 buyTokensClosure: buyTokensClosure,
                 transferCompletion: transferCompletion
             )
@@ -161,6 +176,7 @@ enum AssetOperationViewFactory {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
             filter: { $0.chain.syncMode.enabled() },
+            settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 
@@ -169,7 +185,7 @@ enum AssetOperationViewFactory {
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
             selectedAccount: wallet,
-            wireframe: ReceiveAssetOperationWireframe()
+            wireframe: ReceiveAssetOperationWireframe(stateObservable: stateObservable)
         )
 
         interactor.presenter = presenter
@@ -202,6 +218,7 @@ enum AssetOperationViewFactory {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
             filter: filter,
+            settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 
@@ -210,7 +227,7 @@ enum AssetOperationViewFactory {
             viewModelFactory: viewModelFactory,
             selectedAccount: wallet,
             purchaseProvider: purchaseProvider,
-            wireframe: BuyAssetOperationWireframe(),
+            wireframe: BuyAssetOperationWireframe(stateObservable: stateObservable),
             localizationManager: LocalizationManager.shared
         )
 

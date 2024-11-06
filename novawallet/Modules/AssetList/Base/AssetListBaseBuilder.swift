@@ -2,6 +2,22 @@ import Foundation
 import BigInt
 import Operation_iOS
 
+typealias ChainChangeAssetsProcessResult = (
+    groupChanges: [DataProviderChange<AssetListAssetGroupModel>],
+    listChanges: [AssetModel.Symbol: [DataProviderChange<AssetListAssetModel>]]
+)
+
+typealias ChainChangeChainsProcessResult = (
+    groupChanges: [DataProviderChange<AssetListChainGroupModel>],
+    listChanges: [ChainModel.Id: [DataProviderChange<AssetListAssetModel>]]
+)
+
+typealias ChainChangeProcessResult = (
+    chainGroupResult: ChainChangeChainsProcessResult,
+    assetGroupResult: ChainChangeAssetsProcessResult
+)
+
+// swiftlint:disable:next type_body_length
 class AssetListBaseBuilder {
     let workingQueue: DispatchQueue
     let callbackQueue: DispatchQueue
@@ -9,8 +25,10 @@ class AssetListBaseBuilder {
 
     private(set) var wallet: MetaAccountModel?
 
-    private(set) var groups: ListDifferenceCalculator<AssetListGroupModel>
-    private(set) var groupLists: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>] = [:]
+    private(set) var chainGroups: ListDifferenceCalculator<AssetListChainGroupModel>
+    private(set) var assetGroups: ListDifferenceCalculator<AssetListAssetGroupModel>
+    private(set) var groupListsByChain: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>] = [:]
+    private(set) var groupListsByAsset: [AssetModel.Symbol: ListDifferenceCalculator<AssetListAssetModel>] = [:]
 
     private(set) var priceResult: Result<[ChainAssetId: PriceData], Error>?
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
@@ -32,7 +50,12 @@ class AssetListBaseBuilder {
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
         self.rebuildPeriod = rebuildPeriod
-        groups = AssetListModelHelpers.createGroupsDiffCalculator(from: [])
+
+        chainGroups = AssetListModelHelpers.createGroupsDiffCalculator(
+            from: [],
+            defaultComparingBy: \.chain
+        )
+        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: [])
     }
 
     func rebuildModel() {
@@ -63,8 +86,13 @@ class AssetListBaseBuilder {
         allChains = [:]
         balanceResults = [:]
         balances = [:]
-        groups = AssetListModelHelpers.createGroupsDiffCalculator(from: [])
-        groupLists = [:]
+        chainGroups = AssetListModelHelpers.createGroupsDiffCalculator(
+            from: [],
+            defaultComparingBy: \.chain
+        )
+        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: [])
+        groupListsByChain = [:]
+        groupListsByAsset = [:]
         externalBalancesResult = nil
     }
 
@@ -76,19 +104,22 @@ class AssetListBaseBuilder {
             externalBalances: externalBalancesResult
         )
 
+        updateChainGroups(using: state)
+        rebuildAssetGroups(using: state)
+    }
+
+    private func updateChainGroups(using state: AssetListState) {
         for chain in allChains.values {
-            let models = chain.assets.map { asset in
-                AssetListModelHelpers.createAssetModel(for: chain, assetModel: asset, state: state)
-            }
+            let models = AssetListModelHelpers.createAssetModels(for: chain, state: state)
 
             let changes: [DataProviderChange<AssetListAssetModel>] = models.map { model in
                 .update(newItem: model)
             }
 
-            groupLists[chain.chainId]?.apply(changes: changes)
+            groupListsByChain[chain.chainId]?.apply(changes: changes)
 
-            let groupModel = AssetListModelHelpers.createGroupModel(from: chain, assets: models)
-            groups.apply(changes: [.update(newItem: groupModel)])
+            let groupModel = AssetListModelHelpers.createChainGroupModel(from: chain, assets: models)
+            chainGroups.apply(changes: [.update(newItem: groupModel)])
         }
     }
 
@@ -105,6 +136,99 @@ class AssetListBaseBuilder {
         }
     }
 
+    private func rebuildChainGroups(using state: AssetListState) {
+        var newGroups: [AssetListChainGroupModel] = []
+        var newGroupListsByChain: [ChainModel.Id: ListDifferenceCalculator<AssetListAssetModel>] = [:]
+
+        allChains.values.forEach { chain in
+            let assets = AssetListModelHelpers.createAssetModels(
+                for: chain,
+                state: state
+            )
+            let groups = AssetListModelHelpers.createChainGroupModel(
+                from: chain,
+                assets: assets
+            )
+
+            newGroups.append(groups)
+
+            newGroupListsByChain[chain.chainId] = AssetListModelHelpers.createAssetsDiffCalculator(from: assets)
+        }
+
+        chainGroups = AssetListModelHelpers.createGroupsDiffCalculator(
+            from: newGroups,
+            defaultComparingBy: \.chain
+        )
+
+        groupListsByChain = newGroupListsByChain
+    }
+
+    private func rebuildAssetGroups(using state: AssetListState) {
+        var newGroups: [AssetListAssetGroupModel] = []
+        var newGroupListsByChain: [AssetModel.Symbol: ListDifferenceCalculator<AssetListAssetModel>] = [:]
+
+        var tokensBySymbol: [AssetModel.Symbol: MultichainToken] = [:]
+        var tokensByChainAsset: [ChainAssetId: MultichainToken] = [:]
+
+        Array(allChains.values)
+            .createMultichainTokens()
+            .forEach { token in
+                token.instances.forEach {
+                    tokensByChainAsset[$0.chainAssetId] = token
+                }
+
+                tokensBySymbol[token.symbol] = token
+            }
+
+        assetsBySymbol(
+            using: tokensByChainAsset,
+            state: state
+        )
+        .forEach { symbol, assetListModels in
+            let diffCalculator = AssetListModelHelpers.createAssetsDiffCalculator(from: assetListModels)
+
+            newGroupListsByChain[symbol] = diffCalculator
+
+            guard let token = tokensBySymbol[symbol] else {
+                return
+            }
+
+            let groupModel = AssetListModelHelpers.createAssetGroupModel(
+                token: token,
+                assets: assetListModels
+            )
+
+            newGroups.append(groupModel)
+        }
+
+        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: newGroups)
+        groupListsByAsset = newGroupListsByChain
+    }
+
+    private func assetsBySymbol(
+        using tokensByChainAsset: [ChainAssetId: MultichainToken],
+        state: AssetListState
+    ) -> [AssetModel.Symbol: [AssetListAssetModel]] {
+        allChains.values
+            .flatMap { $0.chainAssets() }
+            .reduce(
+                into: [AssetModel.Symbol: [AssetListAssetModel]]()
+            ) { acc, chainAsset in
+                guard let symbol = tokensByChainAsset[chainAsset.chainAssetId]?.symbol else {
+                    return
+                }
+
+                let model = AssetListModelHelpers.createAssetModel(
+                    for: chainAsset.chain,
+                    assetModel: chainAsset.asset,
+                    state: state
+                )
+
+                let newValue = (acc[symbol] ?? []) + [model]
+                acc[symbol] = newValue
+            }
+    }
+
     private func processChainChanges(_ changes: [DataProviderChange<ChainModel>]) {
         let state = AssetListState(
             priceResult: priceResult,
@@ -113,39 +237,49 @@ class AssetListBaseBuilder {
             externalBalances: externalBalancesResult
         )
 
-        var groupChanges: [DataProviderChange<AssetListGroupModel>] = []
-        for change in changes {
-            switch change {
-            case let .insert(newItem):
-                let assets = AssetListModelHelpers.createAssetModels(for: newItem, state: state)
-                let assetsCalculator = AssetListModelHelpers.createAssetsDiffCalculator(from: assets)
-                groupLists[newItem.chainId] = assetsCalculator
-
-                let groupModel = AssetListModelHelpers.createGroupModel(from: newItem, assets: assets)
-                groupChanges.append(.insert(newItem: groupModel))
-            case let .update(newItem):
-                let assets = AssetListModelHelpers.createAssetModels(for: newItem, state: state)
-
-                groupLists[newItem.chainId] = AssetListModelHelpers.createAssetsDiffCalculator(from: assets)
-
-                let groupModel = AssetListModelHelpers.createGroupModel(from: newItem, assets: assets)
-                groupChanges.append(.update(newItem: groupModel))
-
-            case let .delete(deletedIdentifier):
-                groupLists[deletedIdentifier] = nil
-                groupChanges.append(.delete(deletedIdentifier: deletedIdentifier))
-            }
-        }
-
         storeChainChanges(changes)
 
-        groups.apply(changes: groupChanges)
+        rebuildChainGroups(using: state)
+        rebuildAssetGroups(using: state)
+    }
+
+    private func applyChainListsChanges(_ changes: [ChainModel.Id: [DataProviderChange<AssetListAssetModel>]]) {
+        changes.forEach {
+            applyListChanges(
+                for: &groupListsByChain,
+                key: $0.key,
+                changes: $0.value
+            )
+        }
+    }
+
+    private func applyAssetListsChanges(_ changes: [AssetModel.Symbol: [DataProviderChange<AssetListAssetModel>]]) {
+        changes.forEach {
+            applyListChanges(
+                for: &groupListsByAsset,
+                key: $0.key,
+                changes: $0.value
+            )
+        }
+    }
+
+    private func applyListChanges(
+        for dict: inout [String: ListDifferenceCalculator<AssetListAssetModel>],
+        key: String,
+        changes: [DataProviderChange<AssetListAssetModel>]
+    ) {
+        guard !changes.isEmpty else { return }
+
+        if dict[key] != nil {
+            dict[key]?.apply(changes: changes)
+        } else {
+            let assetModels = changes.compactMap(\.item)
+
+            dict[key] = AssetListModelHelpers.createAssetsDiffCalculator(from: assetModels)
+        }
     }
 
     private func processBalances(_ results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
-        var assetsChanges: [ChainModel.Id: [DataProviderChange<AssetListAssetModel>]] = [:]
-        var changedGroups: [ChainModel.Id: ChainModel] = [:]
-
         for (chainAssetId, result) in results {
             switch result {
             case let .success(maybeAmount):
@@ -160,6 +294,24 @@ class AssetListBaseBuilder {
                 balances[chainAssetId] = .failure(error)
             }
         }
+
+        updateGroupsWithBalances(with: results)
+    }
+
+    private func updateGroupsWithBalances(with results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
+        var chainListsChanges: [ChainModel.Id: [DataProviderChange<AssetListAssetModel>]] = [:]
+        var assetListsChanges: [AssetModel.Symbol: [DataProviderChange<AssetListAssetModel>]] = [:]
+
+        var changedChains: [ChainModel.Id: ChainModel] = [:]
+
+        let tokensByChainAsset = results.keys
+            .compactMap {
+                allChains[$0.chainId]
+            }
+            .createMultichainTokens()
+            .reduce(into: [ChainAssetId: MultichainToken]()) { acc, token in
+                token.instances.forEach { acc[$0.chainAssetId] = token }
+            }
 
         for chainAssetId in results.keys {
             guard
@@ -177,33 +329,83 @@ class AssetListBaseBuilder {
                 externalBalances: externalBalancesResult
             )
 
-            let assetListModel = AssetListModelHelpers.createAssetModel(
+            let assetListAssetModel = AssetListModelHelpers.createAssetModel(
                 for: chainModel,
                 assetModel: assetModel,
                 state: state
             )
-            var chainChanges = assetsChanges[chainAssetId.chainId] ?? []
-            chainChanges.append(.update(newItem: assetListModel))
-            assetsChanges[chainAssetId.chainId] = chainChanges
 
-            changedGroups[chainModel.chainId] = chainModel
+            var chainChanges = chainListsChanges[chainAssetId.chainId] ?? []
+            chainChanges.append(.update(newItem: assetListAssetModel))
+            chainListsChanges[chainAssetId.chainId] = chainChanges
+
+            if let symbol = tokensByChainAsset[assetListAssetModel.chainAssetModel.chainAssetId]?.symbol {
+                var assetChanges = assetListsChanges[symbol] ?? []
+                if groupListsByAsset[symbol]?.allItems.contains(
+                    where: { $0.chainAssetModel.chainAssetId == assetListAssetModel.chainAssetModel.chainAssetId }
+                ) ?? false {
+                    assetChanges.append(.update(newItem: assetListAssetModel))
+                } else {
+                    assetChanges.append(.insert(newItem: assetListAssetModel))
+                }
+
+                assetListsChanges[assetModel.symbol] = assetChanges
+            }
+
+            changedChains[chainModel.chainId] = chainModel
         }
 
-        for (chainId, changes) in assetsChanges {
-            groupLists[chainId]?.apply(changes: changes)
-        }
+        applyChainListsChanges(chainListsChanges)
+        applyAssetListsChanges(assetListsChanges)
 
-        let groupChanges: [DataProviderChange<AssetListGroupModel>] = changedGroups.map { keyValue in
+        let chainGroupChanges: [DataProviderChange<AssetListChainGroupModel>] = chainGroupChanges(for: changedChains)
+
+        let assetGroupChanges = assetGroupChanges(
+            from: changedChains.flatMap { $0.value.chainAssets() },
+            tokensByChainAsset: tokensByChainAsset
+        )
+
+        chainGroups.apply(changes: chainGroupChanges)
+        assetGroups.apply(changes: assetGroupChanges)
+    }
+
+    private func chainGroupChanges(
+        for changedChains: [ChainModel.Id: ChainModel]
+    ) -> [DataProviderChange<AssetListChainGroupModel>] {
+        changedChains.map { keyValue in
             let chainId = keyValue.key
             let chainModel = keyValue.value
 
-            let allItems = groupLists[chainId]?.allItems ?? []
-            let groupModel = AssetListModelHelpers.createGroupModel(from: chainModel, assets: allItems)
+            let allItems = groupListsByChain[chainId]?.allItems ?? []
+
+            let groupModel = AssetListModelHelpers.createChainGroupModel(
+                from: chainModel,
+                assets: allItems
+            )
 
             return .update(newItem: groupModel)
         }
+    }
 
-        groups.apply(changes: groupChanges)
+    private func assetGroupChanges(
+        from chainAssets: [ChainAsset],
+        tokensByChainAsset: [ChainAssetId: MultichainToken]
+    ) -> [DataProviderChange<AssetListAssetGroupModel>] {
+        chainAssets.compactMap { chainAsset in
+            guard
+                let token = tokensByChainAsset[chainAsset.chainAssetId],
+                let assets = groupListsByAsset[token.symbol]?.allItems
+            else {
+                return nil
+            }
+
+            let group = AssetListModelHelpers.createAssetGroupModel(
+                token: token,
+                assets: assets
+            )
+
+            return .update(newItem: group)
+        }
     }
 
     private func processRemovedPriceChainAssets(_ chainAssetIds: Set<ChainAssetId>) -> Bool {

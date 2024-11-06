@@ -42,6 +42,8 @@ protocol ApplicationConfigProtocol {
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
     var wikiURL: URL { get }
+    var whiteAppearanceIconsPath: String { get }
+    var coloredAppearanceIconsPath: String { get }
 }
 
 final class ApplicationConfig {
@@ -139,7 +141,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains_dev.json")!
         #endif
     }
 
@@ -147,7 +149,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/chains_dev.json")!
         #endif
     }
 
@@ -155,7 +157,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/details")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/detailsDev")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/detailsDev")!
         #endif
     }
 
@@ -164,7 +166,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v2/assets.json")!
         #else
             URL(
-                string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v2/assets_dev.json"
+                string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v3/assets_dev.json"
             )!
         #endif
     }
@@ -307,6 +309,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://dev.novawallet.io")!
         #endif
+    }
+
+    var whiteAppearanceIconsPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/icons/tokens/white/"
+    }
+
+    var coloredAppearanceIconsPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/icons/tokens/colored/"
     }
 
     // swiftlint:enable line_length

@@ -29,6 +29,7 @@ struct SwapConfirmViewFactory {
         let viewModelFactory = SwapConfirmViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             networkViewModelFactory: NetworkViewModelFactory(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             percentForamatter: NumberFormatter.percentSingle.localizableResource(),
             priceDifferenceConfig: .defaultConfig
         )

@@ -172,6 +172,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             wireframe.showCurrencies(from: view)
         case .language:
             wireframe.showLanguageSelection(from: view)
+        case .appearance:
+            wireframe.showAppearance(from: view)
         case .biometricAuth:
             toggleBiometryUsage()
         case .approveWithPin:

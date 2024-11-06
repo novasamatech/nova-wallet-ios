@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct TokensManageViewFactory {
     static func createView() -> TokensManageViewProtocol? {
@@ -10,7 +11,12 @@ struct TokensManageViewFactory {
         let wireframe = TokensManageWireframe()
 
         let formatter = NumberFormatter.positiveQuantity.localizableResource()
-        let viewModelFactory = TokensManageViewModelFactory(quantityFormater: formatter)
+        let assetIconViewModelFactory = AssetIconViewModelFactory()
+
+        let viewModelFactory = TokensManageViewModelFactory(
+            quantityFormater: formatter,
+            assetIconViewModelFactory: assetIconViewModelFactory
+        )
 
         let presenter = TokensManagePresenter(
             interactor: interactor,
@@ -32,9 +38,13 @@ struct TokensManageViewFactory {
 
     private static func createInteractor() -> TokensManageInteractor? {
         let repository = SubstrateRepositoryFactory().createChainRepository()
+        let eventCenter = EventCenter.shared
+        let settingsManager = SettingsManager.shared
 
         return .init(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
+            eventCenter: eventCenter,
+            settingsManager: settingsManager,
             repository: repository,
             repositoryFactory: SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
             operationQueue: OperationManagerFacade.sharedDefaultQueue

@@ -10,13 +10,14 @@ final class DAppListFeaturedHeaderView: UICollectionViewCell {
         return view
     }()
 
-    let actionButton: TriangularedBlurButton = {
-        let button = TriangularedBlurButton()
+    let actionButton: TriangularedButton = {
+        let button = TriangularedButton()
         button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
+        button.triangularedView?.fillColor = .clear
+        button.triangularedView?.highlightedFillColor = .clear
+        button.triangularedView?.shadowOpacity = 0
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
-        button.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
         return button
     }()
 

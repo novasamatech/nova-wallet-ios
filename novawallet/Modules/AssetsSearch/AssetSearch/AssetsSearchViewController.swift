@@ -6,11 +6,20 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
 
     let presenter: AssetsSearchPresenterProtocol
 
+    var assetGroupsLayoutStyle: AssetListGroupsStyle?
+
     var collectionViewLayout: UICollectionViewFlowLayout? {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     }
 
-    private var groupsState: AssetListGroupState = .list(groups: [])
+    var collectionViewManager: AssetsSearchCollectionManagerProtocol?
+
+    var groupsViewModel: AssetListViewModel = .init(
+        isFiltered: false,
+        listState: .list(groups: []),
+        listGroupStyle: .tokens
+    )
+
     private let createViewClosure: () -> BaseAssetsSearchViewLayout
     private let localizableTitle: LocalizableResource<String>?
 
@@ -44,8 +53,8 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupSearchBar()
         setupCollectionView()
+        setupSearchBar()
         setupLocalization()
         presenter.setup()
     }
@@ -68,6 +77,21 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
         rootView.searchBar.textField.resignFirstResponder()
     }
 
+    func setupCollectionManager() {
+        collectionViewManager = AssetsSearchCollectionManager(
+            view: rootView,
+            groupsViewModel: groupsViewModel,
+            delegate: self,
+            selectedLocale: selectedLocale
+        )
+    }
+
+    private func setupCollectionView() {
+        setupCollectionManager()
+
+        collectionViewManager?.setupCollectionView()
+    }
+
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
         rootView.searchBar.textField.placeholder = R.string.localizable.assetsSearchPlaceholder(
@@ -82,23 +106,6 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
         localizableTitle.map {
             title = $0.value(for: selectedLocale)
         }
-    }
-
-    private func setupCollectionView() {
-        rootView.collectionView.registerCellClass(AssetListAssetCell.self)
-        rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
-        rootView.collectionView.registerClass(
-            AssetListNetworkView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
-        )
-
-        collectionViewLayout?.register(
-            TokenGroupDecorationView.self,
-            forDecorationViewOfKind: AssetsSearchFlowLayout.assetGroupDecoration
-        )
-
-        rootView.collectionView.dataSource = self
-        rootView.collectionView.delegate = self
     }
 
     private func setupSearchBar() {
@@ -122,159 +129,17 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
         let query = rootView.searchBar.textField.text
         presenter.updateSearch(query: query ?? "")
     }
-
-    func provideEmptyStateCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithType(
-            AssetListEmptyCell.self,
-            for: indexPath
-        )!
-
-        let text = R.string.localizable.assetsSearchEmpty(preferredLanguages: selectedLocale.rLanguages)
-        cell.view.bind(text: text)
-        cell.actionButton.isHidden = true
-        return cell
-    }
-
-    func emptyStateCellHeight(indexPath: IndexPath) -> CGFloat {
-        AssetsSearchFlowLayout.CellType(indexPath: indexPath).height
-    }
 }
 
-extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout _: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        let height = emptyStateCellHeight(indexPath: indexPath)
-        return CGSize(width: collectionView.frame.width, height: height)
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout _: UICollectionViewLayout,
-        referenceSizeForHeaderInSection section: Int
-    ) -> CGSize {
-        switch AssetsSearchFlowLayout.SectionType(section: section) {
-        case .assetGroup:
-            return CGSize(
-                width: collectionView.frame.width,
-                height: AssetListMeasurement.assetHeaderHeight
-            )
-
-        case .technical:
-            return .zero
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
+extension AssetsSearchViewController: AssetsSearchCollectionManagerDelegate {
+    func selectAsset(for chainAssetId: ChainAssetId) {
         keyboardAppearanceStrategy.onCellSelected(for: rootView.searchBar.textField)
-
-        let cellType = AssetsSearchFlowLayout.CellType(indexPath: indexPath)
-
-        switch cellType {
-        case .emptyState:
-            break
-        case .asset:
-            if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
-                indexPath.section
-            ) {
-                let viewModel = groupsState.groups[groupIndex].assets[indexPath.row]
-                presenter.selectAsset(for: viewModel.chainAssetId)
-            }
-        }
+        presenter.selectAsset(for: chainAssetId)
     }
 
-    func collectionView(
-        _: UICollectionView,
-        layout _: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt section: Int
-    ) -> CGFloat {
-        AssetsSearchFlowLayout.SectionType(section: section).cellSpacing
-    }
-
-    func collectionView(
-        _: UICollectionView,
-        layout _: UICollectionViewLayout,
-        insetForSectionAt section: Int
-    ) -> UIEdgeInsets {
-        AssetsSearchFlowLayout.SectionType(section: section).insets
-    }
-}
-
-extension AssetsSearchViewController: UICollectionViewDataSource {
-    func numberOfSections(in _: UICollectionView) -> Int {
-        AssetsSearchFlowLayout.SectionType.assetsStartingSection + groupsState.groups.count
-    }
-
-    func collectionView(_: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch AssetsSearchFlowLayout.SectionType(section: section) {
-        case .technical:
-            return groupsState.isEmpty ? 1 : 0
-        case .assetGroup:
-            if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
-                return groupsState.groups[groupIndex].assets.count
-            } else {
-                return 0
-            }
-        }
-    }
-
-    private func provideAssetCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath,
-        assetIndex: Int
-    ) -> AssetListAssetCell {
-        let assetCell = collectionView.dequeueReusableCellWithType(
-            AssetListAssetCell.self,
-            for: indexPath
-        )!
-
-        if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
-            indexPath.section
-        ) {
-            let viewModel = groupsState.groups[groupIndex].assets[assetIndex]
-            assetCell.bind(viewModel: viewModel)
-        }
-
-        return assetCell
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        switch AssetsSearchFlowLayout.CellType(indexPath: indexPath) {
-        case .emptyState:
-            return provideEmptyStateCell(collectionView, indexPath: indexPath)
-        case let .asset(_, assetIndex):
-            return provideAssetCell(collectionView, indexPath: indexPath, assetIndex: assetIndex)
-        }
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        viewForSupplementaryElementOfKind kind: String,
-        at indexPath: IndexPath
-    ) -> UICollectionReusableView {
-        let view = collectionView.dequeueReusableSupplementaryViewWithType(
-            AssetListNetworkView.self,
-            forSupplementaryViewOfKind: kind,
-            for: indexPath
-        )!
-
-        if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
-            indexPath.section
-        ) {
-            let viewModel = groupsState.groups[groupIndex]
-            view.bind(viewModel: viewModel)
-        }
-
-        return view
+    func selectGroup(with symbol: AssetModel.Symbol) {
+        keyboardAppearanceStrategy.onCellSelected(for: rootView.searchBar.textField)
+        presenter.selectGroup(with: symbol)
     }
 }
 
@@ -286,16 +151,41 @@ extension AssetsSearchViewController: UITextFieldDelegate {
 }
 
 extension AssetsSearchViewController: AssetsSearchViewProtocol {
-    func didReceiveGroups(state: AssetListGroupState) {
-        groupsState = state
+    func didReceiveList(viewModel: AssetListViewModel) {
+        groupsViewModel = viewModel
+        collectionViewManager?.updateGroupsViewModel(with: viewModel)
 
         rootView.collectionView.reloadData()
+
+        collectionViewManager?.updateTokensGroupLayout()
+    }
+
+    func didReceiveAssetGroupsStyle(_ style: AssetListGroupsStyle) {
+        guard rootView.assetGroupsLayoutStyle != style else { return }
+
+        rootView.assetGroupsLayoutStyle = style
+
+        rootView.collectionView.reloadData()
+
+        switch style {
+        case .tokens:
+            rootView.collectionView.setCollectionViewLayout(
+                rootView.collectionTokenGroupsLayout,
+                animated: false
+            )
+        case .networks:
+            rootView.collectionView.setCollectionViewLayout(
+                rootView.collectionNetworkGroupsLayout,
+                animated: false
+            )
+        }
     }
 }
 
 extension AssetsSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
+            collectionViewManager?.updateSelectedLocale(with: selectedLocale)
             rootView.collectionView.reloadData()
             setupLocalization()
         }
