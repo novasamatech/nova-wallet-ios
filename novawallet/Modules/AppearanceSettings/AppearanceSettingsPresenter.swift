@@ -27,5 +27,7 @@ extension AppearanceSettingsPresenter: AppearanceSettingsPresenterProtocol {
 
     func changeTokenIcons(with selectedOption: AppearanceSettingsIconsView.AppearanceOptions) {
         appearanceFacade.selectedIconAppearance = .init(from: selectedOption)
+
+        wireframe.presentAppearanceChanged(from: view)
     }
 }
