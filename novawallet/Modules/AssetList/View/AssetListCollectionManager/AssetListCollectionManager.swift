@@ -98,7 +98,10 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         )
     }
 
-    func changeCollectionViewLayout(to style: AssetListGroupsStyle, animated: Bool) {
+    func changeCollectionViewLayout(
+        to style: AssetListGroupsStyle,
+        animated: Bool
+    ) {
         guard let view else { return }
 
         view.assetGroupsLayoutStyle = style
@@ -108,9 +111,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         view.collectionView.setCollectionViewLayout(
             newLayout,
             animated: animated
-        ) { _ in
-            view.collectionView.collectionViewLayout.invalidateLayout()
-        }
+        )
     }
 
     func updateTokensGroupLayout() {

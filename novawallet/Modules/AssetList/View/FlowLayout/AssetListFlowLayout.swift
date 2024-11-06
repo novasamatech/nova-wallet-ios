@@ -27,7 +27,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     var needsDecorationUpdate = false
 
-    private var isAnimating: Bool = false
+    private var isAnimatingTransition: Bool = false
 
     enum SectionType: CaseIterable {
         case summary
@@ -132,7 +132,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         }
     }
 
-    var itemsDecorationAttributes: [UICollectionViewLayoutAttributes] = []
+    var itemsDecorationAttributes: [IndexPath: UICollectionViewLayoutAttributes] = [:]
 
     func updateItemsBackgroundAttributesIfNeeded() {
         fatalError("Must be overriden by subsclass")
@@ -155,11 +155,11 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
             in: rect
         )?.map { $0.copy() } as? [UICollectionViewLayoutAttributes]
 
-        let visibleAttributes = itemsDecorationAttributes.filter { attributes in
+        let visibleAttributes = itemsDecorationAttributes.filter { _, attributes in
             attributes.frame.intersects(rect)
         }
 
-        return (layoutAttributesObjects ?? []) + visibleAttributes
+        return (layoutAttributesObjects ?? []) + visibleAttributes.values
     }
 
     override func layoutAttributesForDecorationView(
@@ -174,20 +174,18 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
             return nil
         }
 
-        let index = indexPath.section - SectionType.assetsStartingSection
-
-        return itemsDecorationAttributes[index]
+        return itemsDecorationAttributes[indexPath]
     }
 
     override func invalidateLayout() {
         super.invalidateLayout()
-        itemsDecorationAttributes = []
+        itemsDecorationAttributes = [:]
     }
 
     override func prepare() {
         super.prepare()
 
-        itemsDecorationAttributes = []
+        itemsDecorationAttributes = [:]
         updateItemsBackgroundAttributesIfNeeded()
     }
 
@@ -279,36 +277,12 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     // MARK: Animation
 
-    private func getTransformForAnimation(isAppearing: Bool) -> CGAffineTransform {
-        let scale: CGFloat = 0.001
-        let translation: CGFloat = isAppearing ? -50 : 50
-        return CGAffineTransform(scaleX: scale, y: scale)
-    }
-
-    override func prepareForTransition(to newLayout: UICollectionViewLayout) {
-        super.prepareForTransition(to: newLayout)
-
-        itemsDecorationAttributes.removeAll()
-
-        isAnimating = true
-
-        Logger.shared.info("Transition to new layout: \(newLayout) in \(self)")
-    }
-
-    override func prepareForTransition(from oldLayout: UICollectionViewLayout) {
-        super.prepareForTransition(from: oldLayout)
-
-        isAnimating = true
-
-        Logger.shared.info("Transition from old layout: \(oldLayout) in \(self)")
-    }
-
-    override func finalizeLayoutTransition() {
-        super.finalizeLayoutTransition()
-
-        isAnimating = false
-
-        Logger.shared.info("Finalize transition on layout \(self)")
+    func getTransformForAnimation() -> CGAffineTransform {
+        let scale: CGFloat = 0.65
+        return CGAffineTransform(
+            scaleX: scale,
+            y: scale
+        )
     }
 
     override func initialLayoutAttributesForAppearingItem(
@@ -319,11 +293,9 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         attributes?.alpha = 0.0
 
-        if isAnimating {
-            attributes?.transform = getTransformForAnimation(isAppearing: true)
+        if itemIndexPath.row != 0 {
+            attributes?.transform = getTransformForAnimation()
         }
-
-        Logger.shared.info("Transition \(self) Appearing item \(itemIndexPath) Attributes: \(attributes)")
 
         return attributes
     }
@@ -334,13 +306,9 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?
             .copy() as? UICollectionViewLayoutAttributes
 
-        attributes?.alpha = 0.0
-
-        if isAnimating {
-            attributes?.transform = getTransformForAnimation(isAppearing: false)
+        if itemIndexPath.row != 0 {
+            attributes?.transform = getTransformForAnimation()
         }
-
-        Logger.shared.info("Transition \(self) Disappearing item \(itemIndexPath) Attributes: \(attributes)")
 
         return attributes
     }
@@ -349,18 +317,10 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         ofKind _: String,
         at decorationIndexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
-        let attributes = itemsDecorationAttributes
-            .first { $0.indexPath == decorationIndexPath }?
+        let attributes = itemsDecorationAttributes[decorationIndexPath]?
             .copy() as? UICollectionViewLayoutAttributes
 
         attributes?.alpha = 0.0
-
-        if isAnimating {
-            attributes?.transform = getTransformForAnimation(isAppearing: true)
-            Logger.shared.info("Transform Attributes: \(attributes) in Appearing decoration \(self)")
-        }
-
-        Logger.shared.info("Transition \(self) Appearing decoration \(decorationIndexPath) Attributes: \(attributes)")
 
         return attributes
     }
@@ -369,17 +329,8 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         ofKind _: String,
         at decorationIndexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
-        let attributes = itemsDecorationAttributes
-            .first { $0.indexPath == decorationIndexPath }?
+        let attributes = itemsDecorationAttributes[decorationIndexPath]?
             .copy() as? UICollectionViewLayoutAttributes
-
-        attributes?.alpha = 0.0
-
-        if isAnimating {
-            attributes?.transform = getTransformForAnimation(isAppearing: false)
-        }
-
-        Logger.shared.info("Transition \(self) Disappearing decoration \(decorationIndexPath) Attributes: \(attributes)")
 
         return attributes
     }
@@ -395,10 +346,6 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         attributes?.alpha = 0.0
 
-        if isAnimating {
-            attributes?.transform = getTransformForAnimation(isAppearing: true)
-        }
-
         return attributes
     }
 
@@ -412,10 +359,6 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         )?.copy() as? UICollectionViewLayoutAttributes
 
         attributes?.alpha = 0.0
-
-        if isAnimating {
-            attributes?.transform = getTransformForAnimation(isAppearing: false)
-        }
 
         return attributes
     }

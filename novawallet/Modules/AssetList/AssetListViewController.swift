@@ -136,7 +136,10 @@ extension AssetListViewController: AssetListViewProtocol {
             rootView.collectionView.performBatchUpdates {
                 self.rootView.collectionView.deleteSections(IndexSet(removingIndexes))
             } completion: { _ in
-                self.collectionViewManager.changeCollectionViewLayout(to: newGroupStyle, animated: false)
+                self.collectionViewManager.changeCollectionViewLayout(
+                    to: newGroupStyle,
+                    animated: false
+                )
 
                 self.replaceViewModel(viewModel)
 

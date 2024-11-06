@@ -174,7 +174,7 @@ class AssetListTokensFlowLayout: AssetListFlowLayout {
             return (newAttributes, newPosition)
         }
 
-        itemsDecorationAttributes = attributes
+        itemsDecorationAttributes = attributes.reduce(into: [:]) { $0[$1.indexPath] = $1 }
     }
 
     override func assetCellHeight(for _: IndexPath) -> CGFloat {
