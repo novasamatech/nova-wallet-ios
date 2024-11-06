@@ -7,6 +7,9 @@ extension ParachainStaking {
     typealias DecodedParachainBondConfig = ChainStorageDecodedItem<
         ParachainStaking.ParachainBondConfig
     >
+    typealias DecodedInflationDistributionInfo = ChainStorageDecodedItem<
+        ParachainStaking.InflationDistributionInfo
+    >
     typealias DecodedDelegator = ChainStorageDecodedItem<ParachainStaking.Delegator>
     typealias MappedScheduledRequest = ChainStorageDecodedItem<[ParachainStaking.DelegatorScheduledRequest]>
     typealias DecodedScheduledRequests = ChainStorageDecodedItem<
@@ -35,6 +38,10 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
     func getParachainBondProvider(
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<ParachainStaking.DecodedParachainBondConfig>
+
+    func getInflationDistributionInfoProvider(
+        for chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<ParachainStaking.DecodedInflationDistributionInfo>
 
     func getDelegatorStateProvider(
         for chainId: ChainModel.Id,
@@ -126,6 +133,12 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<ParachainStaking.DecodedParachainBondConfig> {
         try getPlainProvider(for: chainId, storagePath: ParachainStaking.parachainBondInfoPath)
+    }
+
+    func getInflationDistributionInfoProvider(
+        for chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<ParachainStaking.DecodedInflationDistributionInfo> {
+        try getPlainProvider(for: chainId, storagePath: ParachainStaking.inflationDistributionInfoPath)
     }
 
     func getDelegatorStateProvider(
