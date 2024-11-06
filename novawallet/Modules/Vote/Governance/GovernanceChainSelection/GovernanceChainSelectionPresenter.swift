@@ -1,9 +1,9 @@
 import Foundation
 import SoraFoundation
 
-final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
-    var wireframe: GovernanceAssetSelectionWireframeProtocol? {
-        baseWireframe as? GovernanceAssetSelectionWireframeProtocol
+final class GovernanceChainSelectionPresenter: ChainAssetSelectionBasePresenter {
+    var wireframe: GovernanceChainSelectionWireframeProtocol? {
+        baseWireframe as? GovernanceChainSelectionWireframeProtocol
     }
 
     struct Option {
@@ -19,8 +19,8 @@ final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
     private let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
     init(
-        interactor: AssetSelectionInteractorInputProtocol,
-        wireframe: GovernanceAssetSelectionWireframeProtocol,
+        interactor: ChainAssetSelectionInteractorInputProtocol,
+        wireframe: GovernanceChainSelectionWireframeProtocol,
         selectedChainId: ChainModel.Id?,
         selectedGovernanceType: GovernanceType?,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
@@ -46,7 +46,7 @@ final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
-        let icon = assetIconViewModelFactory.createAssetIconViewModel(for: asset.icon)
+        let icon = ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
         let title = governanceType.title(for: chain)
         let isSelected = selectedChainId == chain.chainId && selectedGovernanceType == governanceType
         let balance = extractFormattedBalance(for: chainAsset) ?? ""

@@ -415,8 +415,8 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
     }
 }
 
-extension CrowdloanListPresenter: AssetSelectionDelegate {
-    func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
+extension CrowdloanListPresenter: ChainAssetSelectionDelegate {
+    func assetSelection(view _: ChainAssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
         if let currentChain = try? selectedChainResult?.get(), currentChain.chainId == chainAsset.chain.chainId {
             return
         }

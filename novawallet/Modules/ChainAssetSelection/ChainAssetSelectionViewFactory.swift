@@ -3,13 +3,13 @@ import Operation_iOS
 import SoraFoundation
 import BigInt
 
-struct AssetSelectionViewFactory {
+struct ChainAssetSelectionViewFactory {
     static func createView(
-        delegate: AssetSelectionDelegate,
+        delegate: ChainAssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?,
         balanceSlice: KeyPath<AssetBalance, BigUInt>? = nil,
-        assetFilter: @escaping AssetSelectionFilter
-    ) -> AssetSelectionViewProtocol? {
+        assetFilter: @escaping ChainAssetSelectionFilter
+    ) -> ChainAssetSelectionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -18,7 +18,7 @@ struct AssetSelectionViewFactory {
             sortDescriptors: [NSSortDescriptor.chainsByAddressPrefix]
         )
 
-        let interactor = AssetSelectionInteractor(
+        let interactor = ChainAssetSelectionInteractor(
             selectedMetaAccount: SelectedWalletSettings.shared.value,
             balanceSlice: balanceSlice ?? \.transferable,
             repository: AnyDataProviderRepository(repository),
@@ -29,7 +29,7 @@ struct AssetSelectionViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
-        let wireframe = AssetSelectionWireframe()
+        let wireframe = ChainAssetSelectionWireframe()
         wireframe.delegate = delegate
 
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
@@ -37,7 +37,7 @@ struct AssetSelectionViewFactory {
         let localizationManager = LocalizationManager.shared
         let assetIconViewModelFactory = AssetIconViewModelFactory()
 
-        let presenter = AssetSelectionPresenter(
+        let presenter = ChainAssetSelectionPresenter(
             interactor: interactor,
             wireframe: wireframe,
             selectedChainAssetId: selectedChainAssetId,
@@ -47,10 +47,10 @@ struct AssetSelectionViewFactory {
         )
 
         let title = LocalizableResource { locale in
-            R.string.localizable.commonSelectAsset(preferredLanguages: locale.rLanguages)
+            R.string.localizable.commonSelectNetwork(preferredLanguages: locale.rLanguages)
         }
 
-        let view = AssetSelectionViewController(
+        let view = ChainAssetSelectionViewController(
             nibName: R.nib.selectionListViewController.name,
             localizedTitle: title,
             presenter: presenter,
