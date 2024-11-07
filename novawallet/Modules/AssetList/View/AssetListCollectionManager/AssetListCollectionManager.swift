@@ -23,6 +23,10 @@ final class AssetListCollectionManager {
     private let collectionViewDataSource: AssetListCollectionViewDataSource
     private let collectionViewDelegate: AssetListCollectionViewDelegate
 
+    private var transitingLayout: Bool = false
+    
+    private var pendingLayout: (old: AssetListViewModel, new: AssetListViewModel)?
+
     init(
         view: AssetListViewLayout,
         groupsViewModel: AssetListViewModel,
@@ -69,14 +73,16 @@ final class AssetListCollectionManager {
         (cell as? AnimationUpdatibleView)?.updateLayerAnimationIfActive()
     }
 
-    func prepareForAnimatedTransition() {
-        tokenGroupsLayout?.isAnimatingTransition = true
-        networkGroupsLayout?.isAnimatingTransition = true
+    func prepareForLayoutTransition() {
+        transitingLayout = true
+        tokenGroupsLayout?.animatingTransition = true
+        networkGroupsLayout?.animatingTransition = true
     }
 
-    func endAnimatedTransition() {
-        tokenGroupsLayout?.isAnimatingTransition = false
-        networkGroupsLayout?.isAnimatingTransition = false
+    func endLayoutTransition() {
+        transitingLayout = false
+        tokenGroupsLayout?.animatingTransition = false
+        networkGroupsLayout?.animatingTransition = false
     }
 
     private func replaceViewModel(_ newViewModel: AssetListViewModel) {
@@ -121,6 +127,13 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     ) {
         guard let view else { return }
 
+        guard !transitingLayout else {
+            pendingLayout = (oldViewModel, newViewModel)
+
+            return
+        }
+
+        prepareForLayoutTransition()
         updateTokensGroupLayout()
 
         let removingViewModel = AssetListViewModel(
@@ -129,8 +142,8 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
             listGroupStyle: oldViewModel.listGroupStyle
         )
 
-        let removingIndexes = oldViewModel.listState.groups.enumerated().map { index, _ in
-            AssetListFlowLayout.SectionType.assetsStartingSection + index
+        let removingIndexes = (0 ..< view.collectionView.numberOfSections).filter { section in
+            section >= AssetListFlowLayout.SectionType.assetsStartingSection
         }
 
         let insertingIndexes = newViewModel.listState.groups.enumerated().map { index, _ in
@@ -138,11 +151,12 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         }
 
         replaceViewModel(removingViewModel)
-        prepareForAnimatedTransition()
 
         view.collectionView.performBatchUpdates {
             view.collectionView.deleteSections(IndexSet(removingIndexes))
-        } completion: { _ in
+        } completion: { [weak self] _ in
+            guard let self else { return }
+
             view.assetGroupsLayoutStyle = newViewModel.listGroupStyle
 
             let newLayout: AssetListFlowLayout = view.collectionViewLayout
@@ -152,12 +166,17 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
                 animated: false
             )
 
-            self.replaceViewModel(newViewModel)
+            replaceViewModel(newViewModel)
 
             view.collectionView.performBatchUpdates {
                 view.collectionView.insertSections(IndexSet(insertingIndexes))
             } completion: { _ in
-                self.endAnimatedTransition()
+                self.endLayoutTransition()
+
+                if let pending = self.pendingLayout {
+                    self.pendingLayout = nil
+                    self.changeCollectionViewLayout(from: pending.old, to: pending.new)
+                }
             }
         }
     }

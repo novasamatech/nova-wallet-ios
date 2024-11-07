@@ -27,7 +27,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     var needsDecorationUpdate = false
 
-    var isAnimatingTransition: Bool = false
+    var animatingTransition: Bool = false
 
     enum SectionType: CaseIterable {
         case summary
@@ -288,7 +288,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         attributes?.alpha = 0.0
 
-        if itemIndexPath.row != 0, !isAnimatingTransition {
+        if itemIndexPath.row != 0, !animatingTransition {
             attributes?.transform = getTransformForAnimation()
         }
 
@@ -301,7 +301,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?
             .copy() as? UICollectionViewLayoutAttributes
 
-        if itemIndexPath.row != 0, !isAnimatingTransition {
+        if itemIndexPath.row != 0, !animatingTransition {
             attributes?.transform = getTransformForAnimation()
         }
 
