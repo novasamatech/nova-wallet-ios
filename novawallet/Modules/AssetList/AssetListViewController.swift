@@ -132,6 +132,7 @@ extension AssetListViewController: AssetListViewProtocol {
             }
 
             replaceViewModel(removingViewModel)
+            rootView.collectionViewLayout.isAnimatingTransition = true
 
             rootView.collectionView.performBatchUpdates {
                 self.rootView.collectionView.deleteSections(IndexSet(removingIndexes))
@@ -147,6 +148,7 @@ extension AssetListViewController: AssetListViewProtocol {
                     self.rootView.collectionView.insertSections(IndexSet(insertingIndexes))
                 } completion: { _ in
                     self.collectionViewManager.updateTokensGroupLayout()
+                    self.rootView.collectionViewLayout.isAnimatingTransition = false
                 }
             }
         } else {

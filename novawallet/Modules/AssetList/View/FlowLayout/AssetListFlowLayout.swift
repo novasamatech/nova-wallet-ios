@@ -27,7 +27,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     var needsDecorationUpdate = false
 
-    private var isAnimatingTransition: Bool = false
+    var isAnimatingTransition: Bool = false
 
     enum SectionType: CaseIterable {
         case summary
@@ -293,7 +293,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         attributes?.alpha = 0.0
 
-        if itemIndexPath.row != 0 {
+        if itemIndexPath.row != 0, !isAnimatingTransition {
             attributes?.transform = getTransformForAnimation()
         }
 
@@ -306,35 +306,9 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?
             .copy() as? UICollectionViewLayoutAttributes
 
-        if itemIndexPath.row != 0 {
+        if itemIndexPath.row != 0, !isAnimatingTransition {
             attributes?.transform = getTransformForAnimation()
         }
-
-        return attributes
-    }
-
-    override func initialLayoutAttributesForAppearingDecorationElement(
-        ofKind kind: String,
-        at decorationIndexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.initialLayoutAttributesForAppearingDecorationElement(
-            ofKind: kind,
-            at: decorationIndexPath
-        )?.copy() as? UICollectionViewLayoutAttributes
-
-        attributes?.alpha = 0.0
-
-        return attributes
-    }
-
-    override func finalLayoutAttributesForDisappearingDecorationElement(
-        ofKind kind: String,
-        at decorationIndexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.finalLayoutAttributesForDisappearingDecorationElement(
-            ofKind: kind,
-            at: decorationIndexPath
-        )
 
         return attributes
     }
