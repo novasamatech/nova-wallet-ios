@@ -11,15 +11,12 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     let eventCenter: EventCenterProtocol
     let initState: SwapConfirmInitState
-    let assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol
     let signer: SigningWrapperProtocol
     let callPathFactory: AssetConversionCallPathFactoryProtocol
 
     init(
-        flowState: AssetConversionFlowFacadeProtocol,
+        state: SwapTokensFlowStateProtocol,
         initState: SwapConfirmInitState,
-        assetConversionAggregator: AssetConversionAggregationFactoryProtocol,
-        assetConversionExtrinsicService: AssetConversionExtrinsicServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -30,25 +27,25 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         selectedWallet: MetaAccountModel,
         operationQueue: OperationQueue,
         signer: SigningWrapperProtocol,
-        callPathFactory: AssetConversionCallPathFactoryProtocol
+        callPathFactory: AssetConversionCallPathFactoryProtocol,
+        logger: LoggerProtocol
     ) {
         self.initState = initState
         self.signer = signer
-        self.assetConversionExtrinsicService = assetConversionExtrinsicService
         self.persistExtrinsicService = persistExtrinsicService
         self.eventCenter = eventCenter
         self.callPathFactory = callPathFactory
 
         super.init(
-            flowState: flowState,
-            assetConversionAggregator: assetConversionAggregator,
+            state: state,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
     }
 
@@ -100,23 +97,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
 }
 
 extension SwapConfirmInteractor: SwapConfirmInteractorInputProtocol {
-    func submit(args: AssetConversion.CallArgs, lastFee: BigUInt?) {
-        assetConversionExtrinsicService.submit(
-            callArgs: args,
-            feeAsset: initState.feeChainAsset,
-            signer: signer,
-            runCompletionIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(hash):
-                self?.persistSwapAndComplete(
-                    txHash: hash,
-                    args: args,
-                    lastFee: lastFee
-                )
-            case let .failure(error):
-                self?.presenter?.didReceive(error: .submit(error))
-            }
-        }
+    func submit(args _: AssetConversion.CallArgs, lastFee _: BigUInt?) {
+        // TODO: Implement Submission
     }
 }

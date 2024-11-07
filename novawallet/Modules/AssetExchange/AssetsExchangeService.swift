@@ -4,7 +4,7 @@ import Operation_iOS
 protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
     func subscribeUpdates(for target: AnyObject, notifyingIn queue: DispatchQueue, closure: @escaping () -> Void)
     func unsubscribeUpdates(for target: AnyObject)
-    
+
     func fetchReachibilityWrapper() -> CompoundOperationWrapper<AssetsExchageGraphReachabilityProtocol>
 }
 
@@ -29,35 +29,35 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
     func setup() {
         graphProvider.setup()
     }
-    
+
     func throttle() {
         graphProvider.throttle()
     }
-    
+
     func subscribeUpdates(for target: AnyObject, notifyingIn queue: DispatchQueue, closure: @escaping () -> Void) {
         graphProvider.subscribeGraph(
             target,
             notifyingIn: queue
-        ) {
+        ) { _ in
             closure()
         }
     }
-    
+
     func unsubscribeUpdates(for target: AnyObject) {
         graphProvider.unsubscribeGraph(target)
     }
-    
+
     func fetchReachibilityWrapper() -> CompoundOperationWrapper<AssetsExchageGraphReachabilityProtocol> {
-        let graphWrapper = graphProvider.asyncWaitGraphWrapper(using: operationQueue)
-        
+        let graphWrapper = graphProvider.asyncWaitGraphWrapper()
+
         let directionsOperation = ClosureOperation<AssetsExchageGraphReachabilityProtocol> {
             let graph = try graphWrapper.targetOperation.extractNoCancellableResultData()
-            
+
             return graph.fetchReachability()
         }
-        
+
         directionsOperation.addDependency(graphWrapper.targetOperation)
-        
+
         return graphWrapper.insertingTail(operation: directionsOperation)
     }
 }

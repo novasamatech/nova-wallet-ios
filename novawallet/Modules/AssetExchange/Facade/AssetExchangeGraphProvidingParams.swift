@@ -15,7 +15,7 @@ struct AssetExchangeGraphProvidingParams {
     let logger: LoggerProtocol
 
     init(
-        wallet: MetaAccountModel = SelectedWalletSettings.shared.value,
+        wallet: MetaAccountModel,
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         userDataStorageFacade: StorageFacadeProtocol = UserDataStorageFacade.shared,
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,

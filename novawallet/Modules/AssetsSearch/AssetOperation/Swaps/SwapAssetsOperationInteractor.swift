@@ -5,10 +5,9 @@ import Operation_iOS
 final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
     weak var presenter: SwapAssetsOperationPresenterProtocol?
 
-    let stateObservable: AssetListModelObservable
+    let state: SwapTokensFlowStateProtocol
     let logger: LoggerProtocol
     let selectionModel: SwapAssetSelectionModel
-    let assetExchangeService: AssetsExchangeServiceProtocol
 
     let settingsManager: SettingsManagerProtocol
 
@@ -17,42 +16,46 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
     private var reachabilityCallStore = CancellableCallStore()
     private var reachability: AssetsExchageGraphReachabilityProtocol?
 
+    private var assetExchangeService: AssetsExchangeServiceProtocol?
+
     init(
-        stateObservable: AssetListModelObservable,
+        state: SwapTokensFlowStateProtocol,
         selectionModel: SwapAssetSelectionModel,
-        assetExchangeService: AssetsExchangeServiceProtocol,
         settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.stateObservable = stateObservable
+        self.state = state
         self.logger = logger
         self.selectionModel = selectionModel
-        self.assetExchangeService = assetExchangeService
         self.settingsManager = settingsManager
         self.operationQueue = operationQueue
     }
 
     deinit {
-        directionsCall.cancel()
+        reachabilityCallStore.cancel()
     }
 
     private func reloadDirectionsIfNeeded() {
+        guard let assetExchangeService else {
+            return
+        }
+
         let wrapper = assetExchangeService.fetchReachibilityWrapper()
-        
+
         executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
             backingCallIn: reachabilityCallStore,
             runningCallbackIn: .main
-        ) { result in
+        ) { [weak self] result in
             switch result {
             case let .success(reachibility):
                 self?.reachability = reachibility
                 self?.builder?.reload()
-                presenter?.directionsLoaded()
+                self?.presenter?.directionsLoaded()
             case let .failure(error):
-                presenter?.didReceive(error: .directions(error))
+                self?.presenter?.didReceive(error: .directions(error))
             }
         }
     }
@@ -65,23 +68,23 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             guard let self, let reachability else {
                 return false
             }
-            
+
             switch selectionModel {
             case let .payForAsset(receiveAsset):
                 let assetsOut = reachability.getAssetsOut(for: chainAsset.chainAssetId)
-                
+
                 if let receiveAsset {
                     return assetsOut.contains(receiveAsset.chainAssetId)
                 } else {
                     return !assetsOut.isEmpty
                 }
-                
+
             case let .receivePayingWith(payAsset):
                 let assetsIn = reachability.getAssetsIn(for: chainAsset.chainAssetId)
-                
+
                 if let payAsset {
                     return assetsIn.contains(payAsset.chainAssetId)
-                    
+
                 } else {
                     return !assetsIn.isEmpty
                 }
@@ -102,18 +105,20 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             logger: logger
         )
 
-        builder?.apply(model: stateObservable.state.value)
+        builder?.apply(model: state.assetListObservable.state.value)
 
-        stateObservable.addObserver(with: self) { [weak self] _, newState in
+        state.assetListObservable.addObserver(with: self) { [weak self] _, newState in
             guard let self = self else {
                 return
             }
             self.builder?.apply(model: newState.value)
         }
     }
-    
+
     private func setupSwapService() {
-        assetExchangeService.subscribeUpdates(
+        assetExchangeService = state.setupAssetExchangeService()
+
+        assetExchangeService?.subscribeUpdates(
             for: self,
             notifyingIn: .main
         ) { [weak self] in

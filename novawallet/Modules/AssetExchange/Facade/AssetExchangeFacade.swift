@@ -5,7 +5,7 @@ final class AssetExchangeFacade {
         AssetsExchangeGraphProvider(
             supportedExchangeProviders: [
                 CrosschainAssetsExchangeProvider(
-                    wallet: params,
+                    wallet: params.wallet,
                     syncService: XcmTransfersSyncService(
                         remoteUrl: params.config.xcmTransfersURL,
                         operationQueue: params.operationQueue,

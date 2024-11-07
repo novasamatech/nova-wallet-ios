@@ -5,7 +5,7 @@ import Operation_iOS
 struct SwapConfirmViewFactory {
     static func createView(
         initState: SwapConfirmInitState,
-        flowState: AssetConversionFlowFacadeProtocol,
+        flowState: SwapTokensFlowStateProtocol,
         completionClosure: SwapCompletionClosure?
     ) -> SwapConfirmViewProtocol? {
         guard let currencyManager = CurrencyManager.shared, let wallet = SelectedWalletSettings.shared.value else {
@@ -66,38 +66,20 @@ struct SwapConfirmViewFactory {
     private static func createInteractor(
         wallet: MetaAccountModel,
         initState: SwapConfirmInitState,
-        flowState: AssetConversionFlowFacadeProtocol
+        flowState: SwapTokensFlowStateProtocol
     ) -> SwapConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let accountRequest = initState.chainAssetIn.chain.accountRequest()
 
         let chain = initState.chainAssetIn.chain
 
-        guard let connection = chainRegistry.getConnection(for: chain.chainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
-              let currencyManager = CurrencyManager.shared,
-              let selectedAccount = wallet.fetchMetaChainAccount(for: accountRequest) else {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let selectedAccount = wallet.fetchMetaChainAccount(for: accountRequest) else {
             return nil
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-
-        let assetConversionAggregator = AssetConversionAggregationFactory(
-            chainRegistry: chainRegistry,
-            operationQueue: operationQueue
-        )
-
-        let extrinsicServiceFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeService,
-            engine: connection,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared
-        )
-
-        guard let extrinsicService = try? flowState.createExtrinsicService(for: chain) else {
-            return nil
-        }
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: selectedAccount.metaId,
@@ -116,10 +98,8 @@ struct SwapConfirmViewFactory {
         )
 
         let interactor = SwapConfirmInteractor(
-            flowState: flowState,
+            state: flowState,
             initState: initState,
-            assetConversionAggregator: assetConversionAggregator,
-            assetConversionExtrinsicService: extrinsicService,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -130,7 +110,8 @@ struct SwapConfirmViewFactory {
             selectedWallet: wallet,
             operationQueue: operationQueue,
             signer: signingWrapper,
-            callPathFactory: AssetHubCallPathFactory()
+            callPathFactory: AssetHubCallPathFactory(),
+            logger: Logger.shared
         )
 
         return interactor

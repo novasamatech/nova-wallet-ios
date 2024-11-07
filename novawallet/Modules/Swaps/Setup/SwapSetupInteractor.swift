@@ -11,8 +11,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
 
     init(
-        flowState: AssetConversionFlowFacadeProtocol,
-        assetsExchangeGraphProvider: AssetsExchangeGraphProviding,
+        state: SwapTokensFlowStateProtocol,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -26,8 +25,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         self.storageRepository = storageRepository
 
         super.init(
-            flowState: flowState,
-            assetsExchangeGraphProvider: assetsExchangeGraphProvider,
+            state: state,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
@@ -144,19 +142,8 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         }
     }
 
-    override func setupReQuoteSubscription(for assetIn: ChainAssetId, assetOut: ChainAssetId) {
-        if
-            let reQuoteService = flowState.getReQuoteService(for: assetIn, assetOut: assetOut),
-            !reQuoteService.hasSubscription(for: self) {
-            reQuoteService.subscribeSyncState(
-                self,
-                queue: .main
-            ) { [weak self] oldIsSyncing, newIsSyncing in
-                if oldIsSyncing, !newIsSyncing {
-                    self?.presenter?.didReceiveQuoteDataChanged()
-                }
-            }
-        }
+    override func setupReQuoteSubscription(for _: ChainAssetId, assetOut _: ChainAssetId) {
+        // TODO: Implement ReQuote
     }
 }
 

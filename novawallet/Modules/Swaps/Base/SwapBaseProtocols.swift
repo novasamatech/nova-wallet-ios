@@ -29,7 +29,7 @@ protocol SwapBaseWireframeProtocol: AnyObject, SwapErrorPresentable, AlertPresen
 
 enum SwapBaseError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
-    case fetchFeeFailed(Error, TransactionFeeId, FeeChainAssetId?)
+    case fetchFeeFailed(Error, TransactionFeeId, ChainAssetId?)
     case price(Error, AssetModel.PriceId)
     case assetBalance(Error, ChainAssetId, AccountId)
     case assetBalanceExistense(Error, ChainAsset)

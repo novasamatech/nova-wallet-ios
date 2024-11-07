@@ -201,26 +201,17 @@ extension AssetOperationNetworkListViewFactory {
 extension AssetOperationNetworkListViewFactory {
     static func createSwapsView(
         with multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable,
-        selectClosure: @escaping (ChainAsset) -> Void,
+        state: SwapTokensFlowStateProtocol,
+        selectClosure: @escaping SwapAssetSelectionClosure,
         selectClosureStrategy: SubmoduleNavigationStrategy
     ) -> AssetOperationNetworkListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        let logger = Logger.shared
-
-        let interactor = AssetOperationNetworkListInteractor(
-            multichainToken: multichainToken,
-            stateObservable: stateObservable,
-            logger: logger
-        )
-
         let presenter = createSwapPresenter(
-            with: interactor,
+            with: state,
             multichainToken: multichainToken,
-            stateObservable: stateObservable,
             currencyManager: currencyManager,
             selectClosure: selectClosure,
             selectClosureStrategy: selectClosureStrategy
@@ -229,30 +220,44 @@ extension AssetOperationNetworkListViewFactory {
         let view = AssetOperationNetworkListViewController(presenter: presenter)
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }
 
     private static func createSwapPresenter(
-        with interactor: AssetOperationNetworkListInteractor,
+        with state: SwapTokensFlowStateProtocol,
         multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable,
         currencyManager: CurrencyManager,
-        selectClosure: @escaping (ChainAsset) -> Void,
+        selectClosure: @escaping SwapAssetSelectionClosure,
         selectClosureStrategy: SubmoduleNavigationStrategy
     ) -> SwapOperationNetworkListPresenter {
         let viewModelFactory = createViewModelFactory(with: currencyManager)
 
-        let wireframe = SwapAssetsOperationWireframe(stateObservable: stateObservable)
+        let wireframe = SwapAssetsOperationWireframe(
+            state: state,
+            selectClosure: selectClosure,
+            selectClosureStrategy: selectClosureStrategy
+        )
 
-        return SwapOperationNetworkListPresenter(
+        let interactor = AssetOperationNetworkListInteractor(
+            multichainToken: multichainToken,
+            stateObservable: state.assetListObservable,
+            logger: Logger.shared
+        )
+
+        let presenter = SwapOperationNetworkListPresenter(
             interactor: interactor,
             wireframe: wireframe,
             multichainToken: multichainToken,
             viewModelFactory: viewModelFactory,
-            selectClosure: selectClosure,
+            selectClosure: { chainAsset in
+                selectClosure(chainAsset, state)
+            },
             selectClosureStrategy: selectClosureStrategy
         )
+
+        interactor.presenter = presenter
+
+        return presenter
     }
 }
