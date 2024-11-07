@@ -17,7 +17,10 @@ protocol AssetListCollectionManagerProtocol {
     func updateSelectedLocale(with locale: Locale)
 
     func updateTokensGroupLayout()
-    func changeCollectionViewLayout(to style: AssetListGroupsStyle, animated: Bool)
+    func changeCollectionViewLayout(
+        from oldViewModel: AssetListViewModel,
+        to newViewModel: AssetListViewModel
+    )
     func updateLoadingState()
 }
 

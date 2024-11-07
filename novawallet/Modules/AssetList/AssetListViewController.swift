@@ -89,11 +89,6 @@ final class AssetListViewController: UIViewController, ViewHolder {
             rootView.collectionTokenGroupsLayout
         ].forEach { $0.setNftsActive(isActive) }
     }
-
-    private func replaceViewModel(_ newViewModel: AssetListViewModel) {
-        collectionViewManager.updateGroupsViewModel(with: newViewModel)
-        groupsViewModel = newViewModel
-    }
 }
 
 // MARK: AssetListViewProtocol
@@ -111,52 +106,21 @@ extension AssetListViewController: AssetListViewProtocol {
     }
 
     func didReceiveGroups(viewModel: AssetListViewModel) {
-        let oldGroupsStyle = groupsViewModel.listGroupStyle
-        let newGroupStyle = viewModel.listGroupStyle
+        let oldViewModel = groupsViewModel
+        let newViewModel = viewModel
 
-        if oldGroupsStyle != newGroupStyle {
-            let oldViewModel = groupsViewModel
+        groupsViewModel = newViewModel
 
-            let removingViewModel = AssetListViewModel(
-                isFiltered: groupsViewModel.isFiltered,
-                listState: .list(groups: []),
-                listGroupStyle: oldViewModel.listGroupStyle
+        collectionViewManager.updateGroupsViewModel(with: newViewModel)
+
+        if oldViewModel.listGroupStyle != newViewModel.listGroupStyle {
+            collectionViewManager.changeCollectionViewLayout(
+                from: oldViewModel,
+                to: newViewModel
             )
-
-            let removingIndexes = oldViewModel.listState.groups.enumerated().map { index, _ in
-                AssetListFlowLayout.SectionType.assetsStartingSection + index
-            }
-
-            let insertingIndexes = viewModel.listState.groups.enumerated().map { index, _ in
-                AssetListFlowLayout.SectionType.assetsStartingSection + index
-            }
-
-            replaceViewModel(removingViewModel)
-            rootView.collectionViewLayout.isAnimatingTransition = true
-
-            rootView.collectionView.performBatchUpdates {
-                self.rootView.collectionView.deleteSections(IndexSet(removingIndexes))
-            } completion: { _ in
-                self.collectionViewManager.changeCollectionViewLayout(
-                    to: newGroupStyle,
-                    animated: false
-                )
-
-                self.replaceViewModel(viewModel)
-
-                self.rootView.collectionView.performBatchUpdates {
-                    self.rootView.collectionView.insertSections(IndexSet(insertingIndexes))
-                } completion: { _ in
-                    self.collectionViewManager.updateTokensGroupLayout()
-                    self.rootView.collectionViewLayout.isAnimatingTransition = false
-                }
-            }
         } else {
-            replaceViewModel(viewModel)
-
-            rootView.collectionView.reloadData()
-
             collectionViewManager.updateTokensGroupLayout()
+            rootView.collectionView.reloadData()
         }
     }
 

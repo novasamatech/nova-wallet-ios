@@ -177,11 +177,6 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         return itemsDecorationAttributes[indexPath]
     }
 
-    override func invalidateLayout() {
-        super.invalidateLayout()
-        itemsDecorationAttributes = [:]
-    }
-
     override func prepare() {
         super.prepare()
 
@@ -309,6 +304,30 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         if itemIndexPath.row != 0, !isAnimatingTransition {
             attributes?.transform = getTransformForAnimation()
         }
+
+        return attributes
+    }
+
+    override func initialLayoutAttributesForAppearingDecorationElement(
+        ofKind elementKind: String,
+        at decorationIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingDecorationElement(
+            ofKind: elementKind,
+            at: decorationIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingDecorationElement(
+        ofKind elementKind: String,
+        at decorationIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingDecorationElement(
+            ofKind: elementKind,
+            at: decorationIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
 
         return attributes
     }
