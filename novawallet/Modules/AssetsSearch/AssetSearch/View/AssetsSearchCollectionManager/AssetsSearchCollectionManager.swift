@@ -116,12 +116,12 @@ extension AssetsSearchCollectionManager: AssetsSearchCollectionManagerProtocol {
         )
         networkGroupsLayout?.register(
             AssetListNetworkGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListNetworksFlowLayout.assetGroupDecoration
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.networkGroup
         )
 
         tokenGroupsLayout?.register(
             AssetListTokenGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListTokensFlowLayout.assetGroupDecoration
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.tokenGroup
         )
     }
 

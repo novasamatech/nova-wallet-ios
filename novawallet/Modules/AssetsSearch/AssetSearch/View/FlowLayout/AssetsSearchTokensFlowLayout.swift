@@ -76,14 +76,14 @@ class AssetsSearchTokensFlowLayout: AssetsSearchFlowLayout {
             let expanded = numberOfItems > 1
             let expandable = sectionsExpandableState[section] ?? false
 
-            let mainAssetHeight = Measurements.mainAssetHeight + Measurements.decorationContentInset * 2
+            let mainAssetHeight = AssetListMeasurement.assetHeight + AssetListMeasurement.decorationContentInset * 2
 
             let contentHeight = expanded
-                ? mainAssetHeight + (Measurements.mainAssetHeight * CGFloat(numberOfItems - 1))
+                ? mainAssetHeight + (AssetListMeasurement.assetHeight * CGFloat(numberOfItems - 1))
                 : mainAssetHeight
 
             let underneathViewHeight = expandable && !expanded
-                ? Measurements.underneathViewHeight
+                ? AssetListMeasurement.underneathViewHeight
                 : 0
 
             let decorationHeight = contentHeight + underneathViewHeight
@@ -114,7 +114,7 @@ class AssetsSearchTokensFlowLayout: AssetsSearchFlowLayout {
     }
 
     override func assetCellHeight(for _: IndexPath) -> CGFloat {
-        let contentHeight = Measurements.mainAssetHeight
+        let contentHeight = AssetListMeasurement.assetHeight
 
         return contentHeight
     }
@@ -126,10 +126,10 @@ class AssetsSearchTokensFlowLayout: AssetsSearchFlowLayout {
         let expandable = sectionsExpandableState[section] ?? false
 
         let expandableOffset: CGFloat = expandable && !expanded
-            ? Measurements.underneathViewHeight
+            ? AssetListMeasurement.underneathViewHeight
             : 0
 
-        var top = Measurements.decorationContentInset
+        var top = AssetListMeasurement.decorationContentInset
 
         if section == SectionType.assetsStartingSection {
             top += SectionType.technical.insets.top + SectionType.technical.insets.bottom
@@ -138,7 +138,7 @@ class AssetsSearchTokensFlowLayout: AssetsSearchFlowLayout {
         return UIEdgeInsets(
             top: top,
             left: 0,
-            bottom: 8 + Measurements.decorationContentInset + expandableOffset,
+            bottom: 8 + AssetListMeasurement.decorationContentInset + expandableOffset,
             right: 0
         )
     }
