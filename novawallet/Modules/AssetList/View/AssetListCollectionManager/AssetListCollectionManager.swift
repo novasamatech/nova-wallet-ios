@@ -24,7 +24,7 @@ final class AssetListCollectionManager {
     private let collectionViewDelegate: AssetListCollectionViewDelegate
 
     private var transitingLayout: Bool = false
-    
+
     private var pendingLayout: (old: AssetListViewModel, new: AssetListViewModel)?
 
     init(
