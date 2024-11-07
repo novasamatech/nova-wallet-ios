@@ -196,11 +196,11 @@ private extension AssetListCollectionViewDataSource {
                 AssetListNetworkGroupAssetCell.self,
                 for: indexPath
             )!
-            cell.selectedBackgroundView = nil
             cell.bind(viewModel: groupViewModel)
 
             if expanded {
                 cell.showDivider()
+                cell.configureSelectionView(for: expanded)
             }
 
             assetCell = cell
