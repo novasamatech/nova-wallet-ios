@@ -77,7 +77,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         clearRemoteSubscription()
     }
 
-    private func provideCanPayFee(for asset: ChainAsset) {
+    private func provideCanPayFee(for _: ChainAsset) {
         canPayFeeInAssetCall.cancel()
 
         // TODO: Implement provide fee

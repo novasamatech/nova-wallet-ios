@@ -106,9 +106,6 @@ struct SwapSetupViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let assetConversionAggregator = AssetsExchangeGraphProvider(
-            supportedExchangeProviders: <#T##[any AssetsExchangeProviding]#>, operationQueue: <#T##OperationQueue#>, logger: <#T##any LoggerProtocol#>)
-
         let assetStorageFactory = AssetStorageInfoOperationFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue

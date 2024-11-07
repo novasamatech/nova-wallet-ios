@@ -145,6 +145,8 @@
 		0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */; };
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
 		0C29B5382A4C68A500E35C6D /* AnimationUpdatibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */; };
+		0C2A3C932CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */; };
+		0C2A3C952CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2A3C942CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift */; };
 		0C2AA829B5CB89B39E0FA95E /* CrowdloanContributionConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF01941105BCD02536538362 /* CrowdloanContributionConfirmProtocols.swift */; };
 		0C2B18AE2BFE378B00206EDE /* CloudBackupSyncService+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18AD2BFE378B00206EDE /* CloudBackupSyncService+Create.swift */; };
 		0C2B18B02BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18AF2BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift */; };
@@ -5350,6 +5352,8 @@
 		0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningErrorHandling.swift; sourceTree = "<group>"; };
 		0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationUpdatibleView.swift; sourceTree = "<group>"; };
+		0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeOperationFactory.swift; sourceTree = "<group>"; };
+		0C2A3C942CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetSelectionModel.swift; sourceTree = "<group>"; };
 		0C2B18AD2BFE378B00206EDE /* CloudBackupSyncService+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupSyncService+Create.swift"; sourceTree = "<group>"; };
 		0C2B18AF2BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupSyncResultChanges+Critical.swift"; sourceTree = "<group>"; };
 		0C2B18B12BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupUpdateApplicationFactory+Create.swift"; sourceTree = "<group>"; };
@@ -11586,6 +11590,7 @@
 				0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */,
 				0C6108482CD889A000909928 /* AssetsExchange.swift */,
 				0C61084A2CD88F9B00909928 /* AssetsExchangeService.swift */,
+				0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -14503,6 +14508,7 @@
 				77C9BCCD2ACD691300022EA2 /* SwapAssetsOperationViewFactory.swift */,
 				77C9BCCF2ACD8A3600022EA2 /* SwapAssetsOperationViewLayout.swift */,
 				77C9BCD12ACD8AF400022EA2 /* SwapAssetsOperationViewController.swift */,
+				0C2A3C942CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift */,
 			);
 			path = Swaps;
 			sourceTree = "<group>";
@@ -25600,6 +25606,7 @@
 				8407715E28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift in Sources */,
 				88DC3E27292CABCB00DBCE4D /* AssetListStyles.swift in Sources */,
 				8472975D260B1B71009B86D0 /* ExistingBonding.swift in Sources */,
+				0C2A3C932CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift in Sources */,
 				8490144C24A93D0B008F705E /* NovaNavigationController.swift in Sources */,
 				848077D02837C637003B7C79 /* ParachainStakingValidatorFactory.swift in Sources */,
 				84F2FEFF25E7ADE7008338D5 /* ValidatorPrefs.swift in Sources */,
@@ -29269,6 +29276,7 @@
 				F332FA8C330A16C3894B6542 /* WalletConnectSessionDetailsProtocols.swift in Sources */,
 				D0AD3C44BBFD6A9F9FDEC933 /* WalletConnectSessionDetailsWireframe.swift in Sources */,
 				0CFA161C2B0CE851007AF885 /* Utility+Calls.swift in Sources */,
+				0C2A3C952CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift in Sources */,
 				0A44D28DF4BCF56131752F35 /* WalletConnectSessionDetailsPresenter.swift in Sources */,
 				0CA719942B79CA01000B086E /* HydraOmnipool+Storages.swift in Sources */,
 				F92E73C24AB577F37B35649E /* WalletConnectSessionDetailsInteractor.swift in Sources */,

@@ -7,29 +7,28 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
 
     let stateObservable: AssetListModelObservable
     let logger: LoggerProtocol
-    let chainAsset: ChainAsset?
-    let assetConversionAggregation: AssetConversionAggregationFactoryProtocol
+    let selectionModel: SwapAssetSelectionModel
+    let assetExchangeService: AssetsExchangeServiceProtocol
 
     let settingsManager: SettingsManagerProtocol
 
     private let operationQueue: OperationQueue
     private var builder: AssetSearchBuilder?
-    private var directionsCall = CancellableCallStore()
-    private var availableDirections: [ChainAssetId: Set<ChainAssetId>] = [:]
-    private var availableChains: Set<ChainModel.Id> = []
+    private var reachabilityCallStore = CancellableCallStore()
+    private var reachability: AssetsExchageGraphReachabilityProtocol?
 
     init(
         stateObservable: AssetListModelObservable,
-        chainAsset: ChainAsset?,
-        assetConversionAggregation: AssetConversionAggregationFactoryProtocol,
+        selectionModel: SwapAssetSelectionModel,
+        assetExchangeService: AssetsExchangeServiceProtocol,
         settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
         self.logger = logger
-        self.chainAsset = chainAsset
-        self.assetConversionAggregation = assetConversionAggregation
+        self.selectionModel = selectionModel
+        self.assetExchangeService = assetExchangeService
         self.settingsManager = settingsManager
         self.operationQueue = operationQueue
     }
@@ -39,114 +38,23 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
     }
 
     private func reloadDirectionsIfNeeded() {
-        if let chainAsset = chainAsset {
-            guard !availableChains.contains(chainAsset.chain.chainId), chainAsset.chain.hasSwaps else {
-                presenter?.directionsLoaded()
-                return
-            }
-
-            availableChains.insert(chainAsset.chain.chainId)
-            availableDirections = [:]
-            loadAssetDirections(for: chainAsset)
-        } else {
-            let allChains = stateObservable.state.value.allChains.values
-
-            let chainsWithSwaps = allChains.filter(\.hasSwaps)
-            let chainsWithSwapsIds = Set(chainsWithSwaps.map(\.chainId))
-
-            if chainsWithSwapsIds != availableChains {
-                availableChains = chainsWithSwapsIds
-                availableDirections = [:]
-
-                loadDirections(for: chainsWithSwaps)
-            } else {
-                presenter?.directionsLoaded()
-            }
-        }
-    }
-
-    private func loadDirections(for chains: [ChainModel]) {
-        directionsCall.cancel()
-
-        let wrappers = chains.map { assetConversionAggregation.createAvailableDirectionsWrapper(for: $0) }
-
-        let dependencies = wrappers.flatMap(\.allOperations)
-
-        let mergingOperation = ClosureOperation<Void> {
-            try wrappers.forEach { _ = try $0.targetOperation.extractNoCancellableResultData() }
-        }
-
-        dependencies.forEach {
-            mergingOperation.addDependency($0)
-        }
-
-        let commonWrapper = CompoundOperationWrapper(targetOperation: mergingOperation, dependencies: dependencies)
-
-        wrappers.forEach { wrapper in
-            wrapper.targetOperation.completionBlock = { [weak self] in
-                DispatchQueue.main.async {
-                    guard let self = self else {
-                        return
-                    }
-
-                    if case let .success(directions) = wrapper.targetOperation.result {
-                        self.updateAvailableDirections(directions)
-                    }
-                }
-            }
-        }
-
-        executeCancellable(
-            wrapper: commonWrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: directionsCall,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.presenter?.directionsLoaded()
-            case let .failure(error):
-                self?.handleDirectionsResponse(error: error)
-            }
-        }
-    }
-
-    private func loadAssetDirections(for chainAsset: ChainAsset) {
-        directionsCall.cancel()
-
-        let wrapper = assetConversionAggregation.createAvailableDirectionsWrapper(for: chainAsset)
-
+        let wrapper = assetExchangeService.fetchReachibilityWrapper()
+        
         executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            backingCallIn: directionsCall,
+            backingCallIn: reachabilityCallStore,
             runningCallbackIn: .main
-        ) { [weak self] result in
+        ) { result in
             switch result {
-            case let .success(directions):
-                self?.updateAvailableDirections([chainAsset.chainAssetId: directions])
-                self?.presenter?.directionsLoaded()
+            case let .success(reachibility):
+                self?.reachability = reachibility
+                self?.builder?.reload()
+                presenter?.directionsLoaded()
             case let .failure(error):
-                self?.handleDirectionsResponse(error: error)
+                presenter?.didReceive(error: .directions(error))
             }
         }
-    }
-
-    private func handleDirectionsResponse(error: Error) {
-        if let encodingError = error as? StorageKeyEncodingOperationError, encodingError == .invalidStoragePath {
-            // ignore not retryable errors
-            presenter?.directionsLoaded()
-        } else {
-            presenter?.didReceive(error: .directions(error))
-        }
-    }
-
-    private func updateAvailableDirections(_ newDirections: [ChainAssetId: Set<ChainAssetId>]) {
-        availableDirections = newDirections.reduce(into: availableDirections) { accum, keyValue in
-            accum[keyValue.key] = keyValue.value
-        }
-
-        builder?.reload()
     }
 
     private func createBuilder() {
@@ -154,10 +62,30 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
         searchQueue.maxConcurrentOperationCount = 1
 
         let filter: ChainAssetsFilter = { [weak self] chainAsset in
-            guard let availableDirections = self?.availableDirections else {
+            guard let self, let reachability else {
                 return false
             }
-            return availableDirections.contains(where: { $0.value.contains(chainAsset.chainAssetId) })
+            
+            switch selectionModel {
+            case let .payForAsset(receiveAsset):
+                let assetsOut = reachability.getAssetsOut(for: chainAsset.chainAssetId)
+                
+                if let receiveAsset {
+                    return assetsOut.contains(receiveAsset.chainAssetId)
+                } else {
+                    return !assetsOut.isEmpty
+                }
+                
+            case let .receivePayingWith(payAsset):
+                let assetsIn = reachability.getAssetsIn(for: chainAsset.chainAssetId)
+                
+                if let payAsset {
+                    return assetsIn.contains(payAsset.chainAssetId)
+                    
+                } else {
+                    return !assetsIn.isEmpty
+                }
+            }
         }
 
         builder = .init(
@@ -181,7 +109,15 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
                 return
             }
             self.builder?.apply(model: newState.value)
-            self.reloadDirectionsIfNeeded()
+        }
+    }
+    
+    private func setupSwapService() {
+        assetExchangeService.subscribeUpdates(
+            for: self,
+            notifyingIn: .main
+        ) { [weak self] in
+            self?.reloadDirectionsIfNeeded()
         }
     }
 
@@ -196,7 +132,7 @@ extension SwapAssetsOperationInteractor: SwapAssetsOperationInteractorInputProto
     func setup() {
         provideAssetsGroupStyle()
         createBuilder()
-        reloadDirectionsIfNeeded()
+        setupSwapService()
     }
 
     func search(query: String) {

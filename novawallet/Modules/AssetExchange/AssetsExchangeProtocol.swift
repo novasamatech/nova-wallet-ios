@@ -32,3 +32,32 @@ protocol AssetsExchangeGraphProviding {
 
     func unsubscribeGraph(_ target: AnyObject)
 }
+
+extension AssetsExchangeGraphProviding {
+    func asyncWaitGraphWrapper(
+        using operationQueue: OperationQueue,
+        workingQueue: DispatchQueue = .global()
+    ) -> CompoundOperationWrapper<AssetsExchangeGraphProtocol> {
+        let subscriber = UUID()
+        
+        let operation = AsyncClosureOperation(
+            operationClosure: { completion in
+                self.subscribeGraph(
+                    subscriber,
+                    notifyingIn: workingQueue
+                ) { graph in
+                    guard let graph else {
+                        return
+                    }
+                    
+                    completion(graph)
+                }
+            },
+            cancelationClosure: {
+                self.unsubscribeGraph(subscriber)
+            }
+        )
+        
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+}
