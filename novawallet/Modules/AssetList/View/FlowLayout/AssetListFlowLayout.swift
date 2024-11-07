@@ -25,6 +25,10 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     private(set) var promotionInsets: UIEdgeInsets = .zero
     private(set) var nftsInsets: UIEdgeInsets = .zero
 
+    var needsDecorationUpdate = false
+
+    var animatingTransition: Bool = false
+
     enum SectionType: CaseIterable {
         case summary
         case nfts
@@ -128,7 +132,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         }
     }
 
-    var itemsDecorationAttributes: [UICollectionViewLayoutAttributes] = []
+    var itemsDecorationAttributes: [IndexPath: UICollectionViewLayoutAttributes] = [:]
 
     func updateItemsBackgroundAttributesIfNeeded() {
         fatalError("Must be overriden by subsclass")
@@ -151,11 +155,11 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
             in: rect
         )?.map { $0.copy() } as? [UICollectionViewLayoutAttributes]
 
-        let visibleAttributes = itemsDecorationAttributes.filter { attributes in
+        let visibleAttributes = itemsDecorationAttributes.filter { _, attributes in
             attributes.frame.intersects(rect)
         }
 
-        return (layoutAttributesObjects ?? []) + visibleAttributes
+        return (layoutAttributesObjects ?? []) + visibleAttributes.values
     }
 
     override func layoutAttributesForDecorationView(
@@ -170,15 +174,13 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
             return nil
         }
 
-        let index = indexPath.section - SectionType.assetsStartingSection
-
-        return itemsDecorationAttributes[index]
+        return itemsDecorationAttributes[indexPath]
     }
 
     override func prepare() {
         super.prepare()
 
-        itemsDecorationAttributes = []
+        itemsDecorationAttributes = [:]
         updateItemsBackgroundAttributesIfNeeded()
     }
 
@@ -266,5 +268,95 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     func assetSectionIndex(from groupIndex: Int) -> Int {
         SectionType.assetsStartingSection + groupIndex
+    }
+
+    // MARK: Animation
+
+    func getTransformForAnimation() -> CGAffineTransform {
+        let scale: CGFloat = 0.65
+        return CGAffineTransform(
+            scaleX: scale,
+            y: scale
+        )
+    }
+
+    override func initialLayoutAttributesForAppearingItem(
+        at itemIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)?
+            .copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
+
+        if itemIndexPath.row != 0, !animatingTransition {
+            attributes?.transform = getTransformForAnimation()
+        }
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingItem(
+        at itemIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?
+            .copy() as? UICollectionViewLayoutAttributes
+
+        if itemIndexPath.row != 0, !animatingTransition {
+            attributes?.transform = getTransformForAnimation()
+        }
+
+        return attributes
+    }
+
+    override func initialLayoutAttributesForAppearingDecorationElement(
+        ofKind elementKind: String,
+        at decorationIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingDecorationElement(
+            ofKind: elementKind,
+            at: decorationIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingDecorationElement(
+        ofKind elementKind: String,
+        at decorationIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingDecorationElement(
+            ofKind: elementKind,
+            at: decorationIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        return attributes
+    }
+
+    override func initialLayoutAttributesForAppearingSupplementaryElement(
+        ofKind elementKind: String,
+        at elementIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingSupplementaryElement(
+            ofKind: elementKind,
+            at: elementIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingSupplementaryElement(
+        ofKind elementKind: String,
+        at elementIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingSupplementaryElement(
+            ofKind: elementKind,
+            at: elementIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
+
+        return attributes
     }
 }

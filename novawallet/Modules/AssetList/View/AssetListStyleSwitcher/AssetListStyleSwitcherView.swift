@@ -1,5 +1,10 @@
 import UIKit
 
+protocol AssetListStyleSwitcherAnimationDelegate: AnyObject {
+    func didStartAnimating()
+    func didEndAnimating()
+}
+
 class AssetListStyleSwitcherView: UIView {
     var locale = Locale.current {
         didSet {
@@ -7,8 +12,9 @@ class AssetListStyleSwitcherView: UIView {
         }
     }
 
+    weak var delegate: AssetListStyleSwitcherAnimationDelegate?
+
     private var state: State = .tokens
-    private var valueChanged: ((State) -> Void)?
 
     private let label: UILabel = .create { view in
         view.apply(style: .title3Primary)
@@ -48,8 +54,15 @@ class AssetListStyleSwitcherView: UIView {
         setupLocalizations()
     }
 
-    func addAction(on valueChanged: @escaping (State) -> Void) {
-        self.valueChanged = valueChanged
+    func handleTap() {
+        state.toggle()
+
+        switch state {
+        case .networks:
+            animateToNetworks()
+        case .tokens:
+            animateToTokens()
+        }
     }
 }
 
@@ -95,10 +108,8 @@ private extension AssetListStyleSwitcherView {
     }
 
     func setupView() {
-        isUserInteractionEnabled = true
         setupSubviews()
         setupConstraints()
-        setupGesture()
         setupIndicatorLayers(with: state)
     }
 
@@ -115,7 +126,6 @@ private extension AssetListStyleSwitcherView {
             make.width.equalTo(Constants.indicatorContainerWidth)
             make.height.equalTo(Constants.indicatorContainerHeight)
         }
-
         labelContainer.snp.makeConstraints { make in
             make.leading.equalTo(indicatorContainer.snp.trailing).offset(8)
             make.trailing.equalToSuperview()
@@ -123,15 +133,9 @@ private extension AssetListStyleSwitcherView {
             make.height.equalTo(Constants.labelContainerHeight)
             make.width.equalTo(Constants.labelContainerWidth)
         }
-
         label.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-    }
-
-    func setupGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        addGestureRecognizer(tapGesture)
     }
 
     func setupIndicatorLayers(with state: State) {
@@ -177,19 +181,6 @@ private extension AssetListStyleSwitcherView {
 
         indicatorContainer.layer.addSublayer(circleLayer)
     }
-
-    @objc func handleTap() {
-        state.toggle()
-
-        valueChanged?(state)
-
-        switch state {
-        case .networks:
-            animateToNetworks()
-        case .tokens:
-            animateToTokens()
-        }
-    }
 }
 
 // MARK: Animation
@@ -202,7 +193,6 @@ private extension AssetListStyleSwitcherView {
             ),
             direction: .up
         )
-
         animateIndicators(
             squareColor: Constants.indicatorInactiveColor,
             circleColor: Constants.indicatorActiveColor
@@ -216,7 +206,6 @@ private extension AssetListStyleSwitcherView {
             ),
             direction: .down
         )
-
         animateIndicators(
             squareColor: Constants.indicatorActiveColor,
             circleColor: Constants.indicatorInactiveColor
@@ -257,18 +246,20 @@ private extension AssetListStyleSwitcherView {
             direction: direction
         )
 
-        isUserInteractionEnabled = false
+        delegate?.didStartAnimating()
 
+        CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in
             self?.label.text = newText
             self?.label.layer.position.y = currentPosition
             self?.label.layer.opacity = 1.0
+
+            self?.label.layer.removeAllAnimations()
             newLabel.removeFromSuperview()
 
-            self?.isUserInteractionEnabled = true
+            self?.delegate?.didEndAnimating()
         }
 
-        CATransaction.begin()
         label.layer.add(
             currentSpring,
             forKey: "rollOut"
@@ -316,6 +307,7 @@ private extension AssetListStyleSwitcherView {
         group.animations = [anticipation, opacity, spring]
         group.duration = Constants.animationDuration
         group.fillMode = .forwards
+        group.isRemovedOnCompletion = false
 
         return group
     }

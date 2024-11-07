@@ -312,7 +312,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var whiteAppearanceIconsPath: String {
-        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/icons/tokens/white/"
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/icons/tokens/white/v1/"
     }
 
     var coloredAppearanceIconsPath: String {

@@ -23,6 +23,10 @@ final class AssetListCollectionManager {
     private let collectionViewDataSource: AssetListCollectionViewDataSource
     private let collectionViewDelegate: AssetListCollectionViewDelegate
 
+    private var transitingLayout: Bool = false
+
+    private var pendingLayout: (old: AssetListViewModel, new: AssetListViewModel)?
+
     init(
         view: AssetListViewLayout,
         groupsViewModel: AssetListViewModel,
@@ -68,6 +72,25 @@ final class AssetListCollectionManager {
     private func updateLoadingState(for cell: UICollectionViewCell) {
         (cell as? AnimationUpdatibleView)?.updateLayerAnimationIfActive()
     }
+
+    func prepareForLayoutTransition() {
+        transitingLayout = true
+        tokenGroupsLayout?.animatingTransition = true
+        networkGroupsLayout?.animatingTransition = true
+    }
+
+    func endLayoutTransition() {
+        transitingLayout = false
+        tokenGroupsLayout?.animatingTransition = false
+        networkGroupsLayout?.animatingTransition = false
+    }
+
+    private func replaceViewModel(_ newViewModel: AssetListViewModel) {
+        groupsViewModel = newViewModel
+
+        collectionViewDataSource.groupsViewModel = newViewModel
+        collectionViewDelegate.groupsViewModel = newViewModel
+    }
 }
 
 // MARK: AssetListCollectionManagerPtotocol
@@ -98,19 +121,64 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         )
     }
 
-    func changeCollectionViewLayout(to style: AssetListGroupsStyle) {
+    func changeCollectionViewLayout(
+        from oldViewModel: AssetListViewModel,
+        to newViewModel: AssetListViewModel
+    ) {
         guard let view else { return }
 
-        view.assetGroupsLayoutStyle = style
+        guard !transitingLayout else {
+            pendingLayout = (oldViewModel, newViewModel)
 
-        let layout: UICollectionViewLayout = view.collectionViewLayout
+            return
+        }
 
-        view.collectionView.setCollectionViewLayout(
-            layout,
-            animated: false
+        prepareForLayoutTransition()
+        updateTokensGroupLayout()
+
+        let removingViewModel = AssetListViewModel(
+            isFiltered: oldViewModel.isFiltered,
+            listState: .list(groups: []),
+            listGroupStyle: oldViewModel.listGroupStyle
         )
 
-        layout.invalidateLayout()
+        let removingIndexes = (0 ..< view.collectionView.numberOfSections).filter { section in
+            section >= AssetListFlowLayout.SectionType.assetsStartingSection
+        }
+
+        let insertingIndexes = newViewModel.listState.groups.enumerated().map { index, _ in
+            AssetListFlowLayout.SectionType.assetsStartingSection + index
+        }
+
+        replaceViewModel(removingViewModel)
+
+        view.collectionView.performBatchUpdates {
+            view.collectionView.deleteSections(IndexSet(removingIndexes))
+        } completion: { [weak self] _ in
+            guard let self else { return }
+
+            view.assetGroupsLayoutStyle = newViewModel.listGroupStyle
+
+            let newLayout: AssetListFlowLayout = view.collectionViewLayout
+
+            view.collectionView.setCollectionViewLayout(
+                newLayout,
+                animated: false
+            )
+
+            replaceViewModel(newViewModel)
+
+            view.collectionView.performBatchUpdates {
+                view.collectionView.insertSections(IndexSet(insertingIndexes))
+            } completion: { _ in
+                self.endLayoutTransition()
+
+                if let pending = self.pendingLayout {
+                    self.pendingLayout = nil
+                    self.changeCollectionViewLayout(from: pending.old, to: pending.new)
+                }
+            }
+        }
     }
 
     func updateTokensGroupLayout() {
@@ -141,10 +209,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     }
 
     func updateGroupsViewModel(with model: AssetListViewModel) {
-        groupsViewModel = model
-
-        collectionViewDataSource.groupsViewModel = model
-        collectionViewDelegate.groupsViewModel = model
+        replaceViewModel(model)
     }
 
     func updateHeaderViewModel(with model: AssetListHeaderViewModel?) {

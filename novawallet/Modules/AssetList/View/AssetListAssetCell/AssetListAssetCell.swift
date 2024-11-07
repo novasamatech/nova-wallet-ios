@@ -40,17 +40,18 @@ class AssetListAssetCell: UICollectionViewCell {
         view.isHidden = true
     }
 
+    let selectedView: RoundedView = .create { view in
+        view.applyFilledBackgroundStyle()
+        view.fillColor = R.color.colorCellBackgroundPressed()!
+        view.cornerRadius = 0.0
+    }
+
     private var iconViewModel: ImageViewModelProtocol?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        let selectedBackgroundView = RoundedView()
-        selectedBackgroundView.applyFilledBackgroundStyle()
-        selectedBackgroundView.fillColor = R.color.colorCellBackgroundPressed()!
-        selectedBackgroundView.cornerRadius = 0.0
-
-        let rowView = RowView(contentView: selectedBackgroundView)
+        let rowView = RowView(contentView: selectedView)
         rowView.isUserInteractionEnabled = false
         rowView.contentInsets = UIEdgeInsets(
             top: 0.0,
@@ -59,7 +60,7 @@ class AssetListAssetCell: UICollectionViewCell {
             right: UIConstants.horizontalInset
         )
 
-        self.selectedBackgroundView = rowView
+        selectedBackgroundView = rowView
 
         setupLayout()
     }
@@ -86,6 +87,16 @@ class AssetListAssetCell: UICollectionViewCell {
             imageKeyPath: \.token.imageViewModel,
             nameKeyPath: \.token.symbol
         )
+
+        selectedView.cornerRadius = 8.0
+    }
+
+    func configureSelectionView(for expanded: Bool) {
+        selectedView.roundingCorners = if expanded {
+            [.topLeft, .topRight]
+        } else {
+            .allCorners
+        }
     }
 
     func showDivider() {
