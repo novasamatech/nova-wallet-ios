@@ -144,15 +144,31 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         )
     }
 
-    func quote(args _: AssetConversion.QuoteArgs) {
-        // TODO: Implement quote calculation
+    func quote(args: AssetConversion.QuoteArgs) {
+        quoteCall.cancel()
+
+        let wrapper = assetsExchangeService.fetchQuoteWrapper(for: args)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: quoteCall,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(route):
+                self?.basePresenter?.didReceive(route: route, for: args)
+            case let .failure(error):
+                self?.basePresenter?.didReceive(baseError: .quote(error, args))
+            }
+        }
     }
 
     func setupReQuoteSubscription(for _: ChainAssetId, assetOut _: ChainAssetId) {
         // by default we always request quote manually
     }
 
-    func fee(args _: AssetConversion.CallArgs) {
+    func fee(route _: AssetExchangeRoute, slippage _: BigRational) {
         // TODO: Implement fee calculation
     }
 
@@ -203,8 +219,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         quote(args: args)
     }
 
-    func calculateFee(args: AssetConversion.CallArgs) {
-        fee(args: args)
+    func calculateFee(for route: AssetExchangeRoute, slippage: BigRational) {
+        fee(route: route, slippage: slippage)
     }
 
     func retryAssetBalanceSubscription(for chainAsset: ChainAsset) {

@@ -24,7 +24,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
     private var receiveChainAsset: ChainAsset?
     private var feeChainAsset: ChainAsset?
 
-    private var feeIdentifier: SwapSetupFeeIdentifier?
     private var slippage: BigRational
     private var isManualFeeSet: Bool = false
 
@@ -99,39 +98,17 @@ final class SwapSetupPresenter: SwapBasePresenter {
         slippage
     }
 
-    override func shouldHandleQuote(for args: AssetConversion.QuoteArgs?) -> Bool {
+    override func shouldHandleRoute(for args: AssetConversion.QuoteArgs?) -> Bool {
         quoteArgs == args
     }
 
-    override func shouldHandleFee(for feeIdentifier: TransactionFeeId, feeChainAssetId: ChainAssetId?) -> Bool {
-        self.feeIdentifier == SwapSetupFeeIdentifier(transactionId: feeIdentifier, feeChainAssetId: feeChainAssetId)
+    override func shouldHandleFee(for _: TransactionFeeId, feeChainAssetId _: ChainAssetId?) -> Bool {
+        // TODO: Fix implementation
+        true
     }
 
     override func estimateFee() {
-        guard let quote = quote,
-              let receiveChain = receiveChainAsset?.chain,
-              let accountId = selectedWallet.fetch(for: receiveChain.accountRequest())?.accountId,
-              let quoteArgs = quoteArgs else {
-            return
-        }
-
-        let args = AssetConversion.CallArgs(
-            assetIn: quote.assetIn,
-            amountIn: quote.amountIn,
-            assetOut: quote.assetOut,
-            amountOut: quote.amountOut,
-            receiver: accountId,
-            direction: quoteArgs.direction,
-            slippage: slippage,
-            context: quote.context
-        )
-
-        let newIdentifier = SwapSetupFeeIdentifier(
-            transactionId: args.identifier,
-            feeChainAssetId: feeChainAsset?.chainAssetId
-        )
-
-        guard newIdentifier != feeIdentifier || fee == nil else {
+        guard let route = route else {
             return
         }
 
@@ -139,8 +116,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideFeeViewModel()
         provideNotification()
 
-        feeIdentifier = newIdentifier
-        interactor.calculateFee(args: args)
+        interactor.calculateFee(for: route, slippage: slippage)
     }
 
     override func applySwapMax() {
@@ -164,28 +140,24 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideDetailsViewModel()
     }
 
-    override func handleNewQuote(_ quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
-        logger.debug("New quote: \(quote)")
+    override func handleNewRoute(_ route: AssetExchangeRoute, for quoteArgs: AssetConversion.QuoteArgs) {
+        logger.debug("New quote: \(route)")
 
         switch quoteArgs.direction {
         case .buy:
             let payAmount = payChainAsset.map {
-                Decimal.fromSubstrateAmount(
-                    quote.amountIn,
-                    precision: Int16($0.asset.precision)
-                ) ?? 0
+                route.quote.decimal(assetInfo: $0.asset.displayInfo)
             }
+
             payAmountInput = payAmount.map { .absolute($0) }
             providePayAmountInputViewModel()
             providePayInputPriceViewModel()
             provideReceiveInputPriceViewModel()
         case .sell:
             receiveAmountInput = receiveChainAsset.map {
-                Decimal.fromSubstrateAmount(
-                    quote.amountOut,
-                    precision: $0.asset.displayInfo.assetPrecision
-                ) ?? 0
+                route.quote.decimal(assetInfo: $0.asset.displayInfo)
             }
+
             provideReceiveAmountInputViewModel()
             provideReceiveInputPriceViewModel()
             providePayInputPriceViewModel()
@@ -391,12 +363,12 @@ extension SwapSetupPresenter {
         )
 
         let differenceViewModel: DifferenceViewModel?
-        if let quote = quote, let payAssetDisplayInfo = payChainAsset?.assetDisplayInfo {
+        if let route = route, let payAssetDisplayInfo = payChainAsset?.assetDisplayInfo {
             let params = RateParams(
                 assetDisplayInfoIn: payAssetDisplayInfo,
                 assetDisplayInfoOut: assetDisplayInfo,
-                amountIn: quote.amountIn,
-                amountOut: quote.amountOut
+                amountIn: route.amountIn,
+                amountOut: route.amountOut
             )
 
             differenceViewModel = viewModelFactory.priceDifferenceViewModel(
@@ -453,7 +425,7 @@ extension SwapSetupPresenter {
         guard
             let assetDisplayInfoIn = payChainAsset?.assetDisplayInfo,
             let assetDisplayInfoOut = receiveChainAsset?.assetDisplayInfo,
-            let quote = quote else {
+            let route = route else {
             view?.didReceiveRate(viewModel: .loading)
             return
         }
@@ -461,8 +433,8 @@ extension SwapSetupPresenter {
             from: .init(
                 assetDisplayInfoIn: assetDisplayInfoIn,
                 assetDisplayInfoOut: assetDisplayInfoOut,
-                amountIn: quote.amountIn,
-                amountOut: quote.amountOut
+                amountIn: route.amountIn,
+                amountOut: route.amountOut
             ),
             locale: selectedLocale
         )
@@ -832,7 +804,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                 self?.view?.didStopLoading()
 
                 guard let slippage = self?.slippage,
-                      let quote = self?.quote,
+                      let route = self?.route,
                       let quoteArgs = self?.quoteArgs else {
                     return
                 }
@@ -842,7 +814,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     chainAssetOut: swapModel.receiveChainAsset,
                     feeChainAsset: swapModel.feeChainAsset,
                     slippage: slippage,
-                    quote: quote,
+                    route: route,
                     quoteArgs: quoteArgs
                 )
 

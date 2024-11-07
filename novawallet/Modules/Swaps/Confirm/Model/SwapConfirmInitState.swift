@@ -3,6 +3,6 @@ struct SwapConfirmInitState {
     let chainAssetOut: ChainAsset
     let feeChainAsset: ChainAsset
     let slippage: BigRational
-    let quote: AssetConversion.Quote
+    let route: AssetExchangeRoute
     let quoteArgs: AssetConversion.QuoteArgs
 }

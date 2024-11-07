@@ -3,7 +3,7 @@ import BigInt
 protocol SwapBaseInteractorInputProtocol: AnyObject {
     func setup()
     func calculateQuote(for args: AssetConversion.QuoteArgs)
-    func calculateFee(args: AssetConversion.CallArgs)
+    func calculateFee(for route: AssetExchangeRoute, slippage: BigRational)
     func remakePriceSubscription(for chainAsset: ChainAsset)
     func retryAssetBalanceSubscription(for chainAsset: ChainAsset)
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset)
@@ -15,7 +15,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
 }
 
 protocol SwapBaseInteractorOutputProtocol: AnyObject {
-    func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs)
+    func didReceive(route: AssetExchangeRoute, for quoteArgs: AssetConversion.QuoteArgs)
     func didReceive(fee: AssetConversion.FeeModel?, transactionFeeId: TransactionFeeId, feeChainAssetId: ChainAssetId?)
     func didReceive(baseError: SwapBaseError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)

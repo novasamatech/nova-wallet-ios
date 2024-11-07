@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol AssetsExchangeOperationFactoryProtocol {
-    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute?>
+    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute>
     func createFeeWrapper(
         for route: AssetExchangeRoute,
         slippage: BigRational,
@@ -92,8 +92,10 @@ final class AssetsExchangeOperationFactory {
 }
 
 extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol {
-    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute?> {
-        OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute> {
+        let wrapper = OperationCombiningService<AssetExchangeRoute?>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
             let paths = self.graph.fetchPaths(
                 from: args.assetIn,
                 to: args.assetOut,
@@ -110,6 +112,18 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
                 logger: self.logger
             ).fetchRoute(for: args.amount, direction: args.direction)
         }
+
+        let mappingOperation = ClosureOperation<AssetExchangeRoute> {
+            guard let route = try wrapper.targetOperation.extractNoCancellableResultData() else {
+                throw AssetsExchangeOperationFactoryError.noRoute
+            }
+
+            return route
+        }
+
+        mappingOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper.insertingTail(operation: mappingOperation)
     }
 
     func createFeeWrapper(

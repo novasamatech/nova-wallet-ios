@@ -47,7 +47,8 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
 
         let service = AssetsExchangeService(
             graphProvider: graphProvider,
-            operationQueue: assetExchangeParams.operationQueue
+            operationQueue: assetExchangeParams.operationQueue,
+            logger: Logger.shared
         )
 
         service.setup()

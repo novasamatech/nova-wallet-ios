@@ -72,12 +72,12 @@ class SwapBasePresenter {
     }
 
     var fee: AssetConversion.FeeModel?
-    var quoteResult: Result<AssetConversion.Quote, Error>?
+    var quoteResult: Result<AssetExchangeRoute, Error>?
 
-    var quote: AssetConversion.Quote? {
+    var route: AssetExchangeRoute? {
         switch quoteResult {
-        case let .success(quote):
-            return quote
+        case let .success(route):
+            return route
         case .failure, .none:
             return nil
         }
@@ -109,7 +109,7 @@ class SwapBasePresenter {
             utilityAssetExistense: utilityAssetBalanceExistense,
             feeModel: fee,
             quoteArgs: quoteArgs,
-            quote: quote,
+            route: route,
             slippage: getSlippage(),
             accountInfo: accountInfo
         )
@@ -151,7 +151,7 @@ class SwapBasePresenter {
         fatalError("Must be implemented by parent class")
     }
 
-    func shouldHandleQuote(for _: AssetConversion.QuoteArgs?) -> Bool {
+    func shouldHandleRoute(for _: AssetConversion.QuoteArgs?) -> Bool {
         fatalError("Must be implemented by parent class")
     }
 
@@ -169,7 +169,7 @@ class SwapBasePresenter {
 
     func handleBaseError(_: SwapBaseError) {}
 
-    func handleNewQuote(_: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {}
+    func handleNewRoute(_: AssetExchangeRoute, for _: AssetConversion.QuoteArgs) {}
 
     func handleNewFee(
         _: AssetConversion.FeeModel?,
@@ -196,7 +196,7 @@ class SwapBasePresenter {
 
         switch error {
         case let .quote(error, args):
-            guard shouldHandleQuote(for: args) else {
+            guard shouldHandleRoute(for: args) else {
                 return
             }
 
@@ -241,63 +241,64 @@ class SwapBasePresenter {
     }
 
     func getBaseValidations(
-        for swapModel: SwapModel,
-        interactor: SwapBaseInteractorInputProtocol,
-        locale: Locale
+        for _: SwapModel,
+        interactor _: SwapBaseInteractorInputProtocol,
+        locale _: Locale
     ) -> [DataValidating] {
+        // TODO: Enable validations
         [
-            dataValidatingFactory.has(
-                fee: swapModel.feeModel?.extrinsicFee,
-                locale: locale
-            ) { [weak self] in
-                self?.estimateFee()
-            },
-            dataValidatingFactory.hasSufficientBalance(
-                params: swapModel,
-                swapMaxAction: { [weak self] in
-                    self?.applySwapMax()
-                },
-                locale: locale
-            ),
-            dataValidatingFactory.notViolatingMinBalancePaying(
-                fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.extrinsicFee : nil,
-                total: swapModel.utilityAssetBalance?.balanceCountingEd,
-                minBalance: swapModel.feeChainAsset.isUtilityAsset ? swapModel.utilityAssetExistense?.minBalance : 0,
-                asset: swapModel.utilityChainAsset?.assetDisplayInfo ?? swapModel.feeChainAsset.assetDisplayInfo,
-                locale: locale
-            ),
-            dataValidatingFactory.canReceive(params: swapModel, locale: locale),
-            dataValidatingFactory.noDustRemains(
-                params: swapModel,
-                swapMaxAction: { [weak self] in
-                    self?.applySwapMax()
-                },
-                locale: locale
-            ),
-            dataValidatingFactory.passesRealtimeQuoteValidation(
-                params: swapModel,
-                remoteValidatingClosure: { args, completion in
-                    interactor.requestValidatingQuote(for: args, completion: completion)
-                },
-                onQuoteUpdate: { [weak self] quote in
-                    self?.quoteResult = .success(quote)
-                    self?.handleNewQuote(quote, for: swapModel.quoteArgs)
-                },
-                locale: locale
-            )
+            /* dataValidatingFactory.has(
+                 fee: swapModel.feeModel?.extrinsicFee,
+                 locale: locale
+             ) { [weak self] in
+                 self?.estimateFee()
+             },
+             dataValidatingFactory.hasSufficientBalance(
+                 params: swapModel,
+                 swapMaxAction: { [weak self] in
+                     self?.applySwapMax()
+                 },
+                 locale: locale
+             ),
+             dataValidatingFactory.notViolatingMinBalancePaying(
+                 fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.extrinsicFee : nil,
+                 total: swapModel.utilityAssetBalance?.balanceCountingEd,
+                 minBalance: swapModel.feeChainAsset.isUtilityAsset ? swapModel.utilityAssetExistense?.minBalance : 0,
+                 asset: swapModel.utilityChainAsset?.assetDisplayInfo ?? swapModel.feeChainAsset.assetDisplayInfo,
+                 locale: locale
+             ),
+             dataValidatingFactory.canReceive(params: swapModel, locale: locale),
+             dataValidatingFactory.noDustRemains(
+                 params: swapModel,
+                 swapMaxAction: { [weak self] in
+                     self?.applySwapMax()
+                 },
+                 locale: locale
+             ),
+             dataValidatingFactory.passesRealtimeQuoteValidation(
+                 params: swapModel,
+                 remoteValidatingClosure: { args, completion in
+                     interactor.requestValidatingQuote(for: args, completion: completion)
+                 },
+                 onQuoteUpdate: { [weak self] quote in
+                     self?.quoteResult = .success(quote)
+                     self?.handleNewQuote(quote, for: swapModel.quoteArgs)
+                 },
+                 locale: locale
+             ) */
         ]
     }
 }
 
 extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
-    func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
-        guard shouldHandleQuote(for: quoteArgs), self.quote != quote else {
+    func didReceive(route: AssetExchangeRoute, for quoteArgs: AssetConversion.QuoteArgs) {
+        guard shouldHandleRoute(for: quoteArgs) else {
             return
         }
 
-        quoteResult = .success(quote)
+        quoteResult = .success(route)
 
-        handleNewQuote(quote, for: quoteArgs)
+        handleNewRoute(route, for: quoteArgs)
     }
 
     func didReceive(

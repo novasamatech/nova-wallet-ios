@@ -87,7 +87,7 @@ struct SwapModel {
     let utilityAssetExistense: AssetBalanceExistence?
     let feeModel: AssetConversion.FeeModel?
     let quoteArgs: AssetConversion.QuoteArgs
-    let quote: AssetConversion.Quote?
+    let route: AssetExchangeRoute?
     let slippage: BigRational
     let accountInfo: AccountInfo?
 
@@ -202,7 +202,7 @@ struct SwapModel {
 
     func checkCanReceive() -> CannotReceiveReason? {
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
-        let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (quote?.amountOut ?? 0)
+        let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (route?.amountOut ?? 0)
         let feeInReceiveAsset = feeChainAsset.chainAssetId == receiveChainAsset.chainAssetId ?
             (feeModel?.totalFee.targetAmount ?? 0) : 0
         let minBalance = receiveAssetExistense?.minBalance ?? 0
@@ -257,29 +257,30 @@ struct SwapModel {
     }
 
     func asyncCheckQuoteValidity(
-        _ newQuoteClosure: @escaping (AssetConversion.QuoteArgs, @escaping QuoteValidateClosure) -> Void,
-        completion: @escaping (InvalidQuoteReason?) -> Void
+        _: @escaping (AssetConversion.QuoteArgs, @escaping QuoteValidateClosure) -> Void,
+        completion _: @escaping (InvalidQuoteReason?) -> Void
     ) {
-        guard let currenQuote = quote else {
-            completion(.noLiqudity)
-            return
-        }
+        // TODO: Fix implementation
+        /* guard let route = route else {
+             completion(.noLiqudity)
+             return
+         }
 
-        newQuoteClosure(quoteArgs) { result in
-            switch result {
-            case let .success(newQuote):
-                if !currenQuote.matches(
-                    other: newQuote,
-                    slippage: slippage,
-                    direction: quoteArgs.direction
-                ) {
-                    completion(.rateChange(.init(oldQuote: currenQuote, newQuote: newQuote)))
-                } else {
-                    completion(nil)
-                }
-            case .failure:
-                completion(.noLiqudity)
-            }
-        }
+         newQuoteClosure(quoteArgs) { result in
+             switch result {
+             case let .success(newQuote):
+                 if !currenQuote.matches(
+                     other: newQuote,
+                     slippage: slippage,
+                     direction: quoteArgs.direction
+                 ) {
+                     completion(.rateChange(.init(oldQuote: currenQuote, newQuote: newQuote)))
+                 } else {
+                     completion(nil)
+                 }
+             case .failure:
+                 completion(.noLiqudity)
+             }
+         } */
     }
 }

@@ -14,6 +14,14 @@ struct AssetExchangeRoute {
         }
     }
 
+    var amountIn: Balance {
+        items.first?.amountIn(for: direction) ?? amount
+    }
+
+    var amountOut: Balance {
+        items.last?.amountOut(for: direction) ?? amount
+    }
+
     func byAddingNext(item: AssetExchangeRouteItem) -> AssetExchangeRoute {
         switch direction {
         case .sell:
