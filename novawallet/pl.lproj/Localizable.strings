@@ -1767,5 +1767,5 @@
 "settings.appearance.token.icons.option.colored" = "Kolorowe";
 "wallet.receive.details.format" = "Wysyłaj tylko tokeny %@ i tokeny w sieci %@ na ten adres, w przeciwnym razie możesz stracić swoje środki";
 "common.address.coppied" = "Adres skopiowany";
-"common.select.networks" = "Sieci";
+"common.networks" = "Sieci";
 "assets.search.token.hint" = "Wyszukaj według tokena";

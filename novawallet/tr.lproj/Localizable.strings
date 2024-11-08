@@ -1767,5 +1767,5 @@
 "settings.appearance.token.icons.option.colored" = "Renkli";
 "wallet.receive.details.format" = "Bu adrese yalnızca %@ token ve %@ ağındaki tokenleri gönderin, aksi takdirde paranızı kaybedebilirsiniz";
 "common.address.coppied" = "Adres kopyalandı";
-"common.select.networks" = "Ağlar";
+"common.networks" = "Ağlar";
 "assets.search.token.hint" = "Tokene göre ara";

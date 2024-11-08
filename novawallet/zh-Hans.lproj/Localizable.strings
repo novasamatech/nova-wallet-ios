@@ -1767,5 +1767,5 @@
 "settings.appearance.token.icons.option.colored" = "彩色图标";
 "wallet.receive.details.format" = "仅将%@代币和%@网络中的代币发送到此地址，否则您可能会失去资金";
 "common.address.coppied" = "地址已复制";
-"common.select.networks" = "网络";
+"common.networks" = "网络";
 "assets.search.token.hint" = "按代币搜索";

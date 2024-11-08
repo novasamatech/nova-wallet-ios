@@ -1767,5 +1767,5 @@
 "settings.appearance.token.icons.option.colored" = "Berwarna";
 "wallet.receive.details.format" = "Hanya kirim token %@ dan token di jaringan %@ ke alamat ini, atau Anda bisa kehilangan dana Anda";
 "common.address.coppied" = "Alamat disalin";
-"common.select.networks" = "Jaringan";
+"common.networks" = "Jaringan";
 "assets.search.token.hint" = "Cari berdasarkan token";

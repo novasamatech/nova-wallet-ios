@@ -1767,5 +1767,5 @@
 "settings.appearance.token.icons.option.colored" = "Đã tô màu";
 "wallet.receive.details.format" = "Chỉ gửi token %@ và các token trong mạng %@ tới địa chỉ này, nếu không bạn có thể mất tiền";
 "common.address.coppied" = "Địa chỉ đã được sao chép";
-"common.select.networks" = "Mạng";
+"common.networks" = "Mạng";
 "assets.search.token.hint" = "Tìm kiếm theo token";

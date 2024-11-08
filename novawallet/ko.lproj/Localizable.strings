@@ -1767,5 +1767,5 @@
 "settings.appearance.token.icons.option.colored" = "컬러";
 "wallet.receive.details.format" = "이 주소로 %@ 토큰과 %@ 네트워크에서의 토큰만 보내세요, 그렇지 않으면 자금을 잃을 수 있습니다.";
 "common.address.coppied" = "주소가 복사되었습니다";
-"common.select.networks" = "네트워크";
+"common.networks" = "네트워크";
 "assets.search.token.hint" = "토큰으로 검색";

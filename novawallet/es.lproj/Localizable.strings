@@ -1767,5 +1767,5 @@
 "settings.appearance.token.icons.option.colored" = "Coloreado";
 "wallet.receive.details.format" = "Enviar solo el token %@ y tokens en la red %@ a esta dirección, o podrías perder tus fondos";
 "common.address.coppied" = "Dirección copiada";
-"common.select.networks" = "Redes";
+"common.networks" = "Redes";
 "assets.search.token.hint" = "Buscar por token";
