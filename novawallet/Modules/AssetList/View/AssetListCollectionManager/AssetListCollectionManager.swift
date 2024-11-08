@@ -17,6 +17,7 @@ final class AssetListCollectionManager {
     private var promotionBannerViewModel: PromotionBannerView.ViewModel?
 
     private let collectionViewDataSource: AssetListCollectionViewDataSource
+    // swiftlint:disable weak_delegate
     private let collectionViewDelegate: AssetListCollectionViewDelegate
 
     init(
