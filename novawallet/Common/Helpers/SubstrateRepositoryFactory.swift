@@ -80,8 +80,9 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
     }
 
     func createChainStorageItemRepository() -> AnyDataProviderRepository<ChainStorageItem> {
+        let mapper = ChainStorageItemMapper()
         let repository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
-            storageFacade.createRepository()
+            storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         return AnyDataProviderRepository(repository)
     }
@@ -89,8 +90,9 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
     func createChainStorageItemRepository(
         filter: NSPredicate
     ) -> AnyDataProviderRepository<ChainStorageItem> {
+        let mapper = ChainStorageItemMapper()
         let repository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
-            storageFacade.createRepository(filter: filter)
+            storageFacade.createRepository(filter: filter, sortDescriptors: [], mapper: AnyCoreDataMapper(mapper))
 
         return AnyDataProviderRepository(repository)
     }

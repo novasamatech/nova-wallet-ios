@@ -57,8 +57,9 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private lazy var chainStorage: AnyDataProviderRepository<ChainStorageItem> = {
+        let mapper = ChainStorageItemMapper()
         let storage: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
-            substrateStorageFacade.createRepository()
+            substrateStorageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         return AnyDataProviderRepository(storage)
     }()
 

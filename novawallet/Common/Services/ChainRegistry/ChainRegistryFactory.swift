@@ -40,8 +40,9 @@ final class ChainRegistryFactory {
     static func createDefaultRegistry(
         from repositoryFacade: StorageFacadeProtocol
     ) -> ChainRegistryProtocol {
+        let runtimeMapper = RuntimeMetadataItemMapper()
         let runtimeMetadataRepository: CoreDataRepository<RuntimeMetadataItem, CDRuntimeMetadataItem> =
-            repositoryFacade.createRepository()
+            repositoryFacade.createRepository(mapper: AnyCoreDataMapper(runtimeMapper))
 
         let dataFetchOperationFactory = DataOperationFactory()
 
@@ -77,9 +78,9 @@ final class ChainRegistryFactory {
             applicationHandler: SecurityLayerService.shared.applicationHandlingProxy.addApplicationHandler()
         )
 
-        let mapper = ChainModelMapper()
+        let chainMapper = ChainModelMapper()
         let chainRepository: CoreDataRepository<ChainModel, CDChain> =
-            repositoryFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+            repositoryFacade.createRepository(mapper: AnyCoreDataMapper(chainMapper))
 
         let chainProvider = createChainProvider(from: repositoryFacade, chainRepository: chainRepository)
 

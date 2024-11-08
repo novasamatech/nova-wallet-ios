@@ -17,14 +17,19 @@ final class RuntimeMetadataRepositoryFactory {
 extension RuntimeMetadataRepositoryFactory: RuntimeMetadataRepositoryFactoryProtocol {
     func createRepository() -> AnyDataProviderRepository<RuntimeMetadataItem> {
         let repository: CoreDataRepository<RuntimeMetadataItem, CDRuntimeMetadataItem>
-        repository = storageFacade.createRepository()
+
+        let mapper = RuntimeMetadataItemMapper()
+        repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         return AnyDataProviderRepository(repository)
     }
 
     func createRepository(for chainId: ChainModel.Id) -> AnyDataProviderRepository<RuntimeMetadataItem> {
+        let mapper = RuntimeMetadataItemMapper()
         let repository: CoreDataRepository<RuntimeMetadataItem, CDRuntimeMetadataItem> = storageFacade.createRepository(
-            filter: NSPredicate.filterRuntimeMetadataItemsBy(identifier: chainId)
+            filter: NSPredicate.filterRuntimeMetadataItemsBy(identifier: chainId),
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
         )
 
         return AnyDataProviderRepository(repository)

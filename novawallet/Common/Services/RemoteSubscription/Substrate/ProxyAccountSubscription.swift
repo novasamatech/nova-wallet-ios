@@ -18,8 +18,9 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
     private var storageSubscriptionHandler: StorageChildSubscribing?
 
     private lazy var repository: AnyDataProviderRepository<ChainStorageItem> = {
+        let mapper = ChainStorageItemMapper()
         let coreDataRepository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
-            storageFacade.createRepository()
+            storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         return AnyDataProviderRepository(coreDataRepository)
     }()
 
