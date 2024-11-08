@@ -7,12 +7,8 @@ final class AssetListCollectionManager {
         promotionBannerViewModel != nil
     }
 
-    var tokenGroupsLayout: AssetListTokensFlowLayout? {
-        view?.collectionTokenGroupsLayout
-    }
-
-    var networkGroupsLayout: AssetListNetworksFlowLayout? {
-        view?.collectionNetworkGroupsLayout
+    var collectionViewLayout: AssetListFlowLayout? {
+        view?.collectionViewLayout
     }
 
     weak var view: AssetListViewLayout?
@@ -22,10 +18,6 @@ final class AssetListCollectionManager {
 
     private let collectionViewDataSource: AssetListCollectionViewDataSource
     private let collectionViewDelegate: AssetListCollectionViewDelegate
-
-    private var transitingLayout: Bool = false
-
-    private var pendingLayout: (old: AssetListViewModel, new: AssetListViewModel)?
 
     init(
         view: AssetListViewLayout,
@@ -74,15 +66,11 @@ final class AssetListCollectionManager {
     }
 
     func prepareForLayoutTransition() {
-        transitingLayout = true
-        tokenGroupsLayout?.animatingTransition = true
-        networkGroupsLayout?.animatingTransition = true
+        collectionViewLayout?.animatingTransition = true
     }
 
     func endLayoutTransition() {
-        transitingLayout = false
-        tokenGroupsLayout?.animatingTransition = false
-        networkGroupsLayout?.animatingTransition = false
+        collectionViewLayout?.animatingTransition = false
     }
 
     private func replaceViewModel(_ newViewModel: AssetListViewModel) {
@@ -110,37 +98,27 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
 
-        networkGroupsLayout?.register(
+        collectionViewLayout?.register(
             AssetListNetworkGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListNetworksFlowLayout.assetGroupDecoration
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.networkGroup
         )
 
-        tokenGroupsLayout?.register(
+        collectionViewLayout?.register(
             AssetListTokenGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListTokensFlowLayout.assetGroupDecoration
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.tokenGroup
         )
     }
 
     func changeCollectionViewLayout(
-        from oldViewModel: AssetListViewModel,
+        from _: AssetListViewModel,
         to newViewModel: AssetListViewModel
     ) {
         guard let view else { return }
 
-        guard !transitingLayout else {
-            pendingLayout = (oldViewModel, newViewModel)
-
-            return
-        }
-
         prepareForLayoutTransition()
         updateTokensGroupLayout()
 
-        let removingViewModel = AssetListViewModel(
-            isFiltered: oldViewModel.isFiltered,
-            listState: .list(groups: []),
-            listGroupStyle: oldViewModel.listGroupStyle
-        )
+        view.collectionViewLayout.changeGroupLayoutStyle(to: newViewModel.listGroupStyle)
 
         let removingIndexes = (0 ..< view.collectionView.numberOfSections).filter { section in
             section >= AssetListFlowLayout.SectionType.assetsStartingSection
@@ -150,40 +128,19 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
             AssetListFlowLayout.SectionType.assetsStartingSection + index
         }
 
-        replaceViewModel(removingViewModel)
+        replaceViewModel(newViewModel)
 
         view.collectionView.performBatchUpdates {
             view.collectionView.deleteSections(IndexSet(removingIndexes))
+            view.collectionView.insertSections(IndexSet(insertingIndexes))
         } completion: { [weak self] _ in
-            guard let self else { return }
-
-            view.assetGroupsLayoutStyle = newViewModel.listGroupStyle
-
-            let newLayout: AssetListFlowLayout = view.collectionViewLayout
-
-            view.collectionView.setCollectionViewLayout(
-                newLayout,
-                animated: false
-            )
-
-            replaceViewModel(newViewModel)
-
-            view.collectionView.performBatchUpdates {
-                view.collectionView.insertSections(IndexSet(insertingIndexes))
-            } completion: { _ in
-                self.endLayoutTransition()
-
-                if let pending = self.pendingLayout {
-                    self.pendingLayout = nil
-                    self.changeCollectionViewLayout(from: pending.old, to: pending.new)
-                }
-            }
+            self?.endLayoutTransition()
         }
     }
 
     func updateTokensGroupLayout() {
         guard
-            let tokenGroupsLayout,
+            let collectionViewLayout,
             groupsViewModel.listGroupStyle == .tokens
         else {
             return
@@ -194,14 +151,14 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
                 return
             }
 
-            let sectionIndex = tokenGroupsLayout.assetSectionIndex(from: groupIndex)
+            let sectionIndex = collectionViewLayout.assetSectionIndex(from: groupIndex)
 
-            tokenGroupsLayout.changeSection(
+            collectionViewLayout.changeSection(
                 byChanging: sectionIndex,
                 for: groupViewModel.token.symbol
             )
 
-            tokenGroupsLayout.setExpandableSection(
+            collectionViewLayout.setExpandableSection(
                 for: groupViewModel.token.symbol,
                 groupViewModel.assets.count > 1
             )
@@ -245,15 +202,15 @@ extension AssetListCollectionManager: AssetListCollectionViewLayoutDelegate {
     }
 
     func groupExpandable(for symbol: String) -> Bool {
-        tokenGroupsLayout?.state(for: symbol)?.expandable ?? false
+        collectionViewLayout?.state(for: symbol)?.expandable ?? false
     }
 
     func expandAssetGroup(for symbol: String) {
-        tokenGroupsLayout?.expandAssetGroup(for: symbol)
+        collectionViewLayout?.expandAssetGroup(for: symbol)
     }
 
     func collapseAssetGroup(for symbol: String) {
-        tokenGroupsLayout?.collapseAssetGroup(for: symbol)
+        collectionViewLayout?.collapseAssetGroup(for: symbol)
     }
 
     func cellHeight(for type: AssetListFlowLayout.CellType, at indexPath: IndexPath) -> CGFloat {
@@ -264,7 +221,7 @@ extension AssetListCollectionManager: AssetListCollectionViewLayoutDelegate {
     }
 
     func groupExpanded(for symbol: String) -> Bool {
-        tokenGroupsLayout?.expanded(for: symbol) ?? false
+        collectionViewLayout?.expanded(for: symbol) ?? false
     }
 }
 

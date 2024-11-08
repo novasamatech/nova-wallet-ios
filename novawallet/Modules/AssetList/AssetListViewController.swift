@@ -63,31 +63,19 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     func updateTotalBalanceHeight(_ height: CGFloat) {
-        [
-            rootView.collectionNetworkGroupsLayout,
-            rootView.collectionTokenGroupsLayout
-        ].forEach { $0.updateTotalBalanceHeight(height) }
+        rootView.collectionViewLayout.updateTotalBalanceHeight(height)
     }
 
     private func activatePromotionWithHeight(_ height: CGFloat) {
-        [
-            rootView.collectionNetworkGroupsLayout,
-            rootView.collectionTokenGroupsLayout
-        ].forEach { $0.activatePromotionWithHeight(height) }
+        rootView.collectionViewLayout.activatePromotionWithHeight(height)
     }
 
     private func deactivatePromotion() {
-        [
-            rootView.collectionNetworkGroupsLayout,
-            rootView.collectionTokenGroupsLayout
-        ].forEach { $0.deactivatePromotion() }
+        rootView.collectionViewLayout.deactivatePromotion()
     }
 
     private func setNftsActive(_ isActive: Bool) {
-        [
-            rootView.collectionNetworkGroupsLayout,
-            rootView.collectionTokenGroupsLayout
-        ].forEach { $0.setNftsActive(isActive) }
+        rootView.collectionViewLayout.setNftsActive(isActive)
     }
 }
 

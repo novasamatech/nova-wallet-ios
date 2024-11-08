@@ -16,139 +16,28 @@ enum AssetListMeasurement {
     static let nftsInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
     static let settingsInsets = UIEdgeInsets.zero
     static let assetGroupInsets = UIEdgeInsets(top: 2.0, left: 0, bottom: 16.0, right: 0)
+
+    static let underneathViewHeight: CGFloat = 4
+    static let decorationContentInset: CGFloat = 4
 }
 
 class AssetListFlowLayout: UICollectionViewFlowLayout {
-    private(set) var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
-
-    private(set) var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
-    private(set) var promotionInsets: UIEdgeInsets = .zero
-    private(set) var nftsInsets: UIEdgeInsets = .zero
-
-    var needsDecorationUpdate = false
-
     var animatingTransition: Bool = false
 
-    enum SectionType: CaseIterable {
-        case summary
-        case nfts
-        case settings
-        case promotion
-        case assetGroup
+    private var layoutStyle: AssetListGroupsStyle = .tokens
 
-        init(section: Int) {
-            switch section {
-            case 0:
-                self = .summary
-            case 1:
-                self = .nfts
-            case 2:
-                self = .promotion
-            case 3:
-                self = .settings
-            default:
-                self = .assetGroup
-            }
-        }
+    private var assetSectionsState: [String: AssetListTokenSectionState] = [:]
+    private var sectionsExpandableState: [Int: Bool] = [:]
 
-        var index: Int {
-            switch self {
-            case .summary:
-                return 0
-            case .nfts:
-                return 1
-            case .promotion:
-                return 2
-            case .settings:
-                return 3
-            case .assetGroup:
-                return 4
-            }
-        }
+    private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
 
-        static var assetsStartingSection: Int {
-            SectionType.allCases.count - 1
-        }
+    private var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
+    private var promotionInsets: UIEdgeInsets = .zero
+    private var nftsInsets: UIEdgeInsets = .zero
 
-        static func assetsGroupIndexFromSection(_ section: Int) -> Int? {
-            guard section >= assetsStartingSection else {
-                return nil
-            }
+    private let attributesFactory = AssetDecorationAttributesFactory()
 
-            return section - assetsStartingSection
-        }
-
-        var cellSpacing: CGFloat {
-            switch self {
-            case .summary:
-                return 10.0
-            case .settings, .assetGroup, .nfts, .promotion:
-                return 0
-            }
-        }
-    }
-
-    enum CellType {
-        case account
-        case totalBalance
-        case yourNfts
-        case banner
-        case settings
-        case asset(sectionIndex: Int, itemIndex: Int)
-        case emptyState
-
-        init(indexPath: IndexPath) {
-            switch indexPath.section {
-            case 0:
-                self = indexPath.row == 0 ? .account : .totalBalance
-            case 1:
-                self = .yourNfts
-            case 2:
-                self = .banner
-            case 3:
-                self = indexPath.row == 0 ? .settings : .emptyState
-            default:
-                self = .asset(sectionIndex: indexPath.section, itemIndex: indexPath.row)
-            }
-        }
-
-        var indexPath: IndexPath {
-            switch self {
-            case .account:
-                return IndexPath(item: 0, section: 0)
-            case .totalBalance:
-                return IndexPath(item: 1, section: 0)
-            case .yourNfts:
-                return IndexPath(item: 0, section: 1)
-            case .banner:
-                return IndexPath(item: 0, section: 2)
-            case .settings:
-                return IndexPath(item: 0, section: 3)
-            case .emptyState:
-                return IndexPath(item: 1, section: 3)
-            case let .asset(sectionIndex, itemIndex):
-                return IndexPath(item: itemIndex, section: sectionIndex)
-            }
-        }
-    }
-
-    var itemsDecorationAttributes: [IndexPath: UICollectionViewLayoutAttributes] = [:]
-
-    func updateItemsBackgroundAttributesIfNeeded() {
-        fatalError("Must be overriden by subsclass")
-    }
-
-    func assetCellHeight(for _: IndexPath) -> CGFloat {
-        fatalError("Must be overriden by subsclass")
-    }
-
-    func assetGroupDecorationIdentifier() -> String {
-        fatalError("Must be overriden by subsclass")
-    }
-
-    func assetGroupInset(for _: Int) -> UIEdgeInsets {
-        fatalError("Must be overriden by subsclass")
-    }
+    private var itemsDecorationAttributes: [IndexPath: UICollectionViewLayoutAttributes] = [:]
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let layoutAttributesObjects = super.layoutAttributesForElements(
@@ -179,6 +68,198 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     override func prepare() {
         super.prepare()
+
+        itemsDecorationAttributes = [:]
+        updateItemsBackgroundAttributesIfNeeded()
+    }
+
+    // MARK: Animation
+
+    override func initialLayoutAttributesForAppearingItem(
+        at itemIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)?
+            .copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
+
+        if itemIndexPath.row != 0, !animatingTransition {
+            attributes?.transform = getTransformForAnimation()
+        }
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingItem(
+        at itemIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?
+            .copy() as? UICollectionViewLayoutAttributes
+
+        if itemIndexPath.row != 0, !animatingTransition {
+            attributes?.transform = getTransformForAnimation()
+        }
+
+        return attributes
+    }
+
+    override func initialLayoutAttributesForAppearingDecorationElement(
+        ofKind elementKind: String,
+        at decorationIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingDecorationElement(
+            ofKind: elementKind,
+            at: decorationIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingDecorationElement(
+        ofKind elementKind: String,
+        at decorationIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingDecorationElement(
+            ofKind: elementKind,
+            at: decorationIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        return attributes
+    }
+
+    override func initialLayoutAttributesForAppearingSupplementaryElement(
+        ofKind elementKind: String,
+        at elementIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingSupplementaryElement(
+            ofKind: elementKind,
+            at: elementIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
+
+        return attributes
+    }
+
+    override func finalLayoutAttributesForDisappearingSupplementaryElement(
+        ofKind elementKind: String,
+        at elementIndexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingSupplementaryElement(
+            ofKind: elementKind,
+            at: elementIndexPath
+        )?.copy() as? UICollectionViewLayoutAttributes
+
+        attributes?.alpha = 0.0
+
+        return attributes
+    }
+}
+
+// MARK: Private
+
+private extension AssetListFlowLayout {
+    func updateItemsBackgroundAttributesIfNeeded() {
+        guard let collectionView else { return }
+
+        let initialY = calculateInitialY(for: collectionView)
+
+        let attributes = attributesFactory.createItemsBackgroundAttributes(
+            for: layoutStyle,
+            collectionView,
+            using: sectionsExpandableState,
+            assetsStartingSection: SectionType.assetsStartingSection,
+            from: initialY
+        )
+
+        itemsDecorationAttributes = attributes.reduce(into: [:]) { $0[$1.indexPath] = $1 }
+    }
+
+    func calculateInitialY(for collectionView: UICollectionView) -> CGFloat {
+        var initialY: CGFloat = 0.0
+
+        let hasSummarySection = collectionView.numberOfItems(inSection: SectionType.summary.index) > 0
+
+        if hasSummarySection {
+            initialY = AssetListMeasurement.accountHeight + SectionType.summary.cellSpacing +
+                totalBalanceHeight
+        }
+
+        initialY += AssetListMeasurement.summaryInsets.top + AssetListMeasurement.summaryInsets.bottom
+
+        initialY += nftsInsets.top + nftsInsets.bottom
+
+        let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
+
+        if hasNfts {
+            initialY += AssetListMeasurement.nftsHeight
+        }
+
+        initialY += promotionInsets.top + promotionInsets.bottom
+
+        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.promotion.index) > 0
+
+        if hasPromotion {
+            initialY += promotionHeight
+        }
+
+        initialY += AssetListMeasurement.settingsInsets.top
+            + AssetListMeasurement.settingsHeight
+            + AssetListMeasurement.settingsInsets.bottom
+
+        return initialY
+    }
+
+    func getTransformForAnimation() -> CGAffineTransform {
+        let scale: CGFloat = 0.65
+        return CGAffineTransform(
+            scaleX: scale,
+            y: scale
+        )
+    }
+
+    func assetGroupDecorationIdentifier() -> String {
+        switch layoutStyle {
+        case .networks:
+            DecorationIdentifiers.networkGroup
+        case .tokens:
+            DecorationIdentifiers.tokenGroup
+        }
+    }
+
+    func assetGroupInset(for section: Int) -> UIEdgeInsets {
+        guard let collectionView else { return .zero }
+
+        switch layoutStyle {
+        case .networks:
+            return AssetListMeasurement.assetGroupInsets
+        case .tokens:
+            let expanded = collectionView.numberOfItems(inSection: section) > 1
+            let expandable = sectionsExpandableState[section] ?? false
+
+            let expandableOffset: CGFloat = expandable && !expanded
+                ? AssetListMeasurement.underneathViewHeight
+                : 0
+
+            return UIEdgeInsets(
+                top: AssetListMeasurement.decorationContentInset,
+                left: 0,
+                bottom: 8 + AssetListMeasurement.decorationContentInset + expandableOffset,
+                right: 0
+            )
+        }
+    }
+
+    func assetCellHeight(for _: IndexPath) -> CGFloat {
+        AssetListMeasurement.assetHeight
+    }
+}
+
+// MARK: Interface
+
+extension AssetListFlowLayout {
+    func changeGroupLayoutStyle(to style: AssetListGroupsStyle) {
+        layoutStyle = style
 
         itemsDecorationAttributes = [:]
         updateItemsBackgroundAttributesIfNeeded()
@@ -269,94 +350,44 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     func assetSectionIndex(from groupIndex: Int) -> Int {
         SectionType.assetsStartingSection + groupIndex
     }
+}
 
-    // MARK: Animation
+// MARK: Expand/Collapse
 
-    func getTransformForAnimation() -> CGAffineTransform {
-        let scale: CGFloat = 0.65
-        return CGAffineTransform(
-            scaleX: scale,
-            y: scale
-        )
+extension AssetListFlowLayout {
+    func expandAssetGroup(for symbol: String) {
+        assetSectionsState.changeState(with: symbol) { $0.byChanging(expanded: true) }
     }
 
-    override func initialLayoutAttributesForAppearingItem(
-        at itemIndexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)?
-            .copy() as? UICollectionViewLayoutAttributes
+    func collapseAssetGroup(for symbol: String) {
+        assetSectionsState.changeState(with: symbol) { $0.byChanging(expanded: false) }
+    }
 
-        attributes?.alpha = 0.0
+    func state(for symbol: String) -> AssetListTokenSectionState? {
+        assetSectionsState[symbol]
+    }
 
-        if itemIndexPath.row != 0, !animatingTransition {
-            attributes?.transform = getTransformForAnimation()
+    func expanded(for symbol: String) -> Bool {
+        assetSectionsState[symbol]?.expanded ?? false
+    }
+
+    func changeSection(
+        byChanging index: Int,
+        for symbol: String
+    ) {
+        assetSectionsState.changeState(with: symbol) { $0.byChanging(index) }
+    }
+
+    func setExpandableSection(
+        for symbol: String,
+        _ expandable: Bool
+    ) {
+        guard let sectionIndex = assetSectionsState[symbol]?.index else {
+            return
         }
 
-        return attributes
-    }
+        sectionsExpandableState[sectionIndex] = expandable
 
-    override func finalLayoutAttributesForDisappearingItem(
-        at itemIndexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?
-            .copy() as? UICollectionViewLayoutAttributes
-
-        if itemIndexPath.row != 0, !animatingTransition {
-            attributes?.transform = getTransformForAnimation()
-        }
-
-        return attributes
-    }
-
-    override func initialLayoutAttributesForAppearingDecorationElement(
-        ofKind elementKind: String,
-        at decorationIndexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.initialLayoutAttributesForAppearingDecorationElement(
-            ofKind: elementKind,
-            at: decorationIndexPath
-        )?.copy() as? UICollectionViewLayoutAttributes
-
-        return attributes
-    }
-
-    override func finalLayoutAttributesForDisappearingDecorationElement(
-        ofKind elementKind: String,
-        at decorationIndexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.finalLayoutAttributesForDisappearingDecorationElement(
-            ofKind: elementKind,
-            at: decorationIndexPath
-        )?.copy() as? UICollectionViewLayoutAttributes
-
-        return attributes
-    }
-
-    override func initialLayoutAttributesForAppearingSupplementaryElement(
-        ofKind elementKind: String,
-        at elementIndexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.initialLayoutAttributesForAppearingSupplementaryElement(
-            ofKind: elementKind,
-            at: elementIndexPath
-        )?.copy() as? UICollectionViewLayoutAttributes
-
-        attributes?.alpha = 0.0
-
-        return attributes
-    }
-
-    override func finalLayoutAttributesForDisappearingSupplementaryElement(
-        ofKind elementKind: String,
-        at elementIndexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.finalLayoutAttributesForDisappearingSupplementaryElement(
-            ofKind: elementKind,
-            at: elementIndexPath
-        )?.copy() as? UICollectionViewLayoutAttributes
-
-        attributes?.alpha = 0.0
-
-        return attributes
+        assetSectionsState.changeState(with: symbol) { $0.byChanging(expandable: expandable) }
     }
 }
