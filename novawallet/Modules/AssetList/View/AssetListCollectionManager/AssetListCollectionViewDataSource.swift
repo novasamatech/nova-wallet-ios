@@ -200,11 +200,12 @@ private extension AssetListCollectionViewDataSource {
 
             if expanded {
                 cell.showDivider()
-                cell.configureSelectionView(for: expanded)
             }
 
             assetCell = cell
         }
+
+        assetCell.configureSelectionView(for: expanded)
 
         return assetCell
     }
