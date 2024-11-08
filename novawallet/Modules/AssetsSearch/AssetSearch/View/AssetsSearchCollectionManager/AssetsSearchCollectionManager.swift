@@ -3,12 +3,8 @@ import UIKit
 class AssetsSearchCollectionManager {
     private weak var delegate: AssetsSearchCollectionManagerDelegate?
 
-    var tokenGroupsLayout: AssetsSearchTokensFlowLayout? {
-        view?.collectionTokenGroupsLayout
-    }
-
-    var networkGroupsLayout: AssetsSearchNetworksFlowLayout? {
-        view?.collectionNetworkGroupsLayout
+    var collectionViewLayout: AssetsSearchFlowLayout? {
+        view?.collectionViewLayout
     }
 
     weak var view: BaseAssetsSearchViewLayout?
@@ -50,12 +46,12 @@ class AssetsSearchCollectionManager {
     }
 
     func groupExpandable(for symbol: String) -> Bool {
-        tokenGroupsLayout?.state(for: symbol)?.expandable ?? false
+        collectionViewLayout?.state(for: symbol)?.expandable ?? false
     }
 
     func updateTokensGroupLayout() {
         guard
-            let tokenGroupsLayout,
+            let collectionViewLayout,
             groupsViewModel.listGroupStyle == .tokens
         else {
             return
@@ -66,14 +62,14 @@ class AssetsSearchCollectionManager {
                 return
             }
 
-            let sectionIndex = tokenGroupsLayout.assetSectionIndex(from: groupIndex)
+            let sectionIndex = collectionViewLayout.assetSectionIndex(from: groupIndex)
 
-            tokenGroupsLayout.changeSection(
+            collectionViewLayout.changeSection(
                 byChanging: sectionIndex,
                 for: groupViewModel.token.symbol
             )
 
-            tokenGroupsLayout.setExpandableSection(
+            collectionViewLayout.setExpandableSection(
                 for: groupViewModel.token.symbol,
                 groupViewModel.assets.count > 1
             )
@@ -114,30 +110,14 @@ extension AssetsSearchCollectionManager: AssetsSearchCollectionManagerProtocol {
             AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
-        networkGroupsLayout?.register(
+        collectionViewLayout?.register(
             AssetListNetworkGroupDecorationView.self,
             forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.networkGroup
         )
-
-        tokenGroupsLayout?.register(
+        collectionViewLayout?.register(
             AssetListTokenGroupDecorationView.self,
             forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.tokenGroup
         )
-    }
-
-    func changeCollectionViewLayout(to style: AssetListGroupsStyle) {
-        guard let view else { return }
-
-        view.assetGroupsLayoutStyle = style
-
-        let layout: UICollectionViewLayout = view.collectionViewLayout
-
-        view.collectionView.setCollectionViewLayout(
-            layout,
-            animated: false
-        )
-
-        layout.invalidateLayout()
     }
 
     func updateGroupsViewModel(with model: AssetListViewModel) {
@@ -174,15 +154,15 @@ extension AssetsSearchCollectionManager: AssetsSearchCollectionViewLayoutDelegat
     }
 
     func expandAssetGroup(for symbol: String) {
-        tokenGroupsLayout?.expandAssetGroup(for: symbol)
+        collectionViewLayout?.expandAssetGroup(for: symbol)
     }
 
     func collapseAssetGroup(for symbol: String) {
-        tokenGroupsLayout?.collapseAssetGroup(for: symbol)
+        collectionViewLayout?.collapseAssetGroup(for: symbol)
     }
 
     func groupExpanded(for symbol: String) -> Bool {
-        tokenGroupsLayout?.expanded(for: symbol) ?? false
+        collectionViewLayout?.expanded(for: symbol) ?? false
     }
 }
 

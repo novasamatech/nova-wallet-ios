@@ -168,6 +168,7 @@ private extension AssetListFlowLayout {
             for: layoutStyle,
             collectionView,
             using: sectionsExpandableState,
+            assetsStartingSection: SectionType.assetsStartingSection,
             from: initialY
         )
 

@@ -6,6 +6,7 @@ class AssetDecorationAttributesFactory {
         for style: AssetListGroupsStyle,
         _ collectionView: UICollectionView,
         using sectionsExpandableState: [Int: Bool],
+        assetsStartingSection: Int,
         from initialY: CGFloat
     ) -> [UICollectionViewLayoutAttributes] {
         switch style {
@@ -13,11 +14,13 @@ class AssetDecorationAttributesFactory {
             createAttributesForTokenGroups(
                 for: collectionView,
                 using: sectionsExpandableState,
+                assetsStartingSection: assetsStartingSection,
                 initialY: initialY
             )
         case .networks:
             createAttributesForNetworkGroups(
                 for: collectionView,
+                assetsStartingSection: assetsStartingSection,
                 initialY: initialY
             )
         }
@@ -28,16 +31,17 @@ private extension AssetDecorationAttributesFactory {
     func createAttributesForTokenGroups(
         for collectionView: UICollectionView,
         using sectionsExpandableState: [Int: Bool],
+        assetsStartingSection: Int,
         initialY: CGFloat
     ) -> [UICollectionViewLayoutAttributes] {
-        let groupsCount = collectionView.numberOfSections - AssetListFlowLayout.SectionType.assetsStartingSection
+        let groupsCount = collectionView.numberOfSections - assetsStartingSection
 
         let initAttributes = [UICollectionViewLayoutAttributes]()
         let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, initialY)) { result, groupIndex in
             let attributes = result.0
             let positionY = result.1
 
-            let section = AssetListFlowLayout.SectionType.assetsStartingSection + groupIndex
+            let section = assetsStartingSection + groupIndex
             let numberOfItems = collectionView.numberOfItems(inSection: section)
 
             let expanded = numberOfItems > 1
@@ -82,16 +86,17 @@ private extension AssetDecorationAttributesFactory {
 
     func createAttributesForNetworkGroups(
         for collectionView: UICollectionView,
+        assetsStartingSection: Int,
         initialY: CGFloat
     ) -> [UICollectionViewLayoutAttributes] {
-        let groupsCount = collectionView.numberOfSections - AssetListFlowLayout.SectionType.assetsStartingSection
+        let groupsCount = collectionView.numberOfSections - assetsStartingSection
 
         let initAttributes = [UICollectionViewLayoutAttributes]()
         let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, initialY)) { result, groupIndex in
             let attributes = result.0
             let positionY = result.1
 
-            let section = AssetListFlowLayout.SectionType.assetsStartingSection + groupIndex
+            let section = assetsStartingSection + groupIndex
             let numberOfItems = collectionView.numberOfItems(inSection: section)
 
             let contentHeight = AssetListMeasurement.assetHeaderHeight +
