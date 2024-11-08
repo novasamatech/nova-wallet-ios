@@ -113,13 +113,11 @@ private extension AssetListCollectionViewDataSource {
             action: #selector(actionManage),
             for: .touchUpInside
         )
-
         settingsCell.searchButton.addTarget(
             self,
             action: #selector(actionSearch),
             for: .touchUpInside
         )
-
         settingsCell.styleSwitcher.addTarget(
             self,
             action: #selector(actionSwitchStyle),

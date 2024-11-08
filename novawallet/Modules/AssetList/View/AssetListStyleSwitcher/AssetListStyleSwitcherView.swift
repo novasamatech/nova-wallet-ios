@@ -191,7 +191,7 @@ private extension AssetListStyleSwitcherView {
             newText: R.string.localizable.commonTokens(
                 preferredLanguages: locale.rLanguages
             ),
-            direction: .up
+            direction: .top
         )
         animateIndicators(
             squareColor: Constants.indicatorInactiveColor,
@@ -204,7 +204,7 @@ private extension AssetListStyleSwitcherView {
             newText: R.string.localizable.commonNetworks(
                 preferredLanguages: locale.rLanguages
             ),
-            direction: .down
+            direction: .bottom
         )
         animateIndicators(
             squareColor: Constants.indicatorActiveColor,
@@ -357,13 +357,13 @@ private extension AssetListStyleSwitcherView {
 
 private extension AssetListStyleSwitcherView {
     enum AnimationDirection {
-        case up
-        case down
+        case top
+        case bottom
 
         var yOffset: CGFloat {
             switch self {
-            case .up: return -1
-            case .down: return 1
+            case .top: return -1
+            case .bottom: return 1
             }
         }
     }

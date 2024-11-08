@@ -28,7 +28,7 @@ enum AssetListAssetModelComparator {
             return nil
         }
     }
-    
+
     static func byChain(
         lhs: AssetListAssetModel,
         rhs: AssetListAssetModel

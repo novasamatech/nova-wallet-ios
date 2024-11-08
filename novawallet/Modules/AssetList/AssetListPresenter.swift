@@ -42,8 +42,12 @@ final class AssetListPresenter {
         self.localizationManager = localizationManager
         self.appearanceFacade = appearanceFacade
     }
+}
 
-    private func providePolkadotStakingPromotion() {
+// MARK: Private
+
+private extension AssetListPresenter {
+    func providePolkadotStakingPromotion() {
         guard shouldShowPolkadotPromotion else {
             return
         }
@@ -53,7 +57,7 @@ final class AssetListPresenter {
         view?.didReceivePromotion(viewModel: viewModel)
     }
 
-    private func provideHeaderViewModel() {
+    func provideHeaderViewModel() {
         guard let walletType = walletType, let name = name else {
             return
         }
@@ -87,7 +91,7 @@ final class AssetListPresenter {
         )
     }
 
-    private func createAssetAccountPrice(
+    func createAssetAccountPrice(
         chainAssetId: ChainAssetId,
         priceData: PriceData
     ) -> Either<SuccessAssetListAssetAccountPrice, FailedAssetListAssetAccountPrice>? {
@@ -117,7 +121,7 @@ final class AssetListPresenter {
             ))
     }
 
-    private func createAssetAccountPriceLock(
+    func createAssetAccountPriceLock(
         chainAssetId: ChainAssetId,
         priceData: PriceData
     ) -> AssetListAssetAccountPrice? {
@@ -140,7 +144,7 @@ final class AssetListPresenter {
         )
     }
 
-    private func provideHeaderViewModel(
+    func provideHeaderViewModel(
         with priceMapping: [ChainAssetId: PriceData],
         walletIdenticon: Data?,
         walletType: MetaAccountModelType,
@@ -169,7 +173,7 @@ final class AssetListPresenter {
         view?.didReceiveHeader(viewModel: viewModel)
     }
 
-    private func createHeaderPriceState(
+    func createHeaderPriceState(
         from priceMapping: [ChainAssetId: PriceData],
         externalBalances: [AssetListAssetAccountPrice]
     ) -> LoadableViewModelState<[AssetListAssetAccountPrice]> {
@@ -209,7 +213,7 @@ final class AssetListPresenter {
         return priceState + externalBalances
     }
 
-    private func createHeaderLockState(
+    func createHeaderLockState(
         from priceMapping: [ChainAssetId: PriceData],
         externalBalances: [AssetListAssetAccountPrice]
     ) -> [AssetListAssetAccountPrice]? {
@@ -226,7 +230,7 @@ final class AssetListPresenter {
         return locks + externalBalances
     }
 
-    private func checkNonZeroLocks() -> Bool {
+    func checkNonZeroLocks() -> Bool {
         let locks = model.balances.map { (try? $0.value.get())?.locked ?? 0 }
 
         if locks.contains(where: { $0 > 0 }) {
@@ -242,7 +246,7 @@ final class AssetListPresenter {
         return false
     }
 
-    private func provideAssetViewModels() {
+    func provideAssetViewModels() {
         guard let hidesZeroBalances, let assetListStyle else {
             return
         }
@@ -266,7 +270,7 @@ final class AssetListPresenter {
         }
     }
 
-    private func externalBalanceModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
+    func externalBalanceModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
         switch model.externalBalanceResult {
         case .failure, .none:
             return []
@@ -296,7 +300,7 @@ final class AssetListPresenter {
         }
     }
 
-    private func createGroupViewModels() -> [AssetListGroupType] {
+    func createGroupViewModels() -> [AssetListGroupType] {
         guard let hidesZeroBalances, let assetListStyle else {
             return []
         }
@@ -323,7 +327,7 @@ final class AssetListPresenter {
         }
     }
 
-    private func filterZeroBalances(_ assets: [AssetListAssetModel]) -> [AssetListAssetModel] {
+    func filterZeroBalances(_ assets: [AssetListAssetModel]) -> [AssetListAssetModel] {
         let filteredAssets: [AssetListAssetModel]
 
         filteredAssets = assets.filter { asset in
@@ -337,7 +341,7 @@ final class AssetListPresenter {
         return filteredAssets
     }
 
-    private func createAssetGroupViewModel(
+    func createAssetGroupViewModel(
         from groupModel: AssetListAssetGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
         hidesZeroBalances: Bool
@@ -365,7 +369,7 @@ final class AssetListPresenter {
         }
     }
 
-    private func createNetworkGroupViewModel(
+    func createNetworkGroupViewModel(
         from groupModel: AssetListChainGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
         hidesZeroBalances: Bool
@@ -401,7 +405,7 @@ final class AssetListPresenter {
         )
     }
 
-    private func provideNftViewModel() {
+    func provideNftViewModel() {
         guard !model.nfts.isEmpty else {
             view?.didReceiveNft(viewModel: nil)
             return
@@ -411,20 +415,20 @@ final class AssetListPresenter {
         view?.didReceiveNft(viewModel: nftViewModel)
     }
 
-    private func updateAssetsView() {
+    func updateAssetsView() {
         provideHeaderViewModel()
         provideAssetViewModels()
     }
 
-    private func updateHeaderView() {
+    func updateHeaderView() {
         provideHeaderViewModel()
     }
 
-    private func updateNftView() {
+    func updateNftView() {
         provideNftViewModel()
     }
 
-    private func presentAssetDetails(for chainAssetId: ChainAssetId) {
+    func presentAssetDetails(for chainAssetId: ChainAssetId) {
         // get chain from interactor that includes also disabled assets
         let optChain = interactor.getFullChain(for: chainAssetId.chainId) ?? model.allChains[chainAssetId.chainId]
 
@@ -437,6 +441,8 @@ final class AssetListPresenter {
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 }
+
+// MARK: AssetListPresenterProtocol
 
 extension AssetListPresenter: AssetListPresenterProtocol {
     func setup() {
@@ -556,6 +562,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 }
 
+// MARK: AssetListInteractorOutputProtocol
+
 extension AssetListPresenter: AssetListInteractorOutputProtocol {
     func didReceive(result: AssetListBuilderResult) {
         guard result.walletId != nil, result.walletId == walletId else {
@@ -637,6 +645,8 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         view?.didReceiveAssetListStyle(style)
     }
 }
+
+// MARK: Localizable
 
 extension AssetListPresenter: Localizable {
     func applyLocalization() {
