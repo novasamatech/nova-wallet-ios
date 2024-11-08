@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "Референдум #%li завершен";
 "gov.referendum.completed.message.with.index" = "Референдум №%li завершен, голосование окончено";
 "common.use.max.due.fee.message" = "Вы можете использовать до %@, так как вам нужно заплатить %@ комиссию сети.";
+"send.operation.network.list.title" = "Выберите сеть для отправки %@";
+"buy.operation.network.list.title" = "Выберите сеть для покупки %@";
+"receive.operation.network.list.title" = "Выберите сеть для получения %@";
+"swap.operation.network.list.title" = "Выберите сеть для обмена %@";
+"settings.appearance" = "Внешний вид";
+"settings.appearance.token.icons.title" = "иконки токенов";
+"settings.appearance.token.icons.option.white" = "Белый";
+"settings.appearance.token.icons.option.colored" = "Цветной";
+"wallet.receive.details.format" = "Отправляйте только токен %@ и токены в сети %@ на этот адрес, иначе вы можете потерять свои средства";
+"common.address.coppied" = "Адрес скопирован";
+"common.networks" = "Сети";
+"assets.search.token.hint" = "Поиск по токену";

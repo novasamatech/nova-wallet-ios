@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "Referendum #%li selesai";
 "gov.referendum.completed.message.with.index" = "Referendum #%li telah selesai dan pemungutan suara sudah selesai";
 "common.use.max.due.fee.message" = "Anda dapat menggunakan hingga %@ karena Anda perlu membayar %@ untuk biaya jaringan.";
+"send.operation.network.list.title" = "Pilih jaringan untuk mengirim %@";
+"buy.operation.network.list.title" = "Pilih jaringan untuk membeli %@";
+"receive.operation.network.list.title" = "Pilih jaringan untuk menerima %@";
+"swap.operation.network.list.title" = "Pilih jaringan untuk menukar %@";
+"settings.appearance" = "Penampilan";
+"settings.appearance.token.icons.title" = "ikon token";
+"settings.appearance.token.icons.option.white" = "Putih";
+"settings.appearance.token.icons.option.colored" = "Berwarna";
+"wallet.receive.details.format" = "Hanya kirim token %@ dan token di jaringan %@ ke alamat ini, atau Anda bisa kehilangan dana Anda";
+"common.address.coppied" = "Alamat disalin";
+"common.networks" = "Jaringan";
+"assets.search.token.hint" = "Cari berdasarkan token";
