@@ -110,7 +110,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     }
 
     func changeCollectionViewLayout(
-        from oldViewModel: AssetListViewModel,
+        from _: AssetListViewModel,
         to newViewModel: AssetListViewModel
     ) {
         guard let view else { return }
