@@ -86,13 +86,7 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func setupCollectionView() {
-        setupCollectionManager()
-
-        collectionViewManager?.setupCollectionView()
-    }
-
-    private func setupLocalization() {
+    func setupLocalization() {
         let languages = selectedLocale.rLanguages
         rootView.searchBar.textField.placeholder = R.string.localizable.assetsSearchPlaceholder(
             preferredLanguages: languages
@@ -106,6 +100,12 @@ class AssetsSearchViewController: UIViewController, ViewHolder {
         localizableTitle.map {
             title = $0.value(for: selectedLocale)
         }
+    }
+
+    private func setupCollectionView() {
+        setupCollectionManager()
+
+        collectionViewManager?.setupCollectionView()
     }
 
     private func setupSearchBar() {
@@ -158,12 +158,15 @@ extension AssetsSearchViewController: AssetsSearchViewProtocol {
         rootView.collectionView.reloadData()
 
         collectionViewManager?.updateTokensGroupLayout()
+        setupLocalization()
     }
 
     func didReceiveAssetGroupsStyle(_ style: AssetListGroupsStyle) {
-        guard rootView.assetGroupsLayoutStyle != style else { return }
+        guard assetGroupsLayoutStyle != style else { return }
 
-        rootView.assetGroupsLayoutStyle = style
+        assetGroupsLayoutStyle = style
+
+        setupLocalization()
 
         rootView.collectionViewLayout.changeGroupLayoutStyle(to: style)
         rootView.collectionView.reloadData()

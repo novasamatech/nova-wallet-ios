@@ -13,8 +13,6 @@ class BaseAssetsSearchViewLayout: UIView {
 
     var cancelButton: RoundedButton? { searchView.optionalCancelButton }
 
-    var assetGroupsLayoutStyle: AssetListGroupsStyle?
-
     let collectionViewLayout: AssetsSearchFlowLayout = {
         let layout = AssetsSearchFlowLayout()
         layout.scrollDirection = .vertical

@@ -120,21 +120,6 @@ extension AssetsSearchCollectionManager: AssetsSearchCollectionManagerProtocol {
         )
     }
 
-    func changeCollectionViewLayout(to style: AssetListGroupsStyle) {
-        guard let view else { return }
-
-        view.assetGroupsLayoutStyle = style
-
-        let layout: UICollectionViewLayout = view.collectionViewLayout
-
-        view.collectionView.setCollectionViewLayout(
-            layout,
-            animated: false
-        )
-
-        layout.invalidateLayout()
-    }
-
     func updateGroupsViewModel(with model: AssetListViewModel) {
         groupsViewModel = model
 
