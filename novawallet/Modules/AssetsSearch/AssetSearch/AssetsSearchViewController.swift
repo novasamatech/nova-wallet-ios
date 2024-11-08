@@ -165,20 +165,8 @@ extension AssetsSearchViewController: AssetsSearchViewProtocol {
 
         rootView.assetGroupsLayoutStyle = style
 
+        rootView.collectionViewLayout.changeGroupLayoutStyle(to: style)
         rootView.collectionView.reloadData()
-
-        switch style {
-        case .tokens:
-            rootView.collectionView.setCollectionViewLayout(
-                rootView.collectionTokenGroupsLayout,
-                animated: false
-            )
-        case .networks:
-            rootView.collectionView.setCollectionViewLayout(
-                rootView.collectionNetworkGroupsLayout,
-                animated: false
-            )
-        }
     }
 }
 
