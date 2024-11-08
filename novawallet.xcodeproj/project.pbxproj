@@ -903,7 +903,7 @@
 		2CEFF4C2574F0AABE0E9BF89 /* BaseReferendumVoteSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A058D4A585F253CBF2968D /* BaseReferendumVoteSetupViewController.swift */; };
 		2CF2F93AF862CF54FC46B560 /* PurchaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D44421CCD7AD220A05CD0E /* PurchaseInteractor.swift */; };
 		2D008A612CC11E4600BFEE99 /* AssetListCustomLayoutAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A602CC11E4600BFEE99 /* AssetListCustomLayoutAttributes.swift */; };
-		2D008A632CC242DA00BFEE99 /* AssetListAssetModelCompator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A622CC242DA00BFEE99 /* AssetListAssetModelCompator.swift */; };
+		2D008A632CC242DA00BFEE99 /* AssetListAssetModelComparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A622CC242DA00BFEE99 /* AssetListAssetModelComparator.swift */; };
 		2D008A662CC5686D00BFEE99 /* AssetListCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A652CC5686D00BFEE99 /* AssetListCollectionViewDataSource.swift */; };
 		2D008A682CC57BFB00BFEE99 /* AssetListCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A672CC57BFA00BFEE99 /* AssetListCollectionViewDelegate.swift */; };
 		2D008A6A2CC59F3700BFEE99 /* AssetListCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A692CC59F3700BFEE99 /* AssetListCollectionManager.swift */; };
@@ -6093,7 +6093,7 @@
 		2C5CE1E167B357490396AAC5 /* NetworkNodeViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkNodeViewFactory.swift; sourceTree = "<group>"; };
 		2CB02245B44D5D1036626E24 /* ManualBackupKeyListWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListWireframe.swift; sourceTree = "<group>"; };
 		2D008A602CC11E4600BFEE99 /* AssetListCustomLayoutAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCustomLayoutAttributes.swift; sourceTree = "<group>"; };
-		2D008A622CC242DA00BFEE99 /* AssetListAssetModelCompator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListAssetModelCompator.swift; sourceTree = "<group>"; };
+		2D008A622CC242DA00BFEE99 /* AssetListAssetModelComparator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListAssetModelComparator.swift; sourceTree = "<group>"; };
 		2D008A652CC5686D00BFEE99 /* AssetListCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		2D008A672CC57BFA00BFEE99 /* AssetListCollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCollectionViewDelegate.swift; sourceTree = "<group>"; };
 		2D008A692CC59F3700BFEE99 /* AssetListCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCollectionManager.swift; sourceTree = "<group>"; };
@@ -17246,7 +17246,7 @@
 				0C83775C2A4EEB380072102D /* AssetListState.swift */,
 				77CBD39B2ABBA98900D646D6 /* AssetListModel.swift */,
 				77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */,
-				2D008A622CC242DA00BFEE99 /* AssetListAssetModelCompator.swift */,
+				2D008A622CC242DA00BFEE99 /* AssetListAssetModelComparator.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -26547,7 +26547,7 @@
 				842A736827DB4883006EE1EA /* OperationTransferModel.swift in Sources */,
 				8881043A29EBDC48000FA9BC /* EquilibriumTokenExtras.swift in Sources */,
 				AE2C84E425EF98C700986716 /* ValidatorInfoViewController.swift in Sources */,
-				2D008A632CC242DA00BFEE99 /* AssetListAssetModelCompator.swift in Sources */,
+				2D008A632CC242DA00BFEE99 /* AssetListAssetModelComparator.swift in Sources */,
 				8469529E285297330083E0B4 /* AuraEraOperationFactory.swift in Sources */,
 				84D8F16D24D82C7E00AF43E9 /* ModalPickerConfiguration.swift in Sources */,
 				84BAB6102642C286007782D0 /* SelectedRebondVariant.swift in Sources */,
