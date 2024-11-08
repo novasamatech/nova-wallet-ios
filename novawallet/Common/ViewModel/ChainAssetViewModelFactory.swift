@@ -6,17 +6,26 @@ protocol ChainAssetViewModelFactoryProtocol {
 
 final class ChainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol {
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
-    init(networkViewModelFactory: NetworkViewModelFactoryProtocol) {
+    init(
+        networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    ) {
         self.networkViewModelFactory = networkViewModelFactory
+        self.assetIconViewModelFactory = assetIconViewModelFactory
     }
 
     func createViewModel(from chainAsset: ChainAsset) -> ChainAssetViewModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
 
-        let assetIconViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: chainAsset.asset.icon)
+        let assetIconViewModel = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
         let assetViewModel = AssetViewModel(symbol: chainAsset.asset.symbol, imageViewModel: assetIconViewModel)
 
-        return ChainAssetViewModel(networkViewModel: networkViewModel, assetViewModel: assetViewModel)
+        return ChainAssetViewModel(
+            chainAssetId: chainAsset.chainAssetId,
+            networkViewModel: networkViewModel,
+            assetViewModel: assetViewModel
+        )
     }
 }

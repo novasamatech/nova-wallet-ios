@@ -1,13 +1,18 @@
 import UIKit
 import Kingfisher
-import SVGKit
+import SwiftDraw
 import Operation_iOS
 
 final class RemoteImageViewModel: NSObject {
     let url: URL
+    let fallbackImage: UIImage?
 
-    init(url: URL) {
+    init(
+        url: URL,
+        fallbackImage: UIImage? = nil
+    ) {
         self.url = url
+        self.fallbackImage = fallbackImage
     }
 }
 
@@ -27,11 +32,8 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
 
         var options: KingfisherOptionsInfo = [
             .processor(processor),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheSerializer(RemoteImageSerializer.shared),
-            .cacheOriginalImage,
-            .diskCacheExpiration(.days(1))
-        ]
+            .scaleFactor(UIScreen.main.scale)
+        ] + KingfisherOptionsInfo.cacheOptions
 
         if let renderingMode = settings.renderingMode {
             let imageModifier = RenderingModeImageModifier(renderingMode: renderingMode)
@@ -45,7 +47,11 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
         imageView.kf.setImage(
             with: url,
             options: options
-        )
+        ) { [weak self] result in
+            if case .failure = result {
+                imageView.image = self?.fallbackImage
+            }
+        }
     }
 
     func cancel(on imageView: UIImageView) {
@@ -75,8 +81,7 @@ final class RemoteImageSerializer: CacheSerializer {
         if let uiImage = internalCache.image(with: data, options: options) {
             return uiImage
         } else {
-            let imsvg = SVGKImage(data: data)
-            return imsvg?.uiImage
+            return UIImage(svgData: data)
         }
     }
 }

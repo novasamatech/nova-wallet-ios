@@ -25,21 +25,29 @@ final class AssetListPresenter {
 
     private(set) var walletConnectSessionsCount: Int = 0
 
+    private(set) var assetListStyle: AssetListGroupsStyle?
+
     private(set) var model: AssetListBuilderResult.Model = .init()
 
     init(
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
         viewModelFactory: AssetListViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        appearanceFacade: AppearanceFacadeProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
+        self.appearanceFacade = appearanceFacade
     }
+}
 
-    private func providePolkadotStakingPromotion() {
+// MARK: Private
+
+private extension AssetListPresenter {
+    func providePolkadotStakingPromotion() {
         guard shouldShowPolkadotPromotion else {
             return
         }
@@ -49,7 +57,7 @@ final class AssetListPresenter {
         view?.didReceivePromotion(viewModel: viewModel)
     }
 
-    private func provideHeaderViewModel() {
+    func provideHeaderViewModel() {
         guard let walletType = walletType, let name = name else {
             return
         }
@@ -83,7 +91,7 @@ final class AssetListPresenter {
         )
     }
 
-    private func createAssetAccountPrice(
+    func createAssetAccountPrice(
         chainAssetId: ChainAssetId,
         priceData: PriceData
     ) -> Either<SuccessAssetListAssetAccountPrice, FailedAssetListAssetAccountPrice>? {
@@ -113,7 +121,7 @@ final class AssetListPresenter {
             ))
     }
 
-    private func createAssetAccountPriceLock(
+    func createAssetAccountPriceLock(
         chainAssetId: ChainAssetId,
         priceData: PriceData
     ) -> AssetListAssetAccountPrice? {
@@ -136,7 +144,7 @@ final class AssetListPresenter {
         )
     }
 
-    private func provideHeaderViewModel(
+    func provideHeaderViewModel(
         with priceMapping: [ChainAssetId: PriceData],
         walletIdenticon: Data?,
         walletType: MetaAccountModelType,
@@ -165,7 +173,7 @@ final class AssetListPresenter {
         view?.didReceiveHeader(viewModel: viewModel)
     }
 
-    private func createHeaderPriceState(
+    func createHeaderPriceState(
         from priceMapping: [ChainAssetId: PriceData],
         externalBalances: [AssetListAssetAccountPrice]
     ) -> LoadableViewModelState<[AssetListAssetAccountPrice]> {
@@ -205,7 +213,7 @@ final class AssetListPresenter {
         return priceState + externalBalances
     }
 
-    private func createHeaderLockState(
+    func createHeaderLockState(
         from priceMapping: [ChainAssetId: PriceData],
         externalBalances: [AssetListAssetAccountPrice]
     ) -> [AssetListAssetAccountPrice]? {
@@ -222,7 +230,7 @@ final class AssetListPresenter {
         return locks + externalBalances
     }
 
-    private func checkNonZeroLocks() -> Bool {
+    func checkNonZeroLocks() -> Bool {
         let locks = model.balances.map { (try? $0.value.get())?.locked ?? 0 }
 
         if locks.contains(where: { $0 > 0 }) {
@@ -238,35 +246,31 @@ final class AssetListPresenter {
         return false
     }
 
-    private func provideAssetViewModels() {
-        guard let hidesZeroBalances = hidesZeroBalances else {
+    func provideAssetViewModels() {
+        guard let hidesZeroBalances, let assetListStyle else {
             return
         }
 
         let maybePrices = try? model.priceResult?.get()
-        let viewModels: [AssetListGroupViewModel] = model.groups.compactMap { groupModel in
-            createGroupViewModel(
-                from: groupModel,
-                maybePrices: maybePrices,
-                hidesZeroBalances: hidesZeroBalances
-            )
-        }
+        let viewModels = createGroupViewModels()
 
         let isFilterOn = hidesZeroBalances == true
         if viewModels.isEmpty, !model.balanceResults.isEmpty, model.balanceResults.count >= model.allChains.count {
             view?.didReceiveGroups(viewModel: .init(
                 isFiltered: isFilterOn,
-                listState: .empty
+                listState: .empty,
+                listGroupStyle: assetListStyle
             ))
         } else {
             view?.didReceiveGroups(viewModel: .init(
                 isFiltered: isFilterOn,
-                listState: .list(groups: viewModels)
+                listState: .list(groups: viewModels),
+                listGroupStyle: assetListStyle
             ))
         }
     }
 
-    private func externalBalanceModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
+    func externalBalanceModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
         switch model.externalBalanceResult {
         case .failure, .none:
             return []
@@ -296,47 +300,112 @@ final class AssetListPresenter {
         }
     }
 
-    private func createGroupViewModel(
-        from groupModel: AssetListGroupModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        hidesZeroBalances: Bool
-    ) -> AssetListGroupViewModel? {
-        let chain = groupModel.chain
+    func createGroupViewModels() -> [AssetListGroupType] {
+        guard let hidesZeroBalances, let assetListStyle else {
+            return []
+        }
 
-        let assets = model.groupLists[chain.chainId] ?? []
+        let maybePrices = try? model.priceResult?.get()
 
+        return switch assetListStyle {
+        case .networks:
+            model.chainGroups.compactMap {
+                createNetworkGroupViewModel(
+                    from: $0,
+                    maybePrices: maybePrices,
+                    hidesZeroBalances: hidesZeroBalances
+                )
+            }
+        case .tokens:
+            model.assetGroups.compactMap {
+                createAssetGroupViewModel(
+                    from: $0,
+                    maybePrices: maybePrices,
+                    hidesZeroBalances: hidesZeroBalances
+                )
+            }
+        }
+    }
+
+    func filterZeroBalances(_ assets: [AssetListAssetModel]) -> [AssetListAssetModel] {
         let filteredAssets: [AssetListAssetModel]
 
-        if hidesZeroBalances {
-            filteredAssets = assets.filter { asset in
-                if let balance = try? asset.balanceResult?.get(), balance > 0 {
-                    return true
-                } else {
-                    return false
-                }
+        filteredAssets = assets.filter { asset in
+            if let balance = try? asset.balanceResult?.get(), balance > 0 {
+                return true
+            } else {
+                return false
             }
+        }
 
-            guard !filteredAssets.isEmpty else {
-                return nil
-            }
+        return filteredAssets
+    }
+
+    func createAssetGroupViewModel(
+        from groupModel: AssetListAssetGroupModel,
+        maybePrices: [ChainAssetId: PriceData]?,
+        hidesZeroBalances: Bool
+    ) -> AssetListGroupType? {
+        let assets = model.groupListsByAsset[groupModel.multichainToken.symbol] ?? []
+
+        let filteredAssets = hidesZeroBalances
+            ? filterZeroBalances(assets)
+            : assets
+
+        guard !filteredAssets.isEmpty else {
+            return nil
+        }
+
+        return if let groupViewModel = viewModelFactory.createTokenGroupViewModel(
+            assetsList: filteredAssets,
+            group: groupModel,
+            maybePrices: maybePrices,
+            connected: true,
+            locale: selectedLocale
+        ) {
+            .token(groupViewModel)
         } else {
-            filteredAssets = assets
+            nil
+        }
+    }
+
+    func createNetworkGroupViewModel(
+        from groupModel: AssetListChainGroupModel,
+        maybePrices: [ChainAssetId: PriceData]?,
+        hidesZeroBalances: Bool
+    ) -> AssetListGroupType? {
+        let chain = groupModel.chain
+
+        let assets = model.groupListsByChain[chain.chainId] ?? []
+
+        let filteredAssets = hidesZeroBalances
+            ? filterZeroBalances(assets)
+            : assets
+
+        guard !filteredAssets.isEmpty else {
+            return nil
         }
 
         let assetInfoList: [AssetListAssetAccountInfo] = filteredAssets.map { asset in
-            AssetListPresenterHelpers.createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+            AssetListPresenterHelpers.createAssetAccountInfo(
+                from: asset,
+                chain: chain,
+                maybePrices: maybePrices
+            )
         }
 
-        return viewModelFactory.createGroupViewModel(
-            for: chain,
-            assets: assetInfoList,
-            value: groupModel.chainValue,
-            connected: true,
-            locale: selectedLocale
+        return .network(
+            viewModelFactory.createNetworkGroupViewModel(
+                for: chain,
+                assets: assetInfoList,
+                value: groupModel.value,
+                connected: true,
+                locale: selectedLocale
+            )
         )
     }
 
-    private func provideNftViewModel() {
+    func provideNftViewModel() {
         guard !model.nfts.isEmpty else {
             view?.didReceiveNft(viewModel: nil)
             return
@@ -346,20 +415,20 @@ final class AssetListPresenter {
         view?.didReceiveNft(viewModel: nftViewModel)
     }
 
-    private func updateAssetsView() {
+    func updateAssetsView() {
         provideHeaderViewModel()
         provideAssetViewModels()
     }
 
-    private func updateHeaderView() {
+    func updateHeaderView() {
         provideHeaderViewModel()
     }
 
-    private func updateNftView() {
+    func updateNftView() {
         provideNftViewModel()
     }
 
-    private func presentAssetDetails(for chainAssetId: ChainAssetId) {
+    func presentAssetDetails(for chainAssetId: ChainAssetId) {
         // get chain from interactor that includes also disabled assets
         let optChain = interactor.getFullChain(for: chainAssetId.chainId) ?? model.allChains[chainAssetId.chainId]
 
@@ -372,6 +441,8 @@ final class AssetListPresenter {
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 }
+
+// MARK: AssetListPresenterProtocol
 
 extension AssetListPresenter: AssetListPresenterProtocol {
     func setup() {
@@ -392,10 +463,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
     func refresh() {
         interactor.refresh()
-    }
-
-    func presentSettings() {
-        wireframe.showAssetsSettings(from: view)
     }
 
     func presentSearch() {
@@ -482,7 +549,20 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
         view?.didClosePromotion()
     }
+
+    func toggleAssetListStyle() {
+        assetListStyle?.toggle()
+
+        guard let assetListStyle else {
+            return
+        }
+
+        provideAssetViewModels()
+        interactor.setAssetListGroupsStyle(assetListStyle)
+    }
 }
+
+// MARK: AssetListInteractorOutputProtocol
 
 extension AssetListPresenter: AssetListInteractorOutputProtocol {
     func didReceive(result: AssetListBuilderResult) {
@@ -558,7 +638,15 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         hasWalletsUpdates = hasUpdates
         provideHeaderViewModel()
     }
+
+    func didReceiveAssetListGroupStyle(_ style: AssetListGroupsStyle) {
+        assetListStyle = style
+
+        view?.didReceiveAssetListStyle(style)
+    }
 }
+
+// MARK: Localizable
 
 extension AssetListPresenter: Localizable {
     func applyLocalization() {
@@ -581,5 +669,13 @@ extension AssetListPresenter: URIScanDelegate {
         wireframe.hideUriScanAnimated(from: view) { [weak self] in
             self?.interactor.connectWalletConnect(uri: uri)
         }
+    }
+}
+
+extension AssetListPresenter: IconAppearanceDepending {
+    func applyIconAppearance() {
+        guard let view, view.isSetup else { return }
+
+        provideAssetViewModels()
     }
 }

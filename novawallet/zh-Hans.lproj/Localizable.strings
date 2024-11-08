@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "公投 #%li 完成";
 "gov.referendum.completed.message.with.index" = "公投 #%li 已完成，投票结束";
 "common.use.max.due.fee.message" = "您最多可以使用 %@，因为您需要支付 %@ 的网络费用。";
+"send.operation.network.list.title" = "选择发送%@的网络";
+"buy.operation.network.list.title" = "选择购买%@的网络";
+"receive.operation.network.list.title" = "选择接收%@的网络";
+"swap.operation.network.list.title" = "选择交换%@的网络";
+"settings.appearance" = "外观";
+"settings.appearance.token.icons.title" = "代币图标";
+"settings.appearance.token.icons.option.white" = "白色图标";
+"settings.appearance.token.icons.option.colored" = "彩色图标";
+"wallet.receive.details.format" = "仅将%@代币和%@网络中的代币发送到此地址，否则您可能会失去资金";
+"common.address.coppied" = "地址已复制";
+"common.networks" = "网络";
+"assets.search.token.hint" = "按代币搜索";

@@ -1,39 +1,71 @@
 import XCTest
 @testable import novawallet
 import SoraKeystore
+import Operation_iOS
+import SoraFoundation
 import Cuckoo
 
 class AssetsManageTests: XCTestCase {
     func testSetupAndSave() {
         // given
 
-        let view = MockAssetsSettingsViewProtocol()
-        let wireframe = MockAssetsSettingsWireframeProtocol()
+        let view = MockTokensManageViewProtocol()
+        let wireframe = MockTokensManageWireframeProtocol()
 
         let settingsManager = InMemorySettingsManager()
         settingsManager.hidesZeroBalances = true
 
+        let storageFacade = SubstrateStorageTestFacade()
+        
+        let mapper = ChainModelMapper()
+        let repository: CoreDataRepository<ChainModel, CDChain> = storageFacade.createRepository(
+            mapper: AnyCoreDataMapper(mapper)
+        )
+        let dataOperationFactory = MockDataOperationFactoryProtocol()
+        let operationQueue = OperationQueue()
         let eventCenter = MockEventCenterProtocol()
+        
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set())
 
-        let interactor = AssetsSettingsInteractor(settingsManager: settingsManager, eventCenter: eventCenter)
-        let presenter = AssetsSettingsPresenter(interactor: interactor, wireframe: wireframe)
+        let interactor = TokensManageInteractor(
+            chainRegistry: chainRegistry,
+            eventCenter: eventCenter,
+            settingsManager: settingsManager,
+            repository: AnyDataProviderRepository(repository),
+            repositoryFactory: SubstrateRepositoryFactory(storageFacade: storageFacade),
+            operationQueue: operationQueue
+        )
+        
+        let viewModelFactory = TokensManageViewModelFactory(
+            quantityFormater: NumberFormatter.positiveQuantity.localizableResource(), 
+            assetIconViewModelFactory: AssetIconViewModelFactory()
+        )
+        
+        let presenter = TokensManagePresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
 
         // when
 
-        var receivedViewModel: AssetsSettingsViewModel?
-        let expectedViewModel = AssetsSettingsViewModel(hideZeroBalances: true, canApply: false)
+        var reeceivedFilter: Bool?
+        let expectedFilter = true
 
         let setupCompletion = XCTestExpectation()
 
         stub(view) { stub in
-            stub.didReceive(viewModel: any()).then { viewModel in
-                receivedViewModel = viewModel
-
+            stub.didReceive(hidesZeroBalances: any()).then { hidesZeroBalances in
+                reeceivedFilter = hidesZeroBalances
+                
                 setupCompletion.fulfill()
             }
+            
+            stub.didReceive(viewModels: any()).thenDoNothing()
         }
 
         presenter.setup()
@@ -42,21 +74,9 @@ class AssetsManageTests: XCTestCase {
 
         wait(for: [setupCompletion], timeout: 1.0)
 
-        XCTAssertEqual(receivedViewModel, expectedViewModel)
+        XCTAssertEqual(reeceivedFilter, expectedFilter)
 
         // when
-
-        let closeExpectation = XCTestExpectation()
-
-        stub(view) { stub in
-            stub.didReceive(viewModel: any()).thenDoNothing()
-        }
-
-        stub(wireframe) { stub in
-            stub.close(view: any()).then { _ in
-                closeExpectation.fulfill()
-            }
-        }
 
         let notificationExpectation = XCTestExpectation()
 
@@ -66,13 +86,12 @@ class AssetsManageTests: XCTestCase {
             }
         }
 
-        presenter.changeHideZeroBalances(value: false)
-        presenter.apply()
+        presenter.performFilterChange(to: !expectedFilter)
 
         // then
 
-        wait(for: [closeExpectation, notificationExpectation], timeout: 1.0)
+        wait(for: [notificationExpectation], timeout: 1.0)
 
-        XCTAssertEqual(settingsManager.hidesZeroBalances, false)
+        XCTAssertEqual(settingsManager.hidesZeroBalances, !expectedFilter)
     }
 }

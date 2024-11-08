@@ -13,14 +13,22 @@ class BaseAssetsSearchViewLayout: UIView {
 
     var cancelButton: RoundedButton? { searchView.optionalCancelButton }
 
-    lazy var collectionView: UICollectionView = {
-        let flowLayout = AssetsSearchFlowLayout()
-        flowLayout.scrollDirection = .vertical
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.minimumInteritemSpacing = 0
-        flowLayout.sectionInset = .zero
+    let collectionViewLayout: AssetsSearchFlowLayout = {
+        let layout = AssetsSearchFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        layout.sectionInset = .zero
 
-        let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        return layout
+    }()
+
+    lazy var collectionView: UICollectionView = {
+        let view = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: collectionViewLayout
+        )
+
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.contentInset = UIEdgeInsets(top: Constants.searchBarHeight, left: 0.0, bottom: 16.0, right: 0.0)
@@ -28,8 +36,8 @@ class BaseAssetsSearchViewLayout: UIView {
         return view
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(frame _: CGRect) {
+        super.init(frame: .zero)
 
         setup()
     }

@@ -6,15 +6,16 @@ final class ReferendumsSettingsCell: UITableViewCell {
         $0.textColor = R.color.colorTextPrimary()
     }
 
-    let searchButton: TriangularedBlurButton = .create {
+    let searchButton: TriangularedButton = .create {
         $0.imageWithTitleView?.iconImage = R.image.iconSearchButton()
         $0.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        $0.triangularedView?.fillColor = .clear
         $0.changesContentOpacityWhenHighlighted = true
-        $0.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
+        $0.triangularedView?.highlightedFillColor = .clear
+        $0.triangularedView?.shadowOpacity = 0
     }
 
-    let filterButton = FilterBlurButton()
+    let filterButton = FilterButton()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -54,6 +55,6 @@ final class ReferendumsSettingsCell: UITableViewCell {
 
     func bind(title: String?, isFilterOn: Bool) {
         titleLabel.text = title
-        filterButton.bind(isFilterOn: isFilterOn)
+        filterButton.bind(showingBadge: isFilterOn)
     }
 }

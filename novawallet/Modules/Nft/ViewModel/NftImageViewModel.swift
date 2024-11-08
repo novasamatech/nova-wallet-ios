@@ -56,11 +56,8 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
         var options: KingfisherOptionsInfo = [
             .processor(compoundProcessor),
             .scaleFactor(UIScreen.main.scale),
-            .cacheSerializer(RemoteImageSerializer.shared),
-            .cacheOriginalImage,
-            .onlyLoadFirstFrame,
-            .diskCacheExpiration(.days(1))
-        ]
+            .onlyLoadFirstFrame
+        ] + KingfisherOptionsInfo.cacheOptions
 
         if animated {
             options.append(.transition(.fade(0.25)))

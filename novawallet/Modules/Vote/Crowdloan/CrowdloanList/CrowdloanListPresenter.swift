@@ -37,6 +37,7 @@ final class CrowdloanListPresenter {
         localizationManager: LocalizationManagerProtocol,
         crowdloansCalculator: CrowdloansCalculatorProtocol,
         accountManagementFilter: AccountManagementFilterProtocol,
+        appearanceFacade: AppearanceFacadeProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -46,6 +47,7 @@ final class CrowdloanListPresenter {
         self.logger = logger
         self.crowdloansCalculator = crowdloansCalculator
         self.accountManagementFilter = accountManagementFilter
+        self.appearanceFacade = appearanceFacade
         self.localizationManager = localizationManager
     }
 
@@ -413,8 +415,8 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
     }
 }
 
-extension CrowdloanListPresenter: AssetSelectionDelegate {
-    func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
+extension CrowdloanListPresenter: ChainAssetSelectionDelegate {
+    func assetSelection(view _: ChainAssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
         if let currentChain = try? selectedChainResult?.get(), currentChain.chainId == chainAsset.chain.chainId {
             return
         }
@@ -443,5 +445,15 @@ extension CrowdloanListPresenter: Localizable {
             updateChainView()
             updateListView()
         }
+    }
+}
+
+// MARK: IconAppearanceDepending
+
+extension CrowdloanListPresenter: IconAppearanceDepending {
+    func applyIconAppearance() {
+        guard let view, view.isSetup else { return }
+
+        updateChainView()
     }
 }

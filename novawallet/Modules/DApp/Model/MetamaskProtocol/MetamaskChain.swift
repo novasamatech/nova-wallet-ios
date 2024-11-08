@@ -26,7 +26,7 @@ extension MetamaskChain {
             symbol: nativeCurrency.symbol,
             symbolValueSeparator: " ",
             symbolPosition: .suffix,
-            icon: icons?.first
+            icon: .url(icons?.first)
         )
     }
 

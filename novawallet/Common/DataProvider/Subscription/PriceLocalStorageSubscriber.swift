@@ -20,6 +20,20 @@ protocol PriceLocalStorageSubscriber where Self: AnyObject {
 }
 
 extension PriceLocalStorageSubscriber {
+    func subscribeToAllPrices(
+        for priceIds: [AssetModel.PriceId],
+        currency: Currency
+    ) -> StreamableProvider<PriceData> {
+        let options = StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: true,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
+        )
+
+        return subscribeToAllPrices(for: priceIds, currency: currency, options: options)
+    }
+
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
         currency: Currency
@@ -48,6 +62,45 @@ extension PriceLocalStorageSubscriber {
 }
 
 extension PriceLocalStorageSubscriber {
+    func subscribeToAllPrices(
+        for priceIds: [AssetModel.PriceId],
+        currency: Currency,
+        options: StreamableProviderObserverOptions
+    ) -> StreamableProvider<PriceData> {
+        let priceProvider = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
+            for: priceIds,
+            currency: currency
+        )
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
+            guard let self else { return }
+
+            priceLocalSubscriptionHandler.handlePrices(
+                result: .success(changes),
+                priceIds: priceIds
+            )
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            guard let self else { return }
+
+            priceLocalSubscriptionHandler.handlePrices(
+                result: .failure(error),
+                priceIds: priceIds
+            )
+        }
+
+        priceProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return priceProvider
+    }
+
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
         currency: Currency,
