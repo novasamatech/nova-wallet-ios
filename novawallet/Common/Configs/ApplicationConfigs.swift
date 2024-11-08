@@ -139,7 +139,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains_dev.json")!
         #endif
@@ -147,7 +147,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var preConfiguredLightChainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/chains.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/chains_dev.json")!
         #endif
@@ -155,7 +155,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var preConfiguredChainDirectoryURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v20/preConfigured/details")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/details")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/detailsDev")!
         #endif
@@ -163,7 +163,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var evmAssetsURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v2/assets.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v3/assets.json")!
         #else
             URL(
                 string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v3/assets_dev.json"
