@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "Referendum #%li zakończone";
 "gov.referendum.completed.message.with.index" = "Referendum #%li zostało zakończone i głosowanie jest zakończone";
 "common.use.max.due.fee.message" = "Możesz użyć do %@, ponieważ musisz zapłacić %@ za opłatę sieciową.";
+"send.operation.network.list.title" = "Wybierz sieć do wysyłki %@";
+"buy.operation.network.list.title" = "Wybierz sieć do kupna %@";
+"receive.operation.network.list.title" = "Wybierz sieć do otrzymania %@";
+"swap.operation.network.list.title" = "Wybierz sieć do zamiany %@";
+"settings.appearance" = "Wygląd";
+"settings.appearance.token.icons.title" = "ikony tokenów";
+"settings.appearance.token.icons.option.white" = "Białe";
+"settings.appearance.token.icons.option.colored" = "Kolorowe";
+"wallet.receive.details.format" = "Wysyłaj tylko tokeny %@ i tokeny w sieci %@ na ten adres, w przeciwnym razie możesz stracić swoje środki";
+"common.address.coppied" = "Adres skopiowany";
+"common.networks" = "Sieci";
+"assets.search.token.hint" = "Wyszukaj według tokena";

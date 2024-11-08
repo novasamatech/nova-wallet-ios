@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "Cuộc trưng cầu #%li đã hoàn thành";
 "gov.referendum.completed.message.with.index" = "Cuộc trưng cầu #%li đã hoàn thành và việc bỏ phiếu đã kết thúc";
 "common.use.max.due.fee.message" = "Bạn có thể sử dụng tối đa %@ vì bạn cần trả %@ cho phí mạng.";
+"send.operation.network.list.title" = "Chọn mạng để gửi %@";
+"buy.operation.network.list.title" = "Chọn mạng để mua %@";
+"receive.operation.network.list.title" = "Chọn mạng để nhận %@";
+"swap.operation.network.list.title" = "Chọn mạng để hoán đổi %@";
+"settings.appearance" = "Giao diện";
+"settings.appearance.token.icons.title" = "biểu tượng token";
+"settings.appearance.token.icons.option.white" = "Trắng";
+"settings.appearance.token.icons.option.colored" = "Đã tô màu";
+"wallet.receive.details.format" = "Chỉ gửi token %@ và các token trong mạng %@ tới địa chỉ này, nếu không bạn có thể mất tiền";
+"common.address.coppied" = "Địa chỉ đã được sao chép";
+"common.networks" = "Mạng";
+"assets.search.token.hint" = "Tìm kiếm theo token";
