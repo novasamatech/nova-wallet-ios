@@ -19,10 +19,6 @@ final class AssetListCollectionManager {
     private let collectionViewDataSource: AssetListCollectionViewDataSource
     private let collectionViewDelegate: AssetListCollectionViewDelegate
 
-    private var transitingLayout: Bool = false
-
-    private var pendingLayout: (old: AssetListViewModel, new: AssetListViewModel)?
-
     init(
         view: AssetListViewLayout,
         groupsViewModel: AssetListViewModel,
@@ -70,12 +66,10 @@ final class AssetListCollectionManager {
     }
 
     func prepareForLayoutTransition() {
-        transitingLayout = true
         collectionViewLayout?.animatingTransition = true
     }
 
     func endLayoutTransition() {
-        transitingLayout = false
         collectionViewLayout?.animatingTransition = false
     }
 
@@ -116,7 +110,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     }
 
     func changeCollectionViewLayout(
-        from oldViewModel: AssetListViewModel,
+        from _: AssetListViewModel,
         to newViewModel: AssetListViewModel
     ) {
         guard let view else { return }
@@ -126,12 +120,6 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
 
         view.collectionViewLayout.changeGroupLayoutStyle(to: newViewModel.listGroupStyle)
 
-        let removingViewModel = AssetListViewModel(
-            isFiltered: oldViewModel.isFiltered,
-            listState: .list(groups: []),
-            listGroupStyle: oldViewModel.listGroupStyle
-        )
-
         let removingIndexes = (0 ..< view.collectionView.numberOfSections).filter { section in
             section >= AssetListFlowLayout.SectionType.assetsStartingSection
         }
@@ -140,11 +128,10 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
             AssetListFlowLayout.SectionType.assetsStartingSection + index
         }
 
-        replaceViewModel(removingViewModel)
+        replaceViewModel(newViewModel)
 
         view.collectionView.performBatchUpdates {
             view.collectionView.deleteSections(IndexSet(removingIndexes))
-            replaceViewModel(newViewModel)
             view.collectionView.insertSections(IndexSet(insertingIndexes))
         } completion: { [weak self] _ in
             self?.endLayoutTransition()

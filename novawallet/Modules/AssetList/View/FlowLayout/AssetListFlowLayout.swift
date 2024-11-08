@@ -23,7 +23,7 @@ enum AssetListMeasurement {
 
 class AssetListFlowLayout: UICollectionViewFlowLayout {
     var animatingTransition: Bool = false
-    
+
     private var layoutStyle: AssetListGroupsStyle = .tokens
 
     private var assetSectionsState: [String: AssetListTokenSectionState] = [:]
