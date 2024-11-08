@@ -4,7 +4,7 @@ struct SwapMaxModel {
     let payChainAsset: ChainAsset?
     let feeChainAsset: ChainAsset?
     let balance: AssetBalance?
-    let feeModel: AssetConversion.FeeModel?
+    let feeModel: AssetExchangeFee?
     let payAssetExistense: AssetBalanceExistence?
     let receiveAssetExistense: AssetBalanceExistence?
     let accountInfo: AccountInfo?

@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 enum AssetConversion {
-    enum Direction {
+    enum Direction: Equatable {
         case sell
         case buy
     }

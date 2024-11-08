@@ -85,7 +85,7 @@ struct SwapModel {
     let receiveAssetExistense: AssetBalanceExistence?
     let feeAssetExistense: AssetBalanceExistence?
     let utilityAssetExistense: AssetBalanceExistence?
-    let feeModel: AssetConversion.FeeModel?
+    let feeModel: AssetExchangeFee?
     let quoteArgs: AssetConversion.QuoteArgs
     let route: AssetExchangeRoute?
     let slippage: BigRational

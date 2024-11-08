@@ -16,7 +16,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
 
 protocol SwapBaseInteractorOutputProtocol: AnyObject {
     func didReceive(route: AssetExchangeRoute, for quoteArgs: AssetConversion.QuoteArgs)
-    func didReceive(fee: AssetConversion.FeeModel?, transactionFeeId: TransactionFeeId, feeChainAssetId: ChainAssetId?)
+    func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?)
     func didReceive(baseError: SwapBaseError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId)
@@ -29,7 +29,7 @@ protocol SwapBaseWireframeProtocol: AnyObject, SwapErrorPresentable, AlertPresen
 
 enum SwapBaseError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
-    case fetchFeeFailed(Error, TransactionFeeId, ChainAssetId?)
+    case fetchFeeFailed(Error, ChainAssetId?)
     case price(Error, AssetModel.PriceId)
     case assetBalance(Error, ChainAssetId, AccountId)
     case assetBalanceExistense(Error, ChainAsset)

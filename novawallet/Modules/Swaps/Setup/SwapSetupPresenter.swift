@@ -102,11 +102,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
         quoteArgs == args
     }
 
-    override func shouldHandleFee(for _: TransactionFeeId, feeChainAssetId _: ChainAssetId?) -> Bool {
-        // TODO: Fix implementation
-        true
-    }
-
     override func estimateFee() {
         guard let route = route else {
             return
@@ -170,8 +165,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     override func handleNewFee(
-        _: AssetConversion.FeeModel?,
-        transactionFeeId _: TransactionFeeId,
+        _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {
         provideFeeViewModel()

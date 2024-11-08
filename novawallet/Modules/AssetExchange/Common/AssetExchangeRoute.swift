@@ -1,6 +1,6 @@
 import Foundation
 
-struct AssetExchangeRoute {
+struct AssetExchangeRoute: Equatable {
     let items: [AssetExchangeRouteItem]
     let amount: Balance
     let direction: AssetConversion.Direction
@@ -64,5 +64,13 @@ struct AssetExchangeRouteItem {
         case .buy:
             return amount
         }
+    }
+}
+
+extension AssetExchangeRouteItem: Equatable {
+    static func == (lhs: AssetExchangeRouteItem, rhs: AssetExchangeRouteItem) -> Bool {
+        lhs.edge.identifier == rhs.edge.identifier &&
+            lhs.amount == rhs.amount &&
+            lhs.quote == rhs.quote
     }
 }

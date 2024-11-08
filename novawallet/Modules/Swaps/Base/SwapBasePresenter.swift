@@ -71,7 +71,7 @@ class SwapBasePresenter {
         }
     }
 
-    var fee: AssetConversion.FeeModel?
+    var fee: AssetExchangeFee?
     var quoteResult: Result<AssetExchangeRoute, Error>?
 
     var route: AssetExchangeRoute? {
@@ -155,10 +155,6 @@ class SwapBasePresenter {
         fatalError("Must be implemented by parent class")
     }
 
-    func shouldHandleFee(for _: TransactionFeeId, feeChainAssetId _: ChainAssetId?) -> Bool {
-        fatalError("Must be implemented by parent class")
-    }
-
     func estimateFee() {
         fatalError("Must be implemented by parent class")
     }
@@ -172,8 +168,7 @@ class SwapBasePresenter {
     func handleNewRoute(_: AssetExchangeRoute, for _: AssetConversion.QuoteArgs) {}
 
     func handleNewFee(
-        _: AssetConversion.FeeModel?,
-        transactionFeeId _: TransactionFeeId,
+        _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {}
 
@@ -201,11 +196,7 @@ class SwapBasePresenter {
             }
 
             quoteResult = .failure(error)
-        case let .fetchFeeFailed(_, id, feeChainAssetId):
-            guard shouldHandleFee(for: id, feeChainAssetId: feeChainAssetId) else {
-                return
-            }
-
+        case let .fetchFeeFailed(_, feeChainAssetId):
             wireframe.presentRequestStatus(on: view, locale: locale) { [weak self] in
                 self?.estimateFee()
             }
@@ -301,18 +292,14 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
         handleNewRoute(route, for: quoteArgs)
     }
 
-    func didReceive(
-        fee: AssetConversion.FeeModel?,
-        transactionFeeId: TransactionFeeId,
-        feeChainAssetId: ChainAssetId?
-    ) {
-        guard shouldHandleFee(for: transactionFeeId, feeChainAssetId: feeChainAssetId), self.fee != fee else {
+    func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?) {
+        guard self.fee != fee else {
             return
         }
 
         self.fee = fee
 
-        handleNewFee(fee, transactionFeeId: transactionFeeId, feeChainAssetId: feeChainAssetId)
+        handleNewFee(fee, feeChainAssetId: feeChainAssetId)
     }
 
     func didReceive(baseError: SwapBaseError) {

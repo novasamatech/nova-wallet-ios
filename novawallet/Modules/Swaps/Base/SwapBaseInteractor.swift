@@ -16,13 +16,16 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var quoteCall = CancellableCallStore()
+    private var quoteCallStore = CancellableCallStore()
+    private var feeCallStore = CancellableCallStore()
 
     private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
 
     var currentChain: ChainModel?
+
+    private var feeAsset: ChainAsset?
 
     init(
         state: SwapTokensFlowStateProtocol,
@@ -48,7 +51,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     deinit {
-        quoteCall.cancel()
+        quoteCallStore.cancel()
+        feeCallStore.cancel()
     }
 
     private func provideAssetBalanceExistense(for chainAsset: ChainAsset) {
@@ -145,14 +149,14 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func quote(args: AssetConversion.QuoteArgs) {
-        quoteCall.cancel()
+        quoteCallStore.cancel()
 
         let wrapper = assetsExchangeService.fetchQuoteWrapper(for: args)
 
         executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            backingCallIn: quoteCall,
+            backingCallIn: quoteCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
@@ -168,8 +172,35 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         // by default we always request quote manually
     }
 
-    func fee(route _: AssetExchangeRoute, slippage _: BigRational) {
-        // TODO: Implement fee calculation
+    func fee(route: AssetExchangeRoute, slippage: BigRational) {
+        feeCallStore.cancel()
+
+        let args = AssetExchangeFeeArgs(
+            route: route,
+            slippage: slippage,
+            feeAssetId: feeAsset?.chainAssetId
+        )
+
+        let wrapper = assetsExchangeService.estimateFee(for: args)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: feeCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(fee):
+                self?.basePresenter?.didReceive(
+                    fee: fee,
+                    feeChainAssetId: self?.feeAsset?.chainAssetId
+                )
+            case let .failure(error):
+                self?.basePresenter?.didReceive(
+                    baseError: .fetchFeeFailed(error, self?.feeAsset?.chainAssetId)
+                )
+            }
+        }
     }
 
     func chainAccountResponse(for chainAsset: ChainAsset) -> ChainAccountResponse? {
@@ -194,6 +225,12 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func set(feeChainAsset chainAsset: ChainAsset) {
+        guard feeAsset?.chainAssetId != chainAsset.chainAssetId else {
+            return
+        }
+
+        feeAsset = chainAsset
+
         provideAssetBalanceExistense(for: chainAsset)
 
         if let utilityAsset = chainAsset.chain.utilityChainAsset(), !chainAsset.isUtilityAsset {

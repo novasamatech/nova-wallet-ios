@@ -1,21 +1,21 @@
 import Foundation
 
-struct AssetExchangeOperationFee {
-    struct Amount {
+struct AssetExchangeOperationFee: Equatable {
+    struct Amount: Equatable {
         let amount: Balance
 
         // TODO: nil means native, probably make it explicit
         let asset: ChainAssetId?
     }
 
-    struct AmountByPayer {
+    struct AmountByPayer: Equatable {
         let amount: Amount
 
         // TODO: nil means account from the current wallet, probably make it explicit and rename to general type
         let payer: ExtrinsicFeePayer?
     }
 
-    struct PostSubmission {
+    struct PostSubmission: Equatable {
         /**
          * Post-submission fees paid by (some) origin account.
          * This is typed as `AmountByAccount` as those fee might still

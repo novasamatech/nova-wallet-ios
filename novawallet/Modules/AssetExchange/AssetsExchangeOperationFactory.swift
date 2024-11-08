@@ -3,12 +3,7 @@ import Operation_iOS
 
 protocol AssetsExchangeOperationFactoryProtocol {
     func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute>
-    func createFeeWrapper(
-        for route: AssetExchangeRoute,
-        slippage: BigRational,
-        feeAssetId: ChainAssetId?
-    ) -> CompoundOperationWrapper<AssetExchangeFee>
-
+    func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
     func createExecutionWrapper(for fee: AssetExchangeFee) -> CompoundOperationWrapper<Balance>
 }
 
@@ -126,16 +121,12 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
         return wrapper.insertingTail(operation: mappingOperation)
     }
 
-    func createFeeWrapper(
-        for route: AssetExchangeRoute,
-        slippage: BigRational,
-        feeAssetId: ChainAssetId?
-    ) -> CompoundOperationWrapper<AssetExchangeFee> {
+    func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee> {
         do {
             let atomicOperations = try prepareAtomicOperations(
-                for: route,
-                slippage: slippage,
-                feeAssetId: feeAssetId
+                for: args.route,
+                slippage: args.slippage,
+                feeAssetId: args.feeAssetId
             )
 
             let feeWrappers = atomicOperations.map { $0.estimateFee() }
@@ -143,7 +134,12 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             let mappingOperation = ClosureOperation<AssetExchangeFee> {
                 let fees = try feeWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
 
-                return AssetExchangeFee(route: route, fees: fees, slippage: slippage, feeAssetId: feeAssetId)
+                return AssetExchangeFee(
+                    route: args.route,
+                    fees: fees,
+                    slippage: args.slippage,
+                    feeAssetId: args.feeAssetId
+                )
             }
 
             feeWrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
