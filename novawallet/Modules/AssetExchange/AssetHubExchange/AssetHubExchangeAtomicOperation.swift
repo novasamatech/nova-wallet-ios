@@ -50,9 +50,52 @@ final class AssetHubExchangeAtomicOperation {
 
 extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
     func executeWrapper(
-        for _: @escaping () throws -> Balance
+        for amountClosure: @escaping () throws -> Balance
     ) -> CompoundOperationWrapper<Balance> {
-        CompoundOperationWrapper.createWithError(CommonError.undefined)
+        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+
+        let executeWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let amount = try amountClosure()
+
+            let callArgs = AssetConversion.CallArgs(
+                assetIn: self.edge.origin,
+                amountIn: amount,
+                assetOut: self.edge.destination,
+                amountOut: self.operationArgs.swapLimit.amountOut,
+                receiver: self.host.selectedAccount.accountId, // TODO: Check receiver set in a proper way
+                direction: self.operationArgs.swapLimit.direction,
+                slippage: self.operationArgs.swapLimit.slippage,
+                context: nil
+            )
+
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let submittionWrapper = self.host.extrinsicOperationFactory.submit({ builder in
+                try AssetHubExtrinsicConverter.addingOperation(
+                    to: builder,
+                    chain: self.host.chain,
+                    args: callArgs,
+                    codingFactory: codingFactory
+                )
+            }, signer: self.host.signingWrapper, payingIn: self.operationArgs.feeAsset)
+
+            // TODO: Replace with monitoring to understand actual amount received
+            let monitorOperation = ClosureOperation<Balance> {
+                _ = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+
+                return self.operationArgs.swapLimit.amountOut
+            }
+
+            monitorOperation.addDependency(submittionWrapper.targetOperation)
+
+            return submittionWrapper.insertingTail(operation: monitorOperation)
+        }
+
+        executeWrapper.addDependency(operations: [codingFactoryOperation])
+
+        return executeWrapper.insertingHead(operations: [codingFactoryOperation])
     }
 
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
