@@ -34,30 +34,37 @@ final class HydraExchangeAtomicOperation {
         self.edges = edges
     }
 
-    private func createExtrinsicParamsWrapper() -> CompoundOperationWrapper<HydraExchangeSwapParams> {
+    private func createExtrinsicParamsWrapper(
+        for amountInClosure: @escaping () throws -> Balance
+    ) -> CompoundOperationWrapper<HydraExchangeSwapParams> {
         guard let assetIn, let assetOut else {
             return .createWithError(HydraExchangeAtomicOperationError.noRoute)
         }
 
-        let routeComponents = edges.map(\.routeComponent)
-        let route = HydraDx.RemoteSwapRoute(components: routeComponents)
+        return OperationCombiningService<HydraExchangeSwapParams>.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let amountIn = try amountInClosure()
+            let callArgs = AssetConversion.CallArgs(
+                assetIn: assetIn,
+                amountIn: amountIn,
+                assetOut: assetOut,
+                amountOut: self.operationArgs.swapLimit.amountOut,
+                receiver: self.host.selectedAccount.accountId,
+                direction: self.operationArgs.swapLimit.direction,
+                slippage: self.operationArgs.swapLimit.slippage,
+                context: nil
+            )
 
-        let callArgs = AssetConversion.CallArgs(
-            assetIn: assetIn,
-            amountIn: operationArgs.swapLimit.amountIn,
-            assetOut: assetOut,
-            amountOut: operationArgs.swapLimit.amountOut,
-            receiver: host.selectedAccount.accountId,
-            direction: operationArgs.swapLimit.direction,
-            slippage: operationArgs.swapLimit.slippage,
-            context: nil
-        )
+            let routeComponents = self.edges.map(\.routeComponent)
+            let route = HydraDx.RemoteSwapRoute(components: routeComponents)
 
-        return host.extrinsicParamsFactory.createOperationWrapper(for: route, callArgs: callArgs)
+            return self.host.extrinsicParamsFactory.createOperationWrapper(for: route, callArgs: callArgs)
+        }
     }
 
     private func createFeeWrapper() -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        let paramsWrapper = createExtrinsicParamsWrapper()
+        let paramsWrapper = createExtrinsicParamsWrapper { self.operationArgs.swapLimit.amountIn }
 
         let feeWrapper = OperationCombiningService<ExtrinsicFeeProtocol>.compoundNonOptionalWrapper(
             operationQueue: host.operationQueue
@@ -81,8 +88,36 @@ final class HydraExchangeAtomicOperation {
 }
 
 extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
-    func executeWrapper(for _: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance> {
-        CompoundOperationWrapper.createWithError(CommonError.undefined)
+    func executeWrapper(for amountClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance> {
+        let paramsWrapper = createExtrinsicParamsWrapper(for: amountClosure)
+
+        let executionWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let submittionWrapper = self.host.extrinsicOperationFactory.submit({ builder in
+                try HydraExchangeExtrinsicConverter.addingOperation(
+                    from: params,
+                    builder: builder
+                )
+            }, signer: self.host.signingWrapper, payingIn: self.operationArgs.feeAsset)
+
+            // TODO: Replace with monitoring to understand actual amount received
+            let monitorOperation = ClosureOperation<Balance> {
+                _ = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+
+                return self.operationArgs.swapLimit.amountOut
+            }
+
+            monitorOperation.addDependency(submittionWrapper.targetOperation)
+
+            return submittionWrapper.insertingTail(operation: monitorOperation)
+        }
+
+        executionWrapper.addDependency(wrapper: paramsWrapper)
+
+        return executionWrapper.insertingHead(operations: paramsWrapper.allOperations)
     }
 
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {

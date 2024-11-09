@@ -64,7 +64,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
                 amountIn: amount,
                 assetOut: self.edge.destination,
                 amountOut: self.operationArgs.swapLimit.amountOut,
-                receiver: self.host.selectedAccount.accountId, // TODO: Check receiver set in a proper way
+                receiver: self.host.selectedAccount.accountId,
                 direction: self.operationArgs.swapLimit.direction,
                 slippage: self.operationArgs.swapLimit.slippage,
                 context: nil
