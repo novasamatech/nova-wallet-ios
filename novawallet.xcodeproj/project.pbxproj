@@ -1029,6 +1029,7 @@
 		2D6F51A72CDD035900564C00 /* AssetDecorationAttributesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A62CDD035900564C00 /* AssetDecorationAttributesFactory.swift */; };
 		2D6F51A92CDD2C3100564C00 /* AssetListFlowLayout+Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A82CDD2C3100564C00 /* AssetListFlowLayout+Types.swift */; };
 		2D6F51AB2CDDD98300564C00 /* AssetsSearchFlowLayout+Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51AA2CDDD98300564C00 /* AssetsSearchFlowLayout+Types.swift */; };
+		2D6F51AE2CDFF47800564C00 /* WebViewPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51AD2CDFF47800564C00 /* WebViewPool.swift */; };
 		2D7748772C89B5450059607B /* VoteCardViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */; };
 		2D7748802C8B48C40059607B /* CIKeys.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487F2C8B48C40059607B /* CIKeys.generated.swift */; };
 		2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */; };
@@ -6218,6 +6219,7 @@
 		2D6F51A62CDD035900564C00 /* AssetDecorationAttributesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDecorationAttributesFactory.swift; sourceTree = "<group>"; };
 		2D6F51A82CDD2C3100564C00 /* AssetListFlowLayout+Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListFlowLayout+Types.swift"; sourceTree = "<group>"; };
 		2D6F51AA2CDDD98300564C00 /* AssetsSearchFlowLayout+Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetsSearchFlowLayout+Types.swift"; sourceTree = "<group>"; };
+		2D6F51AD2CDFF47800564C00 /* WebViewPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPool.swift; sourceTree = "<group>"; };
 		2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardViewModelFactory.swift; sourceTree = "<group>"; };
 		2D77487F2C8B48C40059607B /* CIKeys.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIKeys.generated.swift; sourceTree = SOURCE_ROOT; };
 		2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumAmountOperationFactory.swift; sourceTree = "<group>"; };
@@ -12838,6 +12840,14 @@
 				2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */,
 			);
 			path = AssetListStyleSwitcher;
+			sourceTree = "<group>";
+		};
+		2D6F51AC2CDFF45C00564C00 /* WebViewPool */ = {
+			isa = PBXGroup;
+			children = (
+				2D6F51AD2CDFF47800564C00 /* WebViewPool.swift */,
+			);
+			path = WebViewPool;
 			sourceTree = "<group>";
 		};
 		2D77488A2C9042800059607B /* Model */ = {
@@ -22212,6 +22222,7 @@
 				842BDB1F278C21FC00AB4B5A /* StateMachine */,
 				84D2F1AD2774CEBD0040C680 /* View */,
 				8496ADD8276AFF3400306B24 /* Model */,
+				2D6F51AC2CDFF45C00564C00 /* WebViewPool */,
 				D02E38ABE379CA48E63328C4 /* DAppBrowserProtocols.swift */,
 				19F47911F8734C007135137D /* DAppBrowserWireframe.swift */,
 				1FF860B3465854DCBC02DFB3 /* DAppBrowserPresenter.swift */,
@@ -25183,6 +25194,7 @@
 				84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */,
 				2D7C8A912C2DA2280044E601 /* NetworkNodeConnectingTrait.swift in Sources */,
 				84D1ABE027E1CB870073C631 /* TitleHorizontalMultiValueView.swift in Sources */,
+				2D6F51AE2CDFF47800564C00 /* WebViewPool.swift in Sources */,
 				0CCDB2DE2B7488A5007BC5D6 /* HydraStableswapPoolService.swift in Sources */,
 				847999B42888BFEC00D1BAD2 /* BaseCreateWatchOnlyWireframe.swift in Sources */,
 				841BFD6B27BA5765000A16CE /* MetamaskError.swift in Sources */,

@@ -8,6 +8,8 @@ final class DAppBrowserPresenter {
     let interactor: DAppBrowserInteractorInputProtocol
     let logger: LoggerProtocol?
     let localizationManager: LocalizationManager
+    
+    private let webViewPool: WebViewPoolProtocol = WebViewPool()
 
     private(set) var favorites: [String: DAppFavorite]?
     private(set) var browserPage: DAppBrowserPage?
