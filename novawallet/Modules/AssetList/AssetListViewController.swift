@@ -228,6 +228,7 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 extension AssetListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
+            collectionViewManager.updateSelectedLocale(with: selectedLocale)
             rootView.collectionView.reloadData()
         }
     }
