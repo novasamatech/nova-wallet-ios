@@ -41,6 +41,33 @@ enum Phase: Decodable {
     case finalization
     case initialization
 
+    var isInitialization: Bool {
+        switch self {
+        case .initialization:
+            return true
+        case .applyExtrinsic, .finalization:
+            return false
+        }
+    }
+
+    var isFinalization: Bool {
+        switch self {
+        case .finalization:
+            return true
+        case .applyExtrinsic, .initialization:
+            return false
+        }
+    }
+
+    var isExtrinsicApplication: Bool {
+        switch self {
+        case .applyExtrinsic:
+            return true
+        case .finalization, .initialization:
+            return false
+        }
+    }
+
     init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         let type = try container.decode(String.self)
@@ -73,5 +100,39 @@ struct Event: Decodable {
         moduleIndex = try unkeyedContainer.decode(UInt8.self)
         eventIndex = try unkeyedContainer.decode(UInt32.self)
         params = try unkeyedContainer.decode(JSON.self)
+    }
+}
+
+struct ExtrinsicFailedEventParams: Decodable {
+    let dispatchError: DispatchExtrinsicError
+
+    init(from decoder: Decoder) throws {
+        var unkeyedContainer = try decoder.unkeyedContainer()
+
+        dispatchError = try unkeyedContainer.decode(DispatchExtrinsicError.self)
+    }
+}
+
+enum DispatchExtrinsicError: Decodable, Error {
+    struct ModuleError: Decodable {
+        @StringCodable var index: UInt8
+        @BytesCodable var error: Data
+    }
+
+    case module(ModuleError)
+    case other(String)
+
+    init(from decoder: Decoder) throws {
+        var unkeyedContainer = try decoder.unkeyedContainer()
+
+        let module = try unkeyedContainer.decode(String.self)
+
+        switch module {
+        case "Module":
+            let moduleError = try unkeyedContainer.decode(ModuleError.self)
+            self = .module(moduleError)
+        default:
+            self = .other(module)
+        }
     }
 }

@@ -66,7 +66,7 @@ final class HydraStableswapPoolService: ObservableSubscriptionSyncService<HydraS
 
         let currentBlockRequest = BatchStorageSubscriptionRequest(
             innerRequest: UnkeyedSubscriptionRequest(
-                storagePath: StorageCodingPath.blockNumber,
+                storagePath: SystemPallet.blockNumberPath,
                 localKey: ""
             ),
             mappingKey: HydraStableswap.PoolRemoteStateChange.Key.currentBlock.rawValue

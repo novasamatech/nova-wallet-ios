@@ -97,13 +97,13 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         let localKeyFactory = LocalStorageKeyFactory()
 
         let accountInfoKey = try localKeyFactory.createFromStoragePath(
-            .account,
+            SystemPallet.accountPath,
             accountId: accountId,
             chainId: chain.chainId
         )
         let accountInfoRequest = BatchStorageSubscriptionRequest(
             innerRequest: MapSubscriptionRequest(
-                storagePath: .account,
+                storagePath: SystemPallet.accountPath,
                 localKey: accountInfoKey,
                 keyParamClosure: {
                     BytesCodable(wrappedValue: accountId)

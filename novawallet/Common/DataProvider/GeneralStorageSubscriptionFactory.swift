@@ -14,7 +14,7 @@ protocol GeneralStorageSubscriptionFactoryProtocol {
 final class GeneralStorageSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     GeneralStorageSubscriptionFactoryProtocol {
     func getBlockNumberProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBlockNumber> {
-        let codingPath = StorageCodingPath.blockNumber
+        let codingPath = SystemPallet.blockNumberPath
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
         return try getDataProvider(
@@ -29,7 +29,7 @@ final class GeneralStorageSubscriptionFactory: SubstrateLocalSubscriptionFactory
         for accountId: AccountId,
         chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedAccountInfo> {
-        let codingPath = StorageCodingPath.account
+        let codingPath = SystemPallet.accountPath
 
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             codingPath,

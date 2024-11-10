@@ -42,7 +42,7 @@ final class HydraXYKQuoteParamsService: ObservableSubscriptionSyncService<HydraX
         if assetId == HydraDx.nativeAssetId {
             return .init(
                 innerRequest: MapSubscriptionRequest(
-                    storagePath: StorageCodingPath.account,
+                    storagePath: SystemPallet.accountPath,
                     localKey: "",
                     keyParamClosure: {
                         BytesCodable(wrappedValue: accountId)
