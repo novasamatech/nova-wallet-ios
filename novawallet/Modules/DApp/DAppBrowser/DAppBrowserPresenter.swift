@@ -8,7 +8,8 @@ final class DAppBrowserPresenter {
     let interactor: DAppBrowserInteractorInputProtocol
     let logger: LoggerProtocol?
     let localizationManager: LocalizationManager
-    
+
+    private let tabsManager: DAppBrowserTabsManagerProtocol = DAppBrowserTabsManager.shared
     private let webViewPool: WebViewPoolProtocol = WebViewPool()
 
     private(set) var favorites: [String: DAppFavorite]?
@@ -100,6 +101,29 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
+    func showTabs() {
+        wireframe.presentTabs(
+            from: view
+        ) { [weak self] selectedId in
+            guard
+                let self,
+                let tab = tabsManager.fetchTab(for: selectedId)
+            else {
+                return
+            }
+
+            let webView = webViewPool.setupWebView(for: tab.uuid)
+
+            let viewModel = DAppBrowserTabViewModel(
+                tab: tab,
+                loadRequired: false,
+                webView: webView
+            )
+
+            view?.didReceiveTab(viewModel: viewModel)
+        }
+    }
+
     func close() {
         let languages = localizationManager.selectedLocale.rLanguages
 
@@ -132,7 +156,16 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     }
 
     func didReceiveDApp(model: DAppBrowserModel) {
-        view?.didReceive(viewModel: model)
+        let tab = tabsManager.createTab(for: model)
+        let webView = webViewPool.setupWebView(for: tab.uuid)
+
+        let viewModel = DAppBrowserTabViewModel(
+            tab: tab,
+            loadRequired: true,
+            webView: webView
+        )
+
+        view?.didReceiveTab(viewModel: viewModel)
     }
 
     func didReceiveReplacement(

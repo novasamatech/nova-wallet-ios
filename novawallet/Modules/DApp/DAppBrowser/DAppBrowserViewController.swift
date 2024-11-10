@@ -170,6 +170,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.settingsBarButton.target = self
         rootView.settingsBarButton.action = #selector(actionSettings)
 
+        rootView.tabsBarButton.target = self
+        rootView.tabsBarButton.action = #selector(actionTabs)
+
+        rootView.addTabBarButton.target = self
+        rootView.addTabBarButton.action = #selector(actionAddTab)
+
         rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
     }
 
@@ -323,6 +329,14 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     @objc private func actionClose() {
         presenter.close()
     }
+
+    @objc private func actionTabs() {
+        presenter.showTabs()
+    }
+
+    @objc private func actionAddTab() {
+        presenter.activateSearch(with: "")
+    }
 }
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
@@ -341,6 +355,22 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         setupScripts()
         setupWebPreferences()
         setupUrl(viewModel.url)
+    }
+
+    func didReceiveTab(viewModel: DAppBrowserTabViewModel) {
+        isDesktop = viewModel.tab.isDesktop
+        transports = viewModel.tab.transports
+
+        rootView.setWebView(viewModel.webView)
+
+        configure()
+
+        setupScripts()
+        setupWebPreferences()
+
+        if viewModel.loadRequired {
+            setupUrl(viewModel.tab.url)
+        }
     }
 
     func didReceive(response: DAppScriptResponse, forTransport _: String) {

@@ -2,8 +2,8 @@ import Foundation
 import WebKit
 
 protocol WebViewPoolProtocol {
-    func getWebView(for uuid: UUID) -> WKWebView?
-    func setupWebView(for uuid: UUID) -> WKWebView
+    func getWebView(for id: UUID) -> WKWebView?
+    func setupWebView(for id: UUID) -> WKWebView
 }
 
 class WebViewPool {
@@ -11,19 +11,24 @@ class WebViewPool {
 }
 
 extension WebViewPool: WebViewPoolProtocol {
-    func getWebView(for uuid: UUID) -> WKWebView? {
-        webViewDict[uuid]
+    func getWebView(for id: UUID) -> WKWebView? {
+        webViewDict[id]
     }
-    
-    func setupWebView(for uuid: UUID) -> WKWebView {
-        if let existingWebView = webViewDict[uuid] {
+
+    func setupWebView(for id: UUID) -> WKWebView {
+        if let existingWebView = webViewDict[id] {
             return existingWebView
         }
-        
-        let webView = WKWebView()
-        
-        webViewDict[uuid] = webView
-        
-        return webView
+
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController = WKUserContentController()
+
+        let view = WKWebView(frame: .zero, configuration: configuration)
+        view.scrollView.contentInsetAdjustmentBehavior = .always
+        view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
+
+        webViewDict[id] = view
+
+        return view
     }
 }
