@@ -13,7 +13,7 @@ struct AssetOperationNetworkListViewFactory {
 
         let logger = Logger.shared
 
-        let interactor = AssetOperationNetworkListInteractor(
+        let interactor = SendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
             logger: logger
@@ -204,7 +204,7 @@ extension AssetOperationNetworkListViewFactory {
 
         let logger = Logger.shared
 
-        let interactor = AssetOperationNetworkListInteractor(
+        let interactor = SendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
             logger: logger
