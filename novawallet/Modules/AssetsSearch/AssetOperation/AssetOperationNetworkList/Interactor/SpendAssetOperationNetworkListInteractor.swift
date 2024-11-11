@@ -1,12 +1,12 @@
 import Foundation
 import Operation_iOS
 
-final class SendAssetOperationNetworkListInteractor: AssetOperationNetworkListInteractor {
+final class SpendAssetOperationNetworkListInteractor: AssetOperationNetworkListInteractor {
     override func createModelBuilder(
         with chainAssets: [ChainAsset],
         resultClosure: @escaping (AssetOperationNetworkBuilderResult?) -> Void
     ) -> AssetOperationNetworkBuilder {
-        SendAssetOperationNetworkBuilder(
+        SpendAssetOperationNetworkBuilder(
             chainAssets: chainAssets,
             workingQueue: .init(
                 label: workingQueueLabel,

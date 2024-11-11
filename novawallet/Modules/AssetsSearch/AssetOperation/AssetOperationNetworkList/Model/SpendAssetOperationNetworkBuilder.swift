@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-class SendAssetOperationNetworkBuilder: AssetOperationNetworkBuilder {
+class SpendAssetOperationNetworkBuilder: AssetOperationNetworkBuilder {
     override func assetListState(from model: AssetListModel) -> AssetListState {
         let chainAssets = model.allChains.flatMap { _, chain in
             chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
@@ -22,7 +22,7 @@ class SendAssetOperationNetworkBuilder: AssetOperationNetworkBuilder {
             priceResult: model.priceResult,
             balanceResults: balanceResults,
             allChains: model.allChains,
-            externalBalances: model.externalBalances
+            externalBalances: nil
         )
     }
 }
