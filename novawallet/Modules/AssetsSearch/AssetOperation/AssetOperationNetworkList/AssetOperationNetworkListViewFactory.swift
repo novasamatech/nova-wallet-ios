@@ -13,7 +13,7 @@ struct AssetOperationNetworkListViewFactory {
 
         let logger = Logger.shared
 
-        let interactor = AssetOperationNetworkListInteractor(
+        let interactor = SpendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
             logger: logger
@@ -52,7 +52,8 @@ struct AssetOperationNetworkListViewFactory {
             interactor: dependencies.interactor,
             wireframe: wireframe,
             multichainToken: dependencies.multichainToken,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared
         )
     }
 
@@ -129,7 +130,8 @@ extension AssetOperationNetworkListViewFactory {
             multichainToken: dependencies.multichainToken,
             viewModelFactory: viewModelFactory,
             selectedAccount: dependencies.selectedAccount,
-            purchaseProvider: dependencies.purchaseProvider
+            purchaseProvider: dependencies.purchaseProvider,
+            localizationManager: LocalizationManager.shared
         )
     }
 }
@@ -184,7 +186,8 @@ extension AssetOperationNetworkListViewFactory {
             wireframe: wireframe,
             multichainToken: dependencies.multichainToken,
             viewModelFactory: viewModelFactory,
-            selectedAccount: dependencies.selectedAccount
+            selectedAccount: dependencies.selectedAccount,
+            localizationManager: LocalizationManager.shared
         )
     }
 }
@@ -204,7 +207,7 @@ extension AssetOperationNetworkListViewFactory {
 
         let logger = Logger.shared
 
-        let interactor = AssetOperationNetworkListInteractor(
+        let interactor = SpendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
             logger: logger
@@ -242,7 +245,8 @@ extension AssetOperationNetworkListViewFactory {
             multichainToken: dependencies.multichainToken,
             viewModelFactory: viewModelFactory,
             selectClosure: dependencies.selectClosure,
-            selectClosureStrategy: dependencies.selectClosureStrategy
+            selectClosureStrategy: dependencies.selectClosureStrategy,
+            localizationManager: LocalizationManager.shared
         )
     }
 }

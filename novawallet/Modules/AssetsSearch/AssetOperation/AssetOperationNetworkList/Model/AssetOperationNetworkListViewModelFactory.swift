@@ -32,7 +32,7 @@ private extension AssetOperationNetworkListViewModelFactory {
 
         let balanceValueString = if let priceData {
             balanceFactory.priceFromAmount(
-                asset.totalValue ?? .zero,
+                asset.totalAmountDecimal ?? .zero,
                 priceData: priceData
             ).value(for: locale)
         } else {
