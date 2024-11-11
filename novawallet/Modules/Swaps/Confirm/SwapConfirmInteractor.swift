@@ -49,6 +49,7 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
         )
     }
 
+    // TODO: Fix swap persisting
     private func persistSwapAndComplete(txHash: String, args: AssetConversion.CallArgs, lastFee: BigUInt?) {
         do {
             let chainIn = initState.chainAssetIn.chain
@@ -79,11 +80,9 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
                 runningIn: .main
             ) { [weak self] _ in
                 self?.eventCenter.notify(with: WalletTransactionListUpdated())
-                self?.presenter?.didReceiveConfirmation(hash: txHash)
             }
         } catch {
             // complete successfully as we don't want a user to think tx is failed
-            presenter?.didReceiveConfirmation(hash: txHash)
         }
     }
 
@@ -97,7 +96,20 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
 }
 
 extension SwapConfirmInteractor: SwapConfirmInteractorInputProtocol {
-    func submit(args _: AssetConversion.CallArgs, lastFee _: BigUInt?) {
-        // TODO: Implement Submission
+    func submit(using estimation: AssetExchangeFee) {
+        let wrapper = assetsExchangeService.submit(using: estimation)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(amount):
+                self?.presenter?.didReceiveSwaped(amount: amount)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .submit(error))
+            }
+        }
     }
 }

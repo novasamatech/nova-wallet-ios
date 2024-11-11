@@ -71,8 +71,6 @@ struct SwapConfirmViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let accountRequest = initState.chainAssetIn.chain.accountRequest()
 
-        let chain = initState.chainAssetIn.chain
-
         guard
             let currencyManager = CurrencyManager.shared,
             let selectedAccount = wallet.fetchMetaChainAccount(for: accountRequest) else {

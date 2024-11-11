@@ -107,6 +107,8 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
                         throw AssetHubExchangeAtomicOperationError.noEventsInResult
                     }
 
+                    self.host.logger.debug("Arrived amount: \(String(amountOut))")
+
                     return amountOut
                 case let .failure(executionFailure):
                     throw executionFailure.error

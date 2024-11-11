@@ -126,6 +126,8 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                         throw HydraExchangeAtomicOperationError.noEventsInResult
                     }
 
+                    self.host.logger.debug("Arrived amount: \(String(amountOut))")
+
                     return amountOut
                 case let .failure(executionFailure):
                     throw executionFailure.error

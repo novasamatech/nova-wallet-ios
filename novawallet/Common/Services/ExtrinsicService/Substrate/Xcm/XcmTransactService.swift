@@ -71,7 +71,11 @@ extension XcmTransactService: XcmTransactServiceProtocol {
             let mappingOperation = ClosureOperation<Balance> {
                 _ = try submittionOperation.extractNoCancellableResultData()
 
-                return try monitoringWrapper.targetOperation.extractNoCancellableResultData()
+                let arrivedAmount = try monitoringWrapper.targetOperation.extractNoCancellableResultData()
+
+                self.logger.debug("Arrived amount: \(String(arrivedAmount))")
+
+                return arrivedAmount
             }
 
             mappingOperation.addDependency(monitoringWrapper.targetOperation)

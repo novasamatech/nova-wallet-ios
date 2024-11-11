@@ -53,6 +53,8 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
 
         service.setup()
 
+        assetExchangeService = service
+
         return service
     }
 }

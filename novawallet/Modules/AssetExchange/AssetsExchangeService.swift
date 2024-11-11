@@ -8,6 +8,7 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
     func fetchReachibilityWrapper() -> CompoundOperationWrapper<AssetsExchageGraphReachabilityProtocol>
     func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute>
     func estimateFee(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
+    func submit(using estimation: AssetExchangeFee) -> CompoundOperationWrapper<Balance>
 }
 
 enum AssetsExchangeServiceError: Error {
@@ -98,5 +99,9 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
 
     func estimateFee(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee> {
         prepareWrapper { $0.createFeeWrapper(for: args) }
+    }
+
+    func submit(using estimation: AssetExchangeFee) -> CompoundOperationWrapper<Balance> {
+        prepareWrapper { $0.createExecutionWrapper(for: estimation) }
     }
 }

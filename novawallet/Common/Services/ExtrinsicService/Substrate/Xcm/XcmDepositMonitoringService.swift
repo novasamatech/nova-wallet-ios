@@ -56,14 +56,22 @@ final class XcmDepositMonitoringService {
 
     private func notifyAboutStateIfNeeded() {
         if let state {
-            notificationClosure?(.success(state))
+            let closureToNotify = notificationClosure
             notificationClosure = nil
+
+            workingQueue.async {
+                closureToNotify?(.success(state))
+            }
         }
     }
 
     private func notifyTimeout() {
-        notificationClosure?(.failure(XcmDepositMonitoringServiceError.timeout))
+        let closureToNotify = notificationClosure
         notificationClosure = nil
+
+        workingQueue.async {
+            closureToNotify?(.failure(XcmDepositMonitoringServiceError.timeout))
+        }
     }
 
     private func clearTimeoutScheduler() {
@@ -147,12 +155,16 @@ final class XcmDepositMonitoringService {
         }
 
         if let state {
-            closure(.success(state))
+            workingQueue.async {
+                closure(.success(state))
+            }
             return
         }
 
         if subscription == nil {
-            closure(.failure(XcmDepositMonitoringServiceError.unsupportedAsset(chainAsset)))
+            workingQueue.async {
+                closure(.failure(XcmDepositMonitoringServiceError.unsupportedAsset(self.chainAsset)))
+            }
             return
         }
 

@@ -299,11 +299,11 @@ extension SwapConfirmPresenter {
     }
 
     private func submit() {
-        guard let route = route, let accountId = accountId else {
+        guard let fee else {
             return
         }
 
-        // TODO: Submit with the lates fee calculated
+        interactor.submit(using: fee)
     }
 }
 
@@ -388,6 +388,8 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
 
 extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
     func didReceive(error: SwapConfirmError) {
+        logger.error("Did receive error: \(error)")
+
         view?.didReceiveStopLoading()
         switch error {
         case let .submit(error):
@@ -401,12 +403,15 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         }
     }
 
-    func didReceiveConfirmation(hash _: String) {
+    func didReceiveSwaped(amount: Balance) {
+        logger.debug("Did receive swaped amount: \(String(amount))")
+
         view?.didReceiveStopLoading()
 
         guard let payChainAsset = getPayChainAsset() else {
             return
         }
+
         wireframe.complete(
             on: view,
             payChainAsset: payChainAsset,

@@ -26,11 +26,11 @@ protocol SwapConfirmPresenterProtocol: AnyObject {
 }
 
 protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {
-    func submit(args: AssetConversion.CallArgs, lastFee: BigUInt?)
+    func submit(using estimation: AssetExchangeFee)
 }
 
 protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
-    func didReceiveConfirmation(hash: String)
+    func didReceiveSwaped(amount: Balance)
     func didReceive(error: SwapConfirmError)
 }
 
