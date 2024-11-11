@@ -5,7 +5,9 @@ extension AssetListModelHelpers {
         AssetListAssetModel,
         AssetListAssetModel
     ) -> Bool = { lhs, rhs in
-        if let result = AssetListAssetModelComparator.by(\.totalAmountDecimal, lhs, rhs) {
+        if let result = AssetListAssetModelComparator.by(\.totalValue, lhs, rhs) {
+            result
+        } else if let result = AssetListAssetModelComparator.by(\.totalAmountDecimal, lhs, rhs) {
             result
         } else {
             ChainModelCompator.defaultComparator(
@@ -19,7 +21,9 @@ extension AssetListModelHelpers {
         AssetListAssetModel,
         AssetListAssetModel
     ) -> Bool = { lhs, rhs in
-        if let result = AssetListAssetModelComparator.by(\.totalAmountDecimal, lhs, rhs) {
+        if let result = AssetListAssetModelComparator.by(\.totalValue, lhs, rhs) {
+            result
+        } else if let result = AssetListAssetModelComparator.by(\.totalAmountDecimal, lhs, rhs) {
             result
         } else {
             AssetListAssetModelComparator.byChain(

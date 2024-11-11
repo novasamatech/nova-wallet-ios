@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 class ReceiveOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
     let wireframe: ReceiveAssetOperationWireframeProtocol
@@ -10,7 +11,8 @@ class ReceiveOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
         wireframe: ReceiveAssetOperationWireframeProtocol,
         multichainToken: MultichainToken,
         viewModelFactory: AssetOperationNetworkListViewModelFactory,
-        selectedAccount: MetaAccountModel
+        selectedAccount: MetaAccountModel,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.wireframe = wireframe
@@ -18,7 +20,8 @@ class ReceiveOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
         super.init(
             interactor: interactor,
             multichainToken: multichainToken,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager
         )
     }
 

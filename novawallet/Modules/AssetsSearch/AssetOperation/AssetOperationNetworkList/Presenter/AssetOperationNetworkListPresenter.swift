@@ -14,11 +14,13 @@ class AssetOperationNetworkListPresenter {
     init(
         interactor: AssetOperationNetworkListInteractorInputProtocol,
         multichainToken: MultichainToken,
-        viewModelFactory: AssetOperationNetworkListViewModelFactory
+        viewModelFactory: AssetOperationNetworkListViewModelFactory,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.multichainToken = multichainToken
         self.viewModelFactory = viewModelFactory
+        self.localizationManager = localizationManager
     }
 
     func provideTitle() {
