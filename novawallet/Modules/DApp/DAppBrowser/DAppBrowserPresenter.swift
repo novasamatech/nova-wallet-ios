@@ -181,7 +181,7 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
         let viewModel = DAppBrowserTabViewModel(
             tab: tab,
-            loadRequired: tab.state == nil,
+            loadRequired: true,
             webView: webView
         )
 
