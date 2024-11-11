@@ -362,6 +362,11 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         transports = viewModel.tab.transports
 
         rootView.setWebView(viewModel.webView)
+        if #available(iOS 15.0, *) {
+            rootView.webView.interactionState = viewModel.tab.state
+        } else {
+            // Fallback on earlier versions
+        }
 
         configure()
 

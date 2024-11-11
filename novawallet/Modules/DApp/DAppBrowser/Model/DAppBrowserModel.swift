@@ -12,6 +12,7 @@ struct DAppBrowserTabModel {
     let url: URL
     let isDesktop: Bool
     let transports: [DAppTransportModel]
+    let state: Data?
 }
 
 struct DAppBrowserTabViewModel {

@@ -25,6 +25,7 @@ enum SettingsKey: String {
     case integrateNetworksBannerSeen
     case assetListGroupStyle
     case assetIconsAppearance
+    case webViewStates
 }
 
 extension SettingsManagerProtocol {
@@ -292,6 +293,17 @@ extension SettingsManagerProtocol {
                 value: newValue.rawValue,
                 for: SettingsKey.assetIconsAppearance.rawValue
             )
+        }
+    }
+
+    var webViewStates: [String: Data]? {
+        get {
+            let anyValue = anyValue(for: SettingsKey.webViewStates.rawValue)
+            return anyValue as? [String: Data]
+        }
+
+        set {
+            set(anyValue: newValue, for: SettingsKey.webViewStates.rawValue)
         }
     }
 }

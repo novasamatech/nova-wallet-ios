@@ -15,6 +15,8 @@ final class DAppBrowserPresenter {
     private(set) var favorites: [String: DAppFavorite]?
     private(set) var browserPage: DAppBrowserPage?
 
+    private var currentTabId: UUID?
+
     init(
         interactor: DAppBrowserInteractorInputProtocol,
         wireframe: DAppBrowserWireframeProtocol,
@@ -112,6 +114,18 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
                 return
             }
 
+            if
+                let currentTabId,
+                let currentWebView = webViewPool.getWebView(for: currentTabId),
+                let url = currentWebView.url {
+                if #available(iOS 15.0, *) {
+                    let currentWebViewState = currentWebView.interactionState
+                    tabsManager.updateStateForTab(with: url, currentWebViewState)
+                } else {
+                    // Fallback on earlier versions
+                }
+            }
+
             let webView = webViewPool.setupWebView(for: tab.uuid)
 
             let viewModel = DAppBrowserTabViewModel(
@@ -119,6 +133,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
                 loadRequired: false,
                 webView: webView
             )
+
+            currentTabId = tab.uuid
 
             view?.didReceiveTab(viewModel: viewModel)
         }
@@ -161,9 +177,11 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
         let viewModel = DAppBrowserTabViewModel(
             tab: tab,
-            loadRequired: true,
+            loadRequired: tab.state == nil,
             webView: webView
         )
+
+        currentTabId = tab.uuid
 
         view?.didReceiveTab(viewModel: viewModel)
     }
