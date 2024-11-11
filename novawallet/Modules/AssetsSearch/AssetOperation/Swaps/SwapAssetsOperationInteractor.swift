@@ -13,7 +13,7 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
     let settingsManager: SettingsManagerProtocol
 
     private let operationQueue: OperationQueue
-    private var builder: SendAssetSearchBuilder?
+    private var builder: SpendAssetSearchBuilder?
     private var directionsCall = CancellableCallStore()
     private var availableDirections: [ChainAssetId: Set<ChainAssetId>] = [:]
     private var availableChains: Set<ChainModel.Id> = []

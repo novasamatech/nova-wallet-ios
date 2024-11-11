@@ -1,6 +1,6 @@
 import BigInt
 
-final class SendAssetSearchBuilder: AssetSearchBuilder {
+final class SpendAssetSearchBuilder: AssetSearchBuilder {
     override func assetListState(from model: AssetListModel) -> AssetListState {
         let balanceResults = model.balances.reduce(into: [ChainAssetId: Result<BigUInt, Error>]()) {
             switch $1.value {
