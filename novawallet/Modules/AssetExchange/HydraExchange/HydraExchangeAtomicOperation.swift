@@ -105,7 +105,7 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                 },
                 payingIn: self.operationArgs.feeAsset,
                 signer: self.host.signingWrapper,
-                matchingEvents: nil // TODO: Provide deposit events matcher
+                matchingEvents: HydraSwapEventsMatcher()
             )
 
             // TODO: Replace with monitoring to understand actual amount received

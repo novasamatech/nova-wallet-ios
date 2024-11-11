@@ -83,7 +83,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
                 },
                 payingIn: self.operationArgs.feeAsset,
                 signer: self.host.signingWrapper,
-                matchingEvents: nil // TODO: Match deposit events
+                matchingEvents: AssetConversionEventsMatching()
             )
 
             // TODO: Replace with monitoring to understand actual amount received

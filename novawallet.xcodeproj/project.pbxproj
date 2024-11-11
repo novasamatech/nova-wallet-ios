@@ -450,6 +450,8 @@
 		0C85FF342B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF332B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift */; };
 		0C85FF372B6E0BB300FC0014 /* AssetConversionAggregationFactory+AssetHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF362B6E0BB300FC0014 /* AssetConversionAggregationFactory+AssetHub.swift */; };
 		0C85FF392B6E0C0600FC0014 /* AssetConversionAggregationFactory+HydraDx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF382B6E0C0600FC0014 /* AssetConversionAggregationFactory+HydraDx.swift */; };
+		0C883A722CE2235600CAB4C8 /* HydraSwapEventsMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C883A712CE2235600CAB4C8 /* HydraSwapEventsMatcher.swift */; };
+		0C883A742CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C883A732CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
 		0C893E6F2A65702A00781503 /* NominationPools+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */; };
@@ -5685,6 +5687,8 @@
 		0C85FF332B6D523B00FC0014 /* HydraOmnipoolQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolQuoteFactory.swift; sourceTree = "<group>"; };
 		0C85FF362B6E0BB300FC0014 /* AssetConversionAggregationFactory+AssetHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionAggregationFactory+AssetHub.swift"; sourceTree = "<group>"; };
 		0C85FF382B6E0C0600FC0014 /* AssetConversionAggregationFactory+HydraDx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetConversionAggregationFactory+HydraDx.swift"; sourceTree = "<group>"; };
+		0C883A712CE2235600CAB4C8 /* HydraSwapEventsMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapEventsMatcher.swift; sourceTree = "<group>"; };
+		0C883A732CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionEventsMatching.swift; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
 		0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NominationPools+CodingPath.swift"; sourceTree = "<group>"; };
@@ -11520,6 +11524,15 @@
 			path = Staking;
 			sourceTree = "<group>";
 		};
+		0C883A702CE222FB00CAB4C8 /* Swap */ = {
+			isa = PBXGroup;
+			children = (
+				0C883A712CE2235600CAB4C8 /* HydraSwapEventsMatcher.swift */,
+				0C883A732CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift */,
+			);
+			path = Swap;
+			sourceTree = "<group>";
+		};
 		0C893E6B2A65629E00781503 /* NominationPools */ = {
 			isa = PBXGroup;
 			children = (
@@ -11774,6 +11787,7 @@
 		0CA8AD612CE08FEE00ED9746 /* ExtrinsicStatusService */ = {
 			isa = PBXGroup;
 			children = (
+				0C883A702CE222FB00CAB4C8 /* Swap */,
 				0CA8AD5B2CE08FEE00ED9746 /* BlockEventsQueryFactory.swift */,
 				0CA8AD5C2CE08FEE00ED9746 /* ExtrinsicEventsMatching.swift */,
 				0CA8AD5D2CE08FEE00ED9746 /* ExtrinsicStatusService.swift */,
@@ -25592,6 +25606,7 @@
 				2A66CFAF25D10EDF0006E4C1 /* PhishingItem.swift in Sources */,
 				882C29AA28DC7B3D009CA4B6 /* SubstrateStorageMigrator.swift in Sources */,
 				0CCD18BF2BA1EF360068D73A /* AssetModel+Remote.swift in Sources */,
+				0C883A722CE2235600CAB4C8 /* HydraSwapEventsMatcher.swift in Sources */,
 				2D1C5D1E2C25ACB500E2DBDD /* CustomNetworkAddInteractor.swift in Sources */,
 				8487583E27F070B300495306 /* ApplicationSettingsPresentable.swift in Sources */,
 				84FEF3E32807E8000042CBE7 /* DAppBrowserPage.swift in Sources */,
@@ -28285,6 +28300,7 @@
 				7D707DDD180999C63FD0C4ED /* AssetListViewController.swift in Sources */,
 				75E689BC8D16786DF2674171 /* AssetListViewLayout.swift in Sources */,
 				88FAE78828FCF8E200130B47 /* ReferendumDetailsTitleView.swift in Sources */,
+				0C883A742CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift in Sources */,
 				847EA1D42A1CA43A00F1CBD8 /* SubqueryNodes.swift in Sources */,
 				8483B15328F940080048B295 /* ReferendumVotersModel.swift in Sources */,
 				2736BAABAE1389260A0B28D6 /* AssetListViewFactory.swift in Sources */,
