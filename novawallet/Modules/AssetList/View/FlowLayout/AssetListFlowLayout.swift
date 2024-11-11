@@ -388,6 +388,17 @@ extension AssetListFlowLayout {
 
         sectionsExpandableState[sectionIndex] = expandable
 
-        assetSectionsState.changeState(with: symbol) { $0.byChanging(expandable: expandable) }
+        let expanded = if expandable {
+            assetSectionsState[symbol]?.expanded ?? false
+        } else {
+            false
+        }
+
+        assetSectionsState.changeState(with: symbol) {
+            $0.byChanging(
+                expandable: expandable,
+                expanded: expanded
+            )
+        }
     }
 }
