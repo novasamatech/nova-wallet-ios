@@ -56,6 +56,20 @@ final class DAppBrowserPresenter {
 
         view?.didSet(canShowSettings: canShowSettings)
     }
+
+    private func saveCurrentWebViewState() {
+        if
+            let currentTabId,
+            let currentWebView = webViewPool.getWebView(for: currentTabId),
+            let url = currentWebView.url {
+            if #available(iOS 15.0, *) {
+                let currentWebViewState = currentWebView.interactionState
+                tabsManager.updateStateForTab(with: url, currentWebViewState)
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+    }
 }
 
 extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
@@ -114,19 +128,9 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
                 return
             }
 
-            if
-                let currentTabId,
-                let currentWebView = webViewPool.getWebView(for: currentTabId),
-                let url = currentWebView.url {
-                if #available(iOS 15.0, *) {
-                    let currentWebViewState = currentWebView.interactionState
-                    tabsManager.updateStateForTab(with: url, currentWebViewState)
-                } else {
-                    // Fallback on earlier versions
-                }
-            }
-
             let webView = webViewPool.setupWebView(for: tab.uuid)
+
+            saveCurrentWebViewState()
 
             let viewModel = DAppBrowserTabViewModel(
                 tab: tab,
@@ -180,6 +184,8 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
             loadRequired: tab.state == nil,
             webView: webView
         )
+
+        saveCurrentWebViewState()
 
         currentTabId = tab.uuid
 
