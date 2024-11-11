@@ -1,6 +1,10 @@
 import Foundation
 import Operation_iOS
 
+enum AssetHubExchangeAtomicOperationError: Error {
+    case noEventsInResult
+}
+
 final class AssetHubExchangeAtomicOperation {
     let host: AssetHubExchangeHostProtocol
     let edge: any AssetExchangableGraphEdge
@@ -86,16 +90,35 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
                 matchingEvents: AssetConversionEventsMatching()
             )
 
-            // TODO: Replace with monitoring to understand actual amount received
-            let monitorOperation = ClosureOperation<Balance> {
-                _ = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+            let codingFactoryOperation = self.host.runtimeService.fetchCoderFactoryOperation()
 
-                return self.operationArgs.swapLimit.amountOut
+            let monitorOperation = ClosureOperation<Balance> {
+                let submittionResult = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+                switch submittionResult {
+                case let .success(executionResult):
+                    let eventParser = AssetConversionEventParser(logger: self.host.logger)
+
+                    guard let amountOut = eventParser.extractDeposit(
+                        from: executionResult.interestedEvents,
+                        using: codingFactory
+                    ) else {
+                        throw AssetHubExchangeAtomicOperationError.noEventsInResult
+                    }
+
+                    return amountOut
+                case let .failure(executionFailure):
+                    throw executionFailure.error
+                }
             }
 
             monitorOperation.addDependency(submittionWrapper.targetOperation)
+            monitorOperation.addDependency(codingFactoryOperation)
 
-            return submittionWrapper.insertingTail(operation: monitorOperation)
+            return submittionWrapper
+                .insertingHead(operations: [codingFactoryOperation])
+                .insertingTail(operation: monitorOperation)
         }
 
         executeWrapper.addDependency(operations: [codingFactoryOperation])

@@ -94,7 +94,8 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
                 signingWrapper: signingWrapper,
                 runtimeService: runtimeService,
                 connection: connection,
-                operationQueue: operationQueue
+                operationQueue: operationQueue,
+                logger: logger
             )
 
             return AssetsHubExchange(host: host)

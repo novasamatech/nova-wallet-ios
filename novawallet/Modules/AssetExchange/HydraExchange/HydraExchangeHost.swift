@@ -11,6 +11,7 @@ protocol HydraExchangeHostProtocol {
     var runtimeService: RuntimeProviderProtocol { get }
     var connection: JSONRPCEngine { get }
     var operationQueue: OperationQueue { get }
+    var logger: LoggerProtocol { get }
 }
 
 final class HydraExchangeHost: HydraExchangeHostProtocol {
@@ -24,6 +25,7 @@ final class HydraExchangeHost: HydraExchangeHostProtocol {
     let connection: JSONRPCEngine
     let signingWrapper: SigningWrapperProtocol
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     init(
         chain: ChainModel,
@@ -34,7 +36,8 @@ final class HydraExchangeHost: HydraExchangeHostProtocol {
         runtimeService: RuntimeProviderProtocol,
         connection: JSONRPCEngine,
         signingWrapper: SigningWrapperProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.chain = chain
         self.selectedAccount = selectedAccount
@@ -45,5 +48,6 @@ final class HydraExchangeHost: HydraExchangeHostProtocol {
         self.connection = connection
         self.signingWrapper = signingWrapper
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }

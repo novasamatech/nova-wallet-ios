@@ -3,6 +3,7 @@ import Operation_iOS
 
 enum HydraExchangeAtomicOperationError: Error {
     case noRoute
+    case noEventsInResult
 }
 
 final class HydraExchangeAtomicOperation {
@@ -108,16 +109,35 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                 matchingEvents: HydraSwapEventsMatcher()
             )
 
-            // TODO: Replace with monitoring to understand actual amount received
-            let monitorOperation = ClosureOperation<Balance> {
-                _ = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+            let codingFactoryOperation = self.host.runtimeService.fetchCoderFactoryOperation()
 
-                return self.operationArgs.swapLimit.amountOut
+            let monitorOperation = ClosureOperation<Balance> {
+                let submittionResult = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+                switch submittionResult {
+                case let .success(executionResult):
+                    let eventParser = AssetsHydraExchangeDepositParser(logger: self.host.logger)
+
+                    guard let amountOut = eventParser.extractDeposit(
+                        from: executionResult.interestedEvents,
+                        using: codingFactory
+                    ) else {
+                        throw HydraExchangeAtomicOperationError.noEventsInResult
+                    }
+
+                    return amountOut
+                case let .failure(executionFailure):
+                    throw executionFailure.error
+                }
             }
 
             monitorOperation.addDependency(submittionWrapper.targetOperation)
+            monitorOperation.addDependency(codingFactoryOperation)
 
-            return submittionWrapper.insertingTail(operation: monitorOperation)
+            return submittionWrapper
+                .insertingHead(operations: [codingFactoryOperation])
+                .insertingTail(operation: monitorOperation)
         }
 
         executionWrapper.addDependency(wrapper: paramsWrapper)

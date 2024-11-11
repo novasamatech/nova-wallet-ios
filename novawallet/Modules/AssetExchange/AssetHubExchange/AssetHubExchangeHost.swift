@@ -10,6 +10,7 @@ protocol AssetHubExchangeHostProtocol {
     var runtimeService: RuntimeProviderProtocol { get }
     var connection: JSONRPCEngine { get }
     var operationQueue: OperationQueue { get }
+    var logger: LoggerProtocol { get }
 }
 
 final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
@@ -21,6 +22,7 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
     let runtimeService: RuntimeProviderProtocol
     let connection: JSONRPCEngine
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     init(
         chain: ChainModel,
@@ -30,7 +32,8 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
         signingWrapper: SigningWrapperProtocol,
         runtimeService: RuntimeProviderProtocol,
         connection: JSONRPCEngine,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.chain = chain
         self.selectedAccount = selectedAccount
@@ -40,5 +43,6 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
         self.runtimeService = runtimeService
         self.connection = connection
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }

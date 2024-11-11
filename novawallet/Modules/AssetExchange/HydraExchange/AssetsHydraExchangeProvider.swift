@@ -173,7 +173,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             runtimeService: runtimeService,
             connection: connection,
             signingWrapper: signingWrapper,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         hosts[chain.chainId] = host
