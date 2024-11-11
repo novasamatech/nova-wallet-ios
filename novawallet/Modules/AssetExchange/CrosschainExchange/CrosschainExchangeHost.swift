@@ -9,6 +9,7 @@ protocol CrosschainExchangeHostProtocol {
     var resolutionFactory: XcmTransferResolutionFactoryProtocol { get }
     var xcmTransfers: XcmTransfers { get }
     var operationQueue: OperationQueue { get }
+    var logger: LoggerProtocol { get }
 }
 
 final class CrosschainExchangeHost: CrosschainExchangeHostProtocol {
@@ -20,6 +21,7 @@ final class CrosschainExchangeHost: CrosschainExchangeHostProtocol {
     let resolutionFactory: XcmTransferResolutionFactoryProtocol
     let xcmTransfers: XcmTransfers
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     init(
         wallet: MetaAccountModel,
@@ -29,7 +31,8 @@ final class CrosschainExchangeHost: CrosschainExchangeHostProtocol {
         xcmService: XcmTransferServiceProtocol,
         resolutionFactory: XcmTransferResolutionFactoryProtocol,
         xcmTransfers: XcmTransfers,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.wallet = wallet
         self.allChains = allChains
@@ -39,5 +42,6 @@ final class CrosschainExchangeHost: CrosschainExchangeHostProtocol {
         self.resolutionFactory = resolutionFactory
         self.xcmTransfers = xcmTransfers
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }

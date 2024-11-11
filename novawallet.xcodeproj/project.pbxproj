@@ -556,6 +556,7 @@
 		0CA7CEF42CE0D210004328F2 /* PalletAssets+EventCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEF32CE0D210004328F2 /* PalletAssets+EventCodingPath.swift */; };
 		0CA7CEF62CE0D35B004328F2 /* PalletAssets+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEF52CE0D35B004328F2 /* PalletAssets+Events.swift */; };
 		0CA7CEF82CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEF72CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift */; };
+		0CA7CEFA2CE13126004328F2 /* TokenDepositEventMatcherFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEF92CE13126004328F2 /* TokenDepositEventMatcherFactory.swift */; };
 		0CA8AD562CE06FA000ED9746 /* XcmTransactService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */; };
 		0CA8AD5A2CE0789100ED9746 /* WalletRemoteSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD592CE0789100ED9746 /* WalletRemoteSubscription.swift */; };
 		0CA8AD622CE08FEE00ED9746 /* BlockEventsQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD5B2CE08FEE00ED9746 /* BlockEventsQueryFactory.swift */; };
@@ -5819,6 +5820,7 @@
 		0CA7CEF32CE0D210004328F2 /* PalletAssets+EventCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PalletAssets+EventCodingPath.swift"; sourceTree = "<group>"; };
 		0CA7CEF52CE0D35B004328F2 /* PalletAssets+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PalletAssets+Events.swift"; sourceTree = "<group>"; };
 		0CA7CEF72CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensPalletDepositEventMatcher.swift; sourceTree = "<group>"; };
+		0CA7CEF92CE13126004328F2 /* TokenDepositEventMatcherFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenDepositEventMatcherFactory.swift; sourceTree = "<group>"; };
 		0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransactService.swift; sourceTree = "<group>"; };
 		0CA8AD592CE0789100ED9746 /* WalletRemoteSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscription.swift; sourceTree = "<group>"; };
 		0CA8AD5B2CE08FEE00ED9746 /* BlockEventsQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEventsQueryFactory.swift; sourceTree = "<group>"; };
@@ -11764,6 +11766,7 @@
 				0CA7CEED2CE0CA75004328F2 /* TokenDepositEventMatching.swift */,
 				0CA7CEF12CE0D14F004328F2 /* PalletAssetsTokenDepositEventMatcher.swift */,
 				0CA7CEF72CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift */,
+				0CA7CEF92CE13126004328F2 /* TokenDepositEventMatcherFactory.swift */,
 			);
 			path = TokenDepositEventMatching;
 			sourceTree = "<group>";
@@ -25629,6 +25632,7 @@
 				849013DE24A927E2008F705E /* LocalizationManager+Shared.swift in Sources */,
 				8412AF9B2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift in Sources */,
 				84F1CB3727CE5EC30095D523 /* NftListViewModelFactory.swift in Sources */,
+				0CA7CEFA2CE13126004328F2 /* TokenDepositEventMatcherFactory.swift in Sources */,
 				849013DC24A927E2008F705E /* ApplicationConfigs.swift in Sources */,
 				84DA03DB275A31B500E8B326 /* DAppListHeaderView.swift in Sources */,
 				84ACEBFA261E684A00AAE665 /* WalletHistoryFilter.swift in Sources */,

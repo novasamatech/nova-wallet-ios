@@ -88,7 +88,8 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
                 )
             ),
             xcmTransfers: xcmTransfers,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         let exchange = CrosschainAssetsExchange(host: host)

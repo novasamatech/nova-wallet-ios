@@ -16,38 +16,72 @@ final class XcmTransactService {
     let transferService: XcmTransferServiceProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
         transferService: XcmTransferServiceProtocol,
         workingQueue: DispatchQueue,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.transferService = transferService
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }
 
 extension XcmTransactService: XcmTransactServiceProtocol {
     func transferAndWaitArrivalWrapper(
         _ transferRequest: XcmTransferRequest,
-        destinationChainAsset _: ChainAsset,
+        destinationChainAsset: ChainAsset,
         xcmTransfers: XcmTransfers,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Balance> {
-        let submittionOperation = AsyncClosureOperation<XcmSubmitExtrinsic> { completion in
-            self.transferService.submit(
-                request: transferRequest,
-                xcmTransfers: xcmTransfers,
-                signer: signer,
-                runningIn: self.workingQueue
-            ) { result in
-                completion(result)
-            }
-        }
+        do {
+            let destinationChainId = destinationChainAsset.chain.chainId
+            let connection = try chainRegistry.getConnectionOrError(for: destinationChainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: destinationChainId)
 
-        return .createWithResult(0)
+            let monitoringService = XcmDepositMonitoringService(
+                accountId: transferRequest.unweighted.destination.accountId,
+                chainAsset: destinationChainAsset,
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                operationQueue: operationQueue,
+                workingQueue: workingQueue,
+                logger: logger
+            )
+
+            let monitoringWrapper = monitoringService.useMonitoringWrapper()
+
+            let submittionOperation = AsyncClosureOperation<XcmSubmitExtrinsic> { completion in
+                self.transferService.submit(
+                    request: transferRequest,
+                    xcmTransfers: xcmTransfers,
+                    signer: signer,
+                    runningIn: self.workingQueue
+                ) { result in
+                    completion(result)
+                }
+            }
+
+            let mappingOperation = ClosureOperation<Balance> {
+                _ = try submittionOperation.extractNoCancellableResultData()
+
+                return try monitoringWrapper.targetOperation.extractNoCancellableResultData()
+            }
+
+            mappingOperation.addDependency(monitoringWrapper.targetOperation)
+            mappingOperation.addDependency(submittionOperation)
+
+            return monitoringWrapper
+                .insertingHead(operations: [submittionOperation])
+                .insertingTail(operation: mappingOperation)
+        } catch {
+            return .createWithError(error)
+        }
     }
 }
