@@ -5,7 +5,8 @@ import SubstrateSdk
 protocol ExtrinsicStatusServiceProtocol {
     func fetchExtrinsicStatusForHash(
         _ extrinsicHash: String,
-        inBlock blockHash: String
+        inBlock blockHash: String,
+        matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus>
 }
 
@@ -32,7 +33,9 @@ final class ExtrinsicStatusService {
     private func createMatchingWrapper(
         dependingOn queryOperation: BaseOperation<[SubstrateExtrinsicEvents]>,
         runtimeProvider: RuntimeProviderProtocol,
-        extrinsicHash: Data
+        extrinsicHash: Data,
+        blockHash: BlockHash,
+        interstedEventsMatcher: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -44,25 +47,37 @@ final class ExtrinsicStatusService {
                 throw ExtrinsicStatusServiceError.extrinsicNotFound(extrinsicHash)
             }
 
-            if ExtrinsicEventsMatcher.findSuccessExtrinsic(
-                from: extrinsicEvents.events,
-                metadata: codingFactory.metadata
-            ) != nil {
-                let hashString = extrinsicHash.toHex(includePrefix: true)
-                return .success(hashString)
+            let successMatcher = ExtrinsicSuccessEventMatcher()
+
+            if extrinsicEvents.events.contains(where: { successMatcher.match(event: $0, using: codingFactory) }) {
+                let extString = extrinsicHash.toHex(includePrefix: true)
+
+                let events: [Event] = if let interstedEventsMatcher {
+                    extrinsicEvents.events.filter { interstedEventsMatcher.match(event: $0, using: codingFactory) }
+                } else {
+                    []
+                }
+
+                return .success(.init(
+                    extrinsicHash: extString,
+                    blockHash: blockHash,
+                    interestedEvents: events
+                )
+                )
             }
 
-            if let failedExtrinsicEvent = ExtrinsicEventsMatcher.findFailureExtrinsic(
-                from: extrinsicEvents.events,
-                metadata: codingFactory.metadata
+            let failMatcher = ExtrinsicFailureEventMatcher()
+
+            if let failureEvent = extrinsicEvents.events.first(
+                where: { failMatcher.match(event: $0, using: codingFactory) }
             ) {
-                let dispatchError = try failedExtrinsicEvent.params.map(
+                let dispatchError = try failureEvent.params.map(
                     to: ExtrinsicFailedEventParams.self,
                     with: codingFactory.createRuntimeJsonContext().toRawContext()
                 ).dispatchError
 
-                let hashString = extrinsicHash.toHex(includePrefix: true)
-                return .failure(hashString, dispatchError)
+                let extString = extrinsicHash.toHex(includePrefix: true)
+                return .failure(.init(extrinsicHash: extString, blockHash: blockHash, error: dispatchError))
             }
 
             throw ExtrinsicStatusServiceError.terminateEventNotFound(extrinsicEvents)
@@ -80,7 +95,8 @@ final class ExtrinsicStatusService {
 extension ExtrinsicStatusService: ExtrinsicStatusServiceProtocol {
     func fetchExtrinsicStatusForHash(
         _ extrinsicHash: String,
-        inBlock blockHash: String
+        inBlock blockHash: String,
+        matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
         do {
             let extHashData = try Data(hexString: extrinsicHash)
@@ -95,7 +111,9 @@ extension ExtrinsicStatusService: ExtrinsicStatusServiceProtocol {
             let statusWrapper = createMatchingWrapper(
                 dependingOn: eventsQueryWrapper.targetOperation,
                 runtimeProvider: runtimeProvider,
-                extrinsicHash: extHashData
+                extrinsicHash: extHashData,
+                blockHash: blockHash,
+                interstedEventsMatcher: matchingEvents
             )
 
             statusWrapper.addDependency(wrapper: eventsQueryWrapper)

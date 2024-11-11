@@ -98,6 +98,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
+    // swiftlint:disable:next function_body_length
     private func setupHost(
         for chain: ChainModel,
         account: ChainAccountResponse,
@@ -108,19 +109,39 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             return host
         }
 
-        let extrinsicOperationFactory = ExtrinsicServiceFactory(
+        let serviceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationQueue: operationQueue,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade
-        ).createOperationFactory(
+        )
+
+        let customFeeEstimatingFactory = AssetExchangeFeeEstimatingFactory(
+            graphProxy: graphProxy,
+            operationQueue: operationQueue
+        )
+
+        let extrinsicOperationFactory = serviceFactory.createOperationFactory(
             account: account,
             chain: chain,
-            customFeeEstimatingFactory: AssetExchangeFeeEstimatingFactory(
-                graphProxy: graphProxy,
-                operationQueue: operationQueue
-            )
+            customFeeEstimatingFactory: customFeeEstimatingFactory
+        )
+
+        let extrinsicService = serviceFactory.createService(
+            account: account,
+            chain: chain,
+            customFeeEstimatingFactory: customFeeEstimatingFactory
+        )
+
+        let submissionMonitorFactory = ExtrinsicSubmissionMonitorFactory(
+            submissionService: extrinsicService,
+            statusService: ExtrinsicStatusService(
+                connection: connection,
+                runtimeProvider: runtimeService,
+                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue, logger: logger)
+            ),
+            operationQueue: operationQueue
         )
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
@@ -146,6 +167,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         let host = HydraExchangeHost(
             chain: chain,
             selectedAccount: account,
+            submissionMonitorFactory: submissionMonitorFactory,
             extrinsicOperationFactory: extrinsicOperationFactory,
             extrinsicParamsFactory: extrinsicParamsFactory,
             runtimeService: runtimeService,

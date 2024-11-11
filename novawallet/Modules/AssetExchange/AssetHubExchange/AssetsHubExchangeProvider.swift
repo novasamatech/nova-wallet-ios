@@ -46,19 +46,39 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
                 return nil
             }
 
-            let extrinsicOperationFactory = ExtrinsicServiceFactory(
+            let serviceFactory = ExtrinsicServiceFactory(
                 runtimeRegistry: runtimeService,
                 engine: connection,
                 operationQueue: operationQueue,
                 userStorageFacade: userStorageFacade,
                 substrateStorageFacade: substrateStorageFacade
-            ).createOperationFactory(
+            )
+
+            let customFeeEstimatingFactory = AssetExchangeFeeEstimatingFactory(
+                graphProxy: graphProxy,
+                operationQueue: operationQueue
+            )
+
+            let extrinsicOperationFactory = serviceFactory.createOperationFactory(
                 account: selectedAccount,
                 chain: chain,
-                customFeeEstimatingFactory: AssetExchangeFeeEstimatingFactory(
-                    graphProxy: graphProxy,
-                    operationQueue: operationQueue
-                )
+                customFeeEstimatingFactory: customFeeEstimatingFactory
+            )
+
+            let extrinsicService = serviceFactory.createService(
+                account: selectedAccount,
+                chain: chain,
+                customFeeEstimatingFactory: customFeeEstimatingFactory
+            )
+
+            let submissionMonitorFactory = ExtrinsicSubmissionMonitorFactory(
+                submissionService: extrinsicService,
+                statusService: ExtrinsicStatusService(
+                    connection: connection,
+                    runtimeProvider: runtimeService,
+                    eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue, logger: logger)
+                ),
+                operationQueue: operationQueue
             )
 
             let signingWrapper = signingWrapperFactory.createSigningWrapper(
@@ -69,6 +89,7 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
             let host = AssetHubExchangeHost(
                 chain: chain,
                 selectedAccount: selectedAccount,
+                submissionMonitorFactory: submissionMonitorFactory,
                 extrinsicOperationFactory: extrinsicOperationFactory,
                 signingWrapper: signingWrapper,
                 runtimeService: runtimeService,

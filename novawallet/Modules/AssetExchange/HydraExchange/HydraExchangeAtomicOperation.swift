@@ -96,12 +96,17 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
         ) {
             let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let submittionWrapper = self.host.extrinsicOperationFactory.submit({ builder in
-                try HydraExchangeExtrinsicConverter.addingOperation(
-                    from: params,
-                    builder: builder
-                )
-            }, signer: self.host.signingWrapper, payingIn: self.operationArgs.feeAsset)
+            let submittionWrapper = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
+                extrinsicBuilderClosure: { builder in
+                    try HydraExchangeExtrinsicConverter.addingOperation(
+                        from: params,
+                        builder: builder
+                    )
+                },
+                payingIn: self.operationArgs.feeAsset,
+                signer: self.host.signingWrapper,
+                matchingEvents: nil // TODO: Provide deposit events matcher
+            )
 
             // TODO: Replace with monitoring to understand actual amount received
             let monitorOperation = ClosureOperation<Balance> {

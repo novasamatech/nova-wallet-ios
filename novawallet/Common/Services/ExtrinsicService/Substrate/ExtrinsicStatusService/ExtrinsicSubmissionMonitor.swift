@@ -4,7 +4,9 @@ import Operation_iOS
 protocol ExtrinsicSubmitMonitorFactoryProtocol {
     func submitAndMonitorWrapper(
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        payingIn feeAssetId: ChainAssetId?,
+        signer: SigningWrapperProtocol,
+        matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus>
 }
 
@@ -33,13 +35,16 @@ final class ExtrinsicSubmissionMonitorFactory {
 extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol {
     func submitAndMonitorWrapper(
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
-        signer: SigningWrapperProtocol
+        payingIn feeAssetId: ChainAssetId?,
+        signer: SigningWrapperProtocol,
+        matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
         var subscriptionId: UInt16?
 
         let submissionOperation = AsyncClosureOperation<SubmissionResult>(operationClosure: { completionClosure in
             self.submissionService.submitAndWatch(
                 extrinsicBuilderClosure,
+                payingIn: feeAssetId,
                 signer: signer,
                 runningIn: self.processingQueue,
                 subscriptionIdClosure: { identifier in
@@ -89,7 +94,8 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
 
                 return self.statusService.fetchExtrinsicStatusForHash(
                     response.extrinsicHash,
-                    inBlock: response.blockHash
+                    inBlock: response.blockHash,
+                    matchingEvents: matchingEvents
                 )
             }
 

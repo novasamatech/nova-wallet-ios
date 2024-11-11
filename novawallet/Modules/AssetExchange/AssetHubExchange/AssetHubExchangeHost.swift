@@ -4,6 +4,7 @@ import SubstrateSdk
 protocol AssetHubExchangeHostProtocol {
     var chain: ChainModel { get }
     var selectedAccount: ChainAccountResponse { get }
+    var submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol { get }
     var extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol { get }
     var signingWrapper: SigningWrapperProtocol { get }
     var runtimeService: RuntimeProviderProtocol { get }
@@ -14,6 +15,7 @@ protocol AssetHubExchangeHostProtocol {
 final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
     let chain: ChainModel
     let selectedAccount: ChainAccountResponse
+    let submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
     let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
     let runtimeService: RuntimeProviderProtocol
@@ -23,6 +25,7 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
     init(
         chain: ChainModel,
         selectedAccount: ChainAccountResponse,
+        submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         runtimeService: RuntimeProviderProtocol,
@@ -31,6 +34,7 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
     ) {
         self.chain = chain
         self.selectedAccount = selectedAccount
+        self.submissionMonitorFactory = submissionMonitorFactory
         self.extrinsicOperationFactory = extrinsicOperationFactory
         self.signingWrapper = signingWrapper
         self.runtimeService = runtimeService

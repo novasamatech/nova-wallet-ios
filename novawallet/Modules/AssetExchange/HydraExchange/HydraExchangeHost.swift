@@ -4,6 +4,7 @@ import SubstrateSdk
 protocol HydraExchangeHostProtocol {
     var chain: ChainModel { get }
     var selectedAccount: ChainAccountResponse { get }
+    var submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol { get }
     var extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol { get }
     var extrinsicParamsFactory: HydraExchangeExtrinsicParamsFactoryProtocol { get }
     var signingWrapper: SigningWrapperProtocol { get }
@@ -15,6 +16,8 @@ protocol HydraExchangeHostProtocol {
 final class HydraExchangeHost: HydraExchangeHostProtocol {
     let chain: ChainModel
     let selectedAccount: ChainAccountResponse
+
+    let submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
     let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
     let extrinsicParamsFactory: HydraExchangeExtrinsicParamsFactoryProtocol
     let runtimeService: RuntimeProviderProtocol
@@ -25,6 +28,7 @@ final class HydraExchangeHost: HydraExchangeHostProtocol {
     init(
         chain: ChainModel,
         selectedAccount: ChainAccountResponse,
+        submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol,
         extrinsicParamsFactory: HydraExchangeExtrinsicParamsFactoryProtocol,
         runtimeService: RuntimeProviderProtocol,
@@ -34,6 +38,7 @@ final class HydraExchangeHost: HydraExchangeHostProtocol {
     ) {
         self.chain = chain
         self.selectedAccount = selectedAccount
+        self.submissionMonitorFactory = submissionMonitorFactory
         self.extrinsicOperationFactory = extrinsicOperationFactory
         self.extrinsicParamsFactory = extrinsicParamsFactory
         self.runtimeService = runtimeService

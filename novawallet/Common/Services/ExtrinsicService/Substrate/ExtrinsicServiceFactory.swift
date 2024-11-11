@@ -9,6 +9,13 @@ protocol ExtrinsicServiceFactoryProtocol {
         extensions: [ExtrinsicSignedExtending]
     ) -> ExtrinsicServiceProtocol
 
+    func createService(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        extensions: [ExtrinsicSignedExtending],
+        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
+    ) -> ExtrinsicServiceProtocol
+
     func createOperationFactory(
         account: ChainAccountResponse,
         chain: ChainModel,
@@ -35,6 +42,7 @@ extension ExtrinsicServiceFactoryProtocol {
         )
     }
 
+    // TODO: Get rid of the method
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
@@ -46,6 +54,19 @@ extension ExtrinsicServiceFactoryProtocol {
             extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions(
                 payingFeeIn: feeAssetConversionId
             )
+        )
+    }
+
+    func createService(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
+    ) -> ExtrinsicServiceProtocol {
+        createService(
+            account: account,
+            chain: chain,
+            extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions(),
+            customFeeEstimatingFactory: customFeeEstimatingFactory
         )
     }
 
@@ -144,6 +165,51 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
+            ),
+            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
+                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
+            )
+        )
+
+        return ExtrinsicService(
+            chain: chain,
+            runtimeRegistry: runtimeRegistry,
+            senderResolvingFactory: senderResolvingFactory,
+            metadataHashOperationFactory: metadataHashOperationFactory,
+            feeEstimationRegistry: feeEstimationRegistry,
+            extensions: extensions,
+            engine: engine,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+    }
+
+    func createService(
+        account: ChainAccountResponse,
+        chain: ChainModel,
+        extensions: [ExtrinsicSignedExtending],
+        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
+    ) -> ExtrinsicServiceProtocol {
+        let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
+            chainAccount: account,
+            chain: chain,
+            userStorageFacade: userStorageFacade
+        )
+
+        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
+            account: account,
+            chain: chain,
+            connection: engine,
+            runtimeProvider: runtimeRegistry,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade,
+            operationQueue: operationQueue
+        )
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
+                host: extrinsicFeeHost,
+                customFeeEstimatorFactory: customFeeEstimatingFactory
             ),
             feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
                 customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)

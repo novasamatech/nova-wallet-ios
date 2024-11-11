@@ -72,14 +72,19 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
 
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let submittionWrapper = self.host.extrinsicOperationFactory.submit({ builder in
-                try AssetHubExtrinsicConverter.addingOperation(
-                    to: builder,
-                    chain: self.host.chain,
-                    args: callArgs,
-                    codingFactory: codingFactory
-                )
-            }, signer: self.host.signingWrapper, payingIn: self.operationArgs.feeAsset)
+            let submittionWrapper = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
+                extrinsicBuilderClosure: { builder in
+                    try AssetHubExtrinsicConverter.addingOperation(
+                        to: builder,
+                        chain: self.host.chain,
+                        args: callArgs,
+                        codingFactory: codingFactory
+                    )
+                },
+                payingIn: self.operationArgs.feeAsset,
+                signer: self.host.signingWrapper,
+                matchingEvents: nil // TODO: Match deposit events
+            )
 
             // TODO: Replace with monitoring to understand actual amount received
             let monitorOperation = ClosureOperation<Balance> {
