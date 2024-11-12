@@ -9,7 +9,7 @@ final class SendAssetsOperationInteractor {
     let settingsManager: SettingsManagerProtocol
     let logger: LoggerProtocol
 
-    private var builder: SendAssetSearchBuilder?
+    private var builder: SpendAssetSearchBuilder?
 
     init(
         stateObservable: AssetListModelObservable,

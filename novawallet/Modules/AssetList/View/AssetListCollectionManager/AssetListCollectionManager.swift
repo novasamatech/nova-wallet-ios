@@ -7,12 +7,8 @@ final class AssetListCollectionManager {
         promotionBannerViewModel != nil
     }
 
-    var tokenGroupsLayout: AssetListTokensFlowLayout? {
-        view?.collectionTokenGroupsLayout
-    }
-
-    var networkGroupsLayout: AssetListNetworksFlowLayout? {
-        view?.collectionNetworkGroupsLayout
+    var collectionViewLayout: AssetListFlowLayout? {
+        view?.collectionViewLayout
     }
 
     weak var view: AssetListViewLayout?
@@ -21,6 +17,7 @@ final class AssetListCollectionManager {
     private var promotionBannerViewModel: PromotionBannerView.ViewModel?
 
     private let collectionViewDataSource: AssetListCollectionViewDataSource
+    // swiftlint:disable weak_delegate
     private let collectionViewDelegate: AssetListCollectionViewDelegate
 
     init(
@@ -68,6 +65,21 @@ final class AssetListCollectionManager {
     private func updateLoadingState(for cell: UICollectionViewCell) {
         (cell as? AnimationUpdatibleView)?.updateLayerAnimationIfActive()
     }
+
+    func prepareForLayoutTransition() {
+        collectionViewLayout?.animatingTransition = true
+    }
+
+    func endLayoutTransition() {
+        collectionViewLayout?.animatingTransition = false
+    }
+
+    private func replaceViewModel(_ newViewModel: AssetListViewModel) {
+        groupsViewModel = newViewModel
+
+        collectionViewDataSource.groupsViewModel = newViewModel
+        collectionViewDelegate.groupsViewModel = newViewModel
+    }
 }
 
 // MARK: AssetListCollectionManagerPtotocol
@@ -87,35 +99,49 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
 
-        networkGroupsLayout?.register(
+        collectionViewLayout?.register(
             AssetListNetworkGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListNetworksFlowLayout.assetGroupDecoration
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.networkGroup
         )
 
-        tokenGroupsLayout?.register(
+        collectionViewLayout?.register(
             AssetListTokenGroupDecorationView.self,
-            forDecorationViewOfKind: AssetListTokensFlowLayout.assetGroupDecoration
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.tokenGroup
         )
     }
 
-    func changeCollectionViewLayout(to style: AssetListGroupsStyle) {
+    func changeCollectionViewLayout(
+        from _: AssetListViewModel,
+        to newViewModel: AssetListViewModel
+    ) {
         guard let view else { return }
 
-        view.assetGroupsLayoutStyle = style
+        prepareForLayoutTransition()
+        updateTokensGroupLayout()
 
-        let layout: UICollectionViewLayout = view.collectionViewLayout
+        view.collectionViewLayout.changeGroupLayoutStyle(to: newViewModel.listGroupStyle)
 
-        view.collectionView.setCollectionViewLayout(
-            layout,
-            animated: false
-        )
+        let removingIndexes = (0 ..< view.collectionView.numberOfSections).filter { section in
+            section >= AssetListFlowLayout.SectionType.assetsStartingSection
+        }
 
-        layout.invalidateLayout()
+        let insertingIndexes = newViewModel.listState.groups.enumerated().map { index, _ in
+            AssetListFlowLayout.SectionType.assetsStartingSection + index
+        }
+
+        replaceViewModel(newViewModel)
+
+        view.collectionView.performBatchUpdates {
+            view.collectionView.deleteSections(IndexSet(removingIndexes))
+            view.collectionView.insertSections(IndexSet(insertingIndexes))
+        } completion: { [weak self] _ in
+            self?.endLayoutTransition()
+        }
     }
 
     func updateTokensGroupLayout() {
         guard
-            let tokenGroupsLayout,
+            let collectionViewLayout,
             groupsViewModel.listGroupStyle == .tokens
         else {
             return
@@ -126,14 +152,14 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
                 return
             }
 
-            let sectionIndex = tokenGroupsLayout.assetSectionIndex(from: groupIndex)
+            let sectionIndex = collectionViewLayout.assetSectionIndex(from: groupIndex)
 
-            tokenGroupsLayout.changeSection(
+            collectionViewLayout.changeSection(
                 byChanging: sectionIndex,
                 for: groupViewModel.token.symbol
             )
 
-            tokenGroupsLayout.setExpandableSection(
+            collectionViewLayout.setExpandableSection(
                 for: groupViewModel.token.symbol,
                 groupViewModel.assets.count > 1
             )
@@ -141,10 +167,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
     }
 
     func updateGroupsViewModel(with model: AssetListViewModel) {
-        groupsViewModel = model
-
-        collectionViewDataSource.groupsViewModel = model
-        collectionViewDelegate.groupsViewModel = model
+        replaceViewModel(model)
     }
 
     func updateHeaderViewModel(with model: AssetListHeaderViewModel?) {
@@ -180,15 +203,15 @@ extension AssetListCollectionManager: AssetListCollectionViewLayoutDelegate {
     }
 
     func groupExpandable(for symbol: String) -> Bool {
-        tokenGroupsLayout?.state(for: symbol)?.expandable ?? false
+        collectionViewLayout?.state(for: symbol)?.expandable ?? false
     }
 
     func expandAssetGroup(for symbol: String) {
-        tokenGroupsLayout?.expandAssetGroup(for: symbol)
+        collectionViewLayout?.expandAssetGroup(for: symbol)
     }
 
     func collapseAssetGroup(for symbol: String) {
-        tokenGroupsLayout?.collapseAssetGroup(for: symbol)
+        collectionViewLayout?.collapseAssetGroup(for: symbol)
     }
 
     func cellHeight(for type: AssetListFlowLayout.CellType, at indexPath: IndexPath) -> CGFloat {
@@ -199,7 +222,7 @@ extension AssetListCollectionManager: AssetListCollectionViewLayoutDelegate {
     }
 
     func groupExpanded(for symbol: String) -> Bool {
-        tokenGroupsLayout?.expanded(for: symbol) ?? false
+        collectionViewLayout?.expanded(for: symbol) ?? false
     }
 }
 

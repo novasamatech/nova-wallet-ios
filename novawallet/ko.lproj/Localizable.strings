@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "국민투표 #%li 완료";
 "gov.referendum.completed.message.with.index" = "국민투표 #%li이 완료되었고 투표가 종료되었습니다";
 "common.use.max.due.fee.message" = "네트워크 수수료로 %@를 지불해야 하므로 %@까지 사용할 수 있습니다.";
+"send.operation.network.list.title" = "%@ 전송을 위한 네트워크 선택";
+"buy.operation.network.list.title" = "%@ 구매를 위한 네트워크 선택";
+"receive.operation.network.list.title" = "%@ 수신을 위한 네트워크 선택";
+"swap.operation.network.list.title" = "%@ 교환을 위한 네트워크 선택";
+"settings.appearance" = "외관";
+"settings.appearance.token.icons.title" = "토큰 아이콘";
+"settings.appearance.token.icons.option.white" = "화이트";
+"settings.appearance.token.icons.option.colored" = "컬러";
+"wallet.receive.details.format" = "이 주소로 %@ 토큰과 %@ 네트워크에서의 토큰만 보내세요, 그렇지 않으면 자금을 잃을 수 있습니다.";
+"common.address.coppied" = "주소가 복사되었습니다";
+"common.networks" = "네트워크";
+"assets.search.token.hint" = "토큰으로 검색";

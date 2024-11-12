@@ -106,23 +106,23 @@ private extension AssetListCollectionViewDataSource {
 
         settingsCell.locale = selectedLocale
 
-        settingsCell.styleSwitcher.setup(with: .init(using: groupsViewModel.listGroupStyle))
+        settingsCell.styleSwitcher.controlContentView.setup(with: .init(using: groupsViewModel.listGroupStyle))
 
         settingsCell.manageButton.addTarget(
             self,
             action: #selector(actionManage),
             for: .touchUpInside
         )
-
         settingsCell.searchButton.addTarget(
             self,
             action: #selector(actionSearch),
             for: .touchUpInside
         )
-
-        settingsCell.styleSwitcher.addAction { [weak self] _ in
-            self?.actionsDelegate?.actionChangeAssetListStyle()
-        }
+        settingsCell.styleSwitcher.addTarget(
+            self,
+            action: #selector(actionSwitchStyle),
+            for: .valueChanged
+        )
 
         settingsCell.manageButton.bind(showingBadge: groupsViewModel.isFiltered)
 
@@ -202,6 +202,8 @@ private extension AssetListCollectionViewDataSource {
 
             assetCell = cell
         }
+
+        assetCell.configureSelectionView(for: expanded)
 
         return assetCell
     }
@@ -315,6 +317,10 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSwap() {
         actionsDelegate?.actionSwap()
+    }
+
+    @objc func actionSwitchStyle() {
+        actionsDelegate?.actionChangeAssetListStyle()
     }
 }
 

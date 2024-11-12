@@ -90,7 +90,7 @@ enum AssetListModelHelpers {
     static func createAssetsDiffCalculator(
         from assets: [AssetListAssetModel]
     ) -> ListDifferenceCalculator<AssetListAssetModel> {
-        let sortingBlock = AssetListModelHelpers.assetSortingBlockDefaultByLexical
+        let sortingBlock = AssetListModelHelpers.assetSortingBlockDefaultByUtility
 
         let sortedAssets = assets.sorted(by: sortingBlock)
 

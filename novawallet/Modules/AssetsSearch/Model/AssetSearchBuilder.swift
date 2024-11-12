@@ -150,7 +150,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             state: state
         )
         .forEach { symbol, assetListModels in
-            let comparator = AssetListModelHelpers.assetSortingBlockDefaultByChain
+            let comparator = AssetListModelHelpers.assetSortingBlockDefaultByUtility
             let sortedModels = assetListModels.sorted(by: comparator)
 
             newGroupListsByAsset[symbol] = sortedModels

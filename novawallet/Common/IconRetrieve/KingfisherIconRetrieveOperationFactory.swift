@@ -61,8 +61,6 @@ extension KingfisherIconRetrieveOperationFactory: IconRetrieveOperationFactoryPr
                     return
                 }
 
-                let sizeBeforeProcessing = resultImage.size
-
                 if case .remoteTransparent = iconInfo.type {
                     resultImage = resultImage.redrawWithBackground(
                         color: R.color.colorTextPrimaryOnWhite()!,

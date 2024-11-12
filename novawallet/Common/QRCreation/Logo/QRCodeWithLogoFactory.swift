@@ -91,7 +91,7 @@ private extension QRCodeWithLogoFactory {
         qrSize: CGSize,
         partialResultClosure: @escaping (Result<QRCreationResult, Error>) -> Void
     ) -> CompoundOperationWrapper<QRCreationResult> {
-        var checkCacheOperation = checkCacheOperation(using: logoInfo)
+        let checkCacheOperation = checkCacheOperation(using: logoInfo)
 
         let wrapper: CompoundOperationWrapper<QRCreationResult> = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
