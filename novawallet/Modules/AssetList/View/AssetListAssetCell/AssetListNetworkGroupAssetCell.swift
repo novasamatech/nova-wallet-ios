@@ -40,6 +40,8 @@ final class AssetListNetworkGroupAssetCell: AssetListAssetCell {
             imageKeyPath: \.icon,
             nameKeyPath: \.tokenName
         )
+
+        selectedView.cornerRadius = 0
     }
 
     override func bind<T>(

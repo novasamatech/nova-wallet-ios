@@ -13,17 +13,15 @@ class BaseAssetsSearchViewLayout: UIView {
 
     var cancelButton: RoundedButton? { searchView.optionalCancelButton }
 
-    let collectionNetworkGroupsLayout = AssetsSearchNetworksFlowLayout()
-    var collectionTokenGroupsLayout = AssetsSearchTokensFlowLayout()
+    let collectionViewLayout: AssetsSearchFlowLayout = {
+        let layout = AssetsSearchFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        layout.sectionInset = .zero
 
-    var assetGroupsLayoutStyle: AssetListGroupsStyle?
-
-    var collectionViewLayout: AssetsSearchFlowLayout {
-        switch assetGroupsLayoutStyle ?? .tokens {
-        case .networks: collectionNetworkGroupsLayout
-        case .tokens: collectionTokenGroupsLayout
-        }
-    }
+        return layout
+    }()
 
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(
@@ -54,8 +52,6 @@ class BaseAssetsSearchViewLayout: UIView {
     }
 
     func setup() {
-        setupLayouts()
-
         addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -66,18 +62,6 @@ class BaseAssetsSearchViewLayout: UIView {
         searchView.snp.makeConstraints { make in
             make.leading.top.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.searchBarHeight)
-        }
-    }
-
-    func setupLayouts() {
-        [
-            collectionNetworkGroupsLayout,
-            collectionTokenGroupsLayout
-        ].forEach {
-            $0.scrollDirection = .vertical
-            $0.minimumLineSpacing = 0
-            $0.minimumInteritemSpacing = 0
-            $0.sectionInset = .zero
         }
     }
 }

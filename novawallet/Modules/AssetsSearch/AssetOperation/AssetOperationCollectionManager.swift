@@ -3,7 +3,7 @@ import Foundation
 class AssetOperationCollectionManager: AssetsSearchCollectionManager {
     override func updateTokensGroupLayout() {
         guard
-            let tokenGroupsLayout,
+            let collectionViewLayout,
             groupsViewModel.listGroupStyle == .tokens
         else {
             return
@@ -14,7 +14,7 @@ class AssetOperationCollectionManager: AssetsSearchCollectionManager {
                 return
             }
 
-            tokenGroupsLayout.setExpandableSection(
+            collectionViewLayout.setExpandableSection(
                 for: groupViewModel.token.symbol,
                 false
             )

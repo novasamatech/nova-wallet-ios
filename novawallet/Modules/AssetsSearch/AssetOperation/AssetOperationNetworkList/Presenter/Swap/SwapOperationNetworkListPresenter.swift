@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 class SwapOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
     let wireframe: SwapAssetsOperationWireframeProtocol
@@ -12,7 +13,8 @@ class SwapOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
         multichainToken: MultichainToken,
         viewModelFactory: AssetOperationNetworkListViewModelFactory,
         selectClosure: @escaping (ChainAsset) -> Void,
-        selectClosureStrategy: SubmoduleNavigationStrategy
+        selectClosureStrategy: SubmoduleNavigationStrategy,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
         self.selectClosure = selectClosure
@@ -21,7 +23,8 @@ class SwapOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
         super.init(
             interactor: interactor,
             multichainToken: multichainToken,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager
         )
     }
 

@@ -9,7 +9,6 @@ protocol AssetsSearchCollectionManagerProtocol {
     func updateSelectedLocale(with locale: Locale)
 
     func updateTokensGroupLayout()
-    func changeCollectionViewLayout(to style: AssetListGroupsStyle)
 }
 
 protocol AssetsSearchCollectionManagerDelegate: AnyObject {

@@ -12,7 +12,8 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
     let settingsManager: SettingsManagerProtocol
 
     private let operationQueue: OperationQueue
-    private var builder: AssetSearchBuilder?
+
+    private var builder: SpendAssetSearchBuilder?
     private var reachabilityCallStore = CancellableCallStore()
     private var reachability: AssetsExchageGraphReachabilityProtocol?
 

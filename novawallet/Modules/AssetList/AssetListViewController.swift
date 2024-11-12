@@ -63,31 +63,19 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     func updateTotalBalanceHeight(_ height: CGFloat) {
-        [
-            rootView.collectionNetworkGroupsLayout,
-            rootView.collectionTokenGroupsLayout
-        ].forEach { $0.updateTotalBalanceHeight(height) }
+        rootView.collectionViewLayout.updateTotalBalanceHeight(height)
     }
 
     private func activatePromotionWithHeight(_ height: CGFloat) {
-        [
-            rootView.collectionNetworkGroupsLayout,
-            rootView.collectionTokenGroupsLayout
-        ].forEach { $0.activatePromotionWithHeight(height) }
+        rootView.collectionViewLayout.activatePromotionWithHeight(height)
     }
 
     private func deactivatePromotion() {
-        [
-            rootView.collectionNetworkGroupsLayout,
-            rootView.collectionTokenGroupsLayout
-        ].forEach { $0.deactivatePromotion() }
+        rootView.collectionViewLayout.deactivatePromotion()
     }
 
     private func setNftsActive(_ isActive: Bool) {
-        [
-            rootView.collectionNetworkGroupsLayout,
-            rootView.collectionTokenGroupsLayout
-        ].forEach { $0.setNftsActive(isActive) }
+        rootView.collectionViewLayout.setNftsActive(isActive)
     }
 }
 
@@ -106,19 +94,22 @@ extension AssetListViewController: AssetListViewProtocol {
     }
 
     func didReceiveGroups(viewModel: AssetListViewModel) {
-        let oldGroupsStyle = groupsViewModel.listGroupStyle
-        let newGroupStyle = viewModel.listGroupStyle
+        let oldViewModel = groupsViewModel
+        let newViewModel = viewModel
 
-        collectionViewManager.updateGroupsViewModel(with: viewModel)
-        groupsViewModel = viewModel
+        groupsViewModel = newViewModel
 
-        rootView.collectionView.reloadData()
-
-        if oldGroupsStyle != newGroupStyle {
-            collectionViewManager.changeCollectionViewLayout(to: newGroupStyle)
-        }
-
+        collectionViewManager.updateGroupsViewModel(with: newViewModel)
         collectionViewManager.updateTokensGroupLayout()
+
+        if oldViewModel.listGroupStyle != newViewModel.listGroupStyle {
+            collectionViewManager.changeCollectionViewLayout(
+                from: oldViewModel,
+                to: newViewModel
+            )
+        } else {
+            rootView.collectionView.reloadData()
+        }
     }
 
     func didReceiveNft(viewModel: AssetListNftsViewModel?) {
@@ -237,6 +228,7 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 extension AssetListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
+            collectionViewManager.updateSelectedLocale(with: selectedLocale)
             rootView.collectionView.reloadData()
         }
     }

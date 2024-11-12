@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, PurchaseFlowManaging {
     let selectedAccount: MetaAccountModel
@@ -13,7 +14,8 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
         multichainToken: MultichainToken,
         viewModelFactory: AssetOperationNetworkListViewModelFactory,
         selectedAccount: MetaAccountModel,
-        purchaseProvider: PurchaseProviderProtocol
+        purchaseProvider: PurchaseProviderProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.purchaseProvider = purchaseProvider
@@ -22,7 +24,8 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
         super.init(
             interactor: interactor,
             multichainToken: multichainToken,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager
         )
     }
 

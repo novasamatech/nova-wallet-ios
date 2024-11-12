@@ -1,14 +1,14 @@
 import UIKit
 import Operation_iOS
 
-final class AssetOperationNetworkListInteractor {
+class AssetOperationNetworkListInteractor {
     weak var presenter: AssetOperationNetworkListInteractorOutputProtocol?
 
-    private let workingQueueLabel: String = "com.nova.wallet.assets.networks.builder"
-    private let stateObservable: AssetListModelObservable
-    private let multichainToken: MultichainToken
+    let workingQueueLabel: String = "com.nova.wallet.assets.networks.builder"
+    let stateObservable: AssetListModelObservable
+    let multichainToken: MultichainToken
 
-    private let logger: LoggerProtocol
+    let logger: LoggerProtocol
 
     private var chainAssets: [ChainAsset] = []
 
@@ -22,6 +22,22 @@ final class AssetOperationNetworkListInteractor {
         self.multichainToken = multichainToken
         self.stateObservable = stateObservable
         self.logger = logger
+    }
+
+    func createModelBuilder(
+        with chainAssets: [ChainAsset],
+        resultClosure: @escaping (AssetOperationNetworkBuilderResult?) -> Void
+    ) -> AssetOperationNetworkBuilder {
+        .init(
+            chainAssets: chainAssets,
+            workingQueue: .init(
+                label: workingQueueLabel,
+                qos: .userInteractive
+            ),
+            callbackQueue: .main,
+            callbackClosure: resultClosure,
+            logger: logger
+        )
     }
 }
 
@@ -46,15 +62,9 @@ extension AssetOperationNetworkListInteractor: AssetOperationNetworkListInteract
             self?.presenter?.didReceive(result: result)
         }
 
-        builder = .init(
-            chainAssets: chainAssets,
-            workingQueue: .init(
-                label: workingQueueLabel,
-                qos: .userInteractive
-            ),
-            callbackQueue: .main,
-            callbackClosure: resultClosure,
-            logger: logger
+        builder = createModelBuilder(
+            with: chainAssets,
+            resultClosure: resultClosure
         )
 
         builder?.apply(model: stateObservable.state.value)
