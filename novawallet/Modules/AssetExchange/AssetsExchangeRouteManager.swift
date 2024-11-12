@@ -83,8 +83,8 @@ extension AssetsExchangeRouteManager {
         let routeWrappers = possiblePaths.map { createQuote(for: $0, amount: amount, direction: direction) }
 
         let winnerCalculator = ClosureOperation<AssetExchangeRoute?> {
-            let exchangeRoutes: [AssetExchangeRoute] = try routeWrappers.map { routeWrapper in
-                try routeWrapper.targetOperation.extractNoCancellableResultData()
+            let exchangeRoutes: [AssetExchangeRoute] = routeWrappers.compactMap { routeWrapper in
+                try? routeWrapper.targetOperation.extractNoCancellableResultData()
             }
 
             switch direction {
