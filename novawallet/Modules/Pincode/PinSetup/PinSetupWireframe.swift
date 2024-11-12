@@ -4,11 +4,18 @@ class PinSetupWireframe: PinSetupWireframeProtocol {
     lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
 
     func showMain(from _: PinSetupViewProtocol?) {
-        guard let mainViewController = MainTabBarViewFactory.createView()?.controller else {
+        guard
+            let tabBarController = MainTabBarViewFactory.createView()?.controller,
+            let widgetViewController = BrowserWidgetViewFactory.createView(),
+            let container = NovaMainAppContainerViewFactory.createView(
+                tabBarController: tabBarController,
+                browserWidgerController: widgetViewController
+            )?.controller
+        else {
             return
         }
 
-        rootAnimator.animateTransition(to: mainViewController)
+        rootAnimator.animateTransition(to: container)
     }
 
     func showSignup(from _: PinSetupViewProtocol?) {

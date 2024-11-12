@@ -10,6 +10,7 @@ struct DAppBrowserModel {
 struct DAppBrowserTabModel {
     let uuid: UUID
     let url: URL
+    let title: String?
     let isDesktop: Bool
     let transports: [DAppTransportModel]
     let state: Data?
