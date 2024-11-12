@@ -132,6 +132,9 @@ final class AssetExchangeExecutionManager {
 
         do {
             let leaveOnAccount = try routeDetails.fees[nextSegment].totalAmountToPayFromAccount()
+
+            logger.debug("Amount for fee: \(Balance(leaveOnAccount))")
+
             let correctedAmount = amountOut.subtractOrZero(leaveOnAccount)
 
             executeSegment(at: nextSegment, amountIn: correctedAmount)
