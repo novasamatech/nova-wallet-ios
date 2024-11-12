@@ -20,13 +20,13 @@ final class CrosschainExchangeAtomicOperation {
     }
 
     private func createXcmPartiesResolutionWrapper(
-        for selectedAccount: ChainAccountResponse
+        for destinationAccount: ChainAccountResponse
     ) -> CompoundOperationWrapper<XcmTransferParties> {
         host.resolutionFactory.createResolutionWrapper(
             for: edge.origin,
             transferDestinationId: .init(
                 chainId: edge.destination.chainId,
-                accountId: selectedAccount.accountId
+                accountId: destinationAccount.accountId
             ),
             xcmTransfers: host.xcmTransfers
         )
@@ -103,7 +103,7 @@ final class CrosschainExchangeAtomicOperation {
     }
 
     private func createSubmitWrapper(
-        for selectedAccount: ChainAccountResponse,
+        for originAccount: ChainAccountResponse,
         destinationAsset: ChainAsset,
         resolutionOperation: BaseOperation<XcmTransferParties>,
         feeOperation: BaseOperation<XcmFeeModelProtocol>,
@@ -117,8 +117,8 @@ final class CrosschainExchangeAtomicOperation {
             let amount = try amountClosure()
 
             let signer = self.host.signingWrapperFactory.createSigningWrapper(
-                for: selectedAccount.metaId,
-                accountResponse: selectedAccount
+                for: originAccount.metaId,
+                accountResponse: originAccount
             )
 
             let unweightedRequest = XcmUnweightedTransferRequest(
@@ -156,12 +156,14 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
     func executeWrapper(for amountClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance> {
         guard
             let originChain = host.allChains[edge.origin.chainId],
-            let destinationAsset = host.allChains[edge.destination.chainId]?.chainAsset(for: edge.destination.assetId),
-            let selectedAccount = host.wallet.fetch(for: originChain.accountRequest()) else {
+            let destinationChain = host.allChains[edge.destination.chainId],
+            let destinationAsset = destinationChain.chainAsset(for: edge.destination.assetId),
+            let originAccount = host.wallet.fetch(for: originChain.accountRequest()),
+            let destinationAccount = host.wallet.fetch(for: destinationChain.accountRequest()) else {
             return .createWithError(ChainAccountFetchingError.accountNotExists)
         }
 
-        let resolutionWrapper = createXcmPartiesResolutionWrapper(for: selectedAccount)
+        let resolutionWrapper = createXcmPartiesResolutionWrapper(for: destinationAccount)
 
         // TODO: We need only weight from the crosschain fee, probably we can calculate it during submission
         let feeWrapper = createCrosschainFeeFetchWrapper(
@@ -172,7 +174,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
         feeWrapper.addDependency(wrapper: resolutionWrapper)
 
         let submitWrapper = createSubmitWrapper(
-            for: selectedAccount,
+            for: originAccount,
             destinationAsset: destinationAsset,
             resolutionOperation: resolutionWrapper.targetOperation,
             feeOperation: feeWrapper.targetOperation,
@@ -188,12 +190,12 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
 
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
         guard
-            let originChain = host.allChains[edge.origin.chainId],
-            let selectedAccount = host.wallet.fetch(for: originChain.accountRequest()) else {
+            let destinationChain = host.allChains[edge.destination.chainId],
+            let destinationAccount = host.wallet.fetch(for: destinationChain.accountRequest()) else {
             return .createWithError(ChainAccountFetchingError.accountNotExists)
         }
 
-        let resolutionWrapper = createXcmPartiesResolutionWrapper(for: selectedAccount)
+        let resolutionWrapper = createXcmPartiesResolutionWrapper(for: destinationAccount)
 
         let crosschainFeeWrapper = createCrosschainFeeFetchWrapper(
             dependingOn: resolutionWrapper.targetOperation,

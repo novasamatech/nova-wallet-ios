@@ -303,6 +303,8 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
     }
 
     func didReceive(baseError: SwapBaseError) {
+        logger.error("Did receive error: \(baseError)")
+
         handleBaseError(baseError)
     }
 
