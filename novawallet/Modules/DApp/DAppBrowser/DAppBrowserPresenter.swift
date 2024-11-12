@@ -176,7 +176,11 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     }
 
     func didReceiveDApp(model: DAppBrowserModel) {
-        let tab = tabsManager.createTab(for: model)
+        let tab = tabsManager.createTab(
+            for: model,
+            browserPage: browserPage
+        )
+
         let webView = webViewPool.setupWebView(for: tab.uuid)
 
         let viewModel = DAppBrowserTabViewModel(
