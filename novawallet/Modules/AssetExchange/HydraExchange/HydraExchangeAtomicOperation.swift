@@ -119,6 +119,8 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                 case let .success(executionResult):
                     let eventParser = AssetsHydraExchangeDepositParser(logger: self.host.logger)
 
+                    self.host.logger.debug("Execution success: \(executionResult.interestedEvents)")
+
                     guard let amountOut = eventParser.extractDeposit(
                         from: executionResult.interestedEvents,
                         using: codingFactory
@@ -159,5 +161,9 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
         mappingOperation.addDependency(feeWrapper.targetOperation)
 
         return feeWrapper.insertingTail(operation: mappingOperation)
+    }
+
+    var swapLimit: AssetExchangeSwapLimit {
+        operationArgs.swapLimit
     }
 }

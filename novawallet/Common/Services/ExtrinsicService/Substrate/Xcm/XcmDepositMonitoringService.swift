@@ -86,7 +86,7 @@ final class XcmDepositMonitoringService {
 
     private func fetchBlockAndDetectDeposit(
         for hash: Data,
-        accountId _: AccountId,
+        accountId: AccountId,
         eventMatcher: TokenDepositEventMatching
     ) {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -104,7 +104,9 @@ final class XcmDepositMonitoringService {
             let allEvents = events.initialization + events.finalization
 
             for event in allEvents {
-                if let deposit = eventMatcher.matchDeposit(event: event, using: codingFactory) {
+                if
+                    let deposit = eventMatcher.matchDeposit(event: event, using: codingFactory),
+                    deposit.accountId == accountId {
                     return deposit
                 }
             }

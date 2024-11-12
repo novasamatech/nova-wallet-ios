@@ -231,4 +231,8 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
             .insertingHead(operations: resolutionWrapper.allOperations)
             .insertingTail(operation: mappingOperation)
     }
+
+    var swapLimit: AssetExchangeSwapLimit {
+        operationArgs.swapLimit
+    }
 }

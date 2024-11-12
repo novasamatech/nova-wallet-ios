@@ -9,23 +9,36 @@ extension AssetExchangeOperationFee {
         args: AssetExchangeAtomicOperationArgs
     ) {
         submissionFee = .init(
-            amount: .init(
+            amountWithAsset: .init(
                 amount: originFee.amount,
                 asset: args.feeAsset
             ),
             payer: originFee.payer
         )
 
-        postSubmissionFee = .init(
-            paidByAccount: [
+        let paidByAccount: [AmountByPayer] = if crosschainFee.senderPart > 0 {
+            [
                 .init(
-                    amount: .init(amount: crosschainFee.senderPart, asset: nil),
+                    amountWithAsset: .init(amount: crosschainFee.senderPart, asset: nil),
                     payer: nil
                 )
-            ],
-            paidFromAmount: [
-                .init(amount: crosschainFee.holdingPart, asset: assetIn)
             ]
+        } else {
+            []
+        }
+
+        let feeAsset = assetIn.assetId == AssetModel.utilityAssetId ? nil : assetIn
+        let paidFromAmount: [Amount] = if crosschainFee.holdingPart > 0 {
+            [
+                .init(amount: crosschainFee.holdingPart, asset: feeAsset)
+            ]
+        } else {
+            []
+        }
+
+        postSubmissionFee = .init(
+            paidByAccount: paidByAccount,
+            paidFromAmount: paidFromAmount
         )
     }
 }

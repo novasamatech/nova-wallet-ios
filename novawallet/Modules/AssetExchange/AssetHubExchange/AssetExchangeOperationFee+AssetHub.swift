@@ -3,7 +3,7 @@ import Foundation
 extension AssetExchangeOperationFee {
     init(extrinsicFee: ExtrinsicFeeProtocol, args: AssetExchangeAtomicOperationArgs) {
         submissionFee = .init(
-            amount: .init(
+            amountWithAsset: .init(
                 amount: extrinsicFee.amount,
                 asset: args.feeAsset
             ),

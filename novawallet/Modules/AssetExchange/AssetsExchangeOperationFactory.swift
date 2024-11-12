@@ -154,10 +154,6 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
     func createExecutionWrapper(for fee: AssetExchangeFee) -> CompoundOperationWrapper<Balance> {
         do {
-            guard let firstSegment = fee.route.items.first else {
-                return .createWithError(AssetsExchangeServiceError.noRoute)
-            }
-
             let atomicOperations = try prepareAtomicOperations(
                 for: fee.route,
                 slippage: fee.slippage,
@@ -166,10 +162,14 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
             let executionManager = AssetExchangeExecutionManager(
                 operations: atomicOperations,
-                operationQueue: operationQueue
+                routeDetails: fee,
+                operationQueue: operationQueue,
+                logger: logger
             )
 
-            return executionManager.executeSwap(for: firstSegment.amount)
+            let operation = LongrunOperation(longrun: AnyLongrun(longrun: executionManager))
+
+            return CompoundOperationWrapper(targetOperation: operation)
         } catch {
             return .createWithError(error)
         }
