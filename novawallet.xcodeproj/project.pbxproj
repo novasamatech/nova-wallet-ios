@@ -1019,7 +1019,6 @@
 		2D65F6D72CCF9C7000CC6F72 /* AssetIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6D62CCF9C7000CC6F72 /* AssetIconViewModelFactory.swift */; };
 		2D65F6D92CD0067500CC6F72 /* AppearanceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6D82CD0067500CC6F72 /* AppearanceFacade.swift */; };
 		2D65F6DE2CD0D77300CC6F72 /* AssetIconURLToStringMigrationPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6DD2CD0D77300CC6F72 /* AssetIconURLToStringMigrationPolicy.swift */; };
-		2D65F6E02CD0DD7300CC6F72 /* AssetIconURLToString.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6DF2CD0DD7300CC6F72 /* AssetIconURLToString.xcmappingmodel */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -5193,6 +5192,7 @@
 		0B556386CEEB76C95ED59897 /* ControllerAccountViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewController.swift; sourceTree = "<group>"; };
 		0B62C2CBCFF1865A1CA0F1B4 /* LedgerNetworkSelectionProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerNetworkSelectionProtocols.swift; sourceTree = "<group>"; };
 		0BA85EE628D7029AC940DFA3 /* NominationPoolBondMoreBasePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreBasePresenter.swift; sourceTree = "<group>"; };
+		0C029E292CE4D2AB00649C28 /* SubstrateDataModel34.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel34.xcdatamodel; sourceTree = "<group>"; };
 		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
 		0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversion.swift; sourceTree = "<group>"; };
 		0C0CB3812AC545A800EAC516 /* AssetConversionExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionExtrinsicService.swift; sourceTree = "<group>"; };
@@ -6210,7 +6210,6 @@
 		2D65F6D82CD0067500CC6F72 /* AppearanceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceFacade.swift; sourceTree = "<group>"; };
 		2D65F6DA2CD0C2DC00CC6F72 /* SubstrateDataModel33.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel33.xcdatamodel; sourceTree = "<group>"; };
 		2D65F6DD2CD0D77300CC6F72 /* AssetIconURLToStringMigrationPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIconURLToStringMigrationPolicy.swift; sourceTree = "<group>"; };
-		2D65F6DF2CD0DD7300CC6F72 /* AssetIconURLToString.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = AssetIconURLToString.xcmappingmodel; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -20254,7 +20253,6 @@
 			isa = PBXGroup;
 			children = (
 				846CA7712707A3060011124C /* SingleToMultiasset.xcmappingmodel */,
-				2D65F6DF2CD0DD7300CC6F72 /* AssetIconURLToString.xcmappingmodel */,
 			);
 			path = MigrationMappings;
 			sourceTree = "<group>";
@@ -24739,7 +24737,6 @@
 				8441D3C929E8015100070BA3 /* WalletConnectMetadata.swift in Sources */,
 				8434B604298D474D00FACF4C /* GovernanceAddDelegationTracksPresenter.swift in Sources */,
 				8460E11F25420A2C00826F55 /* DetailsTriangularedView+Inspectable.swift in Sources */,
-				2D65F6E02CD0DD7300CC6F72 /* AssetIconURLToString.xcmappingmodel in Sources */,
 				772BCCAA2B7A28F400A516D9 /* NotificationsManagementTableFooterView.swift in Sources */,
 				0C3205CC2A895827002EB914 /* EvmNonceProvider.swift in Sources */,
 				8472C39C298BD8CE00043061 /* GovernanceSelectTracksInteractorError.swift in Sources */,
@@ -30458,6 +30455,7 @@
 		0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				0C029E292CE4D2AB00649C28 /* SubstrateDataModel34.xcdatamodel */,
 				2D65F6DA2CD0C2DC00CC6F72 /* SubstrateDataModel33.xcdatamodel */,
 				0C8FDB7F2CAD022700775D7F /* SubstrateDataModel22.xcdatamodel */,
 				0C8FDB802CAD022700775D7F /* SubstrateDataModel9.xcdatamodel */,
@@ -30492,7 +30490,7 @@
 				0C8FDB9D2CAD022700775D7F /* SubstrateDataModel25.xcdatamodel */,
 				0C8FDB9E2CAD022700775D7F /* SubstrateDataModel17.xcdatamodel */,
 			);
-			currentVersion = 2D65F6DA2CD0C2DC00CC6F72 /* SubstrateDataModel33.xcdatamodel */;
+			currentVersion = 0C029E292CE4D2AB00649C28 /* SubstrateDataModel34.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
