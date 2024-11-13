@@ -2,7 +2,12 @@ import Foundation
 
 final class AssetExchangeFacade {
     static func createGraphProvider(for params: AssetExchangeGraphProvidingParams) -> AssetsExchangeGraphProviding {
-        AssetsExchangeGraphProvider(
+        let feeCapabilityProvider = AssetExchangeFeeCapabilityProvider()
+        let suffiencyProvider = AssetExchangeSufficiencyProvider()
+
+        return AssetsExchangeGraphProvider(
+            selectedWallet: params.wallet,
+            chainRegistry: params.chainRegistry,
             supportedExchangeProviders: [
                 CrosschainAssetsExchangeProvider(
                     wallet: params.wallet,
@@ -38,6 +43,8 @@ final class AssetExchangeFacade {
                     logger: params.logger
                 )
             ],
+            feeCapabilityProvider: feeCapabilityProvider,
+            suffiencyProvider: suffiencyProvider,
             operationQueue: params.operationQueue,
             logger: params.logger
         )

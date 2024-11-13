@@ -346,6 +346,9 @@
 		0C626D1D2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */; };
 		0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */; };
 		0C626D212A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C626D202A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift */; };
+		0C6353452CE463BD00EAB200 /* AssetExchangePathFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6353442CE463BD00EAB200 /* AssetExchangePathFilter.swift */; };
+		0C6353472CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6353462CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift */; };
+		0C6353492CE4752300EAB200 /* AssetExchangeFeeCapabilityProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6353482CE4752300EAB200 /* AssetExchangeFeeCapabilityProvider.swift */; };
 		0C63908B2BF073C20015D467 /* CloudBackupSyncMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908A2BF073C20015D467 /* CloudBackupSyncMonitoring.swift */; };
 		0C63908D2BF073D00015D467 /* ICloudBackupSyncMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C63908C2BF073D00015D467 /* ICloudBackupSyncMonitor.swift */; };
 		0C6390912BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */; };
@@ -5586,6 +5589,9 @@
 		0C626D1C2A915E2F00CDAF4E /* StakingNominationPoolsStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNominationPoolsStatics.swift; sourceTree = "<group>"; };
 		0C626D1E2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsDataProviding.swift; sourceTree = "<group>"; };
 		0C626D202A933A7D00CDAF4E /* StakingNPoolsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNPoolsViewModelFactory.swift; sourceTree = "<group>"; };
+		0C6353442CE463BD00EAB200 /* AssetExchangePathFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePathFilter.swift; sourceTree = "<group>"; };
+		0C6353462CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeSufficiencyProvider.swift; sourceTree = "<group>"; };
+		0C6353482CE4752300EAB200 /* AssetExchangeFeeCapabilityProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeCapabilityProvider.swift; sourceTree = "<group>"; };
 		0C63908A2BF073C20015D467 /* CloudBackupSyncMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncMonitoring.swift; sourceTree = "<group>"; };
 		0C63908C2BF073D00015D467 /* ICloudBackupSyncMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudBackupSyncMonitor.swift; sourceTree = "<group>"; };
 		0C6390902BF091610015D467 /* CloudBackupUpdateCalculationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdateCalculationFactory.swift; sourceTree = "<group>"; };
@@ -10894,6 +10900,8 @@
 				0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */,
 				0C61084C2CD8909600909928 /* AssetExchangeFee.swift */,
 				0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */,
+				0C6353462CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift */,
+				0C6353482CE4752300EAB200 /* AssetExchangeFeeCapabilityProvider.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -11658,6 +11666,7 @@
 				0C6108482CD889A000909928 /* AssetsExchange.swift */,
 				0C61084A2CD88F9B00909928 /* AssetsExchangeService.swift */,
 				0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */,
+				0C6353442CE463BD00EAB200 /* AssetExchangePathFilter.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -27431,6 +27440,7 @@
 				84DD49F428EE91ED00B804F3 /* Gov2LocalMappingFactory.swift in Sources */,
 				84C1706D2996424800CBE531 /* GovernanceYourDelegationCell.swift in Sources */,
 				84E0EE04292D336C008B2953 /* GovernanceType.swift in Sources */,
+				0C6353452CE463BD00EAB200 /* AssetExchangePathFilter.swift in Sources */,
 				849B036D2A15E90A009624D9 /* CoingeckoPriceHistorySource.swift in Sources */,
 				0CB3136A2C0F0EC400353724 /* CloudBackupServiceFacade+Create.swift in Sources */,
 				2D32BE222C6D247C0047F520 /* FeeAssetSelectionPresentable.swift in Sources */,
@@ -28692,6 +28702,7 @@
 				842643BF28785CFC0031B5B5 /* TuringStaking.swift in Sources */,
 				0CB64E5E2B00AA8F008F268F /* GetTokenOptionsResult.swift in Sources */,
 				688F73AFD5FF20F77242B57E /* ParaStkCollatorsSearchViewController.swift in Sources */,
+				0C6353492CE4752300EAB200 /* AssetExchangeFeeCapabilityProvider.swift in Sources */,
 				3BFD635E852E4D395025BEE8 /* ParaStkCollatorsSearchViewFactory.swift in Sources */,
 				88FB7DCB2950712E00784E08 /* AssetDetailsContainerViewController.swift in Sources */,
 				846AACED28BF94B9009F3D42 /* AccountManagementFilter.swift in Sources */,
@@ -29290,6 +29301,7 @@
 				845B823629C8FF2900D187CB /* EtherscanBaseOperationFactory.swift in Sources */,
 				473EDA64B1A18BA80189142D /* GovernanceRemoveVotesConfirmProtocols.swift in Sources */,
 				590717389ECBA34FA08F247B /* GovernanceRemoveVotesConfirmWireframe.swift in Sources */,
+				0C6353472CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift in Sources */,
 				544C8EB3D71227FAF2FD4658 /* GovernanceRemoveVotesConfirmPresenter.swift in Sources */,
 				C1E74FC31BFB401B1745C2E8 /* GovernanceRemoveVotesConfirmInteractor.swift in Sources */,
 				AD1920A8DE1C9A4D6502473F /* GovernanceRemoveVotesConfirmViewController.swift in Sources */,

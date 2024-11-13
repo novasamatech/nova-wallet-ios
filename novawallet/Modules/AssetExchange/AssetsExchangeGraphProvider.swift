@@ -2,6 +2,10 @@ import Foundation
 import Operation_iOS
 
 final class AssetsExchangeGraphProvider {
+    let selectedWallet: MetaAccountModel
+    let chainRegistry: ChainRegistryProtocol
+    let feeCapabilityProvider: AssetExchangeFeeCapabilityProviding
+    let suffiencyProvider: AssetExchangeSufficiencyProviding
     let supportedExchangeProviders: [AssetsExchangeProviding]
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -14,11 +18,19 @@ final class AssetsExchangeGraphProvider {
     )
 
     init(
+        selectedWallet: MetaAccountModel,
+        chainRegistry: ChainRegistryProtocol,
         supportedExchangeProviders: [AssetsExchangeProviding],
+        feeCapabilityProvider: AssetExchangeFeeCapabilityProviding,
+        suffiencyProvider: AssetExchangeSufficiencyProviding,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.selectedWallet = selectedWallet
+        self.chainRegistry = chainRegistry
         self.supportedExchangeProviders = supportedExchangeProviders
+        self.feeCapabilityProvider = feeCapabilityProvider
+        self.suffiencyProvider = suffiencyProvider
         self.operationQueue = operationQueue
         self.logger = logger
 
@@ -90,7 +102,15 @@ final class AssetsExchangeGraphProvider {
             currentGraph.merging(with: nextGraph)
         }
 
-        let graph = AssetsExchangeGraph(model: graphModel)
+        let filter = AssetExchangePathFilter(
+            selectedWallet: selectedWallet,
+            chainRegistry: chainRegistry,
+            sufficiencyProvider: suffiencyProvider,
+            feeCapabilityProvider: feeCapabilityProvider
+        )
+
+        let graph = AssetsExchangeGraph(model: graphModel, filter: AnyGraphEdgeFilter(filter: filter))
+
         observableState.state = .init(value: graph)
 
         supportedExchangeProviders.forEach { $0.inject(graph: graph) }
