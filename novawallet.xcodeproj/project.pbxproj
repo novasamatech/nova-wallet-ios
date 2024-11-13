@@ -564,6 +564,11 @@
 		0CA7CEF62CE0D35B004328F2 /* PalletAssets+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEF52CE0D35B004328F2 /* PalletAssets+Events.swift */; };
 		0CA7CEF82CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEF72CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift */; };
 		0CA7CEFA2CE13126004328F2 /* TokenDepositEventMatcherFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEF92CE13126004328F2 /* TokenDepositEventMatcherFactory.swift */; };
+		0CA81D4C2CE4FF8800166969 /* AssetExchangeGraphFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D4B2CE4FF8800166969 /* AssetExchangeGraphFee.swift */; };
+		0CA81D4E2CE5028D00166969 /* AssetHubFeeSupportFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D4D2CE5028D00166969 /* AssetHubFeeSupportFetching.swift */; };
+		0CA81D502CE502B200166969 /* AssetExchangeFeeSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D4F2CE502B200166969 /* AssetExchangeFeeSupport.swift */; };
+		0CA81D522CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D512CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift */; };
+		0CA81D542CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D532CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift */; };
 		0CA8AD562CE06FA000ED9746 /* XcmTransactService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */; };
 		0CA8AD5A2CE0789100ED9746 /* WalletRemoteSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD592CE0789100ED9746 /* WalletRemoteSubscription.swift */; };
 		0CA8AD622CE08FEE00ED9746 /* BlockEventsQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD5B2CE08FEE00ED9746 /* BlockEventsQueryFactory.swift */; };
@@ -5838,6 +5843,11 @@
 		0CA7CEF52CE0D35B004328F2 /* PalletAssets+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PalletAssets+Events.swift"; sourceTree = "<group>"; };
 		0CA7CEF72CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensPalletDepositEventMatcher.swift; sourceTree = "<group>"; };
 		0CA7CEF92CE13126004328F2 /* TokenDepositEventMatcherFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenDepositEventMatcherFactory.swift; sourceTree = "<group>"; };
+		0CA81D4B2CE4FF8800166969 /* AssetExchangeGraphFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphFee.swift; sourceTree = "<group>"; };
+		0CA81D4D2CE5028D00166969 /* AssetHubFeeSupportFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubFeeSupportFetching.swift; sourceTree = "<group>"; };
+		0CA81D4F2CE502B200166969 /* AssetExchangeFeeSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeSupport.swift; sourceTree = "<group>"; };
+		0CA81D512CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeFeeSupportFetcher.swift; sourceTree = "<group>"; };
+		0CA81D532CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeFeeSupportFetcher.swift; sourceTree = "<group>"; };
 		0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransactService.swift; sourceTree = "<group>"; };
 		0CA8AD592CE0789100ED9746 /* WalletRemoteSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscription.swift; sourceTree = "<group>"; };
 		0CA8AD5B2CE08FEE00ED9746 /* BlockEventsQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEventsQueryFactory.swift; sourceTree = "<group>"; };
@@ -10880,6 +10890,8 @@
 				0C32729B2CD28C4000FC1B42 /* AssetExchangeOperationFee+AssetHub.swift */,
 				0C6108292CD5DE9500909928 /* AssetHubExchangeHost.swift */,
 				0C883A772CE2640000CAB4C8 /* AssetConversionEventParser.swift */,
+				0CA81D4D2CE5028D00166969 /* AssetHubFeeSupportFetching.swift */,
+				0CA81D532CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift */,
 			);
 			path = AssetHubExchange;
 			sourceTree = "<group>";
@@ -10922,6 +10934,7 @@
 				0C3272A12CD34F7700FC1B42 /* HydraExchangeExtrinsicConverter.swift */,
 				0C6108252CD5227900909928 /* HydraExchangeHost.swift */,
 				0C883A752CE25E6800CAB4C8 /* HydraSwapEventParser.swift */,
+				0CA81D512CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift */,
 			);
 			path = HydraExchange;
 			sourceTree = "<group>";
@@ -11385,6 +11398,8 @@
 			children = (
 				0C6108402CD74DD200909928 /* AssetExchangeFeeEstimatingFactory.swift */,
 				0C6108422CD755A300909928 /* AssetExchangeGraphProxy.swift */,
+				0CA81D4B2CE4FF8800166969 /* AssetExchangeGraphFee.swift */,
+				0CA81D4F2CE502B200166969 /* AssetExchangeFeeSupport.swift */,
 			);
 			path = FeeEstimating;
 			sourceTree = "<group>";
@@ -25402,6 +25417,7 @@
 				849628CB299684D70073F143 /* GovernanceYourDelegationGroup.swift in Sources */,
 				8860F3E0289D241E00C0BF86 /* CurrencyViewSectionModel.swift in Sources */,
 				84B8AA7D29F9063400347A37 /* WalletConnectStateAuthorizing.swift in Sources */,
+				0CA81D4C2CE4FF8800166969 /* AssetExchangeGraphFee.swift in Sources */,
 				842806F32847A51400702F3A /* AccountDetailsSelectionView.swift in Sources */,
 				840B3D652899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift in Sources */,
 				84C5ADDB2812A244006D7388 /* WalletAccountViewModelFactory.swift in Sources */,
@@ -26073,6 +26089,7 @@
 				84468A0B286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift in Sources */,
 				84A2C90C24E192F50020D3B7 /* ShakeAnimator.swift in Sources */,
 				AEE0C43E272A8C16009F9AD5 /* AddChainAccount+AccountConfirmInteractor.swift in Sources */,
+				0CA81D4E2CE5028D00166969 /* AssetHubFeeSupportFetching.swift in Sources */,
 				8407716028CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift in Sources */,
 				2DCC876B2C598AA80028C3CA /* CloudBackupCreateViewFactory+UpdatePassword.swift in Sources */,
 				8456C08427CFA4A7001282DE /* ImagePlaceholderView.swift in Sources */,
@@ -26608,6 +26625,7 @@
 				846CD24D2656FEB800A2E4B6 /* StorageKeysQueryService.swift in Sources */,
 				0CD846272BDDF43A0026B5CA /* UIImage+Resize.swift in Sources */,
 				8465DA39298EC86E00C7CFF1 /* TitleDetailsSheetViewModel.swift in Sources */,
+				0CA81D542CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift in Sources */,
 				8468B86C24F63CEF00B76BC6 /* AddAccount+AccountConfirmInteractor.swift in Sources */,
 				887A717C28FEF03E00B13C7E /* BaselinedView.swift in Sources */,
 				84ABB32E2A16146700B5E95A /* WalletHistoryBackgroundView.swift in Sources */,
@@ -26780,6 +26798,7 @@
 				84DA03D82759362100E8B326 /* ChainAccountViewModel.swift in Sources */,
 				84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */,
 				84F1A0712869DA51007DB053 /* AssetBalanceExistence.swift in Sources */,
+				0CA81D502CE502B200166969 /* AssetExchangeFeeSupport.swift in Sources */,
 				84ABB32D2A16146700B5E95A /* WalletEmptyStateDataSource.swift in Sources */,
 				0CEB6B382CA450C200609DC2 /* XcmV4.swift in Sources */,
 				84FBECF62926B38300FBEB83 /* ERC20BalanceUpdateService.swift in Sources */,
@@ -27091,6 +27110,7 @@
 				848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */,
 				84C1E7C929EE990800D37668 /* Web3NameProvider.swift in Sources */,
 				2DA85A822C80775F00591900 /* ReferendumsPresenter+VoteChildPresenter.swift in Sources */,
+				0CA81D522CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift in Sources */,
 				84F18D4C27A1874000CA7554 /* TokenSubscriptionFactory.swift in Sources */,
 				8846F72B29D6BC1300B8B776 /* Data+base32.swift in Sources */,
 				4448B591D4A193DBC9E2E3BF /* AccountCreateInteractor.swift in Sources */,

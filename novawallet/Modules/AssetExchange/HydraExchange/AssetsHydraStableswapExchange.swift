@@ -35,7 +35,7 @@ extension AssetsHydraStableswapExchange: AssetsExchangeProtocol {
                 remoteAssets: allRemoteAssets,
                 chain: self.host.chain,
                 codingFactory: codingFactory,
-                failureClosure: { self.logger.error("Token \($0) conversion failed: \($1)") }
+                failureClosure: { self.logger.warning("Token \($0) conversion failed: \($1)") }
             )
 
             return allPools.flatMap { keyValue in
@@ -44,7 +44,7 @@ extension AssetsHydraStableswapExchange: AssetsExchangeProtocol {
 
                 return remotePoolAssets.flatMap { remoteAssetIn in
                     guard let localAssetIn = remoteLocalMapping[remoteAssetIn] else {
-                        self.logger.error("Skipped remote in \(remoteAssetIn) as no mapping found")
+                        self.logger.warning("Skipped remote in \(remoteAssetIn) as no mapping found")
                         return [AnyAssetExchangeEdge]()
                     }
 
@@ -52,7 +52,7 @@ extension AssetsHydraStableswapExchange: AssetsExchangeProtocol {
 
                     return otherAssets.compactMap { remoteAssetOut in
                         guard let localAssetOut = remoteLocalMapping[remoteAssetOut] else {
-                            self.logger.error("Skipped remote out \(remoteAssetOut) as no mapping found")
+                            self.logger.warning("Skipped remote out \(remoteAssetOut) as no mapping found")
                             return nil
                         }
 

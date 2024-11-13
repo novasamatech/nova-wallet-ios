@@ -33,7 +33,7 @@ extension AssetsHydraOmnipoolExchange: AssetsExchangeProtocol {
                 remoteAssets: remoteAssets,
                 chain: self.host.chain,
                 codingFactory: codingFactory,
-                failureClosure: { self.logger.error("Token \($0) conversion failed: \($1)") }
+                failureClosure: { self.logger.warning("Token \($0) conversion failed: \($1)") }
             )
 
             return remoteAssets.flatMap { remoteAssetIn in
