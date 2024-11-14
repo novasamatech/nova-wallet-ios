@@ -38,6 +38,8 @@ final class CrosschainExchangeEdge {
 }
 
 extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
+    var type: AssetExchangeEdgeType { .crossChain }
+
     var weight: Int { AssetsExchange.defaultEdgeWeight }
 
     func quote(
@@ -67,7 +69,6 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
     }
 
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
-        // TODO: Fix me
         deliveryFeeNotPaidOrFromHolding()
     }
 }

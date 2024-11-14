@@ -21,6 +21,8 @@ final class AssetHubExchangeEdge {
 }
 
 extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
+    var type: AssetExchangeEdgeType { .assetHubSwap }
+
     var weight: Int { AssetsExchange.defaultEdgeWeight + 1 }
 
     func quote(

@@ -11,6 +11,8 @@ class AssetsHydraExchangeEdge {
     let remoteSwapPair: HydraDx.RemoteSwapPair
     let host: HydraExchangeHostProtocol
 
+    var type: AssetExchangeEdgeType { .hydraSwap }
+
     init(
         origin: ChainAssetId,
         destination: ChainAssetId,
@@ -43,7 +45,7 @@ class AssetsHydraExchangeEdge {
     }
 
     func shouldIgnoreFeeRequirement(after edge: any AssetExchangableGraphEdge) -> Bool {
-        edge.isOfType(AssetsHydraExchangeEdge.Self)
+        type == edge.type
     }
 
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
