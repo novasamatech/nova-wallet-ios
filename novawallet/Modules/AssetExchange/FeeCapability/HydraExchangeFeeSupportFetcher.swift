@@ -8,7 +8,7 @@ final class HydraExchangeFeeSupportFetcher {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let logger: LoggerProtocol
-    
+
     init(
         chain: ChainModel,
         connection: JSONRPCEngine,
@@ -25,9 +25,11 @@ final class HydraExchangeFeeSupportFetcher {
 }
 
 extension HydraExchangeFeeSupportFetcher: AssetExchangeFeeSupportFetching {
+    var identifier: String { "hydra-fee-\(chain.chainId)" }
+
     func createFeeSupportWrapper() -> CompoundOperationWrapper<AssetExchangeFeeSupporting> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        
+
         let keysFactory = StorageKeysOperationFactory(operationQueue: operationQueue)
         let assetsFetchWrapper: CompoundOperationWrapper<[HydraDx.AssetsKey]> = keysFactory.createKeysFetchWrapper(
             by: HydraDx.feeCurrenciesPath,
@@ -40,16 +42,16 @@ extension HydraExchangeFeeSupportFetcher: AssetExchangeFeeSupportFetching {
         let mapOperation = ClosureOperation<AssetExchangeFeeSupporting> {
             let allAssets = try assetsFetchWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            
+
             let remoteLocalMapping = try HydraDxTokenConverter.convertToRemoteLocalMapping(
-                remoteAssets: allAssets,
+                remoteAssets: Set(allAssets.map(\.assetId)),
                 chain: self.chain,
                 codingFactory: codingFactory,
                 failureClosure: { self.logger.warning("Token \($0) conversion failed: \($1)") }
             )
-            
+
             let localFeeAssetIds = Set(remoteLocalMapping.values)
-            
+
             return AssetExchangeFeeSupport(supportedAssets: localFeeAssetIds)
         }
 

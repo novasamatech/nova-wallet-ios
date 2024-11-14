@@ -65,7 +65,6 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     }
 
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
-        // TODO: assetIn is must be self sufficient
         true
     }
 }

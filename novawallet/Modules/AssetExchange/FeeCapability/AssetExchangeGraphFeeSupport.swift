@@ -6,6 +6,8 @@ protocol AssetExchangeFeeSupporting {
 }
 
 protocol AssetExchangeFeeSupportFetching {
+    var identifier: String { get }
+
     func createFeeSupportWrapper() -> CompoundOperationWrapper<AssetExchangeFeeSupporting>
 }
 
@@ -13,11 +15,11 @@ protocol AssetExchangeFeeSupportProviding {
     func setup()
     func throttle()
 
-    func subscribeExchanges(
+    func subscribeFeeFetchers(
         _ target: AnyObject,
         notifyingIn queue: DispatchQueue,
         onChange: @escaping ([AssetExchangeFeeSupportFetching]) -> Void
     )
 
-    func unsubscribeExchanges(_ target: AnyObject)
+    func unsubscribeFeeFetchers(_ target: AnyObject)
 }

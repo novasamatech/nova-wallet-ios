@@ -26,7 +26,7 @@ final class AssetConversionFeeEstimatingFactory {
 extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol {
     func createCustomFeeEstimator(for chainAsset: ChainAsset) -> ExtrinsicFeeEstimating? {
         switch AssetType(rawType: chainAsset.asset.type) {
-        case .orml where chainAsset.chain.hasHydrationTransferFees:
+        case .orml where chainAsset.chain.hasHydrationFees:
             let hydraState = setupHydraFlowState()
             let hydraQuoteFactory = HydraQuoteFactory(flowState: hydraState)
 
@@ -35,7 +35,7 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
                 operationQueue: host.operationQueue,
                 quoteFactory: hydraQuoteFactory
             )
-        case .statemine where chainAsset.chain.hasAssetHubTransferFees:
+        case .statemine where chainAsset.chain.hasAssetHubFees:
             let assetHubQuoteFactory = AssetHubSwapOperationFactory(
                 chain: host.chain,
                 runtimeService: host.runtimeProvider,

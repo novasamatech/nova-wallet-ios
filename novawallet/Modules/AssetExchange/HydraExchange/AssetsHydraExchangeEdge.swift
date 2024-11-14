@@ -42,13 +42,11 @@ class AssetsHydraExchangeEdge {
         )
     }
 
-    func shouldIgnoreFeeRequirement(after predecessor: any AssetExchangableGraphEdge) -> Bool {
-        predecessor is AssetsHydraExchangeEdge
+    func shouldIgnoreFeeRequirement(after edge: any AssetExchangableGraphEdge) -> Bool {
+        edge.isOfType(AssetsHydraExchangeEdge.Self)
     }
 
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
-        // TODO: assetIn must whitelisted for fee payment
-
         true
     }
 }

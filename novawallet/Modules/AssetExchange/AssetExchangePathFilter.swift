@@ -6,18 +6,18 @@ final class AssetExchangePathFilter {
     let selectedWallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let sufficiencyProvider: AssetExchangeSufficiencyProviding
-    let feeCapabilityProvider: AssetExchangeFeeCapabilityProviding
+    let feeSupport: AssetExchangeFeeSupporting
 
     init(
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         sufficiencyProvider: AssetExchangeSufficiencyProviding,
-        feeCapabilityProvider: AssetExchangeFeeCapabilityProviding
+        feeSupport: AssetExchangeFeeSupporting
     ) {
         self.selectedWallet = selectedWallet
         self.chainRegistry = chainRegistry
         self.sufficiencyProvider = sufficiencyProvider
-        self.feeCapabilityProvider = feeCapabilityProvider
+        self.feeSupport = feeSupport
     }
 }
 
@@ -27,7 +27,7 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             let chainIn = chainRegistry.getChain(for: edge.origin.chainId),
             let chainAssetIn = chainIn.chainAsset(for: edge.origin.assetId),
             let chainOut = chainRegistry.getChain(for: edge.destination.chainId),
-            let chainAssetOut = chainIn.chainAsset(for: edge.destination.assetId) else {
+            let chainAssetOut = chainOut.chainAsset(for: edge.destination.assetId) else {
             return false
         }
 
@@ -54,7 +54,7 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return true
         }
 
-        let canPayFees = feeCapabilityProvider.canPayFee(inNonNative: chainAssetIn) &&
+        let canPayFees = feeSupport.canPayFee(inNonNative: chainAssetIn) &&
             edge.canPayNonNativeFeesInIntermediatePosition()
 
         return canPayFees

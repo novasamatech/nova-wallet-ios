@@ -67,8 +67,7 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
     }
 
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
-        // TODO: also assetIn is must be self sufficient
-
+        // TODO: Fix me
         deliveryFeeNotPaidOrFromHolding()
     }
 }

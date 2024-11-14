@@ -55,13 +55,13 @@ extension AssetConversionFeeInstallingFactory: ExtrinsicCustomFeeInstallingFacto
         accountClosure: @escaping () throws -> ChainAccountResponse
     ) -> CompoundOperationWrapper<ExtrinsicFeeInstalling> {
         switch AssetType(rawType: chainAsset.asset.type) {
-        case .statemine where chainAsset.chain.hasAssetHubTransferFees:
+        case .statemine where chainAsset.chain.hasAssetHubFees:
             CompoundOperationWrapper.createWithResult(
                 ExtrinsicAssetConversionFeeInstaller(
                     feeAsset: chainAsset
                 )
             )
-        case .orml where chainAsset.chain.hasHydrationTransferFees:
+        case .orml where chainAsset.chain.hasHydrationFees:
             createHydraFeeInstallingWrapper(
                 chainAsset: chainAsset,
                 accountClosure: accountClosure
