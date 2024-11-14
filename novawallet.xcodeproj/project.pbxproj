@@ -493,6 +493,7 @@
 		0C962F8A2AA8614500C0B551 /* TransactionHistoryLocalFilterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C962F892AA8614500C0B551 /* TransactionHistoryLocalFilterFactory.swift */; };
 		0C9680F12A8A85BB006A411B /* TokenAddValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9680F02A8A85BB006A411B /* TokenAddValidationFactory.swift */; };
 		0C9680F32A8AC2F2006A411B /* EvmTokenAddResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9680F22A8AC2F2006A411B /* EvmTokenAddResult.swift */; };
+		0C97B21F2CE65D170071047C /* SwapsValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C97B21E2CE65D170071047C /* SwapsValidationTests.swift */; };
 		0C992C342B5184F100ACC129 /* EraValidatorsUpdating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C332B5184F100ACC129 /* EraValidatorsUpdating.swift */; };
 		0C992C392B5187A800ACC129 /* EraStakersRemoteKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C382B5187A800ACC129 /* EraStakersRemoteKey.swift */; };
 		0C992C3B2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C3A2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift */; };
@@ -1565,7 +1566,6 @@
 		77171CAA2A98BC420032B387 /* NominationPoolDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77171CA92A98BC420032B387 /* NominationPoolDataValidatorFactory.swift */; };
 		7719018C2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */; };
 		7719018E2AE0E71F00D9C918 /* SwapErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018D2AE0E71F00D9C918 /* SwapErrorPresentable.swift */; };
-		771901902AE2424B00D9C918 /* SwapsValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719018F2AE2424B00D9C918 /* SwapsValidationTests.swift */; };
 		7719019B2AE670AE00D9C918 /* ShortTextInfoPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019A2AE670AE00D9C918 /* ShortTextInfoPresentable.swift */; };
 		7719019D2AE6996600D9C918 /* SwapPairView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019C2AE6996600D9C918 /* SwapPairView.swift */; };
 		7719019F2AE6C9DC00D9C918 /* SwapElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */; };
@@ -5773,6 +5773,7 @@
 		0C962F892AA8614500C0B551 /* TransactionHistoryLocalFilterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryLocalFilterFactory.swift; sourceTree = "<group>"; };
 		0C9680F02A8A85BB006A411B /* TokenAddValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenAddValidationFactory.swift; sourceTree = "<group>"; };
 		0C9680F22A8AC2F2006A411B /* EvmTokenAddResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTokenAddResult.swift; sourceTree = "<group>"; };
+		0C97B21E2CE65D170071047C /* SwapsValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsValidationTests.swift; sourceTree = "<group>"; };
 		0C992C332B5184F100ACC129 /* EraValidatorsUpdating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorsUpdating.swift; sourceTree = "<group>"; };
 		0C992C382B5187A800ACC129 /* EraStakersRemoteKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraStakersRemoteKey.swift; sourceTree = "<group>"; };
 		0C992C3A2B51A61D00ACC129 /* EraStakersPagedRemoteKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraStakersPagedRemoteKey.swift; sourceTree = "<group>"; };
@@ -6849,7 +6850,6 @@
 		77171CA92A98BC420032B387 /* NominationPoolDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolDataValidatorFactory.swift; sourceTree = "<group>"; };
 		7719018B2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapDataValidatorFactory.swift; sourceTree = "<group>"; };
 		7719018D2AE0E71F00D9C918 /* SwapErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapErrorPresentable.swift; sourceTree = "<group>"; };
-		7719018F2AE2424B00D9C918 /* SwapsValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapsValidationTests.swift; sourceTree = "<group>"; };
 		7719019A2AE670AE00D9C918 /* ShortTextInfoPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortTextInfoPresentable.swift; sourceTree = "<group>"; };
 		7719019C2AE6996600D9C918 /* SwapPairView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPairView.swift; sourceTree = "<group>"; };
 		7719019E2AE6C9DC00D9C918 /* SwapElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapElementView.swift; sourceTree = "<group>"; };
@@ -14161,7 +14161,7 @@
 		771901912AE2425400D9C918 /* Swaps */ = {
 			isa = PBXGroup;
 			children = (
-				7719018F2AE2424B00D9C918 /* SwapsValidationTests.swift */,
+				0C97B21E2CE65D170071047C /* SwapsValidationTests.swift */,
 				0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */,
 			);
 			path = Swaps;
@@ -29936,6 +29936,7 @@
 				84BEE63026CBFDBC00757009 /* ChainRegistryTests.swift in Sources */,
 				84B7C73C289BFA79001A3566 /* StakingRewardPayoutsTests.swift in Sources */,
 				84B7C747289BFA79001A3566 /* AccountManagementTests.swift in Sources */,
+				0C97B21F2CE65D170071047C /* SwapsValidationTests.swift in Sources */,
 				843612CB279011B400DC739E /* SigningWrapperFactoryStub.swift in Sources */,
 				8846F73829D6F57700B8B776 /* MultibaseTests.swift in Sources */,
 				84300B2F26C1112300D64514 /* ConnectionPoolTests.swift in Sources */,
@@ -30051,7 +30052,6 @@
 				84B66A1426FDF29A0038B963 /* WalletLocalSubscriptionFactoryStub.swift in Sources */,
 				887248082924F54900B0D2CC /* URL+Matchable.swift in Sources */,
 				8440F4A5295AB4E300CAFBF9 /* SecurityLayerTests.swift in Sources */,
-				771901902AE2424B00D9C918 /* SwapsValidationTests.swift in Sources */,
 				84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */,
 				844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */,
 				84F4A910255001D2000CF0A3 /* KeystoreExportWrapperTests.swift in Sources */,

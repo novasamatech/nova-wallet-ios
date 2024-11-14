@@ -152,7 +152,6 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
         
         let operationFactory = WalletRemoteQueryWrapperFactory(
             requestFactory: requestFactory,
-            assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
             runtimeProvider: runtimeProvider,
             connection: connection,
             operationQueue: operationQueue

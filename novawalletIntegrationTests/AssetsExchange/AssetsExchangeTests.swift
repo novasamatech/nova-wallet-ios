@@ -123,21 +123,18 @@ final class AssetsExchangeTests: XCTestCase {
                 direction: .sell
             )
             
-            guard let service = createExchangeService(for: params) else {
+            guard let factory = createExchangeFactory(for: params) else {
                 XCTFail("Service not found")
                 return
             }
             
-            let routeWrapper = service.fetchQuoteWrapper(for: quoteArgs)
+            let routeWrapper = factory.createQuoteWrapper(args: quoteArgs)
             
             params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
             
-            guard let route = try routeWrapper.targetOperation.extractNoCancellableResultData() else {
-                XCTFail("Route not found")
-                return
-            }
+            let route = try routeWrapper.targetOperation.extractNoCancellableResultData()
 
-            let feeWrapper = service.estimateFee(
+            let feeWrapper = factory.createFeeWrapper(
                 for: .init(
                     route: route,
                     slippage: BigRational.percent(of: 5),
@@ -158,33 +155,35 @@ final class AssetsExchangeTests: XCTestCase {
     
     private func findRoute(
         quoteArgs: AssetConversion.QuoteArgs,
-        params: CommonParams
+        params: AssetExchangeGraphProvidingParams
     ) throws -> AssetExchangeRoute? {
-        guard let service = createExchangeService(for: params) else {
+        guard let factory = createExchangeFactory(for: params) else {
             return nil
         }
         
-        let routeWrapper = service.fetchQuoteWrapper(for: quoteArgs)
+        let routeWrapper = factory.createQuoteWrapper(args: quoteArgs)
         
         params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
         
         return try routeWrapper.targetOperation.extractNoCancellableResultData()
     }
     
-    private func createExchangeService(for params: CommonParams) -> AssetsExchangeService? {
+    private func createExchangeFactory(for params: AssetExchangeGraphProvidingParams) -> AssetsExchangeOperationFactoryProtocol? {
         guard let graph = createGraph(for: params) else {
             return nil
         }
         
-        return AssetsExchangeService(
+        return AssetsExchangeOperationFactory(
             graph: graph,
             operationQueue: params.operationQueue,
             logger: params.logger
         )
     }
     
-    private func createGraph(for params: CommonParams) -> AssetsExchangeGraphProtocol? {
+    private func createGraph(for params: AssetExchangeGraphProvidingParams) -> AssetsExchangeGraphProtocol? {
         let graphProvider = AssetsExchangeGraphProvider(
+            selectedWallet: params.wallet,
+            chainRegistry: params.chainRegistry,
             supportedExchangeProviders: [
                 CrosschainAssetsExchangeProvider(
                     wallet: params.wallet,
@@ -219,6 +218,12 @@ final class AssetsExchangeTests: XCTestCase {
                     logger: params.logger
                 )
             ],
+            feeSupportProvider: AssetExchangeFeeSupportProvider(
+                chainRegistry: params.chainRegistry,
+                operationQueue: params.operationQueue,
+                logger: params.logger
+            ),
+            suffiencyProvider: AssetExchangeSufficiencyProvider(),
             operationQueue: params.operationQueue,
             logger: params.logger
         )
