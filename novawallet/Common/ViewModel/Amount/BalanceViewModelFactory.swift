@@ -4,14 +4,17 @@ import BigInt
 
 final class BalanceViewModelFactory: PrimitiveBalanceViewModelFactory, BalanceViewModelFactoryProtocol {
     let limit: Decimal
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
     init(
         targetAssetInfo: AssetBalanceDisplayInfo,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
         formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory(),
         limit: Decimal = Decimal.greatestFiniteMagnitude
     ) {
         self.limit = limit
+        self.assetIconViewModelFactory = assetIconViewModelFactory
 
         super.init(
             targetAssetInfo: targetAssetInfo,
@@ -50,7 +53,10 @@ final class BalanceViewModelFactory: PrimitiveBalanceViewModelFactory, BalanceVi
 
         let symbol = targetAssetInfo.symbol
 
-        let iconViewModel = targetAssetInfo.icon.map { RemoteImageViewModel(url: $0) }
+        let iconViewModel = assetIconViewModelFactory.createAssetIconViewModel(
+            for: targetAssetInfo.icon?.getPath(),
+            defaultURL: targetAssetInfo.icon?.getURL()
+        )
 
         return LocalizableResource { locale in
             let priceString: String?

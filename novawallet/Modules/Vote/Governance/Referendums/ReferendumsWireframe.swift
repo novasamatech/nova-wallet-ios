@@ -10,11 +10,11 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: GovernanceAssetSelectionDelegate,
+        delegate: GovernanceChainSelectionDelegate,
         chainId: ChainModel.Id?,
         governanceType: GovernanceType?
     ) {
-        guard let selectionView = GovernanceAssetSelectionViewFactory.createView(
+        guard let selectionView = GovernanceChainSelectionViewFactory.createView(
             for: delegate,
             chainId: chainId,
             governanceType: governanceType

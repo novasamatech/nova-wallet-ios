@@ -69,7 +69,7 @@ struct AssetPriceViewModel {
 
 enum AssetListGroupState {
     case empty
-    case list(groups: [AssetListGroupViewModel])
+    case list(groups: [AssetListGroupType])
 
     var isEmpty: Bool {
         switch self {
@@ -80,7 +80,7 @@ enum AssetListGroupState {
         }
     }
 
-    var groups: [AssetListGroupViewModel] {
+    var groups: [AssetListGroupType] {
         switch self {
         case .empty:
             return []
@@ -93,19 +93,77 @@ enum AssetListGroupState {
 struct AssetListViewModel {
     let isFiltered: Bool
     let listState: AssetListGroupState
+    let listGroupStyle: AssetListGroupsStyle
 }
 
-struct AssetListGroupViewModel {
+// MARK: Group
+
+enum AssetListGroupType: Identifiable {
+    case network(AssetListNetworkGroupViewModel)
+    case token(AssetListTokenGroupViewModel)
+
+    var id: String {
+        switch self {
+        case let .network(model): model.id
+        case let .token(model): model.id
+        }
+    }
+
+    var assetsCount: Int {
+        switch self {
+        case let .network(model): model.assets.count
+        case let .token(model): model.assets.count
+        }
+    }
+
+    func chainAssetId(for assetIndex: Int) -> ChainAssetId {
+        switch self {
+        case let .network(model):
+            model.assets[assetIndex].chainAssetId
+        case let .token(model):
+            model.assets[assetIndex].chainAssetId
+        }
+    }
+}
+
+struct AssetListNetworkGroupViewModel: Identifiable {
+    var id: String { networkName }
+
     let networkName: String
     let amount: LoadableViewModelState<String>
     let icon: ImageViewModelProtocol?
-    let assets: [AssetListAssetViewModel]
+    let assets: [AssetListNetworkGroupAssetViewModel]
 }
 
-struct AssetListAssetViewModel {
+struct AssetListTokenGroupViewModel: Identifiable {
+    var id: String { token.symbol }
+
+    let token: AssetViewModel
+    let assets: [AssetListTokenGroupAssetViewModel]
+
+    let balance: AssetListAssetBalanceViewModel
+}
+
+// MARK: Asset
+
+struct AssetListNetworkGroupAssetViewModel: Identifiable {
+    var id: String { chainAssetId.stringValue }
+
     let chainAssetId: ChainAssetId
     let tokenName: String
     let icon: ImageViewModelProtocol?
+    let balance: AssetListAssetBalanceViewModel
+}
+
+struct AssetListTokenGroupAssetViewModel: Identifiable {
+    var id: String { chainAssetId.stringValue }
+
+    let chainAssetId: ChainAssetId
+    let chainAsset: ChainAssetViewModel
+    let balance: AssetListAssetBalanceViewModel
+}
+
+struct AssetListAssetBalanceViewModel {
     let price: LoadableViewModelState<AssetPriceViewModel>
     let balanceAmount: LoadableViewModelState<String>
     let balanceValue: LoadableViewModelState<String>

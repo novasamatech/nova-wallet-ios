@@ -1,10 +1,13 @@
 import Foundation
 import BigInt
+import Operation_iOS
 
 struct AssetListBuilderResult {
     struct Model {
-        let groups: [AssetListGroupModel]
-        let groupLists: [ChainModel.Id: [AssetListAssetModel]]
+        let chainGroups: [AssetListChainGroupModel]
+        let assetGroups: [AssetListAssetGroupModel]
+        let groupListsByChain: [ChainModel.Id: [AssetListAssetModel]]
+        let groupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]]
         let priceResult: Result<[ChainAssetId: PriceData], Error>?
         let balanceResults: [ChainAssetId: Result<BigUInt, Error>]
         let allChains: [ChainModel.Id: ChainModel]
@@ -15,8 +18,10 @@ struct AssetListBuilderResult {
         let holdsResult: Result<[AssetHold], Error>?
 
         init(
-            groups: [AssetListGroupModel] = [],
-            groupLists: [ChainModel.Id: [AssetListAssetModel]] = [:],
+            chainGroups: [AssetListChainGroupModel] = [],
+            assetGroups: [AssetListAssetGroupModel] = [],
+            groupListsByChain: [ChainModel.Id: [AssetListAssetModel]] = [:],
+            groupListsByAsset: [AssetModel.Symbol: [AssetListAssetModel]] = [:],
             priceResult: Result<[ChainAssetId: PriceData], Error>? = nil,
             balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:],
             allChains: [ChainModel.Id: ChainModel] = [:],
@@ -26,8 +31,10 @@ struct AssetListBuilderResult {
             locksResult: Result<[AssetLock], Error>? = nil,
             holdsResult: Result<[AssetHold], Error>? = nil
         ) {
-            self.groups = groups
-            self.groupLists = groupLists
+            self.chainGroups = chainGroups
+            self.assetGroups = assetGroups
+            self.groupListsByChain = groupListsByChain
+            self.groupListsByAsset = groupListsByAsset
             self.priceResult = priceResult
             self.balanceResults = balanceResults
             self.allChains = allChains
@@ -40,8 +47,10 @@ struct AssetListBuilderResult {
 
         func replacing(nfts: [NftModel]) -> Model {
             .init(
-                groups: groups,
-                groupLists: groupLists,
+                chainGroups: chainGroups,
+                assetGroups: assetGroups,
+                groupListsByChain: groupListsByChain,
+                groupListsByAsset: groupListsByAsset,
                 priceResult: priceResult,
                 balanceResults: balanceResults,
                 allChains: allChains,

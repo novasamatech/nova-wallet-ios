@@ -23,6 +23,8 @@ enum SettingsKey: String {
     case cloudBackupAutoSyncConfirm
     case cloudBackupPasswordId
     case integrateNetworksBannerSeen
+    case assetListGroupStyle
+    case assetIconsAppearance
 }
 
 extension SettingsManagerProtocol {
@@ -256,6 +258,40 @@ extension SettingsManagerProtocol {
             } else {
                 removeValue(for: SettingsKey.cloudBackupPasswordId.rawValue)
             }
+        }
+    }
+
+    var assetListGroupStyle: AssetListGroupsStyle {
+        get {
+            if let rawValue = string(for: SettingsKey.assetListGroupStyle.rawValue) {
+                return AssetListGroupsStyle(rawValue: rawValue) ?? .tokens
+            } else {
+                return .tokens
+            }
+        }
+
+        set {
+            set(
+                value: newValue.rawValue,
+                for: SettingsKey.assetListGroupStyle.rawValue
+            )
+        }
+    }
+
+    var assetIconsAppearance: AppearanceIconsOptions {
+        get {
+            if let rawValue = string(for: SettingsKey.assetIconsAppearance.rawValue) {
+                return AppearanceIconsOptions(rawValue: rawValue) ?? .colored
+            } else {
+                return .colored
+            }
+        }
+
+        set {
+            set(
+                value: newValue.rawValue,
+                for: SettingsKey.assetIconsAppearance.rawValue
+            )
         }
     }
 }

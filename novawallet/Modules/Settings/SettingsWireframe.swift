@@ -138,6 +138,19 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         )
     }
 
+    func showAppearance(from view: ControllerBackedProtocol?) {
+        guard let appearanceView = AppearanceSettingsViewFactory.createView() else {
+            return
+        }
+
+        appearanceView.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.pushViewController(
+            appearanceView.controller,
+            animated: true
+        )
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {

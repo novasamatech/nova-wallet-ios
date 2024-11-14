@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "Referandum #%li tamamlandı";
 "gov.referendum.completed.message.with.index" = "Referandum #%li tamamlandı ve oylama sona erdi";
 "common.use.max.due.fee.message" = "%@ kadar kullanabilirsiniz çünkü ağ ücreti için %@ ödemeniz gerekiyor.";
+"send.operation.network.list.title" = "Gönderme için ağ seçin %@";
+"buy.operation.network.list.title" = "Satın alma için ağ seçin %@";
+"receive.operation.network.list.title" = "Alma için ağ seçin %@";
+"swap.operation.network.list.title" = "Takas için ağ seçin %@";
+"settings.appearance" = "Görünüm";
+"settings.appearance.token.icons.title" = "token simgeleri";
+"settings.appearance.token.icons.option.white" = "Beyaz";
+"settings.appearance.token.icons.option.colored" = "Renkli";
+"wallet.receive.details.format" = "Bu adrese yalnızca %@ token ve %@ ağındaki tokenleri gönderin, aksi takdirde paranızı kaybedebilirsiniz";
+"common.address.coppied" = "Adres kopyalandı";
+"common.networks" = "Ağlar";
+"assets.search.token.hint" = "Tokene göre ara";

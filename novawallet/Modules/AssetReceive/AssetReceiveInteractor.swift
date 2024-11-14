@@ -5,9 +5,10 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
     weak var presenter: AssetReceiveInteractorOutputProtocol!
 
     let chainAsset: ChainAsset
+    let qrCodeFactory: QRCodeWithLogoFactoryProtocol
     let qrCoderFactory: NovaWalletQRCoderFactoryProtocol
-    let qrCodeCreationOperationFactory: QRCreationOperationFactoryProtocol
     let metaChainAccountResponse: MetaChainAccountResponse
+    let appearanceFacade: AppearanceFacadeProtocol
 
     private let operationQueue: OperationQueue
     private var currentQRCodeOperation: CancellableCall?
@@ -16,13 +17,15 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
         metaChainAccountResponse: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         qrCoderFactory: NovaWalletQRCoderFactoryProtocol,
-        qrCodeCreationOperationFactory: QRCreationOperationFactoryProtocol,
+        qrCodeFactory: QRCodeWithLogoFactoryProtocol,
+        appearanceFacade: AppearanceFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.metaChainAccountResponse = metaChainAccountResponse
         self.chainAsset = chainAsset
         self.qrCoderFactory = qrCoderFactory
-        self.qrCodeCreationOperationFactory = qrCodeCreationOperationFactory
+        self.qrCodeFactory = qrCodeFactory
+        self.appearanceFacade = appearanceFacade
         self.operationQueue = operationQueue
     }
 
@@ -41,33 +44,35 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             return
         }
 
-        let qrCreationOperation = qrCodeCreationOperationFactory.createOperation(
-            payload: payload,
-            qrSize: size
+        let qrLogoType = AssetIconURLFactory.createQRLogoURL(
+            for: chainAsset.asset.icon,
+            iconAppearance: appearanceFacade.selectedIconAppearance
         )
 
-        qrCreationOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard let self = self, self.currentQRCodeOperation === qrCreationOperation else {
-                    return
-                }
+        let logoInfo = IconInfo(
+            size: .qrLogoSize,
+            type: qrLogoType
+        )
 
-                self.currentQRCodeOperation = nil
-
-                do {
-                    let qrImage = try qrCreationOperation.extractNoCancellableResultData()
-                    self.presenter.didReceive(qrCodeInfo: .init(
-                        image: qrImage,
-                        encodingData: receiverInfo
-                    ))
-                } catch {
-                    self.presenter.didReceive(error: .generatingQRCode)
-                }
+        let resultClosure: (Result<QRCodeWithLogoFactory.QRCreationResult, Error>) -> Void = { [weak self] result in
+            switch result {
+            case let .success(qrCode):
+                self?.presenter.didReceive(qrCodeInfo: .init(
+                    result: qrCode,
+                    encodingData: receiverInfo
+                ))
+            case .failure:
+                self?.presenter.didReceive(error: .generatingQRCode)
             }
         }
 
-        currentQRCodeOperation = qrCreationOperation
-        operationQueue.addOperation(qrCreationOperation)
+        qrCodeFactory.createQRCode(
+            with: payload,
+            logoInfo: logoInfo,
+            qrSize: size,
+            partialResultClosure: resultClosure,
+            completion: resultClosure
+        )
     }
 }
 

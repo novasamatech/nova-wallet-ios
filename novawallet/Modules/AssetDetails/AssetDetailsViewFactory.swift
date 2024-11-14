@@ -38,6 +38,7 @@ struct AssetDetailsViewFactory {
 
         let viewModelFactory = AssetDetailsViewModelFactory(
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            assetIconViewModelFactory: AssetIconViewModelFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             priceChangePercentFormatter: NumberFormatter.signedPercent.localizableResource()

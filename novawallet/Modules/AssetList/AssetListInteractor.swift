@@ -161,6 +161,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     }
 
     override func setup() {
+        presenter?.didReceiveAssetListGroupStyle(settingsManager.assetListGroupStyle)
         modelBuilder = .init { [weak self] result in
             self?.presenter?.didReceive(result: result)
 
@@ -280,6 +281,10 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
 
     func retryFetchWalletConnectSessionsCount() {
         provideWalletConnectSessionsCount()
+    }
+
+    func setAssetListGroupsStyle(_ style: AssetListGroupsStyle) {
+        settingsManager.assetListGroupStyle = style
     }
 }
 

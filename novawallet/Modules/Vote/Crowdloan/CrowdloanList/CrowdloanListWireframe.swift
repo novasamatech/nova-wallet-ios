@@ -91,7 +91,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
 
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: AssetSelectionDelegate,
+        delegate: ChainAssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?
     ) {
         let assetFilter: (ChainAsset) -> Bool = { chainAsset in
@@ -100,7 +100,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
                 && chainAsset.asset.isUtility
         }
 
-        guard let selectionView = AssetSelectionViewFactory.createView(
+        guard let selectionView = ChainAssetSelectionViewFactory.createView(
             delegate: delegate,
             selectedChainAssetId: selectedChainAssetId,
             assetFilter: assetFilter

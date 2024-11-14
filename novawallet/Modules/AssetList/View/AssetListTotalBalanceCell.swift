@@ -139,7 +139,12 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     func bind(viewModel: AssetListHeaderViewModel) {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
-            amountLabel.attributedText = totalAmountString(from: value)
+            amountLabel.attributedText = NSAttributedString.styledAmountString(
+                from: value.amount,
+                intPartFont: .boldLargeTitle,
+                fractionFont: .boldTitle3,
+                decimalSeparator: value.decimalSeparator
+            )
 
             if let lockedAmount = viewModel.locksAmount {
                 setupStateWithLocks(amount: lockedAmount)
@@ -157,56 +162,44 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         swapButton.isEnabled = viewModel.hasSwaps
     }
 
-    private func totalAmountString(from model: AssetListTotalAmountViewModel) -> NSAttributedString {
-        let defaultAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorTextPrimary()!,
-            .font: UIFont.boldLargeTitle
-        ]
-
-        let amount = model.amount
-
-        if
-            let lastChar = model.amount.last?.asciiValue,
-            !NSCharacterSet.decimalDigits.contains(UnicodeScalar(lastChar)) {
-            return .init(string: amount, attributes: defaultAttributes)
-        } else {
-            guard let decimalSeparator = model.decimalSeparator,
-                  let range = amount.range(of: decimalSeparator) else {
-                return .init(string: amount, attributes: defaultAttributes)
-            }
-
-            let amountAttributedString = NSMutableAttributedString(string: amount)
-            let intPartRange = NSRange(amount.startIndex ..< range.lowerBound, in: amount)
-
-            let fractionPartRange = NSRange(range.lowerBound ..< amount.endIndex, in: amount)
-
-            amountAttributedString.setAttributes(
-                defaultAttributes,
-                range: intPartRange
-            )
-
-            amountAttributedString.setAttributes(
-                [.foregroundColor: R.color.colorTextSecondary()!,
-                 .font: UIFont.boldTitle3],
-                range: fractionPartRange
-            )
-
-            return amountAttributedString
+    func startLoadingIfNeeded() {
+        guard skeletonView == nil else {
+            return
         }
+
+        amountLabel.alpha = 0.0
+
+        setupSkeleton()
     }
 
-    private func setupStateWithLocks(amount: String) {
+    func stopLoadingIfNeeded() {
+        guard skeletonView != nil else {
+            return
+        }
+
+        skeletonView?.stopSkrulling()
+        skeletonView?.removeFromSuperview()
+        skeletonView = nil
+
+        amountLabel.alpha = 1.0
+    }
+}
+
+// MARK: Private
+
+private extension AssetListTotalBalanceCell {
+    func setupStateWithLocks(amount: String) {
         locksView.isHidden = false
 
         locksView.contentView.detailsView.detailsLabel.text = amount
     }
 
-    private func setupStateWithoutLocks() {
+    func setupStateWithoutLocks() {
         locksView.contentView.detailsView.detailsLabel.text = nil
         locksView.isHidden = true
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         titleLabel.text = R.string.localizable.walletTotalBalance(
             preferredLanguages: locale.rLanguages
         )
@@ -222,7 +215,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         )
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         [shadowView1, shadowView2].forEach { view in
             contentView.addSubview(view)
 
@@ -281,29 +274,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         }
     }
 
-    func startLoadingIfNeeded() {
-        guard skeletonView == nil else {
-            return
-        }
-
-        amountLabel.alpha = 0.0
-
-        setupSkeleton()
-    }
-
-    func stopLoadingIfNeeded() {
-        guard skeletonView != nil else {
-            return
-        }
-
-        skeletonView?.stopSkrulling()
-        skeletonView?.removeFromSuperview()
-        skeletonView = nil
-
-        amountLabel.alpha = 1.0
-    }
-
-    private func setupSkeleton() {
+    func setupSkeleton() {
         let spaceSize = contentView.frame.size
 
         guard spaceSize.width > 0, spaceSize.height > 0 else {
@@ -339,7 +310,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
     }
 
-    private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
         let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing +
@@ -361,7 +332,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         ]
     }
 
-    private func createActionButton(title: String?, icon: UIImage?) -> RoundedButton {
+    func createActionButton(title: String?, icon: UIImage?) -> RoundedButton {
         let button = RoundedButton()
         button.roundedBackgroundView?.fillColor = .clear
         button.roundedBackgroundView?.highlightedFillColor = .clear

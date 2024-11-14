@@ -1,6 +1,6 @@
 import UIKit
 
 struct QRCodeInfo {
-    let image: UIImage
+    let result: QRCodeWithLogoFactory.QRCreationResult
     let encodingData: AssetReceiveInfo
 }

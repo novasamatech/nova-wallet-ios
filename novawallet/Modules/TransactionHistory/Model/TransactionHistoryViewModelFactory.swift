@@ -24,6 +24,7 @@ final class TransactionHistoryViewModelFactory {
     let chainAsset: ChainAsset
     let groupDateFormatter: LocalizableResource<DateFormatter>
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     let iconGenerator = PolkadotIconGenerator()
     let calendar = Calendar.current
     let dateFormatter: LocalizableResource<DateFormatter>
@@ -33,11 +34,13 @@ final class TransactionHistoryViewModelFactory {
         chainAsset: ChainAsset,
         dateFormatter: LocalizableResource<DateFormatter>,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         groupDateFormatter: LocalizableResource<DateFormatter>
     ) {
         self.chainAsset = chainAsset
         self.dateFormatter = dateFormatter
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.assetIconViewModelFactory = assetIconViewModelFactory
         self.groupDateFormatter = groupDateFormatter
     }
 
@@ -290,8 +293,10 @@ final class TransactionHistoryViewModelFactory {
             locale: locale
         )
 
-        let iconUrl = chainAsset.asset.icon ?? chainAsset.chain.icon
-        let imageViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: iconUrl)
+        let imageViewModel = assetIconViewModelFactory.createAssetIconViewModel(
+            for: chainAsset.asset.icon,
+            with: .white
+        )
         let peerFirstName = data.callPath.callName.displayCall
         let peerLastName = data.callPath.moduleName.displayCall
         let extrinsicTitleWithSubtitle = data.callPath.isEvmNativeTransaction ?
