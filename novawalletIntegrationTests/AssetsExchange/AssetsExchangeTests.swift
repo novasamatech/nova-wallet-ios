@@ -1,16 +1,8 @@
 import XCTest
 @testable import novawallet
+import SoraKeystore
 
 final class AssetsExchangeTests: XCTestCase {
-    struct CommonParams {
-        let wallet: MetaAccountModel
-        let substrateStorageFacade: StorageFacadeProtocol
-        let userDataStorageFacade: StorageFacadeProtocol
-        let chainRegistry: ChainRegistryProtocol
-        let operationQueue: OperationQueue
-        let logger: LoggerProtocol
-    }
-    
     func testFindPath() {
         let params = buildCommonParams()
         
@@ -136,7 +128,7 @@ final class AssetsExchangeTests: XCTestCase {
                 return
             }
             
-            let routeWrapper = service.createQuoteWrapper(args: quoteArgs)
+            let routeWrapper = service.fetchQuoteWrapper(for: quoteArgs)
             
             params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
             
@@ -145,10 +137,12 @@ final class AssetsExchangeTests: XCTestCase {
                 return
             }
 
-            let feeWrapper = service.createFeeWrapper(
-                for: route,
-                slippage: BigRational.percent(of: 5),
-                feeAssetId: nil
+            let feeWrapper = service.estimateFee(
+                for: .init(
+                    route: route,
+                    slippage: BigRational.percent(of: 5),
+                    feeAssetId: nil
+                )
             )
             
             params.operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: true)
@@ -170,7 +164,7 @@ final class AssetsExchangeTests: XCTestCase {
             return nil
         }
         
-        let routeWrapper = service.createQuoteWrapper(args: quoteArgs)
+        let routeWrapper = service.fetchQuoteWrapper(for: quoteArgs)
         
         params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
         
@@ -253,7 +247,7 @@ final class AssetsExchangeTests: XCTestCase {
         return actualGraph
     }
     
-    private func buildCommonParams() -> CommonParams {
+    private func buildCommonParams() -> AssetExchangeGraphProvidingParams {
         let substrateStorageFacade = SubstrateStorageTestFacade()
         let userDataStorageFacade = UserDataStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: substrateStorageFacade)
@@ -268,7 +262,10 @@ final class AssetsExchangeTests: XCTestCase {
             substrateStorageFacade: substrateStorageFacade,
             userDataStorageFacade: userDataStorageFacade,
             chainRegistry: chainRegistry,
+            config: ApplicationConfig.shared,
             operationQueue: operationQueue,
+            keychain: InMemoryKeychain(),
+            settingsManager: InMemorySettingsManager(),
             logger: logger
         )
     }
