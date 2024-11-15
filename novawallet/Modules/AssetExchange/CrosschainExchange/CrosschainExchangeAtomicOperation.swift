@@ -190,6 +190,8 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
 
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
         guard
+            let originChain = host.allChains[edge.origin.chainId],
+            let originUtilityAsset = originChain.utilityChainAsset(),
             let destinationChain = host.allChains[edge.destination.chainId],
             let destinationAccount = host.wallet.fetch(for: destinationChain.accountRequest()) else {
             return .createWithError(ChainAccountFetchingError.accountNotExists)
@@ -221,6 +223,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
                 originFee: originFee,
                 assetIn: self.edge.origin,
                 assetOut: self.edge.destination,
+                originUtilityAsset: originUtilityAsset.chainAssetId,
                 args: self.operationArgs
             )
         }

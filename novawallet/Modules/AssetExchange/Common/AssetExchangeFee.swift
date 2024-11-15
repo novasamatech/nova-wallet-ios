@@ -3,7 +3,7 @@ import Foundation
 struct AssetExchangeFeeArgs {
     let route: AssetExchangeRoute
     let slippage: BigRational
-    let feeAssetId: ChainAssetId?
+    let feeAssetId: ChainAssetId
 }
 
 enum AssetExchangeFeeError: Error {
@@ -15,7 +15,7 @@ struct AssetExchangeFee: Equatable {
     let operationFees: [AssetExchangeOperationFee]
     let intermediateFeesInAssetIn: Balance
     let slippage: BigRational
-    let feeAssetId: ChainAssetId?
+    let feeAssetId: ChainAssetId
 
     // TODO: Get rid of temp vars
     var networkFee: AssetConversion.AmountWithNative {

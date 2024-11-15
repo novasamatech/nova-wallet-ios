@@ -28,7 +28,7 @@ final class XcmDepositMonitoringService {
     private var state: TokenDepositEvent?
     private var notificationClosure: ((Result<TokenDepositEvent, Error>) -> Void)?
     private var scheduler: SchedulerProtocol?
-    private let detectionCallStore = CancellableCallStore()
+    private var detectionCallsStore: [Data: CancellableCallStore] = [:]
     private let mutex = NSLock()
 
     init(
@@ -121,16 +121,21 @@ final class XcmDepositMonitoringService {
             .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: matchingOperation)
 
+        let callStore = CancellableCallStore()
+        detectionCallsStore[hash] = callStore
+
         executeCancellable(
             wrapper: totalWrapper,
             inOperationQueue: operationQueue,
-            backingCallIn: detectionCallStore,
+            backingCallIn: callStore,
             runningCallbackIn: workingQueue,
             mutex: mutex
         ) { [weak self] result in
             guard let self else {
                 return
             }
+
+            detectionCallsStore[hash] = nil
 
             switch result {
             case let .success(deposit):
@@ -219,7 +224,7 @@ final class XcmDepositMonitoringService {
                     return
                 }
 
-                logger.debug("\(accountId.toHex()) Checking block for deposit \(blockHash.toHex())")
+                logger.debug("\(accountId.toHex()) Checking block \(blockHash.toHex()) in \(chainAsset.chain.name)")
 
                 fetchBlockAndDetectDeposit(
                     for: blockHash,
@@ -242,7 +247,8 @@ final class XcmDepositMonitoringService {
         subscription?.unsubscribe()
         subscription = nil
 
-        detectionCallStore.cancel()
+        detectionCallsStore.values.forEach { $0.cancel() }
+        detectionCallsStore = [:]
 
         notificationClosure = nil
     }

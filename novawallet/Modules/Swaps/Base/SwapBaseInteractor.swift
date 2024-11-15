@@ -173,12 +173,16 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func fee(route: AssetExchangeRoute, slippage: BigRational) {
+        guard let feeAsset else {
+            return
+        }
+
         feeCallStore.cancel()
 
         let args = AssetExchangeFeeArgs(
             route: route,
             slippage: slippage,
-            feeAssetId: feeAsset?.chainAssetId
+            feeAssetId: feeAsset.chainAssetId
         )
 
         let wrapper = assetsExchangeService.estimateFee(for: args)

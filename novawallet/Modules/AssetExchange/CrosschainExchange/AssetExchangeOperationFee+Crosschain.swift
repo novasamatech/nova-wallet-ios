@@ -6,6 +6,7 @@ extension AssetExchangeOperationFee {
         originFee: ExtrinsicFeeProtocol,
         assetIn: ChainAssetId,
         assetOut _: ChainAssetId,
+        originUtilityAsset: ChainAssetId,
         args: AssetExchangeAtomicOperationArgs
     ) {
         submissionFee = .init(
@@ -19,7 +20,7 @@ extension AssetExchangeOperationFee {
         let paidByAccount: [AmountByPayer] = if crosschainFee.senderPart > 0 {
             [
                 .init(
-                    amountWithAsset: .init(amount: crosschainFee.senderPart, asset: nil),
+                    amountWithAsset: .init(amount: crosschainFee.senderPart, asset: originUtilityAsset),
                     payer: nil
                 )
             ]
@@ -27,10 +28,9 @@ extension AssetExchangeOperationFee {
             []
         }
 
-        let feeAsset = assetIn.assetId == AssetModel.utilityAssetId ? nil : assetIn
         let paidFromAmount: [Amount] = if crosschainFee.holdingPart > 0 {
             [
-                .init(amount: crosschainFee.holdingPart, asset: feeAsset)
+                .init(amount: crosschainFee.holdingPart, asset: assetIn)
             ]
         } else {
             []

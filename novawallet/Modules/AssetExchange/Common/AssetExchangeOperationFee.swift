@@ -7,11 +7,9 @@ enum AssetExchangeOperationFeeError: Error {
 struct AssetExchangeOperationFee: Equatable {
     struct Amount: Equatable {
         let amount: Balance
+        let asset: ChainAssetId
 
-        // TODO: nil means native, probably make it explicit
-        let asset: ChainAssetId?
-
-        func totalAmountEnsuring(asset: ChainAssetId?) throws -> Balance {
+        func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
             guard self.asset == asset else {
                 throw AssetExchangeOperationFeeError.assetMismatch
             }
@@ -26,7 +24,7 @@ struct AssetExchangeOperationFee: Equatable {
         // TODO: nil means account from the current wallet, probably make it explicit and rename to general type
         let payer: ExtrinsicFeePayer?
 
-        func totalAmountEnsuring(asset: ChainAssetId?) throws -> Balance {
+        func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
             try amountWithAsset.totalAmountEnsuring(asset: asset)
         }
     }
@@ -45,7 +43,7 @@ struct AssetExchangeOperationFee: Equatable {
          */
         let paidFromAmount: [Amount]
 
-        func totalByAccountEnsuring(asset: ChainAssetId?) throws -> Balance {
+        func totalByAccountEnsuring(asset: ChainAssetId) throws -> Balance {
             try paidByAccount.reduce(0) { total, item in
                 let current = try item.totalAmountEnsuring(asset: asset)
 
@@ -53,7 +51,7 @@ struct AssetExchangeOperationFee: Equatable {
             }
         }
 
-        func totalFromAmountEnsuring(asset: ChainAssetId?) throws -> Balance {
+        func totalFromAmountEnsuring(asset: ChainAssetId) throws -> Balance {
             try paidFromAmount.reduce(0) { total, item in
                 let current = try item.totalAmountEnsuring(asset: asset)
 
@@ -61,7 +59,7 @@ struct AssetExchangeOperationFee: Equatable {
             }
         }
 
-        func totalAmountEnsuring(asset: ChainAssetId?) throws -> Balance {
+        func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
             let totalByAccount = try totalByAccountEnsuring(asset: asset)
 
             let totalFromAmount = try totalFromAmountEnsuring(asset: asset)
@@ -90,7 +88,7 @@ extension AssetExchangeOperationFee {
         return submissionFee.amountWithAsset.amount + postSubmissionByAccount
     }
 
-    func totalToPayFromAmountEnsuring(asset: ChainAssetId?) throws -> Balance {
+    func totalToPayFromAmountEnsuring(asset: ChainAssetId) throws -> Balance {
         try postSubmissionFee.totalFromAmountEnsuring(asset: asset)
     }
 

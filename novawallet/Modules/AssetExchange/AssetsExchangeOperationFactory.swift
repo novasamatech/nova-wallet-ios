@@ -34,7 +34,7 @@ final class AssetsExchangeOperationFactory {
         for segment: AssetExchangeRouteItem,
         routeDirection: AssetConversion.Direction,
         slippage: BigRational,
-        feeAssetId: ChainAssetId?,
+        feeAssetId: ChainAssetId,
         isFirst: Bool
     ) -> AssetExchangeAtomicOperationArgs {
         // on the first segment fee paid in configurable asset and further only in assetIn
@@ -61,7 +61,7 @@ final class AssetsExchangeOperationFactory {
     private func prepareAtomicOperations(
         for route: AssetExchangeRoute,
         slippage: BigRational,
-        feeAssetId: ChainAssetId?
+        feeAssetId: ChainAssetId
     ) throws -> [AssetExchangeAtomicOperationProtocol] {
         try route.items.reduce([]) { curOperations, segment in
             let args = createOperationArgs(

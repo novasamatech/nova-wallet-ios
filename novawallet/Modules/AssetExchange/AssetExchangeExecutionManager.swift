@@ -48,9 +48,7 @@ final class AssetExchangeExecutionManager {
             let amountIn = firstSegment.amountIn(for: routeDetails.route.direction)
             let amountInWithFee = amountIn + routeDetails.intermediateFeesInAssetIn
 
-            // TODO: Get rid when fee is fixed
-            let feeAsset = firstSegment.edge.origin.assetId == AssetModel.utilityAssetId ? nil : firstSegment.edge.origin
-            let holdingFee = try firstFees.totalToPayFromAmountEnsuring(asset: feeAsset)
+            let holdingFee = try firstFees.totalToPayFromAmountEnsuring(asset: firstSegment.edge.origin)
             let amountInWithHolding = amountInWithFee + holdingFee
 
             executeSegment(at: 0, amountIn: amountInWithHolding)
