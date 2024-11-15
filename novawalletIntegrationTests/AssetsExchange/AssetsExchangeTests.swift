@@ -138,7 +138,7 @@ final class AssetsExchangeTests: XCTestCase {
                 for: .init(
                     route: route,
                     slippage: BigRational.percent(of: 5),
-                    feeAssetId: nil
+                    feeAssetId: dotPolkadot.chainAssetId
                 )
             )
             
@@ -146,7 +146,7 @@ final class AssetsExchangeTests: XCTestCase {
             
             let feeResult = try feeWrapper.targetOperation.extractNoCancellableResultData()
             
-            params.logger.info("Fees: \(feeResult.fees)")
+            params.logger.info("Fees: \(feeResult.operationFees)")
             
         } catch {
             XCTFail("Fee error: \(error)")
