@@ -86,15 +86,14 @@ class DAppMetamaskBaseState {
             )
 
             let responseCommand = createNullResponseCommand(for: message.identifier)
-            let reloadCommand = createReloadCommand()
-            let commands = changeChainCommands + [responseCommand, reloadCommand]
+            let commands = changeChainCommands + [responseCommand]
 
             let content = createContentWithCommands(commands)
 
             let response = DAppScriptResponse(content: content)
 
             let nextState = nextStateSuccessClosure(ethereumChain)
-            stateMachine?.emitReload(with: response, nextState: nextState)
+            stateMachine?.emit(response: response, nextState: nextState)
         } else {
             let error = MetamaskError.noChainSwitch
 
@@ -124,15 +123,14 @@ class DAppMetamaskBaseState {
             )
 
             let responseCommand = createNullResponseCommand(for: message.identifier)
-            let reloadCommand = createReloadCommand()
-            let commands = changeChainCommands + [responseCommand, reloadCommand]
+            let commands = changeChainCommands + [responseCommand]
 
             let content = createContentWithCommands(commands)
 
             let response = DAppScriptResponse(content: content)
 
             let nextState = nextStateSuccessClosure(newChain)
-            stateMachine?.emitReload(with: response, nextState: nextState)
+            stateMachine?.emit(response: response, nextState: nextState)
         } else {
             let nextState = nextStateSuccessClosure(chain)
             provideNullResponse(to: message.identifier, nextState: nextState)
@@ -247,10 +245,6 @@ class DAppMetamaskBaseState {
 
     func createSetRpcCommand(_ rpc: String) -> String {
         String(format: "window.ethereum.setRpcUrl(\"%@\");", rpc)
-    }
-
-    func createReloadCommand() -> String {
-        "window.location.reload();"
     }
 
     func createEventCommand(_ event: MetamaskEvent) -> String {
