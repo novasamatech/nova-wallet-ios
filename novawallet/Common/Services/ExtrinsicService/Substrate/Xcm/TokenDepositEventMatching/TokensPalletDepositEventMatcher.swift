@@ -3,9 +3,11 @@ import SubstrateSdk
 
 final class TokensPalletDepositEventMatcher {
     let extras: OrmlTokenExtras
+    let logger: LoggerProtocol
 
-    init(extras: OrmlTokenExtras) {
+    init(extras: OrmlTokenExtras, logger: LoggerProtocol) {
         self.extras = extras
+        self.logger = logger
     }
 }
 
@@ -35,6 +37,8 @@ extension TokensPalletDepositEventMatcher: TokenDepositEventMatching {
 
             return TokenDepositEvent(accountId: depositedEvent.recepient, amount: depositedEvent.amount)
         } catch {
+            logger.error("Parsing failed \(error)")
+
             return nil
         }
     }

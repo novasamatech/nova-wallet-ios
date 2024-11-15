@@ -2,9 +2,11 @@ import Foundation
 
 final class PalletAssetsTokenDepositEventMatcher {
     let extras: StatemineAssetExtras
+    let logger: LoggerProtocol
 
-    init(extras: StatemineAssetExtras) {
+    init(extras: StatemineAssetExtras, logger: LoggerProtocol) {
         self.extras = extras
+        self.logger = logger
     }
 }
 
@@ -38,6 +40,8 @@ extension PalletAssetsTokenDepositEventMatcher: TokenDepositEventMatching {
 
             return TokenDepositEvent(accountId: mintedEvent.accountId, amount: mintedEvent.amount)
         } catch {
+            logger.error("Parsing failed \(error)")
+
             return nil
         }
     }

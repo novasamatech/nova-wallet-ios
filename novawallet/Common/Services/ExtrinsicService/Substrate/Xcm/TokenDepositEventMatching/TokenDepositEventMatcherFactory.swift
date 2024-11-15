@@ -5,19 +5,25 @@ protocol TokenDepositEventMatcherFactoryProtocol {
 }
 
 final class TokenDepositEventMatcherFactory: TokenDepositEventMatcherFactoryProtocol {
+    let logger: LoggerProtocol
+
+    init(logger: LoggerProtocol) {
+        self.logger = logger
+    }
+
     func createMatcher(for chainAsset: ChainAsset) -> TokenDepositEventMatching? {
         try? CustomAssetMapper(
             type: chainAsset.asset.type,
             typeExtras: chainAsset.asset.typeExtras
         ).mapAssetWithExtras(
             nativeHandler: {
-                NativeTokenDepositEventMatcher()
+                NativeTokenDepositEventMatcher(logger: logger)
             },
             statemineHandler: { extras in
-                PalletAssetsTokenDepositEventMatcher(extras: extras)
+                PalletAssetsTokenDepositEventMatcher(extras: extras, logger: logger)
             },
             ormlHandler: { extras in
-                TokensPalletDepositEventMatcher(extras: extras)
+                TokensPalletDepositEventMatcher(extras: extras, logger: logger)
             }, evmHandler: { _ in
                 nil
             },

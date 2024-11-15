@@ -51,7 +51,7 @@ final class XcmDepositMonitoringService {
         self.logger = logger
 
         blockEventsQueryFactory = BlockEventsQueryFactory(operationQueue: operationQueue, logger: logger)
-        tokenDepositEventMatchingFactory = TokenDepositEventMatcherFactory()
+        tokenDepositEventMatchingFactory = TokenDepositEventMatcherFactory(logger: logger)
     }
 
     private func notifyAboutStateIfNeeded() {
@@ -219,7 +219,7 @@ final class XcmDepositMonitoringService {
                     return
                 }
 
-                logger.debug("Checking block for deposit \(blockHash.toHex())")
+                logger.debug("\(accountId.toHex()) Checking block for deposit \(blockHash.toHex())")
 
                 fetchBlockAndDetectDeposit(
                     for: blockHash,

@@ -3,7 +3,6 @@ import Operation_iOS
 
 enum AssetExchangeExecutionManagerError: Error {
     case invalidRouteDetails
-    case feesOperationsMismatch
 }
 
 final class AssetExchangeExecutionManager {
@@ -38,56 +37,21 @@ final class AssetExchangeExecutionManager {
         completionClosure?(result)
     }
 
-    private func calculateAmountInIncludingIntermediateFees() throws -> Balance {
-        guard
-            let firstSegment = operations.first,
-            operations.count == routeDetails.fees.count else {
-            throw AssetExchangeExecutionManagerError.feesOperationsMismatch
-        }
-
-        let totalSegments = operations.count
-        let segmentsWithFee = zip(operations.suffix(totalSegments - 1), routeDetails.fees.suffix(totalSegments - 1))
-
-        let newAmountOut: Balance? = try segmentsWithFee.reversed().reduce(nil) { newAmountOut, segmentWithFee in
-            let segment = segmentWithFee.0
-            let fee = segmentWithFee.1
-
-            let curAmountIn = segment.swapLimit.amountIn
-            let curAmountOut = segment.swapLimit.amountOut
-
-            let totalFee = try fee.totalEnsuringSubmissionAsset()
-
-            if let newAmountOut {
-                return (newAmountOut * curAmountIn).divideByRoundingUp(curAmountOut) + totalFee
-            } else {
-                return curAmountIn + totalFee
-            }
-        }
-
-        let firstSegmentIn = firstSegment.swapLimit.amountIn
-        let firstSegmentOut = firstSegment.swapLimit.amountOut
-
-        if let newAmountOut {
-            return (newAmountOut * firstSegmentIn).divideByRoundingUp(firstSegmentOut)
-        } else {
-            return firstSegmentIn
-        }
-    }
-
     private func startFirstSegmentExecution() {
         do {
             guard
                 let firstSegment = routeDetails.route.items.first,
-                let firstFees = routeDetails.fees.first else {
+                let firstFees = routeDetails.operationFees.first else {
                 throw AssetExchangeExecutionManagerError.invalidRouteDetails
             }
 
-            let amountIn = try calculateAmountInIncludingIntermediateFees()
+            let amountIn = firstSegment.amountIn(for: routeDetails.route.direction)
+            let amountInWithFee = amountIn + routeDetails.intermediateFeesInAssetIn
 
             // TODO: Get rid when fee is fixed
             let feeAsset = firstSegment.edge.origin.assetId == AssetModel.utilityAssetId ? nil : firstSegment.edge.origin
             let holdingFee = try firstFees.totalToPayFromAmountEnsuring(asset: feeAsset)
-            let amountInWithHolding = amountIn + holdingFee
+            let amountInWithHolding = amountInWithFee + holdingFee
 
             executeSegment(at: 0, amountIn: amountInWithHolding)
         } catch {
@@ -131,7 +95,7 @@ final class AssetExchangeExecutionManager {
         let nextSegment = currentSegment + 1
 
         do {
-            let leaveOnAccount = try routeDetails.fees[nextSegment].totalAmountToPayFromAccount()
+            let leaveOnAccount = try routeDetails.operationFees[nextSegment].totalAmountToPayFromAccount()
 
             logger.debug("Amount for fee: \(Balance(leaveOnAccount))")
 

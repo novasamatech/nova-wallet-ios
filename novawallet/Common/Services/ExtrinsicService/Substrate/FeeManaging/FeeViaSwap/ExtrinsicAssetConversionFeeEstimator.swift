@@ -6,15 +6,18 @@ final class ExtrinsicAssetConversionFeeEstimator {
     let chainAsset: ChainAsset
     let operationQueue: OperationQueue
     let quoteFactory: AssetQuoteFactoryProtocol
+    let feeBufferInPercentage: BigRational
 
     init(
         chainAsset: ChainAsset,
         operationQueue: OperationQueue,
-        quoteFactory: AssetQuoteFactoryProtocol
+        quoteFactory: AssetQuoteFactoryProtocol,
+        feeBufferInPercentage: BigRational = BigRational.percent(of: 0) // no overestimation by default
     ) {
         self.chainAsset = chainAsset
         self.operationQueue = operationQueue
         self.quoteFactory = quoteFactory
+        self.feeBufferInPercentage = feeBufferInPercentage
     }
 }
 
@@ -64,7 +67,9 @@ extension ExtrinsicAssetConversionFeeEstimator: ExtrinsicFeeEstimating {
             let quotes = try conversionOperation.extractNoCancellableResultData()
 
             let items = zip(nativeFees, quotes).map { pair in
-                ExtrinsicFee(amount: pair.1.amountIn, payer: pair.0.payer, weight: pair.0.weight)
+                let amountIn = pair.1.amountIn
+                let amountInWithBuffer = amountIn + self.feeBufferInPercentage.mul(value: amountIn)
+                return ExtrinsicFee(amount: amountInWithBuffer, payer: pair.0.payer, weight: pair.0.weight)
             }
 
             return ExtrinsicFeeEstimationResult(items: items)
