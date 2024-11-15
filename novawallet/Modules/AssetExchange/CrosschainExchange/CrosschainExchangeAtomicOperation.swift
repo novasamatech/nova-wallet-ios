@@ -237,6 +237,16 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
             .insertingTail(operation: mappingOperation)
     }
 
+    func requiredAmountToGetAmountOut(
+        _ amountOutClosure: @escaping () throws -> Balance
+    ) -> CompoundOperationWrapper<Balance> {
+        let operation = ClosureOperation {
+            try amountOutClosure()
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
     var swapLimit: AssetExchangeSwapLimit {
         operationArgs.swapLimit
     }

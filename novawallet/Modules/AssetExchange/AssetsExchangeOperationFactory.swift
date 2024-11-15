@@ -89,32 +89,54 @@ final class AssetsExchangeOperationFactory {
     private func calculateIntermediateFeesInAssetIn(
         for operations: [AssetExchangeAtomicOperationProtocol],
         operationFees: [AssetExchangeOperationFee]
-    ) throws -> Balance {
-        guard
-            let firstSegment = operations.first,
-            operations.count == operationFees.count else {
-            throw AssetsExchangeOperationFactoryError.feesOperationsMismatch
+    ) -> CompoundOperationWrapper<Balance> {
+        guard operations.count == operationFees.count else {
+            return .createWithError(AssetsExchangeOperationFactoryError.feesOperationsMismatch)
         }
 
-        let totalSegments = operations.count
-        let segmentsWithFee = zip(operations.suffix(totalSegments - 1), operationFees.suffix(totalSegments - 1))
+        let segmentsWithFee = zip(operations, operationFees)
 
-        let newFeeOut: Balance = try segmentsWithFee.reversed().reduce(0) { feeOut, segmentWithFee in
-            let segment = segmentWithFee.0
-            let fee = segmentWithFee.1
+        let feeWrapper: CompoundOperationWrapper<Balance>? = segmentsWithFee.enumerated().reversed().reduce(
+            nil
+        ) { prevWrapper, segmentWithFeeIndex in
+            let index = segmentWithFeeIndex.offset
+            let segment = segmentWithFeeIndex.element.0
+            let segmentFee = segmentWithFeeIndex.element.1
 
-            let curAmountIn = segment.swapLimit.amountIn
-            let curAmountOut = segment.swapLimit.amountOut
+            let quoteWrapper: CompoundOperationWrapper<Balance>
+            if let prevWrapper {
+                let childWrapper = segment.requiredAmountToGetAmountOut {
+                    try prevWrapper.targetOperation.extractNoCancellableResultData()
+                }
 
-            let totalFee = try fee.totalEnsuringSubmissionAsset()
+                childWrapper.addDependency(wrapper: prevWrapper)
 
-            return (feeOut * curAmountIn).divideByRoundingUp(curAmountOut) + totalFee
+                quoteWrapper = childWrapper.insertingHead(operations: prevWrapper.allOperations)
+            } else {
+                quoteWrapper = .createWithResult(0)
+            }
+
+            let mappingOperation = ClosureOperation<Balance> {
+                let amountIn = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+
+                if index > 0 {
+                    let totalFee = try segmentFee.totalEnsuringSubmissionAsset()
+                    return amountIn + totalFee
+                } else {
+                    return amountIn
+                }
+            }
+
+            mappingOperation.addDependency(quoteWrapper.targetOperation)
+
+            return quoteWrapper.insertingTail(operation: mappingOperation)
         }
 
-        let firstSegmentIn = firstSegment.swapLimit.amountIn
-        let firstSegmentOut = firstSegment.swapLimit.amountOut
+        guard let feeWrapper else {
+            return .createWithError(AssetsExchangeOperationFactoryError.noRoute)
+        }
 
-        return (newFeeOut * firstSegmentIn).divideByRoundingUp(firstSegmentOut)
+        return feeWrapper
     }
 }
 
@@ -163,13 +185,20 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
             let feeWrappers = atomicOperations.map { $0.estimateFee() }
 
+            let intermediateFeesWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) {
+                let operationFees = try feeWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
+
+                return self.calculateIntermediateFeesInAssetIn(for: atomicOperations, operationFees: operationFees)
+            }
+
+            feeWrappers.forEach { intermediateFeesWrapper.addDependency(wrapper: $0) }
+
             let mappingOperation = ClosureOperation<AssetExchangeFee> {
                 let operationFees = try feeWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
 
-                let intermediateFees = try self.calculateIntermediateFeesInAssetIn(
-                    for: atomicOperations,
-                    operationFees: operationFees
-                )
+                let intermediateFees = try intermediateFeesWrapper.targetOperation.extractNoCancellableResultData()
 
                 return AssetExchangeFee(
                     route: args.route,
@@ -181,10 +210,13 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             }
 
             feeWrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+            mappingOperation.addDependency(intermediateFeesWrapper.targetOperation)
 
             let dependencies = feeWrappers.flatMap(\.allOperations)
 
-            return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+            return intermediateFeesWrapper
+                .insertingHead(operations: dependencies)
+                .insertingTail(operation: mappingOperation)
         } catch {
             return .createWithError(error)
         }

@@ -144,6 +144,18 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
         return feeWrapper.insertingTail(operation: mappingOperation)
     }
 
+    func requiredAmountToGetAmountOut(
+        _ amountOutClosure: @escaping () throws -> Balance
+    ) -> CompoundOperationWrapper<Balance> {
+        OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let amountOut = try amountOutClosure()
+
+            return self.edge.quote(amount: amountOut, direction: .buy)
+        }
+    }
+
     var swapLimit: AssetExchangeSwapLimit {
         operationArgs.swapLimit
     }

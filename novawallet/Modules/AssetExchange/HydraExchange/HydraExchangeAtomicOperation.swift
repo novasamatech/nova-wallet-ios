@@ -163,6 +163,38 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
         return feeWrapper.insertingTail(operation: mappingOperation)
     }
 
+    func requiredAmountToGetAmountOut(
+        _ amountOutClosure: @escaping () throws -> Balance
+    ) -> CompoundOperationWrapper<Balance> {
+        let quoteWrapper: CompoundOperationWrapper<Balance>? = edges.reversed().reduce(nil) { prevWrapper, edge in
+            let quoteWrapper: CompoundOperationWrapper<Balance> = OperationCombiningService.compoundNonOptionalWrapper(
+                operationManager: OperationManager(operationQueue: self.host.operationQueue)
+            ) {
+                if let prevWrapper {
+                    let amountOut = try prevWrapper.targetOperation.extractNoCancellableResultData()
+                    return edge.quote(amount: amountOut, direction: .buy)
+                } else {
+                    let amountOut = try amountOutClosure()
+                    return edge.quote(amount: amountOut, direction: .buy)
+                }
+            }
+
+            if let prevWrapper {
+                quoteWrapper.addDependency(wrapper: prevWrapper)
+
+                return quoteWrapper.insertingHead(operations: prevWrapper.allOperations)
+            } else {
+                return quoteWrapper
+            }
+        }
+
+        guard let quoteWrapper else {
+            return .createWithError(HydraExchangeAtomicOperationError.noRoute)
+        }
+
+        return quoteWrapper
+    }
+
     var swapLimit: AssetExchangeSwapLimit {
         operationArgs.swapLimit
     }

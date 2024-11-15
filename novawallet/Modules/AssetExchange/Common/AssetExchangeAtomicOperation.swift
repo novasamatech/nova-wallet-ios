@@ -6,4 +6,5 @@ protocol AssetExchangeAtomicOperationProtocol {
 
     func executeWrapper(for amountClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance>
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee>
+    func requiredAmountToGetAmountOut(_ amountOutClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance>
 }
