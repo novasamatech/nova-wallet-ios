@@ -153,7 +153,7 @@ final class CrosschainExchangeAtomicOperation {
 }
 
 extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
-    func executeWrapper(for amountClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance> {
+    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
         guard
             let originChain = host.allChains[edge.origin.chainId],
             let destinationChain = host.allChains[edge.destination.chainId],
@@ -168,7 +168,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
         // TODO: We need only weight from the crosschain fee, probably we can calculate it during submission
         let feeWrapper = createCrosschainFeeFetchWrapper(
             dependingOn: resolutionWrapper.targetOperation,
-            amountClosure: amountClosure
+            amountClosure: { swapLimit.amountIn }
         )
 
         feeWrapper.addDependency(wrapper: resolutionWrapper)
@@ -178,7 +178,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
             destinationAsset: destinationAsset,
             resolutionOperation: resolutionWrapper.targetOperation,
             feeOperation: feeWrapper.targetOperation,
-            amountClosure: amountClosure
+            amountClosure: { swapLimit.amountIn }
         )
 
         submitWrapper.addDependency(wrapper: feeWrapper)

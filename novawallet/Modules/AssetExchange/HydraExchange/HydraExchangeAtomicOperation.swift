@@ -36,7 +36,7 @@ final class HydraExchangeAtomicOperation {
     }
 
     private func createExtrinsicParamsWrapper(
-        for amountInClosure: @escaping () throws -> Balance
+        for swapLimit: AssetExchangeSwapLimit
     ) -> CompoundOperationWrapper<HydraExchangeSwapParams> {
         guard let assetIn, let assetOut else {
             return .createWithError(HydraExchangeAtomicOperationError.noRoute)
@@ -45,15 +45,14 @@ final class HydraExchangeAtomicOperation {
         return OperationCombiningService<HydraExchangeSwapParams>.compoundNonOptionalWrapper(
             operationQueue: host.operationQueue
         ) {
-            let amountIn = try amountInClosure()
             let callArgs = AssetConversion.CallArgs(
                 assetIn: assetIn,
-                amountIn: amountIn,
+                amountIn: swapLimit.amountIn,
                 assetOut: assetOut,
-                amountOut: self.operationArgs.swapLimit.amountOut,
+                amountOut: swapLimit.amountOut,
                 receiver: self.host.selectedAccount.accountId,
-                direction: self.operationArgs.swapLimit.direction,
-                slippage: self.operationArgs.swapLimit.slippage,
+                direction: swapLimit.direction,
+                slippage: swapLimit.slippage,
                 context: nil
             )
 
@@ -65,7 +64,7 @@ final class HydraExchangeAtomicOperation {
     }
 
     private func createFeeWrapper() -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        let paramsWrapper = createExtrinsicParamsWrapper { self.operationArgs.swapLimit.amountIn }
+        let paramsWrapper = createExtrinsicParamsWrapper(for: operationArgs.swapLimit)
 
         let feeWrapper = OperationCombiningService<ExtrinsicFeeProtocol>.compoundNonOptionalWrapper(
             operationQueue: host.operationQueue
@@ -89,8 +88,8 @@ final class HydraExchangeAtomicOperation {
 }
 
 extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
-    func executeWrapper(for amountClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance> {
-        let paramsWrapper = createExtrinsicParamsWrapper(for: amountClosure)
+    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
+        let paramsWrapper = createExtrinsicParamsWrapper(for: swapLimit)
 
         let executionWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
             operationQueue: host.operationQueue

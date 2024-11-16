@@ -4,7 +4,10 @@ import Operation_iOS
 protocol AssetExchangeAtomicOperationProtocol {
     var swapLimit: AssetExchangeSwapLimit { get }
 
-    func executeWrapper(for amountClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance>
+    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance>
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee>
-    func requiredAmountToGetAmountOut(_ amountOutClosure: @escaping () throws -> Balance) -> CompoundOperationWrapper<Balance>
+
+    func requiredAmountToGetAmountOut(
+        _ amountOutClosure: @escaping () throws -> Balance
+    ) -> CompoundOperationWrapper<Balance>
 }

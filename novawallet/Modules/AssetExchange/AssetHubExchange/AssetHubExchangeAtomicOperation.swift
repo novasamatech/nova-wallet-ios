@@ -53,24 +53,20 @@ final class AssetHubExchangeAtomicOperation {
 }
 
 extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
-    func executeWrapper(
-        for amountClosure: @escaping () throws -> Balance
-    ) -> CompoundOperationWrapper<Balance> {
+    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
         let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
 
         let executeWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
             operationQueue: host.operationQueue
         ) {
-            let amount = try amountClosure()
-
             let callArgs = AssetConversion.CallArgs(
                 assetIn: self.edge.origin,
-                amountIn: amount,
+                amountIn: swapLimit.amountIn,
                 assetOut: self.edge.destination,
-                amountOut: self.operationArgs.swapLimit.amountOut,
+                amountOut: swapLimit.amountOut,
                 receiver: self.host.selectedAccount.accountId,
-                direction: self.operationArgs.swapLimit.direction,
-                slippage: self.operationArgs.swapLimit.slippage,
+                direction: swapLimit.direction,
+                slippage: swapLimit.slippage,
                 context: nil
             )
 

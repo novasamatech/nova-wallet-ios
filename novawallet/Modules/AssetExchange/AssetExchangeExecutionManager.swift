@@ -65,7 +65,13 @@ final class AssetExchangeExecutionManager {
 
         logger.debug("Executing swap \(index)")
 
-        let wrapper = operations[index].executeWrapper(for: { amountIn })
+        let shouldReplaceBuyWithSell = index != 0
+        let swapLimit = operations[index].swapLimit.replacingAmountIn(
+            amountIn,
+            shouldReplaceBuyWithSell: shouldReplaceBuyWithSell
+        )
+
+        let wrapper = operations[index].executeWrapper(for: swapLimit)
 
         executeCancellable(
             wrapper: wrapper,

@@ -40,16 +40,9 @@ final class AssetsExchangeOperationFactory {
         // on the first segment fee paid in configurable asset and further only in assetIn
         let feeAssetId = isFirst ? feeAssetId : segment.edge.origin
 
-        let segmentDirection: AssetConversion.Direction = if isFirst {
-            routeDirection
-        } else {
-            // we currently can't define buy for non first segment
-            .sell
-        }
-
         return .init(
             swapLimit: .init(
-                direction: segmentDirection,
+                direction: routeDirection,
                 amountIn: segment.amountIn(for: routeDirection),
                 amountOut: segment.amountOut(for: routeDirection),
                 slippage: slippage
