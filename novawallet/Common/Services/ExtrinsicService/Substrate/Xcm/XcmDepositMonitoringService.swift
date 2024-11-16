@@ -34,7 +34,7 @@ final class XcmDepositMonitoringService {
     init(
         accountId: AccountId,
         chainAsset: ChainAsset,
-        timeout: TimeInterval = 60,
+        timeout: TimeInterval = 90,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         operationQueue: OperationQueue,
