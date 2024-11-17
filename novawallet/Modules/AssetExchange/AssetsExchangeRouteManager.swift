@@ -95,8 +95,8 @@ final class AssetsExchangeRouteManager {
                     edge: edge,
                     assetIn: chainAssetIn,
                     assetOut: chainAssetOut,
-                    priceIn: priceStore.fetchPrice(for: chainAssetIn),
-                    priceOut: priceStore.fetchPrice(for: chainAssetOut)
+                    priceIn: priceStore.fetchPrice(for: chainAssetIn.chainAssetId),
+                    priceOut: priceStore.fetchPrice(for: chainAssetOut.chainAssetId)
                 )
             }
 

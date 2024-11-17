@@ -10,4 +10,6 @@ protocol AssetExchangeAtomicOperationProtocol {
     func requiredAmountToGetAmountOut(
         _ amountOutClosure: @escaping () throws -> Balance
     ) -> CompoundOperationWrapper<Balance>
+
+    func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval>
 }

@@ -16,7 +16,7 @@ final class AssetExchangePriceStore {
 }
 
 extension AssetExchangePriceStore: AssetExchangePriceStoring {
-    func fetchPrice(for chainAsset: ChainAsset) -> PriceData? {
-        store[chainAsset.chainAssetId]
+    func fetchPrice(for chainAssetId: ChainAssetId) -> PriceData? {
+        store[chainAssetId]
     }
 }

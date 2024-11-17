@@ -197,4 +197,8 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
     var swapLimit: AssetExchangeSwapLimit {
         operationArgs.swapLimit
     }
+
+    func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {
+        host.executionTimeEstimator.totalTimeWrapper(for: [host.chain.chainId])
+    }
 }

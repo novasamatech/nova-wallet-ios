@@ -74,6 +74,7 @@
 		0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */; };
 		0C12BC372CEA7DCB00AB919D /* AssetExchangePrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC362CEA7DCB00AB919D /* AssetExchangePrice.swift */; };
 		0C12BC3A2CEA7ECB00AB919D /* AssetExchangePriceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC392CEA7ECB00AB919D /* AssetExchangePriceStore.swift */; };
+		0C12BC3E2CEA9DF800AB919D /* AssetExchangeTimeEstimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC3D2CEA9DF800AB919D /* AssetExchangeTimeEstimation.swift */; };
 		0C1338102AB832B30036BCD6 /* QRImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */; };
 		0C1338122AB8330D0036BCD6 /* AnimatedImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */; };
 		0C1338142AB834750036BCD6 /* QRImageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */; };
@@ -5320,6 +5321,7 @@
 		0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteViewCell.swift; sourceTree = "<group>"; };
 		0C12BC362CEA7DCB00AB919D /* AssetExchangePrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePrice.swift; sourceTree = "<group>"; };
 		0C12BC392CEA7ECB00AB919D /* AssetExchangePriceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePriceStore.swift; sourceTree = "<group>"; };
+		0C12BC3D2CEA9DF800AB919D /* AssetExchangeTimeEstimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeTimeEstimation.swift; sourceTree = "<group>"; };
 		0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModel.swift; sourceTree = "<group>"; };
 		0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedImageViewModel.swift; sourceTree = "<group>"; };
 		0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModelFactory.swift; sourceTree = "<group>"; };
@@ -10930,6 +10932,7 @@
 				0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */,
 				0C6353462CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift */,
 				0CA81D582CE60AA700166969 /* AssetExchangeEdgeType.swift */,
+				0C12BC3D2CEA9DF800AB919D /* AssetExchangeTimeEstimation.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -25921,6 +25924,7 @@
 				84100F3626A6069200A5054E /* IconTitleValueView.swift in Sources */,
 				771901A82AE8FF9F00D9C918 /* SwapNetworkFeeViewCell.swift in Sources */,
 				77EF9A7C2B9ECF2D0034D619 /* GovernanceNotificationMessageHandler.swift in Sources */,
+				0C12BC3E2CEA9DF800AB919D /* AssetExchangeTimeEstimation.swift in Sources */,
 				88B560BC28F80DCB00A5EB59 /* VoteRowView.swift in Sources */,
 				84FCCD98292E3610002D2D3D /* JSONRPCError+Evm.swift in Sources */,
 				842876AB24AE049B00D91AD8 /* SelectionItemViewProtocol.swift in Sources */,

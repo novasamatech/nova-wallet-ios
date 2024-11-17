@@ -137,6 +137,24 @@ final class AssetsExchangeOperationFactory {
 
         return feeWrapper
     }
+
+    private func estimateExecutionTime(
+        for operations: [AssetExchangeAtomicOperationProtocol]
+    ) -> CompoundOperationWrapper<[TimeInterval]> {
+        let wrappers: [CompoundOperationWrapper<TimeInterval>] = operations.map { operation in
+            operation.estimatedExecutionTimeWrapper()
+        }
+
+        let mappingOperation = ClosureOperation<[TimeInterval]> {
+            try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
+        }
+
+        wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
+
+        let dependecies = wrappers.flatMap(\.allOperations)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependecies)
+    }
 }
 
 extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol {
@@ -186,6 +204,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
             let feeWrappers = atomicOperations.map { $0.estimateFee() }
 
+            let executionTimeWrapper = estimateExecutionTime(for: atomicOperations)
+
             let intermediateFeesWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
                 operationQueue: operationQueue
             ) {
@@ -201,21 +221,28 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
                 let intermediateFees = try intermediateFeesWrapper.targetOperation.extractNoCancellableResultData()
 
+                let executionTimes = try executionTimeWrapper.targetOperation.extractNoCancellableResultData()
+
                 return AssetExchangeFee(
                     route: args.route,
+                    operations: atomicOperations,
                     operationFees: operationFees,
+                    operationExecutionTimes: executionTimes,
                     intermediateFeesInAssetIn: intermediateFees,
                     slippage: args.slippage,
-                    feeAssetId: args.feeAssetId
+                    feeAssetId: args.feeAssetId,
+                    feeAssetPrice: self.priceStore.fetchPrice(for: args.feeAssetId)
                 )
             }
 
             feeWrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
             mappingOperation.addDependency(intermediateFeesWrapper.targetOperation)
+            mappingOperation.addDependency(executionTimeWrapper.targetOperation)
 
             let dependencies = feeWrappers.flatMap(\.allOperations)
 
             return intermediateFeesWrapper
+                .insertingHead(operations: executionTimeWrapper.allOperations)
                 .insertingHead(operations: dependencies)
                 .insertingTail(operation: mappingOperation)
         } catch {
@@ -224,25 +251,14 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
     }
 
     func createExecutionWrapper(for fee: AssetExchangeFee) -> CompoundOperationWrapper<Balance> {
-        do {
-            let atomicOperations = try prepareAtomicOperations(
-                for: fee.route,
-                slippage: fee.slippage,
-                feeAssetId: fee.feeAssetId
-            )
+        let executionManager = AssetExchangeExecutionManager(
+            routeDetails: fee,
+            operationQueue: operationQueue,
+            logger: logger
+        )
 
-            let executionManager = AssetExchangeExecutionManager(
-                operations: atomicOperations,
-                routeDetails: fee,
-                operationQueue: operationQueue,
-                logger: logger
-            )
+        let operation = LongrunOperation(longrun: AnyLongrun(longrun: executionManager))
 
-            let operation = LongrunOperation(longrun: AnyLongrun(longrun: executionManager))
-
-            return CompoundOperationWrapper(targetOperation: operation)
-        } catch {
-            return .createWithError(error)
-        }
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 }

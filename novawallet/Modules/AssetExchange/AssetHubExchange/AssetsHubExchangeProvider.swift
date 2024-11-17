@@ -94,6 +94,7 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
                 signingWrapper: signingWrapper,
                 runtimeService: runtimeService,
                 connection: connection,
+                executionTimeEstimator: AssetExchangeTimeEstimator(chainRegistry: chainRegistry),
                 operationQueue: operationQueue,
                 logger: logger
             )

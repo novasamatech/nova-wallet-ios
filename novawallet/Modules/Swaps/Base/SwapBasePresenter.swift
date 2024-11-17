@@ -293,6 +293,8 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
     }
 
     func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?) {
+        logger.debug("Did receive fee: \(fee)")
+
         guard self.fee != fee else {
             return
         }

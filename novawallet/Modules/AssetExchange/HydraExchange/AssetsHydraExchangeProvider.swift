@@ -173,6 +173,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             runtimeService: runtimeService,
             connection: connection,
             signingWrapper: signingWrapper,
+            executionTimeEstimator: AssetExchangeTimeEstimator(chainRegistry: chainRegistry),
             operationQueue: operationQueue,
             logger: logger
         )

@@ -10,6 +10,7 @@ protocol HydraExchangeHostProtocol {
     var signingWrapper: SigningWrapperProtocol { get }
     var runtimeService: RuntimeProviderProtocol { get }
     var connection: JSONRPCEngine { get }
+    var executionTimeEstimator: AssetExchangeTimeEstimating { get }
     var operationQueue: OperationQueue { get }
     var logger: LoggerProtocol { get }
 }
@@ -21,6 +22,7 @@ final class HydraExchangeHost: HydraExchangeHostProtocol {
     let submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
     let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
     let extrinsicParamsFactory: HydraExchangeExtrinsicParamsFactoryProtocol
+    let executionTimeEstimator: AssetExchangeTimeEstimating
     let runtimeService: RuntimeProviderProtocol
     let connection: JSONRPCEngine
     let signingWrapper: SigningWrapperProtocol
@@ -36,6 +38,7 @@ final class HydraExchangeHost: HydraExchangeHostProtocol {
         runtimeService: RuntimeProviderProtocol,
         connection: JSONRPCEngine,
         signingWrapper: SigningWrapperProtocol,
+        executionTimeEstimator: AssetExchangeTimeEstimating,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -47,6 +50,7 @@ final class HydraExchangeHost: HydraExchangeHostProtocol {
         self.runtimeService = runtimeService
         self.connection = connection
         self.signingWrapper = signingWrapper
+        self.executionTimeEstimator = executionTimeEstimator
         self.operationQueue = operationQueue
         self.logger = logger
     }

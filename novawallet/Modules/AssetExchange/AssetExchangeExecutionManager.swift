@@ -8,7 +8,6 @@ enum AssetExchangeExecutionManagerError: Error {
 final class AssetExchangeExecutionManager {
     typealias ResultType = Balance
 
-    let operations: [AssetExchangeAtomicOperationProtocol]
     let routeDetails: AssetExchangeFee
     let operationQueue: OperationQueue
     let syncQueue: DispatchQueue
@@ -19,12 +18,10 @@ final class AssetExchangeExecutionManager {
     private var isFinished: Bool = false
 
     init(
-        operations: [AssetExchangeAtomicOperationProtocol],
         routeDetails: AssetExchangeFee,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.operations = operations
         self.routeDetails = routeDetails
         self.operationQueue = operationQueue
         self.logger = logger
@@ -66,12 +63,12 @@ final class AssetExchangeExecutionManager {
         logger.debug("Executing swap \(index)")
 
         let shouldReplaceBuyWithSell = index != 0
-        let swapLimit = operations[index].swapLimit.replacingAmountIn(
+        let swapLimit = routeDetails.operations[index].swapLimit.replacingAmountIn(
             amountIn,
             shouldReplaceBuyWithSell: shouldReplaceBuyWithSell
         )
 
-        let wrapper = operations[index].executeWrapper(for: swapLimit)
+        let wrapper = routeDetails.operations[index].executeWrapper(for: swapLimit)
 
         executeCancellable(
             wrapper: wrapper,
@@ -91,7 +88,7 @@ final class AssetExchangeExecutionManager {
     }
 
     private func correctAmountAndExecuteNext(after currentSegment: Int, amountOut: Balance) {
-        if currentSegment == operations.count - 1 {
+        if currentSegment == routeDetails.operations.count - 1 {
             complete(with: .success(amountOut))
             return
         }

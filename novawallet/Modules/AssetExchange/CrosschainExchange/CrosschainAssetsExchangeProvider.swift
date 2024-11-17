@@ -89,6 +89,7 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
                 )
             ),
             xcmTransfers: xcmTransfers,
+            executionTimeEstimator: AssetExchangeTimeEstimator(chainRegistry: chainRegistry),
             operationQueue: operationQueue,
             logger: logger
         )
