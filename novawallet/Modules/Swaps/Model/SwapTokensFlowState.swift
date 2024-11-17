@@ -43,10 +43,13 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
             return assetExchangeService
         }
 
-        let graphProvider = AssetExchangeFacade.createGraphProvider(for: assetExchangeParams)
+        let priceStore = AssetExchangePriceStore(assetListObservable: assetListObservable)
+        let graphProvider = AssetExchangeFacade.createGraphProvider(for: assetExchangeParams, priceStore: priceStore)
 
         let service = AssetsExchangeService(
             graphProvider: graphProvider,
+            chainRegistry: assetExchangeParams.chainRegistry,
+            priceStore: AssetExchangePriceStore(assetListObservable: assetListObservable),
             operationQueue: assetExchangeParams.operationQueue,
             logger: Logger.shared
         )

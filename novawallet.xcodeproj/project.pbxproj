@@ -72,6 +72,8 @@
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
 		0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */; };
+		0C12BC372CEA7DCB00AB919D /* AssetExchangePrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC362CEA7DCB00AB919D /* AssetExchangePrice.swift */; };
+		0C12BC3A2CEA7ECB00AB919D /* AssetExchangePriceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC392CEA7ECB00AB919D /* AssetExchangePriceStore.swift */; };
 		0C1338102AB832B30036BCD6 /* QRImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */; };
 		0C1338122AB8330D0036BCD6 /* AnimatedImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */; };
 		0C1338142AB834750036BCD6 /* QRImageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */; };
@@ -5316,6 +5318,8 @@
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
 		0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteViewCell.swift; sourceTree = "<group>"; };
+		0C12BC362CEA7DCB00AB919D /* AssetExchangePrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePrice.swift; sourceTree = "<group>"; };
+		0C12BC392CEA7ECB00AB919D /* AssetExchangePriceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePriceStore.swift; sourceTree = "<group>"; };
 		0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModel.swift; sourceTree = "<group>"; };
 		0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedImageViewModel.swift; sourceTree = "<group>"; };
 		0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModelFactory.swift; sourceTree = "<group>"; };
@@ -10810,6 +10814,15 @@
 			path = Uniques;
 			sourceTree = "<group>";
 		};
+		0C12BC382CEA7E8500AB919D /* Price */ = {
+			isa = PBXGroup;
+			children = (
+				0C12BC362CEA7DCB00AB919D /* AssetExchangePrice.swift */,
+				0C12BC392CEA7ECB00AB919D /* AssetExchangePriceStore.swift */,
+			);
+			path = Price;
+			sourceTree = "<group>";
+		};
 		0C13D2F82A7D469E0054BB6F /* Recommendation */ = {
 			isa = PBXGroup;
 			children = (
@@ -11667,6 +11680,7 @@
 		0C9BCC562CBD6B1600CBE21B /* AssetExchange */ = {
 			isa = PBXGroup;
 			children = (
+				0C12BC382CEA7E8500AB919D /* Price */,
 				0CA81D552CE5AE6200166969 /* FeeCapability */,
 				0C423AB92CDBAE7300A64941 /* Facade */,
 				0C61083F2CD74D5600909928 /* FeeEstimating */,
@@ -26369,6 +26383,7 @@
 				2A9F8D50274E4EB6003720E0 /* AccountCreateViewLayout.swift in Sources */,
 				84E8AC7527BB975700402635 /* RMRKV1OperationFactory.swift in Sources */,
 				84786E1525FA57B90089DFF7 /* StakingLedger.swift in Sources */,
+				0C12BC3A2CEA7ECB00AB919D /* AssetExchangePriceStore.swift in Sources */,
 				778215D82B9593C6006C7D13 /* UserDefaultMigrator.swift in Sources */,
 				8497FC6026317783002FEAA7 /* AccountInfoViewModel.swift in Sources */,
 				84DEE7042797FBF800B9A39E /* ExtrinsicSignedExtensionFactory.swift in Sources */,
@@ -29879,6 +29894,7 @@
 				49E9D296222D2E8418E0A4EA /* SwipeGovProtocols.swift in Sources */,
 				56C840097B6B2E3D7133EE21 /* SwipeGovWireframe.swift in Sources */,
 				59E3304ED1BBA3CB2699C957 /* SwipeGovPresenter.swift in Sources */,
+				0C12BC372CEA7DCB00AB919D /* AssetExchangePrice.swift in Sources */,
 				7C54DE318B0675170102B7AD /* SwipeGovViewController.swift in Sources */,
 				735E83BE57E30FBFD1382474 /* SwipeGovViewLayout.swift in Sources */,
 				EA5757C027BC51F64C28A4D3 /* SwipeGovViewFactory.swift in Sources */,

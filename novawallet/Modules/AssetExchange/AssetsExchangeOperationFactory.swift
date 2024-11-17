@@ -14,18 +14,24 @@ enum AssetsExchangeOperationFactoryError: Error {
 
 final class AssetsExchangeOperationFactory {
     let graph: AssetsExchangeGraphProtocol
+    let chainRegistry: ChainRegistryProtocol
+    let priceStore: AssetExchangePriceStoring
     let operationQueue: OperationQueue
     let maxQuotePaths: Int
     let logger: LoggerProtocol
 
     init(
         graph: AssetsExchangeGraphProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        priceStore: AssetExchangePriceStoring,
         maxQuotePaths: Int = AssetsExchange.maxQuotePaths,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.graph = graph
         self.operationQueue = operationQueue
+        self.chainRegistry = chainRegistry
+        self.priceStore = priceStore
         self.maxQuotePaths = maxQuotePaths
         self.logger = logger
     }
@@ -38,7 +44,7 @@ final class AssetsExchangeOperationFactory {
         isFirst: Bool
     ) -> AssetExchangeAtomicOperationArgs {
         // on the first segment fee paid in configurable asset and further only in assetIn
-        let feeAssetId = isFirst ? feeAssetId : segment.edge.origin
+        let feeAssetId = isFirst ? feeAssetId : segment.pathItem.edge.origin
 
         return .init(
             swapLimit: .init(
@@ -67,13 +73,13 @@ final class AssetsExchangeOperationFactory {
 
             if
                 let lastOperation = curOperations.last,
-                let newOperation = segment.edge.appendToOperation(
+                let newOperation = segment.pathItem.edge.appendToOperation(
                     lastOperation,
                     args: args
                 ) {
                 return curOperations.dropLast() + [newOperation]
             } else {
-                let newOperation = try segment.edge.beginOperation(for: args)
+                let newOperation = try segment.pathItem.edge.beginOperation(for: args)
                 return curOperations + [newOperation]
             }
         }
@@ -150,6 +156,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
             return AssetsExchangeRouteManager(
                 possiblePaths: paths,
+                chainRegistry: self.chainRegistry,
+                priceStore: self.priceStore,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             ).fetchRoute(for: args.amount, direction: args.direction)

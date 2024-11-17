@@ -48,7 +48,7 @@ final class AssetExchangeExecutionManager {
             let amountIn = firstSegment.amountIn(for: routeDetails.route.direction)
             let amountInWithFee = amountIn + routeDetails.intermediateFeesInAssetIn
 
-            let holdingFee = try firstFees.totalToPayFromAmountEnsuring(asset: firstSegment.edge.origin)
+            let holdingFee = try firstFees.totalToPayFromAmountEnsuring(asset: firstSegment.pathItem.edge.origin)
             let amountInWithHolding = amountInWithFee + holdingFee
 
             executeSegment(at: 0, amountIn: amountInWithHolding)

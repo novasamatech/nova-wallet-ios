@@ -3,8 +3,6 @@ import Operation_iOS
 import SubstrateSdk
 
 final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
-    let chainRegistry: ChainRegistryProtocol
-
     private var supportedChains: [ChainModel.Id: ChainModel]?
     let selectedWallet: MetaAccountModel
     let substrateStorageFacade: StorageFacadeProtocol
@@ -15,17 +13,19 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
     init(
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        priceStore: AssetExchangePriceStoring,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
-        self.chainRegistry = chainRegistry
         self.substrateStorageFacade = substrateStorageFacade
         self.userStorageFacade = userStorageFacade
 
         super.init(
+            chainRegistry: chainRegistry,
+            priceStore: priceStore,
             operationQueue: operationQueue,
             syncQueue: DispatchQueue(label: "io.novawallet.hydraexchangeprovider.\(UUID().uuidString)"),
             logger: logger

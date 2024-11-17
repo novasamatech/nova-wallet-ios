@@ -9,13 +9,13 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
     let syncService: XcmTransfersSyncServiceProtocol
     let userStorageFacade: StorageFacadeProtocol
     let substrateStorageFacade: StorageFacadeProtocol
-    let chainRegistry: ChainRegistryProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
 
     init(
         wallet: MetaAccountModel,
         syncService: XcmTransfersSyncServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
+        priceStore: AssetExchangePriceStoring,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
@@ -24,12 +24,13 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
     ) {
         self.wallet = wallet
         self.syncService = syncService
-        self.chainRegistry = chainRegistry
         self.signingWrapperFactory = signingWrapperFactory
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
 
         super.init(
+            chainRegistry: chainRegistry,
+            priceStore: priceStore,
             operationQueue: operationQueue,
             syncQueue: DispatchQueue(label: "io.novawallet.crosschainassetsprovider.\(UUID().uuidString)"),
             logger: logger

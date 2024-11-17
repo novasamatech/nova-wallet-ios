@@ -2,8 +2,6 @@ import Foundation
 import Operation_iOS
 
 final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
-    let chainRegistry: ChainRegistryProtocol
-
     private var supportedChains: [ChainModel.Id: ChainModel]?
     let wallet: MetaAccountModel
     let signingWrapperFactory: SigningWrapperFactoryProtocol
@@ -13,6 +11,7 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        priceStore: AssetExchangePriceStoring,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
@@ -20,12 +19,13 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
         logger: LoggerProtocol
     ) {
         self.wallet = wallet
-        self.chainRegistry = chainRegistry
         self.signingWrapperFactory = signingWrapperFactory
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
 
         super.init(
+            chainRegistry: chainRegistry,
+            priceStore: priceStore,
             operationQueue: operationQueue,
             syncQueue: DispatchQueue(label: "io.novawallet.assetshubprovider.\(UUID().uuidString)"),
             logger: logger

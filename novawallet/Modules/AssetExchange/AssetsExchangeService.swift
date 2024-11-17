@@ -17,16 +17,22 @@ enum AssetsExchangeServiceError: Error {
 
 final class AssetsExchangeService {
     let graphProvider: AssetsExchangeGraphProviding
+    let chainRegistry: ChainRegistryProtocol
+    let priceStore: AssetExchangePriceStoring
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         graphProvider: AssetsExchangeGraphProviding,
+        chainRegistry: ChainRegistryProtocol,
+        priceStore: AssetExchangePriceStoring,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.graphProvider = graphProvider
         self.operationQueue = operationQueue
+        self.chainRegistry = chainRegistry
+        self.priceStore = priceStore
         self.logger = logger
     }
 
@@ -42,6 +48,8 @@ final class AssetsExchangeService {
 
             let operationFactory = AssetsExchangeOperationFactory(
                 graph: graph,
+                chainRegistry: self.chainRegistry,
+                priceStore: self.priceStore,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             )

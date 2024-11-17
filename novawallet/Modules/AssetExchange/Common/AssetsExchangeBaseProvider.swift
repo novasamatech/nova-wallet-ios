@@ -1,6 +1,7 @@
 import Foundation
 
 class AssetsExchangeBaseProvider {
+    let chainRegistry: ChainRegistryProtocol
     let graphProxy: AssetExchangeGraphProxy
 
     private var observableState: Observable<NotEqualWrapper<[AssetsExchangeProtocol]>> = .init(
@@ -11,12 +12,24 @@ class AssetsExchangeBaseProvider {
     let syncQueue: DispatchQueue
     let logger: LoggerProtocol
 
-    init(operationQueue: OperationQueue, syncQueue: DispatchQueue, logger: LoggerProtocol) {
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        priceStore: AssetExchangePriceStoring,
+        operationQueue: OperationQueue,
+        syncQueue: DispatchQueue,
+        logger: LoggerProtocol
+    ) {
+        self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.syncQueue = syncQueue
         self.logger = logger
 
-        graphProxy = AssetExchangeGraphProxy(operationQueue: operationQueue, logger: logger)
+        graphProxy = AssetExchangeGraphProxy(
+            chainRegistry: chainRegistry,
+            priceStore: priceStore,
+            operationQueue: operationQueue,
+            logger: logger
+        )
     }
 
     func updateState(with newExchanges: [AssetsExchangeProtocol]) {

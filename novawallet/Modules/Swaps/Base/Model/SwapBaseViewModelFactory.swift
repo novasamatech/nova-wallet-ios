@@ -12,6 +12,8 @@ struct RateParams {
 protocol SwapBaseViewModelFactoryProtocol {
     func rateViewModel(from params: RateParams, locale: Locale) -> String
 
+    func routeViewModel(from route: AssetExchangeRoute) -> [SwapRouteItemView.ViewModel]
+
     func priceDifferenceViewModel(
         rateParams: RateParams,
         priceIn: PriceData?,
@@ -154,6 +156,25 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
             return .init(details: diffString, attention: .low)
         default:
             return nil
+        }
+    }
+
+    func routeViewModel(from route: AssetExchangeRoute) -> [SwapRouteItemView.ViewModel] {
+        let chains = route.items.flatMap { routeItem in
+            [routeItem.pathItem.assetIn.chain, routeItem.pathItem.assetOut.chain]
+        }
+
+        var interchangingChains: [ChainModel] = []
+
+        for chain in chains where interchangingChains.last?.chainId != chain.chainId {
+            interchangingChains.append(chain)
+        }
+
+        return interchangingChains.map { chain in
+            SwapRouteItemView.ItemViewModel(
+                title: nil,
+                icon: ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
+            )
         }
     }
 }

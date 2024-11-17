@@ -159,6 +159,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         }
 
         provideRateViewModel()
+        provideRouteViewModel()
         provideButtonState()
         provideDetailsViewModel()
         estimateFee()
@@ -436,6 +437,17 @@ extension SwapSetupPresenter {
         view?.didReceiveRate(viewModel: .loaded(value: rateViewModel))
     }
 
+    private func provideRouteViewModel() {
+        guard let route = route else {
+            view?.didReceiveRoute(viewModel: .loading)
+            return
+        }
+
+        let viewModel = viewModelFactory.routeViewModel(from: route)
+
+        view?.didReceiveRoute(viewModel: .loaded(value: viewModel))
+    }
+
     private func provideFeeViewModel() {
         guard quoteArgs != nil, let feeChainAsset = feeChainAsset else {
             return
@@ -509,6 +521,7 @@ extension SwapSetupPresenter {
         }
 
         provideRateViewModel()
+        provideRouteViewModel()
         provideFeeViewModel()
     }
 
