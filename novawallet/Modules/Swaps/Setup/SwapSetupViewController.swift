@@ -251,6 +251,10 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.rateCell.bind(loadableViewModel: viewModel)
     }
 
+    func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>) {
+        rootView.routeCell.bind(loadableRouteViewModel: viewModel)
+    }
+
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.networkFeeCell.bind(loadableViewModel: viewModel)
 

@@ -39,6 +39,10 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.rateCell
     }
 
+    var routeCell: SwapRouteViewCell {
+        detailsView.routeCell
+    }
+
     var networkFeeCell: SwapNetworkFeeViewCell {
         detailsView.networkFeeCell
     }

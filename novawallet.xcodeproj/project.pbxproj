@@ -71,6 +71,7 @@
 		0C11D8602CCA486B003EC46D /* AssetExchangeRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
+		0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */; };
 		0C1338102AB832B30036BCD6 /* QRImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */; };
 		0C1338122AB8330D0036BCD6 /* AnimatedImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */; };
 		0C1338142AB834750036BCD6 /* QRImageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */; };
@@ -825,6 +826,8 @@
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
 		0CF193D72A861D7E003F12F6 /* StartStakingInfoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */; };
+		0CF3A6C92CE9423000F93C49 /* RouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF3A6C82CE9423000F93C49 /* RouteView.swift */; };
+		0CF3A6CB2CE949ED00F93C49 /* SwapRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF3A6CA2CE949ED00F93C49 /* SwapRouteView.swift */; };
 		0CF5F68A2CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5F6892CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift */; };
 		0CF5F68C2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5F68B2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift */; };
 		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
@@ -5312,6 +5315,7 @@
 		0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeRoute.swift; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
+		0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteViewCell.swift; sourceTree = "<group>"; };
 		0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModel.swift; sourceTree = "<group>"; };
 		0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedImageViewModel.swift; sourceTree = "<group>"; };
 		0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModelFactory.swift; sourceTree = "<group>"; };
@@ -6107,6 +6111,8 @@
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
 		0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoConstants.swift; sourceTree = "<group>"; };
+		0CF3A6C82CE9423000F93C49 /* RouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteView.swift; sourceTree = "<group>"; };
+		0CF3A6CA2CE949ED00F93C49 /* SwapRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteView.swift; sourceTree = "<group>"; };
 		0CF5F6892CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphPath.swift; sourceTree = "<group>"; };
 		0CF5F68B2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchageGraphReachability.swift; sourceTree = "<group>"; };
 		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
@@ -12366,6 +12372,15 @@
 			path = AssetConverters;
 			sourceTree = "<group>";
 		};
+		0CF3A6C72CE9422400F93C49 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				0CF3A6C82CE9423000F93C49 /* RouteView.swift */,
+				0CF3A6CA2CE949ED00F93C49 /* SwapRouteView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		0CF6928A2C231C89000FC395 /* SharedStatusView */ = {
 			isa = PBXGroup;
 			children = (
@@ -14189,6 +14204,7 @@
 				771901A72AE8FF9F00D9C918 /* SwapNetworkFeeViewCell.swift */,
 				771901A52AE8FF7E00D9C918 /* SwapInfoViewCell.swift */,
 				77740BBF2AD4A80D00E8C06F /* SwapInfoView.swift */,
+				0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -14643,6 +14659,7 @@
 		77C9BCBF2ACD2E0300022EA2 /* Swaps */ = {
 			isa = PBXGroup;
 			children = (
+				0CF3A6C72CE9422400F93C49 /* View */,
 				0C2A3C962CDCCEB200A0E2B3 /* Model */,
 				7719018A2AE0E62500D9C918 /* Validation */,
 				288677D19FEB54E369E6B619 /* Slippage */,
@@ -25209,6 +25226,7 @@
 				7728E58B2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift in Sources */,
 				2D65F6D52CCF938D00CC6F72 /* AppearanceIconsOptions+Init.swift in Sources */,
 				844E1E19266142080076AC59 /* BondedState+Status.swift in Sources */,
+				0CF3A6C92CE9423000F93C49 /* RouteView.swift in Sources */,
 				F4CE0F9A27343FFD0094CD8A /* AcalaContributionConfirmVC.swift in Sources */,
 				8493D0E126FF4F5000A28008 /* ScaleCoder+Extension.swift in Sources */,
 				880E4105298D0E550077B18B /* GovernanceDelegationsLocalWrapperFactory.swift in Sources */,
@@ -27255,6 +27273,7 @@
 				778210862A6588D100256E78 /* DiffableDataStore.swift in Sources */,
 				0CCDB2DC2B7128A7007BC5D6 /* HydraOmnipoolTokensFactory.swift in Sources */,
 				849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */,
+				0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */,
 				8804AD8D295B7735001C4E09 /* DAppGlobalSettingsMapper.swift in Sources */,
 				94B0F0C84AF74B3CD7223C3A /* AccountConfirmPresenter.swift in Sources */,
 				84B8AA7929F905C800347A37 /* WalletConnectStateInitiating.swift in Sources */,
@@ -27871,6 +27890,7 @@
 				0678271BE1BA5BBC084F478A /* RecommendedValidatorListWireframe.swift in Sources */,
 				F441BE0E263984DD0096B67B /* BondExtraCall.swift in Sources */,
 				8824D42829032BF60022D778 /* ReferendumStateLocal+Presenter.swift in Sources */,
+				0CF3A6CB2CE949ED00F93C49 /* SwapRouteView.swift in Sources */,
 				0C13D2FC2A7D4B220054BB6F /* RelaychainStakingRestrictionsBuilder.swift in Sources */,
 				84FB9E20285C5C9E00B42FC0 /* XcmJunction.swift in Sources */,
 				84EBA4F027AD26A5000AEEAD /* AssetBalanceId.swift in Sources */,
