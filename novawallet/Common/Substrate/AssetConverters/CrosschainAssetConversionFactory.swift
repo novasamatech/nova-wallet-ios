@@ -32,7 +32,7 @@ final class CrosschainAssetConversionFactory {
 
     private func createAssetsPalletWrapper(
         for paraId: ParaId,
-        assetId: AssetConversionPallet.AssetId,
+        assetId: XcmV3.Multilocation,
         chainRegistry: ChainRegistryProtocol
     ) -> CompoundOperationWrapper<ChainAsset?> {
         let paraResolutionWrapper = parachainResolver.resolveChainId(
