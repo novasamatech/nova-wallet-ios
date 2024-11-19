@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol AssetsExchangeOperationFactoryProtocol {
-    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute>
+    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote>
     func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
     func createExecutionWrapper(for fee: AssetExchangeFee) -> CompoundOperationWrapper<Balance>
 }

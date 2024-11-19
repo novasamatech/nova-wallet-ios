@@ -51,6 +51,51 @@ class AssetsHydraExchangeEdge {
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
         true
     }
+    
+    func beginMetaOperation(
+        edge: any HydraExchangeAtomicOperation.Edge,
+        amountIn: Balance,
+        amountOut: Balance
+    ) throws -> AssetExchangeMetaOperationProtocol {
+        guard let assetIn = host.chain.chainAsset(for: edge.origin.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: edge.origin.assetId)
+        }
+        
+        guard let assetOut = host.chain.chainAsset(for: edge.destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: edge.destination.assetId)
+        }
+        
+        return HydraExchangeMetaOperation(
+            assetIn: assetIn,
+            assetOut: assetOut,
+            amountIn: amountIn,
+            amountOut: amountOut
+        )
+    }
+    
+    func appendToMetaOperation(
+        _ currentOperation: AssetExchangeMetaOperationProtocol,
+        edge: any HydraExchangeAtomicOperation.Edge,
+        amountIn: Balance,
+        amountOut: Balance
+    ) throws -> AssetExchangeMetaOperationProtocol? {
+        guard
+            let hydraOperation = currentOperation as? HydraExchangeMetaOperation,
+            hydraOperation.assetOut.chainAssetId == edge.origin else {
+            return nil
+        }
+        
+        guard let newAssetOut = host.chain.chainAsset(for: edge.destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: edge.destination.assetId)
+        }
+
+        return HydraExchangeMetaOperation(
+            assetIn: currentOperation.assetIn,
+            assetOut: newAssetOut,
+            amountIn: hydraOperation.amountIn,
+            amountOut: amountOut
+        )
+    }
 }
 
 private extension AssetExchangeAtomicOperationArgs {
