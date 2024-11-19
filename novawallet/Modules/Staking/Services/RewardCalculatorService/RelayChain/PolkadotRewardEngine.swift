@@ -43,6 +43,10 @@ final class PolkadotRewardEngine: RewardCalculatorEngine {
     }
 
     override func calculateEraReturn(from annualReturn: Decimal) -> Decimal {
+        guard eraDurationInSeconds > 0 else {
+            return 0
+        }
+
         let daysInYear = TimeInterval(CalculationPeriod.year.inDays)
         let erasInYear = daysInYear * TimeInterval.secondsInDay / eraDurationInSeconds
 
@@ -50,6 +54,9 @@ final class PolkadotRewardEngine: RewardCalculatorEngine {
             return 0
         }
 
-        return annualReturn / Decimal(erasInYear)
+        let rawAnnualReturn = (annualReturn as NSDecimalNumber).doubleValue
+        let result = pow(rawAnnualReturn + 1.0, 1.0 / Double(erasInYear)) - 1.0
+
+        return Decimal(result)
     }
 }
