@@ -166,6 +166,18 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didChangeGlobal(settings: DAppGlobalSettings) {
         view?.didSet(isDesktop: settings.desktopMode)
     }
+    
+    func didReceiveTabs(_ models: [DAppBrowserTab]) {
+        guard !models.isEmpty else {
+            return
+        }
+        
+        if models.count > 1 {
+            // TODO: Present tabs grid
+        } else {
+            interactor.setCurrentTab(models[0])
+        }
+    }
 }
 
 extension DAppBrowserPresenter: DAppOperationConfirmDelegate {

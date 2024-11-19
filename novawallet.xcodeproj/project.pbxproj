@@ -1099,6 +1099,7 @@
 		2DCC87742C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
+		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
 		2DE302ED2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */; };
 		2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */; };
 		2DE302F12C32EAE80082FB5C /* SystemProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302F02C32EAE80082FB5C /* SystemProperties.swift */; };
@@ -6289,6 +6290,8 @@
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
+		2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManager.swift; sourceTree = "<group>"; };
+		2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel14.xcdatamodel; sourceTree = "<group>"; };
 		2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkBaseInteractorError.swift; sourceTree = "<group>"; };
 		2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPropertiesOperationFactory.swift; sourceTree = "<group>"; };
 		2DE302F02C32EAE80082FB5C /* SystemProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemProperties.swift; sourceTree = "<group>"; };
@@ -22221,6 +22224,7 @@
 				677CE34BFAB45122C57095F6 /* DAppBrowserViewFactory.swift */,
 				8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */,
 				840D929E278D8D2E0007B979 /* DAppBrowserInteractorError.swift */,
+				2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */,
 			);
 			path = DAppBrowser;
 			sourceTree = "<group>";
@@ -26358,6 +26362,7 @@
 				84E1CCF5260DCB91001E81B5 /* SwitchAccount+WalletManagementWireframe.swift in Sources */,
 				8467F4C926B2943A00C5B6F4 /* ImportantFlowNavigationController.swift in Sources */,
 				849ABE6D2627949E00011A2A /* BatchMapper.swift in Sources */,
+				2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */,
 				2D81FAE82CC634E700BA0E46 /* AssetListNetworkGroupAssetCell.swift in Sources */,
 				84B5DE53283F7BE500193ED3 /* CollatorsSortType.swift in Sources */,
 				AEDD7C0F269C81F500A8405F /* BlockWeights.swift in Sources */,
@@ -30484,6 +30489,7 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */,
 				0C6C47D42CA96C8A000ADA96 /* MultiassetUserDataModel13.xcdatamodel */,
 				771DA4542B7383BD003C07DD /* MultiassetUserDataModel12.xcdatamodel */,
 				0C37AFC62B597FB500009ECA /* MultiassetUserDataModel11.xcdatamodel */,
@@ -30499,7 +30505,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 0C6C47D42CA96C8A000ADA96 /* MultiassetUserDataModel13.xcdatamodel */;
+			currentVersion = 2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

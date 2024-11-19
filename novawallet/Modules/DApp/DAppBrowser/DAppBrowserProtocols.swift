@@ -24,6 +24,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func setup()
+    func setCurrentTab(_ tab: DAppBrowserTab)
     func process(host: String)
     func process(message: Any, host: String, transport name: String)
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
@@ -36,6 +37,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
+    func didReceiveTabs(_ models: [DAppBrowserTab])
     func didReceiveDApp(model: DAppBrowserModel)
     func didReceiveReplacement(
         transports: [DAppTransportModel],

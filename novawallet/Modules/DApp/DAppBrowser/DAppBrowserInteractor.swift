@@ -7,9 +7,9 @@ final class DAppBrowserInteractor {
         let transportName: String
         let underliningMessage: Any
     }
-
+    
     weak var presenter: DAppBrowserInteractorOutputProtocol?
-
+    
     private(set) var userQuery: DAppSearchResult
     let dataSource: DAppBrowserStateDataSource
     let logger: LoggerProtocol?
@@ -19,11 +19,15 @@ final class DAppBrowserInteractor {
     let dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
     let dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>
     let securedLayer: SecurityLayerServiceProtocol
-
+    let tabManager: DAppBrowserTabManagerProtocol
+    
+    let operationQueue: OperationQueue
+    
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
-
+    private var currentTab: DAppBrowserTab?
+    
     private(set) var messageQueue: [QueueMessage] = []
-
+    
     init(
         transports: [DAppBrowserTransportProtocol],
         userQuery: DAppSearchResult,
@@ -36,10 +40,12 @@ final class DAppBrowserInteractor {
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
         operationQueue: OperationQueue,
         sequentialPhishingVerifier: PhishingSiteVerifing,
+        tabManager: DAppBrowserTabManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.transports = transports
         self.userQuery = userQuery
+        self.operationQueue = operationQueue
         dataSource = DAppBrowserStateDataSource(
             wallet: wallet,
             chainRegistry: chainRegistry,
@@ -52,9 +58,12 @@ final class DAppBrowserInteractor {
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
+        self.tabManager = tabManager
         self.securedLayer = securedLayer
+        
+        process(userQuery: userQuery)
     }
-
+    
     private func subscribeChainRegistry() {
         dataSource.chainRegistry.chainsSubscribe(
             self,
@@ -71,33 +80,33 @@ final class DAppBrowserInteractor {
                     self?.dataSource.set(chain: nil, for: deletedIdentifier)
                 }
             }
-
+            
             self?.completeSetupIfNeeded()
         }
     }
-
+    
     private func completeSetupIfNeeded() {
         if !dataSource.chainStore.isEmpty {
             transports.forEach { transport in
                 transport.delegate = self
                 transport.start(with: dataSource)
             }
-
+            
             provideModel()
         }
     }
-
+    
     func resolveUrl() -> URL? {
         switch userQuery {
         case let .dApp(model):
             return model.url
         case let .query(string):
             var urlComponents = URLComponents(string: string)
-
+            
             if urlComponents?.scheme == nil {
                 urlComponents = URLComponents(string: "https://" + string)
             }
-
+            
             let isValidUrl = NSPredicate.urlPredicate.evaluate(with: string)
             if isValidUrl, let inputUrl = urlComponents?.url {
                 return inputUrl
@@ -106,74 +115,78 @@ final class DAppBrowserInteractor {
                 guard let searchQuery = string.addingPercentEncoding(withAllowedCharacters: querySet) else {
                     return nil
                 }
-
+                
                 return URL(string: "https://duckduckgo.com/?q=\(searchQuery)")
             }
         }
     }
-
+    
     func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
         transports.map { transport in
             let bridgeOperation = transport.createBridgeScriptOperation()
             let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
             let transportName = transport.name
-
+            
             let mapOperation = ClosureOperation<DAppTransportModel> {
                 guard let subscriptionScript = maybeSubscriptionScript else {
                     throw DAppBrowserStateError.unexpected(
                         reason: "Selected wallet doesn't have an address for this network"
                     )
                 }
-
+                
                 let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
-
+                
                 return DAppTransportModel(
                     name: transportName,
                     scripts: [bridgeScript, subscriptionScript]
                 )
             }
-
+            
             mapOperation.addDependency(bridgeOperation)
-
+            
             return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
         }
     }
-
+    
     func createGlobalSettingsOperation(for host: String?) -> BaseOperation<DAppGlobalSettings?> {
         guard let host = host else {
             return BaseOperation.createWithResult(nil)
         }
-
+        
         return dAppGlobalSettingsRepository.fetchOperation(by: host, options: RepositoryFetchOptions())
     }
-
+    
     func provideModel() {
         guard let url = resolveUrl() else {
             presenter?.didReceive(error: DAppBrowserInteractorError.invalidUrl)
             return
         }
-
+        
         let wrappers = createTransportWrappers()
-
+        
         let globalSettingsOperation = createGlobalSettingsOperation(for: url.host)
-
+        
         let desktopOnly = userQuery.dApp?.desktopOnly ?? false
-
-        let mapOperation = ClosureOperation<DAppBrowserModel> {
+        
+        let mapOperation = ClosureOperation<DAppBrowserModel> { [weak self] in
             let transportModels = try wrappers.map { wrapper in
                 try wrapper.targetOperation.extractNoCancellableResultData()
             }
-
+            
             let dAppSettings = try globalSettingsOperation.extractNoCancellableResultData()
-
+            
             let isDesktop = dAppSettings?.desktopMode ?? desktopOnly
-
-            return DAppBrowserModel(url: url, isDesktop: isDesktop, transports: transportModels)
+            
+            return DAppBrowserModel(
+                selectedTab: self?.currentTab,
+                isDesktop: isDesktop,
+                transports: transportModels
+            )
         }
-
+        
         wrappers.forEach { mapOperation.addDependency($0.targetOperation) }
         mapOperation.addDependency(globalSettingsOperation)
-
+        
         mapOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
@@ -184,23 +197,23 @@ final class DAppBrowserInteractor {
                 }
             }
         }
-
+        
         let dependencies = wrappers.flatMap(\.allOperations) + [globalSettingsOperation]
-
+        
         dataSource.operationQueue.addOperations(dependencies + [mapOperation], waitUntilFinished: false)
     }
-
+    
     func provideTransportUpdate(with postExecutionScript: DAppScriptResponse) {
         let wrappers = createTransportWrappers()
-
+        
         let mapOperation = ClosureOperation<[DAppTransportModel]> {
             try wrappers.map { wrapper in
                 try wrapper.targetOperation.extractNoCancellableResultData()
             }
         }
-
+        
         wrappers.forEach { mapOperation.addDependency($0.targetOperation) }
-
+        
         mapOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
@@ -214,34 +227,34 @@ final class DAppBrowserInteractor {
                 }
             }
         }
-
+        
         let dependencies = wrappers.flatMap(\.allOperations)
-
+        
         dataSource.operationQueue.addOperations(dependencies + [mapOperation], waitUntilFinished: false)
     }
-
+    
     private func processMessageIfNeeded() {
         guard transports.allSatisfy({ $0.isIdle() }), let queueMessage = messageQueue.first else {
             return
         }
-
+        
         messageQueue.removeFirst()
-
+        
         let transport = transports.first { $0.name == queueMessage.transportName }
-
+        
         transport?.process(message: queueMessage.underliningMessage, host: queueMessage.host)
     }
-
+    
     private func bringPhishingDetectedStateAndNotify(for host: String) {
         let allPhishing = transports
             .map { $0.bringPhishingDetectedStateIfNeeded() }
             .allSatisfy { !$0 }
-
+        
         if !allPhishing {
             presenter?.didDetectPhishing(host: host)
         }
     }
-
+    
     private func verifyPhishing(for host: String, completion: ((Bool) -> Void)?) {
         sequentialPhishingVerifier.verify(host: host) { [weak self] result in
             switch result {
@@ -249,12 +262,62 @@ final class DAppBrowserInteractor {
                 if !isNotPhishing {
                     self?.bringPhishingDetectedStateAndNotify(for: host)
                 }
-
+                
                 completion?(isNotPhishing)
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)
             }
         }
+    }
+    
+    private func provideTabs() {
+        let allTabsOperation = tabManager.getAllTabs()
+        
+        execute(
+            operation: allTabsOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success(let tabs):
+                self?.presenter?.didReceiveTabs(tabs)
+            case .failure(let error):
+                self?.presenter?.didReceive(error: error)
+            }
+        }
+    }
+    
+    private func process(userQuery: DAppSearchResult) {
+        sequentialPhishingVerifier.cancelAll()
+        
+        self.userQuery = userQuery
+        
+        if case let .dApp(dApp) = userQuery {
+            let states = transports.map { $0.makeOpaqueState() }
+            
+            if let currentTab {
+                tabManager.updateTab(currentTab.updating(state: states))
+            }
+            
+            dataSource.replace(dApp: dApp)
+            
+            let newTabOperation = tabManager.createTab(for: dApp)
+            
+            execute(
+                operation: newTabOperation,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case .success(let model):
+                    self?.currentTab = model
+                case .failure(let error):
+                    self?.presenter?.didReceive(error: Error)
+                }
+            }
+        }
+        
+        transports.forEach { $0.stop() }
     }
 }
 
@@ -263,6 +326,20 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
 
         favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
+        
+        provideTabs()
+    }
+    
+    func setCurrentTab(_ tab: DAppBrowserTab) {
+        currentTab = tab
+        
+        if let opaqueState = tab.opaqueState {
+            transports.forEach { $0.restoreState(from: opaqueState) }
+        } else {
+            // TODO: Implement
+        }
+        
+        completeSetupIfNeeded()
     }
 
     func process(host: String) {
@@ -295,12 +372,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(newQuery: DAppSearchResult) {
-        sequentialPhishingVerifier.cancelAll()
-
-        userQuery = newQuery
-        dataSource.replace(dApp: userQuery.dApp)
-
-        transports.forEach { $0.stop() }
+        process(userQuery: newQuery)
         completeSetupIfNeeded()
     }
 
