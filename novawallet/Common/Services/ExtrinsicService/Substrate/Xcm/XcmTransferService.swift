@@ -50,7 +50,7 @@ final class XcmTransferService {
         switch transferType {
         case .xtokens:
             return xTokensQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
-        case .xcmpallet, .teleport:
+        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
             return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
         case .unknown:
             return CompoundOperationWrapper.createWithError(XcmAssetTransfer.TransferTypeError.unknownType)

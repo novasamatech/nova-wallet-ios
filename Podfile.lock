@@ -1392,7 +1392,7 @@ PODS:
   - R.swift (5.4.0):
     - R.swift.Library (~> 5.3.0)
   - R.swift.Library (5.3.0)
-  - ReachabilitySwift (5.0.0)
+  - ReachabilitySwift (5.2.4)
   - RecaptchaInterop (100.0.0)
   - scrypt.c (0.1.1)
   - secp256k1.c (0.1.3)
@@ -1450,7 +1450,7 @@ PODS:
   - SoraUI/Skrull (1.13.0)
   - Sourcery (1.4.1)
   - Starscream (4.0.12)
-  - SubstrateSdk (3.2.2):
+  - SubstrateSdk (3.4.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -1459,7 +1459,7 @@ PODS:
     - IrohaCrypto/ss58 (~> 0.9.0)
     - keccak.c (~> 0.1.0)
     - Operation-iOS (~> 2.0.1)
-    - ReachabilitySwift (~> 5.0)
+    - ReachabilitySwift (~> 5.2.4)
     - Starscream
     - TweetNacl (~> 1.0.0)
     - xxHash-Swift (~> 1.0.0)
@@ -1546,7 +1546,7 @@ DEPENDENCIES:
   - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
   - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
   - R.swift
-  - ReachabilitySwift
+  - ReachabilitySwift (~> 5.2.4)
   - secp256k1.c (from `https://github.com/novasamatech/secp256k1.c`, tag `0.1.3`)
   - SnapKit (~> 5.0.0)
   - SoraFoundation (from `https://github.com/ERussel/Foundation-iOS.git`, tag `1.1.0`)
@@ -1554,7 +1554,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.2.2`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.4.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftDraw (~> 0.18.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1651,7 +1651,7 @@ EXTERNAL SOURCES:
     :tag: 4.0.12
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.2.2
+    :tag: 3.4.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
   WalletConnectSwiftV2:
@@ -1694,7 +1694,7 @@ CHECKOUT OPTIONS:
     :tag: 4.0.12
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.2.2
+    :tag: 3.4.0
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
@@ -1744,7 +1744,7 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
-  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   scrypt.c: b42ae06183251329d2b2c620c226fb541a4a3592
   secp256k1.c: 9df12a79da0a6735022c5d996d2df6a6e57e1d99
@@ -1754,7 +1754,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
-  SubstrateSdk: bc3da50e8e44ebb67e54fb20d5938a91ed85fc3c
+  SubstrateSdk: ee92f2ede60ffc3a80c73d57870c2cea05741ab4
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftDraw: f63484562ddd30d9682b5576acc1d98acc2bec8f
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1771,6 +1771,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: e61a173a12a181d74e396efe945694768f75d065
+PODFILE CHECKSUM: f485e2dc6e10abfdd79cae68f47ca4679c0cd84f
 
 COCOAPODS: 1.15.2

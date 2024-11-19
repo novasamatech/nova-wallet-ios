@@ -838,6 +838,8 @@
 		0CF4ADFD2CEC0A54009C51FA /* HydraExchangeMetaOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF4ADFC2CEC0A54009C51FA /* HydraExchangeMetaOperation.swift */; };
 		0CF5F68A2CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5F6892CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift */; };
 		0CF5F68C2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF5F68B2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift */; };
+		0CF4ADFF2CECACF9009C51FA /* PolkadotRewardParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF4ADFE2CECACF9009C51FA /* PolkadotRewardParamsService.swift */; };
+		0CF4AE0B2CECDCF1009C51FA /* PolkadotRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF4AE0A2CECDCF1009C51FA /* PolkadotRewardEngine.swift */; };
 		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
 		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
 		0CF692892C20E2B1000FC395 /* BackupManualWarningPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */; };
@@ -6131,6 +6133,8 @@
 		0CF4ADFC2CEC0A54009C51FA /* HydraExchangeMetaOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeMetaOperation.swift; sourceTree = "<group>"; };
 		0CF5F6892CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphPath.swift; sourceTree = "<group>"; };
 		0CF5F68B2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchageGraphReachability.swift; sourceTree = "<group>"; };
+		0CF4ADFE2CECACF9009C51FA /* PolkadotRewardParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotRewardParamsService.swift; sourceTree = "<group>"; };
+		0CF4AE0A2CECDCF1009C51FA /* PolkadotRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotRewardEngine.swift; sourceTree = "<group>"; };
 		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
 		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
 		0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupManualWarningPresentable.swift; sourceTree = "<group>"; };
@@ -21786,6 +21790,8 @@
 				84C1DBC429C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift */,
 				0C846B882BE50BF2000EBFC2 /* VaraRewardEngine.swift */,
 				0C846B8A2BE52FBD000EBFC2 /* VaraRewardParamsService.swift */,
+				0CF4ADFE2CECACF9009C51FA /* PolkadotRewardParamsService.swift */,
+				0CF4AE0A2CECDCF1009C51FA /* PolkadotRewardEngine.swift */,
 			);
 			path = RelayChain;
 			sourceTree = "<group>";
@@ -26492,6 +26498,7 @@
 				0CA8AD692CE0904D00ED9746 /* XcmDepositMonitoringService.swift in Sources */,
 				2D4F55112CCB7C4C00B65B76 /* SendAssetOperationCollectionDataSource.swift in Sources */,
 				8418167528251BBC0007684A /* StorageListSyncResult.swift in Sources */,
+				0CF4ADFF2CECACF9009C51FA /* PolkadotRewardParamsService.swift in Sources */,
 				84DD261929ACA9880032A598 /* BagList+CodingPath.swift in Sources */,
 				8465DA3F298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift in Sources */,
 				2DBB288D2CD42C5200DFA0AD /* QRCreationOperationFactory.swift in Sources */,
@@ -27736,6 +27743,7 @@
 				0CAB7DA32C471AAE0070CE4D /* DirectStkRecommendingValidationFactory.swift in Sources */,
 				84002A9E2992444300A80672 /* GovernanceNewDelegation.swift in Sources */,
 				845B822126EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift in Sources */,
+				0CF4AE0B2CECDCF1009C51FA /* PolkadotRewardEngine.swift in Sources */,
 				0C9C64302A8D6779004DC078 /* StakingNPoolsPresenter.swift in Sources */,
 				8457F91026EB8288006803E1 /* StorageMigrator+Sync.swift in Sources */,
 				F48220F8DA16EB51313B5D56 /* ExportMnemonicConfirmWireframe.swift in Sources */,
