@@ -35,6 +35,13 @@ final class RewardCalculatorParamsServiceFactory {
                 runtimeCodingService: runtimeService,
                 operationQueue: operationQueue
             )
+        case KnowChainId.polkadot:
+            PolkadotRewardParamsService(
+                connection: connection,
+                runtimeCodingService: runtimeService,
+                stateCallFactory: StateCallRequestFactory(),
+                operationQueue: operationQueue
+            )
         default:
             InflationRewardCalculatorParamsService(
                 connection: connection,
