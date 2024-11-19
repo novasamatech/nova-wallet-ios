@@ -8,7 +8,7 @@ extension AssetBalanceDisplayInfo {
             symbol: info.token,
             symbolValueSeparator: " ",
             symbolPosition: .suffix,
-            icon: URL(string: info.icon)
+            icon: .url(URL(string: info.icon))
         )
     }
 }

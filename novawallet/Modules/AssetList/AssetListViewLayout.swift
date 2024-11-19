@@ -3,16 +3,23 @@ import UIKit
 final class AssetListViewLayout: UIView {
     let backgroundView = MultigradientView.background
 
-    let collectionViewLayout = AssetListFlowLayout()
+    let collectionViewLayout: AssetListFlowLayout = {
+        let layout = AssetListFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        layout.sectionInset = .zero
+
+        return layout
+    }()
+
+    var assetGroupsLayoutStyle: AssetListGroupsStyle?
 
     lazy var collectionView: UICollectionView = {
-        let flowLayout = collectionViewLayout
-        flowLayout.scrollDirection = .vertical
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.minimumInteritemSpacing = 0
-        flowLayout.sectionInset = .zero
-
-        let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        let view = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: collectionViewLayout
+        )
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 16.0, right: 0.0)
@@ -21,8 +28,8 @@ final class AssetListViewLayout: UIView {
         return view
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(frame _: CGRect) {
+        super.init(frame: .zero)
 
         setup()
     }

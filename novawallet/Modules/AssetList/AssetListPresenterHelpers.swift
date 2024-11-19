@@ -6,7 +6,7 @@ enum AssetListPresenterHelpers {
         chain: ChainModel,
         maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListAssetAccountInfo {
-        let assetModel = asset.assetModel
+        let assetModel = asset.chainAssetModel.asset
         let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
 
         let assetInfo = assetModel.displayInfo
@@ -20,7 +20,7 @@ enum AssetListPresenterHelpers {
         }
 
         return AssetListAssetAccountInfo(
-            assetId: asset.assetModel.assetId,
+            assetId: asset.chainAssetModel.asset.assetId,
             assetInfo: assetInfo,
             balance: asset.totalAmount,
             priceData: priceData

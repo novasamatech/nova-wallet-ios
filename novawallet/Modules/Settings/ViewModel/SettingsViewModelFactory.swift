@@ -46,7 +46,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             (.preferences, [
                 createNotificationsViewModel(row: .notifications, isOn: parameters.isNotificationsOn, locale: locale),
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
-                createLanguageViewModel(from: language, locale: locale)
+                createLanguageViewModel(from: language, locale: locale),
+                createCommonViewViewModel(row: .appearance, locale: locale)
             ]),
             (.security, [
                 createCommonViewViewModel(row: .backup, locale: locale),

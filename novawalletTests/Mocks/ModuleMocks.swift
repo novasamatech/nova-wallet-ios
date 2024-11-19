@@ -2843,19 +2843,19 @@ import BigInt
 import Operation_iOS
 
 
- class MockAssetSelectionViewProtocol: AssetSelectionViewProtocol, Cuckoo.ProtocolMock {
+ class MockChainAssetSelectionViewProtocol: ChainAssetSelectionViewProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = AssetSelectionViewProtocol
+     typealias MocksType = ChainAssetSelectionViewProtocol
     
-     typealias Stubbing = __StubbingProxy_AssetSelectionViewProtocol
-     typealias Verification = __VerificationProxy_AssetSelectionViewProtocol
+     typealias Stubbing = __StubbingProxy_ChainAssetSelectionViewProtocol
+     typealias Verification = __VerificationProxy_ChainAssetSelectionViewProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: AssetSelectionViewProtocol?
+    private var __defaultImplStub: ChainAssetSelectionViewProtocol?
 
-     func enableDefaultImplementation(_ stub: AssetSelectionViewProtocol) {
+     func enableDefaultImplementation(_ stub: ChainAssetSelectionViewProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -2910,7 +2910,7 @@ import Operation_iOS
     }
     
 
-	 struct __StubbingProxy_AssetSelectionViewProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_ChainAssetSelectionViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -2918,24 +2918,24 @@ import Operation_iOS
 	    }
 	    
 	    
-	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAssetSelectionViewProtocol, Bool> {
+	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockChainAssetSelectionViewProtocol, Bool> {
 	        return .init(manager: cuckoo_manager, name: "isSetup")
 	    }
 	    
 	    
-	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAssetSelectionViewProtocol, UIViewController> {
+	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockChainAssetSelectionViewProtocol, UIViewController> {
 	        return .init(manager: cuckoo_manager, name: "controller")
 	    }
 	    
 	    
 	    func didReload() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionViewProtocol.self, method: "didReload()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionViewProtocol.self, method: "didReload()", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_AssetSelectionViewProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_ChainAssetSelectionViewProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -2968,7 +2968,7 @@ import Operation_iOS
 	}
 }
 
- class AssetSelectionViewProtocolStub: AssetSelectionViewProtocol {
+ class ChainAssetSelectionViewProtocolStub: ChainAssetSelectionViewProtocol {
         
     
     
@@ -3002,19 +3002,19 @@ import Operation_iOS
 
 
 
- class MockAssetSelectionPresenterProtocol: AssetSelectionPresenterProtocol, Cuckoo.ProtocolMock {
+ class MockChainAssetSelectionPresenterProtocol: ChainAssetSelectionPresenterProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = AssetSelectionPresenterProtocol
+     typealias MocksType = ChainAssetSelectionPresenterProtocol
     
-     typealias Stubbing = __StubbingProxy_AssetSelectionPresenterProtocol
-     typealias Verification = __VerificationProxy_AssetSelectionPresenterProtocol
+     typealias Stubbing = __StubbingProxy_ChainAssetSelectionPresenterProtocol
+     typealias Verification = __VerificationProxy_ChainAssetSelectionPresenterProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: AssetSelectionPresenterProtocol?
+    private var __defaultImplStub: ChainAssetSelectionPresenterProtocol?
 
-     func enableDefaultImplementation(_ stub: AssetSelectionPresenterProtocol) {
+     func enableDefaultImplementation(_ stub: ChainAssetSelectionPresenterProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -3085,7 +3085,7 @@ import Operation_iOS
     }
     
 
-	 struct __StubbingProxy_AssetSelectionPresenterProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_ChainAssetSelectionPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -3093,29 +3093,29 @@ import Operation_iOS
 	    }
 	    
 	    
-	    var numberOfItems: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAssetSelectionPresenterProtocol, Int> {
+	    var numberOfItems: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockChainAssetSelectionPresenterProtocol, Int> {
 	        return .init(manager: cuckoo_manager, name: "numberOfItems")
 	    }
 	    
 	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
 	    func item<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubFunction<(Int), SelectableViewModelProtocol> where M1.MatchedType == Int {
 	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionPresenterProtocol.self, method: "item(at: Int) -> SelectableViewModelProtocol", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionPresenterProtocol.self, method: "item(at: Int) -> SelectableViewModelProtocol", parameterMatchers: matchers))
 	    }
 	    
 	    func selectItem<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
 	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionPresenterProtocol.self, method: "selectItem(at: Int)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionPresenterProtocol.self, method: "selectItem(at: Int)", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_AssetSelectionPresenterProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_ChainAssetSelectionPresenterProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -3155,7 +3155,7 @@ import Operation_iOS
 	}
 }
 
- class AssetSelectionPresenterProtocolStub: AssetSelectionPresenterProtocol {
+ class ChainAssetSelectionPresenterProtocolStub: ChainAssetSelectionPresenterProtocol {
         
     
     
@@ -3192,19 +3192,19 @@ import Operation_iOS
 
 
 
- class MockAssetSelectionWireframeProtocol: AssetSelectionWireframeProtocol, Cuckoo.ProtocolMock {
+ class MockChainAssetSelectionWireframeProtocol: ChainAssetSelectionWireframeProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = AssetSelectionWireframeProtocol
+     typealias MocksType = ChainAssetSelectionWireframeProtocol
     
-     typealias Stubbing = __StubbingProxy_AssetSelectionWireframeProtocol
-     typealias Verification = __VerificationProxy_AssetSelectionWireframeProtocol
+     typealias Stubbing = __StubbingProxy_ChainAssetSelectionWireframeProtocol
+     typealias Verification = __VerificationProxy_ChainAssetSelectionWireframeProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: AssetSelectionWireframeProtocol?
+    private var __defaultImplStub: ChainAssetSelectionWireframeProtocol?
 
-     func enableDefaultImplementation(_ stub: AssetSelectionWireframeProtocol) {
+     func enableDefaultImplementation(_ stub: ChainAssetSelectionWireframeProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -3217,9 +3217,9 @@ import Operation_iOS
     
     
     
-     func complete(on view: AssetSelectionViewProtocol, selecting chainAsset: ChainAsset)  {
+     func complete(on view: ChainAssetSelectionViewProtocol, selecting chainAsset: ChainAsset)  {
         
-    return cuckoo_manager.call("complete(on: AssetSelectionViewProtocol, selecting: ChainAsset)",
+    return cuckoo_manager.call("complete(on: ChainAssetSelectionViewProtocol, selecting: ChainAsset)",
             parameters: (view, chainAsset),
             escapingParameters: (view, chainAsset),
             superclassCall:
@@ -3231,7 +3231,7 @@ import Operation_iOS
     }
     
 
-	 struct __StubbingProxy_AssetSelectionWireframeProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_ChainAssetSelectionWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -3239,14 +3239,14 @@ import Operation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(on view: M1, selecting chainAsset: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(AssetSelectionViewProtocol, ChainAsset)> where M1.MatchedType == AssetSelectionViewProtocol, M2.MatchedType == ChainAsset {
-	        let matchers: [Cuckoo.ParameterMatcher<(AssetSelectionViewProtocol, ChainAsset)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: chainAsset) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionWireframeProtocol.self, method: "complete(on: AssetSelectionViewProtocol, selecting: ChainAsset)", parameterMatchers: matchers))
+	    func complete<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(on view: M1, selecting chainAsset: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainAssetSelectionViewProtocol, ChainAsset)> where M1.MatchedType == ChainAssetSelectionViewProtocol, M2.MatchedType == ChainAsset {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainAssetSelectionViewProtocol, ChainAsset)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: chainAsset) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionWireframeProtocol.self, method: "complete(on: ChainAssetSelectionViewProtocol, selecting: ChainAsset)", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_AssetSelectionWireframeProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_ChainAssetSelectionWireframeProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -3261,15 +3261,15 @@ import Operation_iOS
 	
 	    
 	    @discardableResult
-	    func complete<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(on view: M1, selecting chainAsset: M2) -> Cuckoo.__DoNotUse<(AssetSelectionViewProtocol, ChainAsset), Void> where M1.MatchedType == AssetSelectionViewProtocol, M2.MatchedType == ChainAsset {
-	        let matchers: [Cuckoo.ParameterMatcher<(AssetSelectionViewProtocol, ChainAsset)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: chainAsset) { $0.1 }]
-	        return cuckoo_manager.verify("complete(on: AssetSelectionViewProtocol, selecting: ChainAsset)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func complete<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(on view: M1, selecting chainAsset: M2) -> Cuckoo.__DoNotUse<(ChainAssetSelectionViewProtocol, ChainAsset), Void> where M1.MatchedType == ChainAssetSelectionViewProtocol, M2.MatchedType == ChainAsset {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainAssetSelectionViewProtocol, ChainAsset)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: chainAsset) { $0.1 }]
+	        return cuckoo_manager.verify("complete(on: ChainAssetSelectionViewProtocol, selecting: ChainAsset)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
 }
 
- class AssetSelectionWireframeProtocolStub: AssetSelectionWireframeProtocol {
+ class ChainAssetSelectionWireframeProtocolStub: ChainAssetSelectionWireframeProtocol {
     
 
     
@@ -3277,7 +3277,7 @@ import Operation_iOS
     
     
     
-     func complete(on view: AssetSelectionViewProtocol, selecting chainAsset: ChainAsset)   {
+     func complete(on view: ChainAssetSelectionViewProtocol, selecting chainAsset: ChainAsset)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -3285,19 +3285,19 @@ import Operation_iOS
 
 
 
- class MockAssetSelectionDelegate: AssetSelectionDelegate, Cuckoo.ProtocolMock {
+ class MockChainAssetSelectionDelegate: ChainAssetSelectionDelegate, Cuckoo.ProtocolMock {
     
-     typealias MocksType = AssetSelectionDelegate
+     typealias MocksType = ChainAssetSelectionDelegate
     
-     typealias Stubbing = __StubbingProxy_AssetSelectionDelegate
-     typealias Verification = __VerificationProxy_AssetSelectionDelegate
+     typealias Stubbing = __StubbingProxy_ChainAssetSelectionDelegate
+     typealias Verification = __VerificationProxy_ChainAssetSelectionDelegate
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: AssetSelectionDelegate?
+    private var __defaultImplStub: ChainAssetSelectionDelegate?
 
-     func enableDefaultImplementation(_ stub: AssetSelectionDelegate) {
+     func enableDefaultImplementation(_ stub: ChainAssetSelectionDelegate) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -3310,9 +3310,9 @@ import Operation_iOS
     
     
     
-     func assetSelection(view: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset)  {
+     func assetSelection(view: ChainAssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset)  {
         
-    return cuckoo_manager.call("assetSelection(view: AssetSelectionViewProtocol, didCompleteWith: ChainAsset)",
+    return cuckoo_manager.call("assetSelection(view: ChainAssetSelectionViewProtocol, didCompleteWith: ChainAsset)",
             parameters: (view, chainAsset),
             escapingParameters: (view, chainAsset),
             superclassCall:
@@ -3324,7 +3324,7 @@ import Operation_iOS
     }
     
 
-	 struct __StubbingProxy_AssetSelectionDelegate: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_ChainAssetSelectionDelegate: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -3332,14 +3332,14 @@ import Operation_iOS
 	    }
 	    
 	    
-	    func assetSelection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(view: M1, didCompleteWith chainAsset: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(AssetSelectionViewProtocol, ChainAsset)> where M1.MatchedType == AssetSelectionViewProtocol, M2.MatchedType == ChainAsset {
-	        let matchers: [Cuckoo.ParameterMatcher<(AssetSelectionViewProtocol, ChainAsset)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: chainAsset) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionDelegate.self, method: "assetSelection(view: AssetSelectionViewProtocol, didCompleteWith: ChainAsset)", parameterMatchers: matchers))
+	    func assetSelection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(view: M1, didCompleteWith chainAsset: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainAssetSelectionViewProtocol, ChainAsset)> where M1.MatchedType == ChainAssetSelectionViewProtocol, M2.MatchedType == ChainAsset {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainAssetSelectionViewProtocol, ChainAsset)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: chainAsset) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionDelegate.self, method: "assetSelection(view: ChainAssetSelectionViewProtocol, didCompleteWith: ChainAsset)", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_AssetSelectionDelegate: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_ChainAssetSelectionDelegate: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -3354,15 +3354,15 @@ import Operation_iOS
 	
 	    
 	    @discardableResult
-	    func assetSelection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(view: M1, didCompleteWith chainAsset: M2) -> Cuckoo.__DoNotUse<(AssetSelectionViewProtocol, ChainAsset), Void> where M1.MatchedType == AssetSelectionViewProtocol, M2.MatchedType == ChainAsset {
-	        let matchers: [Cuckoo.ParameterMatcher<(AssetSelectionViewProtocol, ChainAsset)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: chainAsset) { $0.1 }]
-	        return cuckoo_manager.verify("assetSelection(view: AssetSelectionViewProtocol, didCompleteWith: ChainAsset)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func assetSelection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(view: M1, didCompleteWith chainAsset: M2) -> Cuckoo.__DoNotUse<(ChainAssetSelectionViewProtocol, ChainAsset), Void> where M1.MatchedType == ChainAssetSelectionViewProtocol, M2.MatchedType == ChainAsset {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainAssetSelectionViewProtocol, ChainAsset)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: chainAsset) { $0.1 }]
+	        return cuckoo_manager.verify("assetSelection(view: ChainAssetSelectionViewProtocol, didCompleteWith: ChainAsset)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
 }
 
- class AssetSelectionDelegateStub: AssetSelectionDelegate {
+ class ChainAssetSelectionDelegateStub: ChainAssetSelectionDelegate {
     
 
     
@@ -3370,7 +3370,7 @@ import Operation_iOS
     
     
     
-     func assetSelection(view: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset)   {
+     func assetSelection(view: ChainAssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -3378,19 +3378,19 @@ import Operation_iOS
 
 
 
- class MockAssetSelectionInteractorInputProtocol: AssetSelectionInteractorInputProtocol, Cuckoo.ProtocolMock {
+ class MockChainAssetSelectionInteractorInputProtocol: ChainAssetSelectionInteractorInputProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = AssetSelectionInteractorInputProtocol
+     typealias MocksType = ChainAssetSelectionInteractorInputProtocol
     
-     typealias Stubbing = __StubbingProxy_AssetSelectionInteractorInputProtocol
-     typealias Verification = __VerificationProxy_AssetSelectionInteractorInputProtocol
+     typealias Stubbing = __StubbingProxy_ChainAssetSelectionInteractorInputProtocol
+     typealias Verification = __VerificationProxy_ChainAssetSelectionInteractorInputProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: AssetSelectionInteractorInputProtocol?
+    private var __defaultImplStub: ChainAssetSelectionInteractorInputProtocol?
 
-     func enableDefaultImplementation(_ stub: AssetSelectionInteractorInputProtocol) {
+     func enableDefaultImplementation(_ stub: ChainAssetSelectionInteractorInputProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -3417,7 +3417,7 @@ import Operation_iOS
     }
     
 
-	 struct __StubbingProxy_AssetSelectionInteractorInputProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_ChainAssetSelectionInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -3427,12 +3427,12 @@ import Operation_iOS
 	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_AssetSelectionInteractorInputProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_ChainAssetSelectionInteractorInputProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -3455,7 +3455,7 @@ import Operation_iOS
 	}
 }
 
- class AssetSelectionInteractorInputProtocolStub: AssetSelectionInteractorInputProtocol {
+ class ChainAssetSelectionInteractorInputProtocolStub: ChainAssetSelectionInteractorInputProtocol {
     
 
     
@@ -3471,19 +3471,19 @@ import Operation_iOS
 
 
 
- class MockAssetSelectionInteractorOutputProtocol: AssetSelectionInteractorOutputProtocol, Cuckoo.ProtocolMock {
+ class MockChainAssetSelectionInteractorOutputProtocol: ChainAssetSelectionInteractorOutputProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = AssetSelectionInteractorOutputProtocol
+     typealias MocksType = ChainAssetSelectionInteractorOutputProtocol
     
-     typealias Stubbing = __StubbingProxy_AssetSelectionInteractorOutputProtocol
-     typealias Verification = __VerificationProxy_AssetSelectionInteractorOutputProtocol
+     typealias Stubbing = __StubbingProxy_ChainAssetSelectionInteractorOutputProtocol
+     typealias Verification = __VerificationProxy_ChainAssetSelectionInteractorOutputProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: AssetSelectionInteractorOutputProtocol?
+    private var __defaultImplStub: ChainAssetSelectionInteractorOutputProtocol?
 
-     func enableDefaultImplementation(_ stub: AssetSelectionInteractorOutputProtocol) {
+     func enableDefaultImplementation(_ stub: ChainAssetSelectionInteractorOutputProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -3555,7 +3555,7 @@ import Operation_iOS
     }
     
 
-	 struct __StubbingProxy_AssetSelectionInteractorOutputProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_ChainAssetSelectionInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -3565,27 +3565,27 @@ import Operation_iOS
 	    
 	    func didReceiveChainAssets<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[ChainAsset], Error>)> where M1.MatchedType == Result<[ChainAsset], Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAsset], Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorOutputProtocol.self, method: "didReceiveChainAssets(result: Result<[ChainAsset], Error>)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceiveChainAssets(result: Result<[ChainAsset], Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveBalance<M1: Cuckoo.Matchable>(results: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAssetId: Result<BigUInt?, Error>])> where M1.MatchedType == [ChainAssetId: Result<BigUInt?, Error>] {
 	        let matchers: [Cuckoo.ParameterMatcher<([ChainAssetId: Result<BigUInt?, Error>])>] = [wrap(matchable: results) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorOutputProtocol.self, method: "didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePrice<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAssetId: DataProviderChange<PriceData>])> where M1.MatchedType == [ChainAssetId: DataProviderChange<PriceData>] {
 	        let matchers: [Cuckoo.ParameterMatcher<([ChainAssetId: DataProviderChange<PriceData>])>] = [wrap(matchable: changes) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorOutputProtocol.self, method: "didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePrice<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
 	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorOutputProtocol.self, method: "didReceivePrice(error: Error)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceivePrice(error: Error)", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_AssetSelectionInteractorOutputProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_ChainAssetSelectionInteractorOutputProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -3626,7 +3626,7 @@ import Operation_iOS
 	}
 }
 
- class AssetSelectionInteractorOutputProtocolStub: AssetSelectionInteractorOutputProtocol {
+ class ChainAssetSelectionInteractorOutputProtocolStub: ChainAssetSelectionInteractorOutputProtocol {
     
 
     
@@ -3653,668 +3653,6 @@ import Operation_iOS
     
     
      func didReceivePrice(error: Error)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-import Cuckoo
-@testable import novawallet
-
-
- class MockAssetsSettingsViewProtocol: AssetsSettingsViewProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = AssetsSettingsViewProtocol
-    
-     typealias Stubbing = __StubbingProxy_AssetsSettingsViewProtocol
-     typealias Verification = __VerificationProxy_AssetsSettingsViewProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: AssetsSettingsViewProtocol?
-
-     func enableDefaultImplementation(_ stub: AssetsSettingsViewProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-    
-    
-     var isSetup: Bool {
-        get {
-            return cuckoo_manager.getter("isSetup",
-                superclassCall:
-                    
-                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                    ,
-                defaultCall: __defaultImplStub!.isSetup)
-        }
-        
-    }
-    
-    
-    
-     var controller: UIViewController {
-        get {
-            return cuckoo_manager.getter("controller",
-                superclassCall:
-                    
-                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                    ,
-                defaultCall: __defaultImplStub!.controller)
-        }
-        
-    }
-    
-
-    
-
-    
-    
-    
-     func didReceive(viewModel: AssetsSettingsViewModel)  {
-        
-    return cuckoo_manager.call("didReceive(viewModel: AssetsSettingsViewModel)",
-            parameters: (viewModel),
-            escapingParameters: (viewModel),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didReceive(viewModel: viewModel))
-        
-    }
-    
-
-	 struct __StubbingProxy_AssetsSettingsViewProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAssetsSettingsViewProtocol, Bool> {
-	        return .init(manager: cuckoo_manager, name: "isSetup")
-	    }
-	    
-	    
-	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAssetsSettingsViewProtocol, UIViewController> {
-	        return .init(manager: cuckoo_manager, name: "controller")
-	    }
-	    
-	    
-	    func didReceive<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AssetsSettingsViewModel)> where M1.MatchedType == AssetsSettingsViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AssetsSettingsViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsViewProtocol.self, method: "didReceive(viewModel: AssetsSettingsViewModel)", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_AssetsSettingsViewProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	    
-	    var isSetup: Cuckoo.VerifyReadOnlyProperty<Bool> {
-	        return .init(manager: cuckoo_manager, name: "isSetup", callMatcher: callMatcher, sourceLocation: sourceLocation)
-	    }
-	    
-	    
-	    var controller: Cuckoo.VerifyReadOnlyProperty<UIViewController> {
-	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
-	    }
-	    
-	
-	    
-	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(AssetsSettingsViewModel), Void> where M1.MatchedType == AssetsSettingsViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AssetsSettingsViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("didReceive(viewModel: AssetsSettingsViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class AssetsSettingsViewProtocolStub: AssetsSettingsViewProtocol {
-        
-    
-    
-     var isSetup: Bool {
-        get {
-            return DefaultValueRegistry.defaultValue(for: (Bool).self)
-        }
-        
-    }
-        
-    
-    
-     var controller: UIViewController {
-        get {
-            return DefaultValueRegistry.defaultValue(for: (UIViewController).self)
-        }
-        
-    }
-    
-
-    
-
-    
-    
-    
-     func didReceive(viewModel: AssetsSettingsViewModel)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-
- class MockAssetsSettingsPresenterProtocol: AssetsSettingsPresenterProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = AssetsSettingsPresenterProtocol
-    
-     typealias Stubbing = __StubbingProxy_AssetsSettingsPresenterProtocol
-     typealias Verification = __VerificationProxy_AssetsSettingsPresenterProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: AssetsSettingsPresenterProtocol?
-
-     func enableDefaultImplementation(_ stub: AssetsSettingsPresenterProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func setup()  {
-        
-    return cuckoo_manager.call("setup()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setup())
-        
-    }
-    
-    
-    
-     func setHideZeroBalances(value: Bool)  {
-        
-    return cuckoo_manager.call("setHideZeroBalances(value: Bool)",
-            parameters: (value),
-            escapingParameters: (value),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setHideZeroBalances(value: value))
-        
-    }
-    
-    
-    
-     func apply()  {
-        
-    return cuckoo_manager.call("apply()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.apply())
-        
-    }
-    
-
-	 struct __StubbingProxy_AssetsSettingsPresenterProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
-	    }
-	    
-	    func setHideZeroBalances<M1: Cuckoo.Matchable>(value: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: value) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsPresenterProtocol.self, method: "setHideZeroBalances(value: Bool)", parameterMatchers: matchers))
-	    }
-	    
-	    func apply() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsPresenterProtocol.self, method: "apply()", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_AssetsSettingsPresenterProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func setHideZeroBalances<M1: Cuckoo.Matchable>(value: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: value) { $0 }]
-	        return cuckoo_manager.verify("setHideZeroBalances(value: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func apply() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("apply()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class AssetsSettingsPresenterProtocolStub: AssetsSettingsPresenterProtocol {
-    
-
-    
-
-    
-    
-    
-     func setup()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func setHideZeroBalances(value: Bool)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func apply()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-
- class MockAssetsSettingsInteractorInputProtocol: AssetsSettingsInteractorInputProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = AssetsSettingsInteractorInputProtocol
-    
-     typealias Stubbing = __StubbingProxy_AssetsSettingsInteractorInputProtocol
-     typealias Verification = __VerificationProxy_AssetsSettingsInteractorInputProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: AssetsSettingsInteractorInputProtocol?
-
-     func enableDefaultImplementation(_ stub: AssetsSettingsInteractorInputProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func setup()  {
-        
-    return cuckoo_manager.call("setup()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setup())
-        
-    }
-    
-    
-    
-     func save(hideZeroBalances: Bool)  {
-        
-    return cuckoo_manager.call("save(hideZeroBalances: Bool)",
-            parameters: (hideZeroBalances),
-            escapingParameters: (hideZeroBalances),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.save(hideZeroBalances: hideZeroBalances))
-        
-    }
-    
-
-	 struct __StubbingProxy_AssetsSettingsInteractorInputProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
-	    }
-	    
-	    func save<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsInteractorInputProtocol.self, method: "save(hideZeroBalances: Bool)", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_AssetsSettingsInteractorInputProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func save<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
-	        return cuckoo_manager.verify("save(hideZeroBalances: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class AssetsSettingsInteractorInputProtocolStub: AssetsSettingsInteractorInputProtocol {
-    
-
-    
-
-    
-    
-    
-     func setup()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func save(hideZeroBalances: Bool)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-
- class MockAssetsSettingsInteractorOutputProtocol: AssetsSettingsInteractorOutputProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = AssetsSettingsInteractorOutputProtocol
-    
-     typealias Stubbing = __StubbingProxy_AssetsSettingsInteractorOutputProtocol
-     typealias Verification = __VerificationProxy_AssetsSettingsInteractorOutputProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: AssetsSettingsInteractorOutputProtocol?
-
-     func enableDefaultImplementation(_ stub: AssetsSettingsInteractorOutputProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func didReceive(hideZeroBalances: Bool)  {
-        
-    return cuckoo_manager.call("didReceive(hideZeroBalances: Bool)",
-            parameters: (hideZeroBalances),
-            escapingParameters: (hideZeroBalances),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didReceive(hideZeroBalances: hideZeroBalances))
-        
-    }
-    
-    
-    
-     func didSave()  {
-        
-    return cuckoo_manager.call("didSave()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didSave())
-        
-    }
-    
-
-	 struct __StubbingProxy_AssetsSettingsInteractorOutputProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func didReceive<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsInteractorOutputProtocol.self, method: "didReceive(hideZeroBalances: Bool)", parameterMatchers: matchers))
-	    }
-	    
-	    func didSave() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsInteractorOutputProtocol.self, method: "didSave()", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_AssetsSettingsInteractorOutputProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
-	        return cuckoo_manager.verify("didReceive(hideZeroBalances: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func didSave() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("didSave()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class AssetsSettingsInteractorOutputProtocolStub: AssetsSettingsInteractorOutputProtocol {
-    
-
-    
-
-    
-    
-    
-     func didReceive(hideZeroBalances: Bool)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func didSave()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-
- class MockAssetsSettingsWireframeProtocol: AssetsSettingsWireframeProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = AssetsSettingsWireframeProtocol
-    
-     typealias Stubbing = __StubbingProxy_AssetsSettingsWireframeProtocol
-     typealias Verification = __VerificationProxy_AssetsSettingsWireframeProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: AssetsSettingsWireframeProtocol?
-
-     func enableDefaultImplementation(_ stub: AssetsSettingsWireframeProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func close(view: AssetsSettingsViewProtocol?)  {
-        
-    return cuckoo_manager.call("close(view: AssetsSettingsViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.close(view: view))
-        
-    }
-    
-
-	 struct __StubbingProxy_AssetsSettingsWireframeProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AssetsSettingsViewProtocol?)> where M1.OptionalMatchedType == AssetsSettingsViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AssetsSettingsViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsSettingsWireframeProtocol.self, method: "close(view: AssetsSettingsViewProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_AssetsSettingsWireframeProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(AssetsSettingsViewProtocol?), Void> where M1.OptionalMatchedType == AssetsSettingsViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AssetsSettingsViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("close(view: AssetsSettingsViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class AssetsSettingsWireframeProtocolStub: AssetsSettingsWireframeProtocol {
-    
-
-    
-
-    
-    
-    
-     func close(view: AssetsSettingsViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -23165,6 +22503,21 @@ import UIKit.UIImage
     
     
     
+     func showAppearance(from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("showAppearance(from: ControllerBackedProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAppearance(from: view))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -23327,6 +22680,11 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showNetworks(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
+	    func showAppearance<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?)> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showAppearance(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -23448,6 +22806,12 @@ import UIKit.UIImage
 	    func showNetworks<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return cuckoo_manager.verify("showNetworks(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showAppearance<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showAppearance(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -23573,6 +22937,12 @@ import UIKit.UIImage
     
     
      func showNetworks(from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showAppearance(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -51859,6 +51229,894 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
+import Operation_iOS
+
+
+ class MockTokensManageViewProtocol: TokensManageViewProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = TokensManageViewProtocol
+    
+     typealias Stubbing = __StubbingProxy_TokensManageViewProtocol
+     typealias Verification = __VerificationProxy_TokensManageViewProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: TokensManageViewProtocol?
+
+     func enableDefaultImplementation(_ stub: TokensManageViewProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+    
+    
+     var isSetup: Bool {
+        get {
+            return cuckoo_manager.getter("isSetup",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.isSetup)
+        }
+        
+    }
+    
+    
+    
+     var controller: UIViewController {
+        get {
+            return cuckoo_manager.getter("controller",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.controller)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func didReceive(viewModels: [TokensManageViewModel])  {
+        
+    return cuckoo_manager.call("didReceive(viewModels: [TokensManageViewModel])",
+            parameters: (viewModels),
+            escapingParameters: (viewModels),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(viewModels: viewModels))
+        
+    }
+    
+    
+    
+     func didReceive(hidesZeroBalances: Bool)  {
+        
+    return cuckoo_manager.call("didReceive(hidesZeroBalances: Bool)",
+            parameters: (hidesZeroBalances),
+            escapingParameters: (hidesZeroBalances),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(hidesZeroBalances: hidesZeroBalances))
+        
+    }
+    
+
+	 struct __StubbingProxy_TokensManageViewProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockTokensManageViewProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup")
+	    }
+	    
+	    
+	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockTokensManageViewProtocol, UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller")
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(viewModels: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([TokensManageViewModel])> where M1.MatchedType == [TokensManageViewModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<([TokensManageViewModel])>] = [wrap(matchable: viewModels) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageViewProtocol.self, method: "didReceive(viewModels: [TokensManageViewModel])", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(hidesZeroBalances: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hidesZeroBalances) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageViewProtocol.self, method: "didReceive(hidesZeroBalances: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_TokensManageViewProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	    
+	    var isSetup: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var controller: Cuckoo.VerifyReadOnlyProperty<UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(viewModels: M1) -> Cuckoo.__DoNotUse<([TokensManageViewModel]), Void> where M1.MatchedType == [TokensManageViewModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<([TokensManageViewModel])>] = [wrap(matchable: viewModels) { $0 }]
+	        return cuckoo_manager.verify("didReceive(viewModels: [TokensManageViewModel])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(hidesZeroBalances: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hidesZeroBalances) { $0 }]
+	        return cuckoo_manager.verify("didReceive(hidesZeroBalances: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class TokensManageViewProtocolStub: TokensManageViewProtocol {
+        
+    
+    
+     var isSetup: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
+        
+    }
+        
+    
+    
+     var controller: UIViewController {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (UIViewController).self)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func didReceive(viewModels: [TokensManageViewModel])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceive(hidesZeroBalances: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockTokensManagePresenterProtocol: TokensManagePresenterProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = TokensManagePresenterProtocol
+    
+     typealias Stubbing = __StubbingProxy_TokensManagePresenterProtocol
+     typealias Verification = __VerificationProxy_TokensManagePresenterProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: TokensManagePresenterProtocol?
+
+     func enableDefaultImplementation(_ stub: TokensManagePresenterProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func search(query: String)  {
+        
+    return cuckoo_manager.call("search(query: String)",
+            parameters: (query),
+            escapingParameters: (query),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.search(query: query))
+        
+    }
+    
+    
+    
+     func performAddToken()  {
+        
+    return cuckoo_manager.call("performAddToken()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performAddToken())
+        
+    }
+    
+    
+    
+     func performEdit(for viewModel: TokensManageViewModel)  {
+        
+    return cuckoo_manager.call("performEdit(for: TokensManageViewModel)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performEdit(for: viewModel))
+        
+    }
+    
+    
+    
+     func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool)  {
+        
+    return cuckoo_manager.call("performSwitch(for: TokensManageViewModel, enabled: Bool)",
+            parameters: (viewModel, enabled),
+            escapingParameters: (viewModel, enabled),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performSwitch(for: viewModel, enabled: enabled))
+        
+    }
+    
+    
+    
+     func performFilterChange(to value: Bool)  {
+        
+    return cuckoo_manager.call("performFilterChange(to: Bool)",
+            parameters: (value),
+            escapingParameters: (value),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performFilterChange(to: value))
+        
+    }
+    
+
+	 struct __StubbingProxy_TokensManagePresenterProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManagePresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func search<M1: Cuckoo.Matchable>(query: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: query) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManagePresenterProtocol.self, method: "search(query: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func performAddToken() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManagePresenterProtocol.self, method: "performAddToken()", parameterMatchers: matchers))
+	    }
+	    
+	    func performEdit<M1: Cuckoo.Matchable>(for viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(TokensManageViewModel)> where M1.MatchedType == TokensManageViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(TokensManageViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManagePresenterProtocol.self, method: "performEdit(for: TokensManageViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func performSwitch<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for viewModel: M1, enabled: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(TokensManageViewModel, Bool)> where M1.MatchedType == TokensManageViewModel, M2.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(TokensManageViewModel, Bool)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: enabled) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManagePresenterProtocol.self, method: "performSwitch(for: TokensManageViewModel, enabled: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func performFilterChange<M1: Cuckoo.Matchable>(to value: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: value) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManagePresenterProtocol.self, method: "performFilterChange(to: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_TokensManagePresenterProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func search<M1: Cuckoo.Matchable>(query: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: query) { $0 }]
+	        return cuckoo_manager.verify("search(query: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func performAddToken() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("performAddToken()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func performEdit<M1: Cuckoo.Matchable>(for viewModel: M1) -> Cuckoo.__DoNotUse<(TokensManageViewModel), Void> where M1.MatchedType == TokensManageViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(TokensManageViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("performEdit(for: TokensManageViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func performSwitch<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for viewModel: M1, enabled: M2) -> Cuckoo.__DoNotUse<(TokensManageViewModel, Bool), Void> where M1.MatchedType == TokensManageViewModel, M2.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(TokensManageViewModel, Bool)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: enabled) { $0.1 }]
+	        return cuckoo_manager.verify("performSwitch(for: TokensManageViewModel, enabled: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func performFilterChange<M1: Cuckoo.Matchable>(to value: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: value) { $0 }]
+	        return cuckoo_manager.verify("performFilterChange(to: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class TokensManagePresenterProtocolStub: TokensManagePresenterProtocol {
+    
+
+    
+
+    
+    
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func search(query: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performAddToken()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performEdit(for viewModel: TokensManageViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performFilterChange(to value: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockTokensManageInteractorInputProtocol: TokensManageInteractorInputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = TokensManageInteractorInputProtocol
+    
+     typealias Stubbing = __StubbingProxy_TokensManageInteractorInputProtocol
+     typealias Verification = __VerificationProxy_TokensManageInteractorInputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: TokensManageInteractorInputProtocol?
+
+     func enableDefaultImplementation(_ stub: TokensManageInteractorInputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel])  {
+        
+    return cuckoo_manager.call("save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel])",
+            parameters: (chainAssetIds, enabled, allChains),
+            escapingParameters: (chainAssetIds, enabled, allChains),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.save(chainAssetIds: chainAssetIds, enabled: enabled, allChains: allChains))
+        
+    }
+    
+    
+    
+     func save(hideZeroBalances: Bool)  {
+        
+    return cuckoo_manager.call("save(hideZeroBalances: Bool)",
+            parameters: (hideZeroBalances),
+            escapingParameters: (hideZeroBalances),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.save(hideZeroBalances: hideZeroBalances))
+        
+    }
+    
+
+	 struct __StubbingProxy_TokensManageInteractorInputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func save<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(chainAssetIds: M1, enabled: M2, allChains: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Set<ChainAssetId>, Bool, [ChainModel])> where M1.MatchedType == Set<ChainAssetId>, M2.MatchedType == Bool, M3.MatchedType == [ChainModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<ChainAssetId>, Bool, [ChainModel])>] = [wrap(matchable: chainAssetIds) { $0.0 }, wrap(matchable: enabled) { $0.1 }, wrap(matchable: allChains) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageInteractorInputProtocol.self, method: "save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel])", parameterMatchers: matchers))
+	    }
+	    
+	    func save<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageInteractorInputProtocol.self, method: "save(hideZeroBalances: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_TokensManageInteractorInputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func save<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(chainAssetIds: M1, enabled: M2, allChains: M3) -> Cuckoo.__DoNotUse<(Set<ChainAssetId>, Bool, [ChainModel]), Void> where M1.MatchedType == Set<ChainAssetId>, M2.MatchedType == Bool, M3.MatchedType == [ChainModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<(Set<ChainAssetId>, Bool, [ChainModel])>] = [wrap(matchable: chainAssetIds) { $0.0 }, wrap(matchable: enabled) { $0.1 }, wrap(matchable: allChains) { $0.2 }]
+	        return cuckoo_manager.verify("save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func save<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
+	        return cuckoo_manager.verify("save(hideZeroBalances: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class TokensManageInteractorInputProtocolStub: TokensManageInteractorInputProtocol {
+    
+
+    
+
+    
+    
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func save(hideZeroBalances: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockTokensManageInteractorOutputProtocol: TokensManageInteractorOutputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = TokensManageInteractorOutputProtocol
+    
+     typealias Stubbing = __StubbingProxy_TokensManageInteractorOutputProtocol
+     typealias Verification = __VerificationProxy_TokensManageInteractorOutputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: TokensManageInteractorOutputProtocol?
+
+     func enableDefaultImplementation(_ stub: TokensManageInteractorOutputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>])  {
+        
+    return cuckoo_manager.call("didReceiveChainModel(changes: [DataProviderChange<ChainModel>])",
+            parameters: (changes),
+            escapingParameters: (changes),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveChainModel(changes: changes))
+        
+    }
+    
+    
+    
+     func didReceive(hideZeroBalances: Bool)  {
+        
+    return cuckoo_manager.call("didReceive(hideZeroBalances: Bool)",
+            parameters: (hideZeroBalances),
+            escapingParameters: (hideZeroBalances),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(hideZeroBalances: hideZeroBalances))
+        
+    }
+    
+    
+    
+     func didFailChainSave()  {
+        
+    return cuckoo_manager.call("didFailChainSave()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didFailChainSave())
+        
+    }
+    
+
+	 struct __StubbingProxy_TokensManageInteractorOutputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didReceiveChainModel<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DataProviderChange<ChainModel>])> where M1.MatchedType == [DataProviderChange<ChainModel>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<ChainModel>])>] = [wrap(matchable: changes) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageInteractorOutputProtocol.self, method: "didReceiveChainModel(changes: [DataProviderChange<ChainModel>])", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageInteractorOutputProtocol.self, method: "didReceive(hideZeroBalances: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func didFailChainSave() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageInteractorOutputProtocol.self, method: "didFailChainSave()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_TokensManageInteractorOutputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didReceiveChainModel<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.__DoNotUse<([DataProviderChange<ChainModel>]), Void> where M1.MatchedType == [DataProviderChange<ChainModel>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<ChainModel>])>] = [wrap(matchable: changes) { $0 }]
+	        return cuckoo_manager.verify("didReceiveChainModel(changes: [DataProviderChange<ChainModel>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
+	        return cuckoo_manager.verify("didReceive(hideZeroBalances: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didFailChainSave() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didFailChainSave()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class TokensManageInteractorOutputProtocolStub: TokensManageInteractorOutputProtocol {
+    
+
+    
+
+    
+    
+    
+     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceive(hideZeroBalances: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didFailChainSave()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockTokensManageWireframeProtocol: TokensManageWireframeProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = TokensManageWireframeProtocol
+    
+     typealias Stubbing = __StubbingProxy_TokensManageWireframeProtocol
+     typealias Verification = __VerificationProxy_TokensManageWireframeProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: TokensManageWireframeProtocol?
+
+     func enableDefaultImplementation(_ stub: TokensManageWireframeProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func showAddToken(from view: TokensManageViewProtocol?)  {
+        
+    return cuckoo_manager.call("showAddToken(from: TokensManageViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAddToken(from: view))
+        
+    }
+    
+    
+    
+     func showEditToken(from view: TokensManageViewProtocol?, token: MultichainToken, allChains: [ChainModel.Id: ChainModel])  {
+        
+    return cuckoo_manager.call("showEditToken(from: TokensManageViewProtocol?, token: MultichainToken, allChains: [ChainModel.Id: ChainModel])",
+            parameters: (view, token, allChains),
+            escapingParameters: (view, token, allChains),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showEditToken(from: view, token: token, allChains: allChains))
+        
+    }
+    
+
+	 struct __StubbingProxy_TokensManageWireframeProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func showAddToken<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(TokensManageViewProtocol?)> where M1.OptionalMatchedType == TokensManageViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(TokensManageViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageWireframeProtocol.self, method: "showAddToken(from: TokensManageViewProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func showEditToken<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, token: M2, allChains: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(TokensManageViewProtocol?, MultichainToken, [ChainModel.Id: ChainModel])> where M1.OptionalMatchedType == TokensManageViewProtocol, M2.MatchedType == MultichainToken, M3.MatchedType == [ChainModel.Id: ChainModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<(TokensManageViewProtocol?, MultichainToken, [ChainModel.Id: ChainModel])>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: token) { $0.1 }, wrap(matchable: allChains) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockTokensManageWireframeProtocol.self, method: "showEditToken(from: TokensManageViewProtocol?, token: MultichainToken, allChains: [ChainModel.Id: ChainModel])", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_TokensManageWireframeProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func showAddToken<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(TokensManageViewProtocol?), Void> where M1.OptionalMatchedType == TokensManageViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(TokensManageViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showAddToken(from: TokensManageViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showEditToken<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, token: M2, allChains: M3) -> Cuckoo.__DoNotUse<(TokensManageViewProtocol?, MultichainToken, [ChainModel.Id: ChainModel]), Void> where M1.OptionalMatchedType == TokensManageViewProtocol, M2.MatchedType == MultichainToken, M3.MatchedType == [ChainModel.Id: ChainModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<(TokensManageViewProtocol?, MultichainToken, [ChainModel.Id: ChainModel])>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: token) { $0.1 }, wrap(matchable: allChains) { $0.2 }]
+	        return cuckoo_manager.verify("showEditToken(from: TokensManageViewProtocol?, token: MultichainToken, allChains: [ChainModel.Id: ChainModel])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class TokensManageWireframeProtocolStub: TokensManageWireframeProtocol {
+    
+
+    
+
+    
+    
+    
+     func showAddToken(from view: TokensManageViewProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showEditToken(from view: TokensManageViewProtocol?, token: MultichainToken, allChains: [ChainModel.Id: ChainModel])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
 
  class MockWalletHistoryFilterViewProtocol: WalletHistoryFilterViewProtocol, Cuckoo.ProtocolMock {
     
@@ -57375,9 +57633,9 @@ import SoraFoundation
     
     
     
-     func selectChain(from view: ControllerBackedProtocol?, delegate: AssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)  {
+     func selectChain(from view: ControllerBackedProtocol?, delegate: ChainAssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)  {
         
-    return cuckoo_manager.call("selectChain(from: ControllerBackedProtocol?, delegate: AssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)",
+    return cuckoo_manager.call("selectChain(from: ControllerBackedProtocol?, delegate: ChainAssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)",
             parameters: (view, delegate, selectedChainAssetId),
             escapingParameters: (view, delegate, selectedChainAssetId),
             superclassCall:
@@ -57452,9 +57710,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListWireframeProtocol.self, method: "showYourContributions(crowdloans: [Crowdloan], viewInfo: CrowdloansViewInfo, chainAsset: ChainAssetDisplayInfo, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
-	    func selectChain<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2, selectedChainAssetId: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, AssetSelectionDelegate, ChainAssetId?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == AssetSelectionDelegate, M3.OptionalMatchedType == ChainAssetId {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, AssetSelectionDelegate, ChainAssetId?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }, wrap(matchable: selectedChainAssetId) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListWireframeProtocol.self, method: "selectChain(from: ControllerBackedProtocol?, delegate: AssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)", parameterMatchers: matchers))
+	    func selectChain<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2, selectedChainAssetId: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ChainAssetSelectionDelegate, ChainAssetId?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ChainAssetSelectionDelegate, M3.OptionalMatchedType == ChainAssetId {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ChainAssetSelectionDelegate, ChainAssetId?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }, wrap(matchable: selectedChainAssetId) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListWireframeProtocol.self, method: "selectChain(from: ControllerBackedProtocol?, delegate: ChainAssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)", parameterMatchers: matchers))
 	    }
 	    
 	    func showWalletDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, MetaAccountModel)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel {
@@ -57501,9 +57759,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func selectChain<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2, selectedChainAssetId: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, AssetSelectionDelegate, ChainAssetId?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == AssetSelectionDelegate, M3.OptionalMatchedType == ChainAssetId {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, AssetSelectionDelegate, ChainAssetId?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }, wrap(matchable: selectedChainAssetId) { $0.2 }]
-	        return cuckoo_manager.verify("selectChain(from: ControllerBackedProtocol?, delegate: AssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func selectChain<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2, selectedChainAssetId: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ChainAssetSelectionDelegate, ChainAssetId?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ChainAssetSelectionDelegate, M3.OptionalMatchedType == ChainAssetId {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ChainAssetSelectionDelegate, ChainAssetId?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }, wrap(matchable: selectedChainAssetId) { $0.2 }]
+	        return cuckoo_manager.verify("selectChain(from: ControllerBackedProtocol?, delegate: ChainAssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -57547,7 +57805,7 @@ import SoraFoundation
     
     
     
-     func selectChain(from view: ControllerBackedProtocol?, delegate: AssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)   {
+     func selectChain(from view: ControllerBackedProtocol?, delegate: ChainAssetSelectionDelegate, selectedChainAssetId: ChainAssetId?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -32,10 +32,13 @@ struct TransactionHistoryViewFactory {
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
+        let assetIconViewModelFactory = AssetIconViewModelFactory()
+
         let viewModelFactory = TransactionHistoryViewModelFactory(
             chainAsset: chainAsset,
             dateFormatter: DateFormatter.txHistory,
             balanceViewModelFactory: balanceViewModelFactory,
+            assetIconViewModelFactory: assetIconViewModelFactory,
             groupDateFormatter: DateFormatter.txHistoryDate.localizableResource()
         )
 

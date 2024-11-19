@@ -8,9 +8,14 @@ protocol TokensManageViewModelFactoryProtocol {
 
 final class TokensManageViewModelFactory {
     let quantityFormater: LocalizableResource<NumberFormatter>
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
-    init(quantityFormater: LocalizableResource<NumberFormatter>) {
+    init(
+        quantityFormater: LocalizableResource<NumberFormatter>,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
+    ) {
         self.quantityFormater = quantityFormater
+        self.assetIconViewModelFactory = assetIconViewModelFactory
     }
 
     private func createSubtitle(
@@ -61,7 +66,7 @@ extension TokensManageViewModelFactory: TokensManageViewModelFactoryProtocol {
     }
 
     func createSingleViewModel(from token: MultichainToken, locale: Locale) -> TokenManageViewModel {
-        let imageViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: token.icon)
+        let imageViewModel = assetIconViewModelFactory.createAssetIconViewModel(for: token.icon)
         let subtitle = createSubtitle(from: token, locale: locale)
 
         return .init(symbol: token.symbol, imageViewModel: imageViewModel, subtitle: subtitle, isOn: token.enabled)

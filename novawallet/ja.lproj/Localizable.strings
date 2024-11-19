@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "国民投票 #%li 完了";
 "gov.referendum.completed.message.with.index" = "国民投票 #%li は完了し、投票が終了しました。";
 "common.use.max.due.fee.message" = "ネットワーク手数料として %@ が必要なので、最大 %@ まで使用できます。";
+"send.operation.network.list.title" = "送信するネットワークを選択 %@";
+"buy.operation.network.list.title" = "購入するネットワークを選択 %@";
+"receive.operation.network.list.title" = "受信するネットワークを選択 %@";
+"swap.operation.network.list.title" = "スワップするネットワークを選択 %@";
+"settings.appearance" = "外観";
+"settings.appearance.token.icons.title" = "トークンアイコン";
+"settings.appearance.token.icons.option.white" = "ホワイト";
+"settings.appearance.token.icons.option.colored" = "カラー";
+"wallet.receive.details.format" = "送信するのは%@トークンと%@ネットワークのトークンのみ可能です、それ以外の場合、資金を失う可能性があります";
+"common.address.coppied" = "住所がコピーされました";
+"common.networks" = "ネットワーク";
+"assets.search.token.hint" = "トークンで検索";

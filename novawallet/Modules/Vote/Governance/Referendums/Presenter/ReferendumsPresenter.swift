@@ -79,6 +79,7 @@ final class ReferendumsPresenter {
         accountManagementFilter: AccountManagementFilterProtocol,
         sorting: ReferendumsSorting,
         localizationManager: LocalizationManagerProtocol,
+        appearanceFacade: AppearanceFacadeProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -94,6 +95,7 @@ final class ReferendumsPresenter {
         self.sorting = sorting
         self.logger = logger
         self.localizationManager = localizationManager
+        self.appearanceFacade = appearanceFacade
     }
 
     private func filterReferendums() {
@@ -445,9 +447,9 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
 // MARK: GovernanceAssetSelectionDelegate
 
-extension ReferendumsPresenter: GovernanceAssetSelectionDelegate {
+extension ReferendumsPresenter: GovernanceChainSelectionDelegate {
     func governanceAssetSelection(
-        view _: AssetSelectionViewProtocol,
+        view _: ChainAssetSelectionViewProtocol,
         didCompleteWith option: GovernanceSelectedOption
     ) {
         if selectedOption == option {
@@ -505,5 +507,15 @@ extension ReferendumsPresenter: Localizable {
 
             updateReferendumsView()
         }
+    }
+}
+
+// MARK: IconAppearanceDepending
+
+extension ReferendumsPresenter: IconAppearanceDepending {
+    func applyIconAppearance() {
+        guard let view, view.isSetup else { return }
+
+        provideChainBalance()
     }
 }

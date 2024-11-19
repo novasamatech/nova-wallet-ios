@@ -328,6 +328,8 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     override func didReceiveError(_ error: Error) {
         super.didReceiveError(error)
 
+        logger?.debug("Did receive error: \(error)")
+
         _ = wireframe.present(error: error, from: view, locale: selectedLocale)
     }
 }

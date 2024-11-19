@@ -34,7 +34,6 @@ final class OperationDetailsViewLayout: UIView {
         let view = AssetIconView()
         view.backgroundView.cornerRadius = Constants.iconSize.height / 2.0
         view.backgroundView.apply(style: .container)
-        view.contentInsets = Constants.imageInsets
         view.imageView.tintColor = R.color.colorIconSecondary()
         return view
     }()
