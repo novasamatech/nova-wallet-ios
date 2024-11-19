@@ -5,7 +5,7 @@ abstract_target 'novawalletAll' do
   use_frameworks!
 
   pod 'DSF_QRCode', '~> 18.0.0'
-  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.3.2'
+  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'f55b0e60b1061744490ca7ce06af8c4b7ef8ddae'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
@@ -40,7 +40,7 @@ abstract_target 'novawalletAll' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.3.2'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'f55b0e60b1061744490ca7ce06af8c4b7ef8ddae'
     pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
@@ -67,7 +67,7 @@ abstract_target 'novawalletAll' do
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
     pod 'Sourcery', '~> 1.4'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.3.2'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'f55b0e60b1061744490ca7ce06af8c4b7ef8ddae'
     pod 'SwiftyBeaver'
     pod 'IrohaCrypto', :git => 'https://github.com/novasamatech/IrohaCrypto', :tag => '0.9.1'
     pod 'secp256k1.c', :git => 'https://github.com/novasamatech/secp256k1.c', :tag => '0.1.3'
