@@ -8,7 +8,8 @@ enum AssetExchangeExecutionManagerError: Error {
 final class AssetExchangeExecutionManager {
     typealias ResultType = Balance
 
-    let routeDetails: AssetExchangeFee
+    let operations: [AssetExchangeAtomicOperationProtocol]
+    let fee: AssetExchangeFee
     let operationQueue: OperationQueue
     let syncQueue: DispatchQueue
     let logger: LoggerProtocol
@@ -18,11 +19,13 @@ final class AssetExchangeExecutionManager {
     private var isFinished: Bool = false
 
     init(
-        routeDetails: AssetExchangeFee,
+        operations: [AssetExchangeAtomicOperationProtocol],
+        fee: AssetExchangeFee,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.routeDetails = routeDetails
+        self.operations = operations
+        self.fee = fee
         self.operationQueue = operationQueue
         self.logger = logger
 
@@ -37,13 +40,13 @@ final class AssetExchangeExecutionManager {
     private func startFirstSegmentExecution() {
         do {
             guard
-                let firstSegment = routeDetails.route.items.first,
-                let firstFees = routeDetails.operationFees.first else {
+                let firstSegment = fee.route.items.first,
+                let firstFees = fee.operationFees.first else {
                 throw AssetExchangeExecutionManagerError.invalidRouteDetails
             }
 
-            let amountIn = firstSegment.amountIn(for: routeDetails.route.direction)
-            let amountInWithFee = amountIn + routeDetails.intermediateFeesInAssetIn
+            let amountIn = firstSegment.amountIn(for: fee.route.direction)
+            let amountInWithFee = amountIn + fee.intermediateFeesInAssetIn
 
             let holdingFee = try firstFees.totalToPayFromAmountEnsuring(asset: firstSegment.edge.origin)
             let amountInWithHolding = amountInWithFee + holdingFee
@@ -63,12 +66,12 @@ final class AssetExchangeExecutionManager {
         logger.debug("Executing swap \(index)")
 
         let shouldReplaceBuyWithSell = index != 0
-        let swapLimit = routeDetails.operations[index].swapLimit.replacingAmountIn(
+        let swapLimit = operations[index].swapLimit.replacingAmountIn(
             amountIn,
             shouldReplaceBuyWithSell: shouldReplaceBuyWithSell
         )
 
-        let wrapper = routeDetails.operations[index].executeWrapper(for: swapLimit)
+        let wrapper = operations[index].executeWrapper(for: swapLimit)
 
         executeCancellable(
             wrapper: wrapper,
@@ -88,7 +91,7 @@ final class AssetExchangeExecutionManager {
     }
 
     private func correctAmountAndExecuteNext(after currentSegment: Int, amountOut: Balance) {
-        if currentSegment == routeDetails.operations.count - 1 {
+        if currentSegment == operations.count - 1 {
             complete(with: .success(amountOut))
             return
         }
@@ -96,7 +99,7 @@ final class AssetExchangeExecutionManager {
         let nextSegment = currentSegment + 1
 
         do {
-            let leaveOnAccount = try routeDetails.operationFees[nextSegment].totalAmountToPayFromAccount()
+            let leaveOnAccount = try fee.operationFees[nextSegment].totalAmountToPayFromAccount()
 
             logger.debug("Amount for fee: \(Balance(leaveOnAccount))")
 

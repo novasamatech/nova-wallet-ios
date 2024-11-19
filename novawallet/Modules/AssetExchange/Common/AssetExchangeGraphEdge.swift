@@ -22,4 +22,10 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
         amountIn: Balance,
         amountOut: Balance
     ) throws -> AssetExchangeMetaOperationProtocol?
+
+    func beginOperationPrototype() throws -> AssetExchangeOperationPrototypeProtocol
+
+    func appendToOperationPrototype(
+        _ currentPrototype: AssetExchangeOperationPrototypeProtocol
+    ) throws -> AssetExchangeOperationPrototypeProtocol?
 }

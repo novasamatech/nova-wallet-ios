@@ -107,4 +107,30 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
     ) throws -> AssetExchangeMetaOperationProtocol? {
         nil
     }
+
+    func beginOperationPrototype() throws -> AssetExchangeOperationPrototypeProtocol {
+        guard let chainIn = host.allChains[origin.chainId] else {
+            throw ChainRegistryError.noChain(origin.chainId)
+        }
+
+        guard let chainOut = host.allChains[destination.chainId] else {
+            throw ChainRegistryError.noChain(destination.chainId)
+        }
+
+        guard let assetIn = chainIn.chainAsset(for: origin.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: origin.assetId)
+        }
+
+        guard let assetOut = chainOut.chainAsset(for: destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: destination.assetId)
+        }
+
+        return CrosschainExchangeOperationPrototype(assetIn: assetIn, assetOut: assetOut, host: host)
+    }
+
+    func appendToOperationPrototype(
+        _: AssetExchangeOperationPrototypeProtocol
+    ) throws -> AssetExchangeOperationPrototypeProtocol? {
+        nil
+    }
 }

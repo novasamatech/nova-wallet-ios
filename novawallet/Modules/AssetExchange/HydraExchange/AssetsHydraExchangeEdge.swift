@@ -94,6 +94,38 @@ class AssetsHydraExchangeEdge {
             amountOut: amountOut
         )
     }
+
+    func beginOperationPrototype() throws -> AssetExchangeOperationPrototypeProtocol {
+        guard let assetIn = host.chain.chainAsset(for: origin.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: origin.assetId)
+        }
+
+        guard let assetOut = host.chain.chainAsset(for: destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: destination.assetId)
+        }
+
+        return HydraExchangeOperationPrototype(assetIn: assetIn, assetOut: assetOut, host: host)
+    }
+
+    func appendToOperationPrototype(
+        _ currentPrototype: AssetExchangeOperationPrototypeProtocol
+    ) throws -> AssetExchangeOperationPrototypeProtocol? {
+        guard
+            let hydraOperation = currentPrototype as? HydraExchangeOperationPrototype,
+            hydraOperation.assetOut.chainAssetId == origin else {
+            return nil
+        }
+
+        guard let newAssetOut = host.chain.chainAsset(for: destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: destination.assetId)
+        }
+
+        return HydraExchangeOperationPrototype(
+            assetIn: currentPrototype.assetIn,
+            assetOut: newAssetOut,
+            host: host
+        )
+    }
 }
 
 private extension AssetExchangeAtomicOperationArgs {

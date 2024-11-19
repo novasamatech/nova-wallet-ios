@@ -139,7 +139,15 @@ final class AssetsExchangeOperationFactory {
     }
 
     private func estimateExecutionTime(
-        for operations: [AssetExchangeAtomicOperationProtocol]
+        using path: AssetExchangeGraphPath
+    ) throws -> CompoundOperationWrapper<[TimeInterval]> {
+        let prototypes = try createOperationPrototypesFrom(path: path)
+
+        return estimateExecutionTime(for: prototypes)
+    }
+
+    private func estimateExecutionTime(
+        for operations: [AssetExchangeOperationPrototypeProtocol]
     ) -> CompoundOperationWrapper<[TimeInterval]> {
         let wrappers: [CompoundOperationWrapper<TimeInterval>] = operations.map { operation in
             operation.estimatedExecutionTimeWrapper()
@@ -175,11 +183,28 @@ final class AssetsExchangeOperationFactory {
             }
         }
     }
+
+    private func createOperationPrototypesFrom(
+        path: AssetExchangeGraphPath
+    ) throws -> [AssetExchangeOperationPrototypeProtocol] {
+        try path.reduce([]) { curOperations, edge in
+            if
+                let lastOperation = curOperations.last,
+                let newOperation = try edge.appendToOperationPrototype(
+                    lastOperation
+                ) {
+                return curOperations.dropLast() + [newOperation]
+            } else {
+                let newOperation = try edge.beginOperationPrototype()
+                return curOperations + [newOperation]
+            }
+        }
+    }
 }
 
 extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol {
     func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote> {
-        let wrapper = OperationCombiningService<AssetExchangeRoute?>.compoundNonOptionalWrapper(
+        let routeWrapper = OperationCombiningService<AssetExchangeRoute?>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
             let paths = self.graph.fetchPaths(
@@ -201,19 +226,38 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             return routeWrapper
         }
 
+        let executionTimesWrapper = OperationCombiningService<[TimeInterval]>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            guard let route = try routeWrapper.targetOperation.extractNoCancellableResultData() else {
+                throw AssetsExchangeOperationFactoryError.noRoute
+            }
+
+            let path = route.items.map(\.edge)
+
+            return try self.estimateExecutionTime(using: path)
+        }
+
+        executionTimesWrapper.addDependency(wrapper: routeWrapper)
+
         let mappingOperation = ClosureOperation<AssetExchangeQuote> {
-            guard let route = try wrapper.targetOperation.extractNoCancellableResultData() else {
+            guard let route = try routeWrapper.targetOperation.extractNoCancellableResultData() else {
                 throw AssetsExchangeOperationFactoryError.noRoute
             }
 
             let metaOperations = try self.createMetaOperationsFrom(route: route)
 
-            return AssetExchangeQuote(route: route, metaOperations: metaOperations)
+            let executionTimes = try executionTimesWrapper.targetOperation.extractNoCancellableResultData()
+
+            return AssetExchangeQuote(route: route, metaOperations: metaOperations, executionTimes: executionTimes)
         }
 
-        mappingOperation.addDependency(wrapper.targetOperation)
+        mappingOperation.addDependency(routeWrapper.targetOperation)
+        mappingOperation.addDependency(executionTimesWrapper.targetOperation)
 
-        return wrapper.insertingTail(operation: mappingOperation)
+        return executionTimesWrapper
+            .insertingHead(operations: routeWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
     }
 
     func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee> {
@@ -225,8 +269,6 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             )
 
             let feeWrappers = atomicOperations.map { $0.estimateFee() }
-
-            let executionTimeWrapper = estimateExecutionTime(for: atomicOperations)
 
             let intermediateFeesWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
                 operationQueue: operationQueue
@@ -243,28 +285,21 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
                 let intermediateFees = try intermediateFeesWrapper.targetOperation.extractNoCancellableResultData()
 
-                let executionTimes = try executionTimeWrapper.targetOperation.extractNoCancellableResultData()
-
                 return AssetExchangeFee(
                     route: args.route,
-                    operations: atomicOperations,
                     operationFees: operationFees,
-                    operationExecutionTimes: executionTimes,
                     intermediateFeesInAssetIn: intermediateFees,
                     slippage: args.slippage,
-                    feeAssetId: args.feeAssetId,
-                    feeAssetPrice: self.priceStore.fetchPrice(for: args.feeAssetId)
+                    feeAssetId: args.feeAssetId
                 )
             }
 
             feeWrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
             mappingOperation.addDependency(intermediateFeesWrapper.targetOperation)
-            mappingOperation.addDependency(executionTimeWrapper.targetOperation)
 
             let dependencies = feeWrappers.flatMap(\.allOperations)
 
             return intermediateFeesWrapper
-                .insertingHead(operations: executionTimeWrapper.allOperations)
                 .insertingHead(operations: dependencies)
                 .insertingTail(operation: mappingOperation)
         } catch {
@@ -273,14 +308,25 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
     }
 
     func createExecutionWrapper(for fee: AssetExchangeFee) -> CompoundOperationWrapper<Balance> {
-        let executionManager = AssetExchangeExecutionManager(
-            routeDetails: fee,
-            operationQueue: operationQueue,
-            logger: logger
-        )
+        do {
+            let atomicOperations = try prepareAtomicOperations(
+                for: fee.route,
+                slippage: fee.slippage,
+                feeAssetId: fee.feeAssetId
+            )
 
-        let operation = LongrunOperation(longrun: AnyLongrun(longrun: executionManager))
+            let executionManager = AssetExchangeExecutionManager(
+                operations: atomicOperations,
+                fee: fee,
+                operationQueue: operationQueue,
+                logger: logger
+            )
 
-        return CompoundOperationWrapper(targetOperation: operation)
+            let operation = LongrunOperation(longrun: AnyLongrun(longrun: executionManager))
+
+            return CompoundOperationWrapper(targetOperation: operation)
+        } catch {
+            return .createWithError(error)
+        }
     }
 }

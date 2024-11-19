@@ -648,6 +648,10 @@
 		0CBABFE72CED31690047F29E /* CrosschainExchangeMetaOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFE62CED31690047F29E /* CrosschainExchangeMetaOperation.swift */; };
 		0CBABFE92CED31C80047F29E /* AssetHubExchangeMetaOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFE82CED31C80047F29E /* AssetHubExchangeMetaOperation.swift */; };
 		0CBABFEB2CED37E30047F29E /* AssetExchangeQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFEA2CED37E30047F29E /* AssetExchangeQuote.swift */; };
+		0CBABFED2CED438A0047F29E /* AssetExchangeOperationPrototype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFEC2CED438A0047F29E /* AssetExchangeOperationPrototype.swift */; };
+		0CBABFEF2CED46200047F29E /* HydraExchangeOperationPrototype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFEE2CED46200047F29E /* HydraExchangeOperationPrototype.swift */; };
+		0CBABFF12CED46C90047F29E /* AssetHubExchangeOperationPrototype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFF02CED46C90047F29E /* AssetHubExchangeOperationPrototype.swift */; };
+		0CBABFF32CED47D10047F29E /* CrosschainExchangeOperationPrototype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFF22CED47D10047F29E /* CrosschainExchangeOperationPrototype.swift */; };
 		0CBC29C62A421B5000F7B1F7 /* StakingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C52A421B5000F7B1F7 /* StakingMainWireframe.swift */; };
 		0CBC29C82A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */; };
 		0CBD23F822E358320E328F2D /* GovernanceTracksSettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442FCD700DEAFD358A48F35D /* GovernanceTracksSettingsViewLayout.swift */; };
@@ -5942,6 +5946,10 @@
 		0CBABFE62CED31690047F29E /* CrosschainExchangeMetaOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainExchangeMetaOperation.swift; sourceTree = "<group>"; };
 		0CBABFE82CED31C80047F29E /* AssetHubExchangeMetaOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeMetaOperation.swift; sourceTree = "<group>"; };
 		0CBABFEA2CED37E30047F29E /* AssetExchangeQuote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeQuote.swift; sourceTree = "<group>"; };
+		0CBABFEC2CED438A0047F29E /* AssetExchangeOperationPrototype.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationPrototype.swift; sourceTree = "<group>"; };
+		0CBABFEE2CED46200047F29E /* HydraExchangeOperationPrototype.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeOperationPrototype.swift; sourceTree = "<group>"; };
+		0CBABFF02CED46C90047F29E /* AssetHubExchangeOperationPrototype.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeOperationPrototype.swift; sourceTree = "<group>"; };
+		0CBABFF22CED47D10047F29E /* CrosschainExchangeOperationPrototype.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainExchangeOperationPrototype.swift; sourceTree = "<group>"; };
 		0CBC29C52A421B5000F7B1F7 /* StakingMainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMainWireframe.swift; sourceTree = "<group>"; };
 		0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardBuilderResult.swift; sourceTree = "<group>"; };
 		0CBF5DE62AB1A60500087EBF /* SharedOperationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedOperationStatus.swift; sourceTree = "<group>"; };
@@ -10915,6 +10923,7 @@
 				0C3272922CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift */,
 				0C6108272CD53CDE00909928 /* CrosschainExchangeHost.swift */,
 				0CBABFE62CED31690047F29E /* CrosschainExchangeMetaOperation.swift */,
+				0CBABFF22CED47D10047F29E /* CrosschainExchangeOperationPrototype.swift */,
 			);
 			path = CrosschainExchange;
 			sourceTree = "<group>";
@@ -10931,6 +10940,7 @@
 				0C6108292CD5DE9500909928 /* AssetHubExchangeHost.swift */,
 				0C883A772CE2640000CAB4C8 /* AssetConversionEventParser.swift */,
 				0CBABFE82CED31C80047F29E /* AssetHubExchangeMetaOperation.swift */,
+				0CBABFF02CED46C90047F29E /* AssetHubExchangeOperationPrototype.swift */,
 			);
 			path = AssetHubExchange;
 			sourceTree = "<group>";
@@ -10955,6 +10965,7 @@
 				0C12BC3D2CEA9DF800AB919D /* AssetExchangeTimeEstimation.swift */,
 				0CF4ADF82CEBF71A009C51FA /* AssetExchangeMetaOperationProtocol.swift */,
 				0CBABFEA2CED37E30047F29E /* AssetExchangeQuote.swift */,
+				0CBABFEC2CED438A0047F29E /* AssetExchangeOperationPrototype.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -10977,6 +10988,7 @@
 				0C6108252CD5227900909928 /* HydraExchangeHost.swift */,
 				0C883A752CE25E6800CAB4C8 /* HydraSwapEventParser.swift */,
 				0CF4ADFC2CEC0A54009C51FA /* HydraExchangeMetaOperation.swift */,
+				0CBABFEE2CED46200047F29E /* HydraExchangeOperationPrototype.swift */,
 			);
 			path = HydraExchange;
 			sourceTree = "<group>";
@@ -25328,6 +25340,7 @@
 				84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */,
 				2DCC87642C596D180028C3CA /* CloudBackupConfirmPasswordPresenter.swift in Sources */,
 				84A1742428ED3CF70096F943 /* ReferendumLocal.swift in Sources */,
+				0CBABFEF2CED46200047F29E /* HydraExchangeOperationPrototype.swift in Sources */,
 				0C5FA9A72B8313950077934C /* String+Search.swift in Sources */,
 				841AB7922993D01A00A362E8 /* GovernanceDelegateConfirmInteractorError.swift in Sources */,
 				774091F92ACB1F4B00172516 /* SwapAmountInputView.swift in Sources */,
@@ -25869,6 +25882,7 @@
 				0CE933952C0488E7000F3EFE /* CloudBackupReviewViewModel.swift in Sources */,
 				77171CAA2A98BC420032B387 /* NominationPoolDataValidatorFactory.swift in Sources */,
 				2D6F51A22CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift in Sources */,
+				0CBABFF12CED46C90047F29E /* AssetHubExchangeOperationPrototype.swift in Sources */,
 				84350AD9284604CE0031EF24 /* ParaStkYourCollatorsViewModel.swift in Sources */,
 				8490141624A92F6D008F705E /* OnboardingMainViewFactory.swift in Sources */,
 				0C962F862AA859F200C0B551 /* TransactionHistoryLocalFilter.swift in Sources */,
@@ -26304,6 +26318,7 @@
 				842E9E982A2A28A700759972 /* StakingDashboardProviderFactory.swift in Sources */,
 				845B07ED291594E1005785D3 /* DemocracyReferendum.swift in Sources */,
 				84466B4028B77B4500FA1E0D /* SignatureVerificationWrapper.swift in Sources */,
+				0CBABFF32CED47D10047F29E /* CrosschainExchangeOperationPrototype.swift in Sources */,
 				844DBC62274D1E29009F8351 /* SecretTypeTableViewCell.swift in Sources */,
 				0CB261F92A9F1F2200287305 /* NPoolsRedeemError.swift in Sources */,
 				847297A2260B3146009B86D0 /* ChangeTargetsSelectValidatorsStartWireframe.swift in Sources */,
@@ -27681,6 +27696,7 @@
 				849976C827B2B80700B14A6C /* DAppMetamaskWaitingAuthState.swift in Sources */,
 				AEF5071E262369C00098574D /* PurchaseProviderProtocol.swift in Sources */,
 				848F8B172863584B00204BC4 /* OnChainTransferSetupProtocols.swift in Sources */,
+				0CBABFED2CED438A0047F29E /* AssetExchangeOperationPrototype.swift in Sources */,
 				84F47D532666F13C00F7647A /* KaruraVerifyInfo.swift in Sources */,
 				F4D96B672637E89300B23D3D /* UIView+Separator.swift in Sources */,
 				0CB4334C2CC10C3C00F2CB59 /* AssetsHydraExchangeProvider.swift in Sources */,

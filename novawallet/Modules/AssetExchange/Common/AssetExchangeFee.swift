@@ -10,15 +10,12 @@ enum AssetExchangeFeeError: Error {
     case mismatchBetweenFeeAndRoute
 }
 
-struct AssetExchangeFee {
+struct AssetExchangeFee: Equatable {
     let route: AssetExchangeRoute
-    let operations: [AssetExchangeAtomicOperationProtocol]
     let operationFees: [AssetExchangeOperationFee]
-    let operationExecutionTimes: [TimeInterval]
     let intermediateFeesInAssetIn: Balance
     let slippage: BigRational
     let feeAssetId: ChainAssetId
-    let feeAssetPrice: PriceData?
 
     // TODO: Get rid of temp vars
     var networkFee: AssetConversion.AmountWithNative {
@@ -41,16 +38,5 @@ struct AssetExchangeFee {
         let networkAmount = networkFee.nativeAmount + networkNativeFeeAddition.nativeAmount
 
         return .init(targetAmount: targetAmount, nativeAmount: networkAmount)
-    }
-}
-
-extension AssetExchangeFee: Equatable {
-    static func == (lhs: AssetExchangeFee, rhs: AssetExchangeFee) -> Bool {
-        lhs.route == rhs.route
-            && lhs.operationFees == rhs.operationFees
-            && lhs.intermediateFeesInAssetIn == rhs.intermediateFeesInAssetIn
-            && lhs.slippage == rhs.slippage
-            && lhs.feeAssetId == rhs.feeAssetId
-            && lhs.feeAssetPrice == rhs.feeAssetPrice
     }
 }

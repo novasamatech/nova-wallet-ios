@@ -23,6 +23,11 @@ class AnyAssetExchangeEdge {
     private let appendToMetaOperationClosure: (AssetExchangeMetaOperationProtocol, Balance, Balance)
         throws -> AssetExchangeMetaOperationProtocol?
 
+    private let beginOperationPrototypeClosure: () throws -> AssetExchangeOperationPrototypeProtocol
+
+    private let appendToOperationPrototypeClosure: (AssetExchangeOperationPrototypeProtocol) throws
+        -> AssetExchangeOperationPrototypeProtocol?
+
     init(_ edge: any AssetExchangableGraphEdge) {
         fetchWeight = { edge.weight }
         fetchOrigin = { edge.origin }
@@ -35,6 +40,8 @@ class AnyAssetExchangeEdge {
         typeClosure = { edge.type }
         beginMetaOperationClosure = edge.beginMetaOperation
         appendToMetaOperationClosure = edge.appendToMetaOperation
+        beginOperationPrototypeClosure = edge.beginOperationPrototype
+        appendToOperationPrototypeClosure = edge.appendToOperationPrototype
     }
 }
 
@@ -77,6 +84,16 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
         amountOut: Balance
     ) throws -> AssetExchangeMetaOperationProtocol? {
         try appendToMetaOperationClosure(currentOperation, amountIn, amountOut)
+    }
+
+    func beginOperationPrototype() throws -> AssetExchangeOperationPrototypeProtocol {
+        try beginOperationPrototypeClosure()
+    }
+
+    func appendToOperationPrototype(
+        _ currentPrototype: AssetExchangeOperationPrototypeProtocol
+    ) throws -> AssetExchangeOperationPrototypeProtocol? {
+        try appendToOperationPrototype(currentPrototype)
     }
 }
 

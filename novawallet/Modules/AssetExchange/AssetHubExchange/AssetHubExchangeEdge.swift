@@ -97,4 +97,22 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     ) throws -> AssetExchangeMetaOperationProtocol? {
         nil
     }
+
+    func beginOperationPrototype() throws -> AssetExchangeOperationPrototypeProtocol {
+        guard let assetIn = host.chain.chainAsset(for: origin.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: origin.assetId)
+        }
+
+        guard let assetOut = host.chain.chainAsset(for: destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: destination.assetId)
+        }
+
+        return AssetHubExchangeOperationPrototype(assetIn: assetIn, assetOut: assetOut, host: host)
+    }
+
+    func appendToOperationPrototype(
+        _: AssetExchangeOperationPrototypeProtocol
+    ) throws -> AssetExchangeOperationPrototypeProtocol? {
+        nil
+    }
 }
