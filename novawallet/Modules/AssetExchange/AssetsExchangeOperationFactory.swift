@@ -44,7 +44,7 @@ final class AssetsExchangeOperationFactory {
         isFirst: Bool
     ) -> AssetExchangeAtomicOperationArgs {
         // on the first segment fee paid in configurable asset and further only in assetIn
-        let feeAssetId = isFirst ? feeAssetId : segment.pathItem.edge.origin
+        let feeAssetId = isFirst ? feeAssetId : segment.edge.origin
 
         return .init(
             swapLimit: .init(
@@ -73,13 +73,13 @@ final class AssetsExchangeOperationFactory {
 
             if
                 let lastOperation = curOperations.last,
-                let newOperation = segment.pathItem.edge.appendToOperation(
+                let newOperation = segment.edge.appendToOperation(
                     lastOperation,
                     args: args
                 ) {
                 return curOperations.dropLast() + [newOperation]
             } else {
-                let newOperation = try segment.pathItem.edge.beginOperation(for: args)
+                let newOperation = try segment.edge.beginOperation(for: args)
                 return curOperations + [newOperation]
             }
         }
@@ -155,10 +155,30 @@ final class AssetsExchangeOperationFactory {
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependecies)
     }
+
+    private func createMetaOperationsFrom(route: AssetExchangeRoute) throws -> [AssetExchangeMetaOperationProtocol] {
+        try route.items.reduce([]) { curOperations, segment in
+            let amountIn = segment.amountIn(for: route.direction)
+            let amountOut = segment.amountOut(for: route.direction)
+
+            if
+                let lastOperation = curOperations.last,
+                let newOperation = try segment.edge.appendToMetaOperation(
+                    lastOperation,
+                    amountIn: amountIn,
+                    amountOut: amountOut
+                ) {
+                return curOperations.dropLast() + [newOperation]
+            } else {
+                let newOperation = try segment.edge.beginMetaOperation(for: amountIn, amountOut: amountOut)
+                return curOperations + [newOperation]
+            }
+        }
+    }
 }
 
 extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol {
-    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute> {
+    func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote> {
         let wrapper = OperationCombiningService<AssetExchangeRoute?>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
@@ -172,21 +192,23 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
                 return .createWithResult(nil)
             }
 
-            return AssetsExchangeRouteManager(
+            let routeWrapper = AssetsExchangeRouteManager(
                 possiblePaths: paths,
-                chainRegistry: self.chainRegistry,
-                priceStore: self.priceStore,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             ).fetchRoute(for: args.amount, direction: args.direction)
+
+            return routeWrapper
         }
 
-        let mappingOperation = ClosureOperation<AssetExchangeRoute> {
+        let mappingOperation = ClosureOperation<AssetExchangeQuote> {
             guard let route = try wrapper.targetOperation.extractNoCancellableResultData() else {
                 throw AssetsExchangeOperationFactoryError.noRoute
             }
 
-            return route
+            let metaOperations = try self.createMetaOperationsFrom(route: route)
+
+            return AssetExchangeQuote(route: route, metaOperations: metaOperations)
         }
 
         mappingOperation.addDependency(wrapper.targetOperation)

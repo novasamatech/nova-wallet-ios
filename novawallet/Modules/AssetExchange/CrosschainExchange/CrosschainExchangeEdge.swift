@@ -71,4 +71,40 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
         deliveryFeeNotPaidOrFromHolding()
     }
+
+    func beginMetaOperation(
+        for amountIn: Balance,
+        amountOut: Balance
+    ) throws -> AssetExchangeMetaOperationProtocol {
+        guard let chainIn = host.allChains[origin.chainId] else {
+            throw ChainRegistryError.noChain(origin.chainId)
+        }
+
+        guard let chainOut = host.allChains[destination.chainId] else {
+            throw ChainRegistryError.noChain(destination.chainId)
+        }
+
+        guard let assetIn = chainIn.chainAsset(for: origin.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: origin.assetId)
+        }
+
+        guard let assetOut = chainOut.chainAsset(for: destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: destination.assetId)
+        }
+
+        return CrosschainExchangeMetaOperation(
+            assetIn: assetIn,
+            assetOut: assetOut,
+            amountIn: amountIn,
+            amountOut: amountOut
+        )
+    }
+
+    func appendToMetaOperation(
+        _: AssetExchangeMetaOperationProtocol,
+        amountIn _: Balance,
+        amountOut _: Balance
+    ) throws -> AssetExchangeMetaOperationProtocol? {
+        nil
+    }
 }

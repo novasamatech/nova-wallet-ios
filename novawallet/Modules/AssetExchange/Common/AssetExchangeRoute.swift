@@ -32,19 +32,19 @@ struct AssetExchangeRoute: Equatable {
     }
 }
 
-extension AssetExchangeQuotePath {
-    func quoteIteration(for direction: AssetConversion.Direction) -> AssetExchangeQuotePath {
+extension AssetExchangeGraphPath {
+    func quoteIteration(for direction: AssetConversion.Direction) -> AssetExchangeGraphPath {
         switch direction {
         case .sell:
             self
         case .buy:
-            AssetExchangeQuotePath(reversed())
+            AssetExchangeGraphPath(reversed())
         }
     }
 }
 
 struct AssetExchangeRouteItem {
-    let pathItem: AssetExchangeQuotePathItem
+    let edge: AnyAssetExchangeEdge
     let amount: Balance
     let quote: Balance
 
@@ -69,7 +69,7 @@ struct AssetExchangeRouteItem {
 
 extension AssetExchangeRouteItem: Equatable {
     static func == (lhs: AssetExchangeRouteItem, rhs: AssetExchangeRouteItem) -> Bool {
-        lhs.pathItem.edge.identifier == rhs.pathItem.edge.identifier &&
+        lhs.edge.identifier == rhs.edge.identifier &&
             lhs.amount == rhs.amount &&
             lhs.quote == rhs.quote
     }

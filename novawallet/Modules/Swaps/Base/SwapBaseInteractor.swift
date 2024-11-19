@@ -160,8 +160,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(route):
-                self?.basePresenter?.didReceive(route: route, for: args)
+            case let .success(quote):
+                self?.basePresenter?.didReceive(quote: quote, for: args)
             case let .failure(error):
                 self?.basePresenter?.didReceive(baseError: .quote(error, args))
             }

@@ -87,7 +87,7 @@ struct SwapModel {
     let utilityAssetExistense: AssetBalanceExistence?
     let feeModel: AssetExchangeFee?
     let quoteArgs: AssetConversion.QuoteArgs
-    let route: AssetExchangeRoute?
+    let quote: AssetExchangeQuote?
     let slippage: BigRational
     let accountInfo: AccountInfo?
 
@@ -202,7 +202,7 @@ struct SwapModel {
 
     func checkCanReceive() -> CannotReceiveReason? {
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
-        let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (route?.amountOut ?? 0)
+        let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (quote?.route.amountOut ?? 0)
         let feeInReceiveAsset = feeChainAsset.chainAssetId == receiveChainAsset.chainAssetId ?
             (feeModel?.totalFee.targetAmount ?? 0) : 0
         let minBalance = receiveAssetExistense?.minBalance ?? 0

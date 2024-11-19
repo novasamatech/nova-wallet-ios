@@ -103,7 +103,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     override func estimateFee() {
-        guard let route = route else {
+        guard let quote else {
             return
         }
 
@@ -111,7 +111,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideFeeViewModel()
         provideNotification()
 
-        interactor.calculateFee(for: route, slippage: slippage)
+        interactor.calculateFee(for: quote.route, slippage: slippage)
     }
 
     override func applySwapMax() {
@@ -135,13 +135,13 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideDetailsViewModel()
     }
 
-    override func handleNewRoute(_ route: AssetExchangeRoute, for quoteArgs: AssetConversion.QuoteArgs) {
-        logger.debug("New quote: \(route)")
+    override func handleNewQuote(_ quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
+        logger.debug("New quote: \(quote)")
 
         switch quoteArgs.direction {
         case .buy:
             let payAmount = payChainAsset.map {
-                route.quote.decimal(assetInfo: $0.asset.displayInfo)
+                quote.route.quote.decimal(assetInfo: $0.asset.displayInfo)
             }
 
             payAmountInput = payAmount.map { .absolute($0) }
@@ -150,7 +150,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
             provideReceiveInputPriceViewModel()
         case .sell:
             receiveAmountInput = receiveChainAsset.map {
-                route.quote.decimal(assetInfo: $0.asset.displayInfo)
+                quote.route.quote.decimal(assetInfo: $0.asset.displayInfo)
             }
 
             provideReceiveAmountInputViewModel()
@@ -358,12 +358,12 @@ extension SwapSetupPresenter {
         )
 
         let differenceViewModel: DifferenceViewModel?
-        if let route = route, let payAssetDisplayInfo = payChainAsset?.assetDisplayInfo {
+        if let quote, let payAssetDisplayInfo = payChainAsset?.assetDisplayInfo {
             let params = RateParams(
                 assetDisplayInfoIn: payAssetDisplayInfo,
                 assetDisplayInfoOut: assetDisplayInfo,
-                amountIn: route.amountIn,
-                amountOut: route.amountOut
+                amountIn: quote.route.amountIn,
+                amountOut: quote.route.amountOut
             )
 
             differenceViewModel = viewModelFactory.priceDifferenceViewModel(
@@ -420,7 +420,7 @@ extension SwapSetupPresenter {
         guard
             let assetDisplayInfoIn = payChainAsset?.assetDisplayInfo,
             let assetDisplayInfoOut = receiveChainAsset?.assetDisplayInfo,
-            let route = route else {
+            let quote else {
             view?.didReceiveRate(viewModel: .loading)
             return
         }
@@ -428,8 +428,8 @@ extension SwapSetupPresenter {
             from: .init(
                 assetDisplayInfoIn: assetDisplayInfoIn,
                 assetDisplayInfoOut: assetDisplayInfoOut,
-                amountIn: route.amountIn,
-                amountOut: route.amountOut
+                amountIn: quote.route.amountIn,
+                amountOut: quote.route.amountOut
             ),
             locale: selectedLocale
         )
@@ -438,12 +438,12 @@ extension SwapSetupPresenter {
     }
 
     private func provideRouteViewModel() {
-        guard let route = route else {
+        guard let quote else {
             view?.didReceiveRoute(viewModel: .loading)
             return
         }
 
-        let viewModel = viewModelFactory.routeViewModel(from: route)
+        let viewModel = viewModelFactory.routeViewModel(from: quote.metaOperations)
 
         view?.didReceiveRoute(viewModel: .loaded(value: viewModel))
     }
@@ -811,7 +811,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                 self?.view?.didStopLoading()
 
                 guard let slippage = self?.slippage,
-                      let route = self?.route,
+                      let quote = self?.quote,
                       let quoteArgs = self?.quoteArgs else {
                     return
                 }
@@ -821,7 +821,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     chainAssetOut: swapModel.receiveChainAsset,
                     feeChainAsset: swapModel.feeChainAsset,
                     slippage: slippage,
-                    route: route,
+                    quote: quote,
                     quoteArgs: quoteArgs
                 )
 

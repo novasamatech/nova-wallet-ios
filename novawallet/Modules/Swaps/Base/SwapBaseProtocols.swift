@@ -15,7 +15,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
 }
 
 protocol SwapBaseInteractorOutputProtocol: AnyObject {
-    func didReceive(route: AssetExchangeRoute, for quoteArgs: AssetConversion.QuoteArgs)
+    func didReceive(quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs)
     func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?)
     func didReceive(baseError: SwapBaseError)
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId)

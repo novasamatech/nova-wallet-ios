@@ -18,7 +18,7 @@ class AssetExchangeBaseMetaOperation {
     let assetOut: ChainAsset
     let amountIn: Balance
     let amountOut: Balance
-    
+
     init(assetIn: ChainAsset, assetOut: ChainAsset, amountIn: Balance, amountOut: Balance) {
         self.assetIn = assetIn
         self.assetOut = assetOut

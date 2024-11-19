@@ -9,23 +9,17 @@ enum AssetExchangeGraphProxyError: Error {
 final class AssetExchangeGraphProxy {
     private weak var actualGraph: AssetsExchangeGraphProtocol?
     let operationQueue: OperationQueue
-    let chainRegistry: ChainRegistryProtocol
-    let priceStore: AssetExchangePriceStoring
     let logger: LoggerProtocol
     let maxQuotePaths: Int
 
     init(
         actualGraph: AssetsExchangeGraphProtocol? = nil,
         maxQuotePaths: Int = AssetsExchange.maxQuotePaths,
-        chainRegistry: ChainRegistryProtocol,
-        priceStore: AssetExchangePriceStoring,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.actualGraph = actualGraph
         self.maxQuotePaths = maxQuotePaths
-        self.chainRegistry = chainRegistry
-        self.priceStore = priceStore
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -49,8 +43,6 @@ extension AssetExchangeGraphProxy: AssetQuoteFactoryProtocol {
 
         let routeManager = AssetsExchangeRouteManager(
             possiblePaths: possiblePaths,
-            chainRegistry: chainRegistry,
-            priceStore: priceStore,
             operationQueue: operationQueue,
             logger: logger
         )

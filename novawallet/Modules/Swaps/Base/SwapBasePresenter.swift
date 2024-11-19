@@ -72,12 +72,12 @@ class SwapBasePresenter {
     }
 
     var fee: AssetExchangeFee?
-    var quoteResult: Result<AssetExchangeRoute, Error>?
+    var quoteResult: Result<AssetExchangeQuote, Error>?
 
-    var route: AssetExchangeRoute? {
+    var quote: AssetExchangeQuote? {
         switch quoteResult {
-        case let .success(route):
-            return route
+        case let .success(quote):
+            return quote
         case .failure, .none:
             return nil
         }
@@ -109,7 +109,7 @@ class SwapBasePresenter {
             utilityAssetExistense: utilityAssetBalanceExistense,
             feeModel: fee,
             quoteArgs: quoteArgs,
-            route: route,
+            quote: quote,
             slippage: getSlippage(),
             accountInfo: accountInfo
         )
@@ -165,7 +165,7 @@ class SwapBasePresenter {
 
     func handleBaseError(_: SwapBaseError) {}
 
-    func handleNewRoute(_: AssetExchangeRoute, for _: AssetConversion.QuoteArgs) {}
+    func handleNewQuote(_: AssetExchangeQuote, for _: AssetConversion.QuoteArgs) {}
 
     func handleNewFee(
         _: AssetExchangeFee?,
@@ -282,14 +282,14 @@ class SwapBasePresenter {
 }
 
 extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
-    func didReceive(route: AssetExchangeRoute, for quoteArgs: AssetConversion.QuoteArgs) {
+    func didReceive(quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
         guard shouldHandleRoute(for: quoteArgs) else {
             return
         }
 
-        quoteResult = .success(route)
+        quoteResult = .success(quote)
 
-        handleNewRoute(route, for: quoteArgs)
+        handleNewQuote(quote, for: quoteArgs)
     }
 
     func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?) {

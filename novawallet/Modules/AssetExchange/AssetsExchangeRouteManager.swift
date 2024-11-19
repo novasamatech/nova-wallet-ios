@@ -3,27 +3,21 @@ import Operation_iOS
 
 final class AssetsExchangeRouteManager {
     let possiblePaths: [AssetExchangeGraphPath]
-    let chainRegistry: ChainRegistryProtocol
-    let priceStore: AssetExchangePriceStoring
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         possiblePaths: [AssetExchangeGraphPath],
-        chainRegistry: ChainRegistryProtocol,
-        priceStore: AssetExchangePriceStoring,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.possiblePaths = possiblePaths
-        self.chainRegistry = chainRegistry
-        self.priceStore = priceStore
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     private func createQuote(
-        for path: AssetExchangeQuotePath,
+        for path: AssetExchangeGraphPath,
         amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute> {
@@ -36,7 +30,7 @@ final class AssetsExchangeRouteManager {
             ) {
                 let prevRouteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
 
-                let wrapper = item.edge.quote(amount: prevRouteItem?.quote ?? amount, direction: direction)
+                let wrapper = item.quote(amount: prevRouteItem?.quote ?? amount, direction: direction)
 
                 return wrapper
             }
@@ -50,7 +44,7 @@ final class AssetsExchangeRouteManager {
                 let prevQuoteItem = try prevWrapper?.targetOperation.extractNoCancellableResultData()
 
                 return AssetExchangeRouteItem(
-                    pathItem: item,
+                    edge: item,
                     amount: prevQuoteItem?.quote ?? amount,
                     quote: quote
                 )
@@ -79,34 +73,6 @@ final class AssetsExchangeRouteManager {
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
-
-    private func prepareQuotePaths() -> [AssetExchangeQuotePath] {
-        possiblePaths.compactMap { graphPath in
-            let quotePath: AssetExchangeQuotePath = graphPath.compactMap { edge in
-                guard
-                    let chainIn = chainRegistry.getChain(for: edge.origin.chainId),
-                    let chainAssetIn = chainIn.chainAsset(for: edge.origin.assetId),
-                    let chainOut = chainRegistry.getChain(for: edge.destination.chainId),
-                    let chainAssetOut = chainOut.chainAsset(for: edge.destination.assetId) else {
-                    return nil
-                }
-
-                return AssetExchangeQuotePathItem(
-                    edge: edge,
-                    assetIn: chainAssetIn,
-                    assetOut: chainAssetOut,
-                    priceIn: priceStore.fetchPrice(for: chainAssetIn.chainAssetId),
-                    priceOut: priceStore.fetchPrice(for: chainAssetOut.chainAssetId)
-                )
-            }
-
-            guard quotePath.count == graphPath.count else {
-                return nil
-            }
-
-            return quotePath
-        }
-    }
 }
 
 extension AssetsExchangeRouteManager {
@@ -114,8 +80,7 @@ extension AssetsExchangeRouteManager {
         for amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
-        let quotePaths = prepareQuotePaths()
-        let routeWrappers = quotePaths.map { createQuote(for: $0, amount: amount, direction: direction) }
+        let routeWrappers = possiblePaths.map { createQuote(for: $0, amount: amount, direction: direction) }
 
         let winnerCalculator = ClosureOperation<AssetExchangeRoute?> {
             let exchangeRoutes: [AssetExchangeRoute] = routeWrappers.compactMap { routeWrapper in

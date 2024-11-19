@@ -6,7 +6,7 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
     func unsubscribeUpdates(for target: AnyObject)
 
     func fetchReachibilityWrapper() -> CompoundOperationWrapper<AssetsExchageGraphReachabilityProtocol>
-    func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute>
+    func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote>
     func estimateFee(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
     func submit(using estimation: AssetExchangeFee) -> CompoundOperationWrapper<Balance>
 }
@@ -99,7 +99,7 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
         return graphWrapper.insertingTail(operation: directionsOperation)
     }
 
-    func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeRoute> {
+    func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote> {
         prepareWrapper { operationFactory in
             operationFactory.createQuoteWrapper(args: args)
         }

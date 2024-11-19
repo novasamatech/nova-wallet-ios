@@ -41,12 +41,12 @@ final class SwapConfirmPresenter: SwapBasePresenter {
             logger: logger
         )
 
-        quoteResult = .success(initState.route)
+        quoteResult = .success(initState.quote)
         self.localizationManager = localizationManager
     }
 
     override func getSpendingInputAmount() -> Decimal? {
-        route?.amountIn.decimal(precision: initState.chainAssetIn.asset.precision)
+        quote?.route.amountIn.decimal(precision: initState.chainAssetIn.asset.precision)
     }
 
     override func getQuoteArgs() -> AssetConversion.QuoteArgs? {
@@ -74,7 +74,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
     }
 
     override func estimateFee() {
-        guard let route = route,
+        guard let quote,
               let accountId = selectedWallet.fetch(
                   for: initState.chainAssetOut.chain.accountRequest()
               )?.accountId else {
@@ -84,7 +84,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         fee = nil
         provideFeeViewModel()
 
-        interactor.calculateFee(for: route, slippage: initState.slippage)
+        interactor.calculateFee(for: quote.route, slippage: initState.slippage)
     }
 
     override func applySwapMax() {
@@ -123,8 +123,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         }
     }
 
-    override func handleNewRoute(_ route: AssetExchangeRoute, for _: AssetConversion.QuoteArgs) {
-        quoteResult = .success(route)
+    override func handleNewQuote(_ quote: AssetExchangeQuote, for _: AssetConversion.QuoteArgs) {
+        quoteResult = .success(quote)
 
         view?.didReceiveStopLoading()
 
@@ -159,13 +159,13 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
 extension SwapConfirmPresenter {
     private func provideAssetInViewModel() {
-        guard let route = route else {
+        guard let quote else {
             return
         }
 
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetIn,
-            amount: route.amountIn,
+            amount: quote.route.amountIn,
             priceData: payAssetPriceData,
             locale: selectedLocale
         )
@@ -174,12 +174,12 @@ extension SwapConfirmPresenter {
     }
 
     private func provideAssetOutViewModel() {
-        guard let route = route else {
+        guard let quote else {
             return
         }
         let viewModel = viewModelFactory.assetViewModel(
             chainAsset: initState.chainAssetOut,
-            amount: route.amountOut,
+            amount: quote.route.amountOut,
             priceData: receiveAssetPriceData,
             locale: selectedLocale
         )
@@ -187,7 +187,7 @@ extension SwapConfirmPresenter {
     }
 
     private func provideRateViewModel() {
-        guard let route = route else {
+        guard let quote else {
             view?.didReceiveRate(viewModel: .loading)
             return
         }
@@ -195,8 +195,8 @@ extension SwapConfirmPresenter {
         let params = RateParams(
             assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
-            amountIn: route.amountIn,
-            amountOut: route.amountOut
+            amountIn: quote.route.amountIn,
+            amountOut: quote.route.amountOut
         )
         let viewModel = viewModelFactory.rateViewModel(from: params, locale: selectedLocale)
 
@@ -204,7 +204,7 @@ extension SwapConfirmPresenter {
     }
 
     private func providePriceDifferenceViewModel() {
-        guard let route = route else {
+        guard let quote else {
             view?.didReceivePriceDifference(viewModel: .loading)
             return
         }
@@ -212,8 +212,8 @@ extension SwapConfirmPresenter {
         let params = RateParams(
             assetDisplayInfoIn: initState.chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: initState.chainAssetOut.assetDisplayInfo,
-            amountIn: route.amountIn,
-            amountOut: route.amountOut
+            amountIn: quote.route.amountIn,
+            amountOut: quote.route.amountOut
         )
 
         if let viewModel = viewModelFactory.priceDifferenceViewModel(

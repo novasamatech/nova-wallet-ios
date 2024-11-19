@@ -51,20 +51,19 @@ class AssetsHydraExchangeEdge {
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
         true
     }
-    
+
     func beginMetaOperation(
-        edge: any HydraExchangeAtomicOperation.Edge,
-        amountIn: Balance,
+        for amountIn: Balance,
         amountOut: Balance
     ) throws -> AssetExchangeMetaOperationProtocol {
-        guard let assetIn = host.chain.chainAsset(for: edge.origin.assetId) else {
-            throw ChainModelFetchError.noAsset(assetId: edge.origin.assetId)
+        guard let assetIn = host.chain.chainAsset(for: origin.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: origin.assetId)
         }
-        
-        guard let assetOut = host.chain.chainAsset(for: edge.destination.assetId) else {
-            throw ChainModelFetchError.noAsset(assetId: edge.destination.assetId)
+
+        guard let assetOut = host.chain.chainAsset(for: destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: destination.assetId)
         }
-        
+
         return HydraExchangeMetaOperation(
             assetIn: assetIn,
             assetOut: assetOut,
@@ -72,21 +71,20 @@ class AssetsHydraExchangeEdge {
             amountOut: amountOut
         )
     }
-    
+
     func appendToMetaOperation(
         _ currentOperation: AssetExchangeMetaOperationProtocol,
-        edge: any HydraExchangeAtomicOperation.Edge,
-        amountIn: Balance,
+        amountIn _: Balance,
         amountOut: Balance
     ) throws -> AssetExchangeMetaOperationProtocol? {
         guard
             let hydraOperation = currentOperation as? HydraExchangeMetaOperation,
-            hydraOperation.assetOut.chainAssetId == edge.origin else {
+            hydraOperation.assetOut.chainAssetId == origin else {
             return nil
         }
-        
-        guard let newAssetOut = host.chain.chainAsset(for: edge.destination.assetId) else {
-            throw ChainModelFetchError.noAsset(assetId: edge.destination.assetId)
+
+        guard let newAssetOut = host.chain.chainAsset(for: destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: destination.assetId)
         }
 
         return HydraExchangeMetaOperation(

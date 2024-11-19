@@ -69,4 +69,32 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     func canPayNonNativeFeesInIntermediatePosition() -> Bool {
         true
     }
+
+    func beginMetaOperation(
+        for amountIn: Balance,
+        amountOut: Balance
+    ) throws -> AssetExchangeMetaOperationProtocol {
+        guard let assetIn = host.chain.chainAsset(for: origin.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: origin.assetId)
+        }
+
+        guard let assetOut = host.chain.chainAsset(for: destination.assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: destination.assetId)
+        }
+
+        return AssetHubExchangeMetaOperation(
+            assetIn: assetIn,
+            assetOut: assetOut,
+            amountIn: amountIn,
+            amountOut: amountOut
+        )
+    }
+
+    func appendToMetaOperation(
+        _: AssetExchangeMetaOperationProtocol,
+        amountIn _: Balance,
+        amountOut _: Balance
+    ) throws -> AssetExchangeMetaOperationProtocol? {
+        nil
+    }
 }
