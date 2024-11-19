@@ -29,4 +29,8 @@ extension Xcm {
     static func limitedTeleportAssetsPath(for module: String) -> CallCodingPath {
         CallCodingPath(moduleName: module, callName: "limited_teleport_assets")
     }
+
+    static func transferAssetsPath(for module: String) -> CallCodingPath {
+        CallCodingPath(moduleName: module, callName: "transfer_assets")
+    }
 }
