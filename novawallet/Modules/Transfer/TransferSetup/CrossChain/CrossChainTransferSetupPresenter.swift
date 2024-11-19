@@ -310,6 +310,8 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     override func didReceiveCrossChainFee(result: Result<XcmFeeModelProtocol, Error>) {
         super.didReceiveCrossChainFee(result: result)
 
+        logger?.debug("Did receive result: \(result)")
+
         if case .success = result {
             updateOriginFeeView()
             updateCrossChainFeeView()

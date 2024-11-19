@@ -23,7 +23,7 @@ extension XcmTransferService {
                 xcmTransfers: xcmTransfers,
                 runtimeProvider: runtimeProvider
             )
-        case .xcmpallet, .teleport:
+        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
             let multiassetsVersionWrapper = xcmPalletQueryFactory.createLowestMultiassetsVersionWrapper(
                 for: runtimeProvider
             )
@@ -111,6 +111,14 @@ extension XcmTransferService {
             return createPalletXcmTransferMapping(
                 dependingOn: moduleResolutionOperation,
                 callPathFactory: { Xcm.limitedTeleportAssetsPath(for: $0) },
+                destinationAssetOperation: destinationAssetOperation,
+                maxWeight: maxWeight,
+                runtimeProvider: runtimeProvider
+            )
+        case .xcmpalletTransferAssets:
+            return createPalletXcmTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                callPathFactory: { Xcm.transferAssetsPath(for: $0) },
                 destinationAssetOperation: destinationAssetOperation,
                 maxWeight: maxWeight,
                 runtimeProvider: runtimeProvider
