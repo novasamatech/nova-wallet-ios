@@ -52,22 +52,19 @@ final class PolkadotRewardParamsService: BaseSyncService {
         ) {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let apiName = "Inflation"
-            let methodName = "experimental_inflation_prediction_info"
-
             guard let runtimeApi = codingFactory.metadata.getRuntimeApiMethod(
-                for: apiName,
-                methodName: methodName
+                for: "Inflation",
+                methodName: "experimental_inflation_prediction_info"
             ) else {
                 throw PolkadotRewardParamsServiceError.runtimeApiNotFound
             }
 
             return self.stateCallFactory.createWrapper(
-                for: "Inflation_experimental_inflation_prediction_info",
+                for: runtimeApi.callName,
                 paramsClosure: nil,
                 codingFactoryClosure: { codingFactory },
                 connection: self.connection,
-                queryType: String(runtimeApi.output)
+                queryType: String(runtimeApi.method.output)
             )
         }
 
