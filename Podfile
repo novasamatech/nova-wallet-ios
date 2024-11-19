@@ -5,7 +5,7 @@ abstract_target 'novawalletAll' do
   use_frameworks!
 
   pod 'DSF_QRCode', '~> 18.0.0'
-  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.2.2'
+  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.3.2'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
@@ -13,7 +13,7 @@ abstract_target 'novawalletAll' do
   pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
   pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
   pod 'SwiftyBeaver'
-  pod 'ReachabilitySwift'
+  pod 'ReachabilitySwift', '~> 5.2.4'
   pod 'SnapKit', '~> 5.0.0'
   pod 'SwiftFormat/CLI', '~> 0.47.13'
   pod 'Sourcery', '~> 1.4'
@@ -27,18 +27,20 @@ abstract_target 'novawalletAll' do
   pod 'EthereumSignTypedDataUtil', :git => 'https://github.com/ERussel/EthereumSignTypedDataUtil.git', :tag => '0.1.3'
   pod 'SwiftAlgorithms', '~> 1.0.0'
   pod 'ZMarkupParser', '= 1.6.1'
-  pod 'FirebaseAuth'
-  pod 'FirebaseFirestore'
-  pod 'FirebaseMessaging'
-  pod 'FirebaseAppCheck'
+  pod 'FirebaseAuth', '~> 11.3.0'
+  pod 'FirebaseFirestore', '~> 11.3.0'
+  pod 'FirebaseMessaging', '~> 11.3.0'
+  pod 'FirebaseAppCheck', '~> 11.3.0'
   pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.2'
   pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
+  pod 'IrohaCrypto', :git => 'https://github.com/novasamatech/IrohaCrypto', :tag => '0.9.1'
+  pod 'secp256k1.c', :git => 'https://github.com/novasamatech/secp256k1.c', :tag => '0.1.3'
   
   target 'novawalletTests' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.2.2'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.3.2'
     pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
@@ -48,6 +50,8 @@ abstract_target 'novawalletAll' do
     pod 'Starscream', :git => 'https://github.com/novasamatech/Starscream.git', :tag => '4.0.12'
     pod 'HydraMath', :git => 'https://github.com/novasamatech/hydra-math-swift.git', :tag => '0.2'
     pod 'MetadataShortenerApi', :git => 'https://github.com/novasamatech/metadata-shortener-ios.git', :tag => '0.1.0'
+    pod 'IrohaCrypto', :git => 'https://github.com/novasamatech/IrohaCrypto', :tag => '0.9.1'
+    pod 'secp256k1.c', :git => 'https://github.com/novasamatech/secp256k1.c', :tag => '0.1.3'
   end
 
   target 'novawalletIntegrationTests'
@@ -63,8 +67,10 @@ abstract_target 'novawalletAll' do
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.0.1'
     pod 'Sourcery', '~> 1.4'
-    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.2.2'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.3.2'
     pod 'SwiftyBeaver'
+    pod 'IrohaCrypto', :git => 'https://github.com/novasamatech/IrohaCrypto', :tag => '0.9.1'
+    pod 'secp256k1.c', :git => 'https://github.com/novasamatech/secp256k1.c', :tag => '0.1.3'
   end
 
 
