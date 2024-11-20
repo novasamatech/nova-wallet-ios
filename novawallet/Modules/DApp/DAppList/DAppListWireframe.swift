@@ -21,7 +21,10 @@ final class DAppListWireframe: DAppListWireframeProtocol {
     }
 
     func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult) {
-        guard let browserView = DAppBrowserViewFactory.createView(for: result) else {
+        guard let browserView = DAppBrowserViewFactory.createView(
+            with: result,
+            selectedTab: DAppBrowserTab(from: result)!
+        ) else {
             return
         }
 

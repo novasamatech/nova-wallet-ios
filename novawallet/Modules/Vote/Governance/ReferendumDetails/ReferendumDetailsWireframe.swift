@@ -86,9 +86,11 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
     }
 
     func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL) {
+        let userInput: DAppSearchResult = .query(string: url.absoluteString)
         guard
             let browser = DAppBrowserViewFactory.createView(
-                for: .query(string: url.absoluteString)
+                with: userInput,
+                selectedTab: DAppBrowserTab(from: userInput)!
             ) else {
             return
         }

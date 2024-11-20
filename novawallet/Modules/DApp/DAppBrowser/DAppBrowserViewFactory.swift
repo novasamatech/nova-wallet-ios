@@ -3,7 +3,10 @@ import SoraFoundation
 import Operation_iOS
 
 struct DAppBrowserViewFactory {
-    static func createView(for userQuery: DAppSearchResult) -> DAppBrowserViewProtocol? {
+    static func createView(
+        with userQuery: DAppSearchResult,
+        selectedTab: DAppBrowserTab
+    ) -> DAppBrowserViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
@@ -29,9 +32,24 @@ struct DAppBrowserViewFactory {
             for: wallet.metaId
         )
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let repository = storageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(DAppBrowserTabMapper())
+        )
+
+        let tabManager = DAppBrowserTabManager(
+            cacheBasePath: "",
+            repository: repository,
+            operationQueue: operationQueue
+        )
+
         let interactor = DAppBrowserInteractor(
             transports: transports,
             userQuery: userQuery,
+            selectedTab: selectedTab,
             wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             securedLayer: SecurityLayerService.shared,
@@ -41,6 +59,7 @@ struct DAppBrowserViewFactory {
             dAppsFavoriteRepository: favoritesRepository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             sequentialPhishingVerifier: phishingVerifier,
+            tabManager: tabManager,
             logger: logger
         )
 

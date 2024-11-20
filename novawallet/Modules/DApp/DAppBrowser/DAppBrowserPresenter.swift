@@ -10,6 +10,7 @@ final class DAppBrowserPresenter {
     let localizationManager: LocalizationManager
 
     private(set) var favorites: [String: DAppFavorite]?
+    private(set) var tabs: [DAppBrowserTab] = []
     private(set) var browserPage: DAppBrowserPage?
 
     init(
@@ -166,17 +167,15 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didChangeGlobal(settings: DAppGlobalSettings) {
         view?.didSet(isDesktop: settings.desktopMode)
     }
-    
+
     func didReceiveTabs(_ models: [DAppBrowserTab]) {
         guard !models.isEmpty else {
             return
         }
-        
-        if models.count > 1 {
-            // TODO: Present tabs grid
-        } else {
-            interactor.setCurrentTab(models[0])
-        }
+
+        tabs = models
+
+        // TODO: Implement UI with tabs counter
     }
 }
 

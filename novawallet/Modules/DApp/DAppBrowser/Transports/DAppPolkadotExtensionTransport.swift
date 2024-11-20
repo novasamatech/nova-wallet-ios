@@ -170,4 +170,16 @@ extension DAppPolkadotExtensionTransport: DAppBrowserTransportProtocol {
         state = nil
         dataSource = nil
     }
+
+    func makeOpaqueState() -> Any? {
+        state
+    }
+
+    func restoreState(from opaqueState: Any) {
+        guard let state = opaqueState as? DAppBrowserStateProtocol else {
+            return
+        }
+
+        self.state = state
+    }
 }

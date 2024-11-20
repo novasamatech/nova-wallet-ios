@@ -20,7 +20,7 @@
         <attribute name="icon" optional="YES" attributeType="String"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>
         <attribute name="label" optional="YES" attributeType="String"/>
-        <attribute name="lastModified" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" optional="YES" attributeType="URI"/>
     </entity>
     <entity name="CDDAppFavorite" representedClassName="CDDAppFavorite" syncable="YES" codeGenerationType="class">

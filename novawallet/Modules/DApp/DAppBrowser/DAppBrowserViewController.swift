@@ -340,7 +340,7 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
         setupScripts()
         setupWebPreferences()
-        setupUrl(viewModel.url)
+        setupUrl(viewModel.selectedTab.url)
     }
 
     func didReceive(response: DAppScriptResponse, forTransport _: String) {

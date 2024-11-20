@@ -1100,6 +1100,8 @@
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
+		2DDEE0E92CEDCEA9002E9289 /* DAppBrowserTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */; };
+		2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */; };
 		2DE302ED2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */; };
 		2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */; };
 		2DE302F12C32EAE80082FB5C /* SystemProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302F02C32EAE80082FB5C /* SystemProperties.swift */; };
@@ -6292,6 +6294,8 @@
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
 		2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManager.swift; sourceTree = "<group>"; };
 		2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel14.xcdatamodel; sourceTree = "<group>"; };
+		2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTab.swift; sourceTree = "<group>"; };
+		2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabMapper.swift; sourceTree = "<group>"; };
 		2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkBaseInteractorError.swift; sourceTree = "<group>"; };
 		2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPropertiesOperationFactory.swift; sourceTree = "<group>"; };
 		2DE302F02C32EAE80082FB5C /* SystemProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemProperties.swift; sourceTree = "<group>"; };
@@ -16266,6 +16270,7 @@
 				0C59E8D22AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift */,
 				0C59E8D42AA5FC96001E11F3 /* ExternalAssetBalanceMapper.swift */,
 				0C37AFC92B5981B900009ECA /* ProxiedSettingsMapper.swift */,
+				2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */,
 				770ABB8D2B85593700132465 /* Web3TopicSettingsMapper.swift */,
 			);
 			path = EntityToModel;
@@ -18618,6 +18623,7 @@
 				849976BB27B25A6600B14A6C /* DAppTransportModel.swift */,
 				84FEF3E22807E8000042CBE7 /* DAppBrowserPage.swift */,
 				8804AD8A295B76E5001C4E09 /* DAppGlobalSettings.swift */,
+				2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -25892,6 +25898,7 @@
 				84786E1525FA57B90089DFF7 /* StakingLedger.swift in Sources */,
 				778215D82B9593C6006C7D13 /* UserDefaultMigrator.swift in Sources */,
 				8497FC6026317783002FEAA7 /* AccountInfoViewModel.swift in Sources */,
+				2DDEE0E92CEDCEA9002E9289 /* DAppBrowserTab.swift in Sources */,
 				84DEE7042797FBF800B9A39E /* ExtrinsicSignedExtensionFactory.swift in Sources */,
 				84B73AD4279B4D570071AE16 /* AssetAccount.swift in Sources */,
 				880059DF28EF09E100E87B9B /* GovernanceStyle.swift in Sources */,
@@ -27075,6 +27082,7 @@
 				840DCBF625E0059D00D45C6A /* AmountInputView+Inspectable.swift in Sources */,
 				845B8920295961AC00EE25B0 /* SecurityLayerProtocols.swift in Sources */,
 				2D8684552BFF7F6000A663D2 /* ExportPresenter.swift in Sources */,
+				2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */,
 				8488ECEA258CE456004591CC /* PurchaseViewController.swift in Sources */,
 				847C9659255362F7002D288F /* RestoreJson.swift in Sources */,
 				0CE933982C048E6B000F3EFE /* CloudBackupReviewChangesCell.swift in Sources */,

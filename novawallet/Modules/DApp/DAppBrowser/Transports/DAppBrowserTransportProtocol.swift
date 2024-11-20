@@ -16,8 +16,8 @@ protocol DAppBrowserTransportProtocol: AnyObject {
     func processConfirmation(response: DAppOperationResponse)
     func processAuth(response: DAppAuthResponse)
     func stop()
-    
-    func makeOpaqueState() -> Any
+
+    func makeOpaqueState() -> Any?
     func restoreState(from opaqueState: Any)
 }
 

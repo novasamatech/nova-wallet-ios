@@ -279,4 +279,16 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
         state = nil
         dataSource = nil
     }
+
+    func makeOpaqueState() -> Any? {
+        state
+    }
+
+    func restoreState(from opaqueState: Any) {
+        guard let state = opaqueState as? DAppMetamaskStateProtocol else {
+            return
+        }
+
+        self.state = state
+    }
 }
