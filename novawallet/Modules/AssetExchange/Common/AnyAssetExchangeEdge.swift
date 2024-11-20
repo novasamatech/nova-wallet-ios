@@ -93,7 +93,7 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
     func appendToOperationPrototype(
         _ currentPrototype: AssetExchangeOperationPrototypeProtocol
     ) throws -> AssetExchangeOperationPrototypeProtocol? {
-        try appendToOperationPrototype(currentPrototype)
+        try appendToOperationPrototypeClosure(currentPrototype)
     }
 }
 

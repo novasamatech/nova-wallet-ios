@@ -16,4 +16,12 @@ extension ChainRegistryProtocol {
 
         return runtimeProvider
     }
+
+    func getChainOrError(for chainId: ChainModel.Id) throws -> ChainModel {
+        guard let chain = getChain(for: chainId) else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+
+        return chain
+    }
 }

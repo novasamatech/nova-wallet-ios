@@ -3,11 +3,9 @@ import BigInt
 protocol SwapBaseInteractorInputProtocol: AnyObject {
     func setup()
     func calculateQuote(for args: AssetConversion.QuoteArgs)
-    func calculateFee(for route: AssetExchangeRoute, slippage: BigRational)
-    func remakePriceSubscription(for chainAsset: ChainAsset)
-    func retryAssetBalanceSubscription(for chainAsset: ChainAsset)
+    func calculateFee(for route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset)
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset)
-    func retryAccountInfoSubscription()
+
     func requestValidatingQuote(
         for args: AssetConversion.QuoteArgs,
         completion: @escaping (Result<AssetConversion.Quote, Error>) -> Void
@@ -30,8 +28,5 @@ protocol SwapBaseWireframeProtocol: AnyObject, SwapErrorPresentable, AlertPresen
 enum SwapBaseError: Error {
     case quote(Error, AssetConversion.QuoteArgs)
     case fetchFeeFailed(Error, ChainAssetId?)
-    case price(Error, AssetModel.PriceId)
-    case assetBalance(Error, ChainAssetId, AccountId)
-    case assetBalanceExistense(Error, ChainAsset)
-    case accountInfo(Error)
+    case assetBalanceExistence(Error, ChainAsset)
 }

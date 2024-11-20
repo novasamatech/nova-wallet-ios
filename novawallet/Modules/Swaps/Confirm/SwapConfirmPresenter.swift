@@ -84,7 +84,11 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         fee = nil
         provideFeeViewModel()
 
-        interactor.calculateFee(for: quote.route, slippage: initState.slippage)
+        interactor.calculateFee(
+            for: quote.route,
+            slippage: initState.slippage,
+            feeAsset: initState.feeChainAsset
+        )
     }
 
     override func applySwapMax() {

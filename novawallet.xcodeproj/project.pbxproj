@@ -652,6 +652,7 @@
 		0CBABFEF2CED46200047F29E /* HydraExchangeOperationPrototype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFEE2CED46200047F29E /* HydraExchangeOperationPrototype.swift */; };
 		0CBABFF12CED46C90047F29E /* AssetHubExchangeOperationPrototype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFF02CED46C90047F29E /* AssetHubExchangeOperationPrototype.swift */; };
 		0CBABFF32CED47D10047F29E /* CrosschainExchangeOperationPrototype.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBABFF22CED47D10047F29E /* CrosschainExchangeOperationPrototype.swift */; };
+		0CBABFF42CEE4D590047F29E /* ChainModelFetchError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCCDF8B2B67BCA000473D42 /* ChainModelFetchError.swift */; };
 		0CBC29C62A421B5000F7B1F7 /* StakingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C52A421B5000F7B1F7 /* StakingMainWireframe.swift */; };
 		0CBC29C82A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBC29C72A42AE2F00F7B1F7 /* StakingDashboardBuilderResult.swift */; };
 		0CBD23F822E358320E328F2D /* GovernanceTracksSettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442FCD700DEAFD358A48F35D /* GovernanceTracksSettingsViewLayout.swift */; };
@@ -25107,6 +25108,7 @@
 				7778FE492B9104EE0023E801 /* PriceAssetInfoFactory.swift in Sources */,
 				77AF376B2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift in Sources */,
 				0CCD18D42BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift in Sources */,
+				0CBABFF42CEE4D590047F29E /* ChainModelFetchError.swift in Sources */,
 				2DCC875B2C5820BA0028C3CA /* Logger.swift in Sources */,
 				77AE4FAB2B905E9B00426519 /* TimeInterval+Time.swift in Sources */,
 				77EDF9222B96D654003266B1 /* Web3Alert.swift in Sources */,

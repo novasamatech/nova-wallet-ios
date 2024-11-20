@@ -44,13 +44,11 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
-    func retryRemoteSubscription()
 }
 
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
     func didReceiveQuoteDataChanged()
-    func didReceive(setupError: SwapSetupError)
 }
 
 protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
@@ -89,11 +87,6 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
         destinationChainAsset: ChainAsset,
         locale: Locale
     )
-}
-
-enum SwapSetupError: Error {
-    case payAssetSetFailed(Error)
-    case remoteSubscription(Error)
 }
 
 enum SwapSetupViewIssue: Equatable {

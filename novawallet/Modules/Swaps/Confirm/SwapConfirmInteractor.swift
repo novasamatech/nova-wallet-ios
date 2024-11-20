@@ -89,9 +89,9 @@ final class SwapConfirmInteractor: SwapBaseInteractor {
     override func setup() {
         super.setup()
 
-        set(payChainAsset: initState.chainAssetIn)
-        set(receiveChainAsset: initState.chainAssetOut)
-        set(feeChainAsset: initState.feeChainAsset)
+        setPayChainAssetSubscriptions(initState.chainAssetIn)
+        setReceiveChainAssetSubscriptions(initState.chainAssetOut)
+        setFeeChainAssetSubscriptions(initState.feeChainAsset)
     }
 }
 

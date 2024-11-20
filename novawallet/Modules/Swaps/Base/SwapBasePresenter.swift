@@ -196,37 +196,13 @@ class SwapBasePresenter {
             }
 
             quoteResult = .failure(error)
-        case let .fetchFeeFailed(_, feeChainAssetId):
+        case let .fetchFeeFailed:
             wireframe.presentRequestStatus(on: view, locale: locale) { [weak self] in
                 self?.estimateFee()
             }
-        case let .price(_, priceId):
-            wireframe.presentRequestStatus(on: view, locale: locale) { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                [self.getPayChainAsset(), self.getReceiveChainAsset(), self.getFeeChainAsset()]
-                    .compactMap { $0 }
-                    .filter { $0.asset.priceId == priceId }
-                    .forEach(interactor.remakePriceSubscription)
-            }
-        case let .assetBalance(_, chainAssetId, _):
-            wireframe.presentRequestStatus(on: view, locale: locale) { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                [self.getPayChainAsset(), self.getReceiveChainAsset(), self.getFeeChainAsset()]
-                    .compactMap { $0 }
-                    .filter { $0.chainAssetId == chainAssetId }
-                    .forEach(interactor.retryAssetBalanceSubscription)
-            }
-        case let .assetBalanceExistense(_, chainAsset):
+        case let .assetBalanceExistence(_, chainAsset):
             wireframe.presentRequestStatus(on: view, locale: locale) {
                 interactor.retryAssetBalanceExistenseFetch(for: chainAsset)
-            }
-        case .accountInfo:
-            wireframe.presentRequestStatus(on: view, locale: locale) {
-                interactor.retryAccountInfoSubscription()
             }
         }
     }
@@ -287,6 +263,8 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
             return
         }
 
+        logger.debug("New quote: \(quote)")
+
         quoteResult = .success(quote)
 
         handleNewQuote(quote, for: quoteArgs)
@@ -320,6 +298,8 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
             return
         }
 
+        logger.debug("New price: \(String(describing: price))")
+
         prices[chainAssetId] = price
 
         handleNewPrice(price, chainAssetId: chainAssetId)
@@ -330,6 +310,8 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
             return
         }
 
+        logger.debug("New balance: \(String(describing: balance))")
+
         balances[chainAsset] = balance
 
         handleNewBalance(balance, for: chainAsset)
@@ -339,6 +321,8 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
         guard assetBalanceExistences[chainAssetId] != existense else {
             return
         }
+
+        logger.debug("New balance existence: \(existense)")
 
         assetBalanceExistences[chainAssetId] = existense
 

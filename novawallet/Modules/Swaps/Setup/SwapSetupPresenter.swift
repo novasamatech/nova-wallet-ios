@@ -103,7 +103,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
     }
 
     override func estimateFee() {
-        guard let quote else {
+        guard let quote, let feeChainAsset else {
             return
         }
 
@@ -111,7 +111,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideFeeViewModel()
         provideNotification()
 
-        interactor.calculateFee(for: quote.route, slippage: slippage)
+        interactor.calculateFee(for: quote.route, slippage: slippage, feeAsset: feeChainAsset)
     }
 
     override func applySwapMax() {
@@ -870,23 +870,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 }
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
-    func didReceive(setupError: SwapSetupError) {
-        logger.error("Did receive setup error: \(setupError)")
-
-        switch setupError {
-        case .payAssetSetFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                if let payChainAsset = self?.payChainAsset {
-                    self?.interactor.update(payChainAsset: payChainAsset)
-                }
-            }
-        case .remoteSubscription:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryRemoteSubscription()
-            }
-        }
-    }
-
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId) {
         if payChainAsset?.chainAssetId == chainAssetId {
             canPayFeeInPayAsset = value

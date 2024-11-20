@@ -86,7 +86,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         remoteSubscription = nil
     }
 
-    private func setupRemoteSubscription(for chain: ChainModel) throws {
+    private func setupRemoteSubscription(for chain: ChainModel) {
         guard
             let accountId = selectedWallet.fetch(for: chain.accountRequest())?.accountId,
             let connection = chainRegistry.getConnection(for: chain.chainId),
@@ -94,51 +94,41 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             return
         }
 
-        let localKeyFactory = LocalStorageKeyFactory()
+        do {
+            let localKeyFactory = LocalStorageKeyFactory()
 
-        let accountInfoKey = try localKeyFactory.createFromStoragePath(
-            SystemPallet.accountPath,
-            accountId: accountId,
-            chainId: chain.chainId
-        )
-        let accountInfoRequest = BatchStorageSubscriptionRequest(
-            innerRequest: MapSubscriptionRequest(
-                storagePath: SystemPallet.accountPath,
-                localKey: accountInfoKey,
-                keyParamClosure: {
-                    BytesCodable(wrappedValue: accountId)
+            let accountInfoKey = try localKeyFactory.createFromStoragePath(
+                SystemPallet.accountPath,
+                accountId: accountId,
+                chainId: chain.chainId
+            )
+
+            let accountInfoRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: SystemPallet.accountPath,
+                    localKey: accountInfoKey,
+                    keyParamClosure: {
+                        BytesCodable(wrappedValue: accountId)
+                    }
+                ),
+                mappingKey: nil
+            )
+
+            remoteSubscription = CallbackBatchStorageSubscription(
+                requests: [accountInfoRequest],
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: storageRepository,
+                operationQueue: operationQueue,
+                callbackQueue: .main,
+                callbackClosure: { _ in
+                    // we are listening remote subscription via database
                 }
-            ),
-            mappingKey: nil
-        )
+            )
 
-        remoteSubscription = CallbackBatchStorageSubscription(
-            requests: [accountInfoRequest],
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: storageRepository,
-            operationQueue: operationQueue,
-            callbackQueue: .main,
-            callbackClosure: { _ in
-                // we are listening remote subscription via database
-            }
-        )
-
-        remoteSubscription?.subscribe()
-    }
-
-    override func updateChain(with newChain: ChainModel) {
-        let oldChainId = currentChain?.chainId
-
-        super.updateChain(with: newChain)
-
-        if newChain.chainId != oldChainId {
-            do {
-                clearRemoteSubscription()
-                try setupRemoteSubscription(for: newChain)
-            } catch {
-                presenter?.didReceive(setupError: .remoteSubscription(error))
-            }
+            remoteSubscription?.subscribe()
+        } catch {
+            logger.error("Unexpected error: \(error)")
         }
     }
 
@@ -151,15 +141,23 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?) {
         self.receiveChainAsset = receiveChainAsset
         receiveChainAsset.map {
-            set(receiveChainAsset: $0)
+            setReceiveChainAssetSubscriptions($0)
         }
     }
 
     func update(payChainAsset: ChainAsset?) {
+        guard self.payChainAsset?.chainAssetId != payChainAsset?.chainAssetId else {
+            return
+        }
+
+        clearRemoteSubscription()
+
         self.payChainAsset = payChainAsset
 
         if let payChainAsset = payChainAsset {
-            set(payChainAsset: payChainAsset)
+            setupRemoteSubscription(for: payChainAsset.chain)
+
+            setPayChainAssetSubscriptions(payChainAsset)
             provideCanPayFee(for: payChainAsset)
         }
     }
@@ -167,20 +165,7 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     func update(feeChainAsset: ChainAsset?) {
         self.feeChainAsset = feeChainAsset
         feeChainAsset.map {
-            set(feeChainAsset: $0)
-        }
-    }
-
-    func retryRemoteSubscription() {
-        guard let chain = currentChain else {
-            return
-        }
-
-        do {
-            clearRemoteSubscription()
-            try setupRemoteSubscription(for: chain)
-        } catch {
-            presenter?.didReceive(setupError: .remoteSubscription(error))
+            setFeeChainAssetSubscriptions($0)
         }
     }
 }
