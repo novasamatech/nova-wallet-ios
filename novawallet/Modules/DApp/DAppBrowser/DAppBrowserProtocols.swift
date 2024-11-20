@@ -3,6 +3,7 @@ import Operation_iOS
 
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: DAppBrowserModel)
+    func didReceiveTabsCount(viewModel: String)
     func didReceive(response: DAppScriptResponse, forTransport name: String)
     func didReceiveReplacement(
         transports: [DAppTransportModel],

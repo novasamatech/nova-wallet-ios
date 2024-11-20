@@ -8,6 +8,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     let presenter: DAppBrowserPresenterProtocol
 
+    private let webViewPool: WebViewPoolProtocol
+    
     private var viewModel: DAppBrowserModel?
 
     private var urlObservation: NSKeyValueObservation?
@@ -38,11 +40,13 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     init(
         presenter: DAppBrowserPresenterProtocol,
         localRouter: URLLocalRouting,
+        webViewPool: WebViewPoolProtocol,
         deviceOrientationManager: DeviceOrientationManaging,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.localRouter = localRouter
+        self.webViewPool = webViewPool
         self.deviceOrientationManager = deviceOrientationManager
         self.localizationManager = localizationManager
 
@@ -335,12 +339,24 @@ extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
 
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
     func didReceive(viewModel: DAppBrowserModel) {
+        if self.viewModel?.selectedTab.uuid != viewModel.selectedTab.uuid {
+            let webView = webViewPool.setupWebView(for: viewModel.selectedTab.uuid)
+            rootView.setWebView(webView)
+        }
+        
+        self.viewModel = viewModel
+        
         isDesktop = viewModel.isDesktop
         transports = viewModel.transports
-
+        
         setupScripts()
         setupWebPreferences()
+        
         setupUrl(viewModel.selectedTab.url)
+    }
+    
+    func didReceiveTabsCount(viewModel: String) {
+        print(viewModel)
     }
 
     func didReceive(response: DAppScriptResponse, forTransport _: String) {

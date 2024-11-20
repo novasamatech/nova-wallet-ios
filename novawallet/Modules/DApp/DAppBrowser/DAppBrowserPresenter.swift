@@ -175,7 +175,7 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
         tabs = models
 
-        // TODO: Implement UI with tabs counter
+        view?.didReceiveTabsCount(viewModel: "\(models.count)")
     }
 }
 
