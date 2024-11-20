@@ -97,31 +97,6 @@ final class DAppBrowserInteractor {
         }
     }
 
-    func resolveUrl() -> URL? {
-        switch userQuery {
-        case let .dApp(model):
-            return model.url
-        case let .query(string):
-            var urlComponents = URLComponents(string: string)
-
-            if urlComponents?.scheme == nil {
-                urlComponents = URLComponents(string: "https://" + string)
-            }
-
-            let isValidUrl = NSPredicate.urlPredicate.evaluate(with: string)
-            if isValidUrl, let inputUrl = urlComponents?.url {
-                return inputUrl
-            } else {
-                let querySet = CharacterSet.urlQueryAllowed
-                guard let searchQuery = string.addingPercentEncoding(withAllowedCharacters: querySet) else {
-                    return nil
-                }
-
-                return URL(string: "https://duckduckgo.com/?q=\(searchQuery)")
-            }
-        }
-    }
-
     func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
         transports.map { transport in
             let bridgeOperation = transport.createBridgeScriptOperation()
@@ -158,14 +133,9 @@ final class DAppBrowserInteractor {
     }
 
     func provideModel() {
-        guard let url = resolveUrl() else {
-            presenter?.didReceive(error: DAppBrowserInteractorError.invalidUrl)
-            return
-        }
-
         let wrappers = createTransportWrappers()
 
-        let globalSettingsOperation = createGlobalSettingsOperation(for: url.host)
+        let globalSettingsOperation = createGlobalSettingsOperation(for: currentTab.url.host)
 
         let desktopOnly = userQuery.dApp?.desktopOnly ?? false
 
@@ -290,6 +260,27 @@ final class DAppBrowserInteractor {
         }
     }
 
+    private func proceedWithTabUpdate(with query: String) {
+        let url = DAppBrowserTab.resolveUrl(for: query)
+        let updateOperation = tabManager.updateTab(currentTab.updating(url: url))
+
+        execute(
+            operation: updateOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(updatedTab):
+                self?.currentTab = updatedTab
+                self?.transports.forEach { $0.stop() }
+                self?.completeSetupIfNeeded()
+                self?.provideTabs()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
+            }
+        }
+    }
+
     private func proceedWithNewTab(opening dApp: DApp) {
         guard let newTab = DAppBrowserTab(from: .dApp(model: dApp)) else {
             return
@@ -313,6 +304,7 @@ final class DAppBrowserInteractor {
                 self?.currentTab = model
                 self?.transports.forEach { $0.stop() }
                 self?.completeSetupIfNeeded()
+                self?.provideTabs()
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)
             }
@@ -365,9 +357,8 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         userQuery = newQuery
 
         switch newQuery {
-        case .query:
-            transports.forEach { $0.stop() }
-            completeSetupIfNeeded()
+        case let .query(query):
+            proceedWithTabUpdate(with: query)
         case let .dApp(dApp):
             proceedWithNewTab(opening: dApp)
         }

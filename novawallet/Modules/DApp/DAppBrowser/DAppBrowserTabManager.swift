@@ -47,6 +47,12 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
                     return nil
                 }
 
+                let iconURL: URL? = if let urlString = fetchResult.icon {
+                    URL(string: urlString)
+                } else {
+                    nil
+                }
+
                 let tab = DAppBrowserTab(
                     uuid: fetchResult.uuid,
                     name: fetchResult.name,
@@ -54,13 +60,14 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
                     lastModified: fetchResult.lastModified,
                     opaqueState: self?.dAppTransportStates[fetchResult.uuid],
                     stateRender: nil,
-                    icon: fetchResult.icon
+                    icon: iconURL
                 )
 
                 self?.tabs[tab.uuid] = tab
 
                 return tab
             }
+            resultOperation.addDependency(fetchOperation)
 
             return resultOperation
         }
@@ -81,14 +88,20 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
             let tabs = try fetchOperation
                 .extractNoCancellableResultData()
                 .map { persistenceModel in
-                    DAppBrowserTab(
+                    let iconURL: URL? = if let urlString = persistenceModel.icon {
+                        URL(string: urlString)
+                    } else {
+                        nil
+                    }
+
+                    return DAppBrowserTab(
                         uuid: persistenceModel.uuid,
                         name: persistenceModel.name,
                         url: persistenceModel.url,
                         lastModified: persistenceModel.lastModified,
                         opaqueState: self?.dAppTransportStates[persistenceModel.uuid],
                         stateRender: nil,
-                        icon: persistenceModel.icon
+                        icon: iconURL
                     )
                 }
 

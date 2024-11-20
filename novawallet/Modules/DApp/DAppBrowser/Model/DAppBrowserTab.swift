@@ -80,7 +80,7 @@ struct DAppBrowserTab {
         )
     }
 
-    private static func resolveUrl(for query: String) -> URL? {
+    static func resolveUrl(for query: String) -> URL? {
         var urlComponents = URLComponents(string: query)
 
         if urlComponents?.scheme == nil {
