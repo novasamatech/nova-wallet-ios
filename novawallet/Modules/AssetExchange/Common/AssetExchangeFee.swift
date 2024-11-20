@@ -40,3 +40,39 @@ struct AssetExchangeFee: Equatable {
         return .init(targetAmount: targetAmount, nativeAmount: networkAmount)
     }
 }
+
+extension AssetExchangeFee {
+    func calculateTotalFeeInFiat(
+        assetIn: ChainAsset,
+        assetInPrice: PriceData?,
+        feeAsset: ChainAsset,
+        feeAssetPrice: PriceData?
+    ) -> Decimal {
+        guard let originFee = operationFees.first else {
+            return 0
+        }
+
+        let originFeeInAssetIn = originFee.totalAmountIn(asset: assetIn.chainAssetId)
+
+        let totalFeeInAssetIn = originFeeInAssetIn + intermediateFeesInAssetIn
+
+        let totalAmountInFeeInFiat = Decimal.fiatValue(
+            from: totalFeeInAssetIn,
+            price: assetInPrice,
+            precision: assetIn.assetDisplayInfo.assetPrecision
+        )
+
+        guard feeAsset.chainAssetId != assetIn.chainAssetId else {
+            return totalAmountInFeeInFiat
+        }
+
+        let totalFeeInFeeAsset = originFee.totalAmountIn(asset: feeAsset.chainAssetId)
+        let totalFeeAssetFeeInFiat = Decimal.fiatValue(
+            from: totalFeeInFeeAsset,
+            price: feeAssetPrice,
+            precision: feeAsset.assetDisplayInfo.assetPrecision
+        )
+
+        return totalAmountInFeeInFiat + totalFeeAssetFeeInFiat
+    }
+}

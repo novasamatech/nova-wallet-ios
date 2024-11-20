@@ -16,6 +16,10 @@ struct AssetExchangeOperationFee: Equatable {
 
             return amount
         }
+
+        func totalAmountIn(asset: ChainAssetId) -> Balance {
+            self.asset == asset ? amount : 0
+        }
     }
 
     struct AmountByPayer: Equatable {
@@ -26,6 +30,10 @@ struct AssetExchangeOperationFee: Equatable {
 
         func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
             try amountWithAsset.totalAmountEnsuring(asset: asset)
+        }
+
+        func totalAmountIn(asset: ChainAssetId) -> Balance {
+            amountWithAsset.totalAmountIn(asset: asset)
         }
     }
 
@@ -51,6 +59,12 @@ struct AssetExchangeOperationFee: Equatable {
             }
         }
 
+        func totalByAccountAmountIn(asset: ChainAssetId) -> Balance {
+            paidByAccount.reduce(0) { total, item in
+                total + item.totalAmountIn(asset: asset)
+            }
+        }
+
         func totalFromAmountEnsuring(asset: ChainAssetId) throws -> Balance {
             try paidFromAmount.reduce(0) { total, item in
                 let current = try item.totalAmountEnsuring(asset: asset)
@@ -59,10 +73,24 @@ struct AssetExchangeOperationFee: Equatable {
             }
         }
 
+        func totalFromAmountIn(asset: ChainAssetId) -> Balance {
+            paidFromAmount.reduce(0) { total, item in
+                total + item.totalAmountIn(asset: asset)
+            }
+        }
+
         func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
             let totalByAccount = try totalByAccountEnsuring(asset: asset)
 
             let totalFromAmount = try totalFromAmountEnsuring(asset: asset)
+
+            return totalByAccount + totalFromAmount
+        }
+
+        func totalAmountIn(asset: ChainAssetId) -> Balance {
+            let totalByAccount = totalByAccountAmountIn(asset: asset)
+
+            let totalFromAmount = totalFromAmountIn(asset: asset)
 
             return totalByAccount + totalFromAmount
         }
@@ -96,5 +124,9 @@ extension AssetExchangeOperationFee {
         let postSubmissionTotal = try postSubmissionFee.totalAmountEnsuring(asset: submissionFee.amountWithAsset.asset)
 
         return submissionFee.amountWithAsset.amount + postSubmissionTotal
+    }
+
+    func totalAmountIn(asset: ChainAssetId) -> Balance {
+        submissionFee.totalAmountIn(asset: asset) + postSubmissionFee.totalAmountIn(asset: asset)
     }
 }

@@ -1769,3 +1769,6 @@
 "common.address.coppied" = "Address copied";
 "common.networks" = "Networks";
 "assets.search.token.hint" = "Search by token";
+"swaps.details.exec.time" = "Execution time";
+"swaps.details.route" = "Route";
+"swaps.details.total.fee" = "Total fee";

@@ -26,8 +26,8 @@ struct SwapSetupViewFactory {
             return nil
         }
 
-        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager))
+        let priceInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceInfoFactory)
 
         guard let interactor = createInteractor(for: state) else {
             return nil
@@ -44,6 +44,7 @@ struct SwapSetupViewFactory {
 
         let viewModelFactory = SwapsSetupViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceAssetInfoFactory: priceInfoFactory,
             issuesViewModelFactory: issuesViewModelFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             assetIconViewModelFactory: AssetIconViewModelFactory(),

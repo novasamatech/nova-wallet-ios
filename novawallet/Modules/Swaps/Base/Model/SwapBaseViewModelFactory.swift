@@ -14,6 +14,8 @@ protocol SwapBaseViewModelFactoryProtocol {
 
     func routeViewModel(from metaOperations: [AssetExchangeMetaOperationProtocol]) -> [SwapRouteItemView.ViewModel]
 
+    func executionTimeViewModel(from timeInterval: TimeInterval, locale: Locale) -> String
+
     func priceDifferenceViewModel(
         rateParams: RateParams,
         priceIn: PriceData?,
@@ -176,5 +178,12 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
                 icon: ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
             )
         }
+    }
+
+    func executionTimeViewModel(from timeInterval: TimeInterval, locale: Locale) -> String {
+        R.string.localizable.commonSecondsFormat(
+            format: Int(timeInterval.rounded(.up)),
+            preferredLanguages: locale.rLanguages
+        ).approximately()
     }
 }

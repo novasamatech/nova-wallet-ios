@@ -160,6 +160,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         provideRateViewModel()
         provideRouteViewModel()
+        provideExecutionTimeViewModel()
         provideButtonState()
         provideDetailsViewModel()
         estimateFee()
@@ -449,23 +450,47 @@ extension SwapSetupPresenter {
     }
 
     private func provideFeeViewModel() {
-        guard quoteArgs != nil, let feeChainAsset = feeChainAsset else {
+        guard
+            quoteArgs != nil,
+            let feeChainAsset = feeChainAsset,
+            let payChainAsset = payChainAsset else {
             return
         }
-        guard let fee = fee?.networkFee.targetAmount else {
+
+        guard let totalFeeInFiat = fee?.calculateTotalFeeInFiat(
+            assetIn: payChainAsset,
+            assetInPrice: payAssetPriceData,
+            feeAsset: feeChainAsset,
+            feeAssetPrice: feeAssetPriceData
+        ) else {
             view?.didReceiveNetworkFee(viewModel: .loading)
             return
         }
-        let isEditable = (payChainAsset?.isUtilityAsset == false) && canPayFeeInPayAsset
+
+        let isEditable = payChainAsset.isUtilityAsset && canPayFeeInPayAsset
+
         let viewModel = viewModelFactory.feeViewModel(
-            amount: fee,
-            assetDisplayInfo: feeChainAsset.assetDisplayInfo,
+            amountInFiat: totalFeeInFiat,
             isEditable: isEditable,
             priceData: feeAssetPriceData,
             locale: selectedLocale
         )
 
         view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
+    }
+
+    private func provideExecutionTimeViewModel() {
+        guard let quote else {
+            view?.didReceiveExecutionTime(viewModel: .loading)
+            return
+        }
+
+        let viewModel = viewModelFactory.executionTimeViewModel(
+            from: quote.totalExecutionTime(),
+            locale: selectedLocale
+        )
+
+        view?.didReceiveExecutionTime(viewModel: .loaded(value: viewModel))
     }
 
     private func provideIssues() {
@@ -522,6 +547,7 @@ extension SwapSetupPresenter {
 
         provideRateViewModel()
         provideRouteViewModel()
+        provideExecutionTimeViewModel()
         provideFeeViewModel()
     }
 

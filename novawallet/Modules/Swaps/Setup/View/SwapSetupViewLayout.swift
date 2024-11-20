@@ -43,6 +43,10 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.routeCell
     }
 
+    var execTimeCell: SwapInfoViewCell {
+        detailsView.execTimeCell
+    }
+
     var networkFeeCell: SwapNetworkFeeViewCell {
         detailsView.networkFeeCell
     }
@@ -150,11 +154,25 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
             preferredLanguages: locale.rLanguages
         )
+
         rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
             preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
-            preferredLanguages: locale.rLanguages)
+
+        routeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsRoute(
+            preferredLanguages: locale.rLanguages
+        )
+
+        execTimeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsExecTime(
+            preferredLanguages: locale.rLanguages
+        )
+
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsTotalFee(
+            preferredLanguages: locale.rLanguages
+        )
+
         rateCell.titleButton.invalidateLayout()
+        routeCell.titleButton.invalidateLayout()
+        execTimeCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
     }
 
