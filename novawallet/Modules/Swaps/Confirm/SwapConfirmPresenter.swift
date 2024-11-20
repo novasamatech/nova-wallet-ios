@@ -74,10 +74,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
     }
 
     override func estimateFee() {
-        guard let quote,
-              let accountId = selectedWallet.fetch(
-                  for: initState.chainAssetOut.chain.accountRequest()
-              )?.accountId else {
+        guard let quote else {
             return
         }
 
@@ -206,6 +203,31 @@ extension SwapConfirmPresenter {
         view?.didReceiveRate(viewModel: .loaded(value: viewModel))
     }
 
+    private func provideRouteViewModel() {
+        guard let quote else {
+            view?.didReceiveRoute(viewModel: .loading)
+            return
+        }
+
+        let viewModel = viewModelFactory.routeViewModel(from: quote.metaOperations)
+
+        view?.didReceiveRoute(viewModel: .loaded(value: viewModel))
+    }
+
+    private func provideExecutionTimeViewModel() {
+        guard let quote else {
+            view?.didReceiveExecutionTime(viewModel: .loading)
+            return
+        }
+
+        let viewModel = viewModelFactory.executionTimeViewModel(
+            from: quote.totalExecutionTime(),
+            locale: selectedLocale
+        )
+
+        view?.didReceiveExecutionTime(viewModel: .loaded(value: viewModel))
+    }
+
     private func providePriceDifferenceViewModel() {
         guard let quote else {
             view?.didReceivePriceDifference(viewModel: .loading)
@@ -279,6 +301,8 @@ extension SwapConfirmPresenter {
         provideAssetInViewModel()
         provideAssetOutViewModel()
         provideRateViewModel()
+        provideRouteViewModel()
+        provideExecutionTimeViewModel()
         providePriceDifferenceViewModel()
         provideSlippageViewModel()
         provideFeeViewModel()

@@ -25,6 +25,18 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
     }
 
+    let routeCell: SwapRouteViewCell = .create {
+        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
+        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
+    }
+
+    let execTimeCell: SwapInfoViewCell = .create {
+        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
+        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
+        $0.rowContentView.selectable = false
+        $0.isUserInteractionEnabled = false
+    }
+
     let networkFeeCell = SwapNetworkFeeViewCell()
 
     let walletTableView: StackTableView = .create {
@@ -56,6 +68,8 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         detailsTableView.addArrangedSubview(rateCell)
         detailsTableView.addArrangedSubview(priceDifferenceCell)
         detailsTableView.addArrangedSubview(slippageCell)
+        detailsTableView.addArrangedSubview(routeCell)
+        detailsTableView.addArrangedSubview(execTimeCell)
         detailsTableView.addArrangedSubview(networkFeeCell)
 
         addArrangedSubview(walletTableView, spacingAfter: 8)
@@ -71,18 +85,30 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
     }
 
     func setup(locale: Locale) {
-        slippageCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupSlippage(
-            preferredLanguages: locale.rLanguages
+        slippageCell.titleButton.setTitle(
+            R.string.localizable.swapsSetupSlippage(
+                preferredLanguages: locale.rLanguages
+            )
         )
-        priceDifferenceCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupPriceDifference(
-            preferredLanguages: locale.rLanguages
+        priceDifferenceCell.titleButton.setTitle(
+            R.string.localizable.swapsSetupPriceDifference(
+                preferredLanguages: locale.rLanguages
+            )
         )
-        rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
-            preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsTotalFee(
-            preferredLanguages: locale.rLanguages)
-        rateCell.titleButton.invalidateLayout()
-        networkFeeCell.titleButton.invalidateLayout()
+        rateCell.titleButton.setTitle(
+            R.string.localizable.swapsSetupDetailsRate(
+                preferredLanguages: locale.rLanguages
+            )
+        )
+        routeCell.titleButton.setTitle(
+            R.string.localizable.swapsDetailsRoute(preferredLanguages: locale.rLanguages)
+        )
+        execTimeCell.titleButton.setTitle(
+            R.string.localizable.swapsDetailsExecTime(preferredLanguages: locale.rLanguages)
+        )
+        networkFeeCell.titleButton.setTitle(
+            R.string.localizable.swapsDetailsTotalFee(preferredLanguages: locale.rLanguages)
+        )
 
         walletCell.titleLabel.text = R.string.localizable.commonWallet(
             preferredLanguages: locale.rLanguages)

@@ -87,6 +87,14 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
         rootView.rateCell.bind(loadableViewModel: viewModel)
     }
 
+    func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>) {
+        rootView.routeCell.bind(loadableRouteViewModel: viewModel)
+    }
+
+    func didReceiveExecutionTime(viewModel: LoadableViewModelState<String>) {
+        rootView.execTimeCell.bind(loadableViewModel: viewModel)
+    }
+
     func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?) {
         if let viewModel = viewModel {
             rootView.priceDifferenceCell.isHidden = false
