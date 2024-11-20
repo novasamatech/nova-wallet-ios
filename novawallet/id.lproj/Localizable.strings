@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "Dapatkan %@";
 "swaps.setup.network.fee.token.title" = "Token untuk membayar biaya jaringan";
 "swaps.setup.network.fee.token.hint" = "Biaya jaringan ditambahkan di atas jumlah yang dimasukkan";
-"swaps.pay.asset.fee.ed.message" = "Untuk membayar biaya jaringan dengan %@, Nova secara otomatis akan menukar %@ dengan %@ untuk mempertahankan saldo minimum %@ akun Anda.";
 "swaps.setup.slippage.error.amount.bounds" = "Masukkan nilai antara %@ dan %@";
 "swaps.setup.slippage.warning.low.amount" = "Transaksi mungkin dibalikkan karena toleransi slippage yang rendah.";
 "swaps.setup.slippage.warning.high.amount" = "Transaksi mungkin diambil oleh pihak lain karena slippage yang tinggi.";

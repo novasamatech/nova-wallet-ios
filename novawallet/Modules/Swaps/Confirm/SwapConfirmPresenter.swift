@@ -141,7 +141,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         feeChainAssetId _: ChainAssetId?
     ) {
         provideFeeViewModel()
-        provideNotificationViewModel()
     }
 
     override func handleNewPrice(_: PriceData?, chainAssetId: ChainAssetId) {
@@ -239,35 +238,20 @@ extension SwapConfirmPresenter {
         view?.didReceiveWarning(viewModel: warning)
     }
 
-    private func provideNotificationViewModel() {
-        guard
-            let networkFeeAddition = fee?.networkNativeFeeAddition,
-            !initState.feeChainAsset.isUtilityAsset,
-            let utilityChainAsset = initState.feeChainAsset.chain.utilityChainAsset() else {
-            view?.didReceiveNotification(viewModel: nil)
-            return
-        }
-
-        let message = viewModelFactory.minimalBalanceSwapForFeeMessage(
-            for: networkFeeAddition,
-            feeChainAsset: initState.feeChainAsset,
-            utilityChainAsset: utilityChainAsset,
-            utilityPriceData: prices[utilityChainAsset.chainAssetId],
-            locale: selectedLocale
-        )
-
-        view?.didReceiveNotification(viewModel: message)
-    }
-
     private func provideFeeViewModel() {
-        guard let fee = fee else {
+        guard let fee = fee?.calculateTotalFeeInFiat(
+            assetIn: initState.chainAssetIn,
+            assetInPrice: payAssetPriceData,
+            feeAsset: initState.feeChainAsset,
+            feeAssetPrice: feeAssetPriceData
+        ) else {
             view?.didReceiveNetworkFee(viewModel: .loading)
             return
         }
 
         let viewModel = viewModelFactory.feeViewModel(
-            fee: fee.networkFee.targetAmount,
-            chainAsset: initState.feeChainAsset,
+            amountInFiat: fee,
+            isEditable: false,
             priceData: feeAssetPriceData,
             locale: selectedLocale
         )
@@ -297,7 +281,6 @@ extension SwapConfirmPresenter {
         provideRateViewModel()
         providePriceDifferenceViewModel()
         provideSlippageViewModel()
-        provideNotificationViewModel()
         provideFeeViewModel()
         provideWalletViewModel()
     }

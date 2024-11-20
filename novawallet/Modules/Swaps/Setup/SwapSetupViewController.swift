@@ -322,14 +322,6 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         }
     }
 
-    func didSetNotification(message: String?) {
-        if let message = message {
-            rootView.displayInfoNotification(with: message)
-        } else {
-            rootView.hideNotification()
-        }
-    }
-
     func didStartLoading() {
         rootView.loadableActionView.startLoading()
     }

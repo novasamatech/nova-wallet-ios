@@ -41,8 +41,6 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
 
     private var warningView: InlineAlertView?
 
-    private var notificationView: InlineAlertView?
-
     let loadableActionView = LoadableActionView()
 
     override func setupStyle() {
@@ -81,7 +79,7 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
         )
         rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
             preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsTotalFee(
             preferredLanguages: locale.rLanguages)
         rateCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
@@ -100,15 +98,6 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
             on: &warningView,
             after: walletTableView,
             text: warning,
-            spacing: 8
-        )
-    }
-
-    func set(notification: String?) {
-        applyInfo(
-            on: &notificationView,
-            after: warningView ?? walletTableView,
-            text: notification,
             spacing: 8
         )
     }

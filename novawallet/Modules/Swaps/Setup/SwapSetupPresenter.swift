@@ -109,7 +109,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         fee = nil
         provideFeeViewModel()
-        provideNotification()
 
         interactor.calculateFee(for: quote.route, slippage: slippage, feeAsset: feeChainAsset)
     }
@@ -189,7 +188,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         provideButtonState()
         provideIssues()
-        provideNotification()
         switchFeeChainAssetIfNecessary()
     }
 
@@ -205,8 +203,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if feeChainAsset?.chainAssetId == chainAssetId {
             provideFeeViewModel()
         }
-
-        provideNotification()
     }
 
     override func handleNewBalance(_: AssetBalance?, for chainAsset: ChainAssetId) {
@@ -498,27 +494,6 @@ extension SwapSetupPresenter {
         view?.didReceive(issues: issues)
     }
 
-    private func provideNotification() {
-        guard
-            let networkFeeAddition = fee?.networkNativeFeeAddition,
-            let feeChainAsset = feeChainAsset,
-            !feeChainAsset.isUtilityAsset,
-            let utilityChainAsset = feeChainAsset.chain.utilityChainAsset() else {
-            view?.didSetNotification(message: nil)
-            return
-        }
-
-        let message = viewModelFactory.minimalBalanceSwapForFeeMessage(
-            for: networkFeeAddition,
-            feeChainAsset: feeChainAsset,
-            utilityChainAsset: utilityChainAsset,
-            utilityPriceData: prices[utilityChainAsset.chainAssetId],
-            locale: selectedLocale
-        )
-
-        view?.didSetNotification(message: message)
-    }
-
     func refreshQuote(direction: AssetConversion.Direction, forceUpdate: Bool = true) {
         guard
             let payChainAsset = payChainAsset,
@@ -573,7 +548,6 @@ extension SwapSetupPresenter {
                 providePayAmountInputViewModel()
                 provideIssues()
                 provideFeeViewModel()
-                provideNotification()
             } else {
                 refreshQuote(direction: .sell)
             }
@@ -600,7 +574,6 @@ extension SwapSetupPresenter {
                 provideReceiveInputPriceViewModel()
                 provideIssues()
                 provideFeeViewModel()
-                provideNotification()
             } else {
                 refreshQuote(direction: .buy)
             }
@@ -614,7 +587,6 @@ extension SwapSetupPresenter {
 
         fee = nil
         provideFeeViewModel()
-        provideNotification()
 
         estimateFee()
     }
@@ -626,7 +598,6 @@ extension SwapSetupPresenter {
         provideButtonState()
         provideSettingsState()
         provideIssues()
-        provideNotification()
     }
 
     private func switchFeeChainAssetIfNecessary() {
@@ -640,7 +611,7 @@ extension SwapSetupPresenter {
             let feeAssetBalance = feeAssetBalance,
             let payAssetBalance = payAssetBalance,
             payAssetBalance.transferable > 0,
-            let fee = fee?.totalFee.nativeAmount,
+            let fee = fee?.originFeeIn(assetIn: feeChainAsset),
             let nativeMinBalance = utilityAssetBalanceExistense?.minBalance else {
             return
         }
@@ -728,7 +699,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         provideReceiveInputPriceViewModel()
         provideButtonState()
         provideIssues()
-        provideNotification()
     }
 
     func updateReceiveAmount(_ amount: Decimal?) {
@@ -738,7 +708,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         providePayInputPriceViewModel()
         provideButtonState()
         provideIssues()
-        provideNotification()
     }
 
     func flip(currentFocus: TextFieldFocus?) {

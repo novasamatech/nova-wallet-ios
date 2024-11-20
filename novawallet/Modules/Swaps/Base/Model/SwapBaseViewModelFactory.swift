@@ -23,26 +23,28 @@ protocol SwapBaseViewModelFactoryProtocol {
         locale: Locale
     ) -> DifferenceViewModel?
 
-    func minimalBalanceSwapForFeeMessage(
-        for networkFeeAddition: AssetConversion.AmountWithNative,
-        feeChainAsset: ChainAsset,
-        utilityChainAsset: ChainAsset,
-        utilityPriceData: PriceData?,
+    func feeViewModel(
+        amountInFiat: Decimal,
+        isEditable: Bool,
+        priceData: PriceData?,
         locale: Locale
-    ) -> String
+    ) -> NetworkFeeInfoViewModel
 }
 
 class SwapBaseViewModelFactory {
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     let percentForamatter: LocalizableResource<NumberFormatter>
     let priceDifferenceConfig: SwapPriceDifferenceConfig
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         percentForamatter: LocalizableResource<NumberFormatter>,
         priceDifferenceConfig: SwapPriceDifferenceConfig
     ) {
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
+        self.priceAssetInfoFactory = priceAssetInfoFactory
         self.percentForamatter = percentForamatter
         self.priceDifferenceConfig = priceDifferenceConfig
     }
@@ -74,47 +76,6 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
         ).value(for: locale)
 
         return amountIn.estimatedEqual(to: amountOut)
-    }
-
-    func minimalBalanceSwapForFeeMessage(
-        for networkFeeAddition: AssetConversion.AmountWithNative,
-        feeChainAsset: ChainAsset,
-        utilityChainAsset: ChainAsset,
-        utilityPriceData: PriceData?,
-        locale: Locale
-    ) -> String {
-        let targetAmount = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: feeChainAsset.assetDisplayInfo,
-            value: networkFeeAddition.targetAmount.decimal(precision: feeChainAsset.asset.precision)
-        ).value(for: locale)
-
-        let nativeAmountDecimal = networkFeeAddition.nativeAmount.decimal(precision: utilityChainAsset.asset.precision)
-        let nativeAmountWithoutPrice = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: utilityChainAsset.assetDisplayInfo,
-            value: nativeAmountDecimal
-        ).value(for: locale)
-
-        let nativeAmount: String
-
-        if let priceData = utilityPriceData {
-            let price = balanceViewModelFactoryFacade.priceFromAmount(
-                targetAssetInfo: utilityChainAsset.assetDisplayInfo,
-                amount: nativeAmountDecimal,
-                priceData: priceData
-            ).value(for: locale)
-
-            nativeAmount = "\(nativeAmountWithoutPrice) \(price.inParenthesis())"
-        } else {
-            nativeAmount = nativeAmountWithoutPrice
-        }
-
-        return R.string.localizable.swapsPayAssetFeeEdMessage(
-            feeChainAsset.asset.symbol,
-            targetAmount,
-            nativeAmount,
-            utilityChainAsset.asset.symbol,
-            preferredLanguages: locale.rLanguages
-        )
     }
 
     func priceDifferenceViewModel(
@@ -185,5 +146,26 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
             format: Int(timeInterval.rounded(.up)),
             preferredLanguages: locale.rLanguages
         ).approximately()
+    }
+
+    func feeViewModel(
+        amountInFiat: Decimal,
+        isEditable: Bool,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> NetworkFeeInfoViewModel {
+        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
+            from: priceData?.currencyId
+        )
+
+        let amount = balanceViewModelFactoryFacade.amountFromValue(
+            targetAssetInfo: assetDisplayInfo,
+            value: amountInFiat
+        ).value(for: locale)
+
+        return .init(
+            isEditable: isEditable,
+            balanceViewModel: BalanceViewModel(amount: amount, price: nil)
+        )
     }
 }

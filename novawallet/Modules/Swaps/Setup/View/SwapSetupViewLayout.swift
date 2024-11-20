@@ -55,8 +55,6 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
 
     var receiveIssueLabel: UILabel?
 
-    var notificationView: InlineAlertView?
-
     private func setupPayIssueLabel() -> UILabel {
         if let payIssueLabel = payIssueLabel {
             return payIssueLabel
@@ -87,20 +85,6 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         receiveIssueLabel = label
 
         return label
-    }
-
-    private func setupNotificationView() -> InlineAlertView {
-        if let notificationView = notificationView {
-            return notificationView
-        }
-
-        let view = InlineAlertView.info()
-        insertArrangedSubview(view, after: detailsView, spacingAfter: 8)
-        stackView.setCustomSpacing(16, after: detailsView)
-
-        notificationView = view
-
-        return view
     }
 
     override func setupStyle() {
@@ -221,17 +205,5 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         stackView.setCustomSpacing(16, after: receiveAmountInputView)
 
         receiveAmountInputView.applyInput(style: .normal)
-    }
-
-    func displayInfoNotification(with text: String) {
-        let notificationView = setupNotificationView()
-        notificationView.contentView.detailsLabel.text = text
-    }
-
-    func hideNotification() {
-        notificationView?.removeFromSuperview()
-        notificationView = nil
-
-        stackView.setCustomSpacing(8, after: detailsView)
     }
 }

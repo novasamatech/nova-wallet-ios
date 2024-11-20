@@ -28,13 +28,6 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, S
         locale: Locale
     ) -> AmountInputViewModelProtocol
 
-    func feeViewModel(
-        amountInFiat: Decimal,
-        isEditable: Bool,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> NetworkFeeInfoViewModel
-
     func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset, locale: Locale) -> String
 }
 
@@ -42,7 +35,6 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
     let issuesViewModelFactory: SwapIssueViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
-    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
@@ -54,12 +46,12 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
         priceDifferenceConfig: SwapPriceDifferenceConfig
     ) {
         self.issuesViewModelFactory = issuesViewModelFactory
-        self.priceAssetInfoFactory = priceAssetInfoFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.assetIconViewModelFactory = assetIconViewModelFactory
 
         super.init(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             percentForamatter: percentForamatter,
             priceDifferenceConfig: priceDifferenceConfig
         )
@@ -221,27 +213,6 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             targetAssetInfo: chainAsset.assetDisplayInfo,
             amount: amount
         ).value(for: locale)
-    }
-
-    func feeViewModel(
-        amountInFiat: Decimal,
-        isEditable: Bool,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> NetworkFeeInfoViewModel {
-        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
-            from: priceData?.currencyId
-        )
-
-        let amount = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: assetDisplayInfo,
-            value: amountInFiat
-        ).value(for: locale)
-
-        return .init(
-            isEditable: isEditable,
-            balanceViewModel: BalanceViewModel(amount: amount, price: nil)
-        )
     }
 
     func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset, locale: Locale) -> String {

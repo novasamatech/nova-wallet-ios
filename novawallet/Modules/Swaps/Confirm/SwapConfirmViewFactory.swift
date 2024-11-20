@@ -22,12 +22,14 @@ struct SwapConfirmViewFactory {
 
         let wireframe = SwapConfirmWireframe(completionClosure: completionClosure)
 
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let viewModelFactory = SwapConfirmViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             assetIconViewModelFactory: AssetIconViewModelFactory(),
             percentForamatter: NumberFormatter.percentSingle.localizableResource(),

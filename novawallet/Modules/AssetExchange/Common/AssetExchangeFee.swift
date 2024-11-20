@@ -16,32 +16,41 @@ struct AssetExchangeFee: Equatable {
     let intermediateFeesInAssetIn: Balance
     let slippage: BigRational
     let feeAssetId: ChainAssetId
-
-    // TODO: Get rid of temp vars
-    var networkFee: AssetConversion.AmountWithNative {
-        let amount = operationFees.first?.submissionFee.amountWithAsset.amount ?? 0
-
-        return .init(targetAmount: amount, nativeAmount: amount)
-    }
-
-    var networkNativeFeeAddition: AssetConversion.AmountWithNative {
-        let amount = operationFees.first?.postSubmissionFee.paidByAccount.first?.amountWithAsset.amount ?? 0
-
-        return .init(
-            targetAmount: amount,
-            nativeAmount: amount
-        )
-    }
-
-    var totalFee: AssetConversion.AmountWithNative {
-        let targetAmount = networkFee.targetAmount + networkNativeFeeAddition.targetAmount
-        let networkAmount = networkFee.nativeAmount + networkNativeFeeAddition.nativeAmount
-
-        return .init(targetAmount: targetAmount, nativeAmount: networkAmount)
-    }
 }
 
 extension AssetExchangeFee {
+    func originPostsubmissionFeeIn(assetIn: ChainAsset) -> Balance {
+        guard let originFee = operationFees.first else {
+            return 0
+        }
+
+        return originFee.postSubmissionFee.totalAmountIn(asset: assetIn.chainAssetId)
+    }
+
+    func originFeeIn(assetIn: ChainAsset) -> Balance {
+        guard let originFee = operationFees.first else {
+            return 0
+        }
+
+        return originFee.totalAmountIn(asset: assetIn.chainAssetId)
+    }
+
+    func postSubmissionFeeInAssetIn(_ assetIn: ChainAsset) -> Balance {
+        guard let originFee = operationFees.first else {
+            return 0
+        }
+
+        return originFee.postSubmissionFee.totalAmountIn(asset: assetIn.chainAssetId) + intermediateFeesInAssetIn
+    }
+
+    func totalFeeInAssetIn(_ assetIn: ChainAsset) -> Balance {
+        guard let originFee = operationFees.first else {
+            return 0
+        }
+
+        return originFee.totalAmountIn(asset: assetIn.chainAssetId) + intermediateFeesInAssetIn
+    }
+
     func calculateTotalFeeInFiat(
         assetIn: ChainAsset,
         assetInPrice: PriceData?,

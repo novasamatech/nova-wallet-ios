@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "Odbierz %@";
 "swaps.setup.network.fee.token.title" = "Token do opłacenia opłaty sieciowej";
 "swaps.setup.network.fee.token.hint" = "Opłata sieciowa jest dodawana do wprowadzonej kwoty";
-"swaps.pay.asset.fee.ed.message" = "Aby zapłacić opłatę sieciową za pomocą %@, Nova automatycznie zamieni %@ na %@, aby utrzymać minimalne saldo %@ na twoim koncie.";
 "swaps.setup.slippage.error.amount.bounds" = "Wprowadź wartość pomiędzy %@ a %@";
 "swaps.setup.slippage.warning.low.amount" = "Transakcja może zostać anulowana z powodu niskiej tolerancji na poślizg.";
 "swaps.setup.slippage.warning.high.amount" = "Transakcja może zostać przechwycona z powodu wysokiego poślizgu.";

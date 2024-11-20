@@ -12,13 +12,6 @@ protocol SwapConfirmViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
 
     func slippageViewModel(slippage: BigRational, locale: Locale) -> String
 
-    func feeViewModel(
-        fee: BigUInt,
-        chainAsset: ChainAsset,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> NetworkFeeInfoViewModel
-
     func walletViewModel(walletAddress: WalletDisplayAddress) -> WalletAccountViewModel?
 }
 
@@ -29,6 +22,7 @@ final class SwapConfirmViewModelFactory: SwapBaseViewModelFactory {
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         percentForamatter: LocalizableResource<NumberFormatter>,
@@ -39,6 +33,7 @@ final class SwapConfirmViewModelFactory: SwapBaseViewModelFactory {
 
         super.init(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             percentForamatter: percentForamatter,
             priceDifferenceConfig: priceDifferenceConfig
         )
@@ -75,25 +70,6 @@ extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
 
     func slippageViewModel(slippage: BigRational, locale: Locale) -> String {
         slippage.decimalValue.map { percentForamatter.value(for: locale).stringFromDecimal($0) ?? "" } ?? ""
-    }
-
-    func feeViewModel(
-        fee: BigUInt,
-        chainAsset: ChainAsset,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> NetworkFeeInfoViewModel {
-        let amountDecimal = Decimal.fromSubstrateAmount(
-            fee,
-            precision: chainAsset.assetDisplayInfo.assetPrecision
-        ) ?? 0
-        let balanceViewModel = balanceViewModelFactoryFacade.balanceFromPrice(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
-            amount: amountDecimal,
-            priceData: priceData
-        ).value(for: locale)
-
-        return .init(isEditable: false, balanceViewModel: balanceViewModel)
     }
 
     func walletViewModel(walletAddress: WalletDisplayAddress) -> WalletAccountViewModel? {

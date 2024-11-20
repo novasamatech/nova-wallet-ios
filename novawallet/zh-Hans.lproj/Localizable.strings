@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "获取%@";
 "swaps.setup.network.fee.token.title" = "用于支付网络费用的代币";
 "swaps.setup.network.fee.token.hint" = "网络费用将添加到输入的金额之上";
-"swaps.pay.asset.fee.ed.message" = "为了支付网络费用，Nova将自动将%@兑换为%@，以保持您账户的最低%@余额。";
 "swaps.setup.slippage.error.amount.bounds" = "请输入介于%@和%@之间的值";
 "swaps.setup.slippage.warning.low.amount" = "因低滑点容忍度可能会被回退。";
 "swaps.setup.slippage.warning.high.amount" = "因高滑点而可能遭受前置交易。";
