@@ -63,6 +63,8 @@
 		0C0E0AA32B3F01FD00865F10 /* UniquesPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0AA22B3F01FD00865F10 /* UniquesPallet.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
+		0C12BC482CEB996700AB919D /* XcmV4Multilocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC472CEB996700AB919D /* XcmV4Multilocation.swift */; };
+		0C12BC492CEB996700AB919D /* XcmJunctionV4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC462CEB996700AB919D /* XcmJunctionV4.swift */; };
 		0C1338102AB832B30036BCD6 /* QRImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */; };
 		0C1338122AB8330D0036BCD6 /* AnimatedImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */; };
 		0C1338142AB834750036BCD6 /* QRImageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */; };
@@ -725,6 +727,8 @@
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
 		0CF193D72A861D7E003F12F6 /* StartStakingInfoConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */; };
+		0CF4ADFF2CECACF9009C51FA /* PolkadotRewardParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF4ADFE2CECACF9009C51FA /* PolkadotRewardParamsService.swift */; };
+		0CF4AE0B2CECDCF1009C51FA /* PolkadotRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF4AE0A2CECDCF1009C51FA /* PolkadotRewardEngine.swift */; };
 		0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */; };
 		0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */; };
 		0CF692892C20E2B1000FC395 /* BackupManualWarningPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */; };
@@ -5206,6 +5210,8 @@
 		0C0E0AA22B3F01FD00865F10 /* UniquesPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniquesPallet.swift; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
+		0C12BC462CEB996700AB919D /* XcmJunctionV4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmJunctionV4.swift; sourceTree = "<group>"; };
+		0C12BC472CEB996700AB919D /* XcmV4Multilocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV4Multilocation.swift; sourceTree = "<group>"; };
 		0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModel.swift; sourceTree = "<group>"; };
 		0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedImageViewModel.swift; sourceTree = "<group>"; };
 		0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageViewModelFactory.swift; sourceTree = "<group>"; };
@@ -5909,6 +5915,8 @@
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
 		0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoConstants.swift; sourceTree = "<group>"; };
+		0CF4ADFE2CECACF9009C51FA /* PolkadotRewardParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotRewardParamsService.swift; sourceTree = "<group>"; };
+		0CF4AE0A2CECDCF1009C51FA /* PolkadotRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotRewardEngine.swift; sourceTree = "<group>"; };
 		0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingCall.swift; sourceTree = "<group>"; };
 		0CF609342B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsServiceFacade.swift; sourceTree = "<group>"; };
 		0CF692882C20E2B1000FC395 /* BackupManualWarningPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupManualWarningPresentable.swift; sourceTree = "<group>"; };
@@ -11932,6 +11940,8 @@
 		0CEB6B342CA4507200609DC2 /* V4 */ = {
 			isa = PBXGroup;
 			children = (
+				0C12BC462CEB996700AB919D /* XcmJunctionV4.swift */,
+				0C12BC472CEB996700AB919D /* XcmV4Multilocation.swift */,
 				0CEB6B352CA450AC00609DC2 /* XcmV4LocatableAsset.swift */,
 				0CEB6B372CA450C200609DC2 /* XcmV4.swift */,
 			);
@@ -21307,6 +21317,8 @@
 				84C1DBC429C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift */,
 				0C846B882BE50BF2000EBFC2 /* VaraRewardEngine.swift */,
 				0C846B8A2BE52FBD000EBFC2 /* VaraRewardParamsService.swift */,
+				0CF4ADFE2CECACF9009C51FA /* PolkadotRewardParamsService.swift */,
+				0CF4AE0A2CECDCF1009C51FA /* PolkadotRewardEngine.swift */,
 			);
 			path = RelayChain;
 			sourceTree = "<group>";
@@ -25108,6 +25120,8 @@
 				777BD86429F979DA004969A2 /* SelectableFilterCell.swift in Sources */,
 				0C992C3F2B53AEF700ACC129 /* OperationSearchService.swift in Sources */,
 				8849AD6229C3532600F4F7FF /* String+Split.swift in Sources */,
+				0C12BC482CEB996700AB919D /* XcmV4Multilocation.swift in Sources */,
+				0C12BC492CEB996700AB919D /* XcmJunctionV4.swift in Sources */,
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
 				0C3976A92C330A1D00998DD6 /* HydraXYK+PoolAccount.swift in Sources */,
 				849067CA299BCCB700B2983E /* GovernanceRevokeDelegationConfirmPresenter+Update.swift in Sources */,
@@ -25979,6 +25993,7 @@
 				0C77B5652A8374EA00B5AE08 /* StaticValidatorListPresenter.swift in Sources */,
 				2D4F55112CCB7C4C00B65B76 /* SendAssetOperationCollectionDataSource.swift in Sources */,
 				8418167528251BBC0007684A /* StorageListSyncResult.swift in Sources */,
+				0CF4ADFF2CECACF9009C51FA /* PolkadotRewardParamsService.swift in Sources */,
 				84DD261929ACA9880032A598 /* BagList+CodingPath.swift in Sources */,
 				8465DA3F298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift in Sources */,
 				2DBB288D2CD42C5200DFA0AD /* QRCreationOperationFactory.swift in Sources */,
@@ -27197,6 +27212,7 @@
 				0CAB7DA32C471AAE0070CE4D /* DirectStkRecommendingValidationFactory.swift in Sources */,
 				84002A9E2992444300A80672 /* GovernanceNewDelegation.swift in Sources */,
 				845B822126EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift in Sources */,
+				0CF4AE0B2CECDCF1009C51FA /* PolkadotRewardEngine.swift in Sources */,
 				0C9C64302A8D6779004DC078 /* StakingNPoolsPresenter.swift in Sources */,
 				8457F91026EB8288006803E1 /* StorageMigrator+Sync.swift in Sources */,
 				F48220F8DA16EB51313B5D56 /* ExportMnemonicConfirmWireframe.swift in Sources */,

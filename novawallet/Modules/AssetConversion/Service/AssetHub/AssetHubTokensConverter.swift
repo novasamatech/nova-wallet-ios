@@ -26,10 +26,10 @@ enum AssetHubTokensConverter {
     }
 
     static func convertFromMultilocation(
-        _ assetId: AssetConversionPallet.AssetId,
+        _ assetId: AssetConversionAssetIdProtocol,
         chain: ChainModel
     ) -> AssetConversionPallet.PoolAsset {
-        let junctions = assetId.interior.items
+        let junctions = assetId.items
 
         if assetId.parents == 0 {
             guard !junctions.isEmpty else {
@@ -43,20 +43,20 @@ enum AssetHubTokensConverter {
                     case let .generalIndex(index) = junctions[1] {
                     return .assets(pallet: pallet, index: index)
                 } else {
-                    return .undefined(assetId)
+                    return .undefined(.init(parents: assetId.parents, interior: .init(items: junctions)))
                 }
             default:
-                return .undefined(assetId)
+                return .undefined(.init(parents: assetId.parents, interior: .init(items: junctions)))
             }
         } else if assetId.parents == 1, junctions.isEmpty, chain.isUtilityTokenOnRelaychain {
             return .native
         } else {
-            return .foreign(assetId)
+            return .foreign(.init(parents: assetId.parents, interior: .init(items: junctions)))
         }
     }
 
     static func convertFromMultilocationToLocal(
-        _ assetId: AssetConversionPallet.AssetId,
+        _ assetId: AssetConversionAssetIdProtocol,
         chain: ChainModel,
         conversionClosure: (AssetConversionPallet.PoolAsset) -> ChainAsset?
     ) -> ChainAsset? {
