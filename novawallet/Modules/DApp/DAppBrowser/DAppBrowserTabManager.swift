@@ -2,11 +2,11 @@ import Foundation
 import Operation_iOS
 
 protocol DAppBrowserTabManagerProtocol {
-    func retrieveTab(with id: UUID) -> BaseOperation<DAppBrowserTab?>
-    func getAllTabs() -> BaseOperation<[DAppBrowserTab]>
+    func retrieveTab(with id: UUID) -> CompoundOperationWrapper<DAppBrowserTab?>
+    func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]>
 
     @discardableResult
-    func updateTab(_ tab: DAppBrowserTab) -> BaseOperation<DAppBrowserTab>
+    func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab>
 
     func removeTab(with id: UUID)
 }
@@ -33,7 +33,7 @@ final class DAppBrowserTabManager {
 // MARK: DAppBrowserTabManagerProtocol
 
 extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
-    func retrieveTab(with id: UUID) -> BaseOperation<DAppBrowserTab?> {
+    func retrieveTab(with id: UUID) -> CompoundOperationWrapper<DAppBrowserTab?> {
         if let currentTab = tabs[id] {
             return .createWithResult(currentTab)
         } else {
@@ -69,11 +69,14 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
             }
             resultOperation.addDependency(fetchOperation)
 
-            return resultOperation
+            return CompoundOperationWrapper(
+                targetOperation: resultOperation,
+                dependencies: [fetchOperation]
+            )
         }
     }
 
-    func getAllTabs() -> BaseOperation<[DAppBrowserTab]> {
+    func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]> {
         let currentTabs = tabs
             .values
             .sorted { $0.lastModified < $1.lastModified }
@@ -111,7 +114,10 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         }
         resultOperaton.addDependency(fetchOperation)
 
-        return resultOperaton
+        return CompoundOperationWrapper(
+            targetOperation: resultOperaton,
+            dependencies: [fetchOperation]
+        )
     }
 
     func removeTab(with id: UUID) {
@@ -134,7 +140,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         )
     }
 
-    func updateTab(_ tab: DAppBrowserTab) -> BaseOperation<DAppBrowserTab> {
+    func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
         let persistenceModel = tab.persistenceModel
 
         let updateOperation = repository.saveOperation(
@@ -152,6 +158,9 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         }
         resultOperation.addDependency(updateOperation)
 
-        return resultOperation
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: [updateOperation]
+        )
     }
 }

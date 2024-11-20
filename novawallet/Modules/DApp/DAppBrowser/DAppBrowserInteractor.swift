@@ -244,10 +244,10 @@ final class DAppBrowserInteractor {
     }
 
     private func provideTabs() {
-        let allTabsOperation = tabManager.getAllTabs()
+        let allTabsWrapper = tabManager.getAllTabs()
 
         execute(
-            operation: allTabsOperation,
+            wrapper: allTabsWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -262,10 +262,10 @@ final class DAppBrowserInteractor {
 
     private func proceedWithTabUpdate(with query: String) {
         let url = DAppBrowserTab.resolveUrl(for: query)
-        let updateOperation = tabManager.updateTab(currentTab.updating(url: url))
+        let updateWrapper = tabManager.updateTab(currentTab.updating(url: url))
 
         execute(
-            operation: updateOperation,
+            wrapper: updateWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -292,10 +292,10 @@ final class DAppBrowserInteractor {
 
         dataSource.replace(dApp: dApp)
 
-        let newTabSaveOperation = tabManager.updateTab(newTab)
+        let newTabSaveWrapper = tabManager.updateTab(newTab)
 
         execute(
-            operation: newTabSaveOperation,
+            wrapper: newTabSaveWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -318,8 +318,21 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
         favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
 
-        provideTabs()
-        completeSetupIfNeeded()
+        let tabSaveWrapper = tabManager.updateTab(currentTab)
+
+        execute(
+            wrapper: tabSaveWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(tab):
+                self?.provideTabs()
+                self?.completeSetupIfNeeded()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
+            }
+        }
     }
 
     func process(host: String) {

@@ -57,7 +57,7 @@ struct DAppBrowserViewFactory {
             dAppGlobalSettingsRepository: accountRepositoryFactory.createDAppsGlobalSettingsRepository(),
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: favoritesRepository,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             sequentialPhishingVerifier: phishingVerifier,
             tabManager: tabManager,
             logger: logger
