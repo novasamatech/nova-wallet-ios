@@ -16,17 +16,42 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
+    
     func process(page: DAppBrowserPage)
-    func process(message: Any, host: String, transport name: String)
+    
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    )
+    
+    func process(
+        stateRender: Data,
+        tabId: UUID
+    )
+    
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
     func close()
+    func showTabs()
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func setup()
+    
     func process(host: String)
-    func process(message: Any, host: String, transport name: String)
+    
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    )
+    
+    func process(
+        stateRender: Data,
+        tabId: UUID
+    )
+    
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func process(newQuery: DAppSearchResult)
     func processAuth(response: DAppAuthResponse, forTransport name: String)
@@ -93,4 +118,6 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
     func hideSettings(from view: DAppBrowserViewProtocol?)
 
     func close(view: DAppBrowserViewProtocol?)
+
+    func showTabs(from view: DAppBrowserViewProtocol?)
 }

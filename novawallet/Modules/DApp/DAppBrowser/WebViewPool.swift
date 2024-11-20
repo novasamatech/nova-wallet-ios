@@ -10,6 +10,12 @@ class WebViewPool {
     private var webViewDict: [UUID: WKWebView] = [:]
 }
 
+extension WebViewPool {
+    static let shared = WebViewPool()
+}
+
+// MARK: WebViewPoolProtocol
+
 extension WebViewPool: WebViewPoolProtocol {
     func getWebView(for id: UUID) -> WKWebView? {
         webViewDict[id]

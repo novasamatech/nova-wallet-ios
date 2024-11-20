@@ -34,18 +34,6 @@ struct DAppBrowserViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let repository = storageFacade.createRepository(
-            filter: nil,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(DAppBrowserTabMapper())
-        )
-
-        let tabManager = DAppBrowserTabManager(
-            cacheBasePath: "",
-            repository: repository,
-            operationQueue: operationQueue
-        )
-
         let interactor = DAppBrowserInteractor(
             transports: transports,
             userQuery: userQuery,
@@ -59,7 +47,7 @@ struct DAppBrowserViewFactory {
             dAppsFavoriteRepository: favoritesRepository,
             operationQueue: operationQueue,
             sequentialPhishingVerifier: phishingVerifier,
-            tabManager: tabManager,
+            tabManager: DAppBrowserTabManager.shared,
             logger: logger
         )
 
@@ -75,6 +63,7 @@ struct DAppBrowserViewFactory {
         let view = DAppBrowserViewController(
             presenter: presenter,
             localRouter: URLLocalRouter.createWithDeeplinks(),
+            webViewPool: WebViewPool.shared,
             deviceOrientationManager: DeviceOrientationManager.shared,
             localizationManager: localizationManager
         )

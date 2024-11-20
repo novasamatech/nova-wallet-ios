@@ -310,6 +310,27 @@ final class DAppBrowserInteractor {
             }
         }
     }
+    
+    private func createStateRenderUpdateWrapper(for tabId: UUID, render: Data) -> CompoundOperationWrapper<DAppBrowserTab> {
+        let tabFetchWrapper = tabManager.retrieveTab(with: tabId)
+        
+        let updateWrapper: CompoundOperationWrapper<DAppBrowserTab>
+        updateWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] in
+            guard
+                let self,
+                let tab = try tabFetchWrapper.targetOperation.extractNoCancellableResultData()
+            else {
+                return .createWithError(NSError())
+            }
+            
+            return tabManager.updateTab(tab.updating(stateRender: render))
+        }
+        updateWrapper.addDependency(wrapper: tabFetchWrapper)
+
+        return updateWrapper.insertingHead(operations: tabFetchWrapper.allOperations)
+    }
 }
 
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
@@ -341,7 +362,11 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
     }
 
-    func process(message: Any, host: String, transport name: String) {
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    ) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
 
@@ -360,8 +385,27 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
     }
 
-    func processConfirmation(response: DAppOperationResponse, forTransport name: String) {
+    func processConfirmation(
+        response: DAppOperationResponse,
+        forTransport name: String
+    ) {
         transports.first(where: { $0.name == name })?.processConfirmation(response: response)
+    }
+    
+    func process(
+        stateRender: Data,
+        tabId: UUID
+    ) {
+        let renderUpdateWrapper = createStateRenderUpdateWrapper(
+            for: tabId,
+            render: stateRender
+        )
+        
+        execute(
+            wrapper: renderUpdateWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { _ in }
     }
 
     func process(newQuery: DAppSearchResult) {

@@ -71,8 +71,26 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         updateSettingsState()
     }
 
-    func process(message: Any, host: String, transport name: String) {
-        interactor.process(message: message, host: host, transport: name)
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    ) {
+        interactor.process(
+            message: message,
+            host: host,
+            transport: name
+        )
+    }
+    
+    func process(
+        stateRender: Data,
+        tabId: UUID
+    ) {
+        interactor.process(
+            stateRender: stateRender,
+            tabId: tabId
+        )
     }
 
     func activateSearch(with query: String?) {
@@ -118,6 +136,10 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
+
+    func showTabs() {
+        wireframe.showTabs(from: view)
     }
 }
 

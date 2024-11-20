@@ -9,7 +9,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     let presenter: DAppBrowserPresenterProtocol
 
     private let webViewPool: WebViewPoolProtocol
-    
+
     private var viewModel: DAppBrowserModel?
 
     private var urlObservation: NSKeyValueObservation?
@@ -160,6 +160,14 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
             self?.didChangeTitle(title)
         }
     }
+    
+    private func makeStateRender() {
+        guard let render = rootView.webView.createStateRenderImage().pngData() else {
+            return
+        }
+        
+        presenter.process(stateRender: render)
+    }
 
     private func configureHandlers() {
         rootView.goBackBarItem.target = self
@@ -167,6 +175,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         rootView.goForwardBarItem.target = self
         rootView.goForwardBarItem.action = #selector(actionGoForward)
+
+        rootView.tabsButton.addTarget(
+            self,
+            action: #selector(actionTabs),
+            for: .touchUpInside
+        )
 
         rootView.refreshBarItem.target = self
         rootView.refreshBarItem.action = #selector(actionRefresh)
@@ -327,6 +341,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     @objc private func actionClose() {
         presenter.close()
     }
+
+    @objc private func actionTabs() {
+        presenter.showTabs()
+    }
 }
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
@@ -340,23 +358,24 @@ extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
     func didReceive(viewModel: DAppBrowserModel) {
         if self.viewModel?.selectedTab.uuid != viewModel.selectedTab.uuid {
+            makeStateRender()
             let webView = webViewPool.setupWebView(for: viewModel.selectedTab.uuid)
             rootView.setWebView(webView)
         }
-        
+
         self.viewModel = viewModel
-        
+
         isDesktop = viewModel.isDesktop
         transports = viewModel.transports
-        
+
         setupScripts()
         setupWebPreferences()
-        
+
         setupUrl(viewModel.selectedTab.url)
     }
-    
+
     func didReceiveTabsCount(viewModel: String) {
-        print(viewModel)
+        rootView.tabsButton.imageWithTitleView?.title = viewModel
     }
 
     func didReceive(response: DAppScriptResponse, forTransport _: String) {
@@ -445,6 +464,13 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         } else {
             decisionHandler(.allow)
         }
+    }
+    
+    func webView(
+        _ webView: WKWebView,
+        didFinish navigation: WKNavigation!
+    ) {
+        makeStateRender()
     }
 
     func webView(
