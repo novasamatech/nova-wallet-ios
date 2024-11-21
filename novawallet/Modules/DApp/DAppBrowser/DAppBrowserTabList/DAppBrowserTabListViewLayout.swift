@@ -86,6 +86,8 @@ final class DAppBrowserTabListViewLayout: UIView {
     }
 }
 
+// MARK: Private
+
 private extension DAppBrowserTabListViewLayout {
     func setupLayout() {
         addSubview(collectionView)
@@ -126,6 +128,8 @@ private extension DAppBrowserTabListViewLayout {
         backgroundColor = R.color.colorSecondaryScreenBackground()
     }
 }
+
+// MARK: Constants
 
 private extension DAppBrowserTabListViewLayout {
     enum Constants {

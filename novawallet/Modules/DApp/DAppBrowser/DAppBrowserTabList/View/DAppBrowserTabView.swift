@@ -56,6 +56,8 @@ class DAppBrowserTabView: UIView {
     }
 }
 
+// MARK: DAppBrowserTabView
+
 private extension DAppBrowserTabView {
     func setupLayout() {
         addSubview(iconName)
@@ -126,6 +128,8 @@ private extension DAppBrowserTabView {
     }
 }
 
+// MARK: Interface
+
 extension DAppBrowserTabView {
     func bind(viewModel: DAppBrowserTabViewModel) {
         self.viewModel = viewModel
@@ -136,6 +140,8 @@ extension DAppBrowserTabView {
         iconName.detailsLabel.text = viewModel.name
     }
 }
+
+// MARK: Constants
 
 private extension DAppBrowserTabView {
     enum Constants {
