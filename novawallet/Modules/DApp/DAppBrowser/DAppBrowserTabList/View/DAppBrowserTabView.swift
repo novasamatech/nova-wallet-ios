@@ -5,7 +5,7 @@ class DAppBrowserTabCollectionCell: CollectionViewContainerCell<DAppBrowserTabVi
     override func prepareForReuse() {
         super.prepareForReuse()
 
-        view.viewModel?.icon?.cancel(on: iconName.imageView)
+        view.viewModel?.icon?.cancel(on: view.iconName.imageView)
         view.iconName.imageView.image = nil
         view.iconName.detailsLabel.text = nil
         view.imageView.image = nil
