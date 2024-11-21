@@ -154,6 +154,16 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     }
 
     func didReceiveDApp(model: DAppBrowserModel) {
+        guard model.selectedTab.url != nil else {
+            wireframe.presentSearch(
+                from: view,
+                initialQuery: nil,
+                delegate: self
+            )
+
+            return
+        }
+
         view?.didReceive(viewModel: model)
     }
 

@@ -29,13 +29,19 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        presenter.setup()
-        setupCollection()
-        setupLocalization()
+        setup()
     }
 }
 
 private extension DAppBrowserTabListViewController {
+    func setup() {
+        presenter.setup()
+
+        setupCollection()
+        setupActions()
+        setupLocalization()
+    }
+
     func setupCollection() {
         rootView.collectionView.registerCellClass(DAppBrowserTabCollectionCell.self)
         rootView.collectionView.dataSource = self
@@ -51,6 +57,29 @@ private extension DAppBrowserTabListViewController {
         rootView.closeAllButtonItem.title = R.string.localizable.commonCloseAll(
             preferredLanguages: languages
         )
+    }
+
+    func setupActions() {
+        rootView.closeAllButtonItem.target = self
+        rootView.closeAllButtonItem.action = #selector(actionCloseAll)
+
+        rootView.newTabButtonItem.target = self
+        rootView.newTabButtonItem.action = #selector(actionNewTab)
+
+        rootView.doneButtonItem.target = self
+        rootView.doneButtonItem.action = #selector(actionDone)
+    }
+
+    @objc func actionCloseAll() {
+        presenter.closeAllTabs()
+    }
+
+    @objc func actionNewTab() {
+        presenter.openNewTab()
+    }
+
+    @objc func actionDone() {
+        presenter.close()
     }
 }
 

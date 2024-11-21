@@ -25,8 +25,9 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         for result: DAppSearchResult,
         dAppList: [DApp]
     ) {
+        let tab = DAppBrowserTab(from: result)
+
         guard
-            let tab = DAppBrowserTab(from: result),
             let tabsView = DAppBrowserTabListViewFactory.createView(dAppList: dAppList),
             let browserView = DAppBrowserViewFactory.createView(
                 with: result.dApp,

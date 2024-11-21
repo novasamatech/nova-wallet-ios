@@ -7,6 +7,9 @@ protocol DAppBrowserTabListViewProtocol: ControllerBackedProtocol {
 protocol DAppBrowserTabListPresenterProtocol: AnyObject {
     func setup()
     func selectTab(with id: UUID)
+    func openNewTab()
+    func closeAllTabs()
+    func close()
 }
 
 protocol DAppBrowserTabListInteractorInputProtocol: AnyObject {
@@ -23,4 +26,6 @@ protocol DAppBrowserTabListWireframeProtocol: AnyObject {
         _ tab: DAppBrowserTab,
         dApp: DApp?
     )
+
+    func close(from view: ControllerBackedProtocol?)
 }

@@ -4,7 +4,7 @@ import Operation_iOS
 struct DAppBrowserTab {
     let uuid: UUID
     let name: String?
-    let url: URL
+    let url: URL?
     let lastModified: Date
     let transportStates: [DAppTransportState]?
     let stateRender: Data?
@@ -23,7 +23,7 @@ struct DAppBrowserTab {
     init(
         uuid: UUID,
         name: String?,
-        url: URL,
+        url: URL?,
         lastModified: Date,
         transportStates: [DAppTransportState]?,
         stateRender: Data?,
@@ -38,31 +38,40 @@ struct DAppBrowserTab {
         self.icon = icon
     }
 
-    init?(from searchResult: DAppSearchResult) {
-        switch searchResult {
-        case let .query(query):
-            self.init(from: query)
-        case let .dApp(dApp):
-            self.init(from: dApp)
+    init(from searchResult: DAppSearchResult?) {
+        if let searchResult {
+            switch searchResult {
+            case let .query(query):
+                self.init(from: query)
+            case let .dApp(dApp):
+                self.init(from: dApp)
+            }
+        } else {
+            self.init()
         }
     }
 
-    init?(from query: String) {
+    init() {
         uuid = UUID()
         lastModified = Date()
         transportStates = nil
         stateRender = nil
         name = nil
         icon = nil
-
-        guard let url = DAppBrowserTab.resolveUrl(for: query) else {
-            return nil
-        }
-
-        self.url = url
+        url = nil
     }
 
-    init?(from dApp: DApp) {
+    init(from query: String) {
+        uuid = UUID()
+        lastModified = Date()
+        transportStates = nil
+        stateRender = nil
+        name = nil
+        icon = nil
+        url = DAppBrowserTab.resolveUrl(for: query)
+    }
+
+    init(from dApp: DApp) {
         uuid = UUID()
         lastModified = Date()
         transportStates = nil
@@ -118,7 +127,7 @@ extension DAppBrowserTab {
 
         let uuid: UUID
         let name: String?
-        let url: URL
+        let url: URL?
         let lastModified: Date
         let icon: String?
     }

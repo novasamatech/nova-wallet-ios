@@ -158,7 +158,7 @@ private extension DAppBrowserInteractor {
     func provideModel() {
         let wrappers = createTransportWrappers()
 
-        let globalSettingsOperation = createGlobalSettingsOperation(for: currentTab.url.host)
+        let globalSettingsOperation = createGlobalSettingsOperation(for: currentTab.url?.host)
 
         let desktopOnly = dApp?.desktopOnly ?? false
 
@@ -308,9 +308,7 @@ private extension DAppBrowserInteractor {
     }
 
     func proceedWithNewTab(opening dApp: DApp) {
-        guard let newTab = DAppBrowserTab(from: .dApp(model: dApp)) else {
-            return
-        }
+        let newTab = DAppBrowserTab(from: .dApp(model: dApp))
 
         let states = transports.compactMap { $0.makeOpaqueState() }
 

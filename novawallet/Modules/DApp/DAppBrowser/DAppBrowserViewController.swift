@@ -234,9 +234,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     private func setupUrl(
-        _ url: URL,
+        _ url: URL?,
         with reload: Bool
     ) {
+        guard let url else { return }
+
         rootView.urlLabel.text = url.host
 
         if url.isTLSScheme {

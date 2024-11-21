@@ -38,6 +38,22 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func openNewTab() {
+        let newTab = DAppBrowserTab(from: nil)
+
+        wireframe.showTab(
+            from: view,
+            newTab,
+            dApp: nil
+        )
+    }
+
+    func closeAllTabs() {}
+
+    func close() {
+        wireframe.close(from: view)
+    }
 }
 
 extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtocol {

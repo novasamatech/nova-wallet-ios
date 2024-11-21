@@ -18,4 +18,8 @@ final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
             animated: true
         )
     }
+
+    func close(from view: ControllerBackedProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
+    }
 }
