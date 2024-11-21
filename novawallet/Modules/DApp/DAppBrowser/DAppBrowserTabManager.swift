@@ -1,11 +1,6 @@
 import Foundation
 import Operation_iOS
 
-enum DAppTabUpdateKind {
-    case pageState
-    case tabMetadata
-}
-
 protocol DAppBrowserTabsObserver: AnyObject {
     func didReceiveUpdatedTabs(_ tabs: [DAppBrowserTab])
 }
@@ -70,16 +65,30 @@ private extension DAppBrowserTabManager {
         }
     }
     
-    func updateWrapper(for tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
+    func saveWrapper(for tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
+        guard let localPath = createLocalPath(tab.uuid.uuidString) else {
+            return .createWithError(NSError())
+        }
+        
         let persistenceModel = tab.persistenceModel
 
-        let updateOperation = repository.saveOperation(
+        let saveTabOperation = repository.saveOperation(
             { [persistenceModel] },
             { [] }
         )
+        
+        let saveRenderOperation: BaseOperation<Void> = if let renderData = tab.stateRender {
+            fileRepository.writeOperation(
+                dataClosure: { renderData },
+                at: localPath
+            )
+        } else {
+            fileRepository.removeOperation(at: localPath)
+        }
 
         let resultOperation = ClosureOperation { [weak self] in
-            _ = try updateOperation.extractNoCancellableResultData()
+            _ = try saveTabOperation.extractNoCancellableResultData()
+            _ = try saveRenderOperation.extractNoCancellableResultData()
 
             self?.tabs[tab.uuid] = tab
             self?.dAppTransportStates[tab.uuid] = tab.opaqueState
@@ -88,11 +97,12 @@ private extension DAppBrowserTabManager {
 
             return tab
         }
-        resultOperation.addDependency(updateOperation)
+        resultOperation.addDependency(saveTabOperation)
+        resultOperation.addDependency(saveRenderOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: [updateOperation]
+            dependencies: [saveTabOperation, saveRenderOperation]
         )
     }
     
@@ -221,43 +231,43 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         let fetchRendersWrapper = createFetchAllRendersWrapper(using: fetchTabsOperation)
 
         let resultOperaton = ClosureOperation { [weak self] in
-            let tabs = try fetchTabsOperation.extractNoCancellableResultData()
-            let renderFetchOperation = tabs.map { tab in
-                guard let localPath = createLocalPath(persistenceModel.identifier) else {
-                    return .createWithError(NSError())
+            let persistedTabs = try fetchTabsOperation.extractNoCancellableResultData()
+            let renders = try fetchRendersWrapper.targetOperation.extractNoCancellableResultData()
+            
+            let tabs = persistedTabs.map { persistenceModel in
+                let iconURL: URL? = if let urlString = persistenceModel.icon {
+                    URL(string: urlString)
+                } else {
+                    nil
                 }
                 
-                let fetchRenderOperation = fileRepository.readOperation(at: localPath)
+                
+                return DAppBrowserTab(
+                    uuid: persistenceModel.uuid,
+                    name: persistenceModel.name,
+                    url: persistenceModel.url,
+                    lastModified: persistenceModel.lastModified,
+                    opaqueState: self?.dAppTransportStates[persistenceModel.uuid],
+                    stateRender: renders[persistenceModel.uuid],
+                    icon: iconURL
+                )
             }
-//                .map { persistenceModel in
-//                    let iconURL: URL? = if let urlString = persistenceModel.icon {
-//                        URL(string: urlString)
-//                    } else {
-//                        nil
-//                    }
-//
-//
-//                    return DAppBrowserTab(
-//                        uuid: persistenceModel.uuid,
-//                        name: persistenceModel.name,
-//                        url: persistenceModel.url,
-//                        lastModified: persistenceModel.lastModified,
-//                        opaqueState: self?.dAppTransportStates[persistenceModel.uuid],
-//                        stateRender: nil,
-//                        icon: iconURL
-//                    )
-//                }
 
             tabs.forEach { self?.tabs[$0.uuid] = $0 }
 
             return tabs
         }
-        resultOperaton.addDependency(fetchOperation)
+        resultOperaton.addDependency(fetchTabsOperation)
+        
 
-        return CompoundOperationWrapper(
+        let wrapper = CompoundOperationWrapper(
             targetOperation: resultOperaton,
-            dependencies: [fetchOperation]
+            dependencies: fetchRendersWrapper.allOperations
         )
+        
+        wrapper.addDependency(wrapper: fetchRendersWrapper)
+        
+        return wrapper
     }
 
     func removeTab(with id: UUID) {
@@ -283,7 +293,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
-        updateWrapper(for: tab)
+        saveWrapper(for: tab)
     }
     
     func addObserver(_ observer: DAppBrowserTabsObserver) {
