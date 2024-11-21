@@ -240,6 +240,10 @@ private extension DAppBrowserTabManager {
 
         return localFilePath
     }
+
+    func sorted(_ tabs: [DAppBrowserTab]) -> [DAppBrowserTab] {
+        tabs.sorted { $0.lastModified < $1.lastModified }
+    }
 }
 
 // MARK: DAppBrowserTabManagerProtocol
@@ -250,18 +254,20 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]> {
-        let currentTabs = tabs
-            .values
-            .sorted { $0.lastModified < $1.lastModified }
+        let currentTabs = Array(tabs.values)
 
         guard currentTabs.isEmpty else {
-            return .createWithResult(currentTabs)
+            return .createWithResult(sorted(currentTabs))
         }
 
         let fetchTabsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
         let fetchRendersWrapper = createFetchAllRendersWrapper(using: fetchTabsOperation)
 
         let resultOperaton = ClosureOperation { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
             let persistedTabs = try fetchTabsOperation.extractNoCancellableResultData()
             let renders = try fetchRendersWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -277,16 +283,16 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
                     name: persistenceModel.name,
                     url: persistenceModel.url,
                     lastModified: persistenceModel.lastModified,
-                    transportStates: self?.dAppTransportStates[persistenceModel.uuid],
+                    transportStates: self.dAppTransportStates[persistenceModel.uuid],
                     stateRender: renders[persistenceModel.uuid],
                     desktopOnly: persistenceModel.desktopOnly,
                     icon: iconURL
                 )
             }
 
-            tabs.forEach { self?.tabs[$0.uuid] = $0 }
+            tabs.forEach { self.tabs[$0.uuid] = $0 }
 
-            return tabs
+            return sorted(tabs)
         }
         resultOperaton.addDependency(fetchTabsOperation)
 
