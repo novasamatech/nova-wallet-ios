@@ -1064,6 +1064,9 @@
 		2D8F0EC52CEDF53C00A22074 /* WebViewPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0EC42CEDF53C00A22074 /* WebViewPool.swift */; };
 		2D8F0EC82CEDFD5500A22074 /* DAppBrowserTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0EC72CEDFD5500A22074 /* DAppBrowserTabView.swift */; };
 		2D8F0ECA2CEE4CC300A22074 /* WKWebView+StateRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0EC92CEE4CC300A22074 /* WKWebView+StateRender.swift */; };
+		2D8F0ECC2CEFC76300A22074 /* DAppBrowserTabManagerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */; };
+		2D8F0ECE2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */; };
+		2D8F0ED22CEFC7FF00A22074 /* WebViewPoolProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */; };
 		2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */; };
 		2D8FF9D32C9BD67500089F53 /* SwipeGovAlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */; };
 		2D95DF5B2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */; };
@@ -6275,6 +6278,9 @@
 		2D8F0EC42CEDF53C00A22074 /* WebViewPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPool.swift; sourceTree = "<group>"; };
 		2D8F0EC72CEDFD5500A22074 /* DAppBrowserTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabView.swift; sourceTree = "<group>"; };
 		2D8F0EC92CEE4CC300A22074 /* WKWebView+StateRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WKWebView+StateRender.swift"; sourceTree = "<group>"; };
+		2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManagerError.swift; sourceTree = "<group>"; };
+		2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManagerProtocol.swift; sourceTree = "<group>"; };
+		2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPoolProtocol.swift; sourceTree = "<group>"; };
 		2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmPresenter.swift; sourceTree = "<group>"; };
 		2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovAlertPresentable.swift; sourceTree = "<group>"; };
 		2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicAssetsCustomFeeEstimator.swift; sourceTree = "<group>"; };
@@ -12936,6 +12942,34 @@
 				2D8F0EC72CEDFD5500A22074 /* DAppBrowserTabView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		2D8F0ECF2CEFC79100A22074 /* DAppBrowserTabManager */ = {
+			isa = PBXGroup;
+			children = (
+				2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */,
+				2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */,
+				2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */,
+			);
+			path = DAppBrowserTabManager;
+			sourceTree = "<group>";
+		};
+		2D8F0ED02CEFC7DA00A22074 /* Tabs */ = {
+			isa = PBXGroup;
+			children = (
+				2D8F0ED32CEFC80400A22074 /* WebViewPool */,
+				2D8F0ECF2CEFC79100A22074 /* DAppBrowserTabManager */,
+			);
+			path = Tabs;
+			sourceTree = "<group>";
+		};
+		2D8F0ED32CEFC80400A22074 /* WebViewPool */ = {
+			isa = PBXGroup;
+			children = (
+				2D8F0EC42CEDF53C00A22074 /* WebViewPool.swift */,
+				2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */,
+			);
+			path = WebViewPool;
 			sourceTree = "<group>";
 		};
 		2D8FF9D12C9AA56A00089F53 /* Presenter */ = {
@@ -22280,6 +22314,7 @@
 		A7D3F0165AEEF4940B376CA5 /* DAppBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				2D8F0ED02CEFC7DA00A22074 /* Tabs */,
 				F7C71F9060883D87B85669DA /* DAppBrowserTabList */,
 				88DA0CCD295F342D0009F70F /* Extensions */,
 				849976B627B24BA200B14A6C /* Transports */,
@@ -22295,8 +22330,6 @@
 				677CE34BFAB45122C57095F6 /* DAppBrowserViewFactory.swift */,
 				8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */,
 				840D929E278D8D2E0007B979 /* DAppBrowserInteractorError.swift */,
-				2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */,
-				2D8F0EC42CEDF53C00A22074 /* WebViewPool.swift */,
 			);
 			path = DAppBrowser;
 			sourceTree = "<group>";
@@ -25955,6 +25988,7 @@
 				84E83AA2286328660000B418 /* XTokensTransfer.swift in Sources */,
 				84CEAAEF26D6DF160021B881 /* SingleToMultiassetMigrationPolicy.swift in Sources */,
 				842BDB23278C229D00AB4B5A /* DAppBrowserStateDataSource.swift in Sources */,
+				2D8F0ECE2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift in Sources */,
 				AE3983A0272BFE5600BC8A85 /* ImportChainAccount+AccountImportInteractor.swift in Sources */,
 				2DA85A792C8071A500591900 /* ReferendumsPresenter+ReferendumSections.swift in Sources */,
 				779107662AB85D39000A4B17 /* FilterBlurButton.swift in Sources */,
@@ -27968,6 +28002,7 @@
 				8027EA456C0C13F6DA73D540 /* MoonbeamTermsPresenter.swift in Sources */,
 				845B08082918C8DA005785D3 /* RemoteStorageSizeRequest.swift in Sources */,
 				8452585527ABF270004F9082 /* AssetListEmptyCell.swift in Sources */,
+				2D8F0ECC2CEFC76300A22074 /* DAppBrowserTabManagerError.swift in Sources */,
 				D72773CE9AF638387DA9BA77 /* MoonbeamTermsInteractor.swift in Sources */,
 				888B8E95291D274B00AA78E9 /* MercuryoProvider.swift in Sources */,
 				2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */,
@@ -29452,6 +29487,7 @@
 				3600267F7689926C259A7E30 /* SwipeGovVotingConfirmViewFactory.swift in Sources */,
 				C39621E998D1DE526DF3C20A /* AssetOperationNetworkListProtocols.swift in Sources */,
 				B9F58B1693A033A54F556845 /* AssetOperationNetworkListWireframe.swift in Sources */,
+				2D8F0ED22CEFC7FF00A22074 /* WebViewPoolProtocol.swift in Sources */,
 				1B1A6061327C143BA38AD745 /* AssetOperationNetworkListPresenter.swift in Sources */,
 				0A51635F9E694871C8AF83F0 /* AssetOperationNetworkListInteractor.swift in Sources */,
 				8B53466F5239B852F20F0C4E /* AssetOperationNetworkListViewController.swift in Sources */,

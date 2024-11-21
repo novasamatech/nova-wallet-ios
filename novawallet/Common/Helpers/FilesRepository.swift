@@ -8,6 +8,7 @@ protocol FileRepositoryProtocol {
     func writeOperation(dataClosure: @escaping () throws -> Data, at path: String) -> BaseOperation<Void>
     func copyOperation(from fromPath: String, to toPath: String) -> BaseOperation<Void>
     func removeOperation(at path: String) -> BaseOperation<Void>
+    func removeOperation(at paths: [String]) -> BaseOperation<Void>
 }
 
 enum FileExistence {
@@ -72,6 +73,16 @@ final class FileRepository: FileRepositoryProtocol {
         ClosureOperation {
             if FileManager.default.fileExists(atPath: path) {
                 try FileManager.default.removeItem(atPath: path)
+            }
+        }
+    }
+
+    func removeOperation(at paths: [String]) -> BaseOperation<Void> {
+        ClosureOperation {
+            try paths.forEach { path in
+                if FileManager.default.fileExists(atPath: path) {
+                    try FileManager.default.removeItem(atPath: path)
+                }
             }
         }
     }

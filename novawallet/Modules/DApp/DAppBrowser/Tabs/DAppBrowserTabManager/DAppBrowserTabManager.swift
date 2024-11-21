@@ -1,33 +1,6 @@
 import Foundation
 import Operation_iOS
 
-protocol DAppBrowserTabsObserver: AnyObject {
-    func didReceiveUpdatedTabs(_ tabs: [DAppBrowserTab])
-}
-
-protocol DAppBrowserTabManagerProtocol {
-    func retrieveTab(with id: UUID) -> CompoundOperationWrapper<DAppBrowserTab?>
-    func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]>
-
-    func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab>
-
-    func updateRenderForTab(
-        with id: UUID,
-        render: Data?
-    ) -> CompoundOperationWrapper<DAppBrowserTab>
-
-    func removeTab(with id: UUID)
-
-    func removeAll()
-
-    func addObserver(_ observer: DAppBrowserTabsObserver)
-}
-
-enum DAppBrowserTabManagerError: Error {
-    case renderCacheFailed
-    case tabNotPersisted
-}
-
 final class DAppBrowserTabManager {
     private let cacheBasePath: String
     private let fileRepository: FileRepositoryProtocol
@@ -218,6 +191,43 @@ private extension DAppBrowserTabManager {
         )
     }
 
+    func removeTabWrapper(for tabId: UUID) -> CompoundOperationWrapper<Void> {
+        let deleteOperation = repository.saveOperation(
+            { [] },
+            { [tabId.uuidString] }
+        )
+
+        let wrapper: CompoundOperationWrapper<Void>
+
+        if let renderPath = createLocalPath(tabId.uuidString) {
+            let renderRemoveOperation = fileRepository.removeOperation(at: renderPath)
+            renderRemoveOperation.addDependency(deleteOperation)
+
+            wrapper = CompoundOperationWrapper(
+                targetOperation: renderRemoveOperation,
+                dependencies: [deleteOperation]
+            )
+        } else {
+            wrapper = CompoundOperationWrapper(targetOperation: deleteOperation)
+        }
+
+        return wrapper
+    }
+
+    func removeAllWrapper() -> CompoundOperationWrapper<Void> {
+        let renderPaths = tabs.compactMap { createLocalPath($0.value.uuid.uuidString) }
+
+        let rendersClearOperations = fileRepository.removeOperation(at: renderPaths)
+        let deleteOperation = repository.deleteAllOperation()
+
+        rendersClearOperations.addDependency(deleteOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: rendersClearOperations,
+            dependencies: [deleteOperation]
+        )
+    }
+
     func createLocalPath(_ fileName: String) -> String? {
         let localFilePath = (cacheBasePath as NSString).appendingPathComponent(fileName)
 
@@ -291,19 +301,10 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func removeTab(with id: UUID) {
-        guard let model = tabs[id]?.persistenceModel else {
-            return
-        }
-
-        tabs[id] = nil
-
-        let deleteOperation = repository.saveOperation(
-            { [] },
-            { [model.identifier] }
-        )
+        let wrapper = removeTabWrapper(for: id)
 
         execute(
-            operation: deleteOperation,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main,
             callbackClosure: { [weak self] _ in
@@ -343,10 +344,10 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func removeAll() {
-        let deleteOperation = repository.deleteAllOperation()
+        let wrapper = removeAllWrapper()
 
         execute(
-            operation: deleteOperation,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in

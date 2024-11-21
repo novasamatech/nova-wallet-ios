@@ -1,17 +1,8 @@
 import Foundation
 import WebKit
 
-protocol WebViewPoolProtocol {
-    func getWebView(for id: UUID) -> WKWebView?
-    func setupWebView(for id: UUID) -> WKWebView
-}
-
 class WebViewPool {
     private var webViewDict: [UUID: WKWebView] = [:]
-}
-
-extension WebViewPool {
-    static let shared = WebViewPool()
 }
 
 // MARK: WebViewPoolProtocol
@@ -37,4 +28,10 @@ extension WebViewPool: WebViewPoolProtocol {
 
         return view
     }
+}
+
+// MARK: Singleton
+
+extension WebViewPool {
+    static let shared = WebViewPool()
 }
