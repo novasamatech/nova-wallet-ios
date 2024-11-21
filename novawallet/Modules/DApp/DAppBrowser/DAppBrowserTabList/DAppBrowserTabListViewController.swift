@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserTabListViewLayout
@@ -7,9 +8,13 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
 
     var viewModels: [DAppBrowserTab] = []
 
-    init(presenter: DAppBrowserTabListPresenterProtocol) {
+    init(
+        presenter: DAppBrowserTabListPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -26,6 +31,7 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
 
         presenter.setup()
         setupCollection()
+        setupLocalization()
     }
 }
 
@@ -34,6 +40,17 @@ private extension DAppBrowserTabListViewController {
         rootView.collectionView.registerCellClass(DAppBrowserTabCollectionCell.self)
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
+    }
+
+    func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+
+        rootView.doneButtonItem.title = R.string.localizable.commonDone(
+            preferredLanguages: languages
+        )
+        rootView.closeAllButtonItem.title = R.string.localizable.commonCloseAll(
+            preferredLanguages: languages
+        )
     }
 }
 
@@ -114,5 +131,15 @@ private extension DAppBrowserTabListViewController {
         ) / 2
 
         static let itemHeight: CGFloat = itemWidth * 1.55
+    }
+}
+
+// MARK: Localizable
+
+extension DAppBrowserTabListViewController: Localizable {
+    func applyLocalization() {
+        guard isViewLoaded else { return }
+
+        setupLocalization()
     }
 }

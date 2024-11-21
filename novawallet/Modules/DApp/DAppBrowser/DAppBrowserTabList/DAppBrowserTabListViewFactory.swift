@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct DAppBrowserTabListViewFactory {
     static func createView(dAppList: [DApp]) -> DAppBrowserTabListViewProtocol? {
@@ -16,7 +17,10 @@ struct DAppBrowserTabListViewFactory {
             dAppList: dAppList
         )
 
-        let view = DAppBrowserTabListViewController(presenter: presenter)
+        let view = DAppBrowserTabListViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
