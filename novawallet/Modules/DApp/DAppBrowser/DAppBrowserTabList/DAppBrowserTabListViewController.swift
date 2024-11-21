@@ -86,7 +86,7 @@ private extension DAppBrowserTabListViewController {
 extension DAppBrowserTabListViewController: DAppBrowserTabListViewProtocol {
     func didReceive(_ viewModels: [DAppBrowserTab]) {
         self.viewModels = viewModels
-        rootView.collectionView.reloadData()
+        rootView.collectionView.reloadSections([0])
     }
 }
 

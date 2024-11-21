@@ -35,6 +35,10 @@ extension DAppBrowserTabListInteractor: DAppBrowserTabListInteractorInputProtoco
             }
         }
     }
+
+    func closeAllTabs() {
+        tabManager.removeAll()
+    }
 }
 
 // MARK: DAppBrowserTabsObserver

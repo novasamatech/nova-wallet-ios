@@ -49,7 +49,9 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
         )
     }
 
-    func closeAllTabs() {}
+    func closeAllTabs() {
+        interactor.closeAllTabs()
+    }
 
     func close() {
         wireframe.close(from: view)

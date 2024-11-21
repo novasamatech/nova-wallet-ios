@@ -14,6 +14,7 @@ protocol DAppBrowserTabListPresenterProtocol: AnyObject {
 
 protocol DAppBrowserTabListInteractorInputProtocol: AnyObject {
     func setup()
+    func closeAllTabs()
 }
 
 protocol DAppBrowserTabListInteractorOutputProtocol: AnyObject {

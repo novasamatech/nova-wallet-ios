@@ -18,6 +18,8 @@ protocol DAppBrowserTabManagerProtocol {
 
     func removeTab(with id: UUID)
 
+    func removeAll()
+
     func addObserver(_ observer: DAppBrowserTabsObserver)
 }
 
@@ -27,6 +29,8 @@ final class DAppBrowserTabManager {
     private let repository: CoreDataRepository<DAppBrowserTab.PersistenceModel, CDDAppBrowserTab>
     private let operationQueue: OperationQueue
     private let observerQueue: DispatchQueue
+
+    private let logger: LoggerProtocol
 
     private var dAppTransportStates: [UUID: [DAppTransportState]] = [:]
     private var tabs: [UUID: DAppBrowserTab] = [:]
@@ -38,13 +42,15 @@ final class DAppBrowserTabManager {
         fileRepository: FileRepositoryProtocol,
         repository: CoreDataRepository<DAppBrowserTab.PersistenceModel, CDDAppBrowserTab>,
         observerQueue: DispatchQueue = .main,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.cacheBasePath = cacheBasePath
         self.repository = repository
         self.fileRepository = fileRepository
         self.operationQueue = operationQueue
         self.observerQueue = observerQueue
+        self.logger = logger
     }
 }
 
@@ -53,6 +59,11 @@ final class DAppBrowserTabManager {
 private extension DAppBrowserTabManager {
     func clearObservers() {
         observers = observers.filter { $0.target != nil }
+    }
+
+    func clearInMemory() {
+        dAppTransportStates = [:]
+        tabs = [:]
     }
 
     func notifyObservers() {
@@ -322,6 +333,24 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         return updateWrapper.insertingHead(operations: tabFetchWrapper.allOperations)
     }
 
+    func removeAll() {
+        let deleteOperation = repository.deleteAllOperation()
+
+        execute(
+            operation: deleteOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.clearInMemory()
+                self?.notifyObservers()
+            case .failure:
+                self?.logger.warning("\(String(describing: self)) Failed on tabs deletion operation")
+            }
+        }
+    }
+
     func addObserver(_ observer: DAppBrowserTabsObserver) {
         clearObservers()
 
@@ -348,7 +377,8 @@ extension DAppBrowserTabManager {
             cacheBasePath: ApplicationConfig.shared.fileCachePath,
             fileRepository: FileRepository(),
             repository: coreDataRepository,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
     }()
 }
