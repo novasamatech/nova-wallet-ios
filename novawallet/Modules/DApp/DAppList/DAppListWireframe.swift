@@ -20,12 +20,17 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult) {
+    func showBrowser(
+        from view: DAppListViewProtocol?,
+        for result: DAppSearchResult,
+        dAppList: [DApp]
+    ) {
         guard
-            let tabsView = DAppBrowserTabListViewFactory.createView(),
+            let tab = DAppBrowserTab(from: result),
+            let tabsView = DAppBrowserTabListViewFactory.createView(dAppList: dAppList),
             let browserView = DAppBrowserViewFactory.createView(
-                with: result,
-                selectedTab: DAppBrowserTab(from: result)!
+                with: result.dApp,
+                selectedTab: tab
             )
         else {
             return

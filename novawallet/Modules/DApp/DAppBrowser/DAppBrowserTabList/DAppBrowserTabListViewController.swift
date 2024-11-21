@@ -69,6 +69,15 @@ extension DAppBrowserTabListViewController: UICollectionViewDataSource {
 extension DAppBrowserTabListViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(
         _: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        let tab = viewModels[indexPath.item]
+
+        presenter.selectTab(with: tab.uuid)
+    }
+
+    func collectionView(
+        _: UICollectionView,
         layout _: UICollectionViewLayout,
         insetForSectionAt _: Int
     ) -> UIEdgeInsets {

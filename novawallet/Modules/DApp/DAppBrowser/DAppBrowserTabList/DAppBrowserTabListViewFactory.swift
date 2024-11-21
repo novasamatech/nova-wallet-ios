@@ -1,7 +1,7 @@
 import Foundation
 
 struct DAppBrowserTabListViewFactory {
-    static func createView() -> DAppBrowserTabListViewProtocol? {
+    static func createView(dAppList: [DApp]) -> DAppBrowserTabListViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let interactor = DAppBrowserTabListInteractor(
@@ -12,7 +12,8 @@ struct DAppBrowserTabListViewFactory {
 
         let presenter = DAppBrowserTabListPresenter(
             interactor: interactor,
-            wireframe: wireframe
+            wireframe: wireframe,
+            dAppList: dAppList
         )
 
         let view = DAppBrowserTabListViewController(presenter: presenter)

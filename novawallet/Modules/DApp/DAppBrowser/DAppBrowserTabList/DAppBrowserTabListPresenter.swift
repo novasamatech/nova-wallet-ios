@@ -5,20 +5,34 @@ final class DAppBrowserTabListPresenter {
     let wireframe: DAppBrowserTabListWireframeProtocol
     let interactor: DAppBrowserTabListInteractorInputProtocol
 
+    private let dAppList: [DApp]
+
     private var tabs: [DAppBrowserTab] = []
 
     init(
         interactor: DAppBrowserTabListInteractorInputProtocol,
-        wireframe: DAppBrowserTabListWireframeProtocol
+        wireframe: DAppBrowserTabListWireframeProtocol,
+        dAppList: [DApp]
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.dAppList = dAppList
     }
 }
 
 extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
     func selectTab(with id: UUID) {
-        print(id)
+        guard let selectedTab = tabs.first(where: { $0.uuid == id }) else {
+            return
+        }
+
+        let dApp = dAppList.first { $0.url == selectedTab.url }
+
+        wireframe.showTab(
+            from: view,
+            selectedTab,
+            dApp: dApp
+        )
     }
 
     func setup() {

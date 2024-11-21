@@ -17,4 +17,10 @@ protocol DAppBrowserTabListInteractorOutputProtocol: AnyObject {
     func didReceiveTabs(_ models: [DAppBrowserTab])
 }
 
-protocol DAppBrowserTabListWireframeProtocol: AnyObject {}
+protocol DAppBrowserTabListWireframeProtocol: AnyObject {
+    func showTab(
+        from view: ControllerBackedProtocol?,
+        _ tab: DAppBrowserTab,
+        dApp: DApp?
+    )
+}

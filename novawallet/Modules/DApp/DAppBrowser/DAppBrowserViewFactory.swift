@@ -4,7 +4,7 @@ import Operation_iOS
 
 struct DAppBrowserViewFactory {
     static func createView(
-        with userQuery: DAppSearchResult,
+        with dApp: DApp? = nil,
         selectedTab: DAppBrowserTab
     ) -> DAppBrowserViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
@@ -36,7 +36,7 @@ struct DAppBrowserViewFactory {
 
         let interactor = DAppBrowserInteractor(
             transports: transports,
-            userQuery: userQuery,
+            dApp: dApp,
             selectedTab: selectedTab,
             wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,

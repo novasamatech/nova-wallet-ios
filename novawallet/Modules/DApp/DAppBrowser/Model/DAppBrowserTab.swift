@@ -38,27 +38,38 @@ struct DAppBrowserTab {
         self.icon = icon
     }
 
-    init?(from userInput: DAppSearchResult) {
+    init?(from searchResult: DAppSearchResult) {
+        switch searchResult {
+        case let .query(query):
+            self.init(from: query)
+        case let .dApp(dApp):
+            self.init(from: dApp)
+        }
+    }
+
+    init?(from query: String) {
         uuid = UUID()
         lastModified = Date()
         opaqueState = nil
         stateRender = nil
+        name = nil
+        icon = nil
 
-        switch userInput {
-        case let .query(query):
-            name = nil
-            icon = nil
-
-            guard let url = DAppBrowserTab.resolveUrl(for: query) else {
-                return nil
-            }
-
-            self.url = url
-        case let .dApp(dApp):
-            name = dApp.name
-            url = dApp.url
-            icon = dApp.icon
+        guard let url = DAppBrowserTab.resolveUrl(for: query) else {
+            return nil
         }
+
+        self.url = url
+    }
+
+    init?(from dApp: DApp) {
+        uuid = UUID()
+        lastModified = Date()
+        opaqueState = nil
+        stateRender = nil
+        name = dApp.name
+        url = dApp.url
+        icon = dApp.icon
     }
 
     func updating(

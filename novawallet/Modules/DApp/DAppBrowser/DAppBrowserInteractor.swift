@@ -10,7 +10,7 @@ final class DAppBrowserInteractor {
 
     weak var presenter: DAppBrowserInteractorOutputProtocol?
 
-    private(set) var userQuery: DAppSearchResult
+    private(set) var dApp: DApp?
     private(set) var currentTab: DAppBrowserTab
 
     let dataSource: DAppBrowserStateDataSource
@@ -31,7 +31,7 @@ final class DAppBrowserInteractor {
 
     init(
         transports: [DAppBrowserTransportProtocol],
-        userQuery: DAppSearchResult,
+        dApp: DApp?,
         selectedTab: DAppBrowserTab,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
@@ -46,7 +46,7 @@ final class DAppBrowserInteractor {
         logger: LoggerProtocol? = nil
     ) {
         self.transports = transports
-        self.userQuery = userQuery
+        self.dApp = dApp
         currentTab = selectedTab
         self.operationQueue = operationQueue
         dataSource = DAppBrowserStateDataSource(
@@ -54,7 +54,7 @@ final class DAppBrowserInteractor {
             chainRegistry: chainRegistry,
             dAppSettingsRepository: dAppSettingsRepository,
             operationQueue: operationQueue,
-            dApp: userQuery.dApp
+            dApp: dApp
         )
         self.logger = logger
         self.sequentialPhishingVerifier = sequentialPhishingVerifier
@@ -137,7 +137,7 @@ final class DAppBrowserInteractor {
 
         let globalSettingsOperation = createGlobalSettingsOperation(for: currentTab.url.host)
 
-        let desktopOnly = userQuery.dApp?.desktopOnly ?? false
+        let desktopOnly = dApp?.desktopOnly ?? false
 
         let mapOperation = ClosureOperation<DAppBrowserModel> { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
@@ -390,10 +390,9 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func process(newQuery: DAppSearchResult) {
         sequentialPhishingVerifier.cancelAll()
 
-        userQuery = newQuery
-
         switch newQuery {
         case let .query(query):
+            dApp = nil
             proceedWithTabUpdate(with: query)
         case let .dApp(dApp):
             proceedWithNewTab(opening: dApp)
