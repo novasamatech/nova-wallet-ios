@@ -6,7 +6,7 @@ struct DAppBrowserTab {
     let name: String?
     let url: URL
     let lastModified: Date
-    let opaqueState: [Any]?
+    let transportStates: [DAppTransportState]?
     let stateRender: Data?
     let icon: URL?
 
@@ -25,7 +25,7 @@ struct DAppBrowserTab {
         name: String?,
         url: URL,
         lastModified: Date,
-        opaqueState: [Any]?,
+        transportStates: [DAppTransportState]?,
         stateRender: Data?,
         icon: URL?
     ) {
@@ -33,7 +33,7 @@ struct DAppBrowserTab {
         self.name = name
         self.url = url
         self.lastModified = lastModified
-        self.opaqueState = opaqueState
+        self.transportStates = transportStates
         self.stateRender = stateRender
         self.icon = icon
     }
@@ -50,7 +50,7 @@ struct DAppBrowserTab {
     init?(from query: String) {
         uuid = UUID()
         lastModified = Date()
-        opaqueState = nil
+        transportStates = nil
         stateRender = nil
         name = nil
         icon = nil
@@ -65,7 +65,7 @@ struct DAppBrowserTab {
     init?(from dApp: DApp) {
         uuid = UUID()
         lastModified = Date()
-        opaqueState = nil
+        transportStates = nil
         stateRender = nil
         name = dApp.name
         url = dApp.url
@@ -73,7 +73,7 @@ struct DAppBrowserTab {
     }
 
     func updating(
-        state: [Any]? = nil,
+        transportStates: [DAppTransportState]? = nil,
         name: String? = nil,
         url: URL? = nil,
         lastModified: Date? = nil,
@@ -85,7 +85,7 @@ struct DAppBrowserTab {
             name: name ?? self.name,
             url: url ?? self.url,
             lastModified: lastModified ?? self.lastModified,
-            opaqueState: state ?? opaqueState,
+            transportStates: transportStates ?? self.transportStates,
             stateRender: stateRender ?? self.stateRender,
             icon: icon ?? self.icon
         )

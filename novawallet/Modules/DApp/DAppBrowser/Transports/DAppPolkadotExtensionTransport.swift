@@ -5,6 +5,20 @@ final class DAppPolkadotExtensionTransport {
     weak var delegate: DAppBrowserTransportDelegate?
     private(set) var dataSource: DAppBrowserStateDataSource?
     private(set) var state: DAppBrowserStateProtocol?
+
+    private let logger: LoggerProtocol
+
+    init(
+        delegate: DAppBrowserTransportDelegate? = nil,
+        dataSource: DAppBrowserStateDataSource? = nil,
+        state: DAppBrowserStateProtocol? = nil,
+        logger: LoggerProtocol = Logger.shared
+    ) {
+        self.delegate = delegate
+        self.dataSource = dataSource
+        self.state = state
+        self.logger = logger
+    }
 }
 
 extension DAppPolkadotExtensionTransport: DAppBrowserStateMachineProtocol {
@@ -171,15 +185,24 @@ extension DAppPolkadotExtensionTransport: DAppBrowserTransportProtocol {
         dataSource = nil
     }
 
-    func makeOpaqueState() -> Any? {
-        state
+    func makeOpaqueState() -> DAppTransportState? {
+        let transportState = PolkadotExtensionTransportState(
+            name: name,
+            dataSource: dataSource,
+            state: state
+        )
+
+        return .polkadotExtension(transportState)
     }
 
-    func restoreState(from opaqueState: Any) {
-        guard let state = opaqueState as? DAppBrowserStateProtocol else {
+    func restoreState(from state: DAppTransportState) {
+        guard case let .polkadotExtension(polkadotTransportState) = state else {
             return
         }
 
-        self.state = state
+        self.state = polkadotTransportState.state
+        dataSource = polkadotTransportState.dataSource
+
+        logger.info("\(String(describing: self)) did restore \(polkadotTransportState.name) transport state")
     }
 }

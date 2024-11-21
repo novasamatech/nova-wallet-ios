@@ -2,6 +2,32 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
+struct MetamaskTransportState {
+    let name: String
+    let dataSource: DAppBrowserStateDataSource?
+    let state: DAppMetamaskStateProtocol?
+}
+
+struct PolkadotExtensionTransportState {
+    let name: String
+    let dataSource: DAppBrowserStateDataSource?
+    let state: DAppBrowserStateProtocol?
+}
+
+enum DAppTransportState {
+    case metamask(MetamaskTransportState)
+    case polkadotExtension(PolkadotExtensionTransportState)
+
+    var dataSource: DAppBrowserStateDataSource? {
+        switch self {
+        case let .metamask(metamaskTransportState):
+            metamaskTransportState.dataSource
+        case let .polkadotExtension(polkadotExtensionTransportState):
+            polkadotExtensionTransportState.dataSource
+        }
+    }
+}
+
 final class DAppMetamaskTransport {
     static let subscriptionName = "_metamask_"
 
@@ -9,10 +35,16 @@ final class DAppMetamaskTransport {
     private(set) var dataSource: DAppBrowserStateDataSource?
     private(set) var state: DAppMetamaskStateProtocol?
 
+    private let logger: LoggerProtocol
+
     let isDebug: Bool
 
-    init(isDebug: Bool) {
+    init(
+        isDebug: Bool,
+        logger: LoggerProtocol = Logger.shared
+    ) {
         self.isDebug = isDebug
+        self.logger = logger
     }
 
     private func createConfirmationRequest(
@@ -280,15 +312,24 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
         dataSource = nil
     }
 
-    func makeOpaqueState() -> Any? {
-        state
+    func makeOpaqueState() -> DAppTransportState? {
+        let transportState = MetamaskTransportState(
+            name: name,
+            dataSource: dataSource,
+            state: state
+        )
+
+        return .metamask(transportState)
     }
 
-    func restoreState(from opaqueState: Any) {
-        guard let state = opaqueState as? DAppMetamaskStateProtocol else {
+    func restoreState(from state: DAppTransportState) {
+        guard case let .metamask(metamaskTransportState) = state else {
             return
         }
 
-        self.state = state
+        self.state = metamaskTransportState.state
+        dataSource = metamaskTransportState.dataSource
+
+        logger.info("\(String(describing: self)) did restore \(metamaskTransportState.name) transport state")
     }
 }

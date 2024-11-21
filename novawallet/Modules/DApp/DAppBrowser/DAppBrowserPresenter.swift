@@ -139,6 +139,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     }
 
     func showTabs() {
+        interactor.saveTransportState()
         wireframe.showTabs(from: view)
     }
 }

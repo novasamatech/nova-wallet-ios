@@ -9,10 +9,8 @@ protocol DAppBrowserTabManagerProtocol {
     func retrieveTab(with id: UUID) -> CompoundOperationWrapper<DAppBrowserTab?>
     func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]>
 
-    @discardableResult
     func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab>
 
-    @discardableResult
     func updateRenderForTab(
         with id: UUID,
         render: Data?
@@ -30,7 +28,7 @@ final class DAppBrowserTabManager {
     private let operationQueue: OperationQueue
     private let observerQueue: DispatchQueue
 
-    private var dAppTransportStates: [UUID: [Any]] = [:]
+    private var dAppTransportStates: [UUID: [DAppTransportState]] = [:]
     private var tabs: [UUID: DAppBrowserTab] = [:]
 
     private var observers: [WeakWrapper] = []
@@ -97,7 +95,7 @@ private extension DAppBrowserTabManager {
             _ = try saveRenderOperation.extractNoCancellableResultData()
 
             self?.tabs[tab.uuid] = tab
-            self?.dAppTransportStates[tab.uuid] = tab.opaqueState
+            self?.dAppTransportStates[tab.uuid] = tab.transportStates
 
             self?.notifyObservers()
 
@@ -145,7 +143,7 @@ private extension DAppBrowserTabManager {
                     name: fetchResult.name,
                     url: fetchResult.url,
                     lastModified: fetchResult.lastModified,
-                    opaqueState: self?.dAppTransportStates[fetchResult.uuid],
+                    transportStates: self?.dAppTransportStates[fetchResult.uuid],
                     stateRender: render,
                     icon: iconURL
                 )
@@ -252,7 +250,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
                     name: persistenceModel.name,
                     url: persistenceModel.url,
                     lastModified: persistenceModel.lastModified,
-                    opaqueState: self?.dAppTransportStates[persistenceModel.uuid],
+                    transportStates: self?.dAppTransportStates[persistenceModel.uuid],
                     stateRender: renders[persistenceModel.uuid],
                     icon: iconURL
                 )

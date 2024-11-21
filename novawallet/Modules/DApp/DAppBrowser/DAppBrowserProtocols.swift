@@ -58,6 +58,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func removeFromFavorites(record: DAppFavorite)
     func reload()
     func save(settings: DAppGlobalSettings)
+    func saveTransportState()
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
