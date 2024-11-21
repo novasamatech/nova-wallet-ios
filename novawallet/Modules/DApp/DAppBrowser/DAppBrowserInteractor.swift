@@ -310,27 +310,6 @@ final class DAppBrowserInteractor {
             }
         }
     }
-    
-    private func createStateRenderUpdateWrapper(for tabId: UUID, render: Data) -> CompoundOperationWrapper<DAppBrowserTab> {
-        let tabFetchWrapper = tabManager.retrieveTab(with: tabId)
-        
-        let updateWrapper: CompoundOperationWrapper<DAppBrowserTab>
-        updateWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard
-                let self,
-                let tab = try tabFetchWrapper.targetOperation.extractNoCancellableResultData()
-            else {
-                return .createWithError(NSError())
-            }
-            
-            return tabManager.updateTab(tab.updating(stateRender: render))
-        }
-        updateWrapper.addDependency(wrapper: tabFetchWrapper)
-
-        return updateWrapper.insertingHead(operations: tabFetchWrapper.allOperations)
-    }
 }
 
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
@@ -391,16 +370,16 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     ) {
         transports.first(where: { $0.name == name })?.processConfirmation(response: response)
     }
-    
+
     func process(
         stateRender: Data,
         tabId: UUID
     ) {
-        let renderUpdateWrapper = createStateRenderUpdateWrapper(
-            for: tabId,
+        let renderUpdateWrapper = tabManager.updateRenderForTab(
+            with: tabId,
             render: stateRender
         )
-        
+
         execute(
             wrapper: renderUpdateWrapper,
             inOperationQueue: operationQueue,

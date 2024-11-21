@@ -16,20 +16,20 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
-    
+
     func process(page: DAppBrowserPage)
-    
+
     func process(
         message: Any,
         host: String,
         transport name: String
     )
-    
+
     func process(
         stateRender: Data,
         tabId: UUID
     )
-    
+
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
     func close()
@@ -38,20 +38,20 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func setup()
-    
+
     func process(host: String)
-    
+
     func process(
         message: Any,
         host: String,
         transport name: String
     )
-    
+
     func process(
         stateRender: Data,
         tabId: UUID
     )
-    
+
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func process(newQuery: DAppSearchResult)
     func processAuth(response: DAppAuthResponse, forTransport name: String)

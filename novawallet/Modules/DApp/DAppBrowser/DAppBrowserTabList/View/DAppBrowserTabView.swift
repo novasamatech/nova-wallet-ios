@@ -8,6 +8,9 @@ class DAppBrowserTabView: UIView {
         view.borderView.cornerRadius = Constants.tabCornerRadius
         view.borderView.strokeWidth = Constants.strokeWidth
         view.borderView.strokeColor = R.color.colorContainerBorder()!
+        view.contentMode = .scaleAspectFill
+        view.layer.cornerRadius = Constants.tabCornerRadius
+        view.clipsToBounds = true
     }
 
     let closeButton: RoundedButton = .create { view in

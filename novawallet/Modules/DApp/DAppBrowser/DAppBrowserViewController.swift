@@ -92,6 +92,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        makeStateRender()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -109,13 +115,17 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.closeBarItem.target = self
         rootView.closeBarItem.action = #selector(actionClose)
 
+        configureWebView()
+        configureHandlers()
+    }
+
+    private func configureWebView() {
         rootView.webView.uiDelegate = self
         rootView.webView.navigationDelegate = self
         rootView.webView.scrollView.delegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
         configureObservers()
-        configureHandlers()
     }
 
     private func configureObservers() {
@@ -160,13 +170,19 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
             self?.didChangeTitle(title)
         }
     }
-    
+
     private func makeStateRender() {
-        guard let render = rootView.webView.createStateRenderImage().pngData() else {
+        guard
+            let viewModel,
+            let render = rootView.webView.createStateRenderImage().pngData()
+        else {
             return
         }
-        
-        presenter.process(stateRender: render)
+
+        presenter.process(
+            stateRender: render,
+            tabId: viewModel.selectedTab.uuid
+        )
     }
 
     private func configureHandlers() {
@@ -361,6 +377,7 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
             makeStateRender()
             let webView = webViewPool.setupWebView(for: viewModel.selectedTab.uuid)
             rootView.setWebView(webView)
+            configureWebView()
         }
 
         self.viewModel = viewModel
@@ -465,10 +482,10 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
             decisionHandler(.allow)
         }
     }
-    
+
     func webView(
-        _ webView: WKWebView,
-        didFinish navigation: WKNavigation!
+        _: WKWebView,
+        didFinish _: WKNavigation!
     ) {
         makeStateRender()
     }

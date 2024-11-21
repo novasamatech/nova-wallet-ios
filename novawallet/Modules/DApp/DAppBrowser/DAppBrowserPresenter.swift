@@ -82,7 +82,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
             transport: name
         )
     }
-    
+
     func process(
         stateRender: Data,
         tabId: UUID

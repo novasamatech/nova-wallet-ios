@@ -15,8 +15,11 @@ final class DAppBrowserTabListInteractor {
     }
 }
 
+// MARK: DAppBrowserTabListInteractorInputProtocol
+
 extension DAppBrowserTabListInteractor: DAppBrowserTabListInteractorInputProtocol {
     func setup() {
+        tabManager.addObserver(self)
         let fetchAllWrapper = tabManager.getAllTabs()
 
         execute(
@@ -31,5 +34,13 @@ extension DAppBrowserTabListInteractor: DAppBrowserTabListInteractorInputProtoco
                 print(error)
             }
         }
+    }
+}
+
+// MARK: DAppBrowserTabsObserver
+
+extension DAppBrowserTabListInteractor: DAppBrowserTabsObserver {
+    func didReceiveUpdatedTabs(_ tabs: [DAppBrowserTab]) {
+        presenter?.didReceiveTabs(tabs)
     }
 }
