@@ -1,7 +1,17 @@
 import UIKit
 import SoraUI
 
-typealias DAppBrowserTabCollectionCell = CollectionViewContainerCell<DAppBrowserTabView>
+class DAppBrowserTabCollectionCell: CollectionViewContainerCell<DAppBrowserTabView> {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        view.viewModel?.icon?.cancel(on: iconName.imageView)
+        view.iconName.imageView.image = nil
+        view.iconName.detailsLabel.text = nil
+        view.imageView.image = nil
+        view.viewModel = nil
+    }
+}
 
 class DAppBrowserTabView: UIView {
     let imageView: BorderedImageView = .create { view in
