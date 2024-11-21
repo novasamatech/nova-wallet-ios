@@ -20,6 +20,7 @@ final class DAppBrowserTabListInteractor {
 extension DAppBrowserTabListInteractor: DAppBrowserTabListInteractorInputProtocol {
     func setup() {
         tabManager.addObserver(self)
+
         let fetchAllWrapper = tabManager.getAllTabs()
 
         execute(
@@ -31,7 +32,7 @@ extension DAppBrowserTabListInteractor: DAppBrowserTabListInteractorInputProtoco
             case let .success(tabs):
                 self?.presenter?.didReceiveTabs(tabs)
             case let .failure(error):
-                print(error)
+                self?.presenter?.didReceiveError(error)
             }
         }
     }

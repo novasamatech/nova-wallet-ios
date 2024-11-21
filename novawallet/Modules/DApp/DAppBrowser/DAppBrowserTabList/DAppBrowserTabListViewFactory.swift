@@ -11,15 +11,18 @@ struct DAppBrowserTabListViewFactory {
         )
         let wireframe = DAppBrowserTabListWireframe()
 
+        let localizationManager = LocalizationManager.shared
+
         let presenter = DAppBrowserTabListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            dAppList: dAppList
+            dAppList: dAppList,
+            localizationManager: localizationManager
         )
 
         let view = DAppBrowserTabListViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager
         )
 
         presenter.view = view

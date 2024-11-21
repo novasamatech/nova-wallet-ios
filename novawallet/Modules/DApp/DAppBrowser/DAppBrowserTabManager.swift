@@ -23,6 +23,11 @@ protocol DAppBrowserTabManagerProtocol {
     func addObserver(_ observer: DAppBrowserTabsObserver)
 }
 
+enum DAppBrowserTabManagerError: Error {
+    case renderCacheFailed
+    case tabNotPersisted
+}
+
 final class DAppBrowserTabManager {
     private let cacheBasePath: String
     private let fileRepository: FileRepositoryProtocol
@@ -82,7 +87,7 @@ private extension DAppBrowserTabManager {
 
     func saveWrapper(for tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
         guard let localPath = createLocalPath(tab.uuid.uuidString) else {
-            return .createWithError(NSError())
+            return .createWithError(DAppBrowserTabManagerError.renderCacheFailed)
         }
 
         let persistenceModel = tab.persistenceModel
@@ -131,7 +136,7 @@ private extension DAppBrowserTabManager {
             )
 
             guard let localPath = createLocalPath(tabId.uuidString) else {
-                return .createWithError(NSError())
+                return .createWithError(DAppBrowserTabManagerError.renderCacheFailed)
             }
 
             let fetchRenderOperation = fileRepository.readOperation(at: localPath)
@@ -323,7 +328,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
                 let self,
                 let tab = try tabFetchWrapper.targetOperation.extractNoCancellableResultData()
             else {
-                return .createWithError(NSError())
+                return .createWithError(DAppBrowserTabManagerError.tabNotPersisted)
             }
 
             return saveWrapper(for: tab.updating(stateRender: render))

@@ -1,9 +1,11 @@
 import Foundation
+import SoraFoundation
 
 final class DAppBrowserTabListPresenter {
     weak var view: DAppBrowserTabListViewProtocol?
     let wireframe: DAppBrowserTabListWireframeProtocol
     let interactor: DAppBrowserTabListInteractorInputProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     private let dAppList: [DApp]
 
@@ -12,11 +14,13 @@ final class DAppBrowserTabListPresenter {
     init(
         interactor: DAppBrowserTabListInteractorInputProtocol,
         wireframe: DAppBrowserTabListWireframeProtocol,
-        dAppList: [DApp]
+        dAppList: [DApp],
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.dAppList = dAppList
+        self.localizationManager = localizationManager
     }
 }
 
@@ -63,5 +67,13 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtoco
         tabs = models
 
         view?.didReceive(models)
+    }
+
+    func didReceiveError(_ error: Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: localizationManager.selectedLocale
+        )
     }
 }
