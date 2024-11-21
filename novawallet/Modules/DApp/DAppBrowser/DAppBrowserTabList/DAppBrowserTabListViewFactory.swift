@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct DAppBrowserTabListViewFactory {
-    static func createView(dAppList: [DApp]) -> DAppBrowserTabListViewProtocol? {
+    static func createView() -> DAppBrowserTabListViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let interactor = DAppBrowserTabListInteractor(
@@ -16,7 +16,7 @@ struct DAppBrowserTabListViewFactory {
         let presenter = DAppBrowserTabListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            dAppList: dAppList,
+            viewModelFactory: DAppBrowserTabListViewModelFactory(),
             localizationManager: localizationManager
         )
 

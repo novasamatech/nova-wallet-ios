@@ -47,8 +47,7 @@ protocol DAppListWireframeProtocol: DAppAlertPresentable, ErrorPresentable, WebP
     )
     func showBrowser(
         from view: DAppListViewProtocol?,
-        for result: DAppSearchResult,
-        dAppList: [DApp]
+        for result: DAppSearchResult
     )
     func showSetting(from view: DAppListViewProtocol?)
 }

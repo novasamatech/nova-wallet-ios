@@ -1,7 +1,7 @@
 import Foundation
 
 protocol DAppBrowserTabListViewProtocol: ControllerBackedProtocol {
-    func didReceive(_ viewModels: [DAppBrowserTab])
+    func didReceive(_ viewModels: [DAppBrowserTabViewModel])
 }
 
 protocol DAppBrowserTabListPresenterProtocol: AnyObject {
@@ -14,6 +14,7 @@ protocol DAppBrowserTabListPresenterProtocol: AnyObject {
 
 protocol DAppBrowserTabListInteractorInputProtocol: AnyObject {
     func setup()
+    func closeTab(with id: UUID)
     func closeAllTabs()
 }
 

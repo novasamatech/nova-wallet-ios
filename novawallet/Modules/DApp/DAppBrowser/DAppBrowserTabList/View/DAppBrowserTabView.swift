@@ -24,16 +24,20 @@ class DAppBrowserTabView: UIView {
         view.roundedBackgroundView?.shadowOpacity = 0.0
     }
 
-    let nameLabel: ImageWithTitleView = .create { view in
-        view.spacingBetweenLabelAndIcon = Constants.iconLabelSpacing
-        view.titleFont = .caption1
-        view.titleColor = R.color.colorTextPrimary()
+    let iconName: IconDetailsView = .create { view in
+        view.detailsLabel.apply(style: .caption1Primary)
+        view.detailsLabel.textAlignment = .center
+        view.spacing = Constants.iconNameSpacing
+        view.iconWidth = Constants.iconSize
     }
+
+    var viewModel: DAppBrowserTabViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
+        setupActions()
     }
 
     @available(*, unavailable)
@@ -44,15 +48,17 @@ class DAppBrowserTabView: UIView {
 
 private extension DAppBrowserTabView {
     func setupLayout() {
-        addSubview(nameLabel)
-        nameLabel.snp.makeConstraints { make in
-            make.bottom.leading.trailing.equalToSuperview()
+        addSubview(iconName)
+        iconName.snp.makeConstraints { make in
+            make.bottom.centerX.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview()
+            make.trailing.lessThanOrEqualToSuperview()
         }
 
         addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
-            make.bottom.equalTo(nameLabel.snp.top).offset(Constants.nameLabelTopOffset)
+            make.bottom.equalTo(iconName.snp.top).offset(Constants.iconNameTopOffset)
         }
 
         addSubview(closeButton)
@@ -61,15 +67,63 @@ private extension DAppBrowserTabView {
             make.top.leading.equalToSuperview().inset(Constants.closeButtonEdgeInsets)
         }
     }
+
+    func setupActions() {
+        closeButton.addTarget(
+            self,
+            action: #selector(actionClose),
+            for: .touchUpInside
+        )
+    }
+
+    func updateRender() {
+        viewModel?.stateRender?.loadImage(
+            on: imageView,
+            settings: .init(
+                targetSize: imageView.intrinsicContentSize,
+                cornerRadius: Constants.tabCornerRadius
+            ),
+            animated: false
+        )
+    }
+
+    func updateIcon() {
+        if let iconModel = viewModel?.icon {
+            iconName.iconWidth = Constants.iconSize
+            iconName.spacing = Constants.iconNameSpacing
+
+            iconModel.loadImage(
+                on: iconName.imageView,
+                settings: .init(
+                    targetSize: CGSize(
+                        width: Constants.iconSize,
+                        height: Constants.iconSize
+                    ),
+                    cornerRadius: Constants.tabCornerRadius
+                ),
+                animated: false
+            )
+        } else {
+            iconName.iconWidth = 0
+            iconName.spacing = 0
+        }
+    }
+
+    @objc func actionClose() {
+        guard let viewModel else { return }
+
+        viewModel.onClose(viewModel.uuid)
+    }
 }
 
 extension DAppBrowserTabView {
-    func bind(viewModel: DAppBrowserTab) {
-        if let imageData = viewModel.stateRender {
-            imageView.image = UIImage(data: imageData)
-        }
+    func bind(viewModel: DAppBrowserTabViewModel) {
+        self.viewModel = viewModel
 
-        nameLabel.title = viewModel.name
+        updateRender()
+        updateIcon()
+
+        iconName.detailsLabel.text = viewModel.name
     }
 }
 
@@ -78,8 +132,9 @@ private extension DAppBrowserTabView {
         static let tabCornerRadius: CGFloat = 16.0
         static let closeButtonCornerRadius: CGFloat = closeButtonSize / 2
         static let closeButtonSize: CGFloat = 20.0
-        static let iconLabelSpacing: CGFloat = 4.0
-        static let nameLabelTopOffset: CGFloat = -8
+        static let iconNameSpacing: CGFloat = 4.0
+        static let iconSize: CGFloat = 15
+        static let iconNameTopOffset: CGFloat = -8
         static let closeButtonEdgeInsets: CGFloat = 10.0
         static let strokeWidth: CGFloat = 2.0
         static let closeButtonContentInsets = UIEdgeInsets(

@@ -282,16 +282,14 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
             wireframe.showBrowser(
                 from: view,
-                for: .dApp(model: dApp),
-                dAppList: dAppList.dApps
+                for: .dApp(model: dApp)
             )
 
         case let .key(value):
             if let dapp = favorites?[value] {
                 wireframe.showBrowser(
                     from: view,
-                    for: .query(string: dapp.identifier),
-                    dAppList: dAppList.dApps
+                    for: .query(string: dapp.identifier)
                 )
             }
         }
@@ -324,14 +322,9 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(_ dapp: DApp) {
-        guard case let .success(dAppList) = dAppsResult else {
-            return
-        }
-
         wireframe.showBrowser(
             from: view,
-            for: .dApp(model: dapp),
-            dAppList: dAppList.dApps
+            for: .dApp(model: dapp)
         )
     }
 }
@@ -383,14 +376,9 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        guard case let .success(dAppList) = dAppsResult else {
-            return
-        }
-
         wireframe.showBrowser(
             from: view,
-            for: result,
-            dAppList: dAppList.dApps
+            for: result
         )
     }
 }

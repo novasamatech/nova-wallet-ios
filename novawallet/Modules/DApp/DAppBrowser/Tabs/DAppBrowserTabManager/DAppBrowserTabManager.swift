@@ -12,7 +12,6 @@ final class DAppBrowserTabManager {
 
     private var dAppTransportStates: [UUID: [DAppTransportState]] = [:]
     private var tabs: [UUID: DAppBrowserTab] = [:]
-
     private var observers: [WeakWrapper] = []
 
     init(

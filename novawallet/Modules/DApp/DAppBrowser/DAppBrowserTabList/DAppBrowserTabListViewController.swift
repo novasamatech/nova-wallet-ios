@@ -6,7 +6,7 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
 
     let presenter: DAppBrowserTabListPresenterProtocol
 
-    var viewModels: [DAppBrowserTab] = []
+    var viewModels: [DAppBrowserTabViewModel] = []
 
     init(
         presenter: DAppBrowserTabListPresenterProtocol,
@@ -32,6 +32,8 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
         setup()
     }
 }
+
+// MARK: Private
 
 private extension DAppBrowserTabListViewController {
     func setup() {
@@ -83,8 +85,10 @@ private extension DAppBrowserTabListViewController {
     }
 }
 
+// MARK: DAppBrowserTabListViewProtocol
+
 extension DAppBrowserTabListViewController: DAppBrowserTabListViewProtocol {
-    func didReceive(_ viewModels: [DAppBrowserTab]) {
+    func didReceive(_ viewModels: [DAppBrowserTabViewModel]) {
         self.viewModels = viewModels
         rootView.collectionView.reloadSections([0])
     }
@@ -147,6 +151,18 @@ extension DAppBrowserTabListViewController: UICollectionViewDelegate, UICollecti
     }
 }
 
+// MARK: Localizable
+
+extension DAppBrowserTabListViewController: Localizable {
+    func applyLocalization() {
+        guard isViewLoaded else { return }
+
+        setupLocalization()
+    }
+}
+
+// MARK: Constants
+
 private extension DAppBrowserTabListViewController {
     enum Constants {
         static let itemEdgeInset: CGFloat = 16
@@ -160,15 +176,5 @@ private extension DAppBrowserTabListViewController {
         ) / 2
 
         static let itemHeight: CGFloat = itemWidth * 1.55
-    }
-}
-
-// MARK: Localizable
-
-extension DAppBrowserTabListViewController: Localizable {
-    func applyLocalization() {
-        guard isViewLoaded else { return }
-
-        setupLocalization()
     }
 }

@@ -7,30 +7,45 @@ final class DAppBrowserTabListPresenter {
     let interactor: DAppBrowserTabListInteractorInputProtocol
     let localizationManager: LocalizationManagerProtocol
 
-    private let dAppList: [DApp]
+    private let viewModelFactory: DAppBrowserTabListViewModelFactoryProtocol
 
     private var tabs: [DAppBrowserTab] = []
 
     init(
         interactor: DAppBrowserTabListInteractorInputProtocol,
         wireframe: DAppBrowserTabListWireframeProtocol,
-        dAppList: [DApp],
+        viewModelFactory: DAppBrowserTabListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.dAppList = dAppList
+        self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
 }
+
+// MARK: Private
+
+private extension DAppBrowserTabListPresenter {
+    func provideTabs() {
+        let viewModels = viewModelFactory.createViewModels(
+            for: tabs,
+            locale: localizationManager.selectedLocale
+        ) { [weak self] id in
+            self?.interactor.closeTab(with: id)
+        }
+
+        view?.didReceive(viewModels)
+    }
+}
+
+// MARK: DAppBrowserTabListPresenterProtocol
 
 extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
     func selectTab(with id: UUID) {
         guard let selectedTab = tabs.first(where: { $0.uuid == id }) else {
             return
         }
-
-        let dApp = dAppList.first { $0.url == selectedTab.url }
 
         wireframe.showTab(
             from: view,
@@ -60,11 +75,13 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
     }
 }
 
+// MARK: DAppBrowserTabListInteractorOutputProtocol
+
 extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtocol {
     func didReceiveTabs(_ models: [DAppBrowserTab]) {
         tabs = models
 
-        view?.didReceive(models)
+        provideTabs()
     }
 
     func didReceiveError(_ error: Error) {

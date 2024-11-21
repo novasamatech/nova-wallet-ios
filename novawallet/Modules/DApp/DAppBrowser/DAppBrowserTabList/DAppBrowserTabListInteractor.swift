@@ -37,6 +37,10 @@ extension DAppBrowserTabListInteractor: DAppBrowserTabListInteractorInputProtoco
         }
     }
 
+    func closeTab(with id: UUID) {
+        tabManager.removeTab(with: id)
+    }
+
     func closeAllTabs() {
         tabManager.removeAll()
     }

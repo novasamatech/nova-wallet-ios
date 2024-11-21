@@ -1067,6 +1067,8 @@
 		2D8F0ECC2CEFC76300A22074 /* DAppBrowserTabManagerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */; };
 		2D8F0ECE2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */; };
 		2D8F0ED22CEFC7FF00A22074 /* WebViewPoolProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */; };
+		2D8F0ED52CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED42CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift */; };
+		2D8F0ED72CEFD05B00A22074 /* DAppBrowserTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED62CEFD05B00A22074 /* DAppBrowserTabViewModel.swift */; };
 		2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */; };
 		2D8FF9D32C9BD67500089F53 /* SwipeGovAlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */; };
 		2D95DF5B2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */; };
@@ -4852,7 +4854,6 @@
 		DB8AD60FE397F764623A566F /* StartStakingConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9AB4A7C57057ECFA1DA03E /* StartStakingConfirmViewLayout.swift */; };
 		DBA436B3B1C90965FE8F9B79 /* YourValidatorListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0533F9E531CDFB721D697769 /* YourValidatorListPresenter.swift */; };
 		DBC67FC188CB7FB675E5E75B /* AppearanceSettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B808DF32AF89255DD5B0CB /* AppearanceSettingsPresenter.swift */; };
-		DBD3C2BE0AB96053E2678A08 /* DAppBrowserTabListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5185D8F6BCD9ACCF6E22F221 /* DAppBrowserTabListTests.swift */; };
 		DC02C1C18DC5C03F5A006C81 /* StartStakingInfoViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694E15BA7E0C59E46D0A6612 /* StartStakingInfoViewFactory.swift */; };
 		DC2867A7DC1415052D090C53 /* ParitySignerWelcomeViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DEDFCF115BB1015C928F3B2 /* ParitySignerWelcomeViewLayout.swift */; };
 		DC682E96D056C069902B9C31 /* DAppSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53235E51143C6E93303E30FE /* DAppSearchViewController.swift */; };
@@ -6281,6 +6282,8 @@
 		2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManagerError.swift; sourceTree = "<group>"; };
 		2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManagerProtocol.swift; sourceTree = "<group>"; };
 		2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPoolProtocol.swift; sourceTree = "<group>"; };
+		2D8F0ED42CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D8F0ED62CEFD05B00A22074 /* DAppBrowserTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabViewModel.swift; sourceTree = "<group>"; };
 		2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmPresenter.swift; sourceTree = "<group>"; };
 		2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovAlertPresentable.swift; sourceTree = "<group>"; };
 		2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicAssetsCustomFeeEstimator.swift; sourceTree = "<group>"; };
@@ -6513,7 +6516,6 @@
 		5147BFCC44EB3938D50EE8D9 /* DAppPhishingPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppPhishingPresenter.swift; sourceTree = "<group>"; };
 		5159EA2661A6CBE123CCF891 /* ReferendumVoteSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupProtocols.swift; sourceTree = "<group>"; };
 		518305BB475DE40E94DCBD5D /* DAppPhishingWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppPhishingWireframe.swift; sourceTree = "<group>"; };
-		5185D8F6BCD9ACCF6E22F221 /* DAppBrowserTabListTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListTests.swift; sourceTree = "<group>"; };
 		525813EB768E636A397C00BB /* WalletsChoosePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletsChoosePresenter.swift; sourceTree = "<group>"; };
 		5278A5F4178922A240590334 /* DAppBrowserViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserViewLayout.swift; sourceTree = "<group>"; };
 		52B7577593D1A0789B60FF70 /* NftListViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListViewLayout.swift; sourceTree = "<group>"; };
@@ -12940,6 +12942,8 @@
 			isa = PBXGroup;
 			children = (
 				2D8F0EC72CEDFD5500A22074 /* DAppBrowserTabView.swift */,
+				2D8F0ED62CEFD05B00A22074 /* DAppBrowserTabViewModel.swift */,
+				2D8F0ED42CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -13422,14 +13426,6 @@
 				842EBB2C289096D300B952D8 /* Common */,
 			);
 			path = WalletsList;
-			sourceTree = "<group>";
-		};
-		48C4623ECB179B9BEB1585D4 /* DAppBrowserTabList */ = {
-			isa = PBXGroup;
-			children = (
-				5185D8F6BCD9ACCF6E22F221 /* DAppBrowserTabListTests.swift */,
-			);
-			path = DAppBrowserTabList;
 			sourceTree = "<group>";
 		};
 		4912F09AC20C06976D4ECFCE /* Addresses */ = {
@@ -19383,7 +19379,6 @@
 				84B7C705289BFA79001A3566 /* AccountManagement */,
 				84B7C708289BFA79001A3566 /* WalletList */,
 				84B7C70A289BFA79001A3566 /* ControllerAccount */,
-				48C4623ECB179B9BEB1585D4 /* DAppBrowserTabList */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -27173,6 +27168,7 @@
 				847F2D5127AAB4BC00AFD476 /* GradientModel.swift in Sources */,
 				845B07FD291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift in Sources */,
 				84E258A12892CC0F00DC8A51 /* AccountManagementViewLayout.swift in Sources */,
+				2D8F0ED72CEFD05B00A22074 /* DAppBrowserTabViewModel.swift in Sources */,
 				848FD1A528AE27E700CCD9E2 /* HardwareWalletOption.swift in Sources */,
 				845CB6FA26276326005F798B /* LongrunOperation.swift in Sources */,
 				0C13DFDB2AFA691400E5F355 /* SlippageConfig.swift in Sources */,
@@ -28072,6 +28068,7 @@
 				84540172292F907B00213402 /* BlurBackgroundView.swift in Sources */,
 				2D5702A12C9E094D00673CB7 /* CardsZStackViewModel.swift in Sources */,
 				771901B02AE97DA500D9C918 /* SwapConfirmViewModels.swift in Sources */,
+				2D8F0ED52CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift in Sources */,
 				DC682E96D056C069902B9C31 /* DAppSearchViewController.swift in Sources */,
 				0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */,
 				286577D8FE44D1F9E7BBDCA9 /* DAppSearchViewLayout.swift in Sources */,
@@ -29687,7 +29684,6 @@
 				84B7C748289BFA79001A3566 /* WalletListTests.swift in Sources */,
 				84B7C720289BFA79001A3566 /* ReferralCrowdloanTests.swift in Sources */,
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
-				DBD3C2BE0AB96053E2678A08 /* DAppBrowserTabListTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
