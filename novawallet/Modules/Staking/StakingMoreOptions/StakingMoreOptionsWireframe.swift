@@ -4,10 +4,7 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
     func showBrowser(from view: ControllerBackedProtocol?, for dApp: DApp) {
         let tab = DAppBrowserTab(from: dApp)
 
-        guard let browserView = DAppBrowserViewFactory.createView(
-            with: dApp,
-            selectedTab: tab
-        ) else {
+        guard let browserView = DAppBrowserViewFactory.createView(selectedTab: tab) else {
             return
         }
 

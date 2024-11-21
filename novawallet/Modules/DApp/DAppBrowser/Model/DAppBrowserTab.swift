@@ -8,6 +8,7 @@ struct DAppBrowserTab {
     let lastModified: Date
     let transportStates: [DAppTransportState]?
     let stateRender: Data?
+    let desktopOnly: Bool?
     let icon: URL?
 
     var persistenceModel: PersistenceModel {
@@ -16,7 +17,8 @@ struct DAppBrowserTab {
             name: name,
             url: url,
             lastModified: lastModified,
-            icon: icon?.absoluteString
+            icon: icon?.absoluteString,
+            desktopOnly: desktopOnly
         )
     }
 
@@ -27,6 +29,7 @@ struct DAppBrowserTab {
         lastModified: Date,
         transportStates: [DAppTransportState]?,
         stateRender: Data?,
+        desktopOnly: Bool?,
         icon: URL?
     ) {
         self.uuid = uuid
@@ -35,6 +38,7 @@ struct DAppBrowserTab {
         self.lastModified = lastModified
         self.transportStates = transportStates
         self.stateRender = stateRender
+        self.desktopOnly = desktopOnly
         self.icon = icon
     }
 
@@ -56,6 +60,7 @@ struct DAppBrowserTab {
         lastModified = Date()
         transportStates = nil
         stateRender = nil
+        desktopOnly = nil
         name = nil
         icon = nil
         url = nil
@@ -66,6 +71,7 @@ struct DAppBrowserTab {
         lastModified = Date()
         transportStates = nil
         stateRender = nil
+        desktopOnly = nil
         name = nil
         icon = nil
         url = DAppBrowserTab.resolveUrl(for: query)
@@ -76,6 +82,7 @@ struct DAppBrowserTab {
         lastModified = Date()
         transportStates = nil
         stateRender = nil
+        desktopOnly = dApp.desktopOnly
         name = dApp.name
         url = dApp.url
         icon = dApp.icon
@@ -87,6 +94,7 @@ struct DAppBrowserTab {
         url: URL? = nil,
         lastModified: Date? = nil,
         stateRender: Data? = nil,
+        desktopOnly: Bool? = nil,
         icon: URL? = nil
     ) -> DAppBrowserTab {
         DAppBrowserTab(
@@ -96,6 +104,7 @@ struct DAppBrowserTab {
             lastModified: lastModified ?? self.lastModified,
             transportStates: transportStates ?? self.transportStates,
             stateRender: stateRender ?? self.stateRender,
+            desktopOnly: desktopOnly ?? self.desktopOnly,
             icon: icon ?? self.icon
         )
     }
@@ -130,5 +139,6 @@ extension DAppBrowserTab {
         let url: URL?
         let lastModified: Date
         let icon: String?
+        let desktopOnly: Bool?
     }
 }

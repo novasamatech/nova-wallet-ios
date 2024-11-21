@@ -17,7 +17,8 @@ extension DAppBrowserTabMapper: CoreDataMapperProtocol {
             name: entity.label,
             url: entity.url!,
             lastModified: entity.lastModified!,
-            icon: entity.icon
+            icon: entity.icon,
+            desktopOnly: entity.desktopOnly
         )
     }
 
@@ -31,5 +32,6 @@ extension DAppBrowserTabMapper: CoreDataMapperProtocol {
         entity.url = model.url
         entity.lastModified = model.lastModified
         entity.icon = model.icon
+        entity.desktopOnly = model.desktopOnly ?? false
     }
 }

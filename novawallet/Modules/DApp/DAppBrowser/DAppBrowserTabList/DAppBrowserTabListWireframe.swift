@@ -3,13 +3,9 @@ import Foundation
 final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
     func showTab(
         from view: ControllerBackedProtocol?,
-        _ tab: DAppBrowserTab,
-        dApp: DApp?
+        _ tab: DAppBrowserTab
     ) {
-        guard let browserView = DAppBrowserViewFactory.createView(
-            with: dApp,
-            selectedTab: tab
-        ) else {
+        guard let browserView = DAppBrowserViewFactory.createView(selectedTab: tab) else {
             return
         }
 

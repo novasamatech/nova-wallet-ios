@@ -29,10 +29,7 @@ final class DAppListWireframe: DAppListWireframeProtocol {
 
         guard
             let tabsView = DAppBrowserTabListViewFactory.createView(dAppList: dAppList),
-            let browserView = DAppBrowserViewFactory.createView(
-                with: result.dApp,
-                selectedTab: tab
-            )
+            let browserView = DAppBrowserViewFactory.createView(selectedTab: tab)
         else {
             return
         }

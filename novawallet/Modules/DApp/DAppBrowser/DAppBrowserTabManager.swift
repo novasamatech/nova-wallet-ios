@@ -161,6 +161,7 @@ private extension DAppBrowserTabManager {
                     lastModified: fetchResult.lastModified,
                     transportStates: self?.dAppTransportStates[fetchResult.uuid],
                     stateRender: render,
+                    desktopOnly: fetchResult.desktopOnly,
                     icon: iconURL
                 )
 
@@ -268,6 +269,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
                     lastModified: persistenceModel.lastModified,
                     transportStates: self?.dAppTransportStates[persistenceModel.uuid],
                     stateRender: renders[persistenceModel.uuid],
+                    desktopOnly: persistenceModel.desktopOnly,
                     icon: iconURL
                 )
             }
@@ -305,6 +307,8 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main,
             callbackClosure: { [weak self] _ in
+                self?.tabs[id] = nil
+                self?.dAppTransportStates[id] = nil
                 self?.notifyObservers()
             }
         )

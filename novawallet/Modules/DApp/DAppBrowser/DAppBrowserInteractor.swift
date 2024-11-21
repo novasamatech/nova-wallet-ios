@@ -10,7 +10,6 @@ final class DAppBrowserInteractor {
 
     weak var presenter: DAppBrowserInteractorOutputProtocol?
 
-    private(set) var dApp: DApp?
     private(set) var currentTab: DAppBrowserTab
 
     var dataSource: DAppBrowserStateDataSource
@@ -31,7 +30,6 @@ final class DAppBrowserInteractor {
 
     init(
         transports: [DAppBrowserTransportProtocol],
-        dApp: DApp?,
         selectedTab: DAppBrowserTab,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
@@ -46,7 +44,6 @@ final class DAppBrowserInteractor {
         logger: LoggerProtocol? = nil
     ) {
         self.transports = transports
-        self.dApp = dApp
         currentTab = selectedTab
         self.operationQueue = operationQueue
         dataSource = DAppBrowserStateDataSource(
@@ -54,7 +51,7 @@ final class DAppBrowserInteractor {
             chainRegistry: chainRegistry,
             dAppSettingsRepository: dAppSettingsRepository,
             operationQueue: operationQueue,
-            dApp: dApp
+            tab: selectedTab
         )
         self.logger = logger
         self.sequentialPhishingVerifier = sequentialPhishingVerifier
@@ -160,7 +157,7 @@ private extension DAppBrowserInteractor {
 
         let globalSettingsOperation = createGlobalSettingsOperation(for: currentTab.url?.host)
 
-        let desktopOnly = dApp?.desktopOnly ?? false
+        let desktopOnly = currentTab.desktopOnly ?? false
 
         let mapOperation = ClosureOperation<DAppBrowserModel> { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
@@ -287,7 +284,6 @@ private extension DAppBrowserInteractor {
         let url = DAppBrowserTab.resolveUrl(for: query)
         let updateWrapper = tabManager.updateTab(currentTab.updating(url: url))
 
-        dataSource.replace(dApp: nil)
         storeTab(currentTab.updating(transportStates: nil))
 
         execute(
@@ -314,7 +310,7 @@ private extension DAppBrowserInteractor {
 
         storeTab(currentTab.updating(transportStates: states))
 
-        dataSource.replace(dApp: dApp)
+        dataSource.replace(tab: newTab)
 
         let newTabSaveWrapper = tabManager.updateTab(newTab)
 
@@ -421,7 +417,6 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
         switch newQuery {
         case let .query(query):
-            dApp = nil
             proceedWithTabUpdate(with: query)
         case let .dApp(dApp):
             proceedWithNewTab(opening: dApp)

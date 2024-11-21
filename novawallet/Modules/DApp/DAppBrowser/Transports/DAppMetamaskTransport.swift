@@ -63,7 +63,7 @@ final class DAppMetamaskTransport {
             wallet: dataSource.wallet,
             accountId: accountId,
             dApp: host,
-            dAppIcon: dataSource.dApp?.icon,
+            dAppIcon: dataSource.tab?.icon,
             operationData: signingOperation
         )
     }

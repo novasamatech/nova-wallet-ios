@@ -34,8 +34,7 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
 
         wireframe.showTab(
             from: view,
-            selectedTab,
-            dApp: dApp
+            selectedTab
         )
     }
 
@@ -48,8 +47,7 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
 
         wireframe.showTab(
             from: view,
-            newTab,
-            dApp: nil
+            newTab
         )
     }
 
