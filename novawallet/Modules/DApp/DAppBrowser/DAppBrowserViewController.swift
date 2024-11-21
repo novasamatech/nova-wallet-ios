@@ -233,7 +233,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         presenter.process(page: page)
     }
 
-    private func setupUrl(_ url: URL) {
+    private func setupUrl(
+        _ url: URL,
+        with reload: Bool
+    ) {
         rootView.urlLabel.text = url.host
 
         if url.isTLSScheme {
@@ -244,8 +247,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         rootView.urlBar.setNeedsLayout()
 
-        let request = URLRequest(url: url)
-        rootView.webView.load(request)
+        if reload {
+            let request = URLRequest(url: url)
+            rootView.webView.load(request)
+        }
 
         rootView.goBackBarItem.isEnabled = rootView.webView.canGoBack
         rootView.goForwardBarItem.isEnabled = rootView.webView.canGoForward
@@ -373,10 +378,20 @@ extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
 
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
     func didReceive(viewModel: DAppBrowserModel) {
+        var reload: Bool = true
+
         if self.viewModel?.selectedTab.uuid != viewModel.selectedTab.uuid {
+            let newTabView: WKWebView
+
+            if let existingTab = webViewPool.getWebView(for: viewModel.selectedTab.uuid) {
+                newTabView = existingTab
+                reload = false
+            } else {
+                newTabView = webViewPool.setupWebView(for: viewModel.selectedTab.uuid)
+            }
+
             makeStateRender()
-            let webView = webViewPool.setupWebView(for: viewModel.selectedTab.uuid)
-            rootView.setWebView(webView)
+            rootView.setWebView(newTabView)
             configureWebView()
         }
 
@@ -388,7 +403,10 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         setupScripts()
         setupWebPreferences()
 
-        setupUrl(viewModel.selectedTab.url)
+        setupUrl(
+            viewModel.selectedTab.url,
+            with: reload
+        )
     }
 
     func didReceiveTabsCount(viewModel: String) {

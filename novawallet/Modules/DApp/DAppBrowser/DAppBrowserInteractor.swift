@@ -328,7 +328,6 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             switch result {
             case let .success(tab):
                 self?.provideTabs()
-                self?.completeSetupIfNeeded()
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)
             }
