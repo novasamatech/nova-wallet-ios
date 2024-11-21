@@ -15,8 +15,9 @@ class DAppBrowserTabView: UIView {
 
     let closeButton: RoundedButton = .create { view in
         view.roundedBackgroundView?.cornerRadius = Constants.closeButtonCornerRadius
+        view.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         view.contentInsets = Constants.closeButtonContentInsets
-        view.imageWithTitleView?.iconImage = R.image.iconClose()?.tinted(
+        view.imageWithTitleView?.iconImage = R.image.iconBannerClose()?.tinted(
             with: R.color.colorIconCloseDApp()!
         )
         view.roundedBackgroundView?.fillColor = R.color.colorCloseDAppBackground()!
