@@ -90,7 +90,7 @@ private extension DAppBrowserTabListViewController {
 extension DAppBrowserTabListViewController: DAppBrowserTabListViewProtocol {
     func didReceive(_ viewModels: [DAppBrowserTabViewModel]) {
         self.viewModels = viewModels
-        rootView.collectionView.reloadSections([0])
+        rootView.collectionView.reloadData()
     }
 }
 
@@ -148,6 +148,27 @@ extension DAppBrowserTabListViewController: UICollectionViewDelegate, UICollecti
             width: Constants.itemWidth,
             height: Constants.itemHeight
         )
+    }
+}
+
+// MARK: DAppBrowserTabViewTransitionProtocol
+
+extension DAppBrowserTabListViewController: DAppBrowserTabViewTransitionProtocol {
+    func getTabViewForTransition(for tabId: UUID) -> UIView? {
+        guard let index = viewModels.enumerated().first(
+            where: { $0.element.uuid == tabId }
+        )?.offset else {
+            return nil
+        }
+
+        let indexPath = IndexPath(
+            item: index,
+            section: 0
+        )
+
+        let cell = rootView.collectionView.cellForItem(at: indexPath)
+
+        return cell
     }
 }
 

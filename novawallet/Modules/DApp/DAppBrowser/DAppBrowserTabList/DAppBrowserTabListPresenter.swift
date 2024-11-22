@@ -47,7 +47,7 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
             return
         }
 
-        wireframe.showTab(
+        wireframe.showExistingTab(
             from: view,
             selectedTab
         )
@@ -60,7 +60,7 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
     func openNewTab() {
         let newTab = DAppBrowserTab(from: nil)
 
-        wireframe.showTab(
+        wireframe.showNewTab(
             from: view,
             newTab
         )
