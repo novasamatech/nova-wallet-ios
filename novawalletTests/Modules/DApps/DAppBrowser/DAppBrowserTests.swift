@@ -63,10 +63,14 @@ class DAppBrowserTests: XCTestCase {
         let dAppsFavoriteRepository = AccountRepositoryFactory(
             storageFacade: storageFacade
         ).createFavoriteDAppsRepository()
+        
+        let tabManager = DAppBrowserTabManager.shared
+        
+        let tab = DAppBrowserTab(from: .query(string: dAppURL))
 
         let interactor = DAppBrowserInteractor(
             transports: [transport],
-            userQuery: .query(string: dAppURL),
+            selectedTab: tab,
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
             securedLayer: SecurityLayerService.shared,
@@ -75,7 +79,9 @@ class DAppBrowserTests: XCTestCase {
             dAppsLocalSubscriptionFactory: dAppLocalProviderFactory,
             dAppsFavoriteRepository: dAppsFavoriteRepository,
             operationQueue: OperationQueue(),
-            sequentialPhishingVerifier: phishingVerifier
+            sequentialPhishingVerifier: phishingVerifier,
+            tabManager: tabManager,
+            logger: Logger.shared
         )
 
         let presenter = DAppBrowserPresenter(
@@ -116,7 +122,7 @@ class DAppBrowserTests: XCTestCase {
 
         wait(for: [loadingExpectation, enableSettingsExpectation], timeout: 10)
 
-        XCTAssertEqual(loadedModel?.url, URL(string: dAppURL)!)
+        XCTAssertEqual(loadedModel?.selectedTab.url, URL(string: dAppURL)!)
 
         if (transport.state as? DAppBrowserWaitingAuthState) == nil {
             XCTFail("Waiting auth state expected after setup")
