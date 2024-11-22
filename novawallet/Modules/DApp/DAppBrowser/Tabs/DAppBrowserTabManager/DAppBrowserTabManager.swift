@@ -196,7 +196,7 @@ private extension DAppBrowserTabManager {
         let renderRemoveWrapper = fileRepository.removeRender(for: tabId)
         renderRemoveWrapper.addDependency(operations: [deleteOperation])
 
-        return renderRemoveWrapper
+        return renderRemoveWrapper.insertingHead(operations: [deleteOperation])
     }
 
     func removeAllWrapper() -> CompoundOperationWrapper<Void> {
