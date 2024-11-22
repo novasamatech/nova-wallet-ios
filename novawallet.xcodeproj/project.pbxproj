@@ -70,6 +70,7 @@
 		0C11D85C2CCA3CCC003EC46D /* AssetsHydraXYKExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D85B2CCA3CCC003EC46D /* AssetsHydraXYKExchange.swift */; };
 		0C11D85E2CCA470D003EC46D /* AssetsExchangeRouteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D85D2CCA470D003EC46D /* AssetsExchangeRouteManager.swift */; };
 		0C11D8602CCA486B003EC46D /* AssetExchangeRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */; };
+		0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11F0272CEFD99C008D19D2 /* CountdownLoadingView.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
 		0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */; };
@@ -859,6 +860,7 @@
 		0CF692922C2412AB000FC395 /* BackupMnemonicAccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF692912C2412AB000FC395 /* BackupMnemonicAccountType.swift */; };
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
+		0CF976722CEFF01D001D2801 /* SwapExecutionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976712CEFF01D001D2801 /* SwapExecutionModel.swift */; };
 		0CFA16132B0CD8A0007AF885 /* GovSpentAmountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */; };
 		0CFA16162B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */; };
 		0CFA16192B0CE709007AF885 /* UtilityPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA16182B0CE709007AF885 /* UtilityPallet.swift */; };
@@ -5340,6 +5342,7 @@
 		0C11D85B2CCA3CCC003EC46D /* AssetsHydraXYKExchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsHydraXYKExchange.swift; sourceTree = "<group>"; };
 		0C11D85D2CCA470D003EC46D /* AssetsExchangeRouteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeRouteManager.swift; sourceTree = "<group>"; };
 		0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeRoute.swift; sourceTree = "<group>"; };
+		0C11F0272CEFD99C008D19D2 /* CountdownLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownLoadingView.swift; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
 		0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteViewCell.swift; sourceTree = "<group>"; };
@@ -6169,6 +6172,7 @@
 		0CF692912C2412AB000FC395 /* BackupMnemonicAccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupMnemonicAccountType.swift; sourceTree = "<group>"; };
 		0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameView.swift; sourceTree = "<group>"; };
 		0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupErrorPresentable.swift; sourceTree = "<group>"; };
+		0CF976712CEFF01D001D2801 /* SwapExecutionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapExecutionModel.swift; sourceTree = "<group>"; };
 		0CFA16122B0CD8A0007AF885 /* GovSpentAmountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountExtractor.swift; sourceTree = "<group>"; };
 		0CFA16152B0CE51E007AF885 /* GovSpentAmountBatchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovSpentAmountBatchHandler.swift; sourceTree = "<group>"; };
 		0CFA16182B0CE709007AF885 /* UtilityPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityPallet.swift; sourceTree = "<group>"; };
@@ -12487,6 +12491,14 @@
 				0C63908C2BF073D00015D467 /* ICloudBackupSyncMonitor.swift */,
 			);
 			path = Monitor;
+			sourceTree = "<group>";
+		};
+		0CF976702CEFF00E001D2801 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0CF976712CEFF01D001D2801 /* SwapExecutionModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		0CFA16142B0CD8A9007AF885 /* Parser */ = {
@@ -18894,6 +18906,7 @@
 				77740BBB2AD4A7B800E8C06F /* CollapsableContainerView.swift */,
 				77ECB46F2ACEEE2D0015CE9F /* NetworkFeeInfoView.swift */,
 				0CAC03052B4D86E000DDEC3A /* LocalizableControllerBackedView.swift */,
+				0C11F0272CEFD99C008D19D2 /* CountdownLoadingView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -23919,6 +23932,7 @@
 		E53BE56E5726646BC073E502 /* Execution */ = {
 			isa = PBXGroup;
 			children = (
+				0CF976702CEFF00E001D2801 /* Model */,
 				0CBABFF72CEF33AE0047F29E /* View */,
 				A2F8A21F1E63BF16DCCE89FE /* SwapExecutionProtocols.swift */,
 				FA1285B676EA226704C14DDB /* SwapExecutionWireframe.swift */,
@@ -28137,6 +28151,7 @@
 				5FE687B860FC10AB08518A6E /* WalletHistoryFilterPresenter.swift in Sources */,
 				640A79BD1335394818E70366 /* WalletHistoryFilterViewController.swift in Sources */,
 				DD090C2ED91726FF7779F6C7 /* WalletHistoryFilterViewFactory.swift in Sources */,
+				0CF976722CEFF01D001D2801 /* SwapExecutionModel.swift in Sources */,
 				2D65F6D92CD0067500CC6F72 /* AppearanceFacade.swift in Sources */,
 				84ED6BE0286900B600B3C558 /* TransferNetworkContainerViewModel.swift in Sources */,
 				845B0819291905CA005785D3 /* Gov1LockStateFactory.swift in Sources */,
@@ -29785,6 +29800,7 @@
 				68E01098C46BFEA570B95ED1 /* ProxiedsUpdatePresenter.swift in Sources */,
 				F19BA6E8A9A7FDA269CA57DE /* ProxiedsUpdateInteractor.swift in Sources */,
 				7136E160BD5C6A19F9C20A5B /* ProxiedsUpdateViewController.swift in Sources */,
+				0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */,
 				5DCEEE88DD1E09DC8110BF0C /* ProxiedsUpdateViewLayout.swift in Sources */,
 				93E203248735DCCEC1BA96AF /* ProxiedsUpdateViewFactory.swift in Sources */,
 				A8515273213D048B0F9AFD15 /* StakingSetupProxyProtocols.swift in Sources */,

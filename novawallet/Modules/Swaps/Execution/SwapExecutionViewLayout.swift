@@ -1,6 +1,8 @@
 import UIKit
 
 final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
+    let countdownView = CountdownLoadingView()
+
     let statusTitleView: MultiValueView = .create { view in
         view.apply(
             style: .init(
@@ -8,28 +10,76 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
                 bottomLabel: .semiboldBodyButtonAccent
             )
         )
-        
+
         view.valueTop.textAlignment = .center
         view.valueBottom.textAlignment = .center
-        
+
         view.spacing = 4
     }
-    
+
     let pairsView = SwapPairView()
-    
-    let details = SwapExecutionDetailsView()
+
+    let detailsView = SwapExecutionDetailsView()
+
+    var rateCell: SwapInfoViewCell {
+        detailsView.rateCell
+    }
+
+    var routeCell: SwapRouteViewCell {
+        detailsView.routeCell
+    }
+
+    var priceDifferenceCell: SwapInfoViewCell {
+        detailsView.priceDifferenceCell
+    }
+
+    var slippageCell: SwapInfoViewCell {
+        detailsView.slippageCell
+    }
+
+    var totalFeeCell: SwapNetworkFeeViewCell {
+        detailsView.totalFeeCell
+    }
+
+    func setup(locale: Locale) {
+        slippageCell.titleButton.setTitle(
+            R.string.localizable.swapsSetupSlippage(
+                preferredLanguages: locale.rLanguages
+            )
+        )
+        priceDifferenceCell.titleButton.setTitle(
+            R.string.localizable.swapsSetupPriceDifference(
+                preferredLanguages: locale.rLanguages
+            )
+        )
+        rateCell.titleButton.setTitle(
+            R.string.localizable.swapsSetupDetailsRate(
+                preferredLanguages: locale.rLanguages
+            )
+        )
+        routeCell.titleButton.setTitle(
+            R.string.localizable.swapsDetailsRoute(preferredLanguages: locale.rLanguages)
+        )
+
+        totalFeeCell.titleButton.setTitle(
+            R.string.localizable.swapsDetailsTotalFee(preferredLanguages: locale.rLanguages)
+        )
+    }
 
     override func setupStyle() {
         backgroundColor = R.color.colorSecondaryScreenBackground()
     }
-    
+
     override func setupLayout() {
         super.setupLayout()
-        
+
         stackView.layoutMargins = UIEdgeInsets(top: 76, left: 16, bottom: 0, right: 16)
 
+        let countdownWrapperView = UIView.vStack(alignment: .center, [countdownView])
+
+        addArrangedSubview(countdownWrapperView, spacingAfter: 16)
         addArrangedSubview(statusTitleView, spacingAfter: 24)
         addArrangedSubview(pairsView, spacingAfter: 8)
-        addArrangedSubview(details, spacingAfter: 24)
+        addArrangedSubview(detailsView, spacingAfter: 24)
     }
 }

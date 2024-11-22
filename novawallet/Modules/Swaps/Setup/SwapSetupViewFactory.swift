@@ -29,9 +29,7 @@ struct SwapSetupViewFactory {
         let priceInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceInfoFactory)
 
-        guard let interactor = createInteractor(for: state) else {
-            return nil
-        }
+        guard let interactor = createInteractor(for: state) else { return nil }
 
         let wireframe = SwapSetupWireframe(
             state: state,

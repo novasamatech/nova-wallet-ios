@@ -9,7 +9,7 @@ final class SwapExecutionDetailsView: CollapsableContainerView {
         $0.roundedBackgroundView.cornerRadius = 12
         $0.roundedBackgroundView.roundingCorners = [.topLeft, .topRight]
     }
-    
+
     let priceDifferenceCell: SwapInfoViewCell = .create {
         $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
@@ -25,7 +25,7 @@ final class SwapExecutionDetailsView: CollapsableContainerView {
         $0.borderView.borderType = .bottom
         $0.roundedBackgroundView.cornerRadius = 0
     }
-    
+
     let routeCell: SwapRouteViewCell = .create {
         $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote

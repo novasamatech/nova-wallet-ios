@@ -310,11 +310,20 @@ extension SwapConfirmPresenter {
     }
 
     private func submit() {
-        guard let fee else {
+        guard let fee, let quote else {
             return
         }
 
-        interactor.submit(using: fee)
+        let executionModel = SwapExecutionModel(
+            chainAssetIn: initState.chainAssetIn,
+            chainAssetOut: initState.chainAssetOut,
+            feeAsset: initState.feeChainAsset,
+            quote: quote,
+            fee: fee,
+            prices: prices
+        )
+
+        wireframe.showSwapExecution(from: view, model: executionModel)
     }
 }
 
@@ -418,16 +427,6 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
         logger.debug("Did receive swaped amount: \(String(amount))")
 
         view?.didReceiveStopLoading()
-
-        guard let payChainAsset = getPayChainAsset() else {
-            return
-        }
-
-        wireframe.complete(
-            on: view,
-            payChainAsset: payChainAsset,
-            locale: selectedLocale
-        )
     }
 }
 

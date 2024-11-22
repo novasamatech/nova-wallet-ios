@@ -55,7 +55,7 @@ extension UILabel.Style {
         textColor: R.color.colorButtonTextAccent(),
         font: .semiBoldBody
     )
-    
+
     static let semiboldBodyPrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .semiBoldBody
@@ -210,7 +210,7 @@ extension UILabel.Style {
         textColor: R.color.colorTextPrimary()!,
         font: .boldTitle1
     )
-    
+
     static let boldTitle2Primary = UILabel.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .boldTitle2

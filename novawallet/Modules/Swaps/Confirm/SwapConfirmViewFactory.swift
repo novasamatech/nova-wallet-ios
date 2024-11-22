@@ -20,7 +20,7 @@ struct SwapConfirmViewFactory {
             return nil
         }
 
-        let wireframe = SwapConfirmWireframe(completionClosure: completionClosure)
+        let wireframe = SwapConfirmWireframe(flowState: flowState, completionClosure: completionClosure)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(

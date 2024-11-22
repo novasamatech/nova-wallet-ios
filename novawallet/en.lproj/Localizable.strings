@@ -1771,3 +1771,4 @@
 "swaps.details.exec.time" = "Execution time";
 "swaps.details.route" = "Route";
 "swaps.details.total.fee" = "Total fee";
+"swaps.execution.dont.close.app" = "Do not close the app!";
