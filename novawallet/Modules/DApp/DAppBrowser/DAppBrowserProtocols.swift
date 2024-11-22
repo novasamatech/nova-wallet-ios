@@ -3,6 +3,7 @@ import Operation_iOS
 
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: DAppBrowserModel)
+    func didReceiveTab(viewModel: DAppBrowserTabViewModel)
     func didReceive(response: DAppScriptResponse, forTransport name: String)
     func didReceiveReplacement(
         transports: [DAppTransportModel],
@@ -20,6 +21,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
     func close()
+    func showTabs()
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
@@ -86,6 +88,11 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
         from view: DAppBrowserViewProtocol?,
         state: DAppSettingsInput,
         delegate: DAppSettingsDelegate
+    )
+
+    func presentTabs(
+        from view: DAppBrowserViewProtocol?,
+        selectionClosure: @escaping (UUID) -> Void
     )
 
     func hideSettings(from view: DAppBrowserViewProtocol?)

@@ -9,8 +9,13 @@ final class DAppBrowserPresenter {
     let logger: LoggerProtocol?
     let localizationManager: LocalizationManager
 
+    private let tabsManager: DAppBrowserTabsManagerProtocol = DAppBrowserTabsManager.shared
+    private let webViewPool: WebViewPoolProtocol = WebViewPool()
+
     private(set) var favorites: [String: DAppFavorite]?
     private(set) var browserPage: DAppBrowserPage?
+
+    private var currentTabId: UUID?
 
     init(
         interactor: DAppBrowserInteractorInputProtocol,
@@ -50,6 +55,20 @@ final class DAppBrowserPresenter {
         let canShowSettings = browserPage != nil && favorites != nil
 
         view?.didSet(canShowSettings: canShowSettings)
+    }
+
+    private func saveCurrentWebViewState() {
+        if
+            let currentTabId,
+            let currentWebView = webViewPool.getWebView(for: currentTabId),
+            let url = currentWebView.url {
+            if #available(iOS 15.0, *) {
+                let currentWebViewState = currentWebView.interactionState
+                tabsManager.updateStateForTab(with: url, currentWebViewState)
+            } else {
+                // Fallback on earlier versions
+            }
+        }
     }
 }
 
@@ -98,6 +117,33 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
+    func showTabs() {
+        wireframe.presentTabs(
+            from: view
+        ) { [weak self] selectedId in
+            guard
+                let self,
+                let tab = tabsManager.fetchTab(for: selectedId)
+            else {
+                return
+            }
+
+            let webView = webViewPool.setupWebView(for: tab.uuid)
+
+            saveCurrentWebViewState()
+
+            let viewModel = DAppBrowserTabViewModel(
+                tab: tab,
+                loadRequired: false,
+                webView: webView
+            )
+
+            currentTabId = tab.uuid
+
+            view?.didReceiveTab(viewModel: viewModel)
+        }
+    }
+
     func close() {
         let languages = localizationManager.selectedLocale.rLanguages
 
@@ -130,7 +176,20 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     }
 
     func didReceiveDApp(model: DAppBrowserModel) {
-        view?.didReceive(viewModel: model)
+        let tab = tabsManager.createTab(for: model)
+        let webView = webViewPool.setupWebView(for: tab.uuid)
+
+        let viewModel = DAppBrowserTabViewModel(
+            tab: tab,
+            loadRequired: true,
+            webView: webView
+        )
+
+        saveCurrentWebViewState()
+
+        currentTabId = tab.uuid
+
+        view?.didReceiveTab(viewModel: viewModel)
     }
 
     func didReceiveReplacement(

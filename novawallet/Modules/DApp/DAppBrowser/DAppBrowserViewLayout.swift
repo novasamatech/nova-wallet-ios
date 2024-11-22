@@ -48,6 +48,29 @@ final class DAppBrowserViewLayout: UIView {
         return item
     }()
 
+    let addTabBarButton: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconAddNetwork(),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        item.isEnabled = true
+        return item
+    }()
+
+    let tabsBarButton: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconNovaSmall(),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        item.tintColor = R.color.colorIconPrimary()
+        item.isEnabled = true
+        return item
+    }()
+
     let toolbarBackgroundView: BlurBackgroundView = {
         let view = BlurBackgroundView()
         view.sideLength = 0.0
@@ -63,7 +86,7 @@ final class DAppBrowserViewLayout: UIView {
         return view
     }()
 
-    let webView: WKWebView = {
+    var webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = WKUserContentController()
 
@@ -85,6 +108,18 @@ final class DAppBrowserViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setWebView(_ webView: WKWebView) {
+        self.webView.removeFromSuperview()
+        self.webView = webView
+        addSubview(webView)
+
+        webView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalTo(toolBar.snp.top)
+        }
     }
 
     func setIsToolbarHidden(_ isHidden: Bool) {
@@ -146,7 +181,11 @@ final class DAppBrowserViewLayout: UIView {
             flexibleSpace,
             refreshBarItem,
             flexibleSpace,
-            settingsBarButton
+            settingsBarButton,
+            flexibleSpace,
+            addTabBarButton,
+            flexibleSpace,
+            tabsBarButton
         ]
     }
 }

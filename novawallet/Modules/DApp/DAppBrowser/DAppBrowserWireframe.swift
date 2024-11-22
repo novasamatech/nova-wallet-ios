@@ -2,6 +2,20 @@ import Foundation
 import SoraUI
 
 final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
+    func presentTabs(
+        from view: (any DAppBrowserViewProtocol)?,
+        selectionClosure: @escaping (UUID) -> Void
+    ) {
+        guard let tabsView = DAppBrowserTabsViewFactory.createView(selectClosure: selectionClosure) else {
+            return
+        }
+
+        view?.controller.navigationController?.present(
+            tabsView.controller,
+            animated: true
+        )
+    }
+
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
