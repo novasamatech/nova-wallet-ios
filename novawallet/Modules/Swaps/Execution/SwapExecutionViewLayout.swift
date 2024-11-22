@@ -1,21 +1,7 @@
 import UIKit
 
 final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
-    let countdownView = CountdownLoadingView()
-
-    let statusTitleView: MultiValueView = .create { view in
-        view.apply(
-            style: .init(
-                topLabel: .boldTitle1Primary,
-                bottomLabel: .semiboldBodyButtonAccent
-            )
-        )
-
-        view.valueTop.textAlignment = .center
-        view.valueBottom.textAlignment = .center
-
-        view.spacing = 4
-    }
+    let statusView = SwapExecutionView()
 
     let pairsView = SwapPairView()
 
@@ -75,11 +61,8 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
 
         stackView.layoutMargins = UIEdgeInsets(top: 76, left: 16, bottom: 0, right: 16)
 
-        let countdownWrapperView = UIView.vStack(alignment: .center, [countdownView])
-
-        addArrangedSubview(countdownWrapperView, spacingAfter: 16)
-        addArrangedSubview(statusTitleView, spacingAfter: 24)
-        addArrangedSubview(pairsView, spacingAfter: 8)
-        addArrangedSubview(detailsView, spacingAfter: 24)
+        addArrangedSubview(statusView, spacingAfter: 24)
+        addArrangedSubview(pairsView, spacingAfter: 24)
+        addArrangedSubview(detailsView)
     }
 }

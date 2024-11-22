@@ -1,7 +1,5 @@
 protocol SwapExecutionViewProtocol: ControllerBackedProtocol {
-    func didReceive(countdownViewModel: CountdownLoadingView.ViewModel)
-    func didReceive(currentOperation: String)
-    func didReceive(executing: UInt, total: UInt)
+    func didReceiveExecution(viewModel: SwapExecutionViewModel)
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel)
     func didReceiveAssetOut(viewModel: SwapAssetAmountViewModel)
     func didReceiveRate(viewModel: LoadableViewModelState<String>)

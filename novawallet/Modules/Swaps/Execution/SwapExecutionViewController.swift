@@ -39,22 +39,9 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
 }
 
 extension SwapExecutionViewController: SwapExecutionViewProtocol {
-    func didReceive(countdownViewModel: CountdownLoadingView.ViewModel) {
-        rootView.countdownView.start(with: countdownViewModel)
+    func didReceiveExecution(viewModel: SwapExecutionViewModel) {
+        rootView.statusView.bind(viewModel: viewModel, locale: selectedLocale)
     }
-
-    func didReceive(currentOperation: String) {
-        rootView.statusTitleView.bind(
-            viewModel: .init(
-                topValue: R.string.localizable.swapsExecutionDontCloseApp(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                bottomValue: currentOperation
-            )
-        )
-    }
-
-    func didReceive(executing _: UInt, total _: UInt) {}
 
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel) {
         rootView.pairsView.leftAssetView.bind(viewModel: viewModel)

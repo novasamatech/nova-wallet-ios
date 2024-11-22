@@ -8,4 +8,8 @@ struct AssetExchangeQuote {
     func totalExecutionTime() -> TimeInterval {
         executionTimes.reduce(0, +)
     }
+
+    func totalExecutionTime(from index: Int) -> TimeInterval {
+        executionTimes.dropFirst(index).reduce(0, +)
+    }
 }

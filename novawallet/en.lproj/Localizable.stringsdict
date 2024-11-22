@@ -210,5 +210,21 @@
 			<string>Select at least %li wallets</string>
 		</dict>
 	</dict>
+	<key>common.operations</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@format@</string>
+		<key>format</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%li operation</string>
+			<key>other</key>
+			<string>%li operations</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
