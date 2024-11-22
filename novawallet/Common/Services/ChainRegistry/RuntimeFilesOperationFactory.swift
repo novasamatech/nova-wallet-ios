@@ -92,7 +92,7 @@ final class RuntimeFilesOperationFactory {
         self.directoryPath = directoryPath
     }
 
-    private func fetchFileOperation(for fileName: String) -> CompoundOperationWrapper<Data?> {
+    func fetchFileOperation(for fileName: String) -> CompoundOperationWrapper<Data?> {
         let createDirOperation = repository.createDirectoryIfNeededOperation(at: directoryPath)
 
         let filePath = (directoryPath as NSString).appendingPathComponent(fileName)
@@ -106,7 +106,7 @@ final class RuntimeFilesOperationFactory {
         )
     }
 
-    private func saveFileOperation(
+    func saveFileOperation(
         for fileName: String,
         data: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<Void> {

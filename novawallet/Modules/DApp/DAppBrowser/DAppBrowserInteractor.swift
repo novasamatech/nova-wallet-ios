@@ -352,6 +352,7 @@ private extension DAppBrowserInteractor {
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func setup() {
         setupState()
+        provideTabs()
 
         subscribeChainRegistry()
 

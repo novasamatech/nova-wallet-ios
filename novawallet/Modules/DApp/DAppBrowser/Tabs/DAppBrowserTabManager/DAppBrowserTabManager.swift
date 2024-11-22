@@ -3,7 +3,7 @@ import Operation_iOS
 
 final class DAppBrowserTabManager {
     private let cacheBasePath: String
-    private let fileRepository: FileRepositoryProtocol
+    private let fileRepository: WebViewRenderFilesOperationFactoryProtocol
     private let repository: CoreDataRepository<DAppBrowserTab.PersistenceModel, CDDAppBrowserTab>
     private let operationQueue: OperationQueue
     private let observerQueue: DispatchQueue
@@ -16,7 +16,7 @@ final class DAppBrowserTabManager {
 
     init(
         cacheBasePath: String,
-        fileRepository: FileRepositoryProtocol,
+        fileRepository: WebViewRenderFilesOperationFactoryProtocol,
         repository: CoreDataRepository<DAppBrowserTab.PersistenceModel, CDDAppBrowserTab>,
         observerQueue: DispatchQueue = .main,
         operationQueue: OperationQueue,
@@ -58,10 +58,6 @@ private extension DAppBrowserTabManager {
     }
 
     func saveWrapper(for tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
-        guard let localPath = createLocalPath(tab.uuid.uuidString) else {
-            return .createWithError(DAppBrowserTabManagerError.renderCacheFailed)
-        }
-
         let persistenceModel = tab.persistenceModel
 
         let saveTabOperation = repository.saveOperation(
@@ -69,18 +65,15 @@ private extension DAppBrowserTabManager {
             { [] }
         )
 
-        let saveRenderOperation: BaseOperation<Void> = if let renderData = tab.stateRender {
-            fileRepository.writeOperation(
-                dataClosure: { renderData },
-                at: localPath
-            )
+        let saveRenderWrapper: CompoundOperationWrapper<Void> = if let renderData = tab.stateRender {
+            fileRepository.saveRenderOperation(for: tab.uuid, data: { renderData })
         } else {
-            fileRepository.removeOperation(at: localPath)
+            fileRepository.removeRender(for: tab.uuid)
         }
 
         let resultOperation = ClosureOperation { [weak self] in
             _ = try saveTabOperation.extractNoCancellableResultData()
-            _ = try saveRenderOperation.extractNoCancellableResultData()
+            _ = try saveRenderWrapper.targetOperation.extractNoCancellableResultData()
 
             self?.tabs[tab.uuid] = tab
             self?.dAppTransportStates[tab.uuid] = tab.transportStates
@@ -90,11 +83,11 @@ private extension DAppBrowserTabManager {
             return tab
         }
         resultOperation.addDependency(saveTabOperation)
-        resultOperation.addDependency(saveRenderOperation)
+        resultOperation.addDependency(saveRenderWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: [saveTabOperation, saveRenderOperation]
+            dependencies: [saveTabOperation] + saveRenderWrapper.allOperations
         )
     }
 
@@ -107,11 +100,7 @@ private extension DAppBrowserTabManager {
                 options: RepositoryFetchOptions()
             )
 
-            guard let localPath = createLocalPath(tabId.uuidString) else {
-                return .createWithError(DAppBrowserTabManagerError.renderCacheFailed)
-            }
-
-            let fetchRenderOperation = fileRepository.readOperation(at: localPath)
+            let fetchRenderWrapper = fileRepository.fetchRender(for: tabId)
 
             let resultOperation = ClosureOperation<DAppBrowserTab?> { [weak self] in
                 guard let fetchResult = try fetchTabOperation.extractNoCancellableResultData() else {
@@ -124,7 +113,7 @@ private extension DAppBrowserTabManager {
                     nil
                 }
 
-                let render = try fetchRenderOperation.extractNoCancellableResultData()
+                let render = try fetchRenderWrapper.targetOperation.extractNoCancellableResultData()
 
                 let tab = DAppBrowserTab(
                     uuid: fetchResult.uuid,
@@ -142,10 +131,11 @@ private extension DAppBrowserTabManager {
                 return tab
             }
             resultOperation.addDependency(fetchTabOperation)
+            resultOperation.addDependency(fetchRenderWrapper.targetOperation)
 
             return CompoundOperationWrapper(
                 targetOperation: resultOperation,
-                dependencies: [fetchTabOperation]
+                dependencies: [fetchTabOperation] + fetchRenderWrapper.allOperations
             )
         }
     }
@@ -153,7 +143,8 @@ private extension DAppBrowserTabManager {
     func createFetchAllRendersWrapper(
         using fetchAllOperation: BaseOperation<[DAppBrowserTab.PersistenceModel]>
     ) -> CompoundOperationWrapper<[UUID: Data]> {
-        OperationCombiningService.compoundNonOptionalWrapper(
+        let fetchRendersWrapper: CompoundOperationWrapper<[UUID: Data]>
+        fetchRendersWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) { [weak self] in
             guard let self else {
@@ -162,32 +153,38 @@ private extension DAppBrowserTabManager {
 
             let tabs = try fetchAllOperation.extractNoCancellableResultData()
 
-            let fetchRenderOperations: [UUID: BaseOperation<Data?>] = tabs.reduce(into: [:]) { acc, tab in
-                guard let localPath = self.createLocalPath(tab.identifier) else {
-                    return
-                }
-
-                acc[tab.uuid] = self.fileRepository.readOperation(at: localPath)
+            let fetchRenderOperations: [UUID: CompoundOperationWrapper<Data?>] = tabs.reduce(into: [:]) { acc, tab in
+                acc[tab.uuid] = self.fileRepository.fetchRender(for: tab.uuid)
             }
 
             return createRendersMappingWrapper(using: fetchRenderOperations)
         }
+
+        fetchRendersWrapper.addDependency(operations: [fetchAllOperation])
+
+        return fetchRendersWrapper.insertingHead(operations: [fetchAllOperation])
     }
 
     func createRendersMappingWrapper(
-        using fetchOperations: [UUID: BaseOperation<Data?>]
+        using fetchWrappers: [UUID: CompoundOperationWrapper<Data?>]
     ) -> CompoundOperationWrapper<[UUID: Data]> {
-        let operations = Array(fetchOperations.values)
-        let closureOperation = ClosureOperation<[UUID: Data]> {
-            fetchOperations.reduce(into: [:]) { acc, operation in
-                acc[operation.key] = try? operation.value.extractNoCancellableResultData()
+        let resultWrapper: CompoundOperationWrapper<[UUID: Data]>
+        resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let result = try fetchWrappers.reduce(into: [UUID: Data]()) { acc, wrapper in
+                let result = try wrapper.value.targetOperation.extractNoCancellableResultData()
+                acc[wrapper.key] = result
             }
+
+            return .createWithResult(result)
         }
 
-        return CompoundOperationWrapper(
-            targetOperation: closureOperation,
-            dependencies: Array(fetchOperations.values)
-        )
+        let operations = Array(fetchWrappers.values).flatMap(\.allOperations)
+
+        resultWrapper.addDependency(operations: operations)
+
+        return resultWrapper.insertingHead(operations: operations)
     }
 
     func removeTabWrapper(for tabId: UUID) -> CompoundOperationWrapper<Void> {
@@ -196,48 +193,21 @@ private extension DAppBrowserTabManager {
             { [tabId.uuidString] }
         )
 
-        let wrapper: CompoundOperationWrapper<Void>
+        let renderRemoveWrapper = fileRepository.removeRender(for: tabId)
+        renderRemoveWrapper.addDependency(operations: [deleteOperation])
 
-        if let renderPath = createLocalPath(tabId.uuidString) {
-            let renderRemoveOperation = fileRepository.removeOperation(at: renderPath)
-            renderRemoveOperation.addDependency(deleteOperation)
-
-            wrapper = CompoundOperationWrapper(
-                targetOperation: renderRemoveOperation,
-                dependencies: [deleteOperation]
-            )
-        } else {
-            wrapper = CompoundOperationWrapper(targetOperation: deleteOperation)
-        }
-
-        return wrapper
+        return renderRemoveWrapper
     }
 
     func removeAllWrapper() -> CompoundOperationWrapper<Void> {
-        let renderPaths = tabs.compactMap { createLocalPath($0.value.uuid.uuidString) }
+        let tabIds = tabs.map(\.value.uuid)
 
-        let rendersClearOperations = fileRepository.removeOperation(at: renderPaths)
+        let rendersClearWrapper = fileRepository.removeRenders(for: tabIds)
         let deleteOperation = repository.deleteAllOperation()
 
-        rendersClearOperations.addDependency(deleteOperation)
+        rendersClearWrapper.addDependency(operations: [deleteOperation])
 
-        return CompoundOperationWrapper(
-            targetOperation: rendersClearOperations,
-            dependencies: [deleteOperation]
-        )
-    }
-
-    func createLocalPath(_ fileName: String) -> String? {
-        let localFilePath = (cacheBasePath as NSString).appendingPathComponent(fileName)
-
-        let filePathComponentsCount = (localFilePath as NSString).pathComponents.count
-        let basePathComponentsCount = (cacheBasePath as NSString).pathComponents.count
-
-        guard filePathComponentsCount > basePathComponentsCount else {
-            return nil
-        }
-
-        return localFilePath
+        return rendersClearWrapper.insertingHead(operations: [deleteOperation])
     }
 
     func sorted(_ tabs: [DAppBrowserTab]) -> [DAppBrowserTab] {
@@ -293,16 +263,10 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
 
             return sorted(tabs)
         }
-        resultOperaton.addDependency(fetchTabsOperation)
 
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: resultOperaton,
-            dependencies: fetchRendersWrapper.allOperations
-        )
+        resultOperaton.addDependency(fetchRendersWrapper.targetOperation)
 
-        wrapper.addDependency(wrapper: fetchRendersWrapper)
-
-        return wrapper
+        return fetchRendersWrapper.insertingTail(operation: resultOperaton)
     }
 
     func removeTab(with id: UUID) {
@@ -388,9 +352,14 @@ extension DAppBrowserTabManager {
             mapper: AnyCoreDataMapper(mapper)
         )
 
+        let renderFilesRepository = RuntimeFilesOperationFactory(
+            repository: FileRepository(),
+            directoryPath: ApplicationConfig.shared.webPageRenderCachePath
+        )
+
         return DAppBrowserTabManager(
             cacheBasePath: ApplicationConfig.shared.fileCachePath,
-            fileRepository: FileRepository(),
+            fileRepository: renderFilesRepository,
             repository: coreDataRepository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared

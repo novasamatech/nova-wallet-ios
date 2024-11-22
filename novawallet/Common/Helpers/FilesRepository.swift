@@ -52,7 +52,7 @@ final class FileRepository: FileRepositoryProtocol {
 
     func readOperation(at path: String) -> BaseOperation<Data?> {
         ClosureOperation {
-            FileManager.default.contents(atPath: path)
+            return FileManager.default.contents(atPath: path)
         }
     }
 

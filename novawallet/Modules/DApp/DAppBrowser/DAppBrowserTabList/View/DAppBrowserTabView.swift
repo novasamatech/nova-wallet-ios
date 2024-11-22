@@ -27,9 +27,7 @@ class DAppBrowserTabView: UIView {
         view.roundedBackgroundView?.cornerRadius = Constants.closeButtonCornerRadius
         view.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         view.contentInsets = Constants.closeButtonContentInsets
-        view.imageWithTitleView?.iconImage = R.image.iconBannerClose()?.tinted(
-            with: R.color.colorIconCloseDApp()!
-        )
+        view.imageWithTitleView?.iconImage = R.image.iconCloseDAppTab()
         view.roundedBackgroundView?.fillColor = R.color.colorCloseDAppBackground()!
         view.roundedBackgroundView?.shadowOpacity = 0.0
     }
