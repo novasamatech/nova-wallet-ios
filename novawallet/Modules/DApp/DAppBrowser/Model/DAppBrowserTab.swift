@@ -22,6 +22,10 @@ struct DAppBrowserTab {
         )
     }
 
+    var isBlankPage: Bool {
+        url == nil
+    }
+
     init(
         uuid: UUID,
         name: String?,
@@ -91,8 +95,7 @@ struct DAppBrowserTab {
     func updating(
         transportStates: [DAppTransportState]? = nil,
         name: String? = nil,
-        url: URL? = nil,
-        lastModified: Date? = nil,
+        lastModified _: Date? = nil,
         stateRender: Data? = nil,
         desktopOnly: Bool? = nil,
         icon: URL? = nil
@@ -100,12 +103,38 @@ struct DAppBrowserTab {
         DAppBrowserTab(
             uuid: uuid,
             name: name ?? self.name,
-            url: url ?? self.url,
-            lastModified: lastModified ?? self.lastModified,
+            url: url,
+            lastModified: Date(),
             transportStates: transportStates ?? self.transportStates,
             stateRender: stateRender ?? self.stateRender,
             desktopOnly: desktopOnly ?? self.desktopOnly,
             icon: icon ?? self.icon
+        )
+    }
+
+    func updating(with dApp: DApp) -> DAppBrowserTab {
+        DAppBrowserTab(
+            uuid: uuid,
+            name: dApp.name,
+            url: dApp.url,
+            lastModified: Date(),
+            transportStates: nil,
+            stateRender: nil,
+            desktopOnly: dApp.desktopOnly,
+            icon: dApp.icon
+        )
+    }
+
+    func updating(with url: URL?) -> DAppBrowserTab {
+        DAppBrowserTab(
+            uuid: uuid,
+            name: nil,
+            url: url,
+            lastModified: Date(),
+            transportStates: nil,
+            stateRender: nil,
+            desktopOnly: nil,
+            icon: nil
         )
     }
 

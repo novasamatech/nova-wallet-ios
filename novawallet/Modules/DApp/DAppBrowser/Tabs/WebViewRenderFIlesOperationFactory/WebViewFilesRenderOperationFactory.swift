@@ -45,7 +45,7 @@ protocol WebViewRenderFilesOperationFactoryProtocol {
      *      - id: Idetifier of a webview for which render data
      *  must be removed.
      *
-     *  - Returns: `BaseOperation` which produces void
+     *  - Returns: `CompoundOperationWrapper` which produces void
      *  in case file removed succesfully.
      */
     func removeRender(for id: UUID) -> CompoundOperationWrapper<Void>
@@ -58,7 +58,7 @@ protocol WebViewRenderFilesOperationFactoryProtocol {
      *      - ids: Idetifier of a webviews for which render data
      *  must be removed.
      *
-     *  - Returns: `BaseOperation` which produces void
+     *  - Returns: `CompoundOperationWrapper` which produces void
      *  in case files removed succesfully.
      */
     func removeRenders(for ids: [UUID]) -> CompoundOperationWrapper<Void>

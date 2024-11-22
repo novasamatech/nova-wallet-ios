@@ -46,13 +46,6 @@ final class DAppBrowserInteractor {
         self.transports = transports
         currentTab = selectedTab
         self.operationQueue = operationQueue
-        dataSource = DAppBrowserStateDataSource(
-            wallet: wallet,
-            chainRegistry: chainRegistry,
-            dAppSettingsRepository: dAppSettingsRepository,
-            operationQueue: operationQueue,
-            tab: selectedTab
-        )
         self.logger = logger
         self.sequentialPhishingVerifier = sequentialPhishingVerifier
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
@@ -60,6 +53,18 @@ final class DAppBrowserInteractor {
         self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
         self.tabManager = tabManager
         self.securedLayer = securedLayer
+
+        if let existingDataSource = currentTab.transportStates?.first?.dataSource {
+            dataSource = existingDataSource
+        } else {
+            dataSource = DAppBrowserStateDataSource(
+                wallet: wallet,
+                chainRegistry: chainRegistry,
+                dAppSettingsRepository: dAppSettingsRepository,
+                operationQueue: operationQueue,
+                tab: selectedTab
+            )
+        }
     }
 }
 
@@ -67,16 +72,13 @@ final class DAppBrowserInteractor {
 
 private extension DAppBrowserInteractor {
     func setupState() {
-        if
-            let existingTabStates = currentTab.transportStates,
-            let existingDataSource = existingTabStates.first?.dataSource {
-            currentTab.transportStates?.forEach { state in
+        if let existingTabStates = currentTab.transportStates {
+            existingTabStates.forEach { state in
                 transports.forEach { transport in
+                    transport.delegate = self
                     transport.restoreState(from: state)
                 }
             }
-
-            dataSource = existingDataSource
         } else {
             transports.forEach { transport in
                 transport.delegate = self
@@ -280,11 +282,19 @@ private extension DAppBrowserInteractor {
         }
     }
 
-    func proceedWithTabUpdate(with query: String) {
-        let url = DAppBrowserTab.resolveUrl(for: query)
-        let updateWrapper = tabManager.updateTab(currentTab.updating(url: url))
+    func proceedWithTabUpdate(with searchResult: DAppSearchResult) {
+        let updateWrapper: CompoundOperationWrapper<DAppBrowserTab>
 
-        storeTab(currentTab.updating(transportStates: nil))
+        switch searchResult {
+        case let .query(query):
+            let url = DAppBrowserTab.resolveUrl(for: query)
+            updateWrapper = tabManager.updateTab(currentTab.updating(with: url))
+        case let .dApp(dApp):
+            let updatedTab = currentTab.updating(with: dApp)
+            updateWrapper = tabManager.updateTab(updatedTab)
+
+            dataSource.replace(tab: updatedTab)
+        }
 
         execute(
             wrapper: updateWrapper,
@@ -416,11 +426,10 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func process(newQuery: DAppSearchResult) {
         sequentialPhishingVerifier.cancelAll()
 
-        switch newQuery {
-        case let .query(query):
-            proceedWithTabUpdate(with: query)
-        case let .dApp(dApp):
+        if case let .dApp(dApp) = newQuery, !currentTab.isBlankPage {
             proceedWithNewTab(opening: dApp)
+        } else {
+            proceedWithTabUpdate(with: newQuery)
         }
     }
 
