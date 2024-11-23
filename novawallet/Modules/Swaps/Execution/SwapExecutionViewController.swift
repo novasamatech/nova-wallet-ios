@@ -28,33 +28,75 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        rootView.statusView.updateAnimationOnAppear()
+    }
+
+    private func setupHandlers() {
+        rootView.detailsView.delegate = self
+
+        rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
+        rootView.priceDifferenceCell.addTarget(self, action: #selector(priceDifferenceAction), for: .touchUpInside)
+        rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
+        rootView.totalFeeCell.addTarget(self, action: #selector(totalFeeAction), for: .touchUpInside)
+    }
+
     private func setupLocalization() {
         rootView.setup(locale: selectedLocale)
+    }
+
+    @objc private func rateAction() {
+        presenter.showRateInfo()
+    }
+
+    @objc private func priceDifferenceAction() {
+        presenter.showPriceDifferenceInfo()
+    }
+
+    @objc private func slippageAction() {
+        presenter.showSlippageInfo()
+    }
+
+    @objc private func totalFeeAction() {
+        presenter.showTotalFeeInfo()
+    }
+
+    @objc private func actionDone() {
+        presenter.activateDone()
+    }
+
+    @objc private func actionTryAgain() {
+        presenter.activateTryAgain()
     }
 }
 
 extension SwapExecutionViewController: SwapExecutionViewProtocol {
-    func didReceive(countdownViewModel: CountdownLoadingView.ViewModel) {
-        rootView.countdownView.start(with: countdownViewModel)
+    func didReceiveExecution(viewModel: SwapExecutionViewModel) {
+        rootView.statusView.bind(viewModel: viewModel, locale: selectedLocale)
+
+        switch viewModel {
+        case .completed:
+            let doneButton = rootView.setupDoneButton(for: selectedLocale)
+            doneButton.addTarget(self, action: #selector(actionDone), for: .touchUpInside)
+        case .failed:
+            let tryAgainButton = rootView.setupTryAgainButton(for: selectedLocale)
+            tryAgainButton.addTarget(self, action: #selector(actionTryAgain), for: .touchUpInside)
+        case .inProgress:
+            break
+        }
     }
 
-    func didReceive(currentOperation: String) {
-        rootView.statusTitleView.bind(
-            viewModel: .init(
-                topValue: R.string.localizable.swapsExecutionDontCloseApp(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                bottomValue: currentOperation
-            )
-        )
+    func didUpdateExecution(remainedTime: UInt) {
+        rootView.statusView.updateProgress(remainedTime: remainedTime)
     }
-
-    func didReceive(executing _: UInt, total _: UInt) {}
 
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel) {
         rootView.pairsView.leftAssetView.bind(viewModel: viewModel)
@@ -88,6 +130,14 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
     func didReceiveTotalFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.totalFeeCell.bind(loadableViewModel: viewModel)
     }
+}
+
+extension SwapExecutionViewController: CollapsableContainerViewDelegate {
+    func animateAlongsideWithInfo(sender _: AnyObject?) {
+        rootView.containerView.scrollView.layoutIfNeeded()
+    }
+
+    func didChangeExpansion(isExpanded _: Bool, sender _: AnyObject) {}
 }
 
 extension SwapExecutionViewController: Localizable {

@@ -9,7 +9,11 @@ struct SwapExecutionViewFactory {
     ) -> SwapExecutionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
-        let interactor = SwapExecutionInteractor()
+        let interactor = SwapExecutionInteractor(
+            assetsExchangeService: flowState.setupAssetExchangeService(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let wireframe = SwapExecutionWireframe(flowState: flowState, completionClosure: completionClosure)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -17,7 +21,7 @@ struct SwapExecutionViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let viewModelFactory = SwapConfirmViewModelFactory(
+        let detailsViewModelFactory = SwapDetailsViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             priceAssetInfoFactory: priceAssetInfoFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
@@ -30,7 +34,9 @@ struct SwapExecutionViewFactory {
             model: model,
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: viewModelFactory
+            executionViewModelFactory: SwapExecutionViewModelFactory(),
+            detailsViewModelFactory: detailsViewModelFactory,
+            localizationManager: LocalizationManager.shared
         )
 
         let view = SwapExecutionViewController(

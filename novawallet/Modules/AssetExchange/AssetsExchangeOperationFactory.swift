@@ -4,7 +4,12 @@ import Operation_iOS
 protocol AssetsExchangeOperationFactoryProtocol {
     func createQuoteWrapper(args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote>
     func createFeeWrapper(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
-    func createExecutionWrapper(for fee: AssetExchangeFee) -> CompoundOperationWrapper<Balance>
+
+    func createExecutionWrapper(
+        for fee: AssetExchangeFee,
+        notifyingIn queue: DispatchQueue,
+        operationStartClosure: @escaping (Int) -> Void
+    ) -> CompoundOperationWrapper<Balance>
 }
 
 enum AssetsExchangeOperationFactoryError: Error {
@@ -307,7 +312,11 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
         }
     }
 
-    func createExecutionWrapper(for fee: AssetExchangeFee) -> CompoundOperationWrapper<Balance> {
+    func createExecutionWrapper(
+        for fee: AssetExchangeFee,
+        notifyingIn queue: DispatchQueue,
+        operationStartClosure: @escaping (Int) -> Void
+    ) -> CompoundOperationWrapper<Balance> {
         do {
             let atomicOperations = try prepareAtomicOperations(
                 for: fee.route,
@@ -319,6 +328,8 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
                 operations: atomicOperations,
                 fee: fee,
                 operationQueue: operationQueue,
+                operationStartClosure: operationStartClosure,
+                notificationQueue: queue,
                 logger: logger
             )
 

@@ -13,7 +13,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         selectedWallet.fetch(for: initState.chainAssetOut.chain.accountRequest())?.accountId
     }
 
-    private var viewModelFactory: SwapConfirmViewModelFactoryProtocol
+    private var viewModelFactory: SwapDetailsViewModelFactoryProtocol
 
     private var quoteArgs: AssetConversion.QuoteArgs
 
@@ -22,7 +22,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         wireframe: SwapConfirmWireframeProtocol,
         initState: SwapConfirmInitState,
         selectedWallet: MetaAccountModel,
-        viewModelFactory: SwapConfirmViewModelFactoryProtocol,
+        viewModelFactory: SwapDetailsViewModelFactoryProtocol,
         slippageBounds: SlippageBounds,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -403,30 +403,6 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
                 self?.view?.didReceiveStartLoading()
             }
         )
-    }
-}
-
-extension SwapConfirmPresenter: SwapConfirmInteractorOutputProtocol {
-    func didReceive(error: SwapConfirmError) {
-        logger.error("Did receive error: \(error)")
-
-        view?.didReceiveStopLoading()
-        switch error {
-        case let .submit(error):
-            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
-                error,
-                view: view,
-                closeAction: .dismiss,
-                locale: selectedLocale,
-                completionClosure: nil
-            )
-        }
-    }
-
-    func didReceiveSwaped(amount: Balance) {
-        logger.debug("Did receive swaped amount: \(String(amount))")
-
-        view?.didReceiveStopLoading()
     }
 }
 

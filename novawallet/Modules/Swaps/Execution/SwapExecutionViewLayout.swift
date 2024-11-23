@@ -1,25 +1,14 @@
 import UIKit
 
 final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
-    let countdownView = CountdownLoadingView()
-
-    let statusTitleView: MultiValueView = .create { view in
-        view.apply(
-            style: .init(
-                topLabel: .boldTitle1Primary,
-                bottomLabel: .semiboldBodyButtonAccent
-            )
-        )
-
-        view.valueTop.textAlignment = .center
-        view.valueBottom.textAlignment = .center
-
-        view.spacing = 4
-    }
+    let statusView = SwapExecutionView()
 
     let pairsView = SwapPairView()
 
-    let detailsView = SwapExecutionDetailsView()
+    let detailsView: SwapExecutionDetailsView = .create {
+        $0.contentInsets = .zero
+        $0.setExpanded(false, animated: false)
+    }
 
     var rateCell: SwapInfoViewCell {
         detailsView.rateCell
@@ -41,7 +30,33 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
         detailsView.totalFeeCell
     }
 
+    private var actionButton: TriangularedButton?
+
+    func setupDoneButton(for locale: Locale) -> TriangularedButton {
+        let button = setupActionButton()
+
+        button.setTitle(R.string.localizable.commonDone(preferredLanguages: locale.rLanguages))
+
+        containerView.scrollBottomOffset = UIConstants.actionBottomInset + UIConstants.actionHeight + 8
+
+        return button
+    }
+
+    func setupTryAgainButton(for locale: Locale) -> TriangularedButton {
+        let button = setupActionButton()
+
+        button.setTitle(R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages))
+
+        containerView.scrollBottomOffset = UIConstants.actionBottomInset + UIConstants.actionHeight + 8
+
+        return button
+    }
+
     func setup(locale: Locale) {
+        detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
         slippageCell.titleButton.setTitle(
             R.string.localizable.swapsSetupSlippage(
                 preferredLanguages: locale.rLanguages
@@ -75,11 +90,29 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
 
         stackView.layoutMargins = UIEdgeInsets(top: 76, left: 16, bottom: 0, right: 16)
 
-        let countdownWrapperView = UIView.vStack(alignment: .center, [countdownView])
+        addArrangedSubview(statusView, spacingAfter: 24)
+        addArrangedSubview(pairsView, spacingAfter: 24)
+        addArrangedSubview(detailsView)
+    }
 
-        addArrangedSubview(countdownWrapperView, spacingAfter: 16)
-        addArrangedSubview(statusTitleView, spacingAfter: 24)
-        addArrangedSubview(pairsView, spacingAfter: 8)
-        addArrangedSubview(detailsView, spacingAfter: 24)
+    private func setupActionButton() -> TriangularedButton {
+        actionButton?.removeFromSuperview()
+        actionButton = nil
+
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+
+        addSubview(button)
+
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        actionButton = button
+
+        return button
     }
 }

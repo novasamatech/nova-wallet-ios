@@ -1772,3 +1772,10 @@
 "swaps.details.route" = "Route";
 "swaps.details.total.fee" = "Total fee";
 "swaps.execution.dont.close.app" = "Do not close the app!";
+"sec.time.units" = "sec";
+"swaps.execution.transfer.details" = "Transferring %@ to %@";
+"swaps.execution.swap.details" = "Swapping %@ to %@ on %@";
+"common.of" = "%@ of %@";
+"swaps.execution.swap.failure" = "Failed on operation #%@ (%@)";
+"swaps.label.crosschain" = "Cross-chain transfer";
+"swaps.label.swap" = "Swap";

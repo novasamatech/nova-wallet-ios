@@ -26,23 +26,12 @@ protocol SwapConfirmPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {
-    func submit(using estimation: AssetExchangeFee)
-}
-
-protocol SwapConfirmInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
-    func didReceiveSwaped(amount: Balance)
-    func didReceive(error: SwapConfirmError)
-}
+protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {}
 
 protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptionsPresentable,
-    ShortTextInfoPresentable, ModalAlertPresenting, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
+    ShortTextInfoPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
     func showSwapExecution(
         from view: SwapConfirmViewProtocol?,
         model: SwapExecutionModel
     )
-}
-
-enum SwapConfirmError: Error {
-    case submit(Error)
 }
