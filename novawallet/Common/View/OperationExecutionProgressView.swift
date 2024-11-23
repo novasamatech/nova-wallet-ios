@@ -66,6 +66,10 @@ final class OperationExecutionProgressView: UIView {
         loadingView?.update(remainedTime: remainedTime)
     }
 
+    func updateAnimationOnAppear() {
+        loadingView?.updateAnimationOnAppear()
+    }
+
     private func setupStyle() {
         backgroundView.cornerRadius = preferredSize / 2
     }

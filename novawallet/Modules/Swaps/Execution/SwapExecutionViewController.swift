@@ -34,18 +34,64 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        rootView.statusView.updateAnimationOnAppear()
+    }
+
     private func setupHandlers() {
         rootView.detailsView.delegate = self
+
+        rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
+        rootView.priceDifferenceCell.addTarget(self, action: #selector(priceDifferenceAction), for: .touchUpInside)
+        rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
+        rootView.totalFeeCell.addTarget(self, action: #selector(totalFeeAction), for: .touchUpInside)
     }
 
     private func setupLocalization() {
         rootView.setup(locale: selectedLocale)
+    }
+
+    @objc private func rateAction() {
+        presenter.showRateInfo()
+    }
+
+    @objc private func priceDifferenceAction() {
+        presenter.showPriceDifferenceInfo()
+    }
+
+    @objc private func slippageAction() {
+        presenter.showSlippageInfo()
+    }
+
+    @objc private func totalFeeAction() {
+        presenter.showTotalFeeInfo()
+    }
+
+    @objc private func actionDone() {
+        presenter.activateDone()
+    }
+
+    @objc private func actionTryAgain() {
+        presenter.activateTryAgain()
     }
 }
 
 extension SwapExecutionViewController: SwapExecutionViewProtocol {
     func didReceiveExecution(viewModel: SwapExecutionViewModel) {
         rootView.statusView.bind(viewModel: viewModel, locale: selectedLocale)
+
+        switch viewModel {
+        case .completed:
+            let doneButton = rootView.setupDoneButton(for: selectedLocale)
+            doneButton.addTarget(self, action: #selector(actionDone), for: .touchUpInside)
+        case .failed:
+            let tryAgainButton = rootView.setupTryAgainButton(for: selectedLocale)
+            tryAgainButton.addTarget(self, action: #selector(actionTryAgain), for: .touchUpInside)
+        case .inProgress:
+            break
+        }
     }
 
     func didUpdateExecution(remainedTime: UInt) {

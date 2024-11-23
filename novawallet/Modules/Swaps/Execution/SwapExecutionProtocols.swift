@@ -12,6 +12,12 @@ protocol SwapExecutionViewProtocol: ControllerBackedProtocol {
 
 protocol SwapExecutionPresenterProtocol: AnyObject {
     func setup()
+    func showRateInfo()
+    func showPriceDifferenceInfo()
+    func showSlippageInfo()
+    func showTotalFeeInfo()
+    func activateDone()
+    func activateTryAgain()
 }
 
 protocol SwapExecutionInteractorInputProtocol: AnyObject {
@@ -24,4 +30,15 @@ protocol SwapExecutionInteractorOutputProtocol: AnyObject {
     func didFailExecution(with error: Error)
 }
 
-protocol SwapExecutionWireframeProtocol: AnyObject {}
+protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable {
+    func complete(
+        on view: ControllerBackedProtocol?,
+        payChainAsset: ChainAsset
+    )
+
+    func showSwapSetup(
+        from view: SwapExecutionViewProtocol?,
+        payChainAsset: ChainAsset,
+        receiveChainAsset: ChainAsset
+    )
+}

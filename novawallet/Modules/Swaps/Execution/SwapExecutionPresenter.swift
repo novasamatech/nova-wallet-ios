@@ -185,6 +185,8 @@ final class SwapExecutionPresenter {
         currentTimer.stop()
         currentTimer.delegate = self
         currentTimer.start(with: reminedExecutionTime)
+        
+        execTimer = currentTimer
     }
 
     private func updateInProgressStateIfNeeded(for newOperationIndex: Int) {
@@ -241,6 +243,55 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
         updateInProgressStateIfNeeded(for: 0)
 
         interactor.submit(using: model.fee)
+    }
+
+    func showRateInfo() {
+        wireframe.showRateInfo(from: view)
+    }
+
+    func showPriceDifferenceInfo() {
+        let title = LocalizableResource {
+            R.string.localizable.swapsSetupPriceDifference(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+        let details = LocalizableResource {
+            R.string.localizable.swapsSetupPriceDifferenceDescription(
+                preferredLanguages: $0.rLanguages
+            )
+        }
+        wireframe.showInfo(
+            from: view,
+            title: title,
+            details: details
+        )
+    }
+
+    func showSlippageInfo() {
+        wireframe.showSlippageInfo(from: view)
+    }
+
+    func showTotalFeeInfo() {
+        wireframe.showFeeInfo(from: view)
+    }
+
+    func activateDone() {
+        wireframe.complete(on: view, payChainAsset: chainAssetIn)
+    }
+
+    func activateTryAgain() {
+        guard case let .failed(operationIndex, _) = state else {
+            return
+        }
+
+        let payChainAsset = quote.metaOperations[operationIndex].assetIn
+        let receiveChainAsset = chainAssetOut
+
+        wireframe.showSwapSetup(
+            from: view,
+            payChainAsset: payChainAsset,
+            receiveChainAsset: receiveChainAsset
+        )
     }
 }
 

@@ -10,6 +10,12 @@ struct AssetExchangeQuote {
     }
 
     func totalExecutionTime(from index: Int) -> TimeInterval {
-        executionTimes.dropFirst(index).reduce(0, +)
+        let subarray = if index > 0 {
+            Array(executionTimes.dropFirst(index))
+        } else {
+            executionTimes
+        }
+
+        return subarray.reduce(0, +)
     }
 }

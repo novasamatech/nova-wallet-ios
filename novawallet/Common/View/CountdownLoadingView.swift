@@ -61,6 +61,13 @@ final class CountdownLoadingView: UIView {
         updateTimeLabel(with: remainedTime, animated: true)
     }
 
+    func updateAnimationOnAppear() {
+        if loadingView.isAnimating {
+            loadingView.stopAnimating()
+            loadingView.startAnimating()
+        }
+    }
+
     private func setupLayout() {
         addSubview(loadingView)
         loadingView.snp.makeConstraints { make in

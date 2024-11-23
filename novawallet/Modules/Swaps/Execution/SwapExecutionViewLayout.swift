@@ -30,6 +30,28 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
         detailsView.totalFeeCell
     }
 
+    private var actionButton: TriangularedButton?
+
+    func setupDoneButton(for locale: Locale) -> TriangularedButton {
+        let button = setupActionButton()
+
+        button.setTitle(R.string.localizable.commonDone(preferredLanguages: locale.rLanguages))
+
+        containerView.scrollBottomOffset = UIConstants.actionBottomInset + UIConstants.actionHeight + 8
+
+        return button
+    }
+
+    func setupTryAgainButton(for locale: Locale) -> TriangularedButton {
+        let button = setupActionButton()
+
+        button.setTitle(R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages))
+
+        containerView.scrollBottomOffset = UIConstants.actionBottomInset + UIConstants.actionHeight + 8
+
+        return button
+    }
+
     func setup(locale: Locale) {
         detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
             preferredLanguages: locale.rLanguages
@@ -71,5 +93,26 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
         addArrangedSubview(statusView, spacingAfter: 24)
         addArrangedSubview(pairsView, spacingAfter: 24)
         addArrangedSubview(detailsView)
+    }
+
+    private func setupActionButton() -> TriangularedButton {
+        actionButton?.removeFromSuperview()
+        actionButton = nil
+
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+
+        addSubview(button)
+
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        actionButton = button
+
+        return button
     }
 }

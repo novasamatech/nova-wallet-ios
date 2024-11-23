@@ -91,6 +91,10 @@ final class SwapExecutionView: UIView {
         progressView.updateProgress(remainedTime: remainedTime)
     }
 
+    func updateAnimationOnAppear() {
+        progressView.updateAnimationOnAppear()
+    }
+
     private func applyInProgressStyle() {
         statusTitleView.apply(
             style: .init(
@@ -120,10 +124,14 @@ final class SwapExecutionView: UIView {
     private func applyCompletedStyle() {
         statusTitleView.apply(
             style: .init(
-                topLabel: .boldTitle1Primary,
-                bottomLabel: .semiboldBodyButtonAccent
+                topLabel: .boldTitle1Positive,
+                bottomLabel: .semiboldBodySecondary
             )
         )
+
+        statusDetailsView.backgroundView.applyCellBackgroundStyle()
+        statusDetailsView.contentView.applyShimmer(style: .regularSubheadlineSecondary)
+        statusDetailsView.contentView.apply(style: .regularSubhedlineSecondary)
     }
 
     private func setupLayout() {
