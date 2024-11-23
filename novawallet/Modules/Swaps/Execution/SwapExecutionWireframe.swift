@@ -36,7 +36,7 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
             return
         }
 
-        let presenter = view?.controller.navigationController?.presentingViewController
+        let presenter = view?.controller.presentingViewController
 
         let navigationController = NovaNavigationController(rootViewController: swapView.controller)
 
