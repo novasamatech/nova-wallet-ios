@@ -30,13 +30,15 @@ final class SwapExecutionPresenter {
         interactor: SwapExecutionInteractorInputProtocol,
         wireframe: SwapExecutionWireframeProtocol,
         executionViewModelFactory: SwapExecutionViewModelFactoryProtocol,
-        detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol
+        detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.model = model
         self.interactor = interactor
         self.wireframe = wireframe
         self.executionViewModelFactory = executionViewModelFactory
         self.detailsViewModelFactory = detailsViewModelFactory
+        self.localizationManager = localizationManager
     }
 
     deinit {

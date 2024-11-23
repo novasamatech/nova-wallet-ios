@@ -35,7 +35,8 @@ struct SwapExecutionViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             executionViewModelFactory: SwapExecutionViewModelFactory(),
-            detailsViewModelFactory: detailsViewModelFactory
+            detailsViewModelFactory: detailsViewModelFactory,
+            localizationManager: LocalizationManager.shared
         )
 
         let view = SwapExecutionViewController(
