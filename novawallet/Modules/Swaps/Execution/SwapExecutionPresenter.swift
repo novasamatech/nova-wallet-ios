@@ -185,7 +185,7 @@ final class SwapExecutionPresenter {
         currentTimer.stop()
         currentTimer.delegate = self
         currentTimer.start(with: reminedExecutionTime)
-        
+
         execTimer = currentTimer
     }
 
