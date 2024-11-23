@@ -5,7 +5,10 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
 
     let pairsView = SwapPairView()
 
-    let detailsView = SwapExecutionDetailsView()
+    let detailsView: SwapExecutionDetailsView = .create {
+        $0.contentInsets = .zero
+        $0.setExpanded(false, animated: false)
+    }
 
     var rateCell: SwapInfoViewCell {
         detailsView.rateCell
@@ -28,6 +31,10 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
     }
 
     func setup(locale: Locale) {
+        detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
         slippageCell.titleButton.setTitle(
             R.string.localizable.swapsSetupSlippage(
                 preferredLanguages: locale.rLanguages

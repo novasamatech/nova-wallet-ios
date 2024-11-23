@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 protocol SwapExecutionViewModelFactoryProtocol {
     func createInProgressViewModel(
@@ -7,9 +8,28 @@ protocol SwapExecutionViewModelFactoryProtocol {
         remainedTime: TimeInterval,
         locale: Locale
     ) -> SwapExecutionViewModel
+
+    func createFailedViewModel(
+        quote: AssetExchangeQuote,
+        currentOperationIndex: Int,
+        for date: Date,
+        locale: Locale
+    ) -> SwapExecutionViewModel
+
+    func createCompletedViewModel(
+        quote: AssetExchangeQuote,
+        for date: Date,
+        locale: Locale
+    ) -> SwapExecutionViewModel
 }
 
 final class SwapExecutionViewModelFactory {
+    let dateFormatter: LocalizableResource<DateFormatter>
+
+    init(dateFormatter: LocalizableResource<DateFormatter> = DateFormatter.shortDateAndTime) {
+        self.dateFormatter = dateFormatter
+    }
+
     private func createOperationDetails(
         _ operation: AssetExchangeMetaOperationProtocol,
         locale: Locale
@@ -60,12 +80,46 @@ extension SwapExecutionViewModelFactory: SwapExecutionViewModelFactoryProtocol {
             preferredLanguages: locale.rLanguages
         )
 
-        return SwapExecutionViewModel.inProgress(
+        return .inProgress(
             .init(
                 remainedTimeViewModel: remainedTimeViewModel,
                 currentOperation: currentOperationString,
                 details: details
             )
         )
+    }
+
+    func createFailedViewModel(
+        quote: AssetExchangeQuote,
+        currentOperationIndex: Int,
+        for date: Date,
+        locale: Locale
+    ) -> SwapExecutionViewModel {
+        let time = dateFormatter.value(for: locale).string(from: date)
+
+        let operationLabel = quote.metaOperations[currentOperationIndex].label.getTitle(for: locale)
+
+        let details = R.string.localizable.swapsExecutionSwapFailure(
+            String(currentOperationIndex + 1),
+            operationLabel,
+            preferredLanguages: locale.rLanguages
+        )
+
+        return .failed(.init(time: time, details: details))
+    }
+
+    func createCompletedViewModel(
+        quote: AssetExchangeQuote,
+        for date: Date,
+        locale: Locale
+    ) -> SwapExecutionViewModel {
+        let time = dateFormatter.value(for: locale).string(from: date)
+
+        let operationsString = R.string.localizable.commonOperations(
+            format: quote.metaOperations.count,
+            preferredLanguages: locale.rLanguages
+        )
+
+        return .completed(.init(time: time, details: operationsString))
     }
 }

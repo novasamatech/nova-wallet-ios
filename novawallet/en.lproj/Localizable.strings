@@ -1776,3 +1776,6 @@
 "swaps.execution.transfer.details" = "Transferring %@ to %@";
 "swaps.execution.swap.details" = "Swapping %@ to %@ on %@";
 "common.of" = "%@ of %@";
+"swaps.execution.swap.failure" = "Failed on operation #%@ (%@)";
+"swaps.label.crosschain" = "Cross-chain transfer";
+"swaps.label.swap" = "Swap";

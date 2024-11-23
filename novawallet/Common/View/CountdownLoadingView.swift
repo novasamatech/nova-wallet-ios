@@ -21,9 +21,19 @@ final class CountdownLoadingView: UIView {
     let timeUpdateAnimator = TransitionAnimator(
         type: .moveIn,
         duration: 0.25,
-        subtype: .fromBottom,
+        subtype: .fromTop,
         curve: .easeInEaseOut
     )
+
+    var preferredSize: CGSize {
+        get {
+            loadingView.contentSize
+        }
+
+        set {
+            loadingView.contentSize = newValue
+        }
+    }
 
     convenience init() {
         self.init(frame: .zero)
@@ -42,10 +52,13 @@ final class CountdownLoadingView: UIView {
 
     func bind(viewModel: CountdownLoadingView.ViewModel, animated: Bool) {
         loadingView.startAnimating()
-
         timerView.valueBottom.text = viewModel.units
 
         updateTimeLabel(with: viewModel.duration, animated: animated)
+    }
+
+    func update(remainedTime: UInt) {
+        updateTimeLabel(with: remainedTime, animated: true)
     }
 
     private func setupLayout() {
@@ -57,7 +70,8 @@ final class CountdownLoadingView: UIView {
         addSubview(timerView)
 
         timerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(8)
+            make.centerY.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(8)
         }
     }
 

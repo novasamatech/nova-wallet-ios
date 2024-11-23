@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import BigInt
 
-protocol SwapConfirmViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
+protocol SwapDetailsViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
     func assetViewModel(
         chainAsset: ChainAsset,
         amount: BigUInt,
@@ -15,7 +15,7 @@ protocol SwapConfirmViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
     func walletViewModel(walletAddress: WalletDisplayAddress) -> WalletAccountViewModel?
 }
 
-final class SwapConfirmViewModelFactory: SwapBaseViewModelFactory {
+final class SwapDetailsViewModelFactory: SwapBaseViewModelFactory {
     let walletViewModelFactory = WalletAccountViewModelFactory()
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
@@ -40,7 +40,7 @@ final class SwapConfirmViewModelFactory: SwapBaseViewModelFactory {
     }
 }
 
-extension SwapConfirmViewModelFactory: SwapConfirmViewModelFactoryProtocol {
+extension SwapDetailsViewModelFactory: SwapDetailsViewModelFactoryProtocol {
     func assetViewModel(
         chainAsset: ChainAsset,
         amount: BigUInt,

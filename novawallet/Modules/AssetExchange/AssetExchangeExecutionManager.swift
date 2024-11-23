@@ -5,6 +5,8 @@ enum AssetExchangeExecutionManagerError: Error {
     case invalidRouteDetails
 }
 
+typealias AssetExchangeOperationExecutionStartClosure = (Int) -> Void
+
 final class AssetExchangeExecutionManager {
     typealias ResultType = Balance
 
@@ -12,6 +14,8 @@ final class AssetExchangeExecutionManager {
     let fee: AssetExchangeFee
     let operationQueue: OperationQueue
     let syncQueue: DispatchQueue
+    let operationStartClosure: AssetExchangeOperationExecutionStartClosure
+    let notificationQueue: DispatchQueue
     let logger: LoggerProtocol
 
     private var completionClosure: ((Result<ResultType, Error>) -> Void)?
@@ -22,11 +26,15 @@ final class AssetExchangeExecutionManager {
         operations: [AssetExchangeAtomicOperationProtocol],
         fee: AssetExchangeFee,
         operationQueue: OperationQueue,
+        operationStartClosure: @escaping AssetExchangeOperationExecutionStartClosure,
+        notificationQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.operations = operations
         self.fee = fee
         self.operationQueue = operationQueue
+        self.operationStartClosure = operationStartClosure
+        self.notificationQueue = notificationQueue
         self.logger = logger
 
         syncQueue = DispatchQueue(label: "io.novawallet.asset.exchange.exec.\(UUID().uuidString)")
@@ -72,6 +80,10 @@ final class AssetExchangeExecutionManager {
         )
 
         let wrapper = operations[index].executeWrapper(for: swapLimit)
+
+        notificationQueue.async { [weak self] in
+            self?.operationStartClosure(index)
+        }
 
         executeCancellable(
             wrapper: wrapper,

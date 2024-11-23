@@ -45,6 +45,8 @@ final class OperationExecutionProgressView: UIView {
             return
         }
 
+        currentViewModel = viewModel
+
         clearCurrentStatusView()
 
         switch viewModel {
@@ -56,6 +58,12 @@ final class OperationExecutionProgressView: UIView {
         case .failed:
             setupFinalStatusView(isComplete: false)
         }
+    }
+
+    func updateProgress(remainedTime: UInt) {
+        guard let currentViewModel, currentViewModel.isInProgress else { return }
+
+        loadingView?.update(remainedTime: remainedTime)
     }
 
     private func setupStyle() {
@@ -80,6 +88,7 @@ final class OperationExecutionProgressView: UIView {
 
     private func setupLoadingView() {
         let view = CountdownLoadingView()
+        view.preferredSize = CGSize(width: preferredSize, height: preferredSize)
         configureContent(view: view)
 
         loadingView = view

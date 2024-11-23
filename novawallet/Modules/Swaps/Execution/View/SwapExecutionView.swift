@@ -4,22 +4,16 @@ final class SwapExecutionView: UIView {
     let progressView = OperationExecutionProgressView()
 
     let statusTitleView: MultiValueView = .create { view in
-        view.apply(
-            style: .init(
-                topLabel: .boldTitle1Primary,
-                bottomLabel: .semiboldBodyButtonAccent
-            )
-        )
-
         view.valueTop.textAlignment = .center
         view.valueBottom.textAlignment = .center
 
         view.spacing = 4
     }
 
-    let statusDetailsView: GenericBorderedView<UILabel> = .create { view in
+    let statusDetailsView: GenericBorderedView<ShimmerLabel> = .create { view in
         view.contentInsets = UIEdgeInsets(verticalInset: 0, horizontalInset: 16)
         view.contentView.textAlignment = .center
+        view.backgroundView.cornerRadius = 12
     }
 
     convenience init() {
@@ -53,6 +47,10 @@ final class SwapExecutionView: UIView {
 
             statusDetailsView.contentView.text = inProgress.details
 
+            applyInProgressStyle()
+
+            statusDetailsView.contentView.startShimmering()
+
         case let .completed(completed):
             progressView.bind(viewModel: .completed)
 
@@ -65,7 +63,10 @@ final class SwapExecutionView: UIView {
                 )
             )
 
+            statusDetailsView.contentView.stopShimmering()
             statusDetailsView.contentView.text = completed.details
+
+            applyCompletedStyle()
 
         case let .failed(failed):
             progressView.bind(viewModel: .failed)
@@ -79,14 +80,62 @@ final class SwapExecutionView: UIView {
                 )
             )
 
+            statusDetailsView.contentView.stopShimmering()
             statusDetailsView.contentView.text = failed.details
+
+            applyFailedStyle()
         }
     }
 
+    func updateProgress(remainedTime: UInt) {
+        progressView.updateProgress(remainedTime: remainedTime)
+    }
+
+    private func applyInProgressStyle() {
+        statusTitleView.apply(
+            style: .init(
+                topLabel: .boldTitle1Primary,
+                bottomLabel: .semiboldBodyButtonAccent
+            )
+        )
+
+        statusDetailsView.backgroundView.applyCellBackgroundStyle()
+        statusDetailsView.contentView.applyShimmer(style: .regularSubheadlineSecondary)
+        statusDetailsView.contentView.apply(style: .regularSubhedlineSecondary)
+    }
+
+    private func applyFailedStyle() {
+        statusTitleView.apply(
+            style: .init(
+                topLabel: .boldTitle1Negative,
+                bottomLabel: .semiboldBodySecondary
+            )
+        )
+
+        statusDetailsView.backgroundView.applyErrorBlockBackgroundStyle()
+        statusDetailsView.contentView.applyShimmer(style: .regularSubheadlinePrimary)
+        statusDetailsView.contentView.apply(style: .regularSubhedlinePrimary)
+    }
+
+    private func applyCompletedStyle() {
+        statusTitleView.apply(
+            style: .init(
+                topLabel: .boldTitle1Primary,
+                bottomLabel: .semiboldBodyButtonAccent
+            )
+        )
+    }
+
     private func setupLayout() {
-        let contentView = UIView.hStack(
-            alignment: .center,
-            [progressView, statusTitleView, statusDetailsView]
+        let progressViewContainer = UIView.vStack(alignment: .center, [progressView])
+
+        let contentView = UIView.vStack(
+            alignment: .fill,
+            [
+                progressViewContainer,
+                statusTitleView,
+                statusDetailsView
+            ]
         )
 
         addSubview(contentView)
@@ -94,7 +143,11 @@ final class SwapExecutionView: UIView {
             make.edges.equalToSuperview()
         }
 
-        contentView.setCustomSpacing(16, after: progressView)
+        contentView.setCustomSpacing(16, after: progressViewContainer)
         contentView.setCustomSpacing(24, after: statusTitleView)
+
+        statusDetailsView.snp.makeConstraints { make in
+            make.height.equalTo(48)
+        }
     }
 }

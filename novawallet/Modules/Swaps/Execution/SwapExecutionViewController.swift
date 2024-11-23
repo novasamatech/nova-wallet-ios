@@ -28,9 +28,14 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.detailsView.delegate = self
     }
 
     private func setupLocalization() {
@@ -41,6 +46,10 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
 extension SwapExecutionViewController: SwapExecutionViewProtocol {
     func didReceiveExecution(viewModel: SwapExecutionViewModel) {
         rootView.statusView.bind(viewModel: viewModel, locale: selectedLocale)
+    }
+
+    func didUpdateExecution(remainedTime: UInt) {
+        rootView.statusView.updateProgress(remainedTime: remainedTime)
     }
 
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel) {
@@ -75,6 +84,14 @@ extension SwapExecutionViewController: SwapExecutionViewProtocol {
     func didReceiveTotalFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.totalFeeCell.bind(loadableViewModel: viewModel)
     }
+}
+
+extension SwapExecutionViewController: CollapsableContainerViewDelegate {
+    func animateAlongsideWithInfo(sender _: AnyObject?) {
+        rootView.containerView.scrollView.layoutIfNeeded()
+    }
+
+    func didChangeExpansion(isExpanded _: Bool, sender _: AnyObject) {}
 }
 
 extension SwapExecutionViewController: Localizable {

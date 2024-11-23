@@ -27,7 +27,7 @@ struct SwapConfirmViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let viewModelFactory = SwapConfirmViewModelFactory(
+        let viewModelFactory = SwapDetailsViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             priceAssetInfoFactory: priceAssetInfoFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
@@ -71,30 +71,16 @@ struct SwapConfirmViewFactory {
         flowState: SwapTokensFlowStateProtocol
     ) -> SwapConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let accountRequest = initState.chainAssetIn.chain.accountRequest()
 
-        guard
-            let currencyManager = CurrencyManager.shared,
-            let selectedAccount = wallet.fetchMetaChainAccount(for: accountRequest) else {
+        guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
-            for: selectedAccount.metaId,
-            accountResponse: selectedAccount.chainAccount
-        )
-
         let assetStorageFactory = AssetStorageInfoOperationFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
-        )
-
-        let transactionStorage = SubstrateRepositoryFactory().createTxRepository()
-        let persistExtrinsicService = PersistentExtrinsicService(
-            repository: transactionStorage,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let interactor = SwapConfirmInteractor(
@@ -104,13 +90,9 @@ struct SwapConfirmViewFactory {
             assetStorageFactory: assetStorageFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            persistExtrinsicService: persistExtrinsicService,
-            eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             selectedWallet: wallet,
             operationQueue: operationQueue,
-            signer: signingWrapper,
-            callPathFactory: AssetHubCallPathFactory(),
             logger: Logger.shared
         )
 
