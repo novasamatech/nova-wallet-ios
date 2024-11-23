@@ -352,7 +352,7 @@ extension DAppBrowserTabManager {
             mapper: AnyCoreDataMapper(mapper)
         )
 
-        let renderFilesRepository = RuntimeFilesOperationFactory(
+        let renderFilesRepository = WebViewRenderFilesOperationFactory(
             repository: FileRepository(),
             directoryPath: ApplicationConfig.shared.webPageRenderCachePath
         )

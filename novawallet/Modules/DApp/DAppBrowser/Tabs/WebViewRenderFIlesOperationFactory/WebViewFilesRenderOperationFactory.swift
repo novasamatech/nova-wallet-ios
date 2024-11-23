@@ -39,19 +39,6 @@ protocol WebViewRenderFilesOperationFactoryProtocol {
 
     /**
      *  Constructs an operations wrapper that removes data of
-     *  webview render by removing a file which matches concrete webview tab id.
-     *
-     *  - Parameters:
-     *      - id: Idetifier of a webview for which render data
-     *  must be removed.
-     *
-     *  - Returns: `CompoundOperationWrapper` which produces void
-     *  in case file removed succesfully.
-     */
-    func removeRender(for id: UUID) -> CompoundOperationWrapper<Void>
-
-    /**
-     *  Constructs an operations wrapper that removes data of
      *  webview renders by removing a files which matches concrete webview tab ids.
      *
      *  - Parameters:
@@ -64,7 +51,30 @@ protocol WebViewRenderFilesOperationFactoryProtocol {
     func removeRenders(for ids: [UUID]) -> CompoundOperationWrapper<Void>
 }
 
-extension RuntimeFilesOperationFactory: WebViewRenderFilesOperationFactoryProtocol {
+extension WebViewRenderFilesOperationFactoryProtocol {
+    /**
+     *  Constructs an operations wrapper that removes data of
+     *  webview render by removing a file which matches concrete webview tab id.
+     *
+     *  - Parameters:
+     *      - id: Idetifier of a webview for which render data
+     *  must be removed.
+     *
+     *  - Returns: `CompoundOperationWrapper` which produces void
+     *  in case file removed succesfully.
+     */
+    func removeRender(for id: UUID) -> Operation_iOS.CompoundOperationWrapper<Void> {
+        removeRenders(for: [id])
+    }
+}
+
+/**
+ *  File has `$(id.uuidString)` name.
+ */
+
+class WebViewRenderFilesOperationFactory: FilesOperationFactory {}
+
+extension WebViewRenderFilesOperationFactory: WebViewRenderFilesOperationFactoryProtocol {
     func fetchRender(for id: UUID) -> Operation_iOS.CompoundOperationWrapper<Data?> {
         fetchFileOperation(for: id.uuidString)
     }
@@ -76,14 +86,6 @@ extension RuntimeFilesOperationFactory: WebViewRenderFilesOperationFactoryProtoc
         saveFileOperation(
             for: id.uuidString,
             data: closure
-        )
-    }
-
-    func removeRender(for id: UUID) -> Operation_iOS.CompoundOperationWrapper<Void> {
-        let filePath = (directoryPath as NSString).appendingPathComponent(id.uuidString)
-
-        return CompoundOperationWrapper(
-            targetOperation: repository.removeOperation(at: filePath)
         )
     }
 
