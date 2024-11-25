@@ -83,14 +83,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
-    func process(
-        stateRenderer: DAppBrowserTabRendererProtocol,
-        tabId: UUID
-    ) {
-        interactor.process(
-            stateRenderer: stateRenderer,
-            tabId: tabId
-        )
+    func process(stateRenderer: DAppBrowserTabRendererProtocol) {
+        interactor.process(stateRenderer: stateRenderer)
     }
 
     func activateSearch(with query: String?) {

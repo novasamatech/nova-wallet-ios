@@ -179,10 +179,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         let renderer = DAppBrowserTabRenderer(for: webView.layer)
 
-        presenter.process(
-            stateRenderer: renderer,
-            tabId: viewModel.selectedTab.uuid
-        )
+        presenter.process(stateRenderer: renderer)
     }
 
     private func configureHandlers() {

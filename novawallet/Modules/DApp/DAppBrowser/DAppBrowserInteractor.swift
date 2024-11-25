@@ -400,12 +400,9 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         transports.first(where: { $0.name == name })?.processConfirmation(response: response)
     }
 
-    func process(
-        stateRenderer: DAppBrowserTabRendererProtocol,
-        tabId: UUID
-    ) {
+    func process(stateRenderer: DAppBrowserTabRendererProtocol) {
         let renderUpdateWrapper = tabManager.updateRenderForTab(
-            with: tabId,
+            with: currentTab.uuid,
             renderer: stateRenderer
         )
 

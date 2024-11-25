@@ -25,10 +25,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
         transport name: String
     )
 
-    func process(
-        stateRenderer: DAppBrowserTabRendererProtocol,
-        tabId: UUID
-    )
+    func process(stateRenderer: DAppBrowserTabRendererProtocol)
 
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
@@ -47,10 +44,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
         transport name: String
     )
 
-    func process(
-        stateRenderer: DAppBrowserTabRendererProtocol,
-        tabId: UUID
-    )
+    func process(stateRenderer: DAppBrowserTabRendererProtocol)
 
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func process(newQuery: DAppSearchResult)
