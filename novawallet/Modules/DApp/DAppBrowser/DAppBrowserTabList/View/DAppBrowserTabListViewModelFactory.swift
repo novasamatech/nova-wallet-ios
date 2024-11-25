@@ -8,23 +8,11 @@ protocol DAppBrowserTabListViewModelFactoryProtocol {
     ) -> [DAppBrowserTabViewModel]
 }
 
-struct DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryProtocol {
+struct DAppBrowserTabListViewModelFactory {
     private let imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol
 
     init(imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol) {
         self.imageViewModelFactory = imageViewModelFactory
-    }
-
-    func createViewModels(
-        for tabs: [DAppBrowserTab],
-        locale: Locale
-    ) -> [DAppBrowserTabViewModel] {
-        tabs.map {
-            createViewModel(
-                for: $0,
-                locale: locale
-            )
-        }
     }
 
     private func createViewModel(
@@ -55,7 +43,24 @@ struct DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryPro
             uuid: tab.uuid,
             stateRender: renderViewModel,
             name: name,
-            icon: iconViewModel
+            icon: iconViewModel,
+            lastModified: tab.lastModified
         )
+    }
+}
+
+// MARK: DAppBrowserTabListViewModelFactoryProtocol
+
+extension DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryProtocol {
+    func createViewModels(
+        for tabs: [DAppBrowserTab],
+        locale: Locale
+    ) -> [DAppBrowserTabViewModel] {
+        tabs.map {
+            createViewModel(
+                for: $0,
+                locale: locale
+            )
+        }
     }
 }

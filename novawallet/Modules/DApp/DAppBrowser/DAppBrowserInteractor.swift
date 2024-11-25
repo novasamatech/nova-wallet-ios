@@ -416,11 +416,10 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             renderer: stateRenderer
         )
 
-        execute(
-            wrapper: renderUpdateWrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { _ in }
+        operationQueue.addOperations(
+            renderUpdateWrapper.allOperations,
+            waitUntilFinished: false
+        )
     }
 
     func process(newQuery: DAppSearchResult) {

@@ -135,8 +135,12 @@ private extension DAppBrowserTabView {
 // MARK: Interface
 
 extension DAppBrowserTabView {
-    func bind(viewModel: DAppBrowserTabViewModel) {
+    func bind(
+        viewModel: DAppBrowserTabViewModel,
+        delegate: DAppBrowserTabViewDelegate?
+    ) {
         self.viewModel = viewModel
+        self.delegate = delegate
 
         updateRender()
         updateIcon()

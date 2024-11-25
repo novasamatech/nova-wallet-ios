@@ -53,12 +53,16 @@ extension DAppBrowserTabRenderer: DAppBrowserTabRendererProtocol {
     func renderDataWrapper(using operationQueue: OperationQueue) -> CompoundOperationWrapper<Data?> {
         let propertiesFetchOperation = fetchViewPropertiesOperation()
 
-        return OperationCombiningService.compoundOptionalWrapper(
+        let resultWrapper = OperationCombiningService.compoundOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             let (layer, bounds) = try propertiesFetchOperation.extractNoCancellableResultData()
 
             return createRenderDataOperation(layer: layer, bounds: bounds)
         }
+
+        resultWrapper.addDependency(operations: [propertiesFetchOperation])
+
+        return resultWrapper.insertingHead(operations: [propertiesFetchOperation])
     }
 }

@@ -1095,6 +1095,7 @@
 		2DAF6ABA2CF4855500A8D132 /* DAppBrowserTabRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AB92CF4855500A8D132 /* DAppBrowserTabRenderer.swift */; };
 		2DAF6ABD2CF4947200A8D132 /* WebViewRenderImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6ABC2CF4947200A8D132 /* WebViewRenderImageViewModel.swift */; };
 		2DAF6ABF2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */; };
+		2DAF6AC12CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */; };
 		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */; };
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DBB28852CD2811200DFA0AD /* QRCodeWithLogoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */; };
@@ -6318,6 +6319,7 @@
 		2DAF6AB92CF4855500A8D132 /* DAppBrowserTabRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabRenderer.swift; sourceTree = "<group>"; };
 		2DAF6ABC2CF4947200A8D132 /* WebViewRenderImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewRenderImageViewModel.swift; sourceTree = "<group>"; };
 		2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewRenderImageViewModelFactory.swift; sourceTree = "<group>"; };
+		2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppBrowserTabManager+Singleton.swift"; sourceTree = "<group>"; };
 		2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainsFetchFactory.swift; sourceTree = "<group>"; };
 		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
 		2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeWithLogoFactory.swift; sourceTree = "<group>"; };
@@ -12976,8 +12978,9 @@
 			isa = PBXGroup;
 			children = (
 				2DAF6AB82CF46C5800A8D132 /* PersistentTabLocalSubscriptionFactory */,
-				2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */,
 				2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */,
+				2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */,
+				2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */,
 				2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */,
 			);
 			path = DAppBrowserTabManager;
@@ -25581,6 +25584,7 @@
 				84CA407E2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift in Sources */,
 				844DBC60274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift in Sources */,
 				0CA5BDFB2C455790000A4CDD /* NominationPoolStakingMigrating.swift in Sources */,
+				2DAF6AC12CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift in Sources */,
 				77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */,
 				849014B924AA87E3008F705E /* PinSetupViewController.swift in Sources */,
 				84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */,
