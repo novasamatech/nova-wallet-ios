@@ -31,9 +31,7 @@ private extension DAppBrowserTabListPresenter {
         let viewModels = viewModelFactory.createViewModels(
             for: tabs,
             locale: localizationManager.selectedLocale
-        ) { [weak self] id in
-            self?.interactor.closeTab(with: id)
-        }
+        )
 
         view?.didReceive(viewModels)
     }
@@ -68,6 +66,10 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
 
     func closeAllTabs() {
         interactor.closeAllTabs()
+    }
+
+    func closeTab(with id: UUID) {
+        interactor.closeTab(with: id)
     }
 
     func close() {

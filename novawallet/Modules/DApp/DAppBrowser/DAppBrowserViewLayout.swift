@@ -76,16 +76,7 @@ final class DAppBrowserViewLayout: UIView {
         return view
     }()
 
-    var webView: WKWebView = {
-        let configuration = WKWebViewConfiguration()
-        configuration.userContentController = WKUserContentController()
-
-        let view = WKWebView(frame: .zero, configuration: configuration)
-        view.scrollView.contentInsetAdjustmentBehavior = .always
-        view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
-
-        return view
-    }()
+    var webView: WKWebView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -128,8 +119,6 @@ final class DAppBrowserViewLayout: UIView {
     }
 
     private func setupLayout() {
-        addSubview(webView)
-
         addSubview(toolbarBackgroundView)
         toolbarBackgroundView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -142,12 +131,6 @@ final class DAppBrowserViewLayout: UIView {
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
             make.height.equalTo(Constants.toolbarHeight)
-        }
-
-        webView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.bottom.equalTo(toolBar.snp.top)
         }
 
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -170,7 +153,7 @@ final class DAppBrowserViewLayout: UIView {
     }
 
     func setWebView(_ webView: WKWebView) {
-        self.webView.removeFromSuperview()
+        self.webView?.removeFromSuperview()
         self.webView = webView
         addSubview(webView)
 

@@ -94,6 +94,14 @@ extension DAppBrowserTabListViewController: DAppBrowserTabListViewProtocol {
     }
 }
 
+// MARK: DAppBrowserTabViewDelegate
+
+extension DAppBrowserTabListViewController: DAppBrowserTabViewDelegate {
+    func actionCloseTab(with id: UUID) {
+        presenter.closeTab(with: id)
+    }
+}
+
 // MARK: UICollectionViewDataSource
 
 extension DAppBrowserTabListViewController: UICollectionViewDataSource {

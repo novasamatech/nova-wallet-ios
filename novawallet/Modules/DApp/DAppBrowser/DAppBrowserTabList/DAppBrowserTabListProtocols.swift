@@ -8,6 +8,7 @@ protocol DAppBrowserTabListPresenterProtocol: AnyObject {
     func setup()
     func selectTab(with id: UUID)
     func openNewTab()
+    func closeTab(with id: UUID)
     func closeAllTabs()
     func close()
 }

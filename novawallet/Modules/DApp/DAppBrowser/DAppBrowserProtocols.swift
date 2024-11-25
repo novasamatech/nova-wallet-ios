@@ -26,7 +26,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     )
 
     func process(
-        stateRender: Data,
+        stateRenderer: DAppBrowserTabRendererProtocol,
         tabId: UUID
     )
 
@@ -48,7 +48,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     )
 
     func process(
-        stateRender: Data,
+        stateRenderer: DAppBrowserTabRendererProtocol,
         tabId: UUID
     )
 

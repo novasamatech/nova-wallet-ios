@@ -7,7 +7,6 @@ struct DAppBrowserTab {
     let url: URL?
     let lastModified: Date
     let transportStates: [DAppTransportState]?
-    let stateRender: Data?
     let desktopOnly: Bool?
     let icon: URL?
 
@@ -32,7 +31,6 @@ struct DAppBrowserTab {
         url: URL?,
         lastModified: Date,
         transportStates: [DAppTransportState]?,
-        stateRender: Data?,
         desktopOnly: Bool?,
         icon: URL?
     ) {
@@ -41,7 +39,6 @@ struct DAppBrowserTab {
         self.url = url
         self.lastModified = lastModified
         self.transportStates = transportStates
-        self.stateRender = stateRender
         self.desktopOnly = desktopOnly
         self.icon = icon
     }
@@ -63,7 +60,6 @@ struct DAppBrowserTab {
         uuid = UUID()
         lastModified = Date()
         transportStates = nil
-        stateRender = nil
         desktopOnly = nil
         name = nil
         icon = nil
@@ -74,7 +70,6 @@ struct DAppBrowserTab {
         uuid = UUID()
         lastModified = Date()
         transportStates = nil
-        stateRender = nil
         desktopOnly = nil
         name = nil
         icon = nil
@@ -85,7 +80,6 @@ struct DAppBrowserTab {
         uuid = UUID()
         lastModified = Date()
         transportStates = nil
-        stateRender = nil
         desktopOnly = dApp.desktopOnly
         name = dApp.name
         url = dApp.url
@@ -95,8 +89,6 @@ struct DAppBrowserTab {
     func updating(
         transportStates: [DAppTransportState]? = nil,
         name: String? = nil,
-        lastModified _: Date? = nil,
-        stateRender: Data? = nil,
         desktopOnly: Bool? = nil,
         icon: URL? = nil
     ) -> DAppBrowserTab {
@@ -106,7 +98,6 @@ struct DAppBrowserTab {
             url: url,
             lastModified: Date(),
             transportStates: transportStates ?? self.transportStates,
-            stateRender: stateRender ?? self.stateRender,
             desktopOnly: desktopOnly ?? self.desktopOnly,
             icon: icon ?? self.icon
         )
@@ -119,7 +110,6 @@ struct DAppBrowserTab {
             url: dApp.url,
             lastModified: Date(),
             transportStates: nil,
-            stateRender: nil,
             desktopOnly: dApp.desktopOnly,
             icon: dApp.icon
         )
@@ -132,7 +122,6 @@ struct DAppBrowserTab {
             url: url,
             lastModified: Date(),
             transportStates: nil,
-            stateRender: nil,
             desktopOnly: nil,
             icon: nil
         )
@@ -159,6 +148,8 @@ struct DAppBrowserTab {
     }
 }
 
+// MARK: PersistenceModel
+
 extension DAppBrowserTab {
     struct PersistenceModel: Hashable, Equatable, Identifiable {
         var identifier: String { uuid.uuidString }
@@ -169,5 +160,19 @@ extension DAppBrowserTab {
         let lastModified: Date
         let icon: String?
         let desktopOnly: Bool?
+    }
+}
+
+// MARK: Equatable
+
+extension DAppBrowserTab: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.uuid == rhs.uuid
+            && lhs.name == rhs.name
+            && lhs.desktopOnly == rhs.desktopOnly
+            && lhs.transportStates?.count == rhs.transportStates?.count
+            && lhs.url == rhs.url
+            && lhs.lastModified == rhs.lastModified
+            && lhs.icon == rhs.icon
     }
 }

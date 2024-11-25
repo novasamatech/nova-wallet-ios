@@ -4,30 +4,32 @@ import UIKit
 protocol DAppBrowserTabListViewModelFactoryProtocol {
     func createViewModels(
         for tabs: [DAppBrowserTab],
-        locale: Locale,
-        onClose: @escaping (UUID) -> Void
+        locale: Locale
     ) -> [DAppBrowserTabViewModel]
 }
 
 struct DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryProtocol {
+    private let imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol
+
+    init(imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol) {
+        self.imageViewModelFactory = imageViewModelFactory
+    }
+
     func createViewModels(
         for tabs: [DAppBrowserTab],
-        locale: Locale,
-        onClose: @escaping (UUID) -> Void
+        locale: Locale
     ) -> [DAppBrowserTabViewModel] {
         tabs.map {
             createViewModel(
                 for: $0,
-                locale: locale,
-                onClose
+                locale: locale
             )
         }
     }
 
     private func createViewModel(
         for tab: DAppBrowserTab,
-        locale: Locale,
-        _ onClose: @escaping (UUID) -> Void
+        locale: Locale
     ) -> DAppBrowserTabViewModel {
         let iconViewModel: ImageViewModelProtocol? = {
             guard let iconUrl = tab.icon else { return nil }
@@ -35,16 +37,7 @@ struct DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryPro
             return RemoteImageViewModel(url: iconUrl)
         }()
 
-        let renderViewModel: ImageViewModelProtocol? = {
-            guard
-                let renderData = tab.stateRender,
-                let image = UIImage(data: renderData)
-            else {
-                return nil
-            }
-
-            return StaticImageViewModel(image: image)
-        }()
+        let renderViewModel: ImageViewModelProtocol? = imageViewModelFactory.createViewModel(for: tab.uuid)
 
         let url = tab.url?.host
 
@@ -62,8 +55,7 @@ struct DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryPro
             uuid: tab.uuid,
             stateRender: renderViewModel,
             name: name,
-            icon: iconViewModel,
-            onClose: onClose
+            icon: iconViewModel
         )
     }
 }

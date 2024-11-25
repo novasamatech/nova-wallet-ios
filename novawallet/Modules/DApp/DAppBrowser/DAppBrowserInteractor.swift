@@ -408,12 +408,12 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(
-        stateRender: Data,
+        stateRenderer: DAppBrowserTabRendererProtocol,
         tabId: UUID
     ) {
         let renderUpdateWrapper = tabManager.updateRenderForTab(
             with: tabId,
-            render: stateRender
+            renderer: stateRenderer
         )
 
         execute(

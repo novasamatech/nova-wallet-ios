@@ -84,11 +84,11 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     }
 
     func process(
-        stateRender: Data,
+        stateRenderer: DAppBrowserTabRendererProtocol,
         tabId: UUID
     ) {
         interactor.process(
-            stateRender: stateRender,
+            stateRenderer: stateRenderer,
             tabId: tabId
         )
     }

@@ -13,10 +13,16 @@ struct DAppBrowserTabListViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
+        let imageViewModelFactory = WebViewRenderImageViewModelFactory(
+            fileRepository: FileRepository(),
+            renderFetchOperationQueue: operationQueue
+        )
+        let viewModelFactory = DAppBrowserTabListViewModelFactory(imageViewModelFactory: imageViewModelFactory)
+
         let presenter = DAppBrowserTabListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: DAppBrowserTabListViewModelFactory(),
+            viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
 
