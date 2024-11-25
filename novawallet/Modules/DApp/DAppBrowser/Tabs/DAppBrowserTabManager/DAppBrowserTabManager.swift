@@ -151,7 +151,7 @@ private extension DAppBrowserTabManager {
             operationManager: OperationManager(operationQueue: operationQueue)
         ) { [weak self] in
             guard let self else {
-                throw BaseOperationError.parentOperationCancelled
+                throw DAppBrowserTabManagerError.renderCacheFailed
             }
 
             let renderData = try renderDataWrapper.targetOperation.extractNoCancellableResultData()
@@ -244,7 +244,7 @@ extension DAppBrowserTabManager: DAppBrowserTabLocalSubscriber, DAppBrowserTabLo
         case let .success(changes):
             apply(changes)
         case let .failure(error):
-            logger.error("Did fail on DAppBrowserTab local subscription with error: \(error.localizedDescription)")
+            logger.error("Failed on DAppBrowserTab local subscription with error: \(error.localizedDescription)")
         }
     }
 }
