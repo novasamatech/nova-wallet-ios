@@ -190,10 +190,6 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     }
 
     func didReceiveTabs(_ models: [DAppBrowserTab]) {
-        guard !models.isEmpty else {
-            return
-        }
-
         tabs = models
 
         view?.didReceiveTabsCount(viewModel: "\(models.count)")
