@@ -4,7 +4,7 @@ import Operation_iOS
 struct DAppBrowserTab {
     let uuid: UUID
     let name: String?
-    let url: URL?
+    let url: URL
     let lastModified: Date
     let transportStates: [DAppTransportState]?
     let desktopOnly: Bool?
@@ -21,14 +21,10 @@ struct DAppBrowserTab {
         )
     }
 
-    var isBlankPage: Bool {
-        url == nil
-    }
-
     init(
         uuid: UUID,
         name: String?,
-        url: URL?,
+        url: URL,
         lastModified: Date,
         transportStates: [DAppTransportState]?,
         desktopOnly: Bool?,
@@ -43,37 +39,27 @@ struct DAppBrowserTab {
         self.icon = icon
     }
 
-    init(from searchResult: DAppSearchResult?) {
-        if let searchResult {
-            switch searchResult {
-            case let .query(query):
-                self.init(from: query)
-            case let .dApp(dApp):
-                self.init(from: dApp)
-            }
-        } else {
-            self.init()
+    init?(from searchResult: DAppSearchResult) {
+        switch searchResult {
+        case let .query(query):
+            self.init(from: query)
+        case let .dApp(dApp):
+            self.init(from: dApp)
         }
     }
 
-    init() {
-        uuid = UUID()
-        lastModified = Date()
-        transportStates = nil
-        desktopOnly = nil
-        name = nil
-        icon = nil
-        url = nil
-    }
+    init?(from query: String) {
+        guard let url = DAppBrowserTab.resolveUrl(for: query) else {
+            return nil
+        }
 
-    init(from query: String) {
         uuid = UUID()
         lastModified = Date()
         transportStates = nil
         desktopOnly = nil
         name = nil
         icon = nil
-        url = DAppBrowserTab.resolveUrl(for: query)
+        self.url = url
     }
 
     init(from dApp: DApp) {
@@ -103,6 +89,17 @@ struct DAppBrowserTab {
         )
     }
 
+    func updating(with searchResult: DAppSearchResult) -> DAppBrowserTab? {
+        switch searchResult {
+        case let .query(query):
+            guard let url = DAppBrowserTab.resolveUrl(for: query) else { return nil }
+
+            return updating(with: url)
+        case let .dApp(dApp):
+            return updating(with: dApp)
+        }
+    }
+
     func updating(with dApp: DApp) -> DAppBrowserTab {
         DAppBrowserTab(
             uuid: uuid,
@@ -115,7 +112,7 @@ struct DAppBrowserTab {
         )
     }
 
-    func updating(with url: URL?) -> DAppBrowserTab {
+    func updating(with url: URL) -> DAppBrowserTab {
         DAppBrowserTab(
             uuid: uuid,
             name: nil,
@@ -156,7 +153,7 @@ extension DAppBrowserTab {
 
         let uuid: UUID
         let name: String?
-        let url: URL?
+        let url: URL
         let lastModified: Date
         let icon: String?
         let desktopOnly: Bool?

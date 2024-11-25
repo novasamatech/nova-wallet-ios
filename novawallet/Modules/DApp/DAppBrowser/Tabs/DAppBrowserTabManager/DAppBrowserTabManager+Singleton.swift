@@ -1,4 +1,5 @@
 import Foundation
+import Operation_iOS
 
 extension DAppBrowserTabManager {
     private static let readWriteQueueLabel = "\(String(describing: DAppBrowserTabManager.self)) sync queue"

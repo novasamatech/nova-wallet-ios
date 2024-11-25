@@ -15,7 +15,7 @@ extension DAppBrowserTabMapper: CoreDataMapperProtocol {
         DAppBrowserTab.PersistenceModel(
             uuid: UUID(uuidString: entity.identifier!)!,
             name: entity.label,
-            url: entity.url,
+            url: entity.url!,
             lastModified: entity.lastModified!,
             icon: entity.icon,
             desktopOnly: entity.desktopOnly

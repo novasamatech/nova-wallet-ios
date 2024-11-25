@@ -80,18 +80,14 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didChangeGlobal(settings: DAppGlobalSettings)
 }
 
-protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
+protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,
+    ErrorPresentable,
+    DAppBrowserSearchPresentable {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
         type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
-    )
-
-    func presentSearch(
-        from view: DAppBrowserViewProtocol?,
-        initialQuery: String?,
-        delegate: DAppSearchDelegate
     )
 
     func presentAuth(

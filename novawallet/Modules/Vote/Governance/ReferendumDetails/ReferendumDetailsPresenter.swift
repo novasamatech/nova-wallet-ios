@@ -5,6 +5,7 @@ import SubstrateSdk
 final class ReferendumDetailsPresenter {
     weak var view: ReferendumDetailsViewProtocol?
     let wireframe: ReferendumDetailsWireframeProtocol
+    let browserRouter: DAppBrowserNewTabRouterProtocol
     let interactor: ReferendumDetailsInteractorInputProtocol
     let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
@@ -49,6 +50,7 @@ final class ReferendumDetailsPresenter {
         initData: ReferendumDetailsInitData,
         interactor: ReferendumDetailsInteractorInputProtocol,
         wireframe: ReferendumDetailsWireframeProtocol,
+        browserRouter: DAppBrowserNewTabRouterProtocol,
         referendumViewModelFactory: ReferendumsModelFactoryProtocol,
         balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
@@ -63,6 +65,7 @@ final class ReferendumDetailsPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.browserRouter = browserRouter
         self.wallet = wallet
         self.governanceType = governanceType
         self.accountManagementFilter = accountManagementFilter
@@ -498,7 +501,10 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             return
         }
 
-        wireframe.showDApp(from: view, url: url)
+        browserRouter.process(
+            searchResult: .query(string: url.absoluteString),
+            view: view
+        )
     }
 
     func readFullDescription() {

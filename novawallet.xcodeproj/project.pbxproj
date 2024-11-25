@@ -1096,6 +1096,7 @@
 		2DAF6ABD2CF4947200A8D132 /* WebViewRenderImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6ABC2CF4947200A8D132 /* WebViewRenderImageViewModel.swift */; };
 		2DAF6ABF2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */; };
 		2DAF6AC12CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */; };
+		2DAF6AC32CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AC22CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift */; };
 		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */; };
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DBB28852CD2811200DFA0AD /* QRCodeWithLogoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */; };
@@ -6320,6 +6321,7 @@
 		2DAF6ABC2CF4947200A8D132 /* WebViewRenderImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewRenderImageViewModel.swift; sourceTree = "<group>"; };
 		2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewRenderImageViewModelFactory.swift; sourceTree = "<group>"; };
 		2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppBrowserTabManager+Singleton.swift"; sourceTree = "<group>"; };
+		2DAF6AC22CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserSearchResultProcessing.swift; sourceTree = "<group>"; };
 		2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainsFetchFactory.swift; sourceTree = "<group>"; };
 		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
 		2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeWithLogoFactory.swift; sourceTree = "<group>"; };
@@ -22371,6 +22373,7 @@
 				19F47911F8734C007135137D /* DAppBrowserWireframe.swift */,
 				1FF860B3465854DCBC02DFB3 /* DAppBrowserPresenter.swift */,
 				15A4DFCC4236D25A3D59F809 /* DAppBrowserInteractor.swift */,
+				2DAF6AC22CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift */,
 				1855972C88E512AED37FD312 /* DAppBrowserViewController.swift */,
 				5278A5F4178922A240590334 /* DAppBrowserViewLayout.swift */,
 				677CE34BFAB45122C57095F6 /* DAppBrowserViewFactory.swift */,
@@ -29104,6 +29107,7 @@
 				0CE629D62AA9B5E200E250BD /* BalanceViewModel.swift in Sources */,
 				0C2F86982A728EE900593C01 /* NPoolsRewardEngineFactory.swift in Sources */,
 				77E304AB2AEBB214006FD6F0 /* SlippageBounds.swift in Sources */,
+				2DAF6AC32CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift in Sources */,
 				C5B07E59C0B00CAD1D0D2DFD /* ReferendumSearchWireframe.swift in Sources */,
 				AB27EE4EE30A06D8E7B8EDB4 /* ReferendumSearchPresenter.swift in Sources */,
 				2F2ACE609F7423EDD0F06F30 /* ReferendumSearchViewController.swift in Sources */,

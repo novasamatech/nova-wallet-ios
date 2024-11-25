@@ -157,7 +157,7 @@ private extension DAppBrowserInteractor {
     func provideModel() {
         let wrappers = createTransportWrappers()
 
-        let globalSettingsOperation = createGlobalSettingsOperation(for: currentTab.url?.host)
+        let globalSettingsOperation = createGlobalSettingsOperation(for: currentTab.url.host)
 
         let desktopOnly = currentTab.desktopOnly ?? false
 
@@ -283,18 +283,13 @@ private extension DAppBrowserInteractor {
     }
 
     func proceedWithTabUpdate(with searchResult: DAppSearchResult) {
-        let updateWrapper: CompoundOperationWrapper<DAppBrowserTab>
-
-        switch searchResult {
-        case let .query(query):
-            let url = DAppBrowserTab.resolveUrl(for: query)
-            updateWrapper = tabManager.updateTab(currentTab.updating(with: url))
-        case let .dApp(dApp):
-            let updatedTab = currentTab.updating(with: dApp)
-            updateWrapper = tabManager.updateTab(updatedTab)
-
-            dataSource.replace(tab: updatedTab)
+        guard let updatedTab = currentTab.updating(with: searchResult) else {
+            return
         }
+
+        let updateWrapper = tabManager.updateTab(updatedTab)
+
+        dataSource.replace(tab: updatedTab)
 
         execute(
             wrapper: updateWrapper,
@@ -314,7 +309,7 @@ private extension DAppBrowserInteractor {
     }
 
     func proceedWithNewTab(opening dApp: DApp) {
-        let newTab = DAppBrowserTab(from: .dApp(model: dApp))
+        let newTab = DAppBrowserTab(from: dApp)
 
         let states = transports.compactMap { $0.makeOpaqueState() }
 
@@ -367,8 +362,6 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
 
         favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
-
-        storeTab(currentTab)
     }
 
     func process(host: String) {
@@ -425,7 +418,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func process(newQuery: DAppSearchResult) {
         sequentialPhishingVerifier.cancelAll()
 
-        if case let .dApp(dApp) = newQuery, !currentTab.isBlankPage {
+        if case let .dApp(dApp) = newQuery {
             proceedWithNewTab(opening: dApp)
         } else {
             proceedWithTabUpdate(with: newQuery)

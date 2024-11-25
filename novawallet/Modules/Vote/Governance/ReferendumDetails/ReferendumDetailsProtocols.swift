@@ -79,7 +79,5 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
         description: String
     )
 
-    func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL)
-
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
 }

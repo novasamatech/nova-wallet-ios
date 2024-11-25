@@ -94,7 +94,11 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     }
 
     func activateSearch(with query: String?) {
-        wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
+        wireframe.presentSearch(
+            from: view,
+            initialQuery: query,
+            delegate: self
+        )
     }
 
     func showSettings(using isDesktop: Bool) {
@@ -154,16 +158,6 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     }
 
     func didReceiveDApp(model: DAppBrowserModel) {
-        guard model.selectedTab.url != nil else {
-            wireframe.presentSearch(
-                from: view,
-                initialQuery: nil,
-                delegate: self
-            )
-
-            return
-        }
-
         view?.didReceive(viewModel: model)
     }
 

@@ -27,7 +27,7 @@ struct DAppBrowserTabListViewModelFactory {
 
         let renderViewModel: ImageViewModelProtocol? = imageViewModelFactory.createViewModel(for: tab.uuid)
 
-        let url = tab.url?.host
+        let url = tab.url.host
 
         let name = if let dAppName = tab.name {
             dAppName

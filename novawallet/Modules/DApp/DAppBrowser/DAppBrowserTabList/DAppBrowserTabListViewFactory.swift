@@ -5,11 +5,19 @@ struct DAppBrowserTabListViewFactory {
     static func createView() -> DAppBrowserTabListViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
+        let tabManager = DAppBrowserTabManager.shared
+
         let interactor = DAppBrowserTabListInteractor(
-            tabManager: DAppBrowserTabManager.shared,
+            tabManager: tabManager,
             operationQueue: operationQueue
         )
         let wireframe = DAppBrowserTabListWireframe()
+
+        let newTabRouter = DAppBrowserNewTabRouter(
+            tabManager: tabManager,
+            operationQueue: operationQueue,
+            wireframe: DAppBrowserNewTabWireframe()
+        )
 
         let localizationManager = LocalizationManager.shared
 
@@ -22,6 +30,7 @@ struct DAppBrowserTabListViewFactory {
         let presenter = DAppBrowserTabListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            newTabRouter: newTabRouter,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
