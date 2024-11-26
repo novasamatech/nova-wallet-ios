@@ -4106,7 +4106,6 @@
 		8804AD81295B7567001C4E09 /* DAppSettingsInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8804AD80295B7567001C4E09 /* DAppSettingsInput.swift */; };
 		8804AD83295B7596001C4E09 /* DAppDesktopModeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8804AD82295B7596001C4E09 /* DAppDesktopModeSettingsView.swift */; };
 		8804AD85295B75B0001C4E09 /* DAppSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8804AD84295B75B0001C4E09 /* DAppSettingsView.swift */; };
-		8804AD87295B75CB001C4E09 /* DAppFavoriteSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8804AD86295B75CB001C4E09 /* DAppFavoriteSettingsView.swift */; };
 		8804AD89295B75F8001C4E09 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8804AD88295B75F8001C4E09 /* Styles.swift */; };
 		8804AD8B295B76E5001C4E09 /* DAppGlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8804AD8A295B76E5001C4E09 /* DAppGlobalSettings.swift */; };
 		8804AD8D295B7735001C4E09 /* DAppGlobalSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8804AD8C295B7735001C4E09 /* DAppGlobalSettingsMapper.swift */; };
@@ -9291,7 +9290,6 @@
 		8804AD80295B7567001C4E09 /* DAppSettingsInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSettingsInput.swift; sourceTree = "<group>"; };
 		8804AD82295B7596001C4E09 /* DAppDesktopModeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppDesktopModeSettingsView.swift; sourceTree = "<group>"; };
 		8804AD84295B75B0001C4E09 /* DAppSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSettingsView.swift; sourceTree = "<group>"; };
-		8804AD86295B75CB001C4E09 /* DAppFavoriteSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppFavoriteSettingsView.swift; sourceTree = "<group>"; };
 		8804AD88295B75F8001C4E09 /* Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styles.swift; sourceTree = "<group>"; };
 		8804AD8A295B76E5001C4E09 /* DAppGlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppGlobalSettings.swift; sourceTree = "<group>"; };
 		8804AD8C295B7735001C4E09 /* DAppGlobalSettingsMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppGlobalSettingsMapper.swift; sourceTree = "<group>"; };
@@ -21535,7 +21533,6 @@
 		8804AD7F295B7556001C4E09 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				8804AD86295B75CB001C4E09 /* DAppFavoriteSettingsView.swift */,
 				8804AD82295B7596001C4E09 /* DAppDesktopModeSettingsView.swift */,
 				8804AD84295B75B0001C4E09 /* DAppSettingsView.swift */,
 				6594A70C41C42049D7FAC692 /* DAppSettingsViewLayout.swift */,
@@ -27887,7 +27884,6 @@
 				849B03682A14FB8C009624D9 /* CoingeckoPriceHistoryData.swift in Sources */,
 				2D1C5D262C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift in Sources */,
 				2D6287652C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift in Sources */,
-				8804AD87295B75CB001C4E09 /* DAppFavoriteSettingsView.swift in Sources */,
 				0CCD18BA2BA1EE690068D73A /* StatemineAssetExtras+AssetStorageInfo.swift in Sources */,
 				7401E7CAEEE6890BE74ACCE1 /* CustomValidatorListViewLayout.swift in Sources */,
 				84B24FA02A2F19DE00F9BF59 /* WalletSwitchCollectionViewCell.swift in Sources */,

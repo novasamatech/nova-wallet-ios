@@ -104,10 +104,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         navigationItem.titleView = rootView.urlBar
 
         navigationItem.leftItemsSupplementBackButton = false
-        navigationItem.leftBarButtonItem = rootView.closeBarItem
+        navigationItem.leftBarButtonItem = rootView.minimizeBarItem
+        navigationItem.rightBarButtonItem = rootView.refreshBarItem
 
-        rootView.closeBarItem.target = self
-        rootView.closeBarItem.action = #selector(actionClose)
+        rootView.minimizeBarItem.target = self
+        rootView.minimizeBarItem.action = #selector(actionClose)
 
         configureWebView()
         configureHandlers()
@@ -188,6 +189,9 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
             action: #selector(actionTabs),
             for: .touchUpInside
         )
+
+        rootView.favoriteBarItem.target = self
+        rootView.favoriteBarItem.action = #selector(actionFavorite)
 
         rootView.refreshBarItem.target = self
         rootView.refreshBarItem.action = #selector(actionRefresh)
@@ -345,6 +349,21 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.webView?.goForward()
     }
 
+    @objc private func actionFavorite() {
+        guard let url = rootView.webView?.url else {
+            return
+        }
+
+        let title = rootView.webView?.title ?? ""
+
+        let page = DAppBrowserPage(
+            url: url,
+            title: title
+        )
+
+        presenter.actionFavorite(page: page)
+    }
+
     @objc private func actionRefresh() {
         rootView.webView?.reload()
     }
@@ -443,6 +462,10 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
     func didSet(canShowSettings: Bool) {
         rootView.settingsBarButton.isEnabled = canShowSettings
+    }
+
+    func didSet(favorite: Bool) {
+        rootView.setFavorite(state: favorite)
     }
 
     func didDecideClose() {

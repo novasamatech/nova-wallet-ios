@@ -198,7 +198,7 @@ extension DAppBrowserTabListViewController: DAppBrowserTabViewTransitionProtocol
         rootView.collectionView.scrollToItem(
             at: indexPath,
             at: .bottom,
-            animated: false
+            animated: true
         )
 
         guard let cell = rootView.collectionView.cellForItem(

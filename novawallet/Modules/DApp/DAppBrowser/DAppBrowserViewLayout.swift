@@ -7,10 +7,69 @@ final class DAppBrowserViewLayout: UIView {
         static let toolbarHeight: CGFloat = 44.0
     }
 
-    let urlBar = DAppURLBarView()
-
     var securityImageView: UIImageView { urlBar.controlContentView.imageView }
     var urlLabel: UILabel { urlBar.controlContentView.detailsLabel }
+
+    // MARK: Top bar controls
+
+    let urlBar = DAppURLBarView()
+
+    let minimizeBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconSmallArrowDown()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        item.tintColor = R.color.colorIconPrimary()!
+        return item
+    }()
+
+    let refreshBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconRefresh()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        item.tintColor = R.color.colorIconPrimary()
+        return item
+    }()
+
+    // MARK: Bottom bar controls
+
+    let favoriteBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconFavToolbar()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        
+        return item
+    }()
+
+    let goBackBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconBrowserBack()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        item.tintColor = R.color.colorIconPrimary()
+        return item
+    }()
+
+    let goForwardBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconBrowserForward()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        item.tintColor = R.color.colorIconPrimary()
+        return item
+    }()
 
     let tabsButton: RoundedButton = .create { view in
         view.imageWithTitleView?.titleFont = .semiBoldCaption1
@@ -19,30 +78,6 @@ final class DAppBrowserViewLayout: UIView {
         view.roundedBackgroundView?.strokeWidth = 1.2
         view.roundedBackgroundView?.strokeColor = R.color.colorTextPrimary()!
     }
-
-    let closeBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconClose()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorIconPrimary()!
-        return item
-    }()
-
-    let refreshBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconRefresh()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorIconPrimary()
-        return item
-    }()
-
-    let goBackBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconBrowserBack()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorIconPrimary()
-        return item
-    }()
-
-    let goForwardBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconBrowserForward()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorIconPrimary()
-        return item
-    }()
 
     lazy var tabsButtonItem: UIBarButtonItem = {
         let item = UIBarButtonItem(customView: tabsButton)
@@ -90,35 +125,12 @@ final class DAppBrowserViewLayout: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    func setIsToolbarHidden(_ isHidden: Bool) {
-        toolbarBackgroundView.snp.remakeConstraints { make in
-            make.leading.trailing.equalToSuperview()
+// MARK: Private
 
-            if isHidden {
-                make.bottom.equalToSuperview().offset(Constants.toolbarHeight)
-                make.top.equalTo(self.snp.bottom)
-            } else {
-                make.bottom.equalToSuperview()
-                make.top.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.toolbarHeight)
-            }
-        }
-
-        toolBar.snp.remakeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(Constants.toolbarHeight)
-
-            if isHidden {
-                make.bottom.equalToSuperview().offset(Constants.toolbarHeight)
-            } else {
-                make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
-            }
-        }
-
-        layoutIfNeeded()
-    }
-
-    private func setupLayout() {
+private extension DAppBrowserViewLayout {
+    func setupLayout() {
         addSubview(toolbarBackgroundView)
         toolbarBackgroundView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -146,10 +158,47 @@ final class DAppBrowserViewLayout: UIView {
             flexibleSpace,
             tabsButtonItem,
             flexibleSpace,
-            refreshBarItem,
+            favoriteBarItem,
             flexibleSpace,
             settingsBarButton
         ]
+    }
+}
+
+// MARK: Interface
+
+extension DAppBrowserViewLayout {
+    func setIsToolbarHidden(_ isHidden: Bool) {
+        toolbarBackgroundView.snp.remakeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+
+            if isHidden {
+                make.bottom.equalToSuperview().offset(Constants.toolbarHeight)
+                make.top.equalTo(self.snp.bottom)
+            } else {
+                make.bottom.equalToSuperview()
+                make.top.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.toolbarHeight)
+            }
+        }
+
+        toolBar.snp.remakeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(Constants.toolbarHeight)
+
+            if isHidden {
+                make.bottom.equalToSuperview().offset(Constants.toolbarHeight)
+            } else {
+                make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            }
+        }
+
+        layoutIfNeeded()
+    }
+
+    func setFavorite(state: Bool) {
+        favoriteBarItem.image = state
+            ? R.image.iconFavToolbarSel()
+            : R.image.iconFavToolbar()
     }
 
     func setWebView(_ webView: WKWebView) {
