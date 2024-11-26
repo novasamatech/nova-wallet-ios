@@ -4,9 +4,13 @@ import SoraFoundation
 final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserTabListViewLayout
 
+    typealias DataSource = UICollectionViewDiffableDataSource<Int, DAppBrowserTabViewModel>
+
     let presenter: DAppBrowserTabListPresenterProtocol
 
     var viewModels: [DAppBrowserTabViewModel] = []
+
+    private lazy var dataSource = createDataSource()
 
     init(
         presenter: DAppBrowserTabListPresenterProtocol,
@@ -44,9 +48,32 @@ private extension DAppBrowserTabListViewController {
         setupLocalization()
     }
 
+    func createDataSource() -> DataSource {
+        let dataSource = DataSource(
+            collectionView: rootView.collectionView,
+            cellProvider: { [weak self] collectionView, indexPath, model -> UICollectionViewCell? in
+                guard let self else { return nil }
+
+                let cell = collectionView.dequeueReusableCellWithType(
+                    DAppBrowserTabCollectionCell.self,
+                    for: indexPath
+                )!
+
+                cell.view.bind(
+                    viewModel: model,
+                    delegate: self
+                )
+
+                return cell
+            }
+        )
+
+        return dataSource
+    }
+
     func setupCollection() {
         rootView.collectionView.registerCellClass(DAppBrowserTabCollectionCell.self)
-        rootView.collectionView.dataSource = self
+        rootView.collectionView.dataSource = dataSource
         rootView.collectionView.delegate = self
     }
 
@@ -90,27 +117,24 @@ private extension DAppBrowserTabListViewController {
 extension DAppBrowserTabListViewController: DAppBrowserTabListViewProtocol {
     func didReceive(_ viewModels: [DAppBrowserTabViewModel]) {
         self.viewModels = viewModels
-        rootView.collectionView.reloadData()
-    }
-}
 
 // MARK: UICollectionViewDataSource
+        var snapshot = NSDiffableDataSourceSnapshot<Int, DAppBrowserTabViewModel>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(viewModels, toSection: 0)
 
 extension DAppBrowserTabListViewController: UICollectionViewDataSource {
     func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         viewModels.count
+        dataSource.apply(snapshot)
     }
+}
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let viewModel = viewModels[indexPath.item]
+// MARK: DAppBrowserTabViewDelegate
 
-        let cell = collectionView.dequeueReusableCellWithType(DAppBrowserTabCollectionCell.self, for: indexPath)!
-        cell.view.bind(viewModel: viewModel)
-
-        return cell
+extension DAppBrowserTabListViewController: DAppBrowserTabViewDelegate {
+    func actionCloseTab(with id: UUID) {
+        presenter.closeTab(with: id)
     }
 }
 

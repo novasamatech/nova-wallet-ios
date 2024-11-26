@@ -43,6 +43,7 @@ final class DAppListPresenter {
 
     weak var view: DAppListViewProtocol?
     let wireframe: DAppListWireframeProtocol
+    let newTabRouter: DAppBrowserNewTabRouterProtocol
     let interactor: DAppListInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
@@ -60,11 +61,13 @@ final class DAppListPresenter {
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
+        newTabRouter: DAppBrowserNewTabRouterProtocol,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.newTabRouter = newTabRouter
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
@@ -280,16 +283,15 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         case let .index(value):
             let dApp = dAppList.dApps[value]
 
-            wireframe.showBrowser(
-                from: view,
-                for: .dApp(model: dApp)
+            newTabRouter.process(
+                searchResult: .dApp(model: dApp),
+                view: view
             )
-
         case let .key(value):
             if let dapp = favorites?[value] {
-                wireframe.showBrowser(
-                    from: view,
-                    for: .query(string: dapp.identifier)
+                newTabRouter.process(
+                    searchResult: .query(string: dapp.identifier),
+                    view: view
                 )
             }
         }
@@ -322,9 +324,9 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(_ dapp: DApp) {
-        wireframe.showBrowser(
-            from: view,
-            for: .dApp(model: dapp)
+        newTabRouter.process(
+            searchResult: .dApp(model: dapp),
+            view: view
         )
     }
 }
@@ -376,9 +378,9 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        wireframe.showBrowser(
-            from: view,
-            for: result
+        newTabRouter.process(
+            searchResult: result,
+            view: view
         )
     }
 }

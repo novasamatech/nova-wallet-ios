@@ -4,30 +4,20 @@ import UIKit
 protocol DAppBrowserTabListViewModelFactoryProtocol {
     func createViewModels(
         for tabs: [DAppBrowserTab],
-        locale: Locale,
-        onClose: @escaping (UUID) -> Void
+        locale: Locale
     ) -> [DAppBrowserTabViewModel]
 }
 
-struct DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryProtocol {
-    func createViewModels(
-        for tabs: [DAppBrowserTab],
-        locale: Locale,
-        onClose: @escaping (UUID) -> Void
-    ) -> [DAppBrowserTabViewModel] {
-        tabs.map {
-            createViewModel(
-                for: $0,
-                locale: locale,
-                onClose
-            )
-        }
+struct DAppBrowserTabListViewModelFactory {
+    private let imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol
+
+    init(imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol) {
+        self.imageViewModelFactory = imageViewModelFactory
     }
 
     private func createViewModel(
         for tab: DAppBrowserTab,
-        locale: Locale,
-        _ onClose: @escaping (UUID) -> Void
+        locale: Locale
     ) -> DAppBrowserTabViewModel {
         let iconViewModel: ImageViewModelProtocol? = {
             guard let iconUrl = tab.icon else { return nil }
@@ -35,18 +25,9 @@ struct DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryPro
             return RemoteImageViewModel(url: iconUrl)
         }()
 
-        let renderViewModel: ImageViewModelProtocol? = {
-            guard
-                let renderData = tab.stateRender,
-                let image = UIImage(data: renderData)
-            else {
-                return nil
-            }
+        let renderViewModel: ImageViewModelProtocol? = imageViewModelFactory.createViewModel(for: tab.uuid)
 
-            return StaticImageViewModel(image: image)
-        }()
-
-        let url = tab.url?.host
+        let url = tab.url.host
 
         let name = if let dAppName = tab.name {
             dAppName
@@ -63,7 +44,23 @@ struct DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryPro
             stateRender: renderViewModel,
             name: name,
             icon: iconViewModel,
-            onClose: onClose
+            lastModified: tab.lastModified
         )
+    }
+}
+
+// MARK: DAppBrowserTabListViewModelFactoryProtocol
+
+extension DAppBrowserTabListViewModelFactory: DAppBrowserTabListViewModelFactoryProtocol {
+    func createViewModels(
+        for tabs: [DAppBrowserTab],
+        locale: Locale
+    ) -> [DAppBrowserTabViewModel] {
+        tabs.map {
+            createViewModel(
+                for: $0,
+                locale: locale
+            )
+        }
     }
 }

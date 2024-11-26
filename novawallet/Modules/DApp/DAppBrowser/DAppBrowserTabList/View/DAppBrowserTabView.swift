@@ -13,7 +13,13 @@ class DAppBrowserTabCollectionCell: CollectionViewContainerCell<DAppBrowserTabVi
     }
 }
 
+protocol DAppBrowserTabViewDelegate: AnyObject {
+    func actionCloseTab(with id: UUID)
+}
+
 class DAppBrowserTabView: UIView {
+    weak var delegate: DAppBrowserTabViewDelegate?
+
     let imageView: BorderedImageView = .create { view in
         view.borderView.cornerRadius = Constants.tabCornerRadius
         view.borderView.strokeWidth = Constants.strokeWidth
@@ -122,15 +128,19 @@ private extension DAppBrowserTabView {
     @objc func actionClose() {
         guard let viewModel else { return }
 
-        viewModel.onClose(viewModel.uuid)
+        delegate?.actionCloseTab(with: viewModel.uuid)
     }
 }
 
 // MARK: Interface
 
 extension DAppBrowserTabView {
-    func bind(viewModel: DAppBrowserTabViewModel) {
+    func bind(
+        viewModel: DAppBrowserTabViewModel,
+        delegate: DAppBrowserTabViewDelegate?
+    ) {
         self.viewModel = viewModel
+        self.delegate = delegate
 
         updateRender()
         updateIcon()

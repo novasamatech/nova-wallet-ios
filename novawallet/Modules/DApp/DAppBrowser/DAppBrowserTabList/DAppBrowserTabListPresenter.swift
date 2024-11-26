@@ -4,6 +4,7 @@ import SoraFoundation
 final class DAppBrowserTabListPresenter {
     weak var view: DAppBrowserTabListViewProtocol?
     let wireframe: DAppBrowserTabListWireframeProtocol
+    let newTabRouter: DAppBrowserNewTabRouterProtocol
     let interactor: DAppBrowserTabListInteractorInputProtocol
     let localizationManager: LocalizationManagerProtocol
 
@@ -14,11 +15,13 @@ final class DAppBrowserTabListPresenter {
     init(
         interactor: DAppBrowserTabListInteractorInputProtocol,
         wireframe: DAppBrowserTabListWireframeProtocol,
+        newTabRouter: DAppBrowserNewTabRouterProtocol,
         viewModelFactory: DAppBrowserTabListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.newTabRouter = newTabRouter
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
@@ -31,9 +34,7 @@ private extension DAppBrowserTabListPresenter {
         let viewModels = viewModelFactory.createViewModels(
             for: tabs,
             locale: localizationManager.selectedLocale
-        ) { [weak self] id in
-            self?.interactor.closeTab(with: id)
-        }
+        )
 
         view?.didReceive(viewModels)
     }
@@ -58,16 +59,19 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
     }
 
     func openNewTab() {
-        let newTab = DAppBrowserTab(from: nil)
-
-        wireframe.showNewTab(
+        wireframe.presentSearch(
             from: view,
-            newTab
+            initialQuery: nil,
+            delegate: self
         )
     }
 
     func closeAllTabs() {
         interactor.closeAllTabs()
+    }
+
+    func closeTab(with id: UUID) {
+        interactor.closeTab(with: id)
     }
 
     func close() {
@@ -89,6 +93,17 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtoco
             error: error,
             from: view,
             locale: localizationManager.selectedLocale
+        )
+    }
+}
+
+// MARK: DAppSearchDelegate
+
+extension DAppBrowserTabListPresenter: DAppSearchDelegate {
+    func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
+        newTabRouter.process(
+            searchResult: result,
+            view: view
         )
     }
 }

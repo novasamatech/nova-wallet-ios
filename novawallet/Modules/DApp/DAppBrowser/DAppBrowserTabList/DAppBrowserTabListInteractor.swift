@@ -20,21 +20,6 @@ final class DAppBrowserTabListInteractor {
 extension DAppBrowserTabListInteractor: DAppBrowserTabListInteractorInputProtocol {
     func setup() {
         tabManager.addObserver(self)
-
-        let fetchAllWrapper = tabManager.getAllTabs()
-
-        execute(
-            wrapper: fetchAllWrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(tabs):
-                self?.presenter?.didReceiveTabs(tabs)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(error)
-            }
-        }
     }
 
     func closeTab(with id: UUID) {

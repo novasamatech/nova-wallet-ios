@@ -984,6 +984,7 @@
 		2D4F55362CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */; };
 		2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */; };
 		2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */; };
+		2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
 		2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */; };
@@ -1026,6 +1027,7 @@
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
 		2D6AED5F2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */; };
+		2D6C5FA32CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */; };
 		2D6F51A22CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */; };
 		2D6F51A52CDBCFAC00564C00 /* AssetListStyleSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */; };
 		2D6F51A72CDD035900564C00 /* AssetDecorationAttributesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A62CDD035900564C00 /* AssetDecorationAttributesFactory.swift */; };
@@ -1065,7 +1067,7 @@
 		2D8EFB2A2C08892300866F90 /* MnemonicViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB292C08892300866F90 /* MnemonicViewModelFactory.swift */; };
 		2D8F0EC52CEDF53C00A22074 /* WebViewPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0EC42CEDF53C00A22074 /* WebViewPool.swift */; };
 		2D8F0EC82CEDFD5500A22074 /* DAppBrowserTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0EC72CEDFD5500A22074 /* DAppBrowserTabView.swift */; };
-		2D8F0ECA2CEE4CC300A22074 /* WKWebView+StateRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0EC92CEE4CC300A22074 /* WKWebView+StateRender.swift */; };
+		2D8F0ECA2CEE4CC300A22074 /* UIView+StateRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0EC92CEE4CC300A22074 /* UIView+StateRender.swift */; };
 		2D8F0ECC2CEFC76300A22074 /* DAppBrowserTabManagerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */; };
 		2D8F0ECE2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */; };
 		2D8F0ED22CEFC7FF00A22074 /* WebViewPoolProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */; };
@@ -1089,6 +1091,13 @@
 		2DAF53952C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */; };
 		2DAF539B2C1842D00076B4B6 /* NetworkDetailsNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */; };
 		2DAF539E2C1B2AA00076B4B6 /* NodePingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */; };
+		2DAF6AB52CF46A0900A8D132 /* DAppBrowserTabLocalSibscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AB42CF46A0900A8D132 /* DAppBrowserTabLocalSibscriber.swift */; };
+		2DAF6AB72CF46BE500A8D132 /* DAppBrowserTabLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AB62CF46BE500A8D132 /* DAppBrowserTabLocalSubscriptionHandler.swift */; };
+		2DAF6ABA2CF4855500A8D132 /* DAppBrowserTabRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AB92CF4855500A8D132 /* DAppBrowserTabRenderer.swift */; };
+		2DAF6ABD2CF4947200A8D132 /* WebViewRenderImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6ABC2CF4947200A8D132 /* WebViewRenderImageViewModel.swift */; };
+		2DAF6ABF2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */; };
+		2DAF6AC12CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */; };
+		2DAF6AC32CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AC22CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift */; };
 		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */; };
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DBB28852CD2811200DFA0AD /* QRCodeWithLogoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */; };
@@ -6201,6 +6210,7 @@
 		2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
+		2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOperationFactory.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D5493332C04C0F700607BF7 /* MnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCardView.swift; sourceTree = "<group>"; };
@@ -6243,6 +6253,7 @@
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
 		2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentTabLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceChainSelectionViewFactory.swift; sourceTree = "<group>"; };
 		2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcher.swift; sourceTree = "<group>"; };
 		2D6F51A62CDD035900564C00 /* AssetDecorationAttributesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDecorationAttributesFactory.swift; sourceTree = "<group>"; };
@@ -6282,7 +6293,7 @@
 		2D8EFB292C08892300866F90 /* MnemonicViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewModelFactory.swift; sourceTree = "<group>"; };
 		2D8F0EC42CEDF53C00A22074 /* WebViewPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPool.swift; sourceTree = "<group>"; };
 		2D8F0EC72CEDFD5500A22074 /* DAppBrowserTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabView.swift; sourceTree = "<group>"; };
-		2D8F0EC92CEE4CC300A22074 /* WKWebView+StateRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WKWebView+StateRender.swift"; sourceTree = "<group>"; };
+		2D8F0EC92CEE4CC300A22074 /* UIView+StateRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+StateRender.swift"; sourceTree = "<group>"; };
 		2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManagerError.swift; sourceTree = "<group>"; };
 		2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManagerProtocol.swift; sourceTree = "<group>"; };
 		2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPoolProtocol.swift; sourceTree = "<group>"; };
@@ -6306,6 +6317,13 @@
 		2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsNodeView.swift; sourceTree = "<group>"; };
 		2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodePingOperationFactory.swift; sourceTree = "<group>"; };
+		2DAF6AB42CF46A0900A8D132 /* DAppBrowserTabLocalSibscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabLocalSibscriber.swift; sourceTree = "<group>"; };
+		2DAF6AB62CF46BE500A8D132 /* DAppBrowserTabLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
+		2DAF6AB92CF4855500A8D132 /* DAppBrowserTabRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabRenderer.swift; sourceTree = "<group>"; };
+		2DAF6ABC2CF4947200A8D132 /* WebViewRenderImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewRenderImageViewModel.swift; sourceTree = "<group>"; };
+		2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewRenderImageViewModelFactory.swift; sourceTree = "<group>"; };
+		2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppBrowserTabManager+Singleton.swift"; sourceTree = "<group>"; };
+		2DAF6AC22CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserSearchResultProcessing.swift; sourceTree = "<group>"; };
 		2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainsFetchFactory.swift; sourceTree = "<group>"; };
 		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
 		2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeWithLogoFactory.swift; sourceTree = "<group>"; };
@@ -12963,8 +12981,10 @@
 		2D8F0ECF2CEFC79100A22074 /* DAppBrowserTabManager */ = {
 			isa = PBXGroup;
 			children = (
-				2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */,
+				2DAF6AB82CF46C5800A8D132 /* PersistentTabLocalSubscriptionFactory */,
 				2D8F0ECD2CEFC77F00A22074 /* DAppBrowserTabManagerProtocol.swift */,
+				2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */,
+				2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */,
 				2D8F0ECB2CEFC76300A22074 /* DAppBrowserTabManagerError.swift */,
 			);
 			path = DAppBrowserTabManager;
@@ -13044,6 +13064,28 @@
 				2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		2DAF6AB82CF46C5800A8D132 /* PersistentTabLocalSubscriptionFactory */ = {
+			isa = PBXGroup;
+			children = (
+				2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */,
+				2DAF6AB62CF46BE500A8D132 /* DAppBrowserTabLocalSubscriptionHandler.swift */,
+				2DAF6AB42CF46A0900A8D132 /* DAppBrowserTabLocalSibscriber.swift */,
+			);
+			path = PersistentTabLocalSubscriptionFactory;
+			sourceTree = "<group>";
+		};
+		2DAF6ABB2CF4944C00A8D132 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				842898CB265A8EC3002D5D65 /* RemoteImageViewModel.swift */,
+				842898D0265A955A002D5D65 /* ImageViewModel.swift */,
+				7778FE7A2B910FC50023E801 /* ImageViewModelFactory.swift */,
+				2DAF6ABC2CF4947200A8D132 /* WebViewRenderImageViewModel.swift */,
+				2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */,
+			);
+			path = Image;
 			sourceTree = "<group>";
 		};
 		2DBB288A2CD42B5100DFA0AD /* Logo */ = {
@@ -18320,6 +18362,7 @@
 				0C37AFBC2B55732100009ECA /* NMapKeyEncodingOperation.swift */,
 				0C37AFC22B5796DD00009ECA /* StateCallOperationFactory.swift */,
 				0CCCDF752B64B80500473D42 /* StorageKeysOperationFactory.swift */,
+				2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */,
 				0CF609322B9438BD00DD4DB3 /* OperatingCall.swift */,
 			);
 			path = Operation;
@@ -18616,11 +18659,9 @@
 			isa = PBXGroup;
 			children = (
 				0C02DF832A40935900CE53AC /* Amount */,
+				2DAF6ABB2CF4944C00A8D132 /* Image */,
 				849244912514EDE800477C1B /* SelectableViewModel.swift */,
 				8497FC5F26317783002FEAA7 /* AccountInfoViewModel.swift */,
-				842898CB265A8EC3002D5D65 /* RemoteImageViewModel.swift */,
-				842898D0265A955A002D5D65 /* ImageViewModel.swift */,
-				7778FE7A2B910FC50023E801 /* ImageViewModelFactory.swift */,
 				AEACD5F8265E94AB00A09892 /* StatusViewModel.swift */,
 				84DBEA41265E80DD00FDF73C /* LearnMoreViewModel.swift */,
 				8448221B26B1850D007F4492 /* TitleIconViewModel.swift */,
@@ -18723,6 +18764,7 @@
 			isa = PBXGroup;
 			children = (
 				8496ADD9276AFF4600306B24 /* DAppBrowserScript.swift */,
+				2DAF6AB92CF4855500A8D132 /* DAppBrowserTabRenderer.swift */,
 				8496ADD6276AFEED00306B24 /* DAppBrowserModel.swift */,
 				849976BB27B25A6600B14A6C /* DAppTransportModel.swift */,
 				84FEF3E22807E8000042CBE7 /* DAppBrowserPage.swift */,
@@ -22017,7 +22059,7 @@
 			isa = PBXGroup;
 			children = (
 				88DA0CCF295F345D0009F70F /* WKWebView+VewportScript.swift */,
-				2D8F0EC92CEE4CC300A22074 /* WKWebView+StateRender.swift */,
+				2D8F0EC92CEE4CC300A22074 /* UIView+StateRender.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -22333,6 +22375,7 @@
 				19F47911F8734C007135137D /* DAppBrowserWireframe.swift */,
 				1FF860B3465854DCBC02DFB3 /* DAppBrowserPresenter.swift */,
 				15A4DFCC4236D25A3D59F809 /* DAppBrowserInteractor.swift */,
+				2DAF6AC22CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift */,
 				1855972C88E512AED37FD312 /* DAppBrowserViewController.swift */,
 				5278A5F4178922A240590334 /* DAppBrowserViewLayout.swift */,
 				677CE34BFAB45122C57095F6 /* DAppBrowserViewFactory.swift */,
@@ -24881,6 +24924,7 @@
 				84276687297AB22B0063E08E /* TableViewCellPosition.swift in Sources */,
 				0C21D77C2AB42A3500EB2DBD /* ScreenOpenService.swift in Sources */,
 				F4B39C66273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift in Sources */,
+				2DAF6ABD2CF4947200A8D132 /* WebViewRenderImageViewModel.swift in Sources */,
 				841E5559282E6A7700C8438F /* ParaStkDurationOperationFactory.swift in Sources */,
 				841E553E282D469F00C8438F /* ParachainStakingDelegator.swift in Sources */,
 				846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */,
@@ -25390,6 +25434,7 @@
 				8401AEC32642A71D000B03E3 /* StakingRebondConfirmationViewController.swift in Sources */,
 				841AAC2D26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift in Sources */,
 				842EBB392890A8E400B952D8 /* WalletSelectionViewProtocols.swift in Sources */,
+				2DAF6AB72CF46BE500A8D132 /* DAppBrowserTabLocalSubscriptionHandler.swift in Sources */,
 				8846F73529D6C7B600B8B776 /* MultibaseEncoding.swift in Sources */,
 				84FA7C1E284FED0A00B648E1 /* CallbackBatchStorageSubscription.swift in Sources */,
 				0CB313882C12C0FC00353724 /* CloudBackupEnablePasswordWireframe.swift in Sources */,
@@ -25492,6 +25537,7 @@
 				2D5493342C04C0F700607BF7 /* MnemonicCardView.swift in Sources */,
 				849A4EFA279ABC8800AB6709 /* AssetBalanceMapper.swift in Sources */,
 				8490147724A94A37008F705E /* RootPresenter.swift in Sources */,
+				2DAF6ABA2CF4855500A8D132 /* DAppBrowserTabRenderer.swift in Sources */,
 				8428765724ADDE0200D91AD8 /* SettingsTableViewCell.swift in Sources */,
 				848CC93F28D9F90D009EB4B0 /* ReferendaDeposit.swift in Sources */,
 				8401AE8D2641EF7B000B03E3 /* NetworkFeeConfirmView.swift in Sources */,
@@ -25545,6 +25591,7 @@
 				84CA407E2A037658004BB71E /* WalletConnectSessionsViewModelFactory.swift in Sources */,
 				844DBC60274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift in Sources */,
 				0CA5BDFB2C455790000A4CDD /* NominationPoolStakingMigrating.swift in Sources */,
+				2DAF6AC12CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift in Sources */,
 				77A0B2F32A3CA37E00CBF653 /* StakingMoreOptionsViewModelFactory.swift in Sources */,
 				849014B924AA87E3008F705E /* PinSetupViewController.swift in Sources */,
 				84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */,
@@ -25747,6 +25794,7 @@
 				F46F9F902733E02B00FFA556 /* MoonbeamKeys.swift in Sources */,
 				849014DC24AA8F60008F705E /* MainTabBarPresenter.swift in Sources */,
 				8467F4C526B1E4E200C5B6F4 /* StakingDurationFetching.swift in Sources */,
+				2D6C5FA32CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift in Sources */,
 				F4A6C9E4265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift in Sources */,
 				844ADE8028CB35EC00EE29F7 /* AutomationTimeCancelTask.swift in Sources */,
 				8422F2F02888193F00C7B840 /* UsernameViewModel+Handler.swift in Sources */,
@@ -26152,6 +26200,7 @@
 				2D6F51A72CDD035900564C00 /* AssetDecorationAttributesFactory.swift in Sources */,
 				84443BA226C123F100C33B5D /* Data+Random.swift in Sources */,
 				84C6800E24D6ECE800006BF5 /* ExpandableActionControl.swift in Sources */,
+				2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */,
 				8490148424AA27C1008F705E /* OperationManagerFacade.swift in Sources */,
 				842A738827DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift in Sources */,
 				77FFB2B12B0D392A00C7C879 /* OpenStakingUrlParsingService.swift in Sources */,
@@ -27536,6 +27585,7 @@
 				0C1338122AB8330D0036BCD6 /* AnimatedImageViewModel.swift in Sources */,
 				84D184F12A04EF6D0060C1BD /* DAppNetworksViewModel.swift in Sources */,
 				88A0E0FF28A284C700A9C940 /* SelectedCurrencyDepending.swift in Sources */,
+				2DAF6ABF2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift in Sources */,
 				2918DCAEB91F8276446873C8 /* StakingRewardPayoutsWireframe.swift in Sources */,
 				AB5E2A2B4CC823E6F6515ADD /* StakingRewardPayoutsPresenter.swift in Sources */,
 				88BB0B4129C1E1C100D041C1 /* KiltDid.swift in Sources */,
@@ -28009,7 +28059,7 @@
 				88E1E896289C021F00C123A8 /* CurrencyCollectionViewCell.swift in Sources */,
 				0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */,
 				BE8CF97B6EA62C75277B78AA /* MoonbeamTermsProtocols.swift in Sources */,
-				2D8F0ECA2CEE4CC300A22074 /* WKWebView+StateRender.swift in Sources */,
+				2D8F0ECA2CEE4CC300A22074 /* UIView+StateRender.swift in Sources */,
 				B316F0D2BDF0F44AD27F58E0 /* MoonbeamTermsWireframe.swift in Sources */,
 				8027EA456C0C13F6DA73D540 /* MoonbeamTermsPresenter.swift in Sources */,
 				845B08082918C8DA005785D3 /* RemoteStorageSizeRequest.swift in Sources */,
@@ -28897,6 +28947,7 @@
 				34D6FF85BEA25EFD1D15D460 /* InAppUpdatesInteractor.swift in Sources */,
 				0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */,
 				841E54A07ACD3AD160A1250A /* InAppUpdatesViewController.swift in Sources */,
+				2DAF6AB52CF46A0900A8D132 /* DAppBrowserTabLocalSibscriber.swift in Sources */,
 				77C9BCD22ACD8AF400022EA2 /* SwapAssetsOperationViewController.swift in Sources */,
 				0CD846232BDCAAE80026B5CA /* WalletImportOptionSecondaryView.swift in Sources */,
 				DDA07514BEF3E2FD6EE1BB4E /* InAppUpdatesViewLayout.swift in Sources */,
@@ -29060,6 +29111,7 @@
 				0CE629D62AA9B5E200E250BD /* BalanceViewModel.swift in Sources */,
 				0C2F86982A728EE900593C01 /* NPoolsRewardEngineFactory.swift in Sources */,
 				77E304AB2AEBB214006FD6F0 /* SlippageBounds.swift in Sources */,
+				2DAF6AC32CF4F01B00A8D132 /* DAppBrowserSearchResultProcessing.swift in Sources */,
 				C5B07E59C0B00CAD1D0D2DFD /* ReferendumSearchWireframe.swift in Sources */,
 				AB27EE4EE30A06D8E7B8EDB4 /* ReferendumSearchPresenter.swift in Sources */,
 				2F2ACE609F7423EDD0F06F30 /* ReferendumSearchViewController.swift in Sources */,
