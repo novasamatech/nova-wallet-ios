@@ -70,7 +70,7 @@ final class DAppBrowserPresenter {
 
     func removeFromFavorites(dApp: DAppFavorite) {
         let name = dApp.label ?? browserPage?.title
-        
+
         wireframe.showFavoritesRemovalConfirmation(
             from: view,
             name: name ?? "",

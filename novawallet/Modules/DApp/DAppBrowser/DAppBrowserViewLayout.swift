@@ -45,7 +45,9 @@ final class DAppBrowserViewLayout: UIView {
             target: nil,
             action: nil
         )
-        
+
+        item.tintColor = R.color.colorIconPrimary()
+
         return item
     }()
 
@@ -195,10 +197,25 @@ extension DAppBrowserViewLayout {
         layoutIfNeeded()
     }
 
-    func setFavorite(state: Bool) {
-        favoriteBarItem.image = state
-            ? R.image.iconFavToolbarSel()
-            : R.image.iconFavToolbar()
+    func setFavorite(_ favorite: Bool) {
+        if favorite {
+            favoriteBarItem.image = R.image.iconFavToolbarSel()
+            favoriteBarItem.tintColor = R.color.colorIconFavorite()
+        } else {
+            favoriteBarItem.image = R.image.iconFavToolbar()
+            favoriteBarItem.tintColor = R.color.colorIconPrimary()
+        }
+    }
+
+    func setURLSecure(_ secure: Bool) {
+        if secure {
+            securityImageView.image = R.image.iconBrowserSecurity()?
+                .tinted(with: R.color.colorIconPositive()!)
+            urlLabel.textColor = R.color.colorTextPositive()
+        } else {
+            securityImageView.image = nil
+            urlLabel.textColor = R.color.colorTextPrimary()
+        }
     }
 
     func setWebView(_ webView: WKWebView) {

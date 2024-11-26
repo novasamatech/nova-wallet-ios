@@ -214,11 +214,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private func didChangeUrl(_ newUrl: URL) {
         rootView.urlLabel.text = newUrl.host
 
-        if newUrl.isTLSScheme {
-            rootView.securityImageView.image = R.image.iconBrowserSecurity()
-        } else {
-            rootView.securityImageView.image = nil
-        }
+        rootView.setURLSecure(newUrl.isTLSScheme)
 
         rootView.urlBar.setNeedsLayout()
 
@@ -236,11 +232,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         rootView.urlLabel.text = url.host
 
-        if url.isTLSScheme {
-            rootView.securityImageView.image = R.image.iconBrowserSecurity()
-        } else {
-            rootView.securityImageView.image = nil
-        }
+        rootView.setURLSecure(url.isTLSScheme)
 
         rootView.urlBar.setNeedsLayout()
 
@@ -465,7 +457,7 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
     }
 
     func didSet(favorite: Bool) {
-        rootView.setFavorite(state: favorite)
+        rootView.setFavorite(favorite)
     }
 
     func didDecideClose() {
