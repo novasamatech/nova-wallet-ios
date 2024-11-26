@@ -104,6 +104,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
         interactor.process(host: newHost)
         updateSettingsState()
+        provideFavorite()
     }
 
     func process(
