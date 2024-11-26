@@ -5,7 +5,8 @@ struct DAppBrowserTab {
     let uuid: UUID
     let name: String?
     let url: URL
-    let lastModified: Date
+    let createdAt: Date
+    let renderModifiedAt: Date?
     let transportStates: [DAppTransportState]?
     let desktopOnly: Bool?
     let icon: URL?
@@ -15,7 +16,8 @@ struct DAppBrowserTab {
             uuid: uuid,
             name: name,
             url: url,
-            lastModified: lastModified,
+            createdAt: createdAt,
+            renderModifiedAt: renderModifiedAt,
             icon: icon?.absoluteString,
             desktopOnly: desktopOnly
         )
@@ -25,7 +27,8 @@ struct DAppBrowserTab {
         uuid: UUID,
         name: String?,
         url: URL,
-        lastModified: Date,
+        createdAt: Date,
+        renderModifiedAt: Date?,
         transportStates: [DAppTransportState]?,
         desktopOnly: Bool?,
         icon: URL?
@@ -33,7 +36,8 @@ struct DAppBrowserTab {
         self.uuid = uuid
         self.name = name
         self.url = url
-        self.lastModified = lastModified
+        self.createdAt = createdAt
+        self.renderModifiedAt = renderModifiedAt
         self.transportStates = transportStates
         self.desktopOnly = desktopOnly
         self.icon = icon
@@ -54,7 +58,8 @@ struct DAppBrowserTab {
         }
 
         uuid = UUID()
-        lastModified = Date()
+        createdAt = Date()
+        renderModifiedAt = nil
         transportStates = nil
         desktopOnly = nil
         name = nil
@@ -64,7 +69,8 @@ struct DAppBrowserTab {
 
     init(from dApp: DApp) {
         uuid = UUID()
-        lastModified = Date()
+        createdAt = Date()
+        renderModifiedAt = nil
         transportStates = nil
         desktopOnly = dApp.desktopOnly
         name = dApp.name
@@ -76,13 +82,15 @@ struct DAppBrowserTab {
         transportStates: [DAppTransportState]? = nil,
         name: String? = nil,
         desktopOnly: Bool? = nil,
+        renderModifiedAt: Date? = nil,
         icon: URL? = nil
     ) -> DAppBrowserTab {
         DAppBrowserTab(
             uuid: uuid,
             name: name ?? self.name,
             url: url,
-            lastModified: Date(),
+            createdAt: createdAt,
+            renderModifiedAt: renderModifiedAt ?? self.renderModifiedAt,
             transportStates: transportStates ?? self.transportStates,
             desktopOnly: desktopOnly ?? self.desktopOnly,
             icon: icon ?? self.icon
@@ -105,7 +113,8 @@ struct DAppBrowserTab {
             uuid: uuid,
             name: dApp.name,
             url: dApp.url,
-            lastModified: Date(),
+            createdAt: createdAt,
+            renderModifiedAt: renderModifiedAt,
             transportStates: nil,
             desktopOnly: dApp.desktopOnly,
             icon: dApp.icon
@@ -117,7 +126,8 @@ struct DAppBrowserTab {
             uuid: uuid,
             name: nil,
             url: url,
-            lastModified: Date(),
+            createdAt: createdAt,
+            renderModifiedAt: renderModifiedAt,
             transportStates: nil,
             desktopOnly: nil,
             icon: nil
@@ -154,7 +164,8 @@ extension DAppBrowserTab {
         let uuid: UUID
         let name: String?
         let url: URL
-        let lastModified: Date
+        let createdAt: Date
+        let renderModifiedAt: Date?
         let icon: String?
         let desktopOnly: Bool?
     }
@@ -169,7 +180,8 @@ extension DAppBrowserTab: Equatable {
             && lhs.desktopOnly == rhs.desktopOnly
             && lhs.transportStates?.count == rhs.transportStates?.count
             && lhs.url == rhs.url
-            && lhs.lastModified == rhs.lastModified
+            && lhs.createdAt == rhs.createdAt
+            && lhs.renderModifiedAt == rhs.renderModifiedAt
             && lhs.icon == rhs.icon
     }
 }

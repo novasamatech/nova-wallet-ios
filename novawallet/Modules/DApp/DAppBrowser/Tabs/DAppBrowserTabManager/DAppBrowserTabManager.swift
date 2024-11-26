@@ -191,7 +191,7 @@ private extension DAppBrowserTabManager {
     }
 
     func sorted(_ tabs: [DAppBrowserTab]) -> [DAppBrowserTab] {
-        tabs.sorted { $0.lastModified < $1.lastModified }
+        tabs.sorted { $0.createdAt < $1.createdAt }
     }
 
     func apply(_ tabsChanges: [DataProviderChange<DAppBrowserTab.PersistenceModel>]) {
@@ -224,7 +224,8 @@ private extension DAppBrowserTabManager {
             uuid: persistenceModel.uuid,
             name: persistenceModel.name,
             url: persistenceModel.url,
-            lastModified: persistenceModel.lastModified,
+            createdAt: persistenceModel.createdAt,
+            renderModifiedAt: persistenceModel.renderModifiedAt,
             transportStates: dAppTransportStates[persistenceModel.uuid],
             desktopOnly: persistenceModel.desktopOnly,
             icon: iconURL
@@ -316,7 +317,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         )
 
         var resultWrapper = saveWrapper(
-            for: tab.updating()
+            for: tab.updating(renderModifiedAt: Date())
         )
 
         resultWrapper.addDependency(wrapper: updateRenderWrapper)

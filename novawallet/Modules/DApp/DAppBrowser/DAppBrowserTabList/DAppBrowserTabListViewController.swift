@@ -99,6 +99,19 @@ private extension DAppBrowserTabListViewController {
         rootView.doneButtonItem.action = #selector(actionDone)
     }
 
+    func reloadCollection() {
+        let snapshot = createSnapshot()
+        dataSource.apply(snapshot)
+    }
+
+    func createSnapshot() -> NSDiffableDataSourceSnapshot<Int, DAppBrowserTabViewModel> {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, DAppBrowserTabViewModel>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(viewModels, toSection: 0)
+
+        return snapshot
+    }
+
     @objc func actionCloseAll() {
         presenter.closeAllTabs()
     }
@@ -118,15 +131,7 @@ extension DAppBrowserTabListViewController: DAppBrowserTabListViewProtocol {
     func didReceive(_ viewModels: [DAppBrowserTabViewModel]) {
         self.viewModels = viewModels
 
-// MARK: UICollectionViewDataSource
-        var snapshot = NSDiffableDataSourceSnapshot<Int, DAppBrowserTabViewModel>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(viewModels, toSection: 0)
-
-extension DAppBrowserTabListViewController: UICollectionViewDataSource {
-    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
-        viewModels.count
-        dataSource.apply(snapshot)
+        reloadCollection()
     }
 }
 
@@ -179,6 +184,12 @@ extension DAppBrowserTabListViewController: UICollectionViewDelegate, UICollecti
 
 extension DAppBrowserTabListViewController: DAppBrowserTabViewTransitionProtocol {
     func getTabViewForTransition(for tabId: UUID) -> UIView? {
+        if #available(iOS 15.0, *) {
+            dataSource.applySnapshotUsingReloadData(createSnapshot())
+        } else {
+            // Fallback on earlier versions
+        }
+
         guard let index = viewModels.enumerated().first(
             where: { $0.element.uuid == tabId }
         )?.offset else {
@@ -188,6 +199,12 @@ extension DAppBrowserTabListViewController: DAppBrowserTabViewTransitionProtocol
         let indexPath = IndexPath(
             item: index,
             section: 0
+        )
+
+        rootView.collectionView.scrollToItem(
+            at: indexPath,
+            at: .bottom,
+            animated: false
         )
 
         let cell = rootView.collectionView.cellForItem(at: indexPath)

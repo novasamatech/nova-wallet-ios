@@ -1,7 +1,7 @@
 import Foundation
 
 final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
-    func showNewTab(
+    func showTab(
         from view: DAppBrowserTabListViewProtocol?,
         _ tab: DAppBrowserTab
     ) {
@@ -9,26 +9,9 @@ final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            browserView.controller,
-            animated: true
-        )
-    }
-
-    func showExistingTab(
-        from view: DAppBrowserTabListViewProtocol?,
-        _ tab: DAppBrowserTab
-    ) {
-        guard
-            let browserView = DAppBrowserViewFactory.createView(selectedTab: tab),
-            let tabView = view?.getTabViewForTransition(for: tab.uuid)
-        else {
-            return
-        }
-
         if #available(iOS 18.0, *) {
             browserView.controller.preferredTransition = .zoom { _ in
-                tabView
+                view?.getTabViewForTransition(for: tab.uuid)
             }
         } else {
             // Fallback on earlier versions

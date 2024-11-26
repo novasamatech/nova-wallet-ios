@@ -16,7 +16,8 @@ extension DAppBrowserTabMapper: CoreDataMapperProtocol {
             uuid: UUID(uuidString: entity.identifier!)!,
             name: entity.label,
             url: entity.url!,
-            lastModified: entity.lastModified!,
+            createdAt: entity.createdAt!,
+            renderModifiedAt: entity.renderModifiedAt,
             icon: entity.icon,
             desktopOnly: entity.desktopOnly
         )
@@ -30,7 +31,8 @@ extension DAppBrowserTabMapper: CoreDataMapperProtocol {
         entity.identifier = model.identifier
         entity.label = model.name
         entity.url = model.url
-        entity.lastModified = model.lastModified
+        entity.createdAt = model.createdAt
+        entity.renderModifiedAt = model.renderModifiedAt
         entity.icon = model.icon
         entity.desktopOnly = model.desktopOnly ?? false
     }

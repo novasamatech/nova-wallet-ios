@@ -5,17 +5,17 @@ struct DAppBrowserTabViewModel {
     let stateRender: ImageViewModelProtocol?
     let name: String
     let icon: ImageViewModelProtocol?
-    let lastModified: Date
+    let renderModifiedAt: Date?
 }
 
 extension DAppBrowserTabViewModel: Hashable {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.uuid == rhs.uuid
-            && lhs.lastModified == rhs.lastModified
+            && lhs.renderModifiedAt == rhs.renderModifiedAt
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(uuid)
-        hasher.combine(lastModified)
+        hasher.combine(renderModifiedAt)
     }
 }

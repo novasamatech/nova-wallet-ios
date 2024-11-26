@@ -136,9 +136,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
     }
 
-    func showTabs() {
-        interactor.saveTransportState()
-        wireframe.showTabs(from: view)
+    func showTabs(stateRenderer: DAppBrowserTabRendererProtocol) {
+        interactor.saveLastTabState(renderer: stateRenderer)
     }
 }
 
@@ -193,6 +192,10 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
         tabs = models
 
         view?.didReceiveTabsCount(viewModel: "\(models.count)")
+    }
+
+    func didSaveLastTabState() {
+        wireframe.showTabs(from: view)
     }
 }
 

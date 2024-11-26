@@ -48,7 +48,7 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
             return
         }
 
-        wireframe.showExistingTab(
+        wireframe.showTab(
             from: view,
             selectedTab
         )
