@@ -184,12 +184,6 @@ extension DAppBrowserTabListViewController: UICollectionViewDelegate, UICollecti
 
 extension DAppBrowserTabListViewController: DAppBrowserTabViewTransitionProtocol {
     func getTabViewForTransition(for tabId: UUID) -> UIView? {
-        if #available(iOS 15.0, *) {
-            dataSource.applySnapshotUsingReloadData(createSnapshot())
-        } else {
-            // Fallback on earlier versions
-        }
-
         guard let index = viewModels.enumerated().first(
             where: { $0.element.uuid == tabId }
         )?.offset else {
@@ -207,9 +201,13 @@ extension DAppBrowserTabListViewController: DAppBrowserTabViewTransitionProtocol
             animated: false
         )
 
-        let cell = rootView.collectionView.cellForItem(at: indexPath)
+        guard let cell = rootView.collectionView.cellForItem(
+            at: indexPath
+        ) as? DAppBrowserTabCollectionCell else {
+            return nil
+        }
 
-        return cell
+        return cell.view.imageView
     }
 }
 
