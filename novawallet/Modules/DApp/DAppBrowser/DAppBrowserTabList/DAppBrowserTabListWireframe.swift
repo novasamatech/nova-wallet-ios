@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
     func showTab(
@@ -10,7 +11,17 @@ final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
         }
 
         if #available(iOS 18.0, *) {
-            browserView.controller.preferredTransition = .zoom { _ in
+            let options = UIViewController.Transition.ZoomOptions()
+            options.alignmentRectProvider = { context in
+                guard let destinationController = context.zoomedViewController as? DAppBrowserViewController else {
+                    return .zero
+                }
+                let container = destinationController.rootView.webViewContainer
+
+                return container.convert(container.bounds, to: destinationController.rootView)
+            }
+
+            browserView.controller.preferredTransition = .zoom(options: options) { _ in
                 view?.getTabViewForTransition(for: tab.uuid)
             }
         } else {
@@ -24,6 +35,6 @@ final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
     }
 
     func close(from view: ControllerBackedProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
+        view?.controller.navigationController?.dismiss(animated: true)
     }
 }

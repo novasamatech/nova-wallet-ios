@@ -8,7 +8,6 @@ class DAppBrowserTabCollectionCell: CollectionViewContainerCell<DAppBrowserTabVi
         view.viewModel?.icon?.cancel(on: view.iconName.imageView)
         view.iconName.imageView.image = nil
         view.iconName.detailsLabel.text = nil
-        view.imageView.image = nil
         view.viewModel = nil
     }
 }
@@ -69,6 +68,7 @@ private extension DAppBrowserTabView {
             make.bottom.centerX.equalToSuperview()
             make.leading.greaterThanOrEqualToSuperview()
             make.trailing.lessThanOrEqualToSuperview()
+            make.height.equalTo(Constants.iconNameHeight)
         }
 
         addSubview(imageView)
@@ -157,6 +157,7 @@ private extension DAppBrowserTabView {
         static let closeButtonCornerRadius: CGFloat = closeButtonSize / 2
         static let closeButtonSize: CGFloat = 20.0
         static let iconNameSpacing: CGFloat = 4.0
+        static let iconNameHeight: CGFloat = 16.0
         static let iconSize: CGFloat = 15
         static let iconNameTopOffset: CGFloat = -8
         static let closeButtonEdgeInsets: CGFloat = 10.0

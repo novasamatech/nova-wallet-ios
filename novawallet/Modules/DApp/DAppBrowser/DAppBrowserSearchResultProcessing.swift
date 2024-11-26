@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 protocol DAppBrowserNewTabRouterProtocol {
     func process(
@@ -66,7 +67,17 @@ class DAppBrowserNewTabWireframe: DAppBrowserNewTabOpening {
         }
 
         if #available(iOS 18.0, *) {
-            browserView.controller.preferredTransition = .zoom { context in
+            let options = UIViewController.Transition.ZoomOptions()
+            options.alignmentRectProvider = { context in
+                guard let destinationController = context.zoomedViewController as? DAppBrowserViewController else {
+                    return .zero
+                }
+                let container = destinationController.rootView.webViewContainer
+
+                return container.convert(container.bounds, to: destinationController.rootView)
+            }
+
+            browserView.controller.preferredTransition = .zoom(options: options) { context in
                 let source = context.sourceViewController as? DAppBrowserTabViewTransitionProtocol
 
                 return source?.getTabViewForTransition(for: tab.uuid)
@@ -98,19 +109,39 @@ class DAppBrowserNewStackWireframe: DAppBrowserNewTabOpening {
         browserView.controller.hidesBottomBarWhenPushed = true
 
         if #available(iOS 18.0, *) {
-            browserView.controller.preferredTransition = .zoom { _ in
+            let options = UIViewController.Transition.ZoomOptions()
+            options.alignmentRectProvider = { context in
+                guard let destinationController = context.zoomedViewController as? DAppBrowserViewController else {
+                    return .zero
+                }
+                let container = destinationController.rootView.webViewContainer
+
+                return container.convert(container.bounds, to: destinationController.rootView)
+            }
+
+            browserView.controller.preferredTransition = .zoom(options: options) { _ in
                 tabsView.getTabViewForTransition(for: tab.uuid)
             }
         } else {
             // Fallback on earlier versions
         }
 
-        let controllers = view?.controller.navigationController?.viewControllers ?? []
-
         tabsView.controller.loadViewIfNeeded()
 
-        view?.controller.navigationController?.setViewControllers(
-            controllers + [tabsView.controller, browserView.controller],
+        let controllers = [tabsView.controller, browserView.controller]
+
+        let navigationController = NovaNavigationController()
+        navigationController.barSettings = .defaultSettings.bySettingCloseButton(false)
+
+        navigationController.setViewControllers(
+            controllers,
+            animated: false
+        )
+
+        navigationController.modalPresentationStyle = .overFullScreen
+
+        view?.controller.present(
+            navigationController,
             animated: true
         )
     }

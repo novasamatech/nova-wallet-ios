@@ -113,6 +113,8 @@ final class DAppBrowserViewLayout: UIView {
         return view
     }()
 
+    let webViewContainer = UIView()
+
     var webView: WKWebView?
 
     override init(frame: CGRect) {
@@ -145,6 +147,13 @@ private extension DAppBrowserViewLayout {
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
             make.height.equalTo(Constants.toolbarHeight)
+        }
+
+        addSubview(webViewContainer)
+        webViewContainer.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalTo(toolBar.snp.top)
         }
 
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -221,12 +230,11 @@ extension DAppBrowserViewLayout {
     func setWebView(_ webView: WKWebView) {
         self.webView?.removeFromSuperview()
         self.webView = webView
-        addSubview(webView)
+
+        webViewContainer.addSubview(webView)
 
         webView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.bottom.equalTo(toolBar.snp.top)
+            make.edges.equalToSuperview()
         }
     }
 }
