@@ -12909,22 +12909,6 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
-		2D74CA362CF72574004EAD8C /* DAppBrowserRouter */ = {
-			isa = PBXGroup;
-			children = (
-				2D74CA3B2CF72609004EAD8C /* Wireframe */,
-			);
-			path = DAppBrowserRouter;
-			sourceTree = "<group>";
-		};
-		2D74CA3B2CF72609004EAD8C /* Wireframe */ = {
-			isa = PBXGroup;
-			children = (
-				2D74CA3E2CF7262E004EAD8C /* DAppBrowserNewTabOpening.swift */,
-			);
-			path = Wireframe;
-			sourceTree = "<group>";
-		};
 		2D77488A2C9042800059607B /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -18122,6 +18106,7 @@
 				77C35CE42B568ED100308F16 /* YourWalletsPresentable.swift */,
 				77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */,
 				0C1998EE2C4CC51D000EBFB8 /* SCLoadableControllerProtocol.swift */,
+				2D74CA3E2CF7262E004EAD8C /* DAppBrowserNewTabOpening.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -22377,7 +22362,6 @@
 		A7D3F0165AEEF4940B376CA5 /* DAppBrowser */ = {
 			isa = PBXGroup;
 			children = (
-				2D74CA362CF72574004EAD8C /* DAppBrowserRouter */,
 				2D8F0ED02CEFC7DA00A22074 /* Tabs */,
 				F7C71F9060883D87B85669DA /* DAppBrowserTabList */,
 				88DA0CCD295F342D0009F70F /* Extensions */,
