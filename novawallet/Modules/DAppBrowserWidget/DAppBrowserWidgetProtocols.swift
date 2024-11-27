@@ -1,6 +1,6 @@
 import Foundation
 
-typealias BrowserWidgetContainableView = DAppBrowserWidgetViewProtocol & NovaMainContainerDAppBrowserProtocol
+typealias DAppBrowserWidgetContainableView = DAppBrowserWidgetViewProtocol & NovaMainContainerDAppBrowserProtocol
 
 protocol DAppBrowserWidgetViewProtocol: ControllerBackedProtocol {
     func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel)

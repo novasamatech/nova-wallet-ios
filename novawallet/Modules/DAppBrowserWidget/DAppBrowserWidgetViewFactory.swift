@@ -1,7 +1,7 @@
 import Foundation
 
 struct DAppBrowserWidgetViewFactory {
-    static func createView() -> DAppBrowserWidgetViewProtocol? {
+    static func createView() -> DAppBrowserWidgetContainableView? {
         let interactor = DAppBrowserWidgetInteractor(
             tabManager: DAppBrowserTabManager.shared
         )

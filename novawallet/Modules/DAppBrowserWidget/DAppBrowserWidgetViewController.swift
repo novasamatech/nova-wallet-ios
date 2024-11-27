@@ -56,7 +56,7 @@ private extension DAppBrowserWidgetViewController {
 
 extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
     func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel) {
-        if let title {
+        if let title = browserWidgetViewModel.title {
             rootView.browserVidgetView.title.text = title
         }
 

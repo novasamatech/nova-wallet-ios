@@ -1,4 +1,4 @@
-protocol NovaMainAppContainerViewProtocol: AnyObject {}
+protocol NovaMainAppContainerViewProtocol: ControllerBackedProtocol {}
 
 protocol NovaMainAppContainerPresenterProtocol: AnyObject {
     func setup()

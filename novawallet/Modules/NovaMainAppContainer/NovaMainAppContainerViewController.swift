@@ -10,8 +10,6 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
 
     private var browserWidgetViewModel: DAppBrowserWidgetViewModel = .empty
 
-    private var overlayWindow: UIWindow?
-
     init(
         presenter: NovaMainAppContainerPresenterProtocol,
         tabController: UIViewController,
@@ -47,6 +45,8 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
     }
 }
 
+// MARK: Private
+
 private extension NovaMainAppContainerViewController {
     func setupChildViewControllers() {
         guard let tabController = tabController as? UITabBarController else {
@@ -63,8 +63,6 @@ private extension NovaMainAppContainerViewController {
         }
         browserWidgerController.controller.didMove(toParent: self)
 
-        browserWidgerController.controller.view.isHidden = true
-
         addChild(tabController)
         rootView.addSubview(tabController.view)
 
@@ -79,31 +77,6 @@ private extension NovaMainAppContainerViewController {
         tabController.didMove(toParent: self)
     }
 
-    func createBrowserWidgetWindow() -> UIWindow {
-        let windowHeight: CGFloat = 78
-
-        let frame = CGRect(
-            x: 0,
-            y: UIScreen.main.bounds.height - windowHeight,
-            width: UIScreen.main.bounds.width,
-            height: windowHeight
-        )
-        let window = UIWindow(frame: frame)
-        window.windowLevel = .alert
-        window.backgroundColor = .clear
-
-        window.addSubview(rootView.browserVidgetView)
-
-        rootView.browserVidgetView.snp.makeConstraints { make in
-            make.bottom.leading.trailing.equalToSuperview()
-            make.height.equalTo(78)
-        }
-
-        window.isHidden = false
-
-        return window
-    }
-
     func setupActions() {
         rootView.browserVidgetView.closeButton.addTarget(
             self,
@@ -113,9 +86,6 @@ private extension NovaMainAppContainerViewController {
     }
 
     func animateBrowserWidgetClose() {
-        browserWidgerController.controller.view.isHidden = false
-        overlayWindow = nil
-
         browserWidgerController.controller.view.snp.updateConstraints { make in
             make.bottom.equalToSuperview().inset(-84)
         }
@@ -127,9 +97,6 @@ private extension NovaMainAppContainerViewController {
     }
 
     func animateBrowserWidgetShow() {
-        overlayWindow = nil
-        browserWidgerController.controller.view.isHidden = false
-
         browserWidgerController.controller.view.snp.updateConstraints { make in
             make.bottom.equalToSuperview()
         }
@@ -137,9 +104,6 @@ private extension NovaMainAppContainerViewController {
         UIView.animate(withDuration: 0.3) {
             self.tabController.view.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
             self.rootView.layoutIfNeeded()
-        } completion: { _ in
-            self.overlayWindow = self.createBrowserWidgetWindow()
-            self.browserWidgerController.controller.view.isHidden = true
         }
     }
 
@@ -147,6 +111,8 @@ private extension NovaMainAppContainerViewController {
         browserWidgerController.closeTabs()
     }
 }
+
+// MARK: DAppBrowserWidgetParentControllerProtocol
 
 extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerProtocol {
     func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel) {
@@ -168,5 +134,7 @@ extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerP
         }
     }
 }
+
+// MARK: NovaMainAppContainerViewProtocol
 
 extension NovaMainAppContainerViewController: NovaMainAppContainerViewProtocol {}

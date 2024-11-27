@@ -1,24 +1,32 @@
 import Foundation
 
 protocol DAppBrowserWidgetViewModelFactoryProtocol {
-    func createViewModel(for tabs: [UUID: DAppBrowserTab]) -> DAppBrowserWidgetViewModel
+    func createViewModel(
+        for tabs: [UUID: DAppBrowserTab],
+        locale: Locale
+    ) -> DAppBrowserWidgetViewModel
 }
 
 class DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryProtocol {
-    func createViewModel(for tabs: [UUID: DAppBrowserTab]) -> DAppBrowserWidgetViewModel {
-        let firstTab = tabs.values.first
-        let firstTabTitle = firstTab?.name ?? firstTab?.url.absoluteString
-
-        guard let firstTabTitle else {
+    func createViewModel(
+        for tabs: [UUID: DAppBrowserTab],
+        locale: Locale
+    ) -> DAppBrowserWidgetViewModel {
+        guard let firstTab = tabs.values.first else {
             return .empty
         }
 
-        let widgetTitle = if tabs.count > 1 {
-            "\(firstTabTitle) & \(tabs.count - 1) Other"
+        let title: String = if tabs.count > 1 {
+            [
+                "\(tabs.count)",
+                R.string.localizable.tabbarDappsTitle(
+                    preferredLanguages: locale.rLanguages
+                )
+            ].joined(with: .space)
         } else {
-            firstTabTitle
+            firstTab.name ?? firstTab.url.absoluteString
         }
 
-        return .some(title: widgetTitle)
+        return .some(title: title)
     }
 }

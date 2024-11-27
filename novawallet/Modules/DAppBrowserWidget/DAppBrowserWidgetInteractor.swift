@@ -11,6 +11,8 @@ final class DAppBrowserWidgetInteractor {
     }
 }
 
+// MARK: DAppBrowserWidgetInteractorInputProtocol
+
 extension DAppBrowserWidgetInteractor: DAppBrowserWidgetInteractorInputProtocol {
     func setup() {
         tabManager.addObserver(self)
