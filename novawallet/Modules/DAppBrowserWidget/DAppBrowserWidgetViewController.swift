@@ -1,7 +1,15 @@
 import UIKit
 
-final class DAppBrowserWidgetViewController: UIViewController {
+protocol DAppBrowserWidgetParentControllerProtocol: AnyObject {
+    func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel)
+}
+
+final class DAppBrowserWidgetViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserWidgetViewLayout
+
+    var parentController: DAppBrowserWidgetParentControllerProtocol? {
+        parent as? DAppBrowserWidgetParentControllerProtocol
+    }
 
     let presenter: DAppBrowserWidgetPresenterProtocol
 
@@ -23,7 +31,43 @@ final class DAppBrowserWidgetViewController: UIViewController {
         super.viewDidLoad()
 
         presenter.setup()
+
+        setupActions()
     }
 }
 
-extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {}
+// MARK: Private
+
+private extension DAppBrowserWidgetViewController {
+    func setupActions() {
+        rootView.browserVidgetView.closeButton.addTarget(
+            self,
+            action: #selector(actionClose),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionClose() {
+        presenter.closeTabs()
+    }
+}
+
+// MARK: DAppBrowserWidgetViewProtocol
+
+extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
+    func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel) {
+        if let title {
+            rootView.browserVidgetView.title.text = title
+        }
+
+        parentController?.didReceive(browserWidgetViewModel)
+    }
+}
+
+// MARK: NovaMainContainerDAppBrowserProtocol
+
+extension DAppBrowserWidgetViewController: NovaMainContainerDAppBrowserProtocol {
+    func closeTabs() {
+        presenter.closeTabs()
+    }
+}
