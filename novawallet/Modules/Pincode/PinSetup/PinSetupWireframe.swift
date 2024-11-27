@@ -9,7 +9,7 @@ class PinSetupWireframe: PinSetupWireframeProtocol {
             let widgetViewController = DAppBrowserWidgetViewFactory.createView(),
             let container = NovaMainAppContainerViewFactory.createView(
                 tabBarController: tabBarController,
-                browserWidgerController: widgetViewController
+                browserWidgetController: widgetViewController
             )?.controller
         else {
             return

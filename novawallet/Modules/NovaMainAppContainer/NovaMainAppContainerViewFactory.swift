@@ -4,7 +4,7 @@ import UIKit
 struct NovaMainAppContainerViewFactory {
     static func createView(
         tabBarController: UIViewController,
-        browserWidgerController: NovaMainContainerDAppBrowserProtocol
+        browserWidgetController: NovaMainContainerDAppBrowserProtocol
     ) -> NovaMainAppContainerViewProtocol? {
         let interactor = NovaMainAppContainerInteractor()
         let wireframe = NovaMainAppContainerWireframe()
@@ -17,7 +17,7 @@ struct NovaMainAppContainerViewFactory {
         let view = NovaMainAppContainerViewController(
             presenter: presenter,
             tabController: tabBarController,
-            browserWidgerController: browserWidgerController
+            browserWidgetController: browserWidgetController
         )
 
         presenter.view = view

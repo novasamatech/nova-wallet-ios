@@ -6,18 +6,18 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
     let presenter: NovaMainAppContainerPresenterProtocol
 
     let tabController: UIViewController
-    let browserWidgerController: NovaMainContainerDAppBrowserProtocol
+    let browserWidgetController: NovaMainContainerDAppBrowserProtocol
 
     private var browserWidgetViewModel: DAppBrowserWidgetViewModel = .empty
 
     init(
         presenter: NovaMainAppContainerPresenterProtocol,
         tabController: UIViewController,
-        browserWidgerController: NovaMainContainerDAppBrowserProtocol
+        browserWidgetController: NovaMainContainerDAppBrowserProtocol
     ) {
         self.presenter = presenter
         self.tabController = tabController
-        self.browserWidgerController = browserWidgerController
+        self.browserWidgetController = browserWidgetController
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -53,22 +53,22 @@ private extension NovaMainAppContainerViewController {
             return
         }
 
-        addChild(browserWidgerController.controller)
-        rootView.addSubview(browserWidgerController.controller.view)
+        addChild(browserWidgetController.controller)
+        rootView.addSubview(browserWidgetController.controller.view)
 
-        browserWidgerController.controller.view.snp.makeConstraints { make in
+        browserWidgetController.controller.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().inset(-84)
             make.height.equalTo(78)
         }
-        browserWidgerController.controller.didMove(toParent: self)
+        browserWidgetController.controller.didMove(toParent: self)
 
         addChild(tabController)
         rootView.addSubview(tabController.view)
 
         tabController.view.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(browserWidgerController.controller.view.snp.top).inset(-6)
+            make.bottom.equalTo(browserWidgetController.controller.view.snp.top).inset(-6)
         }
 
         tabController.view.layer.cornerRadius = 16
@@ -86,7 +86,7 @@ private extension NovaMainAppContainerViewController {
     }
 
     func animateBrowserWidgetClose() {
-        browserWidgerController.controller.view.snp.updateConstraints { make in
+        browserWidgetController.controller.view.snp.updateConstraints { make in
             make.bottom.equalToSuperview().inset(-84)
         }
 
@@ -97,7 +97,7 @@ private extension NovaMainAppContainerViewController {
     }
 
     func animateBrowserWidgetShow() {
-        browserWidgerController.controller.view.snp.updateConstraints { make in
+        browserWidgetController.controller.view.snp.updateConstraints { make in
             make.bottom.equalToSuperview()
         }
 
@@ -108,7 +108,7 @@ private extension NovaMainAppContainerViewController {
     }
 
     @objc func actionClose() {
-        browserWidgerController.closeTabs()
+        browserWidgetController.closeTabs()
     }
 }
 
