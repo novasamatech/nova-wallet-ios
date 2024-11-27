@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct DAppBrowserWidgetViewFactory {
     static func createView() -> DAppBrowserWidgetContainableView? {
@@ -10,7 +11,8 @@ struct DAppBrowserWidgetViewFactory {
         let presenter = DAppBrowserWidgetPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            browserTabsViewModelFactory: DAppBrowserWidgetViewModelFactory()
+            browserTabsViewModelFactory: DAppBrowserWidgetViewModelFactory(),
+            localizationManager: LocalizationManager.shared
         )
 
         let view = DAppBrowserWidgetViewController(presenter: presenter)
