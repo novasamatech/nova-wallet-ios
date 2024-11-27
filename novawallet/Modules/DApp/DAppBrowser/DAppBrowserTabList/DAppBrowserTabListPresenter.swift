@@ -4,7 +4,6 @@ import SoraFoundation
 final class DAppBrowserTabListPresenter {
     weak var view: DAppBrowserTabListViewProtocol?
     let wireframe: DAppBrowserTabListWireframeProtocol
-    let newTabRouter: DAppBrowserNewTabRouterProtocol
     let interactor: DAppBrowserTabListInteractorInputProtocol
     let localizationManager: LocalizationManagerProtocol
 
@@ -15,13 +14,11 @@ final class DAppBrowserTabListPresenter {
     init(
         interactor: DAppBrowserTabListInteractorInputProtocol,
         wireframe: DAppBrowserTabListWireframeProtocol,
-        newTabRouter: DAppBrowserNewTabRouterProtocol,
         viewModelFactory: DAppBrowserTabListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.newTabRouter = newTabRouter
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
@@ -48,9 +45,9 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
             return
         }
 
-        wireframe.showTab(
-            from: view,
-            selectedTab
+        wireframe.showNewBrowserStack(
+            selectedTab,
+            from: view
         )
     }
 
@@ -101,9 +98,16 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtoco
 
 extension DAppBrowserTabListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        newTabRouter.process(
-            searchResult: result,
-            view: view
+        guard let tab = DAppBrowserTab(from: result) else {
+            return
+        }
+
+        tabs.append(tab)
+        provideTabs()
+
+        wireframe.showInExistingBrowserStack(
+            tab,
+            from: view
         )
     }
 }

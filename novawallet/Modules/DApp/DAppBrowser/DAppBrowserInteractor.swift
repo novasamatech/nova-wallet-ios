@@ -25,6 +25,7 @@ final class DAppBrowserInteractor {
     let operationQueue: OperationQueue
 
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
+    private var tabs: [DAppBrowserTab] = []
 
     private(set) var messageQueue: [QueueMessage] = []
 
@@ -275,6 +276,7 @@ private extension DAppBrowserInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(tabs):
+                self?.tabs = tabs
                 self?.presenter?.didReceiveTabs(tabs)
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)
@@ -452,6 +454,14 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
 
         dataSource.operationQueue.addOperation(saveOperation)
+    }
+
+    func saveTabIfNeeded() {
+        guard !tabs.contains(currentTab) else {
+            return
+        }
+
+        storeTab(currentTab)
     }
 
     func saveLastTabState(renderer: DAppBrowserTabRendererProtocol) {

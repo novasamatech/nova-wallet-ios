@@ -18,6 +18,8 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
 
+    func didLoadPage()
+
     func process(page: DAppBrowserPage)
 
     func process(
@@ -55,7 +57,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func removeFromFavorites(record: DAppFavorite)
     func reload()
     func save(settings: DAppGlobalSettings)
-
+    func saveTabIfNeeded()
     func saveLastTabState(renderer: DAppBrowserTabRendererProtocol)
 }
 

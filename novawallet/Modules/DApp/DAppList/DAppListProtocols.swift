@@ -40,7 +40,11 @@ protocol DAppListInteractorOutputProtocol: AnyObject {
     func didReceiveWalletsState(hasUpdates: Bool)
 }
 
-protocol DAppListWireframeProtocol: DAppAlertPresentable, ErrorPresentable, WebPresentable, WalletSwitchPresentable {
+protocol DAppListWireframeProtocol: DAppAlertPresentable,
+    ErrorPresentable,
+    WebPresentable,
+    WalletSwitchPresentable,
+    DAppBrowserNewTabOpening {
     func showSearch(
         from view: DAppListViewProtocol?,
         delegate: DAppSearchDelegate

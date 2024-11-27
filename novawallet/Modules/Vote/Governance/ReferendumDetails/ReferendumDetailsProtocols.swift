@@ -51,8 +51,13 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumDetailsInteractorError)
 }
 
-protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-    AddressOptionsPresentable, WebPresentable, NoAccountSupportPresentable {
+protocol ReferendumDetailsWireframeProtocol: AlertPresentable,
+    ErrorPresentable,
+    CommonRetryable,
+    AddressOptionsPresentable,
+    WebPresentable,
+    NoAccountSupportPresentable,
+    DAppBrowserNewTabOpening {
     func showFullDetails(
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,

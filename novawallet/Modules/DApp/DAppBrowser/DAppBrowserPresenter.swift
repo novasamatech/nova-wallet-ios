@@ -172,6 +172,10 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func showTabs(stateRenderer: DAppBrowserTabRendererProtocol) {
         interactor.saveLastTabState(renderer: stateRenderer)
     }
+
+    func didLoadPage() {
+        interactor.saveTabIfNeeded()
+    }
 }
 
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
