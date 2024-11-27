@@ -274,12 +274,24 @@ private extension DAppBrowserInteractor {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
+            guard let self else { return }
+
             switch result {
             case let .success(tabs):
-                self?.tabs = tabs
-                self?.presenter?.didReceiveTabs(tabs)
+                self.tabs = tabs
+
+                // In case we haven't loaded current tab yet so it is not persisted
+                let outputTabs: [DAppBrowserTab] = if tabs.contains(
+                    where: { $0.uuid == self.currentTab.uuid }
+                ) {
+                    tabs
+                } else {
+                    tabs + [currentTab]
+                }
+
+                presenter?.didReceiveTabs(outputTabs)
             case let .failure(error):
-                self?.presenter?.didReceive(error: error)
+                presenter?.didReceive(error: error)
             }
         }
     }
