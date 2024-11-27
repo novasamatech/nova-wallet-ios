@@ -2,8 +2,6 @@ import UIKit
 import SoraUI
 
 final class NovaMainAppContainerViewLayout: UIView {
-    let browserVidgetView = DAppBrowserWidgetView()
-
     override init(frame: CGRect) {
         super.init(frame: frame)
     }

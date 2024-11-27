@@ -34,10 +34,7 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        presenter.setup()
-
         setupChildViewControllers()
-        setupActions()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -77,14 +74,6 @@ private extension NovaMainAppContainerViewController {
         tabController.didMove(toParent: self)
     }
 
-    func setupActions() {
-        rootView.browserVidgetView.closeButton.addTarget(
-            self,
-            action: #selector(actionClose),
-            for: .touchUpInside
-        )
-    }
-
     func animateBrowserWidgetClose() {
         browserWidgetController.controller.view.snp.updateConstraints { make in
             make.bottom.equalToSuperview().inset(-84)
@@ -106,25 +95,25 @@ private extension NovaMainAppContainerViewController {
             self.rootView.layoutIfNeeded()
         }
     }
-
-    @objc func actionClose() {
-        browserWidgetController.closeTabs()
-    }
 }
 
 // MARK: DAppBrowserWidgetParentControllerProtocol
 
 extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerProtocol {
+    func openBrowser() {
+        guard case let .some(_, tabsCount) = browserWidgetViewModel else {
+            return
+        }
+
+        presenter.openBrowser(tabsCount: tabsCount)
+    }
+
     func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel) {
         guard self.browserWidgetViewModel != browserWidgetViewModel else {
-            rootView.browserVidgetView.title.text = browserWidgetViewModel.title
-
             return
         }
 
         self.browserWidgetViewModel = browserWidgetViewModel
-
-        rootView.browserVidgetView.title.text = browserWidgetViewModel.title
 
         switch browserWidgetViewModel {
         case .empty:

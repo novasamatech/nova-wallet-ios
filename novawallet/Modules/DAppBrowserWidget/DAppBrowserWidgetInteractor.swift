@@ -15,7 +15,10 @@ final class DAppBrowserWidgetInteractor {
 
 extension DAppBrowserWidgetInteractor: DAppBrowserWidgetInteractorInputProtocol {
     func setup() {
-        tabManager.addObserver(self)
+        tabManager.addObserver(
+            self,
+            sendOnSubscription: true
+        )
     }
 
     func closeTabs() {

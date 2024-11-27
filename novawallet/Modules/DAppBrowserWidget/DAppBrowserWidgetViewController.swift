@@ -2,6 +2,7 @@ import UIKit
 
 protocol DAppBrowserWidgetParentControllerProtocol: AnyObject {
     func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel)
+    func openBrowser()
 }
 
 final class DAppBrowserWidgetViewController: UIViewController, ViewHolder {
@@ -40,15 +41,26 @@ final class DAppBrowserWidgetViewController: UIViewController, ViewHolder {
 
 private extension DAppBrowserWidgetViewController {
     func setupActions() {
-        rootView.browserVidgetView.closeButton.addTarget(
+        rootView.browserWidgetView.closeButton.addTarget(
             self,
             action: #selector(actionClose),
             for: .touchUpInside
+        )
+
+        rootView.browserWidgetView.backgroundView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(actionTap)
+            )
         )
     }
 
     @objc func actionClose() {
         presenter.closeTabs()
+    }
+
+    @objc func actionTap() {
+        parentController?.openBrowser()
     }
 }
 
@@ -57,7 +69,7 @@ private extension DAppBrowserWidgetViewController {
 extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
     func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel) {
         if let title = browserWidgetViewModel.title {
-            rootView.browserVidgetView.title.text = title
+            rootView.browserWidgetView.title.text = title
         }
 
         parentController?.didReceive(browserWidgetViewModel)

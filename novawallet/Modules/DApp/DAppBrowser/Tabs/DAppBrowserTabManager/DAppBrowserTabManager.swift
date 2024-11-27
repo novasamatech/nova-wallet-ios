@@ -350,8 +350,15 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         }
     }
 
-    func addObserver(_ observer: DAppBrowserTabsObserver) {
-        observableTabs.addObserver(with: observer, queue: observerQueue) { [weak self] _, newState in
+    func addObserver(
+        _ observer: DAppBrowserTabsObserver,
+        sendOnSubscription: Bool
+    ) {
+        observableTabs.addObserver(
+            with: observer,
+            sendStateOnSubscription: sendOnSubscription,
+            queue: observerQueue
+        ) { [weak self] _, newState in
             guard let self else { return }
 
             let sortedTabs = sorted(Array(newState.values))

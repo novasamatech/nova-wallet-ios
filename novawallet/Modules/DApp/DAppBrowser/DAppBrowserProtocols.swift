@@ -34,7 +34,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
 
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
-    func close()
+    func close(stateRenderer: DAppBrowserTabRendererProtocol)
     func showTabs(stateRenderer: DAppBrowserTabRendererProtocol)
 }
 

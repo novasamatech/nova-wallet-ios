@@ -3,7 +3,6 @@ import SoraFoundation
 
 final class DAppBrowserWidgetPresenter {
     weak var view: DAppBrowserWidgetViewProtocol?
-    let wireframe: DAppBrowserWidgetWireframeProtocol
     let interactor: DAppBrowserWidgetInteractorInputProtocol
 
     let browserTabsViewModelFactory: DAppBrowserWidgetViewModelFactoryProtocol
@@ -12,12 +11,10 @@ final class DAppBrowserWidgetPresenter {
 
     init(
         interactor: DAppBrowserWidgetInteractorInputProtocol,
-        wireframe: DAppBrowserWidgetWireframeProtocol,
         browserTabsViewModelFactory: DAppBrowserWidgetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
-        self.wireframe = wireframe
         self.browserTabsViewModelFactory = browserTabsViewModelFactory
         self.localizationManager = localizationManager
     }

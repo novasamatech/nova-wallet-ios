@@ -148,25 +148,10 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
-    func close() {
-        let languages = localizationManager.selectedLocale.rLanguages
+    func close(stateRenderer: DAppBrowserTabRendererProtocol) {
+        interactor.process(stateRenderer: stateRenderer)
 
-        let closeViewModel = AlertPresentableAction(
-            title: R.string.localizable.commonClose(preferredLanguages: languages),
-            style: .destructive
-        ) { [weak self] in
-            self?.view?.didDecideClose()
-            self?.wireframe.close(view: self?.view)
-        }
-
-        let viewModel = AlertPresentableViewModel(
-            title: nil,
-            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
-            actions: [closeViewModel],
-            closeAction: R.string.localizable.commonCancel(preferredLanguages: languages)
-        )
-
-        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+        wireframe.close(view: view)
     }
 
     func showTabs(stateRenderer: DAppBrowserTabRendererProtocol) {

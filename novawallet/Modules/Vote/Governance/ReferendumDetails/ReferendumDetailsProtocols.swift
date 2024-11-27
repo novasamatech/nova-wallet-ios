@@ -57,7 +57,7 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable,
     AddressOptionsPresentable,
     WebPresentable,
     NoAccountSupportPresentable,
-    DAppBrowserNewTabOpening {
+    DAppBrowserOpening {
     func showFullDetails(
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,

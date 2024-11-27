@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-protocol DAppBrowserNewTabOpening: AnyObject {
+protocol DAppBrowserOpening: AnyObject {
     func showInExistingBrowserStack(
         _ tab: DAppBrowserTab,
         from view: ControllerBackedProtocol?
@@ -11,9 +11,11 @@ protocol DAppBrowserNewTabOpening: AnyObject {
         _ tab: DAppBrowserTab,
         from view: ControllerBackedProtocol?
     )
+
+    func showBrowserTabs(from view: ControllerBackedProtocol?)
 }
 
-extension DAppBrowserNewTabOpening {
+extension DAppBrowserOpening {
     func showInExistingBrowserStack(
         _ tab: DAppBrowserTab,
         from view: ControllerBackedProtocol?
@@ -71,9 +73,25 @@ extension DAppBrowserNewTabOpening {
             animated: true
         )
     }
+
+    func showBrowserTabs(from view: ControllerBackedProtocol?) {
+        guard let tabsView = DAppBrowserTabListViewFactory.createView() else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: tabsView.controller)
+        navigationController.barSettings = .defaultSettings.bySettingCloseButton(false)
+
+        navigationController.modalPresentationStyle = .overFullScreen
+
+        view?.controller.present(
+            navigationController,
+            animated: true
+        )
+    }
 }
 
-private extension DAppBrowserNewTabOpening {
+private extension DAppBrowserOpening {
     func setTransition(
         for controller: UIViewController,
         tabId: UUID

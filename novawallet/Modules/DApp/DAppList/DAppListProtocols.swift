@@ -44,7 +44,7 @@ protocol DAppListWireframeProtocol: DAppAlertPresentable,
     ErrorPresentable,
     WebPresentable,
     WalletSwitchPresentable,
-    DAppBrowserNewTabOpening {
+    DAppBrowserOpening {
     func showSearch(
         from view: DAppListViewProtocol?,
         delegate: DAppSearchDelegate

@@ -6,11 +6,9 @@ struct DAppBrowserWidgetViewFactory {
         let interactor = DAppBrowserWidgetInteractor(
             tabManager: DAppBrowserTabManager.shared
         )
-        let wireframe = DAppBrowserWidgetWireframe()
 
         let presenter = DAppBrowserWidgetPresenter(
             interactor: interactor,
-            wireframe: wireframe,
             browserTabsViewModelFactory: DAppBrowserWidgetViewModelFactory(),
             localizationManager: LocalizationManager.shared
         )

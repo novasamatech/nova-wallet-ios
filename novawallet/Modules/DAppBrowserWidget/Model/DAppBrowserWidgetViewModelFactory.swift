@@ -27,6 +27,6 @@ class DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryProtoc
             firstTab.name ?? firstTab.url.absoluteString
         }
 
-        return .some(title: title)
+        return .some(title: title, count: tabs.count)
     }
 }

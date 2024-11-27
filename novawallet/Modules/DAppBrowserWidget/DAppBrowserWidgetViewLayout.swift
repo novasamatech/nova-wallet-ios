@@ -1,7 +1,7 @@
 import UIKit
 
 final class DAppBrowserWidgetViewLayout: UIView {
-    let browserVidgetView = DAppBrowserWidgetView()
+    let browserWidgetView = DAppBrowserWidgetView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -15,8 +15,8 @@ final class DAppBrowserWidgetViewLayout: UIView {
     }
 
     func setupLayout() {
-        addSubview(browserVidgetView)
-        browserVidgetView.snp.makeConstraints { make in
+        addSubview(browserWidgetView)
+        browserWidgetView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }

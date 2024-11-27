@@ -20,5 +20,8 @@ protocol DAppBrowserTabManagerProtocol {
 
     func removeAll()
 
-    func addObserver(_ observer: DAppBrowserTabsObserver)
+    func addObserver(
+        _ observer: DAppBrowserTabsObserver,
+        sendOnSubscription: Bool
+    )
 }

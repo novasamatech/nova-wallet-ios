@@ -43,14 +43,14 @@ class DAppBrowserWidgetView: UIView {
             make.edges.equalToSuperview()
         }
 
-        backgroundView.addSubview(closeButton)
+        addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
             make.size.equalTo(13)
             make.leading.equalToSuperview().inset(21.5)
             make.top.equalToSuperview().inset(13.5)
         }
 
-        backgroundView.addSubview(title)
+        addSubview(title)
         title.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalToSuperview().inset(9)

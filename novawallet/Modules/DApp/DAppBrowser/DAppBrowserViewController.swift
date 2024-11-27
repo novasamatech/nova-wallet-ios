@@ -369,7 +369,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionClose() {
-        presenter.close()
+        guard let webView = rootView.webView else { return }
+
+        let stateRenderer = DAppBrowserTabRenderer(for: webView.layer)
+
+        presenter.close(stateRenderer: stateRenderer)
     }
 
     @objc private func actionTabs() {

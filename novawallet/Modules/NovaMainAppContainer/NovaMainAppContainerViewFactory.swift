@@ -6,13 +6,9 @@ struct NovaMainAppContainerViewFactory {
         tabBarController: UIViewController,
         browserWidgetController: NovaMainContainerDAppBrowserProtocol
     ) -> NovaMainAppContainerViewProtocol? {
-        let interactor = NovaMainAppContainerInteractor()
         let wireframe = NovaMainAppContainerWireframe()
 
-        let presenter = NovaMainAppContainerPresenter(
-            interactor: interactor,
-            wireframe: wireframe
-        )
+        let presenter = NovaMainAppContainerPresenter(wireframe: wireframe)
 
         let view = NovaMainAppContainerViewController(
             presenter: presenter,
@@ -21,7 +17,6 @@ struct NovaMainAppContainerViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }

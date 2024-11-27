@@ -19,7 +19,10 @@ final class DAppBrowserTabListInteractor {
 
 extension DAppBrowserTabListInteractor: DAppBrowserTabListInteractorInputProtocol {
     func setup() {
-        tabManager.addObserver(self)
+        tabManager.addObserver(
+            self,
+            sendOnSubscription: true
+        )
     }
 
     func closeTab(with id: UUID) {

@@ -3,19 +3,20 @@ import Foundation
 final class NovaMainAppContainerPresenter {
     weak var view: NovaMainAppContainerViewProtocol?
     let wireframe: NovaMainAppContainerWireframeProtocol
-    let interactor: NovaMainAppContainerInteractorInputProtocol
 
-    init(
-        interactor: NovaMainAppContainerInteractorInputProtocol,
-        wireframe: NovaMainAppContainerWireframeProtocol
-    ) {
-        self.interactor = interactor
+    init(wireframe: NovaMainAppContainerWireframeProtocol) {
         self.wireframe = wireframe
     }
 }
 
-extension NovaMainAppContainerPresenter: NovaMainAppContainerPresenterProtocol {
-    func setup() {}
-}
+// MARK: NovaMainAppContainerPresenterProtocol
 
-extension NovaMainAppContainerPresenter: NovaMainAppContainerInteractorOutputProtocol {}
+extension NovaMainAppContainerPresenter: NovaMainAppContainerPresenterProtocol {
+    func openBrowser(tabsCount: Int) {
+        if tabsCount > 1 {
+            wireframe.showBrowserTabs(from: view)
+        } else {
+            // Implement
+        }
+    }
+}

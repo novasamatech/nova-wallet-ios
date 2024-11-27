@@ -25,7 +25,7 @@ protocol DAppBrowserTabListInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol DAppBrowserTabListWireframeProtocol: DAppBrowserNewTabOpening,
+protocol DAppBrowserTabListWireframeProtocol: DAppBrowserOpening,
     AlertPresentable,
     ErrorPresentable,
     DAppBrowserSearchPresentable {
