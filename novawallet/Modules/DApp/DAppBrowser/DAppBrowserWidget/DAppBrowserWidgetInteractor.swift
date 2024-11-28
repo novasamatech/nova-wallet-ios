@@ -17,7 +17,7 @@ extension DAppBrowserWidgetInteractor: DAppBrowserWidgetInteractorInputProtocol 
     func setup() {
         tabManager.addObserver(
             self,
-            sendOnSubscription: true
+            sendOnSubscription: false
         )
     }
 

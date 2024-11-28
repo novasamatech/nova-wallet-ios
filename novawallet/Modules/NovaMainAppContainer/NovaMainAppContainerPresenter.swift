@@ -12,11 +12,7 @@ final class NovaMainAppContainerPresenter {
 // MARK: NovaMainAppContainerPresenterProtocol
 
 extension NovaMainAppContainerPresenter: NovaMainAppContainerPresenterProtocol {
-    func openBrowser(tabsCount: Int) {
-        if tabsCount > 1 {
-            wireframe.showBrowserTabs(from: view)
-        } else {
-            // Implement
-        }
+    func setup() {
+        wireframe.showChildViews(on: view)
     }
 }

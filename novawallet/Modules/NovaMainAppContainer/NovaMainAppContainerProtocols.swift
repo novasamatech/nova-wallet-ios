@@ -1,11 +1,11 @@
-protocol NovaMainAppContainerViewProtocol: ControllerBackedProtocol {}
-
-protocol NovaMainAppContainerPresenterProtocol: AnyObject {
-    func openBrowser(tabsCount: Int)
+protocol NovaMainAppContainerViewProtocol: ControllerBackedProtocol {
+    func openBrowser(with tab: DAppBrowserTab?)
 }
 
-protocol NovaMainAppContainerWireframeProtocol: DAppBrowserOpening {}
+protocol NovaMainAppContainerPresenterProtocol: AnyObject {
+    func setup()
+}
 
-protocol NovaMainContainerDAppBrowserProtocol: ControllerBackedProtocol {
-    func closeTabs()
+protocol NovaMainAppContainerWireframeProtocol {
+    func showChildViews(on view: ControllerBackedProtocol?)
 }

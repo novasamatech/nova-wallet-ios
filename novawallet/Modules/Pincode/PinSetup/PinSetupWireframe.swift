@@ -5,8 +5,8 @@ class PinSetupWireframe: PinSetupWireframeProtocol {
 
     func showMain(from _: PinSetupViewProtocol?) {
         guard
-            let tabBarController = MainTabBarViewFactory.createView()?.controller,
-            let widgetViewController = DAppBrowserWidgetViewFactory.createView(),
+            let tabBarController = MainTabBarViewFactory.createView()?.controller as? MainTabBarViewController,
+            let widgetViewController = DAppBrowserWidgetViewFactory.createView()?.controller as? DAppBrowserWidgetViewController,
             let container = NovaMainAppContainerViewFactory.createView(
                 tabBarController: tabBarController,
                 browserWidgetController: widgetViewController

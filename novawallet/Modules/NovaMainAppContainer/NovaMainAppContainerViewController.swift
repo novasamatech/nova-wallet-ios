@@ -5,19 +5,11 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
 
     let presenter: NovaMainAppContainerPresenterProtocol
 
-    let tabController: UIViewController
-    let browserWidgetController: NovaMainContainerDAppBrowserProtocol
+    var tabBar: MainTabBarProtocol?
+    var browserWidget: DAppBrowserWidgetProtocol?
 
-    private var browserWidgetViewModel: DAppBrowserWidgetViewModel = .empty
-
-    init(
-        presenter: NovaMainAppContainerPresenterProtocol,
-        tabController: UIViewController,
-        browserWidgetController: NovaMainContainerDAppBrowserProtocol
-    ) {
+    init(presenter: NovaMainAppContainerPresenterProtocol) {
         self.presenter = presenter
-        self.tabController = tabController
-        self.browserWidgetController = browserWidgetController
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -34,96 +26,101 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupChildViewControllers()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        presenter.setup()
     }
 }
 
 // MARK: Private
 
 private extension NovaMainAppContainerViewController {
-    func setupChildViewControllers() {
-        guard let tabController = tabController as? UITabBarController else {
-            return
+    func layoutBrowserWidget(for state: DAppBrowserWidgetLayout) {
+        switch state {
+        case .closed: animateBrowserWidgetClose()
+        case .minimized: animateBrowserWidgetMinimized()
+        case .maximized: animateBrowserWidgetMaximized()
+        }
+    }
+
+    func animateBrowserWidgetClose() {
+        browserWidget?.view.snp.updateConstraints { make in
+            make.bottom.equalToSuperview().inset(-84)
         }
 
-        addChild(browserWidgetController.controller)
-        rootView.addSubview(browserWidgetController.controller.view)
+        UIView.animate(withDuration: 0.3) {
+            self.tabBar?.view.layer.maskedCorners = []
+            self.rootView.layoutIfNeeded()
+        }
+    }
 
-        browserWidgetController.controller.view.snp.makeConstraints { make in
+    func animateBrowserWidgetMinimized() {
+        browserWidget?.view.snp.updateConstraints { make in
+            make.bottom.equalToSuperview()
+            make.height.equalTo(78)
+        }
+
+        UIView.animate(withDuration: 0.3) {
+            self.tabBar?.view.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            self.rootView.layoutIfNeeded()
+        }
+    }
+
+    func animateBrowserWidgetMaximized() {
+        let fullHeight = view.frame.size.height
+        let safeAreaInsets = view.safeAreaInsets
+        let totalHeight = fullHeight + safeAreaInsets.top + safeAreaInsets.bottom
+
+        browserWidget?.view.snp.updateConstraints { make in
+            make.bottom.equalToSuperview()
+            make.height.equalTo(totalHeight)
+        }
+
+        UIView.animate(withDuration: 0.3) {
+            self.rootView.layoutIfNeeded()
+        }
+    }
+}
+
+// MARK: Internal
+
+extension NovaMainAppContainerViewController {
+    func setupLayout(
+        bottomView: UIView,
+        topView: UIView
+    ) {
+        rootView.addSubview(bottomView)
+
+        bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().inset(-84)
             make.height.equalTo(78)
         }
-        browserWidgetController.controller.didMove(toParent: self)
 
-        addChild(tabController)
-        rootView.addSubview(tabController.view)
+        rootView.addSubview(topView)
 
-        tabController.view.snp.makeConstraints { make in
+        topView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(browserWidgetController.controller.view.snp.top).inset(-6)
+            make.bottom.equalTo(bottomView.snp.top).inset(-6)
         }
 
-        tabController.view.layer.cornerRadius = 16
-        tabController.view.layer.masksToBounds = true
-
-        tabController.didMove(toParent: self)
-    }
-
-    func animateBrowserWidgetClose() {
-        browserWidgetController.controller.view.snp.updateConstraints { make in
-            make.bottom.equalToSuperview().inset(-84)
-        }
-
-        UIView.animate(withDuration: 0.3) {
-            self.tabController.view.layer.maskedCorners = []
-            self.rootView.layoutIfNeeded()
-        }
-    }
-
-    func animateBrowserWidgetShow() {
-        browserWidgetController.controller.view.snp.updateConstraints { make in
-            make.bottom.equalToSuperview()
-        }
-
-        UIView.animate(withDuration: 0.3) {
-            self.tabController.view.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-            self.rootView.layoutIfNeeded()
-        }
+        topView.layer.cornerRadius = 16
+        topView.layer.masksToBounds = true
     }
 }
 
 // MARK: DAppBrowserWidgetParentControllerProtocol
 
 extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerProtocol {
-    func openBrowser() {
-        guard case let .some(_, tabsCount) = browserWidgetViewModel else {
-            return
-        }
+    func didReceiveWidgetState(_ state: DAppBrowserWidgetState) {
+        let widgetLayout = DAppBrowserWidgetLayout(from: state)
 
-        presenter.openBrowser(tabsCount: tabsCount)
-    }
-
-    func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel) {
-        guard self.browserWidgetViewModel != browserWidgetViewModel else {
-            return
-        }
-
-        self.browserWidgetViewModel = browserWidgetViewModel
-
-        switch browserWidgetViewModel {
-        case .empty:
-            animateBrowserWidgetClose()
-        case .some:
-            animateBrowserWidgetShow()
-        }
+        layoutBrowserWidget(for: widgetLayout)
     }
 }
 
 // MARK: NovaMainAppContainerViewProtocol
 
-extension NovaMainAppContainerViewController: NovaMainAppContainerViewProtocol {}
+extension NovaMainAppContainerViewController: NovaMainAppContainerViewProtocol {
+    func openBrowser(with tab: DAppBrowserTab?) {
+        browserWidget?.openBrowser(with: tab)
+    }
+}

@@ -1,12 +1,13 @@
 import UIKit
 
 protocol DAppBrowserWidgetParentControllerProtocol: AnyObject {
-    func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel)
-    func openBrowser()
+    func didReceiveWidgetState(_ state: DAppBrowserWidgetState)
 }
 
 final class DAppBrowserWidgetViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserWidgetViewLayout
+
+    var state: DAppBrowserWidgetState?
 
     var parentController: DAppBrowserWidgetParentControllerProtocol? {
         parent as? DAppBrowserWidgetParentControllerProtocol
@@ -32,7 +33,6 @@ final class DAppBrowserWidgetViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         presenter.setup()
-
         setupActions()
     }
 }
@@ -60,26 +60,45 @@ private extension DAppBrowserWidgetViewController {
     }
 
     @objc func actionTap() {
-        parentController?.openBrowser()
+        presenter.showBrowser()
     }
 }
 
 // MARK: DAppBrowserWidgetViewProtocol
 
 extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
-    func didReceive(_ browserWidgetViewModel: DAppBrowserWidgetViewModel) {
-        if let title = browserWidgetViewModel.title {
-            rootView.browserWidgetView.title.text = title
-        }
+    func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel) {
+        rootView.browserWidgetView.title.text = title
 
-        parentController?.didReceive(browserWidgetViewModel)
+        guard state != browserWidgetModel.widgetState else { return }
+
+        state = browserWidgetModel.widgetState
+
+        parentController?.didReceiveWidgetState(browserWidgetModel.widgetState)
     }
 }
 
-// MARK: NovaMainContainerDAppBrowserProtocol
+// MARK: DAppBrowserWidgetProtocol
 
-extension DAppBrowserWidgetViewController: NovaMainContainerDAppBrowserProtocol {
-    func closeTabs() {
-        presenter.closeTabs()
+extension DAppBrowserWidgetViewController: DAppBrowserWidgetProtocol {
+    func openBrowser(with tab: DAppBrowserTab?) {
+        presenter.showBrowser(with: tab)
     }
+}
+
+// MARK: DAppBrowserParentViewProtocol
+
+extension DAppBrowserWidgetViewController: DAppBrowserParentViewProtocol {
+    func close() {
+        presenter.actionDone()
+    }
+}
+
+// MARK: DAppBrowserWidgetState
+
+enum DAppBrowserWidgetState {
+    case disabled
+    case closed
+    case miniature
+    case fullBrowser
 }

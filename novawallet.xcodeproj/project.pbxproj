@@ -1038,8 +1038,13 @@
 		2D6F51B32CE120AB00564C00 /* SpendAssetOperationNetworkListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51B22CE120AB00564C00 /* SpendAssetOperationNetworkListInteractor.swift */; };
 		2D74CA3F2CF7262E004EAD8C /* DAppBrowserNewTabOpening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA3E2CF7262E004EAD8C /* DAppBrowserNewTabOpening.swift */; };
 		2D74CA412CF74752004EAD8C /* DAppBrowserWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA402CF74752004EAD8C /* DAppBrowserWidgetView.swift */; };
-		2D74CA432CF747CE004EAD8C /* DAppBrowserWidgetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetViewModel.swift */; };
+		2D74CA432CF747CE004EAD8C /* DAppBrowserWidgetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetModel.swift */; };
 		2D74CA452CF74888004EAD8C /* DAppBrowserWidgetViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA442CF74888004EAD8C /* DAppBrowserWidgetViewModelFactory.swift */; };
+		2D74CA492CF87A3F004EAD8C /* DAppBrowserWidgetWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA482CF87A3F004EAD8C /* DAppBrowserWidgetWireframe.swift */; };
+		2D74CA4B2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA4A2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift */; };
+		2D74CA4D2CF87D74004EAD8C /* DAppBrowserFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA4C2CF87D74004EAD8C /* DAppBrowserFactory.swift */; };
+		2D74CA4F2CF8BEEB004EAD8C /* DAppBrowserWidgetLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA4E2CF8BEEB004EAD8C /* DAppBrowserWidgetLayout.swift */; };
+		2D74CA512CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA502CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift */; };
 		2D7748772C89B5450059607B /* VoteCardViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */; };
 		2D7748802C8B48C40059607B /* CIKeys.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487F2C8B48C40059607B /* CIKeys.generated.swift */; };
 		2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */; };
@@ -6279,8 +6284,13 @@
 		2D6F51B22CE120AB00564C00 /* SpendAssetOperationNetworkListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendAssetOperationNetworkListInteractor.swift; sourceTree = "<group>"; };
 		2D74CA3E2CF7262E004EAD8C /* DAppBrowserNewTabOpening.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserNewTabOpening.swift; sourceTree = "<group>"; };
 		2D74CA402CF74752004EAD8C /* DAppBrowserWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetView.swift; sourceTree = "<group>"; };
-		2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetViewModel.swift; sourceTree = "<group>"; };
+		2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetModel.swift; sourceTree = "<group>"; };
 		2D74CA442CF74888004EAD8C /* DAppBrowserWidgetViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetViewModelFactory.swift; sourceTree = "<group>"; };
+		2D74CA482CF87A3F004EAD8C /* DAppBrowserWidgetWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetWireframe.swift; sourceTree = "<group>"; };
+		2D74CA4A2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabTransition.swift; sourceTree = "<group>"; };
+		2D74CA4C2CF87D74004EAD8C /* DAppBrowserFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserFactory.swift; sourceTree = "<group>"; };
+		2D74CA4E2CF8BEEB004EAD8C /* DAppBrowserWidgetLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetLayout.swift; sourceTree = "<group>"; };
+		2D74CA502CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppWidgetTransitionCoordinator.swift; sourceTree = "<group>"; };
 		2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardViewModelFactory.swift; sourceTree = "<group>"; };
 		2D77487F2C8B48C40059607B /* CIKeys.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIKeys.generated.swift; sourceTree = SOURCE_ROOT; };
 		2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumAmountOperationFactory.swift; sourceTree = "<group>"; };
@@ -12276,6 +12286,8 @@
 				88828BE43F341AB264FA51AF /* DAppBrowserWidgetViewController.swift */,
 				4C57B5C83F5A27949AAE9A87 /* DAppBrowserWidgetViewLayout.swift */,
 				22987F2F731F702564980965 /* DAppBrowserWidgetViewFactory.swift */,
+				2D74CA482CF87A3F004EAD8C /* DAppBrowserWidgetWireframe.swift */,
+				2D74CA502CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift */,
 			);
 			path = DAppBrowserWidget;
 			sourceTree = "<group>";
@@ -12957,7 +12969,7 @@
 		2D74CA462CF74898004EAD8C /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetViewModel.swift */,
+				2D74CA422CF747CE004EAD8C /* DAppBrowserWidgetModel.swift */,
 				2D74CA442CF74888004EAD8C /* DAppBrowserWidgetViewModelFactory.swift */,
 			);
 			path = Model;
@@ -17940,7 +17952,6 @@
 				77FF02672B21DCB300B655BC /* Proxy */,
 				85D192A683920D50BCD10893 /* Notifications */,
 				3C6913D315CA586B8DBC28EC /* AppearanceSettings */,
-				16FEC9BACF1412EA96BC641E /* DAppBrowserWidget */,
 				F3B54B5A951ACB53FBE9A9EF /* NovaMainAppContainer */,
 			);
 			path = Modules;
@@ -22426,6 +22437,7 @@
 		A7D3F0165AEEF4940B376CA5 /* DAppBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				16FEC9BACF1412EA96BC641E /* DAppBrowserWidget */,
 				2D8F0ED02CEFC7DA00A22074 /* Tabs */,
 				F7C71F9060883D87B85669DA /* DAppBrowserTabList */,
 				88DA0CCD295F342D0009F70F /* Extensions */,
@@ -22442,6 +22454,8 @@
 				677CE34BFAB45122C57095F6 /* DAppBrowserViewFactory.swift */,
 				8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */,
 				840D929E278D8D2E0007B979 /* DAppBrowserInteractorError.swift */,
+				2D74CA4A2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift */,
+				2D74CA4C2CF87D74004EAD8C /* DAppBrowserFactory.swift */,
 			);
 			path = DAppBrowser;
 			sourceTree = "<group>";
@@ -23710,6 +23724,7 @@
 				BED16E7F2F3F7BDBD849CC5A /* NovaMainAppContainerWireframe.swift */,
 				617F300E7FD54044844B133E /* NovaMainAppContainerPresenter.swift */,
 				8B8A970293B4B722721811D8 /* NovaMainAppContainerViewController.swift */,
+				2D74CA4E2CF8BEEB004EAD8C /* DAppBrowserWidgetLayout.swift */,
 				8B68A2522B7F8A652A713F79 /* NovaMainAppContainerViewLayout.swift */,
 				DF420765C667F0AA9DFD25C8 /* NovaMainAppContainerViewFactory.swift */,
 			);
@@ -25067,7 +25082,7 @@
 				2DA85A742C7FC5D100591900 /* RoundedGradientBackgroundView.swift in Sources */,
 				8886020D29D1024900C6344C /* KiltWeb3n+schema.swift in Sources */,
 				0CC4CCF42A67C9C400F63041 /* Multistaking+NominationPools.swift in Sources */,
-				2D74CA432CF747CE004EAD8C /* DAppBrowserWidgetViewModel.swift in Sources */,
+				2D74CA432CF747CE004EAD8C /* DAppBrowserWidgetModel.swift in Sources */,
 				8445F41628C8CFEC009E61C4 /* ParaStkYieldBoostSelectionViewModel.swift in Sources */,
 				84C1706F299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift in Sources */,
 				2DA85A872C81170700591900 /* CardsZStack.swift in Sources */,
@@ -26181,6 +26196,7 @@
 				84EFB78F28AB897D003B8396 /* LedgerResponse.swift in Sources */,
 				F429C3CC272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift in Sources */,
 				849014FC24AA9939008F705E /* Charset+Mnemonic.swift in Sources */,
+				2D74CA512CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift in Sources */,
 				F418E86F264D0F0400699085 /* Migrating.swift in Sources */,
 				AEE5FAFB26414C4F002B8FDC /* StakingRebondSetupProtocols.swift in Sources */,
 				84FA7C1C284F8EB400B648E1 /* PendingExtrinsicInteracting.swift in Sources */,
@@ -26884,6 +26900,7 @@
 				849F1445294360BB00D9F9BA /* EvmTokenAddRequest.swift in Sources */,
 				F40966DB26B29839008CD244 /* SubqueryRewardData.swift in Sources */,
 				84C4C2D7255D2B780045B582 /* PinChangeWireframe.swift in Sources */,
+				2D74CA492CF87A3F004EAD8C /* DAppBrowserWidgetWireframe.swift in Sources */,
 				845353BB2886E3B4006C871A /* OnboardingMainViewLayout.swift in Sources */,
 				2D1C5D282C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift in Sources */,
 				84FB29992639AC2300BE0FCD /* YourValidatorList+SelectionConfirm.swift in Sources */,
@@ -27218,6 +27235,7 @@
 				88C7165428C894510015D1E9 /* CollectionViewDelegate.swift in Sources */,
 				840302DE292CE3EA0013F356 /* StorageEntryMetadata+TypeCheck.swift in Sources */,
 				0CC2E5682A6E64FD004092E7 /* NPoolsLocalStorageHandler.swift in Sources */,
+				2D74CA4D2CF87D74004EAD8C /* DAppBrowserFactory.swift in Sources */,
 				F458D3982642911B0055CB75 /* ControllerAccountViewModel.swift in Sources */,
 				84DAC198268D3DD9002D0DF4 /* SNAddressType.swift in Sources */,
 				846B32A126DCDB7300250E89 /* SubqueryTotalRewardSource.swift in Sources */,
@@ -27320,6 +27338,7 @@
 				2AFF4BA2274D1E5C00D790B4 /* UsernameSetupViewLayout.swift in Sources */,
 				2A66CF4F25D109780006E4C1 /* CDPhishingItem+CoreDataDecodable.swift in Sources */,
 				0C6941BF2B1F247C00A7CF6D /* ChainSyncModeUpdateService.swift in Sources */,
+				2D74CA4F2CF8BEEB004EAD8C /* DAppBrowserWidgetLayout.swift in Sources */,
 				0C0E0A9D2B3EFD2500865F10 /* ProxyCallFilter.swift in Sources */,
 				8496ADDE276B123200306B24 /* PolkadotExtentionMessage.swift in Sources */,
 				84A15489262888CA0050D557 /* IdentityOperationFactory.swift in Sources */,
@@ -29016,6 +29035,7 @@
 				77ED167C2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift in Sources */,
 				507AFE76D2D4EF2F739AE799 /* GovernanceDelegateInfoViewLayout.swift in Sources */,
 				0B65DAE0327678679CACE0B1 /* GovernanceDelegateInfoViewFactory.swift in Sources */,
+				2D74CA4B2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift in Sources */,
 				B776F3F1B81EBA9EED68F605 /* InAppUpdatesProtocols.swift in Sources */,
 				0C66102D2A73828800E44634 /* RelaychainStakingSharedState.swift in Sources */,
 				4CBA0A25DB544214C4A02F0B /* InAppUpdatesWireframe.swift in Sources */,
