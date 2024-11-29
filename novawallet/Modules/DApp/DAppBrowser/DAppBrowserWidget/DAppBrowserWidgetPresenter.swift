@@ -53,7 +53,7 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
             state = .miniature
         }
 
-        transitionBuilder.addingChildNavigation { [weak self] completion in
+        transitionBuilder.setChildNavigation { [weak self] completion in
             guard let self else { return }
 
             wireframe.showMiniature(from: view)
@@ -68,7 +68,7 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
 
         state = .miniature
 
-        transitionBuilder.addingChildNavigation { [weak self] completion in
+        transitionBuilder.setChildNavigation { [weak self] completion in
             guard let self else { return }
 
             wireframe.showMiniature(from: view)
@@ -81,7 +81,7 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
     func showBrowser(transitionBuilder: DAppBrowserWidgetTransitionBuilder) {
         state = .fullBrowser
 
-        transitionBuilder.addingChildNavigation { [weak self] completion in
+        transitionBuilder.setChildNavigation { [weak self] completion in
             guard let self else { return }
 
             if browserTabs.count == 1, let tab = browserTabs.values.first {
@@ -108,7 +108,7 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
     ) {
         state = .fullBrowser
 
-        transitionBuilder.addingChildNavigation { [weak self] completion in
+        transitionBuilder.setChildNavigation { [weak self] completion in
             guard let self else { return }
 
             wireframe.showBrowser(

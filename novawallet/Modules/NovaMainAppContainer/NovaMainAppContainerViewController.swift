@@ -33,53 +33,65 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
 // MARK: Private
 
 private extension NovaMainAppContainerViewController {
-    func layoutBrowserWidget(
-        for state: DAppBrowserWidgetLayout,
-        _ completion: (() -> Void)?
-    ) {
+    func createTransitionLayoutDependencies(
+        for state: DAppBrowserWidgetLayout
+    ) -> DAppBrowserLayoutTransitionDependencies {
         switch state {
-        case .closed: animateBrowserWidgetClose(completion)
-        case .minimized: animateBrowserWidgetMinimized(completion)
-        case .maximized: animateBrowserWidgetMaximized(completion)
+        case .closed: browserCloseLayoutDependencies()
+        case .minimized: browserMinimizeLayoutDependencies()
+        case .maximized: browserMaximizeLayoutDependencies()
         }
     }
 
-    func animateBrowserWidgetClose(_ completion: (() -> Void)?) {
-        browserWidget?.view.snp.updateConstraints { make in
-            make.bottom.equalToSuperview().inset(-84)
-        }
+    func browserCloseLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
+        DAppBrowserLayoutTransitionDependencies(
+            layoutClosure: { [weak self] in
+                self?.browserWidget?.view.snp.updateConstraints { make in
+                    make.bottom.equalToSuperview().inset(-84)
+                }
 
-        UIView.animate(withDuration: 0.3) {
-            self.tabBar?.view.layer.maskedCorners = []
-            self.rootView.layoutIfNeeded()
-        } completion: { _ in completion?() }
+                return self?.rootView
+            },
+            animatableClosure: { [weak self] in
+                self?.tabBar?.view.layer.maskedCorners = []
+            }
+        )
     }
 
-    func animateBrowserWidgetMinimized(_ completion: (() -> Void)?) {
-        browserWidget?.view.snp.updateConstraints { make in
-            make.bottom.equalToSuperview()
-            make.height.equalTo(78)
-        }
+    func browserMinimizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
+        DAppBrowserLayoutTransitionDependencies(
+            layoutClosure: { [weak self] in
+                self?.browserWidget?.view.snp.updateConstraints { make in
+                    make.bottom.equalToSuperview()
+                    make.height.equalTo(78)
+                }
 
-        UIView.animate(withDuration: 0.3) {
-            self.tabBar?.view.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-            self.rootView.layoutIfNeeded()
-        } completion: { _ in completion?() }
+                return self?.rootView
+            },
+            animatableClosure: { [weak self] in
+                self?.tabBar?.view.layer.maskedCorners = [
+                    .layerMinXMaxYCorner,
+                    .layerMaxXMaxYCorner
+                ]
+            }
+        )
     }
 
-    func animateBrowserWidgetMaximized(_ completion: (() -> Void)?) {
+    func browserMaximizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
         let fullHeight = view.frame.size.height
         let safeAreaInsets = view.safeAreaInsets
         let totalHeight = fullHeight + safeAreaInsets.top + safeAreaInsets.bottom
 
-        browserWidget?.view.snp.updateConstraints { make in
-            make.bottom.equalToSuperview()
-            make.height.equalTo(totalHeight)
-        }
+        return DAppBrowserLayoutTransitionDependencies(
+            layoutClosure: { [weak self] in
+                self?.browserWidget?.view.snp.updateConstraints { make in
+                    make.bottom.equalToSuperview()
+                    make.height.equalTo(totalHeight)
+                }
 
-        UIView.animate(withDuration: 0.3) {
-            self.rootView.layoutIfNeeded()
-        } completion: { _ in completion?() }
+                return self?.rootView
+            }
+        )
     }
 }
 
@@ -117,8 +129,6 @@ extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerP
         _ state: DAppBrowserWidgetState,
         transitionBuilder: DAppBrowserWidgetTransitionBuilder?
     ) {
-        guard let transitionBuilder else { return }
-
         makeTransition(
             for: state,
             using: transitionBuilder
@@ -127,17 +137,21 @@ extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerP
 
     func makeTransition(
         for state: DAppBrowserWidgetState,
-        using transitionBuilder: DAppBrowserWidgetTransitionBuilder
+        using transitionBuilder: DAppBrowserWidgetTransitionBuilder?
     ) {
+        let builder = if let transitionBuilder {
+            transitionBuilder
+        } else {
+            DAppBrowserWidgetTransitionBuilder()
+        }
+
         let widgetLayout = DAppBrowserWidgetLayout(from: state)
+        let transitionDependencies = createTransitionLayoutDependencies(for: widgetLayout)
+
+        builder.setWidgetLayout(transitionDependencies)
 
         do {
-            let transition = try transitionBuilder.addingWidgetLayoutClosure { [weak self] completion in
-                self?.layoutBrowserWidget(
-                    for: widgetLayout,
-                    completion
-                )
-            }.build(for: widgetLayout)
+            let transition = try builder.build(for: widgetLayout)
 
             transition.start()
         } catch {

@@ -17,21 +17,33 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtoco
             return
         }
 
-        dependencies.disappearanceAnimator.animate(
+        let appearanceAnimator = dependencies.appearanceAnimator
+        let disappearanceAnimator = dependencies.disappearanceAnimator
+
+        let childNavigation = dependencies.childNavigation
+        let layoutClosure = dependencies.layoutDependencies.layoutClosure
+        let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
+
+        disappearanceAnimator.animate(
             view: browserView
         ) { _ in
-            dependencies.layout {
+            let containerView = layoutClosure()
+
+            UIView.animate(withDuration: 0.25) {
+                layoutAnimatables?()
+                containerView?.layoutIfNeeded()
+            } completion: { _ in
                 guard let widgetView = dependencies.widgetViewClosure() else {
                     return
                 }
 
-                dependencies.appearanceAnimator.animate(
+                appearanceAnimator.animate(
                     view: widgetView.contentContainerView,
                     completionBlock: nil
                 )
             }
 
-            dependencies.childNavigation {}
+            childNavigation {}
         }
     }
 }

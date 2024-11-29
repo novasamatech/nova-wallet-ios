@@ -74,25 +74,22 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
     func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel) {
         rootView.browserWidgetView.title.text = browserWidgetModel.title
 
-        guard
-            state != browserWidgetModel.widgetState,
-            let transitionBuilder = browserWidgetModel.transitionBuilder
-        else { return }
+        guard state != browserWidgetModel.widgetState else { return }
 
         state = browserWidgetModel.widgetState
 
         parentController?.didReceiveWidgetState(
             browserWidgetModel.widgetState,
-            transitionBuilder: transitionBuilder
+            transitionBuilder: browserWidgetModel.transitionBuilder
         )
     }
 
     func createTransitionBuilder() -> DAppBrowserWidgetTransitionBuilder {
         DAppBrowserWidgetTransitionBuilder()
-            .addingBrowserView(
+            .setBrowserView(
                 { [weak self] in self?.children.first?.view }
             )
-            .addingWidgetContentView(
+            .setWidgetContentView(
                 { [weak self] in self?.rootView.browserWidgetView }
             )
     }
