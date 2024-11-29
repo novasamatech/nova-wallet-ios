@@ -4,6 +4,7 @@ protocol DAppBrowserWidgetViewModelFactoryProtocol {
     func createViewModel(
         for tabs: [UUID: DAppBrowserTab],
         state: DAppBrowserWidgetState,
+        transitionBuilder: DAppBrowserWidgetTransitionBuilder?,
         locale: Locale
     ) -> DAppBrowserWidgetModel
 }
@@ -12,6 +13,7 @@ class DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryProtoc
     func createViewModel(
         for tabs: [UUID: DAppBrowserTab],
         state: DAppBrowserWidgetState,
+        transitionBuilder: DAppBrowserWidgetTransitionBuilder?,
         locale: Locale
     ) -> DAppBrowserWidgetModel {
         let title: String? = if tabs.count > 1 {
@@ -27,7 +29,8 @@ class DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryProtoc
 
         return DAppBrowserWidgetModel(
             title: title,
-            widgetState: state
+            widgetState: state,
+            transitionBuilder: transitionBuilder
         )
     }
 }

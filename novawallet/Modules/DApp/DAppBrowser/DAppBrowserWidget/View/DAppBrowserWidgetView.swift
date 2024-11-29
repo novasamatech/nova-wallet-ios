@@ -11,6 +11,8 @@ class DAppBrowserWidgetView: UIView {
         view.overlayView.strokeWidth = 1
     }
 
+    let contentContainerView = UIView()
+
     let closeButton: TriangularedButton = .create { view in
         view.applyEnabledStyle(colored: .clear)
         view.imageWithTitleView?.iconImage = R.image.iconClose()
@@ -43,16 +45,22 @@ class DAppBrowserWidgetView: UIView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(closeButton)
+        addSubview(contentContainerView)
+        contentContainerView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        contentContainerView.addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
             make.size.equalTo(13)
             make.leading.equalToSuperview().inset(21.5)
             make.top.equalToSuperview().inset(13.5)
         }
 
-        addSubview(title)
+        contentContainerView.addSubview(title)
         title.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
+            make.height.equalTo(22)
             make.top.equalToSuperview().inset(9)
         }
     }

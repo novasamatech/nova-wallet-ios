@@ -33,15 +33,18 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
 // MARK: Private
 
 private extension NovaMainAppContainerViewController {
-    func layoutBrowserWidget(for state: DAppBrowserWidgetLayout) {
+    func layoutBrowserWidget(
+        for state: DAppBrowserWidgetLayout,
+        _ completion: (() -> Void)?
+    ) {
         switch state {
-        case .closed: animateBrowserWidgetClose()
-        case .minimized: animateBrowserWidgetMinimized()
-        case .maximized: animateBrowserWidgetMaximized()
+        case .closed: animateBrowserWidgetClose(completion)
+        case .minimized: animateBrowserWidgetMinimized(completion)
+        case .maximized: animateBrowserWidgetMaximized(completion)
         }
     }
 
-    func animateBrowserWidgetClose() {
+    func animateBrowserWidgetClose(_ completion: (() -> Void)?) {
         browserWidget?.view.snp.updateConstraints { make in
             make.bottom.equalToSuperview().inset(-84)
         }
@@ -49,10 +52,10 @@ private extension NovaMainAppContainerViewController {
         UIView.animate(withDuration: 0.3) {
             self.tabBar?.view.layer.maskedCorners = []
             self.rootView.layoutIfNeeded()
-        }
+        } completion: { _ in completion?() }
     }
 
-    func animateBrowserWidgetMinimized() {
+    func animateBrowserWidgetMinimized(_ completion: (() -> Void)?) {
         browserWidget?.view.snp.updateConstraints { make in
             make.bottom.equalToSuperview()
             make.height.equalTo(78)
@@ -61,10 +64,10 @@ private extension NovaMainAppContainerViewController {
         UIView.animate(withDuration: 0.3) {
             self.tabBar?.view.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
             self.rootView.layoutIfNeeded()
-        }
+        } completion: { _ in completion?() }
     }
 
-    func animateBrowserWidgetMaximized() {
+    func animateBrowserWidgetMaximized(_ completion: (() -> Void)?) {
         let fullHeight = view.frame.size.height
         let safeAreaInsets = view.safeAreaInsets
         let totalHeight = fullHeight + safeAreaInsets.top + safeAreaInsets.bottom
@@ -76,7 +79,7 @@ private extension NovaMainAppContainerViewController {
 
         UIView.animate(withDuration: 0.3) {
             self.rootView.layoutIfNeeded()
-        }
+        } completion: { _ in completion?() }
     }
 }
 
@@ -110,10 +113,36 @@ extension NovaMainAppContainerViewController {
 // MARK: DAppBrowserWidgetParentControllerProtocol
 
 extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerProtocol {
-    func didReceiveWidgetState(_ state: DAppBrowserWidgetState) {
+    func didReceiveWidgetState(
+        _ state: DAppBrowserWidgetState,
+        transitionBuilder: DAppBrowserWidgetTransitionBuilder?
+    ) {
+        guard let transitionBuilder else { return }
+
+        makeTransition(
+            for: state,
+            using: transitionBuilder
+        )
+    }
+
+    func makeTransition(
+        for state: DAppBrowserWidgetState,
+        using transitionBuilder: DAppBrowserWidgetTransitionBuilder
+    ) {
         let widgetLayout = DAppBrowserWidgetLayout(from: state)
 
-        layoutBrowserWidget(for: widgetLayout)
+        do {
+            let transition = try transitionBuilder.addingWidgetLayoutClosure { [weak self] completion in
+                self?.layoutBrowserWidget(
+                    for: widgetLayout,
+                    completion
+                )
+            }.build(for: widgetLayout)
+
+            transition.start()
+        } catch {
+            print(error)
+        }
     }
 }
 

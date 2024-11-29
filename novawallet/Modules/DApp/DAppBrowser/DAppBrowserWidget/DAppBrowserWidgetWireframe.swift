@@ -30,7 +30,7 @@ class DAppBrowserWidgetWireframe: NSObject, DAppBrowserWidgetWireframeProtocol {
         browserView.didMove(toParent: view.controller)
     }
 
-    func showMiniature(form view: (any DAppBrowserParentWidgetViewProtocol)?) {
+    func showMiniature(from view: (any DAppBrowserParentWidgetViewProtocol)?) {
         view?.controller.children.forEach {
             $0.willMove(toParent: nil)
             $0.view.removeFromSuperview()

@@ -1,7 +1,10 @@
 import UIKit
 
 protocol DAppBrowserWidgetParentControllerProtocol: AnyObject {
-    func didReceiveWidgetState(_ state: DAppBrowserWidgetState)
+    func didReceiveWidgetState(
+        _ state: DAppBrowserWidgetState,
+        transitionBuilder: DAppBrowserWidgetTransitionBuilder?
+    )
 }
 
 final class DAppBrowserWidgetViewController: UIViewController, ViewHolder {
@@ -47,7 +50,7 @@ private extension DAppBrowserWidgetViewController {
             for: .touchUpInside
         )
 
-        rootView.browserWidgetView.backgroundView.addGestureRecognizer(
+        rootView.browserWidgetView.contentContainerView.addGestureRecognizer(
             UITapGestureRecognizer(
                 target: self,
                 action: #selector(actionTap)
@@ -60,7 +63,8 @@ private extension DAppBrowserWidgetViewController {
     }
 
     @objc func actionTap() {
-        presenter.showBrowser()
+        let transitionBuilder = createTransitionBuilder()
+        presenter.showBrowser(transitionBuilder: transitionBuilder)
     }
 }
 
@@ -70,11 +74,27 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
     func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel) {
         rootView.browserWidgetView.title.text = title
 
-        guard state != browserWidgetModel.widgetState else { return }
+        guard
+            state != browserWidgetModel.widgetState,
+            let transitionBuilder = browserWidgetModel.transitionBuilder
+        else { return }
 
         state = browserWidgetModel.widgetState
 
-        parentController?.didReceiveWidgetState(browserWidgetModel.widgetState)
+        parentController?.didReceiveWidgetState(
+            browserWidgetModel.widgetState,
+            transitionBuilder: transitionBuilder
+        )
+    }
+
+    func createTransitionBuilder() -> DAppBrowserWidgetTransitionBuilder {
+        DAppBrowserWidgetTransitionBuilder()
+            .addingBrowserView(
+                { [weak self] in self?.children.first?.view }
+            )
+            .addingWidgetContentView(
+                { [weak self] in self?.rootView.browserWidgetView }
+            )
     }
 }
 
@@ -82,7 +102,12 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
 
 extension DAppBrowserWidgetViewController: DAppBrowserWidgetProtocol {
     func openBrowser(with tab: DAppBrowserTab?) {
-        presenter.showBrowser(with: tab)
+        let transitionBuilder = createTransitionBuilder()
+
+        presenter.showBrowser(
+            with: tab,
+            transitionBuilder: transitionBuilder
+        )
     }
 }
 
@@ -90,7 +115,11 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetProtocol {
 
 extension DAppBrowserWidgetViewController: DAppBrowserParentViewProtocol {
     func close() {
-        presenter.actionDone()
+        let transitionBuilder = createTransitionBuilder()
+
+        presenter.actionDone(
+            transitionBuilder: transitionBuilder
+        )
     }
 }
 

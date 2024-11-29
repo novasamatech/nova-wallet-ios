@@ -24,11 +24,14 @@ protocol DAppBrowserWidgetViewProtocol: ControllerBackedProtocol {
 
 protocol DAppBrowserWidgetPresenterProtocol: AnyObject {
     func setup()
-    func showBrowser()
-    func showBrowser(with tab: DAppBrowserTab?)
+    func showBrowser(transitionBuilder: DAppBrowserWidgetTransitionBuilder)
+    func showBrowser(
+        with tab: DAppBrowserTab?,
+        transitionBuilder: DAppBrowserWidgetTransitionBuilder
+    )
+    func actionDone(transitionBuilder: DAppBrowserWidgetTransitionBuilder)
+    func minimizeBrowser(transitionBuilder: DAppBrowserWidgetTransitionBuilder)
     func closeTabs()
-    func actionDone()
-    func minimizeBrowser()
 }
 
 // MARK: PRESENTER -> INTERACTOR
@@ -52,5 +55,5 @@ protocol DAppBrowserWidgetWireframeProtocol: AnyObject {
         with tab: DAppBrowserTab?
     )
 
-    func showMiniature(form view: DAppBrowserParentWidgetViewProtocol?)
+    func showMiniature(from view: DAppBrowserParentWidgetViewProtocol?)
 }

@@ -23,10 +23,13 @@ final class DAppBrowserWidgetPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func provideModel() {
+    private func provideModel(
+        with transitionBuilder: DAppBrowserWidgetTransitionBuilder? = nil
+    ) {
         let viewModel = browserTabsViewModelFactory.createViewModel(
             for: browserTabs,
             state: state,
+            transitionBuilder: transitionBuilder,
             locale: selectedLocale
         )
 
@@ -41,7 +44,7 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
         interactor.setup()
     }
 
-    func actionDone() {
+    func actionDone(transitionBuilder: DAppBrowserWidgetTransitionBuilder) {
         guard state == .fullBrowser else { return }
 
         if browserTabs.isEmpty {
@@ -50,45 +53,73 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
             state = .miniature
         }
 
-        provideModel()
+        transitionBuilder.addingChildNavigation { [weak self] completion in
+            guard let self else { return }
 
-        wireframe.showMiniature(form: view)
+            wireframe.showMiniature(from: view)
+            completion()
+        }
+
+        provideModel(with: transitionBuilder)
     }
 
-    func minimizeBrowser() {
+    func minimizeBrowser(transitionBuilder: DAppBrowserWidgetTransitionBuilder) {
         guard state == .fullBrowser else { return }
 
         state = .miniature
-        provideModel()
+
+        transitionBuilder.addingChildNavigation { [weak self] completion in
+            guard let self else { return }
+
+            wireframe.showMiniature(from: view)
+            completion()
+        }
+
+        provideModel(with: transitionBuilder)
     }
 
-    func showBrowser() {
-        if browserTabs.count == 1, let tab = browserTabs.values.first {
+    func showBrowser(transitionBuilder: DAppBrowserWidgetTransitionBuilder) {
+        state = .fullBrowser
+
+        transitionBuilder.addingChildNavigation { [weak self] completion in
+            guard let self else { return }
+
+            if browserTabs.count == 1, let tab = browserTabs.values.first {
+                wireframe.showBrowser(
+                    from: view,
+                    with: tab
+                )
+            } else {
+                wireframe.showBrowser(
+                    from: view,
+                    with: nil
+                )
+            }
+
+            completion()
+        }
+
+        provideModel(with: transitionBuilder)
+    }
+
+    func showBrowser(
+        with tab: DAppBrowserTab?,
+        transitionBuilder: DAppBrowserWidgetTransitionBuilder
+    ) {
+        state = .fullBrowser
+
+        transitionBuilder.addingChildNavigation { [weak self] completion in
+            guard let self else { return }
+
             wireframe.showBrowser(
                 from: view,
                 with: tab
             )
-        } else {
-            wireframe.showBrowser(
-                from: view,
-                with: nil
-            )
+
+            completion()
         }
 
-        state = .fullBrowser
-
-        provideModel()
-    }
-
-    func showBrowser(with tab: DAppBrowserTab?) {
-        wireframe.showBrowser(
-            from: view,
-            with: tab
-        )
-
-        state = .fullBrowser
-
-        provideModel()
+        provideModel(with: transitionBuilder)
     }
 
     func closeTabs() {

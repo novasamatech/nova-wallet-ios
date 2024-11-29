@@ -964,6 +964,10 @@
 		2D389B132C86FF7300256C7B /* VoteCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */; };
 		2D389B152C87036100256C7B /* ReferendumFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B142C87036100256C7B /* ReferendumFilter.swift */; };
 		2D389B172C875B3200256C7B /* SwipeGovInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */; };
+		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
+		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
+		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
+		2D3EA7D82CF9BC7B0033AFD2 /* FadeContentDAppBrowserTransitionDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D72CF9BC7B0033AFD2 /* FadeContentDAppBrowserTransitionDependencies.swift */; };
 		2D442CEF2CD0F7DF00A0380F /* AppearanceDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CEE2CD0F7DF00A0380F /* AppearanceDepending.swift */; };
 		2D442CF12CD0F85400A0380F /* IconAppearanceDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */; };
 		2D442CF32CD103ED00A0380F /* BarcodeCreationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */; };
@@ -1044,7 +1048,7 @@
 		2D74CA4B2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA4A2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift */; };
 		2D74CA4D2CF87D74004EAD8C /* DAppBrowserFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA4C2CF87D74004EAD8C /* DAppBrowserFactory.swift */; };
 		2D74CA4F2CF8BEEB004EAD8C /* DAppBrowserWidgetLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA4E2CF8BEEB004EAD8C /* DAppBrowserWidgetLayout.swift */; };
-		2D74CA512CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA502CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift */; };
+		2D74CA512CF8CA39004EAD8C /* DAppBrowserWidgetTransitionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74CA502CF8CA39004EAD8C /* DAppBrowserWidgetTransitionBuilder.swift */; };
 		2D7748772C89B5450059607B /* VoteCardViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */; };
 		2D7748802C8B48C40059607B /* CIKeys.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D77487F2C8B48C40059607B /* CIKeys.generated.swift */; };
 		2D7748822C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */; };
@@ -6211,6 +6215,10 @@
 		2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardViewModel.swift; sourceTree = "<group>"; };
 		2D389B142C87036100256C7B /* ReferendumFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFilter.swift; sourceTree = "<group>"; };
 		2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovInteractor.swift; sourceTree = "<group>"; };
+		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
+		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
+		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
+		2D3EA7D72CF9BC7B0033AFD2 /* FadeContentDAppBrowserTransitionDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserTransitionDependencies.swift; sourceTree = "<group>"; };
 		2D442CEE2CD0F7DF00A0380F /* AppearanceDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceDepending.swift; sourceTree = "<group>"; };
 		2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAppearanceDepending.swift; sourceTree = "<group>"; };
 		2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeCreationError.swift; sourceTree = "<group>"; };
@@ -6290,7 +6298,7 @@
 		2D74CA4A2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabTransition.swift; sourceTree = "<group>"; };
 		2D74CA4C2CF87D74004EAD8C /* DAppBrowserFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserFactory.swift; sourceTree = "<group>"; };
 		2D74CA4E2CF8BEEB004EAD8C /* DAppBrowserWidgetLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetLayout.swift; sourceTree = "<group>"; };
-		2D74CA502CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppWidgetTransitionCoordinator.swift; sourceTree = "<group>"; };
+		2D74CA502CF8CA39004EAD8C /* DAppBrowserWidgetTransitionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetTransitionBuilder.swift; sourceTree = "<group>"; };
 		2D7748762C89B5450059607B /* VoteCardViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardViewModelFactory.swift; sourceTree = "<group>"; };
 		2D77487F2C8B48C40059607B /* CIKeys.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIKeys.generated.swift; sourceTree = SOURCE_ROOT; };
 		2D7748812C8CFB0B0059607B /* ReferendumAmountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumAmountOperationFactory.swift; sourceTree = "<group>"; };
@@ -12287,7 +12295,7 @@
 				4C57B5C83F5A27949AAE9A87 /* DAppBrowserWidgetViewLayout.swift */,
 				22987F2F731F702564980965 /* DAppBrowserWidgetViewFactory.swift */,
 				2D74CA482CF87A3F004EAD8C /* DAppBrowserWidgetWireframe.swift */,
-				2D74CA502CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift */,
+				2D3EA7D22CF9BB7C0033AFD2 /* Transition */,
 			);
 			path = DAppBrowserWidget;
 			sourceTree = "<group>";
@@ -12680,6 +12688,26 @@
 				2D7748852C8F799C0059607B /* SwipeGovModelBuilder.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		2D3EA7D22CF9BB7C0033AFD2 /* Transition */ = {
+			isa = PBXGroup;
+			children = (
+				2D3EA7D92CF9BD2C0033AFD2 /* Fade */,
+				2D74CA502CF8CA39004EAD8C /* DAppBrowserWidgetTransitionBuilder.swift */,
+				2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */,
+			);
+			path = Transition;
+			sourceTree = "<group>";
+		};
+		2D3EA7D92CF9BD2C0033AFD2 /* Fade */ = {
+			isa = PBXGroup;
+			children = (
+				2D3EA7D72CF9BC7B0033AFD2 /* FadeContentDAppBrowserTransitionDependencies.swift */,
+				2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */,
+				2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */,
+			);
+			path = Fade;
 			sourceTree = "<group>";
 		};
 		2D442CED2CD0F7AB00A0380F /* Appearance */ = {
@@ -25450,6 +25478,7 @@
 				842B17FF28649CCD0014CC57 /* CrossChainSelectionState.swift in Sources */,
 				8437F7C12924FF6400DB6366 /* EvmSubscriptionMessage.swift in Sources */,
 				84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */,
+				2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */,
 				2D7C8A912C2DA2280044E601 /* NetworkNodeConnectingTrait.swift in Sources */,
 				84D1ABE027E1CB870073C631 /* TitleHorizontalMultiValueView.swift in Sources */,
 				0CCDB2DE2B7488A5007BC5D6 /* HydraStableswapPoolService.swift in Sources */,
@@ -25856,6 +25885,7 @@
 				0C59E8E32AA61252001E11F3 /* NominationPoolExternalServiceFactory.swift in Sources */,
 				84B8AA8729F9115400347A37 /* WalletConnectTransportMessage.swift in Sources */,
 				84F98D9625E3E2B10040418E /* InMemoryDataProviderRepository.swift in Sources */,
+				2D3EA7D82CF9BC7B0033AFD2 /* FadeContentDAppBrowserTransitionDependencies.swift in Sources */,
 				8446F5FA28192FF500B7A86C /* ListLoadingView.swift in Sources */,
 				844384AC28538D3000611CE2 /* RewardCalculatorEngine.swift in Sources */,
 				84DBEA5E265EDAD300FDF73C /* BaseDataValidatorFactory.swift in Sources */,
@@ -26196,7 +26226,7 @@
 				84EFB78F28AB897D003B8396 /* LedgerResponse.swift in Sources */,
 				F429C3CC272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift in Sources */,
 				849014FC24AA9939008F705E /* Charset+Mnemonic.swift in Sources */,
-				2D74CA512CF8CA39004EAD8C /* DAppWidgetTransitionCoordinator.swift in Sources */,
+				2D74CA512CF8CA39004EAD8C /* DAppBrowserWidgetTransitionBuilder.swift in Sources */,
 				F418E86F264D0F0400699085 /* Migrating.swift in Sources */,
 				AEE5FAFB26414C4F002B8FDC /* StakingRebondSetupProtocols.swift in Sources */,
 				84FA7C1C284F8EB400B648E1 /* PendingExtrinsicInteracting.swift in Sources */,
@@ -27076,6 +27106,7 @@
 				8466781127EB4078007935D3 /* StackNetworkFeeCell.swift in Sources */,
 				0C8AF7BC2B38076900005AC9 /* Pdc20NftModelConverter.swift in Sources */,
 				8D9BC9C36DC891CDD900A895 /* AccountConfirmViewController.swift in Sources */,
+				2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */,
 				84222986283621F2009F0086 /* StakingRewardInfoViewModel.swift in Sources */,
 				0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */,
 				84CFE443292B8F3E00CDDD7C /* TransferEvmOnChainConfirmInteractor.swift in Sources */,
@@ -28603,6 +28634,7 @@
 				97BF7157FE13F723BF4D5713 /* CreateWatchOnlyWireframe.swift in Sources */,
 				84770F25291F72D700852A33 /* ReferendumVotingInitData.swift in Sources */,
 				84E0C51E29CA40DA000B65C8 /* OperationContractCallModel.swift in Sources */,
+				2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */,
 				846A835D28B8D09600D92892 /* LedgerMessageSheetViewFactory.swift in Sources */,
 				774092002ACC1BE400172516 /* SwapAmountInput.swift in Sources */,
 				60FFEE5B386E82D70333BE80 /* CreateWatchOnlyPresenter.swift in Sources */,
