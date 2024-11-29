@@ -25,8 +25,6 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtoco
                     return
                 }
 
-                widgetView.layoutIfNeeded()
-
                 dependencies.appearanceAnimator.animate(
                     view: widgetView.contentContainerView,
                     completionBlock: nil
