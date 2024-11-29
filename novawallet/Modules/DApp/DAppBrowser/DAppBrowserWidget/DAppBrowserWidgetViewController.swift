@@ -121,6 +121,14 @@ extension DAppBrowserWidgetViewController: DAppBrowserParentViewProtocol {
             transitionBuilder: transitionBuilder
         )
     }
+
+    func minimize() {
+        let transitionBuilder = createTransitionBuilder()
+
+        presenter.minimizeBrowser(
+            transitionBuilder: transitionBuilder
+        )
+    }
 }
 
 // MARK: DAppBrowserWidgetState

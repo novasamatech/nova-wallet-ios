@@ -3,6 +3,7 @@ import UIKit
 
 protocol DAppBrowserParentViewProtocol: AnyObject {
     func close()
+    func minimize()
 }
 
 protocol DAppBrowserTabListViewProtocol: ControllerBackedProtocol, DAppBrowserTabViewTransitionProtocol {

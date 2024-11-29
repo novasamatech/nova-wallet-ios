@@ -1,7 +1,7 @@
 import Foundation
 import SoraUI
 
-final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
+class BaseDAppBrowserWireframe {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
@@ -101,11 +101,25 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(dappSettingsView.controller, animated: true, completion: nil)
     }
 
-    func close(view: DAppBrowserViewProtocol?) {
-        view?.controller.navigationController?.dismiss(animated: true)
-    }
-
     func showTabs(from view: DAppBrowserViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
+    }
+}
+
+final class DAppBrowserWireframe: BaseDAppBrowserWireframe, DAppBrowserWireframeProtocol {
+    func close(view: ControllerBackedProtocol?) {
+        view?.controller.navigationController?.dismiss(animated: true)
+    }
+}
+
+final class DAppBrowserChildWireframe: BaseDAppBrowserWireframe, DAppBrowserWireframeProtocol {
+    private let parentView: DAppBrowserParentViewProtocol
+
+    init(parentView: DAppBrowserParentViewProtocol) {
+        self.parentView = parentView
+    }
+
+    func close(view _: ControllerBackedProtocol?) {
+        parentView.minimize()
     }
 }

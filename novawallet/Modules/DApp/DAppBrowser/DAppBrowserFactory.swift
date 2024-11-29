@@ -23,7 +23,10 @@ enum DAppBrowserFactory {
     ) -> UIViewController? {
         guard
             let tabsView = DAppBrowserTabListViewFactory.createChildView(for: parent),
-            let browserView = DAppBrowserViewFactory.createView(selectedTab: tab)
+            let browserView = DAppBrowserViewFactory.createChildView(
+                for: parent,
+                selectedTab: tab
+            )
         else {
             return nil
         }

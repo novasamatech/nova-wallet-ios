@@ -113,7 +113,7 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,
         delegate: DAppSettingsDelegate
     )
 
-    func close(view: DAppBrowserViewProtocol?)
+    func close(view: ControllerBackedProtocol?)
 
     func showTabs(from view: DAppBrowserViewProtocol?)
 }
