@@ -33,6 +33,11 @@ protocol DAppBrowserTabListInteractorOutputProtocol: AnyObject {
 protocol DAppBrowserTabListWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     DAppBrowserSearchPresentable {
+    func showTab(
+        _ tab: DAppBrowserTab,
+        from view: ControllerBackedProtocol?
+    )
+
     func close(from view: ControllerBackedProtocol?)
 }
 

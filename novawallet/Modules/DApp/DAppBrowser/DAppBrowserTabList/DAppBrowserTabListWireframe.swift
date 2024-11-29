@@ -5,6 +5,25 @@ final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
     func close(from view: ControllerBackedProtocol?) {
         view?.controller.navigationController?.dismiss(animated: true)
     }
+
+    func showTab(
+        _ tab: DAppBrowserTab,
+        from view: ControllerBackedProtocol?
+    ) {
+        guard let browserView = DAppBrowserViewFactory.createView(selectedTab: tab) else {
+            return
+        }
+
+        DAppBrowserTabTransition.setTransition(
+            for: browserView.controller,
+            tabId: tab.uuid
+        )
+
+        view?.controller.navigationController?.pushViewController(
+            browserView.controller,
+            animated: true
+        )
+    }
 }
 
 final class DAppBrowserTabListChildViewWireframe: DAppBrowserTabListWireframeProtocol {
@@ -17,14 +36,15 @@ final class DAppBrowserTabListChildViewWireframe: DAppBrowserTabListWireframePro
     func close(from _: ControllerBackedProtocol?) {
         parentView.close()
     }
-}
 
-extension DAppBrowserTabListWireframeProtocol {
     func showTab(
         _ tab: DAppBrowserTab,
         from view: ControllerBackedProtocol?
     ) {
-        guard let browserView = DAppBrowserViewFactory.createView(selectedTab: tab) else {
+        guard let browserView = DAppBrowserViewFactory.createChildView(
+            for: parentView,
+            selectedTab: tab
+        ) else {
             return
         }
 
