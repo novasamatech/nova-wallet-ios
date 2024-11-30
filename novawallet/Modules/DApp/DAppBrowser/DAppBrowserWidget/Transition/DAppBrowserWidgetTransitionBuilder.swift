@@ -3,6 +3,11 @@ import UIKit
 
 typealias DAppBrowserChildNavigationClosure = ((_ completion: @escaping () -> Void) -> Void)
 
+enum DAppBrowserWidgetTransitionBuilderError: Error {
+    case missingRequiredDependencies
+    case wrongLayoutState
+}
+
 class DAppBrowserWidgetTransitionBuilder {
     private var browserViewClosure: (() -> UIView?)?
     private var widgetViewClosure: (() -> DAppBrowserWidgetView?)?
@@ -28,7 +33,7 @@ class DAppBrowserWidgetTransitionBuilder {
 private extension DAppBrowserWidgetTransitionBuilder {
     func buildDisappearTransition() throws -> DAppBrowserTransitionProtocol {
         guard let layoutDependencies else {
-            throw NSError()
+            throw DAppBrowserWidgetTransitionBuilderError.missingRequiredDependencies
         }
 
         return DAppBrowserCloseTransition(
@@ -45,7 +50,7 @@ private extension DAppBrowserWidgetTransitionBuilder {
             let childNavigation,
             let layoutDependencies
         else {
-            throw NSError()
+            throw DAppBrowserWidgetTransitionBuilderError.missingRequiredDependencies
         }
 
         let dependencies = FadeContentDAppBrowserTransitionDependencies(
@@ -65,7 +70,7 @@ private extension DAppBrowserWidgetTransitionBuilder {
                 dependencies: dependencies
             )
         default:
-            throw NSError()
+            throw DAppBrowserWidgetTransitionBuilderError.wrongLayoutState
         }
     }
 }

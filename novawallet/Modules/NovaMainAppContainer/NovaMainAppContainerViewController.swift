@@ -7,9 +7,15 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
 
     var tabBar: MainTabBarProtocol?
     var browserWidget: DAppBrowserWidgetProtocol?
+    
+    let logger: LoggerProtocol
 
-    init(presenter: NovaMainAppContainerPresenterProtocol) {
+    init(
+        presenter: NovaMainAppContainerPresenterProtocol,
+        logger: LoggerProtocol
+    ) {
         self.presenter = presenter
+        self.logger = logger
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -155,7 +161,7 @@ extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerP
 
             transition.start()
         } catch {
-            print(error)
+            logger.error("Failed to build transition: \(error)")
         }
     }
 }
