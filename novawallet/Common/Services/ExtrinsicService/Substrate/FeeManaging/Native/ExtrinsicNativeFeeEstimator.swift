@@ -115,14 +115,20 @@ final class ExtrinsicNativeFeeEstimator {
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<RuntimeDispatchInfo> {
         if chain.feeViaRuntimeCall {
-            createStateCallFeeWrapper(
+            let feeApi = coderFactory.metadata.getRuntimeApiMethod(
+                for: StateCallRpc.feeBuiltInModule, methodName: StateCallRpc.feeBuiltInMethod
+            )
+
+            let feeTypeName = feeApi.map { String($0.method.output) } ?? StateCallRpc.feeResultType
+
+            return createStateCallFeeWrapper(
                 for: coderFactory,
-                type: StateCallRpc.feeResultType,
+                type: feeTypeName,
                 extrinsic: extrinsic,
                 connection: connection
             )
         } else {
-            createApiFeeWrapper(
+            return createApiFeeWrapper(
                 extrinsic: extrinsic,
                 connection: connection
             )
