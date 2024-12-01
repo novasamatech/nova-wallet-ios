@@ -36,6 +36,8 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
             direction: direction
         )
 
+        _ = host.flowState.setupReQuoteService()
+        
         let quoteWrapper = quoteFactory.quote(for: quoteArgs)
 
         let mappingOperation = ClosureOperation<Balance> {

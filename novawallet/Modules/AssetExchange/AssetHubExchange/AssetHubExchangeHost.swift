@@ -11,12 +11,14 @@ protocol AssetHubExchangeHostProtocol {
     var connection: JSONRPCEngine { get }
     var operationQueue: OperationQueue { get }
     var executionTimeEstimator: AssetExchangeTimeEstimating { get }
+    var flowState: AssetHubFlowStateProtocol { get }
     var logger: LoggerProtocol { get }
 }
 
 final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
     let chain: ChainModel
     let selectedAccount: ChainAccountResponse
+    let flowState: AssetHubFlowStateProtocol
     let submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
     let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
@@ -29,6 +31,7 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
     init(
         chain: ChainModel,
         selectedAccount: ChainAccountResponse,
+        flowState: AssetHubFlowStateProtocol,
         submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
@@ -40,6 +43,7 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
     ) {
         self.chain = chain
         self.selectedAccount = selectedAccount
+        self.flowState = flowState
         self.submissionMonitorFactory = submissionMonitorFactory
         self.extrinsicOperationFactory = extrinsicOperationFactory
         self.signingWrapper = signingWrapper

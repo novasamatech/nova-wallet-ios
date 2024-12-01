@@ -42,11 +42,17 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
         if let assetExchangeService {
             return assetExchangeService
         }
+        
+        let exchangesStateMediator = AssetsExchangeStateMediator()
 
-        let graphProvider = AssetExchangeFacade.createGraphProvider(for: assetExchangeParams)
+        let graphProvider = AssetExchangeFacade.createGraphProvider(
+            for: assetExchangeParams,
+            exchangesStateMediator: exchangesStateMediator
+        )
 
         let service = AssetsExchangeService(
             graphProvider: graphProvider,
+            exchangesStateMediator: exchangesStateMediator,
             operationQueue: assetExchangeParams.operationQueue,
             logger: Logger.shared
         )

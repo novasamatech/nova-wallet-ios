@@ -7,6 +7,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
     let selectedWallet: MetaAccountModel
     let substrateStorageFacade: StorageFacadeProtocol
     let userStorageFacade: StorageFacadeProtocol
+    let exchangeStateRegistrar: AssetsExchangeStateRegistring
 
     private var hosts: [ChainModel.Id: HydraExchangeHostProtocol] = [:]
 
@@ -15,12 +16,14 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         chainRegistry: ChainRegistryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        exchangeStateRegistrar: AssetsExchangeStateRegistring,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.substrateStorageFacade = substrateStorageFacade
         self.userStorageFacade = userStorageFacade
+        self.exchangeStateRegistrar = exchangeStateRegistrar
 
         super.init(
             chainRegistry: chainRegistry,
@@ -30,7 +33,10 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
-    private func createOmnipoolExchange(from host: HydraExchangeHostProtocol) -> AssetsHydraOmnipoolExchange {
+    private func createOmnipoolExchange(
+        from host: HydraExchangeHostProtocol,
+        registeringStateIn stateProviderRegistrar: AssetsExchangeStateRegistring
+    ) -> AssetsHydraOmnipoolExchange {
         let flowState = HydraOmnipoolFlowState(
             account: host.selectedAccount,
             chain: host.chain,
@@ -38,6 +44,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             runtimeProvider: host.runtimeService,
             operationQueue: host.operationQueue
         )
+        
+        stateProviderRegistrar.addStateProvider(flowState)
 
         return AssetsHydraOmnipoolExchange(
             host: host,
@@ -52,7 +60,10 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
-    private func createStableswapExchange(from host: HydraExchangeHostProtocol) -> AssetsHydraStableswapExchange {
+    private func createStableswapExchange(
+        from host: HydraExchangeHostProtocol,
+        registeringStateIn stateProviderRegistrar: AssetsExchangeStateRegistring
+    ) -> AssetsHydraStableswapExchange {
         let flowState = HydraStableswapFlowState(
             account: host.selectedAccount,
             chain: host.chain,
@@ -60,6 +71,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             runtimeProvider: host.runtimeService,
             operationQueue: host.operationQueue
         )
+        
+        stateProviderRegistrar.addStateProvider(flowState)
 
         return AssetsHydraStableswapExchange(
             host: host,
@@ -74,7 +87,10 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
         )
     }
 
-    private func createXYKExchange(from host: HydraExchangeHostProtocol) -> AssetsHydraXYKExchange {
+    private func createXYKExchange(
+        from host: HydraExchangeHostProtocol,
+        registeringStateIn stateProviderRegistrar: AssetsExchangeStateRegistring
+    ) -> AssetsHydraXYKExchange {
         let flowState = HydraXYKFlowState(
             account: host.selectedAccount,
             chain: host.chain,
@@ -82,6 +98,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             runtimeProvider: host.runtimeService,
             operationQueue: host.operationQueue
         )
+        
+        stateProviderRegistrar.addStateProvider(flowState)
 
         return AssetsHydraXYKExchange(
             host: host,
@@ -202,11 +220,11 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
                 runtimeService: runtimeService
             )
 
-            let omnipoolExchange = createOmnipoolExchange(from: swapHost)
+            let omnipoolExchange = createOmnipoolExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
 
-            let stableswapExchange = createStableswapExchange(from: swapHost)
+            let stableswapExchange = createStableswapExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
 
-            let xykExchange = createXYKExchange(from: swapHost)
+            let xykExchange = createXYKExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
 
             return [omnipoolExchange, stableswapExchange, xykExchange]
         }

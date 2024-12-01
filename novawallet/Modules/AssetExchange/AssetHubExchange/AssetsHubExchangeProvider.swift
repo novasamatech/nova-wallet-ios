@@ -6,6 +6,7 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
     let wallet: MetaAccountModel
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let substrateStorageFacade: StorageFacadeProtocol
+    let exchangeStateRegistrar: AssetsExchangeStateRegistring
     let userStorageFacade: StorageFacadeProtocol
 
     init(
@@ -14,6 +15,7 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        exchangeStateRegistrar: AssetsExchangeStateRegistring,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -21,6 +23,7 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
         self.signingWrapperFactory = signingWrapperFactory
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
+        self.exchangeStateRegistrar = exchangeStateRegistrar
 
         super.init(
             chainRegistry: chainRegistry,
@@ -84,9 +87,19 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
                 accountResponse: selectedAccount
             )
 
+            let flowState = AssetHubFlowState(
+                connection: connection,
+                runtimeProvider: runtimeService,
+                notificationsRegistrar: exchangeStateRegistrar,
+                operationQueue: operationQueue
+            )
+            
+            exchangeStateRegistrar.addStateProvider(flowState)
+            
             let host = AssetHubExchangeHost(
                 chain: chain,
                 selectedAccount: selectedAccount,
+                flowState: flowState,
                 submissionMonitorFactory: submissionMonitorFactory,
                 extrinsicOperationFactory: extrinsicOperationFactory,
                 signingWrapper: signingWrapper,

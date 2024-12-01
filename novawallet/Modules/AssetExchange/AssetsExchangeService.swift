@@ -14,6 +14,14 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
         notifyingIn queue: DispatchQueue,
         operationStartClosure: @escaping (Int) -> Void
     ) -> CompoundOperationWrapper<Balance>
+    
+    func subscribeRequoteService(
+        for target: AnyObject,
+        notifyingIn queue: DispatchQueue,
+        closure: @escaping () -> Void
+    )
+    
+    func throttleRequoteService()
 }
 
 enum AssetsExchangeServiceError: Error {
@@ -21,16 +29,19 @@ enum AssetsExchangeServiceError: Error {
 }
 
 final class AssetsExchangeService {
+    let exchangesStateMediator: AssetsExchangeStateManaging
     let graphProvider: AssetsExchangeGraphProviding
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         graphProvider: AssetsExchangeGraphProviding,
+        exchangesStateMediator: AssetsExchangeStateManaging,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.graphProvider = graphProvider
+        self.exchangesStateMediator = exchangesStateMediator
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -118,5 +129,17 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
                 operationStartClosure: operationStartClosure
             )
         }
+    }
+    
+    func subscribeRequoteService(
+        for target: AnyObject,
+        notifyingIn queue: DispatchQueue,
+        closure: @escaping () -> Void
+    ) {
+        exchangesStateMediator.subscribeStateChanges(target, notifyingIn: queue, closure: closure)
+    }
+    
+    func throttleRequoteService() {
+        exchangesStateMediator.throttleStateServicesSynchroniously()
     }
 }

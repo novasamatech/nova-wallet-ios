@@ -1,7 +1,10 @@
 import Foundation
 
 final class AssetExchangeFacade {
-    static func createGraphProvider(for params: AssetExchangeGraphProvidingParams) -> AssetsExchangeGraphProviding {
+    static func createGraphProvider(
+        for params: AssetExchangeGraphProvidingParams,
+        exchangesStateMediator: AssetsExchangeStateMediating
+    ) -> AssetsExchangeGraphProviding {
         let feeSupportProvider = AssetExchangeFeeSupportProvider(
             chainRegistry: params.chainRegistry,
             operationQueue: params.operationQueue,
@@ -34,6 +37,7 @@ final class AssetExchangeFacade {
                     chainRegistry: params.chainRegistry,
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
+                    exchangeStateRegistrar: exchangesStateMediator,
                     operationQueue: params.operationQueue,
                     logger: params.logger
                 ),
@@ -44,6 +48,7 @@ final class AssetExchangeFacade {
                     signingWrapperFactory: params.signingWrapperFactory,
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
+                    exchangeStateRegistrar: exchangesStateMediator,
                     operationQueue: params.operationQueue,
                     logger: params.logger
                 )
