@@ -4,7 +4,7 @@ final class AssetHubReQuoteService: ObservableSubscriptionSyncService<Observable
     override func getRequests() throws -> [BatchStorageSubscriptionRequest] {
         let blockNumberRequest = BatchStorageSubscriptionRequest(
             innerRequest: UnkeyedSubscriptionRequest(
-                storagePath: .blockNumber,
+                storagePath: SystemPallet.blockNumberPath,
                 localKey: ""
             ),
             mappingKey: nil

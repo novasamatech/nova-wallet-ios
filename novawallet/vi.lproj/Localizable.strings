@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "Nhận %@";
 "swaps.setup.network.fee.token.title" = "Token để trả phí mạng";
 "swaps.setup.network.fee.token.hint" = "Phí mạng được thêm vào trên số tiền đã nhập";
-"swaps.pay.asset.fee.ed.message" = "Để thanh toán phí mạng bằng %@, Nova sẽ tự động hoán đổi %@ thành %@ để duy trì số dư tối thiểu %@ trong tài khoản của bạn.";
 "swaps.setup.slippage.error.amount.bounds" = "Nhập một giá trị giữa %@ và %@";
 "swaps.setup.slippage.warning.low.amount" = "Giao dịch có thể bị hoàn lại do mức chấp nhận độ trượt giá thấp.";
 "swaps.setup.slippage.warning.high.amount" = "Giao dịch có thể bị frontrun do độ trượt giá cao.";

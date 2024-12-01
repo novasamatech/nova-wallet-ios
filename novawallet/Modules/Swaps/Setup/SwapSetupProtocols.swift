@@ -12,11 +12,12 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmountInputPrice(receiveViewModel: SwapPriceDifferenceViewModel?)
     func didReceiveTitle(receiveViewModel viewModel: TitleHorizontalMultiValueView.Model)
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
+    func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>)
+    func didReceiveExecutionTime(viewModel: LoadableViewModelState<String>)
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
     func didReceive(issues: [SwapSetupViewIssue])
-    func didSetNotification(message: String?)
     func didReceive(focus: TextFieldFocus?)
     func didStartLoading()
     func didStopLoading()
@@ -43,13 +44,11 @@ protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?)
     func update(payChainAsset: ChainAsset?)
     func update(feeChainAsset: ChainAsset?)
-    func retryRemoteSubscription()
 }
 
 protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId)
     func didReceiveQuoteDataChanged()
-    func didReceive(setupError: SwapSetupError)
 }
 
 protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
@@ -88,11 +87,6 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
         destinationChainAsset: ChainAsset,
         locale: Locale
     )
-}
-
-enum SwapSetupError: Error {
-    case payAssetSetFailed(Error)
-    case remoteSubscription(Error)
 }
 
 enum SwapSetupViewIssue: Equatable {

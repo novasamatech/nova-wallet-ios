@@ -4,7 +4,7 @@ struct SwapMaxModel {
     let payChainAsset: ChainAsset?
     let feeChainAsset: ChainAsset?
     let balance: AssetBalance?
-    let feeModel: AssetConversion.FeeModel?
+    let feeModel: AssetExchangeFee?
     let payAssetExistense: AssetBalanceExistence?
     let receiveAssetExistense: AssetBalanceExistence?
     let accountInfo: AccountInfo?
@@ -38,7 +38,7 @@ struct SwapMaxModel {
         }
 
         if let feeModel = feeModel {
-            let fee = feeModel.totalFee.targetAmount
+            let fee = feeModel.totalFeeInAssetIn(payChainAsset)
             maxAmount = maxAmount.subtractOrZero(fee)
         }
 
@@ -46,11 +46,16 @@ struct SwapMaxModel {
     }
 
     private func calculateForCustomAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {
-        guard let feeModel = feeModel, payChainAsset.chainAssetId == feeChainAsset?.chainAssetId else {
+        guard let feeModel = feeModel else {
             return balance.transferable.decimal(precision: payChainAsset.asset.precision)
         }
 
-        let fee = feeModel.totalFee.targetAmount
+        let fee: Balance = if payChainAsset.chainAssetId == feeChainAsset?.chainAssetId {
+            feeModel.totalFeeInAssetIn(payChainAsset)
+        } else {
+            feeModel.postSubmissionFeeInAssetIn(payChainAsset)
+        }
+
         let maxAmount = balance.transferable.subtractOrZero(fee)
 
         return maxAmount.decimal(precision: payChainAsset.asset.precision)

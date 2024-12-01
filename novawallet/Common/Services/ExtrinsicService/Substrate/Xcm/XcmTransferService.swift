@@ -15,9 +15,11 @@ final class XcmTransferService {
 
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
-    let senderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol
     let operationQueue: OperationQueue
     let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+    let userStorageFacade: StorageFacadeProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
+    let customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol?
 
     private(set) lazy var xcmFactory = XcmTransferFactory()
     private(set) lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
@@ -26,15 +28,19 @@ final class XcmTransferService {
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
-        senderResolutionFacade: ExtrinsicSenderResolutionFacadeProtocol,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
-        operationQueue: OperationQueue
+        userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
+        operationQueue: OperationQueue,
+        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol? = nil
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
-        self.senderResolutionFacade = senderResolutionFacade
         self.metadataHashOperationFactory = metadataHashOperationFactory
+        self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
+        self.customFeeEstimatingFactory = customFeeEstimatingFactory
     }
 
     func createModuleResolutionWrapper(
@@ -63,41 +69,26 @@ final class XcmTransferService {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
-        let senderResolvingFactory = senderResolutionFacade.createResolutionFactory(
-            for: chainAccount,
-            chainModel: chain
-        )
-
-        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
-            account: chainAccount,
-            chain: chain,
-            runtimeService: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
-            chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared,
-            operationQueue: operationQueue
-        )
-
-        let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId)
-
-        return ExtrinsicOperationFactory(
-            chain: chain,
-            runtimeRegistry: runtimeProvider,
-            customExtensions: signedExtensionFactory.createExtensions(),
-            engine: connection,
-            feeEstimationRegistry: feeEstimationRegistry,
-            metadataHashOperationFactory: metadataHashOperationFactory,
-            senderResolvingFactory: senderResolvingFactory,
-            blockHashOperationFactory: BlockHashOperationFactory(),
-            operationManager: OperationManager(operationQueue: operationQueue)
-        )
+        if let customFeeEstimatingFactory {
+            return ExtrinsicServiceFactory(
+                runtimeRegistry: runtimeProvider,
+                engine: connection,
+                operationQueue: operationQueue,
+                userStorageFacade: userStorageFacade,
+                substrateStorageFacade: substrateStorageFacade
+            ).createOperationFactory(
+                account: chainAccount,
+                chain: chain,
+                customFeeEstimatingFactory: customFeeEstimatingFactory
+            )
+        } else {
+            return ExtrinsicServiceFactory(
+                runtimeRegistry: runtimeProvider,
+                engine: connection,
+                operationQueue: operationQueue,
+                userStorageFacade: userStorageFacade,
+                substrateStorageFacade: substrateStorageFacade
+            ).createOperationFactory(account: chainAccount, chain: chain)
+        }
     }
 }

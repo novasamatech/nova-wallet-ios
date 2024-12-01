@@ -101,20 +101,19 @@ final class AssetConversionFlowFacade {
             throw ChainAccountFetchingError.accountNotExists
         }
 
-        let flowStateStore = HydraFlowStateStore.getShared(
-            for: connection,
-            runtimeProvider: runtimeProvider,
-            userStorageFacade: userStorageFacade,
-            substrateStorageFacade: substrateStorageFacade
+        let flowState = AssetConversionFeeSharedStateStore.getOrCreateHydra(
+            for: ExtrinsicFeeEstimatorHost(
+                account: account,
+                chain: chain,
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                userStorageFacade: userStorageFacade,
+                substrateStorageFacade: substrateStorageFacade,
+                operationQueue: operationQueue
+            )
         )
 
-        let hydraFlowState = try flowStateStore.setupFlowState(
-            account: account,
-            chain: chain,
-            queue: operationQueue
-        )
-
-        let newState = AssetConversionFlowState.hydra(hydraFlowState)
+        let newState = AssetConversionFlowState.hydra(flowState)
         state = newState
 
         return newState

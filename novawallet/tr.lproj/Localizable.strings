@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "%@ alın";
 "swaps.setup.network.fee.token.title" = "Ağ ücreti ödemek için token";
 "swaps.setup.network.fee.token.hint" = "Ağ ücreti girilen miktarın üstüne eklenir";
-"swaps.pay.asset.fee.ed.message" = "%@ ile ağ ücreti ödemek için, Nova otomatik olarak hesabınızın minimum %@ bakiyesini korumak için %@'i %@'ye dönüştürecektir.";
 "swaps.setup.slippage.error.amount.bounds" = "%@ ile %@ arasında bir değer girin";
 "swaps.setup.slippage.warning.low.amount" = "Düşük kayma toleransı nedeniyle işlem geri alınabilir.";
 "swaps.setup.slippage.warning.high.amount" = "Yüksek kayma nedeniyle işlem ön alıma maruz kalabilir.";

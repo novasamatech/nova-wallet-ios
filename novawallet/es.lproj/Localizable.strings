@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "Obtener %@";
 "swaps.setup.network.fee.token.title" = "Token para pagar la tasa de red";
 "swaps.setup.network.fee.token.hint" = "La tasa de red se agrega al monto ingresado";
-"swaps.pay.asset.fee.ed.message" = "Para pagar la comisión de red con %@, Nova intercambiará automáticamente %@ por %@ para mantener el balance mínimo de %@ en tu cuenta.";
 "swaps.setup.slippage.error.amount.bounds" = "Ingrese un valor entre %@ y %@";
 "swaps.setup.slippage.warning.low.amount" = "La transacción podría ser revertida debido a la baja tolerancia al deslizamiento.";
 "swaps.setup.slippage.warning.high.amount" = "La transacción podría ser adelantada debido al alto deslizamiento.";

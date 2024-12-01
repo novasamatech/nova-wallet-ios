@@ -21,7 +21,7 @@ final class HydraOmnipoolTokensFactory {
         self.operationQueue = operationQueue
     }
 
-    private func fetchAllRemoteAssets() -> CompoundOperationWrapper<Set<HydraDx.AssetId>> {
+    func fetchAllRemoteAssets() -> CompoundOperationWrapper<Set<HydraDx.AssetId>> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let hubAssetIdOperation = PrimitiveConstantOperation<HydraDx.AssetId>.operation(

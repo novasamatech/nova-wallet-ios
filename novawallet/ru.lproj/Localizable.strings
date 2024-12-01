@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "Получить %@";
 "swaps.setup.network.fee.token.title" = "Токен для оплаты комиссии сети";
 "swaps.setup.network.fee.token.hint" = "Комиссия сети добавится к введенной сумме";
-"swaps.pay.asset.fee.ed.message" = "Чтобы оплатить комиссию сети с помощью %@, Nova автоматически обменяет %@ на %@, чтобы поддерживать минимальный %@ баланс вашей учетной записи.";
 "swaps.setup.slippage.error.amount.bounds" = "Введите значение между %@ и %@";
 "swaps.setup.slippage.warning.low.amount" = "Транзакция может быть отменена из-за низкой устойчивости к проскальзыванию.";
 "swaps.setup.slippage.warning.high.amount" = "Транзакция может подвергнуться фронтрану из-за высокого проскальзывания";

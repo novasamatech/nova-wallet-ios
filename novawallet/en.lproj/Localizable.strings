@@ -1397,7 +1397,6 @@
 "swaps.setup.deposit.button.title" = "Get %@";
 "swaps.setup.network.fee.token.title" = "Token for paying network fee";
 "swaps.setup.network.fee.token.hint" = "Network fee is added on top of entered amount";
-"swaps.pay.asset.fee.ed.message" = "To pay network fee with %@, Nova will automatically swap %@ for %@ to maintain your account\'s minimum %@ balance.";
 "swaps.setup.slippage.error.amount.bounds" = "Enter a value between %@ and %@";
 "swaps.setup.slippage.warning.low.amount" = "Transaction might be reverted because of low slippage tolerance.";
 "swaps.setup.slippage.warning.high.amount" = "Transaction might be frontrun because of high slippage.";
@@ -1769,3 +1768,14 @@
 "common.address.coppied" = "Address copied";
 "common.networks" = "Networks";
 "assets.search.token.hint" = "Search by token";
+"swaps.details.exec.time" = "Execution time";
+"swaps.details.route" = "Route";
+"swaps.details.total.fee" = "Total fee";
+"swaps.execution.dont.close.app" = "Do not close the app!";
+"sec.time.units" = "sec";
+"swaps.execution.transfer.details" = "Transferring %@ to %@";
+"swaps.execution.swap.details" = "Swapping %@ to %@ on %@";
+"common.of" = "%@ of %@";
+"swaps.execution.swap.failure" = "Failed on operation #%@ (%@)";
+"swaps.label.crosschain" = "Cross-chain transfer";
+"swaps.label.swap" = "Swap";

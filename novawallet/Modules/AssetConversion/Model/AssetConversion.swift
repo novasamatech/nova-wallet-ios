@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 enum AssetConversion {
-    enum Direction {
+    enum Direction: Equatable {
         case sell
         case buy
     }
@@ -58,7 +58,7 @@ enum AssetConversion {
         let receiver: AccountId
         let direction: Direction
         let slippage: BigRational
-        let context: String?
+        let context: String? // TODO: Get rid of the field
     }
 }
 

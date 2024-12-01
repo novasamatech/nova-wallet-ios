@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "%@ 받기";
 "swaps.setup.network.fee.token.title" = "네트워크 수수료를 지불할 토큰";
 "swaps.setup.network.fee.token.hint" = "입력한 금액 외에 네트워크 수수료가 추가됩니다";
-"swaps.pay.asset.fee.ed.message" = "%@로 네트워크 수수료를 지불하기 위해, Nova는 계정의 최소 %@ 잔액을 유지하기 위해 자동으로 %@를 %@로 교환합니다.";
 "swaps.setup.slippage.error.amount.bounds" = "%@와 %@ 사이의 값을 입력하세요";
 "swaps.setup.slippage.warning.low.amount" = "낮은 슬리피지 허용량으로 인해 거래가 되돌릴 수 있습니다.";
 "swaps.setup.slippage.warning.high.amount" = "높은 슬리피지로 인해 거래가 프론트런 당할 수 있습니다.";

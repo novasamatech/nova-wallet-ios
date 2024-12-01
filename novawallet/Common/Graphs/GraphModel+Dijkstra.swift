@@ -1,15 +1,21 @@
 import Foundation
 
-extension GraphModel {
-    func calculateShortestPath(from nodeStart: N, nodeEnd: N, topN: Int) -> [[E]] {
+extension GraphModel where E: GraphWeightableEdgeProtocol {
+    func calculateShortestPath(
+        from nodeStart: N,
+        nodeEnd: N,
+        topN: Int,
+        filter: AnyGraphEdgeFilter<E>
+    ) -> [[E]] {
         var queue = PriorityQueue<(cost: Int, path: [E])>(sort: { $0.cost < $1.cost })
 
-        connections[nodeStart]?.forEach {
-            queue.push((cost: 1, path: [$0]))
+        connections[nodeStart]?.forEach { edge in
+            if filter.shouldVisit(edge: edge, predecessor: nil) {
+                queue.push((cost: edge.weight, path: [edge]))
+            }
         }
 
         var result: [[E]] = []
-        var visitedPaths: Set<[E]> = Set()
 
         while !queue.isEmpty, result.count < topN {
             guard let (cost, path) = queue.pop() else { break }
@@ -24,12 +30,13 @@ extension GraphModel {
             let neighbors = connections[currentEdge.destination] ?? []
 
             for neighbor in neighbors {
-                var newPath = path
-                newPath.append(neighbor)
+                if
+                    !path.contains(neighbor),
+                    filter.shouldVisit(edge: neighbor, predecessor: currentEdge) {
+                    var newPath = path
+                    newPath.append(neighbor)
 
-                if !visitedPaths.contains(newPath) {
-                    visitedPaths.insert(newPath)
-                    queue.push((cost: cost + 1, path: newPath))
+                    queue.push((cost: cost + neighbor.weight, path: newPath))
                 }
             }
         }

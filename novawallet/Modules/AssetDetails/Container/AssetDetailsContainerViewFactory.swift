@@ -6,15 +6,24 @@ final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryPr
         asset: AssetModel,
         operationState: AssetOperationState
     ) -> AssetDetailsContainerViewProtocol? {
+        let swapState = SwapTokensFlowState(
+            assetListObservable: operationState.assetListObservable,
+            assetExchangeParams: AssetExchangeGraphProvidingParams(
+                wallet: SelectedWalletSettings.shared.value
+            )
+        )
+
         guard
             let accountView = AssetDetailsViewFactory.createView(
                 chain: chain,
                 asset: asset,
-                operationState: operationState
+                operationState: operationState,
+                swapState: swapState
             ),
             let historyView = TransactionHistoryViewFactory.createView(
                 chainAsset: .init(chain: chain, asset: asset),
-                operationState: operationState
+                operationState: operationState,
+                swapState: swapState
             ) else {
             return nil
         }

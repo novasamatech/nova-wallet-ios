@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-final class HydraStableSwapsTokensFactory {
+final class HydraStableswapTokensFactory {
     let chain: ChainModel
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
@@ -89,7 +89,9 @@ final class HydraStableSwapsTokensFactory {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
-    private func fetchAllLocalPairs(for chain: ChainModel) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
+    private func fetchAllLocalPairs(
+        for chain: ChainModel
+    ) -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
         let remotePoolsWrapper = fetchAllPools(dependingOn: codingFactoryOperation)
 
@@ -161,7 +163,7 @@ final class HydraStableSwapsTokensFactory {
     }
 }
 
-extension HydraStableSwapsTokensFactory: HydraPoolTokensFactoryProtocol {
+extension HydraStableswapTokensFactory: HydraPoolTokensFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]> {
         fetchAllLocalPairs(for: chain)
     }
@@ -184,5 +186,14 @@ extension HydraStableSwapsTokensFactory: HydraPoolTokensFactoryProtocol {
 
     func fetchAllLocalPoolAssets() -> CompoundOperationWrapper<Set<ChainAssetId>> {
         fetchAllLocalPoolAssets(for: chain)
+    }
+
+    func fetchRemotePools() -> CompoundOperationWrapper<[HydraDx.AssetId: [HydraDx.AssetId]]> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let fetchWrapper = fetchAllPools(dependingOn: codingFactoryOperation)
+
+        fetchWrapper.addDependency(operations: [codingFactoryOperation])
+
+        return fetchWrapper.insertingHead(operations: [codingFactoryOperation])
     }
 }

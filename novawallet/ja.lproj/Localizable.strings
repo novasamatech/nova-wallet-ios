@@ -1396,7 +1396,6 @@
 "swaps.setup.deposit.button.title" = "%@を取得";
 "swaps.setup.network.fee.token.title" = "ネットワーク手数料を支払うトークン";
 "swaps.setup.network.fee.token.hint" = "入力された金額の上にネットワーク手数料が追加されます";
-"swaps.pay.asset.fee.ed.message" = "ネットワーク手数料を %@ で支払うため、Novaは %@ を %@ に自動的にスワップして、アカウントの最低 %@ 残高を維持します。";
 "swaps.setup.slippage.error.amount.bounds" = "%@から%@の範囲内の値を入力してください";
 "swaps.setup.slippage.warning.low.amount" = "低スリッページ許容のため、トランザクションがリバートされる可能性があります。";
 "swaps.setup.slippage.warning.high.amount" = "高いスリッページのため、トランザクションがフロントランされる可能性があります。";

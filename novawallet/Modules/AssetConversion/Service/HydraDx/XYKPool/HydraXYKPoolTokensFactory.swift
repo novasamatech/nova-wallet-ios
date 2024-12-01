@@ -20,7 +20,7 @@ final class HydraXYKPoolTokensFactory {
         self.operationQueue = operationQueue
     }
 
-    private func fetchAllRemotePairsWrapper(
+    func fetchAllRemotePairsWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<[AccountIdKey: HydraXYK.PoolAssets]> {
         let requestFactory = StorageRequestFactory(

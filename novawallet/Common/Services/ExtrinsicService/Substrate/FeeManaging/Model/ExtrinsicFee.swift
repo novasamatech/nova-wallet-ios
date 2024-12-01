@@ -1,0 +1,66 @@
+import Foundation
+import BigInt
+
+struct ExtrinsicFeePayer: Equatable {
+    enum Reason: Equatable {
+        case proxy
+    }
+
+    let accountId: AccountId?
+    let reason: Reason
+
+    init(accountId: AccountId?, reason: Reason) {
+        self.accountId = accountId
+        self.reason = reason
+    }
+
+    init?(senderResolution: ExtrinsicSenderResolution) {
+        switch senderResolution {
+        case let .proxy(resolvedProxy):
+            accountId = resolvedProxy.proxyAccount?.chainAccount.accountId
+            reason = .proxy
+        case .current:
+            return nil
+        }
+    }
+}
+
+protocol ExtrinsicFeeProtocol {
+    // TODO: We need asset id here to make it more explicit how fee is paid
+    var amount: BigUInt { get }
+    // TODO: nil is for current account, we need make it explicit
+    var payer: ExtrinsicFeePayer? { get }
+    var weight: BigUInt { get }
+}
+
+extension ExtrinsicFeeProtocol {
+    var amountForCurrentAccount: BigUInt? {
+        payer == nil ? amount : nil
+    }
+}
+
+struct ExtrinsicFee: ExtrinsicFeeProtocol {
+    let amount: BigUInt
+    let payer: ExtrinsicFeePayer?
+    let weight: BigUInt
+
+    init?(dispatchInfo: RuntimeDispatchInfo, payer: ExtrinsicFeePayer?) {
+        guard let amount = BigUInt(dispatchInfo.fee) else {
+            return nil
+        }
+
+        self.amount = amount
+        self.payer = payer
+        weight = BigUInt(dispatchInfo.weight)
+    }
+
+    init(amount: BigUInt, payer: ExtrinsicFeePayer?, weight: BigUInt) {
+        self.amount = amount
+        self.payer = payer
+        self.weight = weight
+    }
+
+    static func zero() -> ExtrinsicFee {
+        .init(amount: 0, payer: nil, weight: 0)
+    }
+}

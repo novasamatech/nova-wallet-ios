@@ -85,9 +85,9 @@ struct SwapModel {
     let receiveAssetExistense: AssetBalanceExistence?
     let feeAssetExistense: AssetBalanceExistence?
     let utilityAssetExistense: AssetBalanceExistence?
-    let feeModel: AssetConversion.FeeModel?
+    let feeModel: AssetExchangeFee?
     let quoteArgs: AssetConversion.QuoteArgs
-    let quote: AssetConversion.Quote?
+    let quote: AssetExchangeQuote?
     let slippage: BigRational
     let accountInfo: AccountInfo?
 
@@ -101,7 +101,7 @@ struct SwapModel {
 
     var payAssetTotalBalanceAfterSwap: BigUInt {
         let balance = payAssetBalance?.freeInPlank ?? 0
-        let fee = isFeeInPayToken ? (feeModel?.totalFee.targetAmount ?? 0) : 0
+        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
         let spendingAmount = spendingAmountInPlank ?? 0
 
         let totalSpending = spendingAmount + fee
@@ -115,7 +115,7 @@ struct SwapModel {
 
     func checkBalanceSufficiency() -> InsufficientBalanceReason? {
         let balance = payAssetBalance?.transferable ?? 0
-        let fee = isFeeInPayToken ? (feeModel?.totalFee.targetAmount ?? 0) : 0
+        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
         let swapAmount = spendingAmountInPlank ?? 0
 
         let totalSpending = swapAmount + fee
@@ -131,7 +131,6 @@ struct SwapModel {
         } else if isViolatingConsumers {
             let minBalance = utilityAssetExistense?.minBalance ?? 0
             let precision = (utilityChainAsset ?? feeChainAsset).asset.precision
-            let fee = feeModel?.totalFee.targetAmount ?? 0
             return .violatingConsumers(
                 .init(
                     minBalance: minBalance.decimal(precision: precision),
@@ -152,14 +151,17 @@ struct SwapModel {
 
             if
                 isFeeInPayToken,
-                let addition = feeModel?.networkNativeFeeAddition,
-                let utilityAsset = feeChainAsset.chain.utilityAsset() {
+                let additionInPayAsset = feeModel?.postSubmissionFeeInAssetIn(payChainAsset),
+                let utilityAsset = feeChainAsset.chain.utilityChainAsset(),
+                let additionInNativeAsset = feeModel?.originPostsubmissionFeeIn(assetIn: utilityAsset) {
                 return .feeInPayAsset(
                     .init(
                         available: available.decimal(precision: payChainAsset.asset.precision),
                         feeInPayAsset: fee.decimal(precision: feeChainAsset.asset.precision),
-                        minBalanceInPayAsset: addition.targetAmount.decimal(precision: payChainAsset.asset.precision),
-                        minBalanceInNativeAsset: addition.nativeAmount.decimal(precision: utilityAsset.precision)
+                        minBalanceInPayAsset: additionInPayAsset.decimal(precision: payChainAsset.asset.precision),
+                        minBalanceInNativeAsset: additionInNativeAsset.decimal(
+                            precision: utilityAsset.asset.precision
+                        )
                     )
                 )
             } else {
@@ -180,7 +182,7 @@ struct SwapModel {
             balance = payAssetTotalBalanceAfterSwap
         } else if feeChainAsset.isUtilityAsset {
             let total = feeAssetBalance?.freeInPlank ?? 0
-            let fee = feeModel?.totalFee.targetAmount ?? 0
+            let fee = feeModel?.originFeeIn(assetIn: feeChainAsset) ?? 0
             balance = total > fee ? total - fee : 0
         } else {
             // if fee is paid in non native token then we will have at least ed
@@ -202,9 +204,9 @@ struct SwapModel {
 
     func checkCanReceive() -> CannotReceiveReason? {
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
-        let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (quote?.amountOut ?? 0)
+        let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (quote?.route.amountOut ?? 0)
         let feeInReceiveAsset = feeChainAsset.chainAssetId == receiveChainAsset.chainAssetId ?
-            (feeModel?.totalFee.targetAmount ?? 0) : 0
+            (feeModel?.originFeeIn(assetIn: feeChainAsset) ?? 0) : 0
         let minBalance = receiveAssetExistense?.minBalance ?? 0
 
         if amountAfterSwap < minBalance + feeInReceiveAsset {
@@ -234,16 +236,19 @@ struct SwapModel {
 
         if
             isFeeInPayToken, !payChainAsset.isUtilityAsset,
-            let networkFee = feeModel?.networkFee,
-            let feeAdditions = feeModel?.networkNativeFeeAddition,
-            let utilityAsset = feeChainAsset.chain.utilityAsset() {
+            let networkFee = feeModel?.totalFeeInAssetIn(payChainAsset),
+            let additionInPayAsset = feeModel?.postSubmissionFeeInAssetIn(payChainAsset),
+            let utilityAsset = feeChainAsset.chain.utilityChainAsset(),
+            let additionInNativeAsset = feeModel?.originPostsubmissionFeeIn(assetIn: utilityAsset) {
             return .swapAndFee(
                 .init(
                     dust: remaning.decimal(precision: payChainAsset.asset.precision),
                     minBalance: minBalance.decimal(precision: payChainAsset.asset.precision),
-                    fee: networkFee.targetAmount.decimal(precision: payChainAsset.asset.precision),
-                    minBalanceInPayAsset: feeAdditions.targetAmount.decimal(precision: payChainAsset.asset.precision),
-                    minBalanceInNativeAsset: feeAdditions.nativeAmount.decimal(precision: utilityAsset.precision)
+                    fee: networkFee.decimal(precision: payChainAsset.asset.precision),
+                    minBalanceInPayAsset: additionInPayAsset.decimal(precision: payChainAsset.asset.precision),
+                    minBalanceInNativeAsset: additionInNativeAsset.decimal(
+                        precision: utilityAsset.asset.precision
+                    )
                 )
             )
         } else {
@@ -257,29 +262,30 @@ struct SwapModel {
     }
 
     func asyncCheckQuoteValidity(
-        _ newQuoteClosure: @escaping (AssetConversion.QuoteArgs, @escaping QuoteValidateClosure) -> Void,
-        completion: @escaping (InvalidQuoteReason?) -> Void
+        _: @escaping (AssetConversion.QuoteArgs, @escaping QuoteValidateClosure) -> Void,
+        completion _: @escaping (InvalidQuoteReason?) -> Void
     ) {
-        guard let currenQuote = quote else {
-            completion(.noLiqudity)
-            return
-        }
+        // TODO: Fix implementation
+        /* guard let route = route else {
+             completion(.noLiqudity)
+             return
+         }
 
-        newQuoteClosure(quoteArgs) { result in
-            switch result {
-            case let .success(newQuote):
-                if !currenQuote.matches(
-                    other: newQuote,
-                    slippage: slippage,
-                    direction: quoteArgs.direction
-                ) {
-                    completion(.rateChange(.init(oldQuote: currenQuote, newQuote: newQuote)))
-                } else {
-                    completion(nil)
-                }
-            case .failure:
-                completion(.noLiqudity)
-            }
-        }
+         newQuoteClosure(quoteArgs) { result in
+             switch result {
+             case let .success(newQuote):
+                 if !currenQuote.matches(
+                     other: newQuote,
+                     slippage: slippage,
+                     direction: quoteArgs.direction
+                 ) {
+                     completion(.rateChange(.init(oldQuote: currenQuote, newQuote: newQuote)))
+                 } else {
+                     completion(nil)
+                 }
+             case .failure:
+                 completion(.noLiqudity)
+             }
+         } */
     }
 }

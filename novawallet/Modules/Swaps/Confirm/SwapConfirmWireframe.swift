@@ -1,25 +1,34 @@
 import Foundation
 
 final class SwapConfirmWireframe: SwapConfirmWireframeProtocol {
+    let flowState: SwapTokensFlowStateProtocol
     let completionClosure: SwapCompletionClosure?
 
-    init(completionClosure: SwapCompletionClosure?) {
+    init(
+        flowState: SwapTokensFlowStateProtocol,
+        completionClosure: SwapCompletionClosure?
+    ) {
+        self.flowState = flowState
         self.completionClosure = completionClosure
     }
 
-    func complete(
-        on view: ControllerBackedProtocol?,
-        payChainAsset: ChainAsset,
-        locale: Locale
+    func showSwapExecution(
+        from view: SwapConfirmViewProtocol?,
+        model: SwapExecutionModel
     ) {
-        let title = R.string.localizable
-            .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
+        guard
+            let swapExecutionView = SwapExecutionViewFactory.createView(
+                for: model,
+                flowState: flowState,
+                completionClosure: completionClosure
+            ) else {
+            return
+        }
 
         let presenter = view?.controller.navigationController?.presentingViewController
 
         presenter?.dismiss(animated: true) {
-            self.completionClosure?(payChainAsset)
-            self.presentSuccessNotification(title, from: presenter, completion: nil)
+            presenter?.present(swapExecutionView.controller, animated: true)
         }
     }
 }

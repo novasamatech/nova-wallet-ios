@@ -3,17 +3,14 @@ import SoraFoundation
 import SoraUI
 
 final class SwapSetupWireframe: SwapSetupWireframeProtocol {
-    let assetListObservable: AssetListModelObservable
-    let flowState: AssetConversionFlowFacadeProtocol
+    let state: SwapTokensFlowStateProtocol
     let swapCompletionClosure: SwapCompletionClosure?
 
     init(
-        assetListObservable: AssetListModelObservable,
-        flowState: AssetConversionFlowFacadeProtocol,
+        state: SwapTokensFlowStateProtocol,
         swapCompletionClosure: SwapCompletionClosure?
     ) {
-        self.assetListObservable = assetListObservable
-        self.flowState = flowState
+        self.state = state
         self.swapCompletionClosure = swapCompletionClosure
     }
 
@@ -22,10 +19,12 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
     ) {
-        guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectPayTokenView(
-            for: assetListObservable,
-            chainAsset: chainAsset,
-            selectClosure: completionHandler
+        guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectPayTokenViewWithState(
+            state,
+            selectionModel: .payForAsset(chainAsset),
+            selectClosure: { chainAsset, _ in
+                completionHandler(chainAsset)
+            }
         ) else {
             return
         }
@@ -42,10 +41,12 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         chainAsset: ChainAsset?,
         completionHandler: @escaping (ChainAsset) -> Void
     ) {
-        guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectReceiveTokenView(
-            for: assetListObservable,
-            chainAsset: chainAsset,
-            selectClosure: completionHandler
+        guard let selectTokenView = SwapAssetsOperationViewFactory.createSelectReceiveTokenViewWithState(
+            state,
+            selectionModel: .receivePayingWith(chainAsset),
+            selectClosure: { chainAsset, _ in
+                completionHandler(chainAsset)
+            }
         ) else {
             return
         }
@@ -83,7 +84,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
     ) {
         guard let confimView = SwapConfirmViewFactory.createView(
             initState: initState,
-            flowState: flowState,
+            flowState: state,
             completionClosure: swapCompletionClosure
         ) else {
             return
@@ -132,7 +133,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
         guard let bottomSheet = GetTokenOptionsViewFactory.createView(
             from: destinationChainAsset,
-            assetModelObservable: assetListObservable,
+            assetModelObservable: state.assetListObservable,
             completion: completion
         ) else {
             return
@@ -151,7 +152,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             from: origins,
             to: destination,
             xcmTransfers: xcmTransfers,
-            assetListObservable: assetListObservable,
+            assetListObservable: state.assetListObservable,
             transferCompletion: nil
         ) else {
             return

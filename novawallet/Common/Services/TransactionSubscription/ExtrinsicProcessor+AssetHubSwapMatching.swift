@@ -193,8 +193,8 @@ extension ExtrinsicProcessor {
 
         guard
             let swap = findAssetHubSwap(swapEvents, customFee: customFee),
-            let remoteAssetIn = swap.path.first,
-            let remoteAssetOut = swap.path.last
+            let remoteAssetIn = swap.path.first?.asset,
+            let remoteAssetOut = swap.path.last?.asset
         else {
             return nil
         }
@@ -308,7 +308,7 @@ extension ExtrinsicProcessor {
         guard
             let feeSwap = optFeeSwap,
             let targetSwap = swapsAfterFee.first,
-            let feeAssetOut = feeSwap.path.last,
+            let feeAssetOut = feeSwap.path.last?.asset,
             case .native = AssetHubTokensConverter.convertFromMultilocation(feeAssetOut, chain: chain) else {
             return nil
         }

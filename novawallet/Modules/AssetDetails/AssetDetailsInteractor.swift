@@ -8,7 +8,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
-    let assetConvertionAggregator: AssetConversionAggregationFactoryProtocol
+    let swapState: SwapTokensFlowStateProtocol
     let purchaseProvider: PurchaseProviderProtocol
     let assetMapper: CustomAssetMapper
     let operationQueue: OperationQueue
@@ -19,6 +19,8 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     private var externalBalanceSubscription: StreamableProvider<ExternalAssetBalance>?
     private var assetHoldsSubscription: StreamableProvider<AssetHold>?
     private var swapsCall = CancellableCallStore()
+
+    private var assetExchangeService: AssetsExchangeServiceProtocol?
 
     private var accountId: AccountId? {
         selectedMetaAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId
@@ -31,7 +33,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
-        assetConvertionAggregator: AssetConversionAggregationFactoryProtocol,
+        swapState: SwapTokensFlowStateProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
@@ -41,7 +43,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         self.selectedMetaAccount = selectedMetaAccount
         self.chainAsset = chainAsset
         self.purchaseProvider = purchaseProvider
-        self.assetConvertionAggregator = assetConvertionAggregator
+        self.swapState = swapState
         self.operationQueue = operationQueue
         assetMapper = CustomAssetMapper(
             type: chainAsset.asset.type,
@@ -62,17 +64,27 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         }
     }
 
-    private func fetchSwapsAndProvideOperations() {
+    private func fetchSwapsAndProvideOperations(for chainAsset: ChainAsset) {
         swapsCall.cancel()
 
-        guard chainAsset.chain.hasSwaps else {
+        guard let assetExchangeService else {
             return
         }
 
-        let wrapper = assetConvertionAggregator.createAvailableDirectionsWrapper(for: chainAsset)
+        let wrapper = assetExchangeService.fetchReachibilityWrapper()
+
+        let checkOperation = ClosureOperation<Bool> {
+            let reachability = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            return !reachability.getAssetsOut(for: chainAsset.chainAssetId).isEmpty
+        }
+
+        checkOperation.addDependency(wrapper.targetOperation)
+
+        let totalWrapper = wrapper.insertingTail(operation: checkOperation)
 
         executeCancellable(
-            wrapper: wrapper,
+            wrapper: totalWrapper,
             inOperationQueue: operationQueue,
             backingCallIn: swapsCall,
             runningCallbackIn: .main
@@ -82,12 +94,26 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
             }
 
             switch result {
-            case let .success(directions):
-                let hasSwaps = !directions.isEmpty
+            case let .success(hasSwaps):
                 self.setAvailableOperations(hasSwaps: hasSwaps)
             case let .failure(error):
                 self.presenter?.didReceive(error: .swaps(error))
             }
+        }
+    }
+
+    private func setupSwapService() {
+        assetExchangeService = swapState.setupAssetExchangeService()
+
+        assetExchangeService?.subscribeUpdates(
+            for: self,
+            notifyingIn: .main
+        ) { [weak self] in
+            guard let self else {
+                return
+            }
+
+            fetchSwapsAndProvideOperations(for: chainAsset)
         }
     }
 
@@ -158,9 +184,7 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
 
         setAvailableOperations(hasSwaps: false)
 
-        if chainAsset.chain.hasSwaps {
-            fetchSwapsAndProvideOperations()
-        }
+        setupSwapService()
     }
 }
 
