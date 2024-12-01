@@ -24,26 +24,24 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtoco
         let layoutClosure = dependencies.layoutDependencies.layoutClosure
         let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
 
-        disappearanceAnimator.animate(
-            view: browserView
-        ) { _ in
-            let containerView = layoutClosure()
+        let containerView = layoutClosure()
 
-            UIView.animate(withDuration: 0.25) {
-                layoutAnimatables?()
-                containerView?.layoutIfNeeded()
-            } completion: { _ in
-                guard let widgetView = dependencies.widgetViewClosure() else {
-                    return
-                }
-
-                appearanceAnimator.animate(
-                    view: widgetView.contentContainerView,
-                    completionBlock: nil
-                )
+        disappearanceAnimator.animate(view: browserView) { _ in
+            childNavigation {}
+        }
+        
+        UIView.animate(withDuration: 0.25) {
+            layoutAnimatables?()
+            containerView?.layoutIfNeeded()
+        } completion: { _ in
+            guard let widgetView = dependencies.widgetViewClosure() else {
+                return
             }
 
-            childNavigation {}
+            appearanceAnimator.animate(
+                view: widgetView.contentContainerView,
+                completionBlock: nil
+            )
         }
     }
 }

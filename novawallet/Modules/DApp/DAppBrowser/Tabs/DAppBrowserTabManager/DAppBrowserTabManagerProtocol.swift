@@ -13,7 +13,7 @@ protocol DAppBrowserTabManagerProtocol {
 
     func updateRenderForTab(
         with id: UUID,
-        renderer: DAppBrowserTabRendererProtocol
+        render: DAppBrowserTabRenderProtocol
     ) -> CompoundOperationWrapper<Void>
 
     func removeTab(with id: UUID)

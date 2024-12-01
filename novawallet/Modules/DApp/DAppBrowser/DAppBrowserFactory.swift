@@ -73,7 +73,8 @@ enum DAppBrowserFactory {
         browserView.controller.hidesBottomBarWhenPushed = true
 
         DAppBrowserTabTransition.setTransition(
-            for: browserView.controller,
+            from: tabsView.controller,
+            to: browserView.controller,
             tabId: tabId
         )
 

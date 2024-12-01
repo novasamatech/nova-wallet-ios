@@ -7,7 +7,7 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
 
     var tabBar: MainTabBarProtocol?
     var browserWidget: DAppBrowserWidgetProtocol?
-    
+
     let logger: LoggerProtocol
 
     init(

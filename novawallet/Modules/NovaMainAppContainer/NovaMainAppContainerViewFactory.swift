@@ -13,7 +13,10 @@ struct NovaMainAppContainerViewFactory {
 
         let presenter = NovaMainAppContainerPresenter(wireframe: wireframe)
 
-        let view = NovaMainAppContainerViewController(presenter: presenter)
+        let view = NovaMainAppContainerViewController(
+            presenter: presenter,
+            logger: Logger.shared
+        )
 
         view.tabBar = tabBarController
         view.browserWidget = browserWidgetController

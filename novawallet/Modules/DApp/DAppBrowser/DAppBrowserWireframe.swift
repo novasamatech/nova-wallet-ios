@@ -102,7 +102,15 @@ class BaseDAppBrowserWireframe {
     }
 
     func showTabs(from view: DAppBrowserViewProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
+        DAppBrowserTabTransition.setTransition(
+            from: view?.controller,
+            to: nil,
+            tabId: nil
+        )
+
+        view?.controller.navigationController?.popViewController(
+            animated: DAppBrowserTabTransition.animated
+        )
     }
 }
 

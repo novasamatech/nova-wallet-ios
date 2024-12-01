@@ -8,6 +8,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     let presenter: DAppBrowserPresenterProtocol
 
+    let logger: LoggerProtocol
+
     private let webViewPool: WebViewPoolProtocol
 
     private var viewModel: DAppBrowserModel?
@@ -42,9 +44,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         localRouter: URLLocalRouting,
         webViewPool: WebViewPoolProtocol,
         deviceOrientationManager: DeviceOrientationManaging,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.presenter = presenter
+        self.logger = logger
         self.localRouter = localRouter
         self.webViewPool = webViewPool
         self.deviceOrientationManager = deviceOrientationManager
@@ -167,14 +171,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     private func makeStateRender() {
-        guard
-            let viewModel,
-            let webView = rootView.webView
-        else { return }
+        guard let webView = rootView.webView else { return }
 
-        let renderer = DAppBrowserTabRenderer(for: webView.layer)
-
-        presenter.process(stateRenderer: renderer)
+        snapshotWebView { [weak self] image in
+            let render = DAppBrowserTabRender(for: image)
+            self?.presenter.process(stateRender: render)
+        }
     }
 
     private func configureHandlers() {
@@ -333,6 +335,28 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.goForwardBarItem.isEnabled = rootView.webView?.canGoForward ?? false
     }
 
+    private func snapshotWebView(completion: @escaping (UIImage?) -> Void) {
+        guard let webView = rootView.webView else {
+            completion(nil)
+            return
+        }
+
+        let snapshotConfiguration = WKSnapshotConfiguration()
+        snapshotConfiguration.rect = webView.bounds
+        snapshotConfiguration.afterScreenUpdates = false
+
+        webView.takeSnapshot(with: snapshotConfiguration) { [weak self] image, error in
+            guard let image = image else {
+                self?.logger.error("Failed to take snapshot: \(String(describing: error))")
+
+                completion(nil)
+                return
+            }
+
+            completion(image)
+        }
+    }
+
     @objc private func actionGoBack() {
         rootView.webView?.goBack()
     }
@@ -369,19 +393,17 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionClose() {
-        guard let webView = rootView.webView else { return }
-
-        let stateRenderer = DAppBrowserTabRenderer(for: webView.layer)
-
-        presenter.close(stateRenderer: stateRenderer)
+        snapshotWebView { [weak self] image in
+            let stateRender = DAppBrowserTabRender(for: image)
+            self?.presenter.close(stateRender: stateRender)
+        }
     }
 
     @objc private func actionTabs() {
-        guard let webView = rootView.webView else { return }
-
-        let renderer = DAppBrowserTabRenderer(for: webView.layer)
-
-        presenter.showTabs(stateRenderer: renderer)
+        snapshotWebView { [weak self] image in
+            let stateRender = DAppBrowserTabRender(for: image)
+            self?.presenter.showTabs(stateRender: stateRender)
+        }
     }
 }
 

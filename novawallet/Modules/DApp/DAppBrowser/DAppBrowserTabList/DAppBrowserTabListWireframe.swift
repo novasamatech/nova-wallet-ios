@@ -15,13 +15,14 @@ final class DAppBrowserTabListWireframe: DAppBrowserTabListWireframeProtocol {
         }
 
         DAppBrowserTabTransition.setTransition(
-            for: browserView.controller,
+            from: view?.controller,
+            to: browserView.controller,
             tabId: tab.uuid
         )
 
         view?.controller.navigationController?.pushViewController(
             browserView.controller,
-            animated: true
+            animated: DAppBrowserTabTransition.animated
         )
     }
 }
@@ -49,13 +50,14 @@ final class DAppBrowserTabListChildViewWireframe: DAppBrowserTabListWireframePro
         }
 
         DAppBrowserTabTransition.setTransition(
-            for: browserView.controller,
+            from: view?.controller,
+            to: browserView.controller,
             tabId: tab.uuid
         )
 
         view?.controller.navigationController?.pushViewController(
             browserView.controller,
-            animated: true
+            animated: DAppBrowserTabTransition.animated
         )
     }
 }

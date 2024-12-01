@@ -142,10 +142,10 @@ private extension DAppBrowserTabManager {
     }
 
     func updateRenderWrapper(
-        renderer: DAppBrowserTabRendererProtocol,
+        render: DAppBrowserTabRenderProtocol,
         tab: DAppBrowserTab
     ) -> CompoundOperationWrapper<Void> {
-        let renderDataWrapper = renderer.renderDataWrapper(using: operationQueue)
+        let renderDataOperation = render.serializationOperation()
 
         let wrapper: CompoundOperationWrapper<Void> = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -154,7 +154,7 @@ private extension DAppBrowserTabManager {
                 throw DAppBrowserTabManagerError.renderCacheFailed
             }
 
-            let renderData = try renderDataWrapper.targetOperation.extractNoCancellableResultData()
+            let renderData = try renderDataOperation.extractNoCancellableResultData()
 
             return saveRenderWrapper(
                 renderData: renderData,
@@ -162,9 +162,9 @@ private extension DAppBrowserTabManager {
             )
         }
 
-        wrapper.addDependency(wrapper: renderDataWrapper)
+        wrapper.addDependency(operations: [renderDataOperation])
 
-        return wrapper.insertingHead(operations: renderDataWrapper.allOperations)
+        return wrapper.insertingHead(operations: [renderDataOperation])
     }
 
     func removeTabWrapper(for tabId: UUID) -> CompoundOperationWrapper<Void> {
@@ -305,14 +305,14 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
 
     func updateRenderForTab(
         with id: UUID,
-        renderer: DAppBrowserTabRendererProtocol
+        render: DAppBrowserTabRenderProtocol
     ) -> CompoundOperationWrapper<Void> {
         guard let tab = tabs[id] else {
             return .createWithResult(())
         }
 
         let updateRenderWrapper = updateRenderWrapper(
-            renderer: renderer,
+            render: render,
             tab: tab
         )
 

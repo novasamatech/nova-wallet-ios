@@ -119,8 +119,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
-    func process(stateRenderer: DAppBrowserTabRendererProtocol) {
-        interactor.process(stateRenderer: stateRenderer)
+    func process(stateRender: DAppBrowserTabRenderProtocol) {
+        interactor.process(stateRender: stateRender)
     }
 
     func activateSearch(with query: String?) {
@@ -148,14 +148,14 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
-    func close(stateRenderer: DAppBrowserTabRendererProtocol) {
-        interactor.process(stateRenderer: stateRenderer)
+    func close(stateRender: DAppBrowserTabRenderProtocol) {
+        interactor.process(stateRender: stateRender)
 
         wireframe.close(view: view)
     }
 
-    func showTabs(stateRenderer: DAppBrowserTabRendererProtocol) {
-        interactor.saveLastTabState(renderer: stateRenderer)
+    func showTabs(stateRender: DAppBrowserTabRenderProtocol) {
+        interactor.saveLastTabState(render: stateRender)
     }
 
     func didLoadPage() {

@@ -85,7 +85,8 @@ struct DAppBrowserViewFactory {
             localRouter: URLLocalRouter.createWithDeeplinks(),
             webViewPool: WebViewPool.shared,
             deviceOrientationManager: DeviceOrientationManager.shared,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            logger: logger
         )
 
         presenter.view = view
