@@ -97,6 +97,29 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
     
+    func testMeasureRouteSearch() {
+        let params = buildCommonParams()
+        
+        guard
+            let polkadotUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAssetId(),
+            let ibtcInterlayAsset = params.chainRegistry.getChain(
+                for: "bf88efe70e9e0e916416e8bed61f2b45717f517d7f3523e33c7b001e5ffcbc72"
+            )?.chainAssetForSymbol("iBTC")?.chainAssetId else {
+            XCTFail("No chain or asset")
+            return
+        }
+        
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+        
+        measure {
+            let route = graph.fetchPaths(from: polkadotUtilityAsset, to: ibtcInterlayAsset, maxTopPaths: 1)
+            XCTAssert(!route.isEmpty, "No routes founds")
+        }
+    }
+    
     func testCalculateFee() {
         let params = buildCommonParams()
         
@@ -132,11 +155,11 @@ final class AssetsExchangeTests: XCTestCase {
             
             params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
             
-            let route = try routeWrapper.targetOperation.extractNoCancellableResultData()
+            let quote = try routeWrapper.targetOperation.extractNoCancellableResultData()
 
             let feeWrapper = factory.createFeeWrapper(
                 for: .init(
-                    route: route,
+                    route: quote.route,
                     slippage: BigRational.percent(of: 5),
                     feeAssetId: dotPolkadot.chainAssetId
                 )
@@ -165,7 +188,7 @@ final class AssetsExchangeTests: XCTestCase {
         
         params.operationQueue.addOperations(routeWrapper.allOperations, waitUntilFinished: true)
         
-        return try routeWrapper.targetOperation.extractNoCancellableResultData()
+        return try routeWrapper.targetOperation.extractNoCancellableResultData().route
     }
     
     private func createExchangeFactory(for params: AssetExchangeGraphProvidingParams) -> AssetsExchangeOperationFactoryProtocol? {
@@ -241,7 +264,7 @@ final class AssetsExchangeTests: XCTestCase {
         
         let expectation = XCTestExpectation()
         
-        DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(5)) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(10)) {
             expectation.fulfill()
         }
         

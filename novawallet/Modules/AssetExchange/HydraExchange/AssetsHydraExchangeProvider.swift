@@ -13,7 +13,6 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
     init(
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
-        priceStore: AssetExchangePriceStoring,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
@@ -25,7 +24,6 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
 
         super.init(
             chainRegistry: chainRegistry,
-            priceStore: priceStore,
             operationQueue: operationQueue,
             syncQueue: DispatchQueue(label: "io.novawallet.hydraexchangeprovider.\(UUID().uuidString)"),
             logger: logger

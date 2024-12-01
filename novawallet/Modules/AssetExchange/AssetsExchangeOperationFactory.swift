@@ -19,24 +19,18 @@ enum AssetsExchangeOperationFactoryError: Error {
 
 final class AssetsExchangeOperationFactory {
     let graph: AssetsExchangeGraphProtocol
-    let chainRegistry: ChainRegistryProtocol
-    let priceStore: AssetExchangePriceStoring
     let operationQueue: OperationQueue
     let maxQuotePaths: Int
     let logger: LoggerProtocol
 
     init(
         graph: AssetsExchangeGraphProtocol,
-        chainRegistry: ChainRegistryProtocol,
-        priceStore: AssetExchangePriceStoring,
         maxQuotePaths: Int = AssetsExchange.maxQuotePaths,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.graph = graph
         self.operationQueue = operationQueue
-        self.chainRegistry = chainRegistry
-        self.priceStore = priceStore
         self.maxQuotePaths = maxQuotePaths
         self.logger = logger
     }
