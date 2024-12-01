@@ -14,7 +14,6 @@ class AssetsExchangeBaseProvider {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        priceStore _: AssetExchangePriceStoring,
         operationQueue: OperationQueue,
         syncQueue: DispatchQueue,
         logger: LoggerProtocol

@@ -15,7 +15,6 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
         wallet: MetaAccountModel,
         syncService: XcmTransfersSyncServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
-        priceStore: AssetExchangePriceStoring,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
@@ -30,7 +29,6 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
 
         super.init(
             chainRegistry: chainRegistry,
-            priceStore: priceStore,
             operationQueue: operationQueue,
             syncQueue: DispatchQueue(label: "io.novawallet.crosschainassetsprovider.\(UUID().uuidString)"),
             logger: logger
