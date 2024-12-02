@@ -12,6 +12,14 @@ final class DAppBrowserViewLayout: UIView {
     var securityImageView: UIImageView { urlBar.controlContentView.imageView }
     var urlLabel: UILabel { urlBar.controlContentView.detailsLabel }
 
+    let tabsButton: RoundedButton = .create { view in
+        view.imageWithTitleView?.titleFont = .semiBoldCaption1
+        view.roundedBackgroundView?.applyStrokedBackgroundStyle()
+        view.roundedBackgroundView?.cornerRadius = 6.0
+        view.roundedBackgroundView?.strokeWidth = 1.2
+        view.roundedBackgroundView?.strokeColor = R.color.colorTextPrimary()!
+    }
+
     let closeBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem(image: R.image.iconClose()!, style: .plain, target: nil, action: nil)
         item.tintColor = R.color.colorIconPrimary()!
@@ -33,6 +41,11 @@ final class DAppBrowserViewLayout: UIView {
     let goForwardBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem(image: R.image.iconBrowserForward()!, style: .plain, target: nil, action: nil)
         item.tintColor = R.color.colorIconPrimary()
+        return item
+    }()
+
+    lazy var tabsButtonItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(customView: tabsButton)
         return item
     }()
 
@@ -63,16 +76,7 @@ final class DAppBrowserViewLayout: UIView {
         return view
     }()
 
-    let webView: WKWebView = {
-        let configuration = WKWebViewConfiguration()
-        configuration.userContentController = WKUserContentController()
-
-        let view = WKWebView(frame: .zero, configuration: configuration)
-        view.scrollView.contentInsetAdjustmentBehavior = .always
-        view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
-
-        return view
-    }()
+    var webView: WKWebView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -115,8 +119,6 @@ final class DAppBrowserViewLayout: UIView {
     }
 
     private func setupLayout() {
-        addSubview(webView)
-
         addSubview(toolbarBackgroundView)
         toolbarBackgroundView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -131,22 +133,34 @@ final class DAppBrowserViewLayout: UIView {
             make.height.equalTo(Constants.toolbarHeight)
         }
 
-        webView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.bottom.equalTo(toolBar.snp.top)
-        }
-
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+
+        tabsButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
 
         toolBar.items = [
             goBackBarItem,
             flexibleSpace,
             goForwardBarItem,
             flexibleSpace,
+            tabsButtonItem,
+            flexibleSpace,
             refreshBarItem,
             flexibleSpace,
             settingsBarButton
         ]
+    }
+
+    func setWebView(_ webView: WKWebView) {
+        self.webView?.removeFromSuperview()
+        self.webView = webView
+        addSubview(webView)
+
+        webView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalTo(toolBar.snp.top)
+        }
     }
 }

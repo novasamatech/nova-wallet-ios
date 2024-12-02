@@ -85,17 +85,6 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
         view?.controller.present(navigationController, animated: true)
     }
 
-    func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL) {
-        guard
-            let browser = DAppBrowserViewFactory.createView(
-                for: .query(string: url.absoluteString)
-            ) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(browser.controller, animated: true)
-    }
-
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel) {
         guard let accountManagementView = AccountManagementViewFactory.createView(for: wallet.identifier) else {
             return

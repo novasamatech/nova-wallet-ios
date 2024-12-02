@@ -110,4 +110,8 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
     func close(view: DAppBrowserViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }
+
+    func showTabs(from view: DAppBrowserViewProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
+    }
 }

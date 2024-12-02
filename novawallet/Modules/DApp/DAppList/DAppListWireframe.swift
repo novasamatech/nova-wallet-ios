@@ -20,15 +20,6 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult) {
-        guard let browserView = DAppBrowserViewFactory.createView(for: result) else {
-            return
-        }
-
-        browserView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(browserView.controller, animated: true)
-    }
-
     func showSetting(from view: DAppListViewProtocol?) {
         guard let settingsView = DAppAuthSettingsViewFactory.createView() else {
             return

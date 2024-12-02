@@ -21,10 +21,19 @@ struct ReferendumDetailsViewFactory {
 
         let wireframe = ReferendumDetailsWireframe(state: state)
 
+        let browserTabManager = DAppBrowserTabManager.shared
+
+        let newTabRouter = DAppBrowserNewTabRouter(
+            tabManager: browserTabManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            wireframe: DAppBrowserNewStackWireframe()
+        )
+
         guard
             let presenter = createPresenter(
                 interactor: interactor,
                 wireframe: wireframe,
+                browserRouter: newTabRouter,
                 currencyManager: currencyManager,
                 state: state,
                 initData: initData
@@ -46,6 +55,7 @@ struct ReferendumDetailsViewFactory {
     private static func createPresenter(
         interactor: ReferendumDetailsInteractor,
         wireframe: ReferendumDetailsWireframe,
+        browserRouter: DAppBrowserNewTabRouterProtocol,
         currencyManager: CurrencyManagerProtocol,
         state: GovernanceSharedState,
         initData: ReferendumDetailsInitData
@@ -104,6 +114,7 @@ struct ReferendumDetailsViewFactory {
             initData: initData,
             interactor: interactor,
             wireframe: wireframe,
+            browserRouter: browserRouter,
             referendumViewModelFactory: referendumViewModelFactory,
             balanceViewModelFacade: balanceViewModelFacade,
             referendumFormatter: indexFormatter,

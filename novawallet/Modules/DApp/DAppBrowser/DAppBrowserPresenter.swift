@@ -10,6 +10,7 @@ final class DAppBrowserPresenter {
     let localizationManager: LocalizationManager
 
     private(set) var favorites: [String: DAppFavorite]?
+    private(set) var tabs: [DAppBrowserTab] = []
     private(set) var browserPage: DAppBrowserPage?
 
     init(
@@ -70,12 +71,28 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         updateSettingsState()
     }
 
-    func process(message: Any, host: String, transport name: String) {
-        interactor.process(message: message, host: host, transport: name)
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    ) {
+        interactor.process(
+            message: message,
+            host: host,
+            transport: name
+        )
+    }
+
+    func process(stateRenderer: DAppBrowserTabRendererProtocol) {
+        interactor.process(stateRenderer: stateRenderer)
     }
 
     func activateSearch(with query: String?) {
-        wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
+        wireframe.presentSearch(
+            from: view,
+            initialQuery: query,
+            delegate: self
+        )
     }
 
     func showSettings(using isDesktop: Bool) {
@@ -117,6 +134,11 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
+
+    func showTabs() {
+        interactor.saveTransportState()
+        wireframe.showTabs(from: view)
     }
 }
 
@@ -165,6 +187,12 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
     func didChangeGlobal(settings: DAppGlobalSettings) {
         view?.didSet(isDesktop: settings.desktopMode)
+    }
+
+    func didReceiveTabs(_ models: [DAppBrowserTab]) {
+        tabs = models
+
+        view?.didReceiveTabsCount(viewModel: "\(models.count)")
     }
 }
 

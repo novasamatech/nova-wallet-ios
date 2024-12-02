@@ -1769,3 +1769,5 @@
 "common.address.coppied" = "Address copied";
 "common.networks" = "Networks";
 "assets.search.token.hint" = "Search by token";
+"common.close.all" = "Close All";
+"dapp.browser.tab.not.available" = "Webpage not available";
