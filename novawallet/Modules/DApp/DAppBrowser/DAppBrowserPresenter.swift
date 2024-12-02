@@ -119,8 +119,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
-    func process(stateRenderer: DAppBrowserTabRendererProtocol) {
-        interactor.process(stateRenderer: stateRenderer)
+    func process(stateRender: DAppBrowserTabRenderProtocol) {
+        interactor.process(stateRender: stateRender)
     }
 
     func activateSearch(with query: String?) {
@@ -148,29 +148,14 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
-    func close() {
-        let languages = localizationManager.selectedLocale.rLanguages
+    func close(stateRender: DAppBrowserTabRenderProtocol) {
+        interactor.process(stateRender: stateRender)
 
-        let closeViewModel = AlertPresentableAction(
-            title: R.string.localizable.commonClose(preferredLanguages: languages),
-            style: .destructive
-        ) { [weak self] in
-            self?.view?.didDecideClose()
-            self?.wireframe.close(view: self?.view)
-        }
-
-        let viewModel = AlertPresentableViewModel(
-            title: nil,
-            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
-            actions: [closeViewModel],
-            closeAction: R.string.localizable.commonCancel(preferredLanguages: languages)
-        )
-
-        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+        wireframe.close(view: view)
     }
 
-    func showTabs(stateRenderer: DAppBrowserTabRendererProtocol) {
-        interactor.saveLastTabState(renderer: stateRenderer)
+    func showTabs(stateRender: DAppBrowserTabRenderProtocol) {
+        interactor.saveLastTabState(render: stateRender)
     }
 
     func didLoadPage() {

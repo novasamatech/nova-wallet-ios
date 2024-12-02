@@ -3,6 +3,22 @@ import SoraFoundation
 
 struct DAppBrowserTabListViewFactory {
     static func createView() -> DAppBrowserTabListViewProtocol? {
+        let wireframe = DAppBrowserTabListWireframe()
+
+        return createView(with: wireframe)
+    }
+
+    static func createChildView(
+        for parent: DAppBrowserParentViewProtocol
+    ) -> DAppBrowserTabListViewProtocol? {
+        let wireframe = DAppBrowserTabListChildViewWireframe(parentView: parent)
+
+        return createView(with: wireframe)
+    }
+
+    private static func createView(
+        with wireframe: DAppBrowserTabListWireframeProtocol
+    ) -> DAppBrowserTabListViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let tabManager = DAppBrowserTabManager.shared
@@ -11,7 +27,6 @@ struct DAppBrowserTabListViewFactory {
             tabManager: tabManager,
             operationQueue: operationQueue
         )
-        let wireframe = DAppBrowserTabListWireframe()
 
         let localizationManager = LocalizationManager.shared
 

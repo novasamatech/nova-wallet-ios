@@ -2,67 +2,22 @@ import Foundation
 import UIKit
 import Operation_iOS
 
-protocol DAppBrowserTabRendererProtocol {
-    func renderDataWrapper(using operationQueue: OperationQueue) -> CompoundOperationWrapper<Data?>
+protocol DAppBrowserTabRenderProtocol {
+    func serializationOperation() -> BaseOperation<Data?>
 }
 
-struct DAppBrowserTabRenderer {
-    private let layer: CALayer
+struct DAppBrowserTabRender {
+    private let snapshot: UIImage?
 
-    init(for layer: CALayer) {
-        self.layer = layer
+    init(for snapshot: UIImage?) {
+        self.snapshot = snapshot
     }
 }
 
-// MARK: Private
+// MARK: DAppBrowserTabStateRenderProtocol
 
-private extension DAppBrowserTabRenderer {
-    func fetchViewPropertiesOperation() -> AsyncClosureOperation<(layer: CALayer, bounds: CGRect)> {
-        AsyncClosureOperation { resultClosure in
-            DispatchQueue.main.async {
-                let bounds = layer.bounds
-
-                resultClosure(.success((layer, bounds)))
-            }
-        }
-    }
-
-    func createRenderDataOperation(
-        layer: CALayer,
-        bounds: CGRect
-    ) -> CompoundOperationWrapper<Data?> {
-        let operation = ClosureOperation {
-            let renderer = UIGraphicsImageRenderer(bounds: bounds)
-
-            let image = renderer.image { rendererContext in
-                layer.render(in: rendererContext.cgContext)
-            }
-
-            let imageData = image.pngData()
-
-            return imageData
-        }
-
-        return CompoundOperationWrapper(targetOperation: operation)
-    }
-}
-
-// MARK: DAppBrowserTabStateRendererProtocol
-
-extension DAppBrowserTabRenderer: DAppBrowserTabRendererProtocol {
-    func renderDataWrapper(using operationQueue: OperationQueue) -> CompoundOperationWrapper<Data?> {
-        let propertiesFetchOperation = fetchViewPropertiesOperation()
-
-        let resultWrapper = OperationCombiningService.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            let (layer, bounds) = try propertiesFetchOperation.extractNoCancellableResultData()
-
-            return createRenderDataOperation(layer: layer, bounds: bounds)
-        }
-
-        resultWrapper.addDependency(operations: [propertiesFetchOperation])
-
-        return resultWrapper.insertingHead(operations: [propertiesFetchOperation])
+extension DAppBrowserTabRender: DAppBrowserTabRenderProtocol {
+    func serializationOperation() -> BaseOperation<Data?> {
+        ClosureOperation { snapshot?.pngData() }
     }
 }

@@ -1,6 +1,11 @@
 import Foundation
 import UIKit
 
+protocol DAppBrowserParentViewProtocol: AnyObject {
+    func close()
+    func minimize()
+}
+
 protocol DAppBrowserTabListViewProtocol: ControllerBackedProtocol, DAppBrowserTabViewTransitionProtocol {
     func didReceive(_ viewModels: [DAppBrowserTabViewModel])
 }
@@ -25,10 +30,14 @@ protocol DAppBrowserTabListInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol DAppBrowserTabListWireframeProtocol: DAppBrowserNewTabOpening,
-    AlertPresentable,
+protocol DAppBrowserTabListWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     DAppBrowserSearchPresentable {
+    func showTab(
+        _ tab: DAppBrowserTab,
+        from view: ControllerBackedProtocol?
+    )
+
     func close(from view: ControllerBackedProtocol?)
 }
 

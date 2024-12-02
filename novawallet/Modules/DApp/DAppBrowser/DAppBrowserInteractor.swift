@@ -414,10 +414,10 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         transports.first(where: { $0.name == name })?.processConfirmation(response: response)
     }
 
-    func process(stateRenderer: DAppBrowserTabRendererProtocol) {
+    func process(stateRender: DAppBrowserTabRenderProtocol) {
         let renderUpdateWrapper = tabManager.updateRenderForTab(
             with: currentTab.uuid,
-            renderer: stateRenderer
+            render: stateRender
         )
 
         operationQueue.addOperations(
@@ -476,14 +476,14 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         storeTab(currentTab)
     }
 
-    func saveLastTabState(renderer: DAppBrowserTabRendererProtocol) {
+    func saveLastTabState(render: DAppBrowserTabRenderProtocol) {
         let transportStates = transports.compactMap { $0.makeOpaqueState() }
 
         let tabSaveWrapper = tabManager.updateTab(currentTab.updating(transportStates: transportStates))
 
         let renderUpdateWrapper = tabManager.updateRenderForTab(
             with: currentTab.uuid,
-            renderer: renderer
+            render: render
         )
 
         renderUpdateWrapper.addDependency(wrapper: tabSaveWrapper)

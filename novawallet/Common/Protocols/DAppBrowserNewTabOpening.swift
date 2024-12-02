@@ -1,101 +1,36 @@
 import Foundation
 import UIKit
 
-protocol DAppBrowserNewTabOpening: AnyObject {
-    func showInExistingBrowserStack(
-        _ tab: DAppBrowserTab,
-        from view: ControllerBackedProtocol?
-    )
-
+protocol DAppBrowserOpening: AnyObject {
     func showNewBrowserStack(
         _ tab: DAppBrowserTab,
         from view: ControllerBackedProtocol?
     )
+
+    func showBrowserTabs(from view: ControllerBackedProtocol?)
 }
 
-extension DAppBrowserNewTabOpening {
-    func showInExistingBrowserStack(
-        _ tab: DAppBrowserTab,
-        from view: ControllerBackedProtocol?
-    ) {
-        guard let browserView = DAppBrowserViewFactory.createView(selectedTab: tab) else {
-            return
-        }
-
-        setTransition(
-            for: browserView.controller,
-            tabId: tab.uuid
-        )
-
-        view?.controller.navigationController?.pushViewController(
-            browserView.controller,
-            animated: true
-        )
-    }
-
+extension DAppBrowserOpening {
     func showNewBrowserStack(
         _ tab: DAppBrowserTab,
-        from view: ControllerBackedProtocol?
+        from _: ControllerBackedProtocol?
     ) {
-        guard
-            let tabsView = DAppBrowserTabListViewFactory.createView(),
-            let browserView = DAppBrowserViewFactory.createView(selectedTab: tab)
-        else {
-            return
-        }
+        guard let mainContainerView = findMainContainer() else { return }
 
-        tabsView.controller.hidesBottomBarWhenPushed = true
-        browserView.controller.hidesBottomBarWhenPushed = true
-
-        setTransition(
-            for: browserView.controller,
-            tabId: tab.uuid
-        )
-
-        tabsView.controller.loadViewIfNeeded()
-
-        let controllers = [tabsView.controller, browserView.controller]
-
-        let navigationController = NovaNavigationController()
-        navigationController.barSettings = .defaultSettings.bySettingCloseButton(false)
-
-        navigationController.setViewControllers(
-            controllers,
-            animated: false
-        )
-
-        navigationController.modalPresentationStyle = .overFullScreen
-
-        view?.controller.present(
-            navigationController,
-            animated: true
-        )
+        mainContainerView.openBrowser(with: tab)
     }
-}
 
-private extension DAppBrowserNewTabOpening {
-    func setTransition(
-        for controller: UIViewController,
-        tabId: UUID
-    ) {
-        if #available(iOS 18.0, *) {
-            let options = UIViewController.Transition.ZoomOptions()
-            options.alignmentRectProvider = { context in
-                guard let destinationController = context.zoomedViewController as? DAppBrowserViewController else {
-                    return .zero
-                }
-                let container = destinationController.rootView.webViewContainer
+    func showBrowserTabs(from _: ControllerBackedProtocol?) {
+        guard let mainContainerView = findMainContainer() else { return }
 
-                return container.convert(container.bounds, to: destinationController.rootView)
-            }
+        mainContainerView.openBrowser(with: nil)
+    }
 
-            controller.preferredTransition = .zoom(options: options) { context in
-                let source = context.sourceViewController as? DAppBrowserTabViewTransitionProtocol
-
-                return source?.getTabViewForTransition(for: tabId)
-            }
-        } else {
-            // Fallback on earlier versions
-        }
+    private func findMainContainer() -> NovaMainAppContainerViewProtocol? {
+        UIApplication
+            .shared
+            .windows
+            .first { $0.isKeyWindow }?
+            .rootViewController as? NovaMainAppContainerViewProtocol
     }
 }

@@ -3,8 +3,32 @@ import SoraFoundation
 import Operation_iOS
 
 struct DAppBrowserViewFactory {
+    static func createChildView(
+        for parent: DAppBrowserParentViewProtocol,
+        selectedTab: DAppBrowserTab
+    ) -> DAppBrowserViewProtocol? {
+        let wireframe = DAppBrowserChildWireframe(parentView: parent)
+
+        return createView(
+            with: selectedTab,
+            wireframe: wireframe
+        )
+    }
+
     static func createView(
         selectedTab: DAppBrowserTab
+    ) -> DAppBrowserViewProtocol? {
+        let wireframe = DAppBrowserWireframe()
+
+        return createView(
+            with: selectedTab,
+            wireframe: wireframe
+        )
+    }
+
+    private static func createView(
+        with selectedTab: DAppBrowserTab,
+        wireframe: DAppBrowserWireframeProtocol
     ) -> DAppBrowserViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -49,8 +73,6 @@ struct DAppBrowserViewFactory {
             logger: logger
         )
 
-        let wireframe = DAppBrowserWireframe()
-
         let presenter = DAppBrowserPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -63,7 +85,8 @@ struct DAppBrowserViewFactory {
             localRouter: URLLocalRouter.createWithDeeplinks(),
             webViewPool: WebViewPool.shared,
             deviceOrientationManager: DeviceOrientationManager.shared,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            logger: logger
         )
 
         presenter.view = view

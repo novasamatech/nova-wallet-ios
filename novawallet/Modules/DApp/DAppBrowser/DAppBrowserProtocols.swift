@@ -28,14 +28,14 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
         transport name: String
     )
 
-    func process(stateRenderer: DAppBrowserTabRendererProtocol)
+    func process(stateRender: DAppBrowserTabRenderProtocol)
 
     func actionFavorite(page: DAppBrowserPage)
 
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
-    func close()
-    func showTabs(stateRenderer: DAppBrowserTabRendererProtocol)
+    func close(stateRender: DAppBrowserTabRenderProtocol)
+    func showTabs(stateRender: DAppBrowserTabRenderProtocol)
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
@@ -49,7 +49,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
         transport name: String
     )
 
-    func process(stateRenderer: DAppBrowserTabRendererProtocol)
+    func process(stateRender: DAppBrowserTabRenderProtocol)
 
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func process(newQuery: DAppSearchResult)
@@ -58,7 +58,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func reload()
     func save(settings: DAppGlobalSettings)
     func saveTabIfNeeded()
-    func saveLastTabState(renderer: DAppBrowserTabRendererProtocol)
+    func saveLastTabState(render: DAppBrowserTabRenderProtocol)
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
@@ -113,7 +113,7 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,
         delegate: DAppSettingsDelegate
     )
 
-    func close(view: DAppBrowserViewProtocol?)
+    func close(view: ControllerBackedProtocol?)
 
     func showTabs(from view: DAppBrowserViewProtocol?)
 }

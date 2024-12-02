@@ -66,7 +66,7 @@ class DAppBrowserTests: XCTestCase {
         
         let tabManager = DAppBrowserTabManager.shared
         
-        let tab = DAppBrowserTab(from: .query(string: dAppURL))
+        let tab = DAppBrowserTab(from: dAppURL)!
 
         let interactor = DAppBrowserInteractor(
             transports: [transport],

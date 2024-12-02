@@ -45,7 +45,7 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
             return
         }
 
-        wireframe.showInExistingBrowserStack(
+        wireframe.showTab(
             selectedTab,
             from: view
         )
@@ -105,7 +105,7 @@ extension DAppBrowserTabListPresenter: DAppSearchDelegate {
         tabs.append(tab)
         provideTabs()
 
-        wireframe.showInExistingBrowserStack(
+        wireframe.showTab(
             tab,
             from: view
         )
