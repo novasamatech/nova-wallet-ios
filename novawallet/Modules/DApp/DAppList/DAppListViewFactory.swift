@@ -42,20 +42,11 @@ struct DAppListViewFactory {
 
         let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
 
-        let browserTabManager = DAppBrowserTabManager.shared
-
-        let newTabRouter = DAppBrowserNewTabRouter(
-            tabManager: browserTabManager,
-            operationQueue: sharedQueue,
-            wireframe: DAppBrowserNewStackWireframe()
-        )
-
         let localizationManager = LocalizationManager.shared
 
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            newTabRouter: newTabRouter,
             viewModelFactory: DAppListViewModelFactory(),
             localizationManager: localizationManager
         )

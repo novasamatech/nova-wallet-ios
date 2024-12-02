@@ -13,12 +13,6 @@ struct DAppBrowserTabListViewFactory {
         )
         let wireframe = DAppBrowserTabListWireframe()
 
-        let newTabRouter = DAppBrowserNewTabRouter(
-            tabManager: tabManager,
-            operationQueue: operationQueue,
-            wireframe: DAppBrowserNewTabWireframe()
-        )
-
         let localizationManager = LocalizationManager.shared
 
         let imageViewModelFactory = WebViewRenderImageViewModelFactory(
@@ -30,7 +24,6 @@ struct DAppBrowserTabListViewFactory {
         let presenter = DAppBrowserTabListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            newTabRouter: newTabRouter,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )

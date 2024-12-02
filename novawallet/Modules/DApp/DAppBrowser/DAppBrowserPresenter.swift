@@ -48,13 +48,48 @@ final class DAppBrowserPresenter {
     }
 
     private func updateSettingsState() {
-        let canShowSettings = browserPage != nil && favorites != nil
+        let canShowSettings = browserPage != nil
 
         view?.didSet(canShowSettings: canShowSettings)
+    }
+
+    func provideFavorite() {
+        guard let browserPage else { return }
+
+        let state = favorites?[browserPage.identifier] != nil
+
+        view?.didSet(favorite: state)
+    }
+
+    func addToFavorites(page: DAppBrowserPage) {
+        wireframe.presentAddToFavoriteForm(
+            from: view,
+            page: page
+        )
+    }
+
+    func removeFromFavorites(dApp: DAppFavorite) {
+        let name = dApp.label ?? browserPage?.title
+
+        wireframe.showFavoritesRemovalConfirmation(
+            from: view,
+            name: name ?? "",
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.interactor.removeFromFavorites(record: dApp)
+        }
     }
 }
 
 extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
+    func actionFavorite(page: DAppBrowserPage) {
+        if let favorite = favorites?[page.identifier] {
+            removeFromFavorites(dApp: favorite)
+        } else {
+            addToFavorites(page: page)
+        }
+    }
+
     func setup() {
         interactor.setup()
     }
@@ -69,6 +104,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
         interactor.process(host: newHost)
         updateSettingsState()
+        provideFavorite()
     }
 
     func process(
@@ -96,15 +132,12 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     }
 
     func showSettings(using isDesktop: Bool) {
-        guard let page = browserPage, let favorites = favorites else {
+        guard let page = browserPage else {
             return
         }
 
-        let favorite = favorites[page.identifier] != nil
-
         let input = DAppSettingsInput(
             page: page,
-            favorite: favorite,
             desktopMode: isDesktop
         )
 
@@ -138,6 +171,10 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
     func showTabs(stateRenderer: DAppBrowserTabRendererProtocol) {
         interactor.saveLastTabState(renderer: stateRenderer)
+    }
+
+    func didLoadPage() {
+        interactor.saveTabIfNeeded()
     }
 }
 
@@ -181,7 +218,7 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>]) {
         favorites = changes.mergeToDict(favorites ?? [:])
-        updateSettingsState()
+        provideFavorite()
     }
 
     func didChangeGlobal(settings: DAppGlobalSettings) {
@@ -227,32 +264,6 @@ extension DAppBrowserPresenter: DAppPhishingViewDelegate {
 }
 
 extension DAppBrowserPresenter: DAppSettingsDelegate {
-    func addToFavorites(page: DAppBrowserPage) {
-        wireframe.hideSettings(from: view)
-
-        wireframe.presentAddToFavoriteForm(
-            from: view,
-            page: page
-        )
-    }
-
-    func removeFromFavorites(page: DAppBrowserPage) {
-        wireframe.hideSettings(from: view)
-
-        guard let favoriteDApp = favorites?[page.identifier] else {
-            return
-        }
-
-        let name = favoriteDApp.label ?? browserPage?.title
-        wireframe.showFavoritesRemovalConfirmation(
-            from: view,
-            name: name ?? "",
-            locale: localizationManager.selectedLocale
-        ) { [weak self] in
-            self?.interactor.removeFromFavorites(record: favoriteDApp)
-        }
-    }
-
     func desktopModeDidChanged(page: DAppBrowserPage, isOn: Bool) {
         let settings = DAppGlobalSettings(identifier: page.domain, desktopMode: isOn)
         interactor.save(settings: settings)

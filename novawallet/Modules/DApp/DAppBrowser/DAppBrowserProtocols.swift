@@ -11,11 +11,14 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     )
     func didSet(isDesktop: Bool)
     func didSet(canShowSettings: Bool)
+    func didSet(favorite: Bool)
     func didDecideClose()
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
+
+    func didLoadPage()
 
     func process(page: DAppBrowserPage)
 
@@ -26,6 +29,8 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     )
 
     func process(stateRenderer: DAppBrowserTabRendererProtocol)
+
+    func actionFavorite(page: DAppBrowserPage)
 
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
@@ -52,7 +57,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func removeFromFavorites(record: DAppFavorite)
     func reload()
     func save(settings: DAppGlobalSettings)
-
+    func saveTabIfNeeded()
     func saveLastTabState(renderer: DAppBrowserTabRendererProtocol)
 }
 
@@ -107,8 +112,6 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,
         state: DAppSettingsInput,
         delegate: DAppSettingsDelegate
     )
-
-    func hideSettings(from view: DAppBrowserViewProtocol?)
 
     func close(view: DAppBrowserViewProtocol?)
 
