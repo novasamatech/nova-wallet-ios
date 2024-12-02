@@ -30,7 +30,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
     func close()
-    func showTabs()
+    func showTabs(stateRenderer: DAppBrowserTabRendererProtocol)
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
@@ -52,7 +52,8 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func removeFromFavorites(record: DAppFavorite)
     func reload()
     func save(settings: DAppGlobalSettings)
-    func saveTransportState()
+
+    func saveLastTabState(renderer: DAppBrowserTabRendererProtocol)
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
@@ -72,6 +73,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didDetectPhishing(host: String)
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
     func didChangeGlobal(settings: DAppGlobalSettings)
+    func didSaveLastTabState()
 }
 
 protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,

@@ -65,6 +65,16 @@ class DAppBrowserNewTabWireframe: DAppBrowserNewTabOpening {
             return
         }
 
+        if #available(iOS 18.0, *) {
+            browserView.controller.preferredTransition = .zoom { context in
+                let source = context.sourceViewController as? DAppBrowserTabViewTransitionProtocol
+
+                return source?.getTabViewForTransition(for: tab.uuid)
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+
         view?.controller.navigationController?.pushViewController(
             browserView.controller,
             animated: true
@@ -87,7 +97,17 @@ class DAppBrowserNewStackWireframe: DAppBrowserNewTabOpening {
         tabsView.controller.hidesBottomBarWhenPushed = true
         browserView.controller.hidesBottomBarWhenPushed = true
 
+        if #available(iOS 18.0, *) {
+            browserView.controller.preferredTransition = .zoom { _ in
+                tabsView.getTabViewForTransition(for: tab.uuid)
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+
         let controllers = view?.controller.navigationController?.viewControllers ?? []
+
+        tabsView.controller.loadViewIfNeeded()
 
         view?.controller.navigationController?.setViewControllers(
             controllers + [tabsView.controller, browserView.controller],

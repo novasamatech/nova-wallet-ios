@@ -44,7 +44,7 @@ struct DAppBrowserTabListViewModelFactory {
             stateRender: renderViewModel,
             name: name,
             icon: iconViewModel,
-            lastModified: tab.lastModified
+            renderModifiedAt: tab.renderModifiedAt
         )
     }
 }

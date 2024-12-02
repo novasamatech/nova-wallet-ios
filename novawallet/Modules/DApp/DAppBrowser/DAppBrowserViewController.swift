@@ -92,12 +92,6 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        makeStateRender()
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -368,7 +362,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionTabs() {
-        presenter.showTabs()
+        guard let webView = rootView.webView else { return }
+
+        let renderer = DAppBrowserTabRenderer(for: webView.layer)
+
+        presenter.showTabs(stateRenderer: renderer)
     }
 }
 
@@ -503,13 +501,6 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         } else {
             decisionHandler(.allow)
         }
-    }
-
-    func webView(
-        _: WKWebView,
-        didFinish _: WKNavigation!
-    ) {
-        makeStateRender()
     }
 
     func webView(
