@@ -45,6 +45,7 @@ final class DAppBrowserScriptHandler: NSObject {
             contentController.addUserScript(wkScript)
         }
 
+        contentController.removeScriptMessageHandler(forName: viewModel.name)
         contentController.add(self, name: viewModel.name)
     }
 

@@ -39,13 +39,6 @@ final class DAppSettingsViewController: UIViewController, ViewHolder {
     private func createDataSource() -> DataSource {
         .init(tableView: rootView.tableView) { tableView, indexPath, itemIdentifier -> UITableViewCell? in
             switch itemIdentifier {
-            case let .favorite(model):
-                let cell: DAppFavoriteSettingsView = tableView.dequeueReusableCellWithType(
-                    DAppFavoriteSettingsView.self,
-                    forIndexPath: indexPath
-                )
-                cell.iconDetailsView.bind(viewModel: model)
-                return cell
             case let .desktopModel(model):
                 let cell: DAppDesktopModeSettingsView =
                     tableView.dequeueReusableCellWithType(DAppDesktopModeSettingsView.self, forIndexPath: indexPath)
@@ -80,18 +73,6 @@ extension DAppSettingsViewController: UITableViewDelegate {
         headerView.contentInsets = .init(top: 10, left: 0, bottom: 10, right: 0)
         headerView.titleView.bind(viewModel: .init(title: titleModel, icon: nil))
         return headerView
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-
-        let viewModel = dataSource.itemIdentifier(for: indexPath)
-        switch viewModel {
-        case .favorite:
-            presenter.presentFavorite()
-        case .desktopModel, .none:
-            break
-        }
     }
 }
 
