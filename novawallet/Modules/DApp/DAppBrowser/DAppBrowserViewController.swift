@@ -260,7 +260,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     private func setupTransports(_ transports: [DAppTransportModel], contentController: WKUserContentController) {
         scriptMessageHandlers = transports.reduce(
-            into: [String: DAppBrowserScriptHandler]()
+            into: scriptMessageHandlers
         ) { handlers, transport in
             let handler = handlers[transport.name] ?? DAppBrowserScriptHandler(
                 contentController: contentController,
