@@ -29,7 +29,7 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtoco
         disappearanceAnimator.animate(view: browserView) { _ in
             childNavigation {}
         }
-        
+
         UIView.animate(withDuration: 0.25) {
             layoutAnimatables?()
             containerView?.layoutIfNeeded()
