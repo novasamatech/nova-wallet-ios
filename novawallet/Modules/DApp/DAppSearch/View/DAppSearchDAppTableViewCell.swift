@@ -20,6 +20,13 @@ final class DAppSearchDAppTableViewCell: UITableViewCell {
         return view
     }()
 
+    let favoriteImageView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
+        view.image = R.image.iconFavButtonSel()?.tinted(
+            with: R.color.colorIconMiniFavorite()!
+        )
+    }
+
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTextPrimary()
@@ -32,11 +39,6 @@ final class DAppSearchDAppTableViewCell: UITableViewCell {
         label.textColor = R.color.colorTextSecondary()
         label.font = .caption1
         return label
-    }()
-
-    let accessoryImageView: UIImageView = {
-        let imageView = UIImageView()
-        return imageView
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -63,9 +65,9 @@ final class DAppSearchDAppTableViewCell: UITableViewCell {
         subtitleLabel.text = viewModel.details
 
         if viewModel.isFavorite {
-            accessoryImageView.image = R.image.iconFavButtonSel()!
+            favoriteImageView.isHidden = false
         } else {
-            accessoryImageView.image = nil
+            favoriteImageView.isHidden = true
         }
     }
 
@@ -77,24 +79,25 @@ final class DAppSearchDAppTableViewCell: UITableViewCell {
             make.size.equalTo(Constants.preferredIconViewSize)
         }
 
-        contentView.addSubview(accessoryImageView)
-        accessoryImageView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16.0)
-            make.centerY.equalToSuperview()
+        contentView.addSubview(favoriteImageView)
+        favoriteImageView.snp.makeConstraints { make in
+            make.size.equalTo(12.0)
+            make.top.equalTo(iconImageView.snp.top).inset(-2)
+            make.trailing.equalTo(iconImageView.snp.trailing).inset(-4.0)
         }
 
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(iconImageView.snp.top).offset(4.0)
             make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
-            make.trailing.lessThanOrEqualTo(accessoryImageView.snp.leading).offset(-4.0)
+            make.trailing.lessThanOrEqualToSuperview().offset(-4.0)
         }
 
         contentView.addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
             make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
-            make.trailing.lessThanOrEqualTo(accessoryImageView.snp.leading).offset(-4.0)
+            make.trailing.lessThanOrEqualToSuperview().offset(-4.0)
         }
     }
 }

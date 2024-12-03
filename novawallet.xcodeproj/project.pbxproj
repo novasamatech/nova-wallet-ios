@@ -969,6 +969,9 @@
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
 		2D3EA7D82CF9BC7B0033AFD2 /* FadeContentDAppBrowserTransitionDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D72CF9BC7B0033AFD2 /* FadeContentDAppBrowserTransitionDependencies.swift */; };
 		2D3EA7DC2CFA0F8E0033AFD2 /* DAppBrowserCloseTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7DB2CFA0F8E0033AFD2 /* DAppBrowserCloseTransition.swift */; };
+		2D3EA7DE2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7DD2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift */; };
+		2D3EA7E02CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7DF2CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift */; };
+		2D3EA7E22CFF0D540033AFD2 /* DAppSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7E12CFF0D540033AFD2 /* DAppSearchViewModel.swift */; };
 		2D442CEF2CD0F7DF00A0380F /* AppearanceDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CEE2CD0F7DF00A0380F /* AppearanceDepending.swift */; };
 		2D442CF12CD0F85400A0380F /* IconAppearanceDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */; };
 		2D442CF32CD103ED00A0380F /* BarcodeCreationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */; };
@@ -6221,6 +6224,9 @@
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
 		2D3EA7D72CF9BC7B0033AFD2 /* FadeContentDAppBrowserTransitionDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserTransitionDependencies.swift; sourceTree = "<group>"; };
 		2D3EA7DB2CFA0F8E0033AFD2 /* DAppBrowserCloseTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserCloseTransition.swift; sourceTree = "<group>"; };
+		2D3EA7DD2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCategoryViewModel.swift; sourceTree = "<group>"; };
+		2D3EA7DF2CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCategoryViewModelFactory.swift; sourceTree = "<group>"; };
+		2D3EA7E12CFF0D540033AFD2 /* DAppSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchViewModel.swift; sourceTree = "<group>"; };
 		2D442CEE2CD0F7DF00A0380F /* AppearanceDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceDepending.swift; sourceTree = "<group>"; };
 		2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAppearanceDepending.swift; sourceTree = "<group>"; };
 		2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeCreationError.swift; sourceTree = "<group>"; };
@@ -15481,9 +15487,11 @@
 		842BA36927B64F1000D31EEF /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				2D3EA7DD2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift */,
 				841BFD6427BA332F000A16CE /* DAppListState.swift */,
 				842BA36A27B64F1000D31EEF /* DAppViewModel.swift */,
 				842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */,
+				2D3EA7DF2CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -19134,6 +19142,7 @@
 			isa = PBXGroup;
 			children = (
 				849E17E227913220002D1744 /* DAppSearchResult.swift */,
+				2D3EA7E12CFF0D540033AFD2 /* DAppSearchViewModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -25873,6 +25882,7 @@
 				88A5317D28B9170100AF18F5 /* NSCollectionLayoutSection+create.swift in Sources */,
 				8444D1BE2671465A00AF6D8C /* CrowdloanBonusServiceError.swift in Sources */,
 				8448F7A22882ABF50080CEA9 /* CustomSearchView.swift in Sources */,
+				2D3EA7DE2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift in Sources */,
 				84D2F1AF2774CEF00040C680 /* DAppURLBarView.swift in Sources */,
 				849D3223291CC43D00D25839 /* MarkupAttributedText.swift in Sources */,
 				0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */,
@@ -26132,6 +26142,7 @@
 				8846F72729D6BAD700B8B776 /* Data+base10.swift in Sources */,
 				849FFFD0298020C900A17471 /* GovernanceDelegationConstants.swift in Sources */,
 				84B66A0B26FDB70F0038B963 /* CrowdloansListInteractor+Protocols.swift in Sources */,
+				2D3EA7E22CFF0D540033AFD2 /* DAppSearchViewModel.swift in Sources */,
 				AE2C32DC271D90DD00D57C91 /* MetaAccountOperationFactory.swift in Sources */,
 				84D8F16F24D8451F00AF43E9 /* CryptoType+ViewModel.swift in Sources */,
 				AEBE16E6262EA7C100DF257C /* StakingErrors.swift in Sources */,
@@ -27424,6 +27435,7 @@
 				77C3D7D72B5E824700997BA0 /* StakingRemoveProxyProtocols.swift in Sources */,
 				84B24FB02A2F7B6F00F9BF59 /* StakingDashboardMoreOptionsCell.swift in Sources */,
 				77799ADD2A74219A00B7E564 /* ButtonState.swift in Sources */,
+				2D3EA7E02CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift in Sources */,
 				84BAD222293C655900C55C49 /* TokensManageViewModelFactory.swift in Sources */,
 				84F3B27427F4130800D64CF5 /* PhishingSites.swift in Sources */,
 				8430AAF12602306A005B1066 /* BondedState.swift in Sources */,

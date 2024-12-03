@@ -64,7 +64,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     private func configureCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
         rootView.collectionView.registerCellClass(DAppListLoadingView.self)
-        rootView.collectionView.registerCellClass(DAppCategoriesView.self)
+        rootView.collectionView.registerCellClass(DAppCategoriesViewCell.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemView.self)
         rootView.collectionView.registerCellClass(DAppListFeaturedHeaderView.self)
@@ -149,21 +149,21 @@ extension DAppListViewController: UICollectionViewDataSource {
         using collectionView: UICollectionView,
         indexPath: IndexPath
     ) -> UICollectionViewCell {
-        let view: DAppCategoriesView = collectionView.dequeueReusableCellWithType(
-            DAppCategoriesView.self,
+        let cell: DAppCategoriesViewCell = collectionView.dequeueReusableCellWithType(
+            DAppCategoriesViewCell.self,
             for: indexPath
         )!
 
-        view.delegate = self
+        cell.view.delegate = self
 
         let numberOfCategories = presenter.numberOfCategories()
-        let allCategories = (0 ..< numberOfCategories).map { presenter.category(at: $0) }
+        let allCategories = presenter.categories()
 
-        view.bind(categories: allCategories)
+        cell.view.bind(categories: allCategories)
 
-        view.setSelectedIndex(presenter.selectedCategoryIndex(), animated: false)
+        cell.view.setSelectedIndex(presenter.selectedCategoryIndex(), animated: false)
 
-        return view
+        return cell
     }
 
     private func setupDAppView(
@@ -283,8 +283,11 @@ extension DAppListViewController: ErrorStateViewDelegate {
 }
 
 extension DAppListViewController: DAppCategoriesViewDelegate {
-    func dAppCategories(view _: DAppCategoriesView, didSelectItemAt index: Int) {
-        presenter.selectCategory(at: index)
+    func dAppCategories(
+        view _: DAppCategoriesView,
+        didSelectCategoryWith identifier: String?
+    ) {
+        presenter.selectCategory(with: identifier)
     }
 }
 

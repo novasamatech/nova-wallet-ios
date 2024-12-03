@@ -19,10 +19,14 @@ struct DAppSearchViewFactory {
 
         let wireframe = DAppSearchWireframe()
 
+        let viewModelFactory = DAppListViewModelFactory(
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory()
+        )
+
         let presenter = DAppSearchPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: DAppListViewModelFactory(),
+            viewModelFactory: viewModelFactory,
             initialQuery: initialQuery,
             delegate: delegate,
             applicationConfig: ApplicationConfig.shared,

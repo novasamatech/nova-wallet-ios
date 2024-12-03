@@ -7,21 +7,41 @@ protocol DAppListViewModelFactoryProtocol {
 
     func createDApps(
         from category: String?,
+        query: String?,
         dAppList: DAppList,
         favorites: [String: DAppFavorite]
-    ) -> [DAppViewModel]
+    ) -> DAppListViewModel
+}
 
-    func createDAppsFromQuery(
-        _ query: String?,
+extension DAppListViewModelFactoryProtocol {
+    func createDApps(
+        from category: String?,
         dAppList: DAppList,
         favorites: [String: DAppFavorite]
-    ) -> [DAppViewModel]
+    ) -> DAppListViewModel {
+        createDApps(
+            from: category,
+            query: nil,
+            dAppList: dAppList,
+            favorites: favorites
+        )
+    }
 }
 
 private typealias IndexedDApp = (index: Int, dapp: DApp)
 
 final class DAppListViewModelFactory {
-    private func createDAppViewModel(
+    let dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol
+
+    init(dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol) {
+        self.dappCategoriesViewModelFactory = dappCategoriesViewModelFactory
+    }
+}
+
+// MARK: Private
+
+private extension DAppListViewModelFactory {
+    func createDAppViewModel(
         from model: DApp,
         index: Int,
         categories: [String: DAppCategory],
@@ -48,7 +68,7 @@ final class DAppListViewModelFactory {
         )
     }
 
-    private func createFavoriteDAppViewModel(from model: DAppFavorite) -> DAppViewModel {
+    func createFavoriteDAppViewModel(from model: DAppFavorite) -> DAppViewModel {
         let imageViewModel: ImageViewModelProtocol
 
         if let icon = model.icon, let url = URL(string: icon) {
@@ -68,7 +88,7 @@ final class DAppListViewModelFactory {
         )
     }
 
-    private func createViewModels(
+    func createViewModels(
         merging dapps: [IndexedDApp],
         filteredFavorites: [String: DAppFavorite],
         allFavorites: [String: DAppFavorite],
@@ -115,6 +135,8 @@ final class DAppListViewModelFactory {
     }
 }
 
+// MARK: DAppListViewModelFactoryProtocol
+
 extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
     func createFavoriteDAppName(from model: DAppFavorite) -> String {
         if let label = model.label {
@@ -134,41 +156,11 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
 
     func createDApps(
         from category: String?,
+        query: String?,
         dAppList: DAppList,
         favorites: [String: DAppFavorite]
-    ) -> [DAppViewModel] {
-        let actualDApps: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
-            if let category = category {
-                return valueIndex.element.categories.contains(category) ?
-                    IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element) : nil
-            } else {
-                return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
-            }
-        }
-
-        if category == nil {
-            return createViewModels(
-                merging: actualDApps,
-                filteredFavorites: favorites,
-                allFavorites: favorites,
-                categories: dAppList.categories
-            )
-        } else {
-            return createViewModels(
-                merging: actualDApps,
-                filteredFavorites: [:],
-                allFavorites: favorites,
-                categories: dAppList.categories
-            )
-        }
-    }
-
-    func createDAppsFromQuery(
-        _ query: String?,
-        dAppList: DAppList,
-        favorites: [String: DAppFavorite]
-    ) -> [DAppViewModel] {
-        let actualDApps: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
+    ) -> DAppListViewModel {
+        let dAppsByQuery: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
             guard let query = query, !query.isEmpty else {
                 return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
             }
@@ -180,6 +172,12 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             }
         }
 
+        let actualDApps: [IndexedDApp] = dAppsByQuery.filter { indexedDApp in
+            guard let category else { return true }
+
+            return indexedDApp.dapp.categories.contains(category)
+        }
+
         let filteredFavorites = favorites.filter { keyValue in
             guard let query = query, !query.isEmpty else {
                 return true
@@ -189,11 +187,22 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             return name.localizedCaseInsensitiveContains(query)
         }
 
-        return createViewModels(
+        let availableCategories = Set(dAppsByQuery.flatMap(\.dapp.categories))
+
+        let categoryViewModels = dAppList.categories
+            .filter { availableCategories.contains($0.identifier) }
+            .map { dappCategoriesViewModelFactory.createViewModel(for: $0) }
+
+        let dappViewModels = createViewModels(
             merging: actualDApps,
             filteredFavorites: filteredFavorites,
             allFavorites: favorites,
             categories: dAppList.categories
+        )
+
+        return DAppListViewModel(
+            categories: categoryViewModels,
+            dApps: dappViewModels
         )
     }
 }

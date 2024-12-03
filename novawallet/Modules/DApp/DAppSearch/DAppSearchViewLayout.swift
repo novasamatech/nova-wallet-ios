@@ -3,6 +3,14 @@ import SoraUI
 
 final class DAppSearchViewLayout: UIView {
     let searchBar = CustomSearchBar()
+    let categoriesView = DAppCategoriesView()
+
+    let topContainerView = UIView()
+
+    let topBackgroundView: BlurBackgroundView = .create { view in
+        view.sideLength = 0.0
+        view.borderType = []
+    }
 
     let tableView: UITableView = {
         let view = UITableView()
@@ -32,10 +40,23 @@ final class DAppSearchViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(topBackgroundView)
+        addSubview(categoriesView)
         addSubview(tableView)
 
-        tableView.snp.makeConstraints { make in
+        categoriesView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
+            make.height.equalTo(DAppCategoriesView.preferredHeight)
+            make.leading.trailing.equalToSuperview()
+        }
+
+        topBackgroundView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(categoriesView)
+        }
+
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(categoriesView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
     }

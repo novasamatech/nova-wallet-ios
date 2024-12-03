@@ -2,13 +2,31 @@ import UIKit
 import SoraUI
 
 protocol DAppCategoriesViewDelegate: AnyObject {
-    func dAppCategories(view: DAppCategoriesView, didSelectItemAt index: Int)
+    func dAppCategories(
+        view: DAppCategoriesView,
+        didSelectCategoryWith identifier: String?
+    )
 }
 
-final class DAppCategoriesView: UICollectionViewCell {
+private typealias CategoryChip = GenericBorderedView<IconDetailsView>
+
+class DAppCategoriesViewCell: CollectionViewContainerCell<DAppCategoriesView> {
+    override func preferredLayoutAttributesFitting(
+        _ layoutAttributes: UICollectionViewLayoutAttributes
+    ) -> UICollectionViewLayoutAttributes {
+        layoutAttributes.frame.size = CGSize(
+            width: layoutAttributes.frame.width,
+            height: DAppCategoriesView.preferredHeight
+        )
+
+        return layoutAttributes
+    }
+}
+
+final class DAppCategoriesView: UIView {
     private enum Constants {
         static let layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
-        static let buttonHeight: CGFloat = 36
+        static let buttonHeight: CGFloat = 32
     }
 
     static var preferredHeight: CGFloat {
@@ -28,7 +46,8 @@ final class DAppCategoriesView: UICollectionViewCell {
 
     weak var delegate: DAppCategoriesViewDelegate?
 
-    private var categoryItems: [RoundedButton] = []
+    private var categoryItems: [CategoryChip] = []
+    private var viewModels: [DAppCategoryViewModel] = []
 
     private(set) var selectedIndex: Int?
 
@@ -43,13 +62,6 @@ final class DAppCategoriesView: UICollectionViewCell {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func preferredLayoutAttributesFitting(
-        _ layoutAttributes: UICollectionViewLayoutAttributes
-    ) -> UICollectionViewLayoutAttributes {
-        layoutAttributes.frame.size = CGSize(width: layoutAttributes.frame.width, height: Self.preferredHeight)
-        return layoutAttributes
     }
 
     func setSelectedIndex(_ newIndex: Int?, animated: Bool) {
@@ -72,7 +84,9 @@ final class DAppCategoriesView: UICollectionViewCell {
         selectedIndex = newIndex
     }
 
-    func bind(categories: [String]) {
+    func bind(categories: [DAppCategoryViewModel]) {
+        viewModels = categories
+
         if categoryItems.count > categories.count {
             let itemsToRemove = categoryItems.count - categories.count
 
@@ -85,21 +99,25 @@ final class DAppCategoriesView: UICollectionViewCell {
             let itemsToInsert = categories.count - categoryItems.count
 
             (0 ..< itemsToInsert).forEach { _ in
-                let button = createButton()
-                setNormalStyle(for: button)
+                let chip = createChip(with: categoryItems.endIndex)
+                setNormalStyle(for: chip)
 
-                containerView.stackView.addArrangedSubview(button)
-                button.snp.makeConstraints { make in
+                containerView.stackView.addArrangedSubview(chip)
+                chip.snp.makeConstraints { make in
                     make.height.equalTo(Constants.buttonHeight)
                 }
 
-                categoryItems.append(button)
+                categoryItems.append(chip)
             }
         }
 
         for (index, category) in categories.enumerated() {
-            categoryItems[index].imageWithTitleView?.title = category
-            categoryItems[index].invalidateLayout()
+            category.imageViewModel?.loadImage(
+                on: categoryItems[index].contentView.imageView,
+                targetSize: CGSize(width: 20, height: 20),
+                animated: true
+            )
+            categoryItems[index].contentView.detailsLabel.text = category.title
         }
 
         if let currentIndex = selectedIndex, currentIndex >= categories.count {
@@ -110,42 +128,63 @@ final class DAppCategoriesView: UICollectionViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(containerView)
+        addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.trailing.equalToSuperview()
         }
     }
 
-    private func createButton() -> RoundedButton {
-        let button = RoundedButton()
-        button.imageWithTitleView?.titleFont = .regularFootnote
-        button.roundedBackgroundView?.shadowOpacity = 0.0
-        button.roundedBackgroundView?.strokeWidth = 0.0
-        button.changesContentOpacityWhenHighlighted = true
-        button.contentInsets = UIEdgeInsets(top: 9.0, left: 9.0, bottom: 9.0, right: 9.0)
-        button.addTarget(self, action: #selector(actionButton(sender:)), for: .touchUpInside)
-        return button
+    private func createChip(with index: Int) -> CategoryChip {
+        .create { view in
+            view.backgroundView.apply(style: .roundedChips(radius: 10.0))
+            view.contentView.detailsLabel.apply(style: .semiboldFootnotePrimary)
+            view.contentView.spacing = 9.25
+
+            view.tag = index
+            view.addGestureRecognizer(
+                UITapGestureRecognizer(
+                    target: self,
+                    action: #selector(actionButton(sender:))
+                )
+            )
+        }
     }
 
-    private func setSelectedStyle(for button: RoundedButton) {
-        button.imageWithTitleView?.titleColor = R.color.colorTextPrimary()!
-        button.roundedBackgroundView?.apply(style: .chips)
+    private func setSelectedStyle(for categoryChip: CategoryChip) {
+        let templateIcon = categoryChip.contentView.imageView.image?.tinted(
+            with: R.color.colorIconPrimaryNegative()!
+        )
+
+        categoryChip.contentView.detailsLabel.textColor = R.color.colorTextPrimaryNegative()!
+        categoryChip.contentView.imageView.image = templateIcon
+
+        categoryChip.backgroundView.fillColor = R.color.colorSelectedDAppCategoryBackground()!
     }
 
-    private func setNormalStyle(for button: RoundedButton) {
-        button.imageWithTitleView?.titleColor = R.color.colorTextSecondary()!
-        button.roundedBackgroundView?.fillColor = .clear
-        button.roundedBackgroundView?.highlightedFillColor = .clear
+    private func setNormalStyle(for categoryChip: CategoryChip) {
+        let originalIcon = categoryChip.contentView.imageView.image?.withRenderingMode(.alwaysOriginal)
+
+        categoryChip.contentView.detailsLabel.textColor = R.color.colorTextPrimary()!
+        categoryChip.contentView.imageView.image = originalIcon
+        categoryChip.backgroundView.fillColor = R.color.colorButtonBackgroundSecondary()!
     }
 
-    @objc private func actionButton(sender: RoundedButton) {
-        guard let index = categoryItems.firstIndex(of: sender) else {
-            return
+    @objc private func actionButton(sender: UITapGestureRecognizer) {
+        var index = sender.view?.tag
+        var selectedCategory: DAppCategoryViewModel?
+
+        if selectedIndex != index, let index {
+            selectedCategory = viewModels[index]
+        } else {
+            index = nil
         }
 
         setSelectedIndex(index, animated: true)
 
-        delegate?.dAppCategories(view: self, didSelectItemAt: index)
+        delegate?.dAppCategories(
+            view: self,
+            didSelectCategoryWith: selectedCategory?.identifier
+        )
     }
 }

@@ -45,10 +45,11 @@ final class DAppListPresenter {
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
+    let categoryViewModelFactory: DAppCategoryViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
     private var dAppsResult: Result<DAppList, Error>?
-    private var categories: [DAppCategory] = []
+    private var categoryModels: [DAppCategory] = []
     private var selectedDApps: [DAppViewModel] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
@@ -61,11 +62,13 @@ final class DAppListPresenter {
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
         viewModelFactory: DAppListViewModelFactoryProtocol,
+        categoryViewModelFactory: DAppCategoryViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.categoryViewModelFactory = categoryViewModelFactory
         self.localizationManager = localizationManager
     }
 
@@ -95,8 +98,8 @@ final class DAppListPresenter {
                 dApp.categories.forEach { result.insert($0) }
             }
 
-            let prevCategories = categories
-            categories = dAppList.categories.filter { existingCategories.contains($0.identifier) }
+            let prevCategories = categoryModels
+            categoryModels = dAppList.categories.filter { existingCategories.contains($0.identifier) }
 
             switch selectedCategory {
             case .all:
@@ -104,7 +107,7 @@ final class DAppListPresenter {
                     from: nil,
                     dAppList: dAppList,
                     favorites: favorites
-                )
+                ).dApps
             case .favorites:
                 let hasFavorites = !favorites.isEmpty
 
@@ -115,7 +118,7 @@ final class DAppListPresenter {
                         from: nil,
                         dAppList: dAppList,
                         favorites: favorites
-                    )
+                    ).dApps
                 } else {
                     selectedCategory = .favorites
 
@@ -130,7 +133,7 @@ final class DAppListPresenter {
             }
 
         } else {
-            categories = []
+            categoryModels = []
             selectedDApps = []
             selectedCategory = .all
         }
@@ -140,7 +143,7 @@ final class DAppListPresenter {
         for dAppList: DAppList,
         selectedDAppCategory: DAppCategory?
     ) {
-        let maybeNewCategoryIndex = categories.firstIndex { category in
+        let maybeNewCategoryIndex = categoryModels.firstIndex { category in
             category.identifier == selectedDAppCategory?.identifier
         }
 
@@ -148,13 +151,13 @@ final class DAppListPresenter {
             CategoryIndex.custom(index: $0, hasFavorites: hasFavorites)
         } ?? .all
 
-        let categoryId = selectedCategory.customIndex.map { categories[$0].identifier }
+        let categoryId = selectedCategory.customIndex.map { categoryModels[$0].identifier }
 
         selectedDApps = viewModelFactory.createDApps(
             from: categoryId,
             dAppList: dAppList,
             favorites: favorites ?? [:]
-        )
+        ).dApps
     }
 
     private func updateState() {
@@ -207,32 +210,23 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func numberOfCategories() -> Int {
-        hasFavorites ? categories.count + 2 : categories.count + 1
+        hasFavorites ? categoryModels.count + 2 : categoryModels.count + 1
     }
 
-    func category(at index: Int) -> String {
-        let category = CategoryIndex(uiIndex: index, hasFavorites: hasFavorites)
-
-        switch category {
-        case .all:
-            return R.string.localizable.commonAll(preferredLanguages: selectedLocale.rLanguages)
-        case .favorites:
-            return R.string.localizable.commonFavorites(preferredLanguages: selectedLocale.rLanguages)
-        case let .custom(index, _):
-            return categories[index].name
-        }
+    func categories() -> [DAppCategoryViewModel] {
+        categoryViewModelFactory.createViewModels(for: categoryModels)
     }
 
     func selectedCategoryIndex() -> Int {
         selectedCategory.selectedIndex
     }
 
-    func selectCategory(at index: Int) {
+    func selectCategory(with _: String?) {
         guard let dAppList = try? dAppsResult?.get(), let favorites = favorites else {
             return
         }
 
-        let newCategory = CategoryIndex(uiIndex: index, hasFavorites: hasFavorites)
+        let newCategory: CategoryIndex = .all // fix
 
         guard selectedCategory != newCategory else {
             return
@@ -246,16 +240,16 @@ extension DAppListPresenter: DAppListPresenterProtocol {
                 from: nil,
                 dAppList: dAppList,
                 favorites: favorites
-            )
+            ).dApps
         case .favorites:
             selectedDApps = viewModelFactory.createFavoriteDApps(from: Array(favorites.values))
         case let .custom(index, _):
-            let categoryId = categories[index].identifier
+            let categoryId = categoryModels[index].identifier
             selectedDApps = viewModelFactory.createDApps(
                 from: categoryId,
                 dAppList: dAppList,
                 favorites: favorites
-            )
+            ).dApps
         }
 
         view?.didReceive(state: .loaded)

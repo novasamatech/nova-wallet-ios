@@ -27,11 +27,15 @@ class DAppSearchTests: XCTestCase {
             dAppsLocalSubscriptionFactory: dAppProviderFactory,
             logger: Logger.shared
         )
+        
+        let viewModelFactory = DAppListViewModelFactory(
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory()
+        )
 
         let presenter = DAppSearchPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: DAppListViewModelFactory(),
+            viewModelFactory: viewModelFactory,
             initialQuery: "",
             delegate: delegate,
             applicationConfig: ApplicationConfig.shared,

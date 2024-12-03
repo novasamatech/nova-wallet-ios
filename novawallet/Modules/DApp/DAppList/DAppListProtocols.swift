@@ -16,9 +16,9 @@ protocol DAppListPresenterProtocol: AnyObject {
     func activateSettings()
 
     func numberOfCategories() -> Int
-    func category(at index: Int) -> String
+    func categories() -> [DAppCategoryViewModel]
     func selectedCategoryIndex() -> Int
-    func selectCategory(at index: Int)
+    func selectCategory(with id: String?)
     func numberOfDApps() -> Int
     func dApp(at index: Int) -> DAppViewModel
     func selectDApp(at index: Int)
