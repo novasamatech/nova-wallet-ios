@@ -42,7 +42,7 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
         if let assetExchangeService {
             return assetExchangeService
         }
-        
+
         let exchangesStateMediator = AssetsExchangeStateMediator()
 
         let graphProvider = AssetExchangeFacade.createGraphProvider(

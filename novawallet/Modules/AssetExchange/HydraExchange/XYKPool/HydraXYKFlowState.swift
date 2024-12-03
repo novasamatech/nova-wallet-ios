@@ -8,8 +8,8 @@ final class HydraXYKFlowState {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
-    let notificationsRegistrar: AssetsExchangeStateRegistring
-    
+    let notificationsRegistrar: AssetsExchangeStateRegistring?
+
     let mutex = NSLock()
 
     private var quoteStateServices: [HydraDx.RemoteSwapPair: HydraXYKQuoteParamsService] = [:]
@@ -19,7 +19,7 @@ final class HydraXYKFlowState {
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        notificationsRegistrar: AssetsExchangeStateRegistring,
+        notificationsRegistrar: AssetsExchangeStateRegistring?,
         operationQueue: OperationQueue
     ) {
         self.account = account
@@ -32,7 +32,7 @@ final class HydraXYKFlowState {
 
     deinit {
         quoteStateServices.values.forEach {
-            notificationsRegistrar.deregisterStateService($0)
+            notificationsRegistrar?.deregisterStateService($0)
             $0.throttle()
         }
     }
@@ -57,10 +57,10 @@ extension HydraXYKFlowState {
         }
 
         quoteStateServices.values.forEach {
-            notificationsRegistrar.deregisterStateService($0)
+            notificationsRegistrar?.deregisterStateService($0)
             $0.throttle()
         }
-        
+
         quoteStateServices = [:]
     }
 
@@ -87,8 +87,8 @@ extension HydraXYKFlowState {
         quoteStateServices[swapPair] = newService
 
         newService.setup()
-        
-        notificationsRegistrar.registerStateService(newService)
+
+        notificationsRegistrar?.registerStateService(newService)
 
         return newService
     }

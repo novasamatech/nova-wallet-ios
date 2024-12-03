@@ -133,7 +133,12 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     }
 
     override func setupReQuoteSubscription(for _: ChainAssetId, assetOut _: ChainAssetId) {
-        // TODO: Implement ReQuote
+        assetsExchangeService.subscribeRequoteService(
+            for: self,
+            notifyingIn: .main
+        ) { [weak self] in
+            self?.presenter?.didReceiveQuoteDataChanged()
+        }
     }
 }
 
@@ -143,6 +148,8 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
         receiveChainAsset.map {
             setReceiveChainAssetSubscriptions($0)
         }
+
+        assetsExchangeService.throttleRequoteService()
     }
 
     func update(payChainAsset: ChainAsset?) {
@@ -160,6 +167,8 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
             setPayChainAssetSubscriptions(payChainAsset)
             provideCanPayFee(for: payChainAsset)
         }
+
+        assetsExchangeService.throttleRequoteService()
     }
 
     func update(feeChainAsset: ChainAsset?) {

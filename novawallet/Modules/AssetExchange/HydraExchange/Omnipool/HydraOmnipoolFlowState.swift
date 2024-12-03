@@ -8,7 +8,7 @@ final class HydraOmnipoolFlowState {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
-    let notificationsRegistrar: AssetsExchangeStateRegistring
+    let notificationsRegistrar: AssetsExchangeStateRegistring?
 
     let mutex = NSLock()
 
@@ -19,7 +19,7 @@ final class HydraOmnipoolFlowState {
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        notificationsRegistrar: AssetsExchangeStateRegistring,
+        notificationsRegistrar: AssetsExchangeStateRegistring?,
         operationQueue: OperationQueue
     ) {
         self.account = account
@@ -32,7 +32,7 @@ final class HydraOmnipoolFlowState {
 
     deinit {
         quoteStateServices.values.forEach {
-            notificationsRegistrar.deregisterStateService($0)
+            notificationsRegistrar?.deregisterStateService($0)
             $0.throttle()
         }
     }
@@ -57,10 +57,10 @@ extension HydraOmnipoolFlowState {
         }
 
         quoteStateServices.values.forEach {
-            notificationsRegistrar.deregisterStateService($0)
+            notificationsRegistrar?.deregisterStateService($0)
             $0.throttle()
         }
-        
+
         quoteStateServices = [:]
     }
 
@@ -87,8 +87,8 @@ extension HydraOmnipoolFlowState {
         quoteStateServices[swapPair] = newService
 
         newService.setup()
-        
-        notificationsRegistrar.registerStateService(newService)
+
+        notificationsRegistrar?.registerStateService(newService)
 
         return newService
     }

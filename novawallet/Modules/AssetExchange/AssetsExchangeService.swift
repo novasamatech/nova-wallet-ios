@@ -14,13 +14,13 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
         notifyingIn queue: DispatchQueue,
         operationStartClosure: @escaping (Int) -> Void
     ) -> CompoundOperationWrapper<Balance>
-    
+
     func subscribeRequoteService(
         for target: AnyObject,
         notifyingIn queue: DispatchQueue,
         closure: @escaping () -> Void
     )
-    
+
     func throttleRequoteService()
 }
 
@@ -130,7 +130,7 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
             )
         }
     }
-    
+
     func subscribeRequoteService(
         for target: AnyObject,
         notifyingIn queue: DispatchQueue,
@@ -138,7 +138,7 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
     ) {
         exchangesStateMediator.subscribeStateChanges(target, notifyingIn: queue, closure: closure)
     }
-    
+
     func throttleRequoteService() {
         exchangesStateMediator.throttleStateServicesSynchroniously()
     }

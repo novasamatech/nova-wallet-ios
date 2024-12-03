@@ -93,9 +93,9 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
                 notificationsRegistrar: exchangeStateRegistrar,
                 operationQueue: operationQueue
             )
-            
+
             exchangeStateRegistrar.addStateProvider(flowState)
-            
+
             let host = AssetHubExchangeHost(
                 chain: chain,
                 selectedAccount: selectedAccount,

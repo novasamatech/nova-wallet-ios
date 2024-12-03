@@ -42,9 +42,10 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             chain: host.chain,
             connection: host.connection,
             runtimeProvider: host.runtimeService,
+            notificationsRegistrar: exchangeStateRegistrar,
             operationQueue: host.operationQueue
         )
-        
+
         stateProviderRegistrar.addStateProvider(flowState)
 
         return AssetsHydraOmnipoolExchange(
@@ -69,9 +70,10 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             chain: host.chain,
             connection: host.connection,
             runtimeProvider: host.runtimeService,
+            notificationsRegistrar: exchangeStateRegistrar,
             operationQueue: host.operationQueue
         )
-        
+
         stateProviderRegistrar.addStateProvider(flowState)
 
         return AssetsHydraStableswapExchange(
@@ -96,9 +98,10 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             chain: host.chain,
             connection: host.connection,
             runtimeProvider: host.runtimeService,
+            notificationsRegistrar: exchangeStateRegistrar,
             operationQueue: host.operationQueue
         )
-        
+
         stateProviderRegistrar.addStateProvider(flowState)
 
         return AssetsHydraXYKExchange(

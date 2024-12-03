@@ -32,26 +32,26 @@ final class AssetHubFlowState {
 extension AssetHubFlowState: AssetHubFlowStateProtocol {
     func setupReQuoteService() -> AssetHubReQuoteService {
         mutex.lock()
-        
+
         defer {
             mutex.unlock()
         }
-        
+
         if let reQuoteService = reQuoteService {
             return reQuoteService
         }
-        
+
         let service = AssetHubReQuoteService(
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue
         )
-        
+
         reQuoteService = service
         service.setup()
-        
+
         notificationsRegistrar.registerStateService(service)
-        
+
         return service
     }
 }
@@ -59,16 +59,16 @@ extension AssetHubFlowState: AssetHubFlowStateProtocol {
 extension AssetHubFlowState: AssetsExchangeStateProviding {
     func throttleStateServices() {
         mutex.lock()
-        
+
         defer {
             mutex.unlock()
         }
-        
+
         if let reQuoteService {
             notificationsRegistrar.deregisterStateService(reQuoteService)
             reQuoteService.throttle()
         }
-        
-        self.reQuoteService = nil
+
+        reQuoteService = nil
     }
 }

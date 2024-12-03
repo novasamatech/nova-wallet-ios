@@ -46,6 +46,10 @@ extension AssetCanPayFeeWrapperFactoryProtocol {
 
 protocol AssetTransferAggregationFactoryProtocol: AssetCanPayFeeWrapperFactoryProtocol {}
 
+enum AssetFeePaymentError: Error {
+    case unavailableProvider(ChainModel)
+}
+
 final class AssetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol {
     let operationQueue: OperationQueue
     let chainRegistry: ChainRegistryProtocol
@@ -65,7 +69,7 @@ final class AssetTransferAggregationFactory: AssetTransferAggregationFactoryProt
             return createHydraCanPayFee(for: chainAsset)
         } else {
             return CompoundOperationWrapper.createWithError(
-                AssetConversionAggregationFactoryError.unavailableProvider(chainAsset.chain)
+                AssetFeePaymentError.unavailableProvider(chainAsset.chain)
             )
         }
     }

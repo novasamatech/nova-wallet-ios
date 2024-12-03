@@ -85,6 +85,7 @@ extension HydraFlowState {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeProvider,
+            notificationsRegistrar: nil,
             operationQueue: operationQueue
         )
 
@@ -109,6 +110,7 @@ extension HydraFlowState {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeProvider,
+            notificationsRegistrar: nil,
             operationQueue: operationQueue
         )
 
@@ -133,6 +135,7 @@ extension HydraFlowState {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeProvider,
+            notificationsRegistrar: nil,
             operationQueue: operationQueue
         )
 
