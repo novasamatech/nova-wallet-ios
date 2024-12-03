@@ -130,3 +130,9 @@ extension AssetExchangeOperationFee {
         submissionFee.totalAmountIn(asset: asset) + postSubmissionFee.totalAmountIn(asset: asset)
     }
 }
+
+extension AssetExchangeOperationFee.AmountByPayer: ExtrinsicFeeProtocol {
+    var amount: Balance { amountWithAsset.amount }
+    // TODO: nil is for current account, we need make it explicit
+    var weight: Balance { 0 } // TODO: Get rid of weight
+}

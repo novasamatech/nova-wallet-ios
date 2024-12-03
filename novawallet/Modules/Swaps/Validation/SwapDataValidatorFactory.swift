@@ -22,7 +22,7 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func passesRealtimeQuoteValidation(
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
-        onQuoteUpdate: @escaping (AssetConversion.Quote) -> Void,
+        onQuoteUpdate: @escaping (AssetExchangeQuote) -> Void,
         locale: Locale
     ) -> DataValidating
 }
@@ -258,7 +258,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
     func passesRealtimeQuoteValidation(
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
-        onQuoteUpdate: @escaping (AssetConversion.Quote) -> Void,
+        onQuoteUpdate: @escaping (AssetExchangeQuote) -> Void,
         locale: Locale
     ) -> DataValidating {
         var reason: SwapModel.InvalidQuoteReason?
@@ -275,8 +275,8 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                 switch reason {
                 case let .rateChange(rateUpdate):
                     let oldRate = Decimal.rateFromSubstrate(
-                        amount1: rateUpdate.oldQuote.amountIn,
-                        amount2: rateUpdate.oldQuote.amountOut,
+                        amount1: rateUpdate.oldQuote.route.amountIn,
+                        amount2: rateUpdate.oldQuote.route.amountOut,
                         precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
                         precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
                     ) ?? 0
@@ -288,8 +288,8 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     ).value(for: locale)
 
                     let newRate = Decimal.rateFromSubstrate(
-                        amount1: rateUpdate.newQuote.amountIn,
-                        amount2: rateUpdate.newQuote.amountOut,
+                        amount1: rateUpdate.newQuote.route.amountIn,
+                        amount2: rateUpdate.newQuote.route.amountOut,
                         precision1: params.payChainAsset.assetDisplayInfo.assetPrecision,
                         precision2: params.receiveChainAsset.assetDisplayInfo.assetPrecision
                     ) ?? 0

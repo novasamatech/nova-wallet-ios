@@ -8,7 +8,7 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
 
     func requestValidatingQuote(
         for args: AssetConversion.QuoteArgs,
-        completion: @escaping (Result<AssetConversion.Quote, Error>) -> Void
+        completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     )
 }
 

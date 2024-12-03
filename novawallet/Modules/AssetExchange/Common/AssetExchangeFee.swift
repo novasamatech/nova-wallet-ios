@@ -35,6 +35,10 @@ extension AssetExchangeFee {
         return originFee.totalAmountIn(asset: assetIn.chainAssetId)
     }
 
+    func originExtrinsicFee() -> ExtrinsicFeeProtocol? {
+        operationFees.first?.submissionFee
+    }
+
     func postSubmissionFeeInAssetIn(_ assetIn: ChainAsset) -> Balance {
         guard let originFee = operationFees.first else {
             return 0

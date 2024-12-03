@@ -30,6 +30,21 @@ struct AssetExchangeRoute: Equatable {
             return .init(items: [item] + items, amount: amount, direction: direction)
         }
     }
+
+    func matches(otherRoute: AssetExchangeRoute, slippage: BigRational) -> Bool {
+        guard direction == otherRoute.direction else { return false }
+
+        switch direction {
+        case .sell:
+            let amountOutMin = amountOut - slippage.mul(value: amountOut)
+
+            return amountOutMin <= otherRoute.amountOut
+        case .buy:
+            let amountInMax = amountIn + slippage.mul(value: amountIn)
+
+            return amountInMax >= otherRoute.amountIn
+        }
+    }
 }
 
 extension AssetExchangeGraphPath {

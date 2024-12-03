@@ -62,8 +62,8 @@ struct SwapModel {
     }
 
     struct InvalidQuoteDueRateChange {
-        let oldQuote: AssetConversion.Quote
-        let newQuote: AssetConversion.Quote
+        let oldQuote: AssetExchangeQuote
+        let newQuote: AssetExchangeQuote
     }
 
     enum InvalidQuoteReason {
@@ -71,7 +71,7 @@ struct SwapModel {
         case noLiqudity
     }
 
-    typealias QuoteValidateClosure = (Result<AssetConversion.Quote, Error>) -> Void
+    typealias QuoteValidateClosure = (Result<AssetExchangeQuote, Error>) -> Void
 
     let payChainAsset: ChainAsset
     let receiveChainAsset: ChainAsset
@@ -262,30 +262,28 @@ struct SwapModel {
     }
 
     func asyncCheckQuoteValidity(
-        _: @escaping (AssetConversion.QuoteArgs, @escaping QuoteValidateClosure) -> Void,
-        completion _: @escaping (InvalidQuoteReason?) -> Void
+        _ newQuoteClosure: @escaping (AssetConversion.QuoteArgs, @escaping QuoteValidateClosure) -> Void,
+        completion: @escaping (InvalidQuoteReason?) -> Void
     ) {
-        // TODO: Fix implementation
-        /* guard let route = route else {
-             completion(.noLiqudity)
-             return
-         }
+        guard let currentQuote = quote else {
+            completion(.noLiqudity)
+            return
+        }
 
-         newQuoteClosure(quoteArgs) { result in
-             switch result {
-             case let .success(newQuote):
-                 if !currenQuote.matches(
-                     other: newQuote,
-                     slippage: slippage,
-                     direction: quoteArgs.direction
-                 ) {
-                     completion(.rateChange(.init(oldQuote: currenQuote, newQuote: newQuote)))
-                 } else {
-                     completion(nil)
-                 }
-             case .failure:
-                 completion(.noLiqudity)
-             }
-         } */
+        newQuoteClosure(quoteArgs) { result in
+            switch result {
+            case let .success(newQuote):
+                if !currentQuote.route.matches(
+                    otherRoute: newQuote.route,
+                    slippage: slippage
+                ) {
+                    completion(.rateChange(.init(oldQuote: currentQuote, newQuote: newQuote)))
+                } else {
+                    completion(nil)
+                }
+            case .failure:
+                completion(.noLiqudity)
+            }
+        }
     }
 }

@@ -196,7 +196,7 @@ class SwapBasePresenter {
             }
 
             quoteResult = .failure(error)
-        case let .fetchFeeFailed:
+        case .fetchFeeFailed:
             wireframe.presentRequestStatus(on: view, locale: locale) { [weak self] in
                 self?.estimateFee()
             }
@@ -208,51 +208,50 @@ class SwapBasePresenter {
     }
 
     func getBaseValidations(
-        for _: SwapModel,
-        interactor _: SwapBaseInteractorInputProtocol,
-        locale _: Locale
+        for swapModel: SwapModel,
+        interactor: SwapBaseInteractorInputProtocol,
+        locale: Locale
     ) -> [DataValidating] {
-        // TODO: Enable validations
         [
-            /* dataValidatingFactory.has(
-                 fee: swapModel.feeModel?.extrinsicFee,
-                 locale: locale
-             ) { [weak self] in
-                 self?.estimateFee()
-             },
-             dataValidatingFactory.hasSufficientBalance(
-                 params: swapModel,
-                 swapMaxAction: { [weak self] in
-                     self?.applySwapMax()
-                 },
-                 locale: locale
-             ),
-             dataValidatingFactory.notViolatingMinBalancePaying(
-                 fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.extrinsicFee : nil,
-                 total: swapModel.utilityAssetBalance?.balanceCountingEd,
-                 minBalance: swapModel.feeChainAsset.isUtilityAsset ? swapModel.utilityAssetExistense?.minBalance : 0,
-                 asset: swapModel.utilityChainAsset?.assetDisplayInfo ?? swapModel.feeChainAsset.assetDisplayInfo,
-                 locale: locale
-             ),
-             dataValidatingFactory.canReceive(params: swapModel, locale: locale),
-             dataValidatingFactory.noDustRemains(
-                 params: swapModel,
-                 swapMaxAction: { [weak self] in
-                     self?.applySwapMax()
-                 },
-                 locale: locale
-             ),
-             dataValidatingFactory.passesRealtimeQuoteValidation(
-                 params: swapModel,
-                 remoteValidatingClosure: { args, completion in
-                     interactor.requestValidatingQuote(for: args, completion: completion)
-                 },
-                 onQuoteUpdate: { [weak self] quote in
-                     self?.quoteResult = .success(quote)
-                     self?.handleNewQuote(quote, for: swapModel.quoteArgs)
-                 },
-                 locale: locale
-             ) */
+            dataValidatingFactory.has(
+                fee: swapModel.feeModel?.originExtrinsicFee(),
+                locale: locale
+            ) { [weak self] in
+                self?.estimateFee()
+            },
+            dataValidatingFactory.hasSufficientBalance(
+                params: swapModel,
+                swapMaxAction: { [weak self] in
+                    self?.applySwapMax()
+                },
+                locale: locale
+            ),
+            dataValidatingFactory.notViolatingMinBalancePaying(
+                fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.originExtrinsicFee() : nil,
+                total: swapModel.utilityAssetBalance?.balanceCountingEd,
+                minBalance: swapModel.feeChainAsset.isUtilityAsset ? swapModel.utilityAssetExistense?.minBalance : 0,
+                asset: swapModel.utilityChainAsset?.assetDisplayInfo ?? swapModel.feeChainAsset.assetDisplayInfo,
+                locale: locale
+            ),
+            dataValidatingFactory.canReceive(params: swapModel, locale: locale),
+            dataValidatingFactory.noDustRemains(
+                params: swapModel,
+                swapMaxAction: { [weak self] in
+                    self?.applySwapMax()
+                },
+                locale: locale
+            ),
+            dataValidatingFactory.passesRealtimeQuoteValidation(
+                params: swapModel,
+                remoteValidatingClosure: { args, completion in
+                    interactor.requestValidatingQuote(for: args, completion: completion)
+                },
+                onQuoteUpdate: { [weak self] quote in
+                    self?.quoteResult = .success(quote)
+                    self?.handleNewQuote(quote, for: swapModel.quoteArgs)
+                },
+                locale: locale
+            )
         ]
     }
 }

@@ -285,10 +285,17 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     }
 
     func requestValidatingQuote(
-        for _: AssetConversion.QuoteArgs,
-        completion _: @escaping (Result<AssetConversion.Quote, Error>) -> Void
+        for args: AssetConversion.QuoteArgs,
+        completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     ) {
-        // TODO: Implement
+        let wrapper = assetsExchangeService.fetchQuoteWrapper(for: args)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: completion
+        )
     }
 
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset) {

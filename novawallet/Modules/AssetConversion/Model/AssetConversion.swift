@@ -35,19 +35,6 @@ enum AssetConversion {
             assetOut = args.assetOut
             self.context = context
         }
-
-        func matches(other quote: Quote, slippage: BigRational, direction: Direction) -> Bool {
-            switch direction {
-            case .sell:
-                let amountOutMin = amountOut - slippage.mul(value: amountOut)
-
-                return amountOutMin <= quote.amountOut
-            case .buy:
-                let amountInMax = amountIn + slippage.mul(value: amountIn)
-
-                return amountInMax >= quote.amountIn
-            }
-        }
     }
 
     struct CallArgs: Hashable {
