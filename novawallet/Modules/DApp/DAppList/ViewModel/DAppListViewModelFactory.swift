@@ -149,19 +149,19 @@ private extension DAppListViewModelFactory {
     func favoritesSection(
         from favorites: [String: DAppFavorite],
         locale: Locale
-    ) -> DAppListSectionViewModel {
+    ) -> DAppListSection {
         let favoritesDApps = createFavoriteDApps(from: Array(favorites.values))
 
-        return DAppListSectionViewModel(
+        return DAppListSection(
             title: R.string.localizable.commonFavorites(preferredLanguages: locale.rLanguages),
-            items: favoritesDApps.map { .favorites($0) }
+            cells: favoritesDApps.map { .favorites($0) }
         )
     }
 
     func categorySections(
         from dAppList: DAppList,
         favorites: [String: DAppFavorite]
-    ) -> [DAppListSectionViewModel] {
+    ) -> [DAppListSection] {
         let categoriesById: [String: DAppCategory] = dAppList.categories
             .reduce(into: [:]) { $0[$1.identifier] = $1 }
 
@@ -171,7 +171,7 @@ private extension DAppListViewModelFactory {
             }
         }
 
-        let categorySections: [DAppListSectionViewModel] = dAppsByCategory.keys.compactMap { categoryId in
+        let categorySections: [DAppListSection] = dAppsByCategory.keys.compactMap { categoryId in
             guard
                 let dApps = dAppsByCategory[categoryId],
                 let category = categoriesById[categoryId]
@@ -188,37 +188,37 @@ private extension DAppListViewModelFactory {
                 categories: [category]
             )
 
-            return DAppListSectionViewModel(
+            return DAppListSection(
                 title: categoriesById[categoryId]?.name ?? categoryId,
-                items: dAppViewModels.map { .category($0) }
+                cells: dAppViewModels.map { .category($0) }
             )
         }
 
         return categorySections
     }
 
-    func categorySelectSection(from dAppList: DAppList) -> DAppListSectionViewModel {
+    func categorySelectSection(from dAppList: DAppList) -> DAppListSection {
         let categoryViewModels = dappCategoriesViewModelFactory.createViewModels(for: dAppList.categories)
 
-        return DAppListSectionViewModel(
+        return DAppListSection(
             title: nil,
-            items: [.categorySelect(categoryViewModels)]
+            cells: [.categorySelect(categoryViewModels)]
         )
     }
 
     func headerSection(
         for wallet: MetaAccountModel,
         hasWalletsListUpdates: Bool
-    ) -> DAppListSectionViewModel {
+    ) -> DAppListSection {
         let headerViewModel = walletSwitchViewModelFactory.createViewModel(
             from: wallet.walletIdenticonData(),
             walletType: wallet.type,
             hasNotification: hasWalletsListUpdates
         )
 
-        return DAppListSectionViewModel(
+        return DAppListSection(
             title: nil,
-            items: [.header(headerViewModel)]
+            cells: [.header(headerViewModel)]
         )
     }
 }
@@ -318,10 +318,9 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         )
 
         return [
-            .header(headerSection),
-            .categorySelect(categorySelectSection),
-            .favorites(favoritesSection)
-        ]
-            + categorySections.map { .category($0) }
+            headerSection,
+            categorySelectSection,
+            favoritesSection
+        ] + categorySections
     }
 }

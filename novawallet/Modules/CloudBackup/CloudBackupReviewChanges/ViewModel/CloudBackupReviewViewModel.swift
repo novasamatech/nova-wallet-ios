@@ -14,7 +14,7 @@ struct CloudBackupReviewItemViewModel {
 
 struct CloudBackupReviewSectionViewModel: SectionProtocol {
     let header: TitleIconViewModel?
-    let cells: [CloudBackupReviewItemViewModel]
+    var cells: [CloudBackupReviewItemViewModel]
 }
 
 extension CloudBackupReviewItemViewModel.ChangeType: Hashable {}

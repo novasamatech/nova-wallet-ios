@@ -140,16 +140,17 @@ private extension DAppListViewController {
         kind: String,
         indexPath: IndexPath
     ) -> UICollectionReusableView? {
-        let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+        let sectionModel = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+        let section = RootViewType.Section(for: indexPath.section)
 
         switch section {
-        case let .category(model), let .favorites(model):
+        case .category, .favorites:
             let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
                 forSupplementaryViewOfKind: kind,
                 for: indexPath
             )
 
-            if let title = model.title {
+            if let title = sectionModel.title {
                 header?.bind(title: title)
             }
 

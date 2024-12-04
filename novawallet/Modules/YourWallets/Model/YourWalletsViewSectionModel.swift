@@ -2,7 +2,7 @@ import UIKit
 
 struct YourWalletsViewSectionModel: SectionProtocol, Hashable {
     let header: HeaderViewModel?
-    let cells: [YourWalletsCellViewModel]
+    var cells: [YourWalletsCellViewModel]
 
     struct HeaderViewModel: Hashable {
         let title: String

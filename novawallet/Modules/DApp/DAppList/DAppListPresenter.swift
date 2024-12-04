@@ -127,7 +127,7 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
         switch walletResult {
         case let .success(wallet):
             self.wallet = wallet
-            provideWalletSwitchViewModel()
+            provideSections()
         case let .failure(error):
             wallet = nil
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)

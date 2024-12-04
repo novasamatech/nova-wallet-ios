@@ -16,7 +16,7 @@ final class DAppListViewLayout: UIView {
         return view
     }()
 
-    private var sectionViewModels: [DAppListSectionViewModel] = []
+    private var sectionViewModels: [DAppListSection] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,11 +53,11 @@ private extension DAppListViewLayout {
         configuration.interSectionSpacing = 16.0
 
         let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider
-        sectionProvider = { [weak self] (section, _) -> NSCollectionLayoutSection? in
-            switch self?.sectionViewModels[section] {
+        sectionProvider = { [weak self] (index, _) -> NSCollectionLayoutSection? in
+            switch Section(for: index) {
             case .favorites: self?.dAppFavoritesSectionLayout()
             case .category: self?.dAppCategorySectionLayout()
-            case .none: nil
+            default: nil
             }
         }
 
@@ -136,5 +136,23 @@ private extension DAppListViewLayout {
         )
 
         return section
+    }
+}
+
+extension DAppListViewLayout {
+    enum Section {
+        case header
+        case categorySelect
+        case favorites
+        case category
+
+        init(for index: Int) {
+            switch index {
+            case 0: self = .header
+            case 1: self = .categorySelect
+            case 2: self = .favorites
+            default: self = .category
+            }
+        }
     }
 }
