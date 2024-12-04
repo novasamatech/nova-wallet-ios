@@ -10,7 +10,7 @@ final class AssetHubFlowState {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
-    let notificationsRegistrar: AssetsExchangeStateRegistring
+    let notificationsRegistrar: AssetsExchangeStateRegistring?
 
     let mutex = NSLock()
 
@@ -19,7 +19,7 @@ final class AssetHubFlowState {
     init(
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        notificationsRegistrar: AssetsExchangeStateRegistring,
+        notificationsRegistrar: AssetsExchangeStateRegistring?,
         operationQueue: OperationQueue
     ) {
         self.connection = connection
@@ -50,7 +50,7 @@ extension AssetHubFlowState: AssetHubFlowStateProtocol {
         reQuoteService = service
         service.setup()
 
-        notificationsRegistrar.registerStateService(service)
+        notificationsRegistrar?.registerStateService(service)
 
         return service
     }
@@ -65,7 +65,7 @@ extension AssetHubFlowState: AssetsExchangeStateProviding {
         }
 
         if let reQuoteService {
-            notificationsRegistrar.deregisterStateService(reQuoteService)
+            notificationsRegistrar?.deregisterStateService(reQuoteService)
             reQuoteService.throttle()
         }
 

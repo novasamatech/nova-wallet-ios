@@ -86,6 +86,9 @@ final class HydraSwapsFeeTests: XCTestCase {
         
         guard
             let chain = chainRegistry.getChain(for: chainId),
+            let chainAccount = wallet.fetch(for: chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId),
             let feeAsset = chain.asset(for: feeAssetId.assetId) else {
             throw ChainRegistryError.noChain(chainId)
         }
@@ -97,14 +100,19 @@ final class HydraSwapsFeeTests: XCTestCase {
             logger: Logger.shared
         )
         
-        let feeService = try AssetConversionFlowFacade(
-            wallet: wallet,
-            chainRegistry: chainRegistry,
+        let extrinsicEstimatorHost = ExtrinsicFeeEstimatorHost(
+            account: chainAccount,
+            chain: chain,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
             userStorageFacade: userFacade,
             substrateStorageFacade: substrateStorageFacade,
-            generalSubscriptonFactory: generalSubscriptionFactory,
             operationQueue: operationQueue
-        ).createFeeService(for: chain)
+        )
+        
+        let hydraFlowState = AssetConversionFeeSharedStateStore.getOrCreateHydra(for: extrinsicEstimatorHost)
+        
+        let feeService = try hydraFlowState.createFeeService()
         
         var feeResult: AssetConversion.FeeResult?
         

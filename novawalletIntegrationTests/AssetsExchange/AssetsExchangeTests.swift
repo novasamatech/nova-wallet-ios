@@ -203,7 +203,21 @@ final class AssetsExchangeTests: XCTestCase {
         )
     }
     
-    private func createGraph(for params: AssetExchangeGraphProvidingParams) -> AssetsExchangeGraphProtocol? {
+    private func createGraph(
+        for params: AssetExchangeGraphProvidingParams
+    ) -> AssetsExchangeGraphProtocol? {
+        let exchangeStateRegistrar = AssetsExchangeStateMediator()
+        
+        let feeSupportProvider = AssetsExchangeFeeSupportProvider(
+            feeSupportFetchersProvider: AssetExchangeFeeSupportFetchersProvider(
+                chainRegistry: params.chainRegistry,
+                operationQueue: params.operationQueue,
+                logger: params.logger
+            ),
+            operationQueue: params.operationQueue,
+            logger: params.logger
+        )
+        
         let graphProvider = AssetsExchangeGraphProvider(
             selectedWallet: params.wallet,
             chainRegistry: params.chainRegistry,
@@ -228,6 +242,7 @@ final class AssetsExchangeTests: XCTestCase {
                     signingWrapperFactory: SigningWrapperFactory(),
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
+                    exchangeStateRegistrar: exchangeStateRegistrar,
                     operationQueue: params.operationQueue,
                     logger: params.logger
                 ),
@@ -237,21 +252,19 @@ final class AssetsExchangeTests: XCTestCase {
                     chainRegistry: params.chainRegistry,
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
+                    exchangeStateRegistrar: exchangeStateRegistrar,
                     operationQueue: params.operationQueue,
                     logger: params.logger
                 )
             ],
-            feeSupportProvider: AssetExchangeFeeSupportProvider(
-                chainRegistry: params.chainRegistry,
-                operationQueue: params.operationQueue,
-                logger: params.logger
-            ),
+            feeSupportProvider: feeSupportProvider,
             suffiencyProvider: AssetExchangeSufficiencyProvider(),
             operationQueue: params.operationQueue,
             logger: params.logger
         )
 
         graphProvider.setup()
+        feeSupportProvider.setup()
         
         var actualGraph: AssetsExchangeGraphProtocol?
         
@@ -271,6 +284,7 @@ final class AssetsExchangeTests: XCTestCase {
         wait(for: [expectation], timeout: 60)
         
         graphProvider.throttle()
+        feeSupportProvider.throttle()
         
         return actualGraph
     }
