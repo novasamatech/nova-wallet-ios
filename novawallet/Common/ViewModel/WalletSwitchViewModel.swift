@@ -13,7 +13,7 @@ extension WalletSwitchViewModel: Hashable {
         hasher.combine(type)
         hasher.combine(hasNotification)
     }
-    
+
     static func == (lhs: WalletSwitchViewModel, rhs: WalletSwitchViewModel) -> Bool {
         lhs.type == rhs.type && lhs.hasNotification == rhs.hasNotification
     }

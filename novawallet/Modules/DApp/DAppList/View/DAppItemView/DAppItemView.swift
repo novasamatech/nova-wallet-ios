@@ -40,10 +40,10 @@ final class DAppItemView: UIView {
         label.font = .caption1
         return label
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         setupLayout()
     }
 

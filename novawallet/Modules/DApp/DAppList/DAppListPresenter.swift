@@ -40,7 +40,7 @@ final class DAppListPresenter {
         else {
             return
         }
-        
+
         let sections = viewModelFactory.createDAppSections(
             from: dAppList,
             favorites: favorites ?? [:],
@@ -48,7 +48,7 @@ final class DAppListPresenter {
             hasWalletsListUpdates: hasWalletsListUpdates,
             locale: selectedLocale
         )
-        
+
         view?.didReceive(sections)
     }
 
@@ -95,7 +95,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         hasFavorites ? categoryModels.count + 2 : categoryModels.count + 1
     }
 
-    func selectCategory(with id: String) {
+    func selectCategory(with _: String) {
         guard
             case let .success(dAppList) = dAppsResult,
             let favorites = favorites

@@ -9,11 +9,11 @@ final class DAppItemTableViewCell: PlainBaseTableViewCell<DAppItemView> {
             style: style,
             reuseIdentifier: reuseIdentifier
         )
-        
+
         contentInsets = .zero
-        
+
         backgroundColor = .clear
-        
+
         let selectedView = UIView()
         selectedView.backgroundColor = R.color.colorCellBackgroundPressed()
         selectedBackgroundView = selectedView

@@ -28,7 +28,7 @@ extension DAppViewModel: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(identifier)
     }
-    
+
     static func == (
         lhs: DAppViewModel,
         rhs: DAppViewModel

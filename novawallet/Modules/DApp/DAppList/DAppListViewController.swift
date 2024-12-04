@@ -16,9 +16,9 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
         return nil
     }
-    
+
     private lazy var dataSource = createDataSource()
-    
+
     private var sectionViewModels: [DAppListSection] = []
     private var walletSwitchViewModel: WalletSwitchViewModel?
 
@@ -83,7 +83,7 @@ private extension DAppListViewController {
             for: .valueChanged
         )
     }
-    
+
     func setupHeaderView(
         using collectionView: UICollectionView,
         walletSwitchViewModel: WalletSwitchViewModel,
@@ -129,30 +129,30 @@ private extension DAppListViewController {
             DAppItemCollectionViewCell.self,
             for: indexPath
         )!
-        
+
         cell.view.bind(viewModel: dApp)
 
         return cell
     }
-    
+
     func setupSectionHeaderView(
         using collectionView: UICollectionView,
         kind: String,
         indexPath: IndexPath
     ) -> UICollectionReusableView? {
-        let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
-        
+        let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+
         switch section {
         case let .category(model), let .favorites(model):
             let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
                 forSupplementaryViewOfKind: kind,
                 for: indexPath
             )
-            
+
             if let title = model.title {
                 header?.bind(title: title)
             }
-            
+
             return header
         default:
             return nil
@@ -206,7 +206,7 @@ private extension DAppListViewController {
             return UICollectionViewCell()
         }
     }
-    
+
     func updateIcon(for headerView: DAppListHeaderView, walletSwitchViewModel: WalletSwitchViewModel) {
         headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
@@ -217,20 +217,20 @@ private extension DAppListViewController {
 private extension DAppListViewController {
     func createDataSource() -> DataSource {
         let cellProvider = cellProvider()
-        
+
         let dataSource = DataSource(
             collectionView: rootView.collectionView,
             cellProvider: cellProvider
         )
         dataSource.supplementaryViewProvider = supplementaryViewProvider()
-        
+
         return dataSource
     }
-    
+
     func cellProvider() -> DataSource.CellProvider {
         { [weak self] collectionView, indexPath, model -> UICollectionViewCell? in
             guard let self else { return nil }
-            
+
             return switch model {
             case let .header(model):
                 setupHeaderView(
@@ -259,7 +259,7 @@ private extension DAppListViewController {
             }
         }
     }
-    
+
     func supplementaryViewProvider() -> DataSource.SupplementaryViewProvider {
         { [weak self] collectionView, kind, indexPath in
             self?.setupSectionHeaderView(
@@ -296,8 +296,6 @@ private extension DAppListViewController {
 extension DAppListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-
-        
     }
 }
 
@@ -317,7 +315,7 @@ extension DAppListViewController: DAppCategoriesViewDelegate {
         didSelectCategoryWith identifier: String?
     ) {
         guard let identifier else { return }
-        
+
         presenter.selectCategory(with: identifier)
     }
 }
@@ -327,14 +325,14 @@ extension DAppListViewController: DAppCategoriesViewDelegate {
 extension DAppListViewController: DAppListViewProtocol {
     func didReceive(_ sections: [DAppListSection]) {
         sectionViewModels = sections
-        
+
         dataSource.apply(sections)
     }
-    
+
     func didReceive(state: DAppListState) {
         self.state = state
 
-        //rootView.collectionView.reloadData()
+        // rootView.collectionView.reloadData()
     }
 
     func didCompleteRefreshing() {
@@ -343,6 +341,7 @@ extension DAppListViewController: DAppListViewProtocol {
 }
 
 // MARK: Localizable
+
 extension DAppListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {

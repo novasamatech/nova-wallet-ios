@@ -15,7 +15,7 @@ final class DAppListViewLayout: UIView {
 
         return view
     }()
-    
+
     private var sectionViewModels: [DAppListSectionViewModel] = []
 
     override init(frame: CGRect) {
@@ -51,7 +51,7 @@ private extension DAppListViewLayout {
     func createLayout() -> UICollectionViewCompositionalLayout {
         let configuration = UICollectionViewCompositionalLayoutConfiguration()
         configuration.interSectionSpacing = 16.0
-        
+
         let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider
         sectionProvider = { [weak self] (section, _) -> NSCollectionLayoutSection? in
             switch self?.sectionViewModels[section] {
@@ -60,13 +60,13 @@ private extension DAppListViewLayout {
             case .none: nil
             }
         }
-        
+
         return UICollectionViewCompositionalLayout(
             sectionProvider: sectionProvider,
             configuration: configuration
         )
     }
-    
+
     func dAppFavoritesSectionLayout() -> NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(
@@ -90,10 +90,10 @@ private extension DAppListViewLayout {
             bottom: 0,
             trailing: 16
         )
-        
+
         return section
     }
-    
+
     func dAppCategorySectionLayout() -> NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(
@@ -134,7 +134,7 @@ private extension DAppListViewLayout {
             bottom: 0,
             trailing: 16
         )
-        
+
         return section
     }
 }

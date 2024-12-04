@@ -4,15 +4,15 @@ enum DAppListSection: Hashable, SectionProtocol {
     var cells: [DAppListItem] {
         switch self {
         case let .header(model),
-            let .categorySelect(model),
-            let .favorites(model),
-            let .category(model):
+             let .categorySelect(model),
+             let .favorites(model),
+             let .category(model):
             model.items
         }
     }
-    
+
     typealias CellModel = DAppListItem
-    
+
     case header(DAppListSectionViewModel)
     case categorySelect(DAppListSectionViewModel)
     case favorites(DAppListSectionViewModel)
