@@ -11,7 +11,7 @@ protocol AssetExchangeFeeSupportFetching {
     func createFeeSupportWrapper() -> CompoundOperationWrapper<AssetExchangeFeeSupporting>
 }
 
-protocol AssetExchangeFeeSupportProviding {
+protocol AssetExchangeFeeSupportFetchersProviding {
     func setup()
     func throttle()
 

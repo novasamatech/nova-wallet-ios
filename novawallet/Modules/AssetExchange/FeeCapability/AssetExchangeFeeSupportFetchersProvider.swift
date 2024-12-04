@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-class AssetExchangeFeeSupportProvider {
+class AssetExchangeFeeSupportFetchersProvider {
     private var observableState: Observable<NotEqualWrapper<[AssetExchangeFeeSupportFetching]>> = .init(
         state: .init(value: [])
     )
@@ -106,7 +106,7 @@ class AssetExchangeFeeSupportProvider {
     }
 }
 
-extension AssetExchangeFeeSupportProvider: AssetExchangeFeeSupportProviding {
+extension AssetExchangeFeeSupportFetchersProvider: AssetExchangeFeeSupportFetchersProviding {
     func setup() {
         performSetup()
     }

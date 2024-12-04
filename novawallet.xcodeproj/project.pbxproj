@@ -574,7 +574,7 @@
 		0CA81D502CE502B200166969 /* AssetExchangeFeeSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D4F2CE502B200166969 /* AssetExchangeFeeSupport.swift */; };
 		0CA81D522CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D512CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift */; };
 		0CA81D542CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D532CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift */; };
-		0CA81D572CE5AF2600166969 /* AssetExchangeFeeSupportProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D562CE5AF2600166969 /* AssetExchangeFeeSupportProvider.swift */; };
+		0CA81D572CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D562CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift */; };
 		0CA81D592CE60AA700166969 /* AssetExchangeEdgeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D582CE60AA700166969 /* AssetExchangeEdgeType.swift */; };
 		0CA8AD562CE06FA000ED9746 /* XcmTransactService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */; };
 		0CA8AD5A2CE0789100ED9746 /* WalletRemoteSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD592CE0789100ED9746 /* WalletRemoteSubscription.swift */; };
@@ -5887,7 +5887,7 @@
 		0CA81D4F2CE502B200166969 /* AssetExchangeFeeSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeSupport.swift; sourceTree = "<group>"; };
 		0CA81D512CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeFeeSupportFetcher.swift; sourceTree = "<group>"; };
 		0CA81D532CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeFeeSupportFetcher.swift; sourceTree = "<group>"; };
-		0CA81D562CE5AF2600166969 /* AssetExchangeFeeSupportProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeSupportProvider.swift; sourceTree = "<group>"; };
+		0CA81D562CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeSupportFetchersProvider.swift; sourceTree = "<group>"; };
 		0CA81D582CE60AA700166969 /* AssetExchangeEdgeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeEdgeType.swift; sourceTree = "<group>"; };
 		0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransactService.swift; sourceTree = "<group>"; };
 		0CA8AD592CE0789100ED9746 /* WalletRemoteSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscription.swift; sourceTree = "<group>"; };
@@ -11902,7 +11902,7 @@
 				0CA81D512CE50BDB00166969 /* HydraExchangeFeeSupportFetcher.swift */,
 				0CA81D4B2CE4FF8800166969 /* AssetExchangeGraphFeeSupport.swift */,
 				0CA81D4F2CE502B200166969 /* AssetExchangeFeeSupport.swift */,
-				0CA81D562CE5AF2600166969 /* AssetExchangeFeeSupportProvider.swift */,
+				0CA81D562CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift */,
 				0C33E8B52D0069EC0090096A /* AssetsExchangeFeeSupportProvider.swift */,
 			);
 			path = FeeCapability;
@@ -26043,7 +26043,7 @@
 				2D32BE152C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift in Sources */,
 				848F8B1928635A5600204BC4 /* TransferSetupPresenter.swift in Sources */,
 				841221A028F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift in Sources */,
-				0CA81D572CE5AF2600166969 /* AssetExchangeFeeSupportProvider.swift in Sources */,
+				0CA81D572CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift in Sources */,
 				84ABB3322A16150400B5E95A /* AssetReceiveInfo.swift in Sources */,
 				84100F3626A6069200A5054E /* IconTitleValueView.swift in Sources */,
 				771901A82AE8FF9F00D9C918 /* SwapNetworkFeeViewCell.swift in Sources */,

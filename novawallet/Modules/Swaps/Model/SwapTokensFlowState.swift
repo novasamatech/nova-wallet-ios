@@ -46,7 +46,7 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
         let exchangesStateMediator = AssetsExchangeStateMediator()
 
         let feeSupportProvider = AssetsExchangeFeeSupportProvider(
-            feeSupportFetchersProvider: AssetExchangeFeeSupportProvider(
+            feeSupportFetchersProvider: AssetExchangeFeeSupportFetchersProvider(
                 chainRegistry: assetExchangeParams.chainRegistry,
                 operationQueue: assetExchangeParams.operationQueue,
                 logger: assetExchangeParams.logger

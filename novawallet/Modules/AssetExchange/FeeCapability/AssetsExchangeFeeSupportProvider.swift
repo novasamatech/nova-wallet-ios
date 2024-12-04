@@ -1,7 +1,7 @@
 import Foundation
 
 final class AssetsExchangeFeeSupportProvider {
-    let feeSupportFetchersProvider: AssetExchangeFeeSupportProviding
+    let feeSupportFetchersProvider: AssetExchangeFeeSupportFetchersProviding
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -15,7 +15,7 @@ final class AssetsExchangeFeeSupportProvider {
     private var feeFetchRequests: [String: CancellableCallStore] = [:]
 
     init(
-        feeSupportFetchersProvider: AssetExchangeFeeSupportProviding,
+        feeSupportFetchersProvider: AssetExchangeFeeSupportFetchersProviding,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
