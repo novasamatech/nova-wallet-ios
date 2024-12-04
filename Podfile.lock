@@ -1387,7 +1387,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - Operation-iOS (2.0.1)
+  - Operation-iOS (2.1.0)
   - PromisesObjC (2.4.0)
   - R.swift (5.4.0):
     - R.swift.Library (~> 5.3.0)
@@ -1450,7 +1450,7 @@ PODS:
   - SoraUI/Skrull (1.13.0)
   - Sourcery (1.4.1)
   - Starscream (4.0.12)
-  - SubstrateSdk (3.4.0):
+  - SubstrateSdk (3.5.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -1458,7 +1458,7 @@ PODS:
     - IrohaCrypto/sr25519 (~> 0.9.0)
     - IrohaCrypto/ss58 (~> 0.9.0)
     - keccak.c (~> 0.1.0)
-    - Operation-iOS (~> 2.0.1)
+    - Operation-iOS (~> 2.1.0)
     - ReachabilitySwift (~> 5.2.4)
     - Starscream
     - TweetNacl (~> 1.0.0)
@@ -1544,7 +1544,7 @@ DEPENDENCIES:
   - IrohaCrypto (from `https://github.com/novasamatech/IrohaCrypto`, tag `0.9.1`)
   - Kingfisher
   - MetadataShortenerApi (from `https://github.com/novasamatech/metadata-shortener-ios.git`, tag `0.1.0`)
-  - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.0.1`)
+  - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, commit `a183d0c990742580e2afbb2529064395ef27f5ff`)
   - R.swift
   - ReachabilitySwift (~> 5.2.4)
   - secp256k1.c (from `https://github.com/novasamatech/secp256k1.c`, tag `0.1.3`)
@@ -1554,7 +1554,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.4.0`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `9fed266e18d3b1b0b94ff57ad6acf0a5fa964739`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftDraw (~> 0.18.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1635,8 +1635,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/metadata-shortener-ios.git
     :tag: 0.1.0
   Operation-iOS:
+    :commit: a183d0c990742580e2afbb2529064395ef27f5ff
     :git: https://github.com/novasamatech/Operation-iOS
-    :tag: 2.0.1
   secp256k1.c:
     :git: https://github.com/novasamatech/secp256k1.c
     :tag: 0.1.3
@@ -1650,8 +1650,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
+    :commit: 9fed266e18d3b1b0b94ff57ad6acf0a5fa964739
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.4.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
   WalletConnectSwiftV2:
@@ -1678,8 +1678,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/metadata-shortener-ios.git
     :tag: 0.1.0
   Operation-iOS:
+    :commit: a183d0c990742580e2afbb2529064395ef27f5ff
     :git: https://github.com/novasamatech/Operation-iOS
-    :tag: 2.0.1
   secp256k1.c:
     :git: https://github.com/novasamatech/secp256k1.c
     :tag: 0.1.3
@@ -1693,8 +1693,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
+    :commit: 9fed266e18d3b1b0b94ff57ad6acf0a5fa964739
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.4.0
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
@@ -1740,7 +1740,7 @@ SPEC CHECKSUMS:
   leveldb-library: e8eadf9008a61f9e1dde3978c086d2b6d9b9dc28
   MetadataShortenerApi: b2d5d3ddb2e75e34688cc5f162881a943939ea9a
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  Operation-iOS: 5f1c2cb82bf10f46b92faefc92d5821550b14eb5
+  Operation-iOS: 29111118f2bc5049f7bdc4e27c3967f5acc61802
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
@@ -1754,7 +1754,7 @@ SPEC CHECKSUMS:
   SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
-  SubstrateSdk: ee92f2ede60ffc3a80c73d57870c2cea05741ab4
+  SubstrateSdk: e5aea1104b89dab2e2989fa9979854e1ca238f46
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftDraw: f63484562ddd30d9682b5576acc1d98acc2bec8f
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1771,6 +1771,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: f485e2dc6e10abfdd79cae68f47ca4679c0cd84f
+PODFILE CHECKSUM: e2b1ee1d2d9c59369e4cd8db098c489cdf780454
 
 COCOAPODS: 1.15.2
