@@ -196,6 +196,10 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         // by default we always request quote manually
     }
 
+    func performUpdateOnGraphChange() {
+        logger.debug("Asset Exchange graph did change")
+    }
+
     func fee(route: AssetExchangeRoute, slippage: BigRational, feeAsset: ChainAsset) {
         feeCallStore.cancel()
 
@@ -271,8 +275,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         assetsExchangeService.subscribeUpdates(
             for: self,
             notifyingIn: .main
-        ) {
-            // TODO: Update on graph change
+        ) { [weak self] in
+            self?.performUpdateOnGraphChange()
         }
     }
 

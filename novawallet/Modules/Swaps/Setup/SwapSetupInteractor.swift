@@ -10,6 +10,8 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
 
+    private var requoteChange = Debouncer(delay: 1)
+
     init(
         state: SwapTokensFlowStateProtocol,
         chainRegistry: ChainRegistryProtocol,
@@ -157,11 +159,22 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     }
 
     override func setupReQuoteSubscription(for _: ChainAssetId, assetOut _: ChainAssetId) {
+        requoteChange.cancel()
+
         assetsExchangeService.subscribeRequoteService(
             for: self,
+            ignoreIfAlreadyAdded: true,
             notifyingIn: .main
         ) { [weak self] in
-            self?.presenter?.didReceiveQuoteDataChanged()
+            self?.requoteChange.debounce {
+                self?.presenter?.didReceiveQuoteDataChanged()
+            }
+        }
+    }
+
+    override func performUpdateOnGraphChange() {
+        if let payChainAsset {
+            provideCanPayFee(for: payChainAsset)
         }
     }
 }

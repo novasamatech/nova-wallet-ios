@@ -13,6 +13,7 @@ protocol AssetsExchangeStateRegistring: AnyObject {
 protocol AssetsExchangeStateManaging: AnyObject {
     func subscribeStateChanges(
         _ target: AnyObject,
+        ignoreIfAlreadyAdded: Bool,
         notifyingIn queue: DispatchQueue,
         closure: @escaping () -> Void
     )
@@ -75,10 +76,15 @@ extension AssetsExchangeStateMediator: AssetsExchangeStateRegistring {
 extension AssetsExchangeStateMediator: AssetsExchangeStateManaging {
     func subscribeStateChanges(
         _ target: AnyObject,
+        ignoreIfAlreadyAdded: Bool,
         notifyingIn queue: DispatchQueue,
         closure: @escaping () -> Void
     ) {
         syncQueue.async {
+            if ignoreIfAlreadyAdded, self.observers.contains(where: { $0.target === target }) {
+                return
+            }
+
             self.observers = self.observers.filter { $0.target !== target || $0.target == nil }
             self.observers.append(.init(target: target, notificationQueue: queue, closure: closure))
         }

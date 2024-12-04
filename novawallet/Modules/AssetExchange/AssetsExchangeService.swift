@@ -18,6 +18,7 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
 
     func subscribeRequoteService(
         for target: AnyObject,
+        ignoreIfAlreadyAdded: Bool,
         notifyingIn queue: DispatchQueue,
         closure: @escaping () -> Void
     )
@@ -139,10 +140,16 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
 
     func subscribeRequoteService(
         for target: AnyObject,
+        ignoreIfAlreadyAdded: Bool,
         notifyingIn queue: DispatchQueue,
         closure: @escaping () -> Void
     ) {
-        exchangesStateMediator.subscribeStateChanges(target, notifyingIn: queue, closure: closure)
+        exchangesStateMediator.subscribeStateChanges(
+            target,
+            ignoreIfAlreadyAdded: ignoreIfAlreadyAdded,
+            notifyingIn: queue,
+            closure: closure
+        )
     }
 
     func throttleRequoteService() {
