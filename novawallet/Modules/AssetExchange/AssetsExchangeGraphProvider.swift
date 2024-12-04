@@ -4,7 +4,7 @@ import Operation_iOS
 final class AssetsExchangeGraphProvider {
     let selectedWallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
-    let feeSupportProvider: AssetExchangeFeeSupportProviding
+    let feeSupportProvider: AssetsExchangeFeeSupportProviding
     let suffiencyProvider: AssetExchangeSufficiencyProviding
     let supportedExchangeProviders: [AssetsExchangeProviding]
     let operationQueue: OperationQueue
@@ -17,14 +17,13 @@ final class AssetsExchangeGraphProvider {
         state: .init(value: nil)
     )
 
-    private var feeSupporters: [String: AssetExchangeFeeSupporting] = [:]
-    private var feeFetchRequests: [String: CancellableCallStore] = [:]
+    private var feeSupporting: AssetExchangeFeeSupporting?
 
     init(
         selectedWallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         supportedExchangeProviders: [AssetsExchangeProviding],
-        feeSupportProvider: AssetExchangeFeeSupportProviding,
+        feeSupportProvider: AssetsExchangeFeeSupportProviding,
         suffiencyProvider: AssetExchangeSufficiencyProviding,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -46,7 +45,6 @@ final class AssetsExchangeGraphProvider {
 
     private func clearCurrentRequests() {
         edgesRequestPerProvider.values.forEach { $0.cancel() }
-        feeFetchRequests.values.forEach { $0.cancel() }
     }
 
     private func updateExchanges(
@@ -103,50 +101,6 @@ final class AssetsExchangeGraphProvider {
         }
     }
 
-    private func updateFeeSupport(for fetchers: [AssetExchangeFeeSupportFetching]) {
-        feeFetchRequests.values.forEach { $0.cancel() }
-        feeFetchRequests = [:]
-
-        let oldFeeSupportIds = Set(feeSupporters.keys)
-        let newFeeSupportIds = Set(fetchers.map(\.identifier))
-
-        let idsToRemove = oldFeeSupportIds.subtracting(newFeeSupportIds)
-
-        if !idsToRemove.isEmpty {
-            idsToRemove.forEach { feeSupporters[$0] = nil }
-            rebuildGraph()
-        }
-
-        fetchers.forEach { fetcher in
-            let callStore = CancellableCallStore()
-            feeFetchRequests[fetcher.identifier] = callStore
-
-            let wrapper = fetcher.createFeeSupportWrapper()
-
-            executeCancellable(
-                wrapper: wrapper,
-                inOperationQueue: operationQueue,
-                backingCallIn: callStore,
-                runningCallbackIn: syncQueue
-            ) { [weak self] result in
-                guard let self else {
-                    return
-                }
-
-                switch result {
-                case let .success(feeSupport):
-                    logger.debug("Did receive fee support for \(fetcher.identifier).")
-
-                    feeSupporters[fetcher.identifier] = feeSupport
-
-                    rebuildGraph()
-                case let .failure(error):
-                    logger.error("Did receive error \(fetcher.identifier): \(error).")
-                }
-            }
-        }
-    }
-
     private func rebuildGraph() {
         let graphModel: AssetsExchangeGraphModel = graphPerProvider.values.reduce(
             AssetsExchangeGraphModel(connections: [:])
@@ -158,14 +112,14 @@ final class AssetsExchangeGraphProvider {
             selectedWallet: selectedWallet,
             chainRegistry: chainRegistry,
             sufficiencyProvider: suffiencyProvider,
-            feeSupport: CompoundAssetExchangeFeeSupport(supporters: Array(feeSupporters.values))
+            feeSupport: feeSupporting ?? CompoundAssetExchangeFeeSupport(supporters: [])
         )
 
         let graph = AssetsExchangeGraph(model: graphModel, filter: AnyGraphEdgeFilter(filter: filter))
 
-        observableState.state = .init(value: graph)
-
         supportedExchangeProviders.forEach { $0.inject(graph: graph) }
+
+        observableState.state = .init(value: graph)
     }
 }
 
@@ -184,11 +138,12 @@ extension AssetsExchangeGraphProvider: AssetsExchangeGraphProviding {
 
         feeSupportProvider.setup()
 
-        feeSupportProvider.subscribeFeeFetchers(
+        feeSupportProvider.subscribeFeeSupport(
             self,
-            notifyingIn: syncQueue
-        ) { [weak self] fetchers in
-            self?.updateFeeSupport(for: fetchers)
+            notifyingIn: .main
+        ) { [weak self] newState in
+            self?.feeSupporting = newState
+            self?.rebuildGraph()
         }
     }
 
@@ -198,7 +153,7 @@ extension AssetsExchangeGraphProvider: AssetsExchangeGraphProviding {
             provider.throttle()
         }
 
-        feeSupportProvider.unsubscribeFeeFetchers(self)
+        feeSupportProvider.unsubscribe(self)
 
         syncQueue.async {
             self.clearCurrentRequests()

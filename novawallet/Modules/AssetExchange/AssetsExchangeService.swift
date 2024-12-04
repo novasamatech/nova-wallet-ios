@@ -8,6 +8,7 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
     func fetchReachibilityWrapper() -> CompoundOperationWrapper<AssetsExchageGraphReachabilityProtocol>
     func fetchQuoteWrapper(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetExchangeQuote>
     func estimateFee(for args: AssetExchangeFeeArgs) -> CompoundOperationWrapper<AssetExchangeFee>
+    func canPayFee(in asset: ChainAsset) -> CompoundOperationWrapper<Bool>
 
     func submit(
         using estimation: AssetExchangeFee,
@@ -31,16 +32,19 @@ enum AssetsExchangeServiceError: Error {
 final class AssetsExchangeService {
     let exchangesStateMediator: AssetsExchangeStateManaging
     let graphProvider: AssetsExchangeGraphProviding
+    let feeSupportProvider: AssetsExchangeFeeSupportProviding
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         graphProvider: AssetsExchangeGraphProviding,
+        feeSupportProvider: AssetsExchangeFeeSupportProviding,
         exchangesStateMediator: AssetsExchangeStateManaging,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.graphProvider = graphProvider
+        self.feeSupportProvider = feeSupportProvider
         self.exchangesStateMediator = exchangesStateMediator
         self.operationQueue = operationQueue
         self.logger = logger
@@ -74,10 +78,12 @@ final class AssetsExchangeService {
 extension AssetsExchangeService: AssetsExchangeServiceProtocol {
     func setup() {
         graphProvider.setup()
+        feeSupportProvider.setup()
     }
 
     func throttle() {
         graphProvider.throttle()
+        feeSupportProvider.throttle()
     }
 
     func subscribeUpdates(for target: AnyObject, notifyingIn queue: DispatchQueue, closure: @escaping () -> Void) {
@@ -141,5 +147,20 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
 
     func throttleRequoteService() {
         exchangesStateMediator.throttleStateServicesSynchroniously()
+    }
+
+    func canPayFee(in asset: ChainAsset) -> CompoundOperationWrapper<Bool> {
+        guard !asset.isUtilityAsset else {
+            return CompoundOperationWrapper.createWithResult(true)
+        }
+
+        let operation = AsyncClosureOperation<Bool>(operationClosure: { completionClosure in
+            self.feeSupportProvider.fetchCurrentState(in: .global()) { state in
+                let isFeeSupported = state?.canPayFee(inNonNative: asset) ?? false
+                completionClosure(.success(isFeeSupported))
+            }
+        })
+
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 }

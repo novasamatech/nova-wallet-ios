@@ -23,3 +23,18 @@ protocol AssetExchangeFeeSupportProviding {
 
     func unsubscribeFeeFetchers(_ target: AnyObject)
 }
+
+protocol AssetsExchangeFeeSupportProviding {
+    func setup()
+    func throttle()
+
+    func subscribeFeeSupport(
+        _ target: AnyObject,
+        notifyingIn queue: DispatchQueue,
+        onChange: @escaping (AssetExchangeFeeSupporting?) -> Void
+    )
+
+    func unsubscribe(_ target: AnyObject)
+
+    func fetchCurrentState(in queue: DispatchQueue, completionClosure: @escaping (AssetExchangeFeeSupporting?) -> Void)
+}

@@ -3,14 +3,9 @@ import Foundation
 final class AssetExchangeFacade {
     static func createGraphProvider(
         for params: AssetExchangeGraphProvidingParams,
+        feeSupportProvider: AssetsExchangeFeeSupportProviding,
         exchangesStateMediator: AssetsExchangeStateMediating
     ) -> AssetsExchangeGraphProviding {
-        let feeSupportProvider = AssetExchangeFeeSupportProvider(
-            chainRegistry: params.chainRegistry,
-            operationQueue: params.operationQueue,
-            logger: params.logger
-        )
-
         let suffiencyProvider = AssetExchangeSufficiencyProvider()
 
         return AssetsExchangeGraphProvider(

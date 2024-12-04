@@ -866,6 +866,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
 extension SwapSetupPresenter: SwapSetupInteractorOutputProtocol {
     func didReceiveCanPayFeeInPayAsset(_ value: Bool, chainAssetId: ChainAssetId) {
+        logger.debug("Can pay fee in \(chainAssetId.assetId): \(value)")
+
         if payChainAsset?.chainAssetId == chainAssetId {
             canPayFeeInPayAsset = value
 
