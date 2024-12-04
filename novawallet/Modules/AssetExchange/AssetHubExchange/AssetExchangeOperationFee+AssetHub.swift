@@ -7,7 +7,8 @@ extension AssetExchangeOperationFee {
                 amount: extrinsicFee.amount,
                 asset: args.feeAsset
             ),
-            payer: extrinsicFee.payer
+            payer: extrinsicFee.payer,
+            weight: extrinsicFee.weight
         )
 
         postSubmissionFee = .init(paidByAccount: [], paidFromAmount: [])

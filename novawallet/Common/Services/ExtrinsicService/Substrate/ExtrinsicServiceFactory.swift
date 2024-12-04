@@ -42,21 +42,6 @@ extension ExtrinsicServiceFactoryProtocol {
         )
     }
 
-    // TODO: Get rid of the method
-    func createService(
-        account: ChainAccountResponse,
-        chain: ChainModel,
-        feeAssetConversionId: AssetConversionPallet.AssetId
-    ) -> ExtrinsicServiceProtocol {
-        createService(
-            account: account,
-            chain: chain,
-            extensions: ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions(
-                payingFeeIn: feeAssetConversionId
-            )
-        )
-    }
-
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,

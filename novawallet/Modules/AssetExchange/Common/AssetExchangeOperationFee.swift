@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 enum AssetExchangeOperationFeeError: Error {
     case assetMismatch
@@ -19,6 +20,23 @@ struct AssetExchangeOperationFee: Equatable {
 
         func totalAmountIn(asset: ChainAssetId) -> Balance {
             self.asset == asset ? amount : 0
+        }
+    }
+
+    struct Submission: Equatable {
+        let amountWithAsset: Amount
+
+        // TODO: nil means account from the current wallet, probably make it explicit and rename to general type
+        let payer: ExtrinsicFeePayer?
+
+        let weight: BigUInt
+
+        func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
+            try amountWithAsset.totalAmountEnsuring(asset: asset)
+        }
+
+        func totalAmountIn(asset: ChainAssetId) -> Balance {
+            amountWithAsset.totalAmountIn(asset: asset)
         }
     }
 
@@ -99,7 +117,7 @@ struct AssetExchangeOperationFee: Equatable {
     /**
      *  Fee that is paid when submitting transaction
      */
-    let submissionFee: AmountByPayer
+    let submissionFee: Submission
 
     /**
      *  Fee that is paid after transaction started execution on-chain. For example, delivery fee for the crosschain
@@ -131,8 +149,6 @@ extension AssetExchangeOperationFee {
     }
 }
 
-extension AssetExchangeOperationFee.AmountByPayer: ExtrinsicFeeProtocol {
+extension AssetExchangeOperationFee.Submission: ExtrinsicFeeProtocol {
     var amount: Balance { amountWithAsset.amount }
-    // TODO: nil is for current account, we need make it explicit
-    var weight: Balance { 0 } // TODO: Get rid of weight
 }

@@ -14,7 +14,8 @@ extension AssetExchangeOperationFee {
                 amount: originFee.amount,
                 asset: args.feeAsset
             ),
-            payer: originFee.payer
+            payer: originFee.payer,
+            weight: originFee.weight
         )
 
         let paidByAccount: [AmountByPayer] = if crosschainFee.senderPart > 0 {
