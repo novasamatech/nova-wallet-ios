@@ -11,33 +11,6 @@ final class DAppListHeaderView: UICollectionViewCell {
 
     let walletSwitch = WalletSwitchControl()
 
-    let decorationView: UIImageView = {
-        let view = UIImageView()
-        view.contentMode = .scaleAspectFill
-        view.layer.cornerRadius = 12.0
-        view.clipsToBounds = true
-        view.image = R.image.imageDapps()
-        return view
-    }()
-
-    let decorationTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .semiBoldTitle3
-        label.textAlignment = .left
-        label.numberOfLines = 0
-        return label
-    }()
-
-    let decorationSubtitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
-        label.font = .caption1
-        label.textAlignment = .left
-        label.numberOfLines = 0
-        return label
-    }()
-
     let searchView: ControlView<BlockBackgroundView, IconDetailsView> = {
         let backgroundView = BlockBackgroundView()
         backgroundView.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
@@ -88,14 +61,6 @@ final class DAppListHeaderView: UICollectionViewCell {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        decorationTitleLabel.text = R.string.localizable.dappDecorationTitle_2_4_3(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        decorationSubtitleLabel.text = R.string.localizable.dappsDecorationSubtitle_2_4_3(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
         searchView.controlContentView.detailsLabel.text = R.string.localizable.dappListSearch(
             preferredLanguages: selectedLocale.rLanguages
         )
@@ -116,29 +81,10 @@ final class DAppListHeaderView: UICollectionViewCell {
             make.centerY.equalTo(walletSwitch.snp.centerY)
         }
 
-        contentView.addSubview(decorationView)
-        decorationView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(walletSwitch.snp.bottom).offset(16.0)
-        }
-
-        decorationView.addSubview(decorationTitleLabel)
-        decorationTitleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(20.0)
-        }
-
-        decorationView.addSubview(decorationSubtitleLabel)
-        decorationSubtitleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(decorationTitleLabel.snp.bottom).offset(8.0)
-            make.bottom.equalToSuperview().inset(24.0)
-        }
-
         contentView.addSubview(searchView)
         searchView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(decorationView.snp.bottom).offset(12.0)
+            make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
             make.height.equalTo(52.0)
             make.bottom.equalToSuperview().inset(0.0)
         }

@@ -1,8 +1,8 @@
 import UIKit
 
-final class DAppSearchDAppTableViewCell: UITableViewCell {
+final class DAppItemView: UIView {
     private enum Constants {
-        static let iconInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
+        static let iconInsets = UIEdgeInsets(top: 6.0, left: 6.0, bottom: 6.0, right: 6.0)
         static let iconSize = CGSize(width: 36.0, height: 36.0)
 
         static var preferredIconViewSize: CGSize {
@@ -40,16 +40,10 @@ final class DAppSearchDAppTableViewCell: UITableViewCell {
         label.font = .caption1
         return label
     }()
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        backgroundColor = .clear
-
-        let selectedView = UIView()
-        selectedView.backgroundColor = R.color.colorCellBackgroundPressed()
-        selectedBackgroundView = selectedView
-
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
         setupLayout()
     }
 
@@ -72,28 +66,28 @@ final class DAppSearchDAppTableViewCell: UITableViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(iconImageView)
+        addSubview(iconImageView)
         iconImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
             make.size.equalTo(Constants.preferredIconViewSize)
         }
 
-        contentView.addSubview(favoriteImageView)
+        addSubview(favoriteImageView)
         favoriteImageView.snp.makeConstraints { make in
             make.size.equalTo(12.0)
             make.top.equalTo(iconImageView.snp.top).inset(-2)
             make.trailing.equalTo(iconImageView.snp.trailing).inset(-4.0)
         }
 
-        contentView.addSubview(titleLabel)
+        addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(iconImageView.snp.top).offset(4.0)
             make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
             make.trailing.lessThanOrEqualToSuperview().offset(-4.0)
         }
 
-        contentView.addSubview(subtitleLabel)
+        addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
             make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)

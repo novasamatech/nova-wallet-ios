@@ -2,10 +2,9 @@ import SubstrateSdk
 import Operation_iOS
 
 protocol DAppListViewProtocol: ControllerBackedProtocol {
-    func didReceiveWalletSwitch(viewModel: WalletSwitchViewModel)
     func didReceive(state: DAppListState)
-    func didReceive(dApp: DApp)
     func didCompleteRefreshing()
+    func didReceive(_ sections: [DAppListSection])
 }
 
 protocol DAppListPresenterProtocol: AnyObject {
@@ -15,15 +14,8 @@ protocol DAppListPresenterProtocol: AnyObject {
     func activateSearch()
     func activateSettings()
 
-    func numberOfCategories() -> Int
-    func categories() -> [DAppCategoryViewModel]
-    func selectedCategoryIndex() -> Int
-    func selectCategory(with id: String?)
-    func numberOfDApps() -> Int
-    func dApp(at index: Int) -> DAppViewModel
-    func selectDApp(at index: Int)
-    func toogleFavoriteForDApp(at index: Int)
-    func selectDApp(_ dapp: DApp)
+    func selectCategory(with id: String)
+    func selectDApp(with id: String)
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {

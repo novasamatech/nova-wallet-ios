@@ -4,43 +4,6 @@ import SoraFoundation
 import Operation_iOS
 
 final class DAppListPresenter {
-    enum CategoryIndex: Equatable {
-        case all
-        case favorites
-        case custom(index: Int, hasFavorites: Bool)
-
-        var selectedIndex: Int {
-            switch self {
-            case .all:
-                return 0
-            case .favorites:
-                return 1
-            case let .custom(index, hasFavorites):
-                return hasFavorites ? index + 2 : index + 1
-            }
-        }
-
-        var customIndex: Int? {
-            switch self {
-            case .all, .favorites:
-                return nil
-            case let .custom(index, _):
-                return index
-            }
-        }
-
-        init(uiIndex: Int, hasFavorites: Bool) {
-            if uiIndex == 0 {
-                self = .all
-            } else if uiIndex == 1, hasFavorites {
-                self = .favorites
-            } else {
-                self = hasFavorites ? .custom(index: uiIndex - 2, hasFavorites: hasFavorites)
-                    : .custom(index: uiIndex - 1, hasFavorites: hasFavorites)
-            }
-        }
-    }
-
     weak var view: DAppListViewProtocol?
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
@@ -50,10 +13,8 @@ final class DAppListPresenter {
     private var wallet: MetaAccountModel?
     private var dAppsResult: Result<DAppList, Error>?
     private var categoryModels: [DAppCategory] = []
-    private var selectedDApps: [DAppViewModel] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
-    private var selectedCategory: CategoryIndex = .all
     private var hasWalletsListUpdates: Bool = false
 
     private lazy var iconGenerator = NovaIconGenerator()
@@ -72,92 +33,23 @@ final class DAppListPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func provideWalletSwitchViewModel() {
-        guard let wallet = wallet else {
+    private func provideSections() {
+        guard
+            case let .success(dAppList) = dAppsResult,
+            let wallet
+        else {
             return
         }
-
-        let icon = wallet.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
-        let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
-        let viewModel = WalletSwitchViewModel(
-            type: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
-            iconViewModel: iconViewModel,
-            hasNotification: hasWalletsListUpdates
+        
+        let sections = viewModelFactory.createDAppSections(
+            from: dAppList,
+            favorites: favorites ?? [:],
+            wallet: wallet,
+            hasWalletsListUpdates: hasWalletsListUpdates,
+            locale: selectedLocale
         )
-
-        view?.didReceiveWalletSwitch(viewModel: viewModel)
-    }
-
-    private func updateCategories() {
-        guard let favorites = favorites else {
-            return
-        }
-
-        if let dAppList = try? dAppsResult?.get() {
-            let existingCategories = dAppList.dApps.reduce(into: Set<String>()) { result, dApp in
-                dApp.categories.forEach { result.insert($0) }
-            }
-
-            let prevCategories = categoryModels
-            categoryModels = dAppList.categories.filter { existingCategories.contains($0.identifier) }
-
-            switch selectedCategory {
-            case .all:
-                selectedDApps = viewModelFactory.createDApps(
-                    from: nil,
-                    dAppList: dAppList,
-                    favorites: favorites
-                ).dApps
-            case .favorites:
-                let hasFavorites = !favorites.isEmpty
-
-                if !hasFavorites {
-                    selectedCategory = .all
-
-                    selectedDApps = viewModelFactory.createDApps(
-                        from: nil,
-                        dAppList: dAppList,
-                        favorites: favorites
-                    ).dApps
-                } else {
-                    selectedCategory = .favorites
-
-                    selectedDApps = viewModelFactory.createFavoriteDApps(from: Array(favorites.values))
-                }
-            case .custom:
-                let maybeSelectedCategory = selectedCategory.customIndex.map { prevCategories[$0] }
-                updateCategoriesWhenCustomSelected(
-                    for: dAppList,
-                    selectedDAppCategory: maybeSelectedCategory
-                )
-            }
-
-        } else {
-            categoryModels = []
-            selectedDApps = []
-            selectedCategory = .all
-        }
-    }
-
-    private func updateCategoriesWhenCustomSelected(
-        for dAppList: DAppList,
-        selectedDAppCategory: DAppCategory?
-    ) {
-        let maybeNewCategoryIndex = categoryModels.firstIndex { category in
-            category.identifier == selectedDAppCategory?.identifier
-        }
-
-        selectedCategory = maybeNewCategoryIndex.map {
-            CategoryIndex.custom(index: $0, hasFavorites: hasFavorites)
-        } ?? .all
-
-        let categoryId = selectedCategory.customIndex.map { categoryModels[$0].identifier }
-
-        selectedDApps = viewModelFactory.createDApps(
-            from: categoryId,
-            dAppList: dAppList,
-            favorites: favorites ?? [:]
-        ).dApps
+        
+        view?.didReceive(sections)
     }
 
     private func updateState() {
@@ -172,16 +64,6 @@ final class DAppListPresenter {
             }
         } else {
             view?.didReceive(state: .loading)
-        }
-    }
-
-    private func askDAppRemoval(for identifier: String, name: String) {
-        wireframe.showFavoritesRemovalConfirmation(
-            from: view,
-            name: name,
-            locale: selectedLocale
-        ) { [weak self] in
-            self?.interactor.removeFromFavorites(dAppIdentifier: identifier)
         }
     }
 }
@@ -213,118 +95,30 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         hasFavorites ? categoryModels.count + 2 : categoryModels.count + 1
     }
 
-    func categories() -> [DAppCategoryViewModel] {
-        categoryViewModelFactory.createViewModels(for: categoryModels)
-    }
-
-    func selectedCategoryIndex() -> Int {
-        selectedCategory.selectedIndex
-    }
-
-    func selectCategory(with _: String?) {
-        guard let dAppList = try? dAppsResult?.get(), let favorites = favorites else {
+    func selectCategory(with id: String) {
+        guard
+            case let .success(dAppList) = dAppsResult,
+            let favorites = favorites
+        else {
             return
         }
 
-        let newCategory: CategoryIndex = .all // fix
-
-        guard selectedCategory != newCategory else {
-            return
-        }
-
-        selectedCategory = newCategory
-
-        switch selectedCategory {
-        case .all:
-            selectedDApps = viewModelFactory.createDApps(
-                from: nil,
-                dAppList: dAppList,
-                favorites: favorites
-            ).dApps
-        case .favorites:
-            selectedDApps = viewModelFactory.createFavoriteDApps(from: Array(favorites.values))
-        case let .custom(index, _):
-            let categoryId = categoryModels[index].identifier
-            selectedDApps = viewModelFactory.createDApps(
-                from: categoryId,
-                dAppList: dAppList,
-                favorites: favorites
-            ).dApps
-        }
-
-        view?.didReceive(state: .loaded)
+        // TODO: Show search with selected category
     }
 
-    func numberOfDApps() -> Int {
-        selectedDApps.count
-    }
-
-    func dApp(at index: Int) -> DAppViewModel {
-        selectedDApps[index]
-    }
-
-    func selectDApp(at index: Int) {
+    func selectDApp(with id: String) {
         guard case let .success(dAppList) = dAppsResult else {
             return
         }
 
-        let dAppViewModel = selectedDApps[index]
-
-        switch dAppViewModel.identifier {
-        case let .index(value):
-            let dApp = dAppList.dApps[value]
-
+        if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
             let tab = DAppBrowserTab(from: dApp)
 
             wireframe.showNewBrowserStack(
                 tab,
                 from: view
             )
-        case let .key(value):
-            if
-                let dapp = favorites?[value],
-                let tab = DAppBrowserTab(from: dapp.identifier) {
-                wireframe.showNewBrowserStack(
-                    tab,
-                    from: view
-                )
-            }
         }
-    }
-
-    func toogleFavoriteForDApp(at index: Int) {
-        guard case let .success(dAppList) = dAppsResult else {
-            return
-        }
-
-        let dAppViewModel = selectedDApps[index]
-
-        switch dAppViewModel.identifier {
-        case let .index(value):
-            let dApp = dAppList.dApps[value]
-            let identifier = dApp.identifier
-
-            if favorites?[identifier] != nil {
-                askDAppRemoval(for: identifier, name: dAppViewModel.name)
-            } else {
-                interactor.addToFavorites(dApp: dApp)
-            }
-
-        case let .key(value):
-            if let dapp = favorites?[value] {
-                let name = viewModelFactory.createFavoriteDAppName(from: dapp)
-                askDAppRemoval(for: dapp.identifier, name: name)
-            }
-        }
-    }
-
-    func selectDApp(_ dapp: DApp) {
-        let tab = DAppBrowserTab(from: dapp)
-
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
-        )
     }
 }
 
@@ -356,20 +150,20 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         self.dAppsResult = dAppsResult
 
-        updateCategories()
+        provideSections()
         updateState()
     }
 
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>]) {
         favorites = changes.mergeToDict(favorites ?? [:])
 
-        updateCategories()
+        provideSections()
         updateState()
     }
 
     func didReceiveWalletsState(hasUpdates: Bool) {
         hasWalletsListUpdates = hasUpdates
-        provideWalletSwitchViewModel()
+        provideSections()
     }
 }
 

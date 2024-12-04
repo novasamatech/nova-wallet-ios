@@ -3,14 +3,11 @@ import UIKit
 final class DAppListViewLayout: UIView {
     private let backgroundView = MultigradientView.background
 
-    let collectionView: UICollectionView = {
-        let flowLayout = DAppListFlowLayout()
-        flowLayout.scrollDirection = .vertical
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.minimumInteritemSpacing = 0
-        flowLayout.sectionInset = .zero
-
-        let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+    lazy var collectionView: UICollectionView = {
+        let view = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: createLayout()
+        )
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 16.0, right: 0.0)
@@ -18,6 +15,8 @@ final class DAppListViewLayout: UIView {
 
         return view
     }()
+    
+    private var sectionViewModels: [DAppListSectionViewModel] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -43,5 +42,99 @@ final class DAppListViewLayout: UIView {
             make.leading.trailing.equalToSuperview()
             make.top.bottom.equalToSuperview()
         }
+    }
+}
+
+// MARK: Private
+
+private extension DAppListViewLayout {
+    func createLayout() -> UICollectionViewCompositionalLayout {
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        configuration.interSectionSpacing = 16.0
+        
+        let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider
+        sectionProvider = { [weak self] (section, _) -> NSCollectionLayoutSection? in
+            switch self?.sectionViewModels[section] {
+            case .favorites: self?.dAppFavoritesSectionLayout()
+            case .category: self?.dAppCategorySectionLayout()
+            case .none: nil
+            }
+        }
+        
+        return UICollectionViewCompositionalLayout(
+            sectionProvider: sectionProvider,
+            configuration: configuration
+        )
+    }
+    
+    func dAppFavoritesSectionLayout() -> NSCollectionLayoutSection {
+        let item = NSCollectionLayoutItem(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .absolute(80),
+                heightDimension: .absolute(88)
+            )
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .absolute(88)
+            ),
+            subitem: item,
+            count: 1
+        )
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .continuous
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: 0,
+            leading: 16,
+            bottom: 0,
+            trailing: 16
+        )
+        
+        return section
+    }
+    
+    func dAppCategorySectionLayout() -> NSCollectionLayoutSection {
+        let item = NSCollectionLayoutItem(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(0.75),
+                heightDimension: .absolute(88)
+            )
+        )
+        let group = NSCollectionLayoutGroup.vertical(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .fractionalHeight(1.0)
+            ),
+            subitem: item,
+            count: 3
+        )
+        let containerGroup = NSCollectionLayoutGroup.vertical(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(0.75),
+                heightDimension: .fractionalHeight(0.80)
+            ),
+            subitem: group,
+            count: 1
+        )
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .absolute(24.0)
+            ),
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top
+        )
+        let section = NSCollectionLayoutSection(group: containerGroup)
+        section.orthogonalScrollingBehavior = .continuous
+        section.boundarySupplementaryItems = [header]
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: 0,
+            leading: 16,
+            bottom: 0,
+            trailing: 16
+        )
+        
+        return section
     }
 }

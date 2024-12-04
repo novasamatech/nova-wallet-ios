@@ -17,7 +17,7 @@ protocol LocksWireframeProtocol: AnyObject {
 
 struct LocksViewSectionModel: SectionProtocol, Hashable {
     let header: HeaderViewModel
-    var cells: [CellViewModel]
+    let cells: [CellViewModel]
 
     struct HeaderViewModel: Hashable {
         let icon: UIImage?

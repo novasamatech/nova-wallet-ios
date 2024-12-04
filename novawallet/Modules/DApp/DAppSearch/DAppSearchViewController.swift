@@ -90,7 +90,7 @@ private extension DAppSearchViewController {
         rootView.tableView.delegate = self
 
         rootView.tableView.registerClassForCell(DAppSearchQueryTableViewCell.self)
-        rootView.tableView.registerClassForCell(DAppSearchDAppTableViewCell.self)
+        rootView.tableView.registerClassForCell(DAppItemTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: DAppSearchHeaderView.self)
     }
 
@@ -175,8 +175,8 @@ extension DAppSearchViewController: UITableViewDataSource {
                 return UITableViewCell()
             }
 
-            let cell = tableView.dequeueReusableCellWithType(DAppSearchDAppTableViewCell.self)!
-            cell.bind(viewModel: dAppViewModel)
+            let cell: DAppItemTableViewCell = tableView.dequeueReusableCellWithType(DAppItemTableViewCell.self)!
+            cell.contentDisplayView.bind(viewModel: dAppViewModel)
             return cell
         }
     }

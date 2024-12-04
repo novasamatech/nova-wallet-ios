@@ -1,7 +1,7 @@
 import Foundation
 
 struct DAppViewModel {
-    enum Identifier {
+    enum Identifier: Equatable, Hashable {
         case index(value: Int)
         case key(value: String)
     }
@@ -19,5 +19,20 @@ struct DAppViewModel {
         case .key:
             return nil
         }
+    }
+}
+
+// MARK: Hashable
+
+extension DAppViewModel: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+    
+    static func == (
+        lhs: DAppViewModel,
+        rhs: DAppViewModel
+    ) -> Bool {
+        lhs.identifier == rhs.identifier && lhs.isFavorite == rhs.isFavorite
     }
 }
