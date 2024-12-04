@@ -30,7 +30,8 @@ protocol SwapExecutionInteractorOutputProtocol: AnyObject {
     func didFailExecution(with error: Error)
 }
 
-protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable {
+protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetPresentable, AlertPresentable,
+    ErrorPresentable, ExtrinsicSigningErrorHandling {
     func complete(
         on view: ControllerBackedProtocol?,
         payChainAsset: ChainAsset

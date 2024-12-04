@@ -9,6 +9,7 @@ protocol XcmDepositMonitoringServiceProtocol {
 enum XcmDepositMonitoringServiceError: Error {
     case unsupportedAsset(ChainAsset)
     case timeout
+    case throttled
 }
 
 final class XcmDepositMonitoringService {
@@ -71,6 +72,19 @@ final class XcmDepositMonitoringService {
 
         workingQueue.async {
             closureToNotify?(.failure(XcmDepositMonitoringServiceError.timeout))
+        }
+    }
+
+    private func notifyCancelled() {
+        guard notificationClosure != nil else {
+            return
+        }
+
+        let closureToNotify = notificationClosure
+        notificationClosure = nil
+
+        workingQueue.async {
+            closureToNotify?(.failure(XcmDepositMonitoringServiceError.throttled))
         }
     }
 
@@ -244,13 +258,17 @@ final class XcmDepositMonitoringService {
             mutex.unlock()
         }
 
+        guard subscription != nil else {
+            return
+        }
+
         subscription?.unsubscribe()
         subscription = nil
 
         detectionCallsStore.values.forEach { $0.cancel() }
         detectionCallsStore = [:]
 
-        notificationClosure = nil
+        notifyCancelled()
     }
 }
 

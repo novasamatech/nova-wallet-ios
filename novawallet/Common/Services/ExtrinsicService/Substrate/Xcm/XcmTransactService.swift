@@ -64,6 +64,11 @@ extension XcmTransactService: XcmTransactServiceProtocol {
                     signer: signer,
                     runningIn: self.workingQueue
                 ) { result in
+                    // cancel monitoring in case transaction submission failed
+                    if case .failure = result {
+                        monitoringWrapper.cancel()
+                    }
+
                     completion(result)
                 }
             }
@@ -81,9 +86,9 @@ extension XcmTransactService: XcmTransactServiceProtocol {
             mappingOperation.addDependency(monitoringWrapper.targetOperation)
             mappingOperation.addDependency(submittionOperation)
 
-            return monitoringWrapper
-                .insertingHead(operations: [submittionOperation])
-                .insertingTail(operation: mappingOperation)
+            let dependencies = monitoringWrapper.allOperations + [submittionOperation]
+
+            return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
         } catch {
             return .createWithError(error)
         }

@@ -306,7 +306,14 @@ extension SwapExecutionPresenter: SwapExecutionInteractorOutputProtocol {
         updateCompletedStateIfNeeded()
     }
 
-    func didFailExecution(with _: Error) {
+    func didFailExecution(with error: Error) {
+        _ = wireframe.handleExtrinsicSigningErrorPresentation(
+            error,
+            view: view,
+            closeAction: nil,
+            completionClosure: nil
+        )
+
         updateFailedStateIfNeeded()
     }
 }
