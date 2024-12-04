@@ -25,7 +25,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
     private var feeChainAsset: ChainAsset?
 
     private var slippage: BigRational
-    private var isManualFeeSet: Bool = false
 
     private var detailsAvailable: Bool {
         !quoteResult.hasError() && quoteArgs != nil
@@ -463,11 +462,9 @@ extension SwapSetupPresenter {
             return
         }
 
-        let isEditable = payChainAsset.isUtilityAsset && canPayFeeInPayAsset
-
         let viewModel = viewModelFactory.feeViewModel(
             amountInFiat: totalFeeInFiat,
-            isEditable: isEditable,
+            isEditable: false,
             priceData: feeAssetPriceData,
             locale: selectedLocale
         )
@@ -603,7 +600,6 @@ extension SwapSetupPresenter {
     private func switchFeeChainAssetIfNecessary() {
         guard
             canPayFeeInPayAsset,
-            !isManualFeeSet,
             let payChainAsset = getPayChainAsset(),
             !payChainAsset.isUtilityAsset,
             let feeChainAsset = getFeeChainAsset(),
@@ -645,9 +641,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func selectPayToken() {
         wireframe.showPayTokenSelection(from: view, chainAsset: receiveChainAsset) { [weak self] chainAsset in
             self?.payChainAsset = chainAsset
-            let feeChainAsset = chainAsset.chain.utilityAsset().map {
-                ChainAsset(chain: chainAsset.chain, asset: $0)
-            }
+            let feeChainAsset = chainAsset.chain.utilityChainAsset()
 
             self?.feeChainAsset = feeChainAsset
             self?.fee = nil
@@ -661,7 +655,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
             self?.interactor.update(payChainAsset: chainAsset)
             self?.interactor.update(feeChainAsset: feeChainAsset)
-            self?.isManualFeeSet = false
 
             if let direction = self?.quoteArgs?.direction {
                 self?.refreshQuote(direction: direction, forceUpdate: false)
@@ -762,28 +755,6 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         maxCorrectionCounter.resetCounter()
 
         applySwapMax()
-    }
-
-    func showFeeActions() {
-        guard
-            let payChainAsset = payChainAsset,
-            let utilityAsset = payChainAsset.chain.utilityChainAsset()
-        else {
-            return
-        }
-
-        wireframe.showFeeAssetSelection(
-            from: view,
-            utilityAsset: utilityAsset,
-            sendingAsset: payChainAsset,
-            currentFeeAsset: feeChainAsset,
-            onFeeAssetSelect: { [weak self] selectedAsset in
-                if selectedAsset.chainAssetId != self?.feeChainAsset?.chainAssetId {
-                    self?.isManualFeeSet = true
-                }
-                self?.updateFeeChainAsset(selectedAsset)
-            }
-        )
     }
 
     func showFeeInfo() {

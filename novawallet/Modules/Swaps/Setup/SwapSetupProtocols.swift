@@ -31,7 +31,6 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func flip(currentFocus: TextFieldFocus?)
     func updatePayAmount(_ amount: Decimal?)
     func updateReceiveAmount(_ amount: Decimal?)
-    func showFeeActions()
     func showFeeInfo()
     func showRateInfo()
     func showSettings()

@@ -76,11 +76,6 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(rateInfoAction),
             for: .touchUpInside
         )
-        rootView.networkFeeCell.valueTopButton.addTarget(
-            self,
-            action: #selector(changeNetworkFeeAction),
-            for: .touchUpInside
-        )
         rootView.networkFeeCell.addTarget(
             self,
             action: #selector(networkFeeInfoAction),
@@ -156,10 +151,6 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
     @objc private func receiveAmountChangeAction() {
         let amount = rootView.receiveAmountInputView.textInputView.inputViewModel?.decimalAmount
         presenter.updateReceiveAmount(amount)
-    }
-
-    @objc private func changeNetworkFeeAction() {
-        presenter.showFeeActions()
     }
 
     @objc private func networkFeeInfoAction() {
