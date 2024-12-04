@@ -12,33 +12,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     private var requoteChange = Debouncer(delay: 1)
 
-    init(
-        state: SwapTokensFlowStateProtocol,
-        chainRegistry: ChainRegistryProtocol,
-        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        storageRepository: AnyDataProviderRepository<ChainStorageItem>,
-        currencyManager: CurrencyManagerProtocol,
-        selectedWallet: MetaAccountModel,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
-    ) {
-        self.storageRepository = storageRepository
-
-        super.init(
-            state: state,
-            chainRegistry: chainRegistry,
-            assetStorageFactory: assetStorageFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            currencyManager: currencyManager,
-            selectedWallet: selectedWallet,
-            operationQueue: operationQueue,
-            logger: logger
-        )
-    }
-
     weak var presenter: SwapSetupInteractorOutputProtocol? {
         basePresenter as? SwapSetupInteractorOutputProtocol
     }
@@ -71,10 +44,38 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             ].compactMap { $0 }
         )
     }
+    
+    init(
+        state: SwapTokensFlowStateProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        storageRepository: AnyDataProviderRepository<ChainStorageItem>,
+        currencyManager: CurrencyManagerProtocol,
+        selectedWallet: MetaAccountModel,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) {
+        self.storageRepository = storageRepository
+
+        super.init(
+            state: state,
+            chainRegistry: chainRegistry,
+            assetStorageFactory: assetStorageFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            currencyManager: currencyManager,
+            selectedWallet: selectedWallet,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
 
     deinit {
         canPayFeeInAssetCall.cancel()
         clearRemoteSubscription()
+        requoteChange.cancel()
     }
 
     private func provideCanPayFee(for asset: ChainAsset) {
