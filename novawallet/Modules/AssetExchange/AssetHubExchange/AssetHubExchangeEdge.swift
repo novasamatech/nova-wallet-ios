@@ -41,7 +41,13 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
         let quoteWrapper = quoteFactory.quote(for: quoteArgs)
 
         let mappingOperation = ClosureOperation<Balance> {
-            try quoteWrapper.targetOperation.extractNoCancellableResultData().amountOut
+            let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+            switch direction {
+            case .sell:
+                return quote.amountOut
+            case .buy:
+                return quote.amountIn
+            }
         }
 
         mappingOperation.addDependency(quoteWrapper.targetOperation)

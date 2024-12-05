@@ -45,16 +45,11 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return false
         }
 
-        // always can pay fee in utility asset
-        if chainAssetIn.isUtilityAsset {
-            return true
-        }
-
         if edge.shouldIgnoreFeeRequirement(after: predecessor) {
             return true
         }
 
-        let canPayFees = feeSupport.canPayFee(inNonNative: chainAssetIn) &&
+        let canPayFees = (chainAssetIn.isUtilityAsset || feeSupport.canPayFee(inNonNative: chainAssetIn)) &&
             edge.canPayNonNativeFeesInIntermediatePosition()
 
         return canPayFees
