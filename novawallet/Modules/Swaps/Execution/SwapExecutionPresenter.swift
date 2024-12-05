@@ -278,7 +278,7 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
     }
 
     func activateDone() {
-        wireframe.complete(on: view, payChainAsset: chainAssetIn)
+        wireframe.complete(on: view, payChainAsset: chainAssetOut)
     }
 
     func activateTryAgain() {

@@ -44,7 +44,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             ].compactMap { $0 }
         )
     }
-    
+
     init(
         state: SwapTokensFlowStateProtocol,
         chainRegistry: ChainRegistryProtocol,
