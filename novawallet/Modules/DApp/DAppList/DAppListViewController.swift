@@ -19,7 +19,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
     private lazy var dataSource = createDataSource()
 
-    private var sectionViewModels: [DAppListSection] = []
+    private var sectionViewModels: [DAppListSectionViewModel] = []
     private var walletSwitchViewModel: WalletSwitchViewModel?
 
     private var state: DAppListState?
@@ -72,10 +72,16 @@ private extension DAppListViewController {
         rootView.collectionView.registerCellClass(DAppCategoriesViewCell.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemCollectionViewCell.self)
+
+        rootView.collectionView.registerClass(
+            RoundedIconTitleCollectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
+        )
         rootView.collectionView.registerClass(
             TitleCollectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
+
         rootView.collectionView.dataSource = dataSource
         rootView.collectionView.delegate = self
 
@@ -132,6 +138,12 @@ private extension DAppListViewController {
             for: indexPath
         )!
 
+        if dApp.isFavorite {
+            cell.view.layoutStyle = .vertical
+        } else {
+            cell.view.layoutStyle = .horizontal
+        }
+
         cell.view.bind(viewModel: dApp)
 
         return cell
@@ -142,23 +154,34 @@ private extension DAppListViewController {
         kind: String,
         indexPath: IndexPath
     ) -> UICollectionReusableView? {
-        let sectionModel = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+        guard let title = dataSource.snapshot().sectionIdentifiers[indexPath.section].title else {
+            return nil
+        }
 
-        guard let title = sectionModel.title else { return nil }
+        var viewModel: TitleCollectionHeaderView.Model
+
+        switch sectionViewModels[indexPath.section] {
+        case .favorites:
+            viewModel = .init(
+                title: title,
+                icon: R.image.iconFavButtonSel()
+            )
+        case let .category(model):
+            viewModel = .init(
+                title: title,
+                icon: nil
+            )
+        default:
+            return nil
+        }
 
         let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
             forSupplementaryViewOfKind: kind,
             for: indexPath
         )
-
-        header?.contentInsets = .init(
-            top: 4,
-            left: 16,
-            bottom: 4,
-            right: 16
-        )
-
-        header?.bind(title: title)
+        header?.contentInsets.top = 4
+        header?.contentInsets.bottom = 4
+        header?.bind(viewModel: viewModel)
 
         return header
     }
@@ -317,11 +340,9 @@ extension DAppListViewController: DAppCategoriesViewDelegate {
 extension DAppListViewController: DAppListViewProtocol {
     func didReceive(_ sections: [DAppListSectionViewModel]) {
         rootView.sectionViewModels = sections
+        sectionViewModels = sections
 
-        let models = sections.models
-
-        sectionViewModels = models
-        dataSource.apply(models)
+        dataSource.apply(sections.models)
     }
 
     func didReceive(state: DAppListState) {

@@ -78,7 +78,6 @@ private extension DAppListViewLayout {
                 section = dAppCategorySectionLayout()
                 contentInsets.bottom = 24
                 contentInsets.top = 12
-                contentInsets.trailing = bounds.width * 0.25
             }
             section?.contentInsets = contentInsets
 
@@ -89,14 +88,14 @@ private extension DAppListViewLayout {
     func dAppFavoritesSectionLayout() -> NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(
-                widthDimension: .absolute(80),
-                heightDimension: .absolute(88)
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalWidth(1)
             )
         )
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
-                heightDimension: .absolute(88)
+                widthDimension: .absolute(80),
+                heightDimension: .absolute(80)
             ),
             subitem: item,
             count: 1
@@ -134,6 +133,9 @@ private extension DAppListViewLayout {
             subitem: group,
             count: 1
         )
+        containerGroup.contentInsets = NSDirectionalEdgeInsets.zero
+        containerGroup.contentInsets.trailing = -(bounds.width * 0.25)
+        containerGroup.contentInsets.leading = 16
 
         let header = headerLayoutItem()
 

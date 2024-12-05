@@ -1,24 +1,10 @@
 import UIKit
 
 final class DAppItemView: UIView {
-    private enum Constants {
-        static let iconInsets = UIEdgeInsets(top: 6.0, left: 6.0, bottom: 6.0, right: 6.0)
-        static let iconSize = CGSize(width: 36.0, height: 36.0)
-
-        static var preferredIconViewSize: CGSize {
-            CGSize(
-                width: iconInsets.left + iconSize.width + iconInsets.right,
-                height: iconInsets.top + iconSize.height + iconInsets.bottom
-            )
-        }
+    let iconImageView: DAppIconView = .create {
+        $0.contentInsets = Constants.iconInsets
+        $0.backgroundView.apply(style: .roundedContainer(radius: Constants.iconRadius))
     }
-
-    let iconImageView: DAppIconView = {
-        let view = DAppIconView()
-        view.contentInsets = Constants.iconInsets
-        view.backgroundView.apply(style: .roundedContainer(radius: 12))
-        return view
-    }()
 
     let favoriteImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
@@ -27,71 +13,191 @@ final class DAppItemView: UIView {
         )
     }
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .regularSubheadline
-        return label
-    }()
+    let titleView: MultiValueView = .create { view in
+        view.spacing = Constants.titleSubtitleSpace
+    }
 
-    let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
-        label.font = .caption1
-        return label
-    }()
+    private var model: DAppViewModel?
+
+    var layoutStyle: LayoutStyle = .horizontal {
+        didSet {
+            setupLayout()
+            setupStyle()
+
+            if let model {
+                bind(model)
+            }
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
+        setupStyle()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    func bind(viewModel: DAppViewModel) {
-        iconImageView.bind(viewModel: viewModel.icon, size: Constants.iconSize)
+// MARK: Private
 
-        titleLabel.text = viewModel.name
-        subtitleLabel.text = viewModel.details
-
-        if viewModel.isFavorite {
-            favoriteImageView.isHidden = false
-        } else {
-            favoriteImageView.isHidden = true
+private extension DAppItemView {
+    func setupLayout() {
+        iconImageView.snp.makeConstraints {
+            $0.size.equalTo(Constants.preferredIconViewSize)
         }
-    }
 
-    private func setupLayout() {
-        addSubview(iconImageView)
-        iconImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(Constants.preferredIconViewSize)
+        switch layoutStyle {
+        case .horizontal: layoutHorizontal()
+        case .vertical: layoutVertical()
         }
 
         addSubview(favoriteImageView)
         favoriteImageView.snp.makeConstraints { make in
-            make.size.equalTo(12.0)
+            make.size.equalTo(Constants.favoriteIconSize)
             make.top.equalTo(iconImageView.snp.top).inset(-2)
             make.trailing.equalTo(iconImageView.snp.trailing).inset(-4.0)
         }
+    }
 
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(iconImageView.snp.top).offset(4.0)
-            make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
-            make.trailing.lessThanOrEqualToSuperview().offset(-4.0)
+    func layoutHorizontal() {
+        subviews.forEach { $0.removeFromSuperview() }
+
+        let content = UIView.hStack(
+            alignment: .center,
+            distribution: .fillProportionally,
+            spacing: Constants.horizontalSpace,
+            [
+                iconImageView,
+                titleView
+            ]
+        )
+
+        titleView.stackView.alignment = .leading
+
+        addSubview(content)
+
+        content.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+    }
+
+    func layoutVertical() {
+        subviews.forEach { $0.removeFromSuperview() }
+
+        let content = UIView.vStack(
+            alignment: .center,
+            spacing: Constants.verticalSpace,
+            [
+                iconImageView,
+                titleView
+            ]
+        )
+
+        titleView.stackView.alignment = .center
+
+        addSubview(content)
+
+        content.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+    }
+
+    func setupStyle() {
+        switch layoutStyle {
+        case .horizontal: styleHorizontal()
+        case .vertical: styleVertical()
+        }
+    }
+
+    func styleVertical() {
+        titleView.valueTop.apply(style: .caption1Secondary)
+    }
+
+    func styleHorizontal() {
+        titleView.valueTop.apply(style: .regularSubhedlinePrimary)
+    }
+
+    func bind(_ model: DAppViewModel) {
+        titleView.valueTop.text = model.name
+
+        iconImageView.bind(
+            viewModel: model.icon,
+            size: Constants.iconSize
+        )
+
+        if model.isFavorite {
+            favoriteImageView.isHidden = false
+        } else {
+            favoriteImageView.isHidden = true
         }
 
-        addSubview(subtitleLabel)
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
-            make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
-            make.trailing.lessThanOrEqualToSuperview().offset(-4.0)
+        switch layoutStyle {
+        case .horizontal:
+            titleView.valueBottom.text = model.details
+        case .vertical:
+            titleView.valueBottom.text = nil
         }
+    }
+}
+
+// MARK: - Model
+
+extension DAppItemView {
+    struct Model {
+        let icon: ImageViewModelProtocol?
+        let title: String
+        let subtitle: String
+    }
+
+    func bind(viewModel: DAppViewModel) {
+        bind(viewModel)
+
+        model = viewModel
+    }
+
+    func clear() {
+        model?.icon?.cancel(on: iconImageView.imageView)
+    }
+}
+
+// MARK: - Constants
+
+extension DAppItemView {
+    enum Constants {
+        static let arrowSize = CGSize(width: 16, height: 16)
+        static let titleSubtitleSpace: CGFloat = 4
+        static let horizontalSpace: CGFloat = 12
+        static let verticalSpace: CGFloat = 8
+        static let iconRadius: CGFloat = 12
+
+        static let iconSize = CGSize(
+            width: 36,
+            height: 36
+        )
+        static let iconInsets = UIEdgeInsets(
+            top: 6,
+            left: 6,
+            bottom: 6,
+            right: 6
+        )
+        static var preferredIconViewSize = CGSize(
+            width: iconInsets.left + iconSize.width + iconInsets.right,
+            height: iconInsets.top + iconSize.height + iconInsets.bottom
+        )
+
+        static var favoriteIconSize = CGSize(
+            width: 12,
+            height: 12
+        )
+    }
+
+    enum LayoutStyle {
+        case horizontal
+        case vertical
     }
 }

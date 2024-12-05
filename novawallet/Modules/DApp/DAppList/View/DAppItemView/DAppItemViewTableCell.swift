@@ -10,8 +10,6 @@ final class DAppItemTableViewCell: PlainBaseTableViewCell<DAppItemView> {
             reuseIdentifier: reuseIdentifier
         )
 
-        contentInsets = .zero
-
         backgroundColor = .clear
 
         let selectedView = UIView()
